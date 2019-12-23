@@ -1,0 +1,219 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/mixins";
+
+$border-radius: .35rem;
+$border-radius-lg: .4rem;
+
+$container-max-widths: (
+  xl: 1180px
+);
+$primary: #3f51b5;
+$secondary: #637382;
+@import "node_modules/bootstrap/scss/variables";
+$dropdown-color: $black;
+$dropdown-link-color: $black;
+$body-color: $black;
+$nav-pills-link-active-bg: rgba($primary, 0.15);
+$nav-pills-link-active-color: $primary;
+$theme-colors: (
+  "primary": $primary,
+  "requires_payment": $warning,
+  "white": $white,
+  "gray": #999,
+  "secondary": rgba($gray-200, 70%),
+  "black": $black
+);
+$card-border-width: 0;
+$btn-transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out;
+$link-color: #1e70bf;
+$nav-link-padding-y: 0.85rem;
+$input-btn-focus-color: rgba($primary, .25);
+$input-focus-border-color: $primary;
+$dropdown-link-active-bg: rgba($secondary, 0.1);
+$dropdown-link-active-color: black;
+$input-height-lg: calc(#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 3} + #{$input-height-border});
+$input-font-size-lg: 1rem;
+$font-weight-bold: 600;
+$dropdown-padding-y: 0.45rem;
+$dropdown-item-padding-x: 1rem;
+$input-placeholder-color: $gray-500;
+$close-font-size: 2rem;
+$close-font-weight: 200;
+$modal-content-border-width: 0;
+$dropdown-font-size: 0.95rem;
+$input-transition: none;
+$navbar-nav-link-padding-x: .75rem;
+$dropdown-divider-margin-y: 0.45rem;
+.modal {
+  .modal-dialog {
+    .close{
+      outline: 0;
+      padding: 0 !important;
+      margin: 0 !important;
+      position: absolute;
+      top: 8px;
+      right: 14px;
+      float: none !important;
+      z-index: 2;
+    }
+  }
+  .modal-body{
+    z-index: 1;
+  }
+}
+
+$pagination-color: $secondary;
+$pagination-hover-color: $secondary;
+$pagination-active-color: $primary;
+$pagination-active-bg: white;
+$pagination-active-border-color: transparent;
+$pagination-border-color: transparent;
+$pagination-disabled-border-color: transparent;
+$pagination-hover-border-color: transparent;
+$pagination-disabled-color: #ddd;
+
+/*$font-family-base: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";*/
+$headings-font-weight: 600;
+$btn-padding-x: 0.75rem;
+$btn-padding-y: .375rem;
+$btn-padding-x-sm: 1.5rem;
+$btn-padding-x-lg: 1.2rem;
+$btn-font-size-lg: 1.05rem;
+$input-btn-focus-width: .15rem;
+$btn-box-shadow: 5px;
+$input-focus-box-shadow:  0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$input-btn-focus-box-shadow:  0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$alert-padding-y: 0.35rem;
+$btn-focus-width: 0.15rem;
+$btn-border-width: 0;
+$badge-font-weight: 600;
+$badge-padding-x: 0.6em;
+$transition-base: all .1s ease-in-out;
+$transition-fade: opacity .1s linear;
+$modal-transition: transform .15s ease-out;
+$modal-fade-transform: scale(.95);
+// Brands
+$brand-primary: #3f51b5;
+$brand-info: #8eb4cb;
+$brand-success: #2ab27b;
+$brand-warning: #cbb956;
+$brand-danger: #bf5329;
+
+// Typography
+$font-family-sans-serif: "Raleway", sans-serif;
+$font-size-base: 0.95rem;
+$line-height-base: 1.5;
+$text-color: #636b6f;
+
+// Navbar
+$navbar-default-bg: #fff;
+$navbar-padding-y: 0.5rem;
+$navbar-brand-padding-y: 0;
+$navbar-light-color: #212b35;
+$navbar-brand-font-size: inherit;
+$navbar-toggler-padding-y: 0;
+$navbar-toggler-padding-x: 0;
+.navbar-toggler{
+  border: 0 !important; 
+  outline: 0 !important;
+}
+@media screen and (max-width: map-get($grid-breakpoints,"md")) {
+  .navbar{
+    padding: 0.8rem 1rem !important;
+  }
+}
+$enable-validation-icons: false;
+$enable-responsive-font-size: true;
+
+$transition-collapse: opacity 1s, left 1s;
+
+// Buttons
+$btn-default-color: $text-color;
+
+// Inputs
+$input-color: #000;
+$input-focus-color: #000;
+$input-border: lighten($text-color, 40%);
+$input-border-focus: lighten($brand-primary, 25%);
+$input-color-placeholder: lighten($text-color, 30%);
+
+$spinner-width: 2rem;
+$spinner-height: 2rem;
+$spinner-border-width: .075em;
+$spinner-border-width-sm: .075rem;
+
+$list-group-color: darken($primary, 30%);
+$list-group-bg: transparent;
+$list-group-hover-bg: rgba($black, 3%);
+$list-group-action-active-bg: rgba($black, 6%);
+$list-group-active-bg: rgba($black, 6%);
+$list-group-action-hover-color: $black;
+$list-group-active-color: $black;
+$list-group-action-active-color: $black;
+$list-group-item-padding-y: .5rem;
+$list-group-item-padding-x: 0.8rem;
+$list-group-color: $black;
+.list-group-item{
+  margin-bottom:0 !important;
+}
+.badge{
+  line-height: 1.3 !important;
+}
+
+$table-hover-bg: rgba($secondary, 3%);
+
+$box-shadow-sm: 0 .1rem .5rem rgba($black, .075);
+.hover-shadow-sm:hover{
+  box-shadow: $box-shadow-sm !important;
+}
+
+
+@each $color, $value in $theme-colors {
+  .btn-outline-#{$color} {
+    &:focus,
+    &.focus {
+      box-shadow: 0 0 0 $btn-focus-width rgba($value, .25) !important;
+    }
+  }
+
+  .hover-color-#{$color} {
+    &:hover{
+      color: $value !important;
+    }
+  }
+
+  .hover-bg-#{$color} {
+    &:hover{
+      background-color: $value !important;
+    }
+  }
+}
+@each $breakpoint, $value in $grid-breakpoints {
+  @media screen and (max-width: #{$value}) {
+    .btn-block-#{$breakpoint} {
+      display: block;
+      width: 100%;
+    }
+    .flex-column-#{$breakpoint} {
+      flex-direction: column;
+    }
+  }
+  @media screen and (min-width: #{$value}) {
+    .maxh-100-#{$breakpoint}{
+      max-height: 100%;
+    }
+    .minh-100-#{$breakpoint}{
+      min-height: 100%;
+    }
+    .h-auto-#{$breakpoint}{
+      height: auto !important;
+    }
+    .h-100-#{$breakpoint}{
+      height: 100% !important;
+    }
+  }
+}
+$navbar-dark-toggler-icon-bg: none;
+$navbar-light-toggler-icon-bg: none;
+@import "node_modules/bootstrap/scss/bootstrap";

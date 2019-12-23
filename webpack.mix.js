@@ -12,10 +12,10 @@ if (production) {
 }
 
 if (argv.indexOf('--css') > -1) { 
+    console.log('Running css...');
     mix
         .sass('resources/sass/bootstrap.scss', 'public/css')
         .sass('resources/sass/app.scss', 'public/css')
-        .sass('resources/sass/landing.scss', 'public/css')
         .options({
             postCss: [require('postcss-css-variables')()]
         })
@@ -30,7 +30,8 @@ if (argv.indexOf('--css') > -1) {
 }
 
 else if (argv.indexOf('--js') > -1) { 
-    mix.js('resources/js/app.js', 'public/js')s')
+    console.log('Running js...');
+    mix.js('resources/js/app.js', 'public/js')
         .webpackConfig({
             output: {
                 chunkFilename: `js/chunks/[name]${timestamp}.js`
@@ -58,15 +59,15 @@ else if (argv.indexOf('--js') > -1) {
         .mergeManifest();
 
     mix.browserSync({
-        proxy: 'https://faceboxy.app',
-        host: 'workhob.app',
+        proxy: 'https://boxbi.app',
+        host: 'boxbi.app',
         open: false,
         port: 8000,
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/faceboxy.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/faceboxy.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.crt'
         }
     });
 }
