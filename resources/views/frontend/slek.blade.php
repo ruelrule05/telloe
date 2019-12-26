@@ -13,11 +13,22 @@
 <body>
     <div id="app">
         <div class="modal fade" id="recordVideoModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-zoom" role="document">
-                <div class="modal-content" id="toRecord">
-                     <video id="videoFile" playsinline class="video-js vjs-default-skin"></video>
-                    
-                    <button id="btn-start-recording">Start Recording</button>
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
+                <div class="modal-content">
+                    <div class="d-flex align-items-middle" id="toRecord">
+                        <div class="w-50 position-relative" id="images">
+                            <img src="/images/file1.jpg" class="w-100" alt="">
+                        </div>
+                        <div class="w-50 bg-black">
+                            <video id="videoFile" class="w-100"></video>
+                        </div>
+                    </div>
+
+                    <!-- <canvas id="canvas-output" width="1024" height="768"></canvas>  -->
+
+
+                    <button id="btn-start-recording" @click="startRecord">Start Recording</button>
+                    <button id="btn-start-recording" @click="stopRecord">Stop Recording</button>
 
                     <div class="modal-footer justify-content-between p-3">
                         <button type="button" class="btn" data-dismiss="modal" aria-label="Close">Cancel</button>
@@ -209,7 +220,7 @@
                             </div>
                         </form>
                         <div class="mt-2">
-                            <button class="btn btn-light" data-target="#recordVideoModal" data-toggle="modal" title="Record video" type="button">
+                            <button class="btn btn-light" id="btn-recorxd-webm" data-target="#recordVideoModal" data-toggle="modal" title="Record video" type="button">
                                 <i data-feather="video"></i>
                             </button>
                             <button class="btn btn-light" data-toggle="tooltip" title="Record audio" type="button">
@@ -231,6 +242,9 @@
             </div>
             <!-- ./ content -->
         </div>
+
+
+        <canvas id="canvas-output" width="1024" height="768" hidden style="position: absolute; width: 100vw; height: 100vh;"></canvas>
     </div>
 
 <script src="/js/screenshot.js"></script>

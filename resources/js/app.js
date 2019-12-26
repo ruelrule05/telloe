@@ -5,67 +5,43 @@ import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/modal';
 import 'bootstrap/js/dist/tooltip';
 import 'bootstrap/js/dist/tab';
-import video_css from 'video.js/dist/video-js.min.css';
-import videojs from 'video.js';
-import 'webrtc-adapter';
 import RecordRTC from 'recordrtc';
-import record_css from 'videojs-record/dist/css/videojs.record.css';
-import record from 'videojs-record/dist/videojs.record.js';
-
-
 const feather = require('feather-icons');
-const DetectRTC = require('detectrtc');
-const html2canvas = require('html2canvas');
-const recordrtc = require('recordrtc');
-
 
 window.app = new Vue({
     el: '#app',
     data: {
         videoRecorder: null,
+        streams: null,
+        video: null,
     },
 
 
     mounted() {
-    	feather.replace();
+        feather.replace();
+        this.video = document.querySelector('#videoFile');
+
         $('#recordVideoModal').on('shown.bs.modal', (e) => {
-            this.videoRecorder = videojs('videoFile', {
-                controls: true,
-                width: 400,
-                height: 400,
-                controlBar: {
-                    fullscreenToggle: false,
-                },
-                plugins: {
-                    record: {
-                        audio: true,
-                        video: true,
-                        maxLength: 15,
-                        debug: false,
-                    }
-                }
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
+                this.streams = streams;
+                this.video.muted = true;
+                this.video.volume = 0;
+                this.video.srcObject = new MediaStream(this.streams.getVideoTracks());
+                this.video.play();
+            }).catch(function(error) {
+                alert('Unable to capture your camera.');
+                console.error(error);
             });
 
-            this.videoRecorder.on('deviceError', () => {
-                console.warn('device error:', this.videoRecorder.deviceErrorCode);
-            });
-
-            this.videoRecorder.on('error', function(error) {
-                console.log('error:', error);
-            });
-
-            this.videoRecorder.on('finishRecord', () => {
-                this.$emit('finish-record', this.videoRecorder.recordedData);
-            });
-
-            this.videoRecorder.record().getDevice();
-
-            this.testRecord();
         });
 
         $('#recordVideoModal').on('hidden.bs.modal', (e) => {
-            //this.videoRecorder.record().reset();
+            this.streams.getTracks().forEach(function(track) {
+              track.stop();
+            });
+            this.videoRecorder = this.streams = null;
         });
+
     },
 
     created() {
@@ -75,7 +51,57 @@ window.app = new Vue({
     },
 
     methods: {
-        testRecord() {
-        }
+        startRecord() {
+            let canvasOutput = document.getElementById('canvas-output');
+            let canvasCtx = canvasOutput.getContext('2d');
+            canvasOutput.width = $('#toRecord').width();
+            canvasOutput.height = $('#toRecord').height();
+
+            // Video
+            let video = this.video;
+            (function loop() {
+                if (!video.paused && !video.ended) {
+                    canvasCtx.drawImage(video, canvasOutput.width / 2, 0, canvasOutput.width / 2, canvasOutput.height);
+                    setTimeout(loop, 1);
+                }
+            })();
+
+            // Images
+            let images = document.getElementById('images');
+            (function loop() {
+                html2canvas(images, {
+                    grabMouse: true,
+                    onrendered: (canvas) => {
+                        canvasCtx.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
+                        canvasCtx.drawImage(canvas, 0, 0, canvasOutput.width / 2, canvasOutput.height);
+                        setTimeout(loop, 60);
+                    }
+                });
+            })();
+
+            let finalStream = new MediaStream();
+
+            let audioStream = new MediaStream(this.streams.getAudioTracks());
+            audioStream.getTracks('audio').forEach(function(track) {
+                finalStream.addTrack(track);
+            });
+            canvasOutput.captureStream().getTracks('video').forEach(function(track) {
+                finalStream.addTrack(track);
+            });
+
+            this.videoRecorder = RecordRTC(finalStream, {
+                type: 'video',
+            });
+            this.videoRecorder.startRecording();
+        },
+        
+
+        stopRecord() {
+            this.videoRecorder.stopRecording( (videoBlob) => {
+                window.open(videoBlob);
+            });
+        },
     }
 });
+
+
