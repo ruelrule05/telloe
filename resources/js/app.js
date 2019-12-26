@@ -7,6 +7,8 @@ import 'bootstrap/js/dist/tooltip';
 import 'bootstrap/js/dist/tab';
 import RecordRTC from 'recordrtc';
 const feather = require('feather-icons');
+//const html2canvas = require('html2canvas');
+
 
 window.app = new Vue({
     el: '#app',
@@ -14,6 +16,10 @@ window.app = new Vue({
         videoRecorder: null,
         streams: null,
         video: null,
+        mouse: {
+            x: 0,
+            y: 0
+        }
     },
 
 
@@ -51,32 +57,69 @@ window.app = new Vue({
     },
 
     methods: {
+        imagesHover(e) {
+            var rect = e.target.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+        },
+
+
         startRecord() {
             let canvasOutput = document.getElementById('canvas-output');
-            let canvasCtx = canvasOutput.getContext('2d');
-            canvasOutput.width = $('#toRecord').width();
-            canvasOutput.height = $('#toRecord').height();
+            let canvasOutputCtx = canvasOutput.getContext('2d');
+
+            let canvasPlaceholder = document.getElementById('canvas-placeholder');
+            let canvasCtx = canvasPlaceholder.getContext('2d');
+
+            canvasOutput.width = canvasPlaceholder.width = $('#toRecord').width();
+            canvasOutput.height = canvasPlaceholder.height = $('#toRecord').height();
 
             // Video
             let video = this.video;
-            (function loop() {
+            (function loopVideo() {
                 if (!video.paused && !video.ended) {
-                    canvasCtx.drawImage(video, canvasOutput.width / 2, 0, canvasOutput.width / 2, canvasOutput.height);
-                    setTimeout(loop, 1);
+                    canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+                    canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                    setTimeout(loopVideo, 1);
                 }
             })();
 
             // Images
             let images = document.getElementById('images');
-            (function loop() {
+            let $this = this;
+            let cursor = new Image();
+            cursor.src = '/images/mouse.png';
+            (function loopImages(test) {
                 html2canvas(images, {
-                    grabMouse: true,
+                    grabMouse: false,
                     onrendered: (canvas) => {
-                        canvasCtx.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-                        canvasCtx.drawImage(canvas, 0, 0, canvasOutput.width / 2, canvasOutput.height);
-                        setTimeout(loop, 60);
+                        if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+                            let newCanvasCtx = canvas.getContext('2d');
+                            newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
+                        }
+
+                        canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                        canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+                        canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                        setTimeout(loopImages, 1);
                     }
+
                 });
+
+                /*html2canvas(images, {
+                    allowTaint: true,
+                    scale: 6,
+                }).then(canvas => {
+                    if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+                        let newCanvasCtx = canvas.getContext('2d');
+                        newCanvasCtx.drawImage(cursor, $this.mouse.x + 70, $this.mouse.y + 70, 20, 20);
+                    }
+
+                    canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                    canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+                    canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                    setTimeout(loopImages, 1);
+                });*/
             })();
 
             let finalStream = new MediaStream();
@@ -99,6 +142,14 @@ window.app = new Vue({
         stopRecord() {
             this.videoRecorder.stopRecording( (videoBlob) => {
                 window.open(videoBlob);
+                /*var url = videoBlob;
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                a.href = url;
+                a.download = 'test.webm';
+                a.click();
+                window.URL.revokeObjectURL(url);*/
             });
         },
     }

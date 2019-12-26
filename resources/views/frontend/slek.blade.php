@@ -17,15 +17,12 @@
                 <div class="modal-content">
                     <div class="d-flex align-items-middle" id="toRecord">
                         <div class="w-50 position-relative" id="images">
-                            <img src="/images/file1.jpg" class="w-100" alt="">
+                            <img src="/images/file1.jpg" class="w-100" alt="" @mousemove="imagesHover">
                         </div>
                         <div class="w-50 bg-black">
                             <video id="videoFile" class="w-100"></video>
                         </div>
                     </div>
-
-                    <!-- <canvas id="canvas-output" width="1024" height="768"></canvas>  -->
-
 
                     <button id="btn-start-recording" @click="startRecord">Start Recording</button>
                     <button id="btn-start-recording" @click="stopRecord">Stop Recording</button>
@@ -242,10 +239,12 @@
             </div>
             <!-- ./ content -->
         </div>
-
-
-        <canvas id="canvas-output" width="1024" height="768" hidden style="position: absolute; width: 100vw; height: 100vh;"></canvas>
+        
     </div>
+
+
+    <canvas id="canvas-placeholder" hidden></canvas> 
+    <canvas id="canvas-output" hidden></canvas> 
 
 <script src="/js/screenshot.js"></script>
 <script src="{{ mix('/js/app.js') }}"></script>

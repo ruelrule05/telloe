@@ -56086,14 +56086,19 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 
-var feather = __webpack_require__(/*! feather-icons */ "./node_modules/feather-icons/dist/feather.js");
+var feather = __webpack_require__(/*! feather-icons */ "./node_modules/feather-icons/dist/feather.js"); //const html2canvas = require('html2canvas');
+
 
 window.app = new Vue({
   el: '#app',
   data: {
     videoRecorder: null,
     streams: null,
-    video: null
+    video: null,
+    mouse: {
+      x: 0,
+      y: 0
+    }
   },
   mounted: function mounted() {
     var _this = this;
@@ -56127,33 +56132,63 @@ window.app = new Vue({
   created: function created() {},
   watch: {},
   methods: {
+    imagesHover: function imagesHover(e) {
+      var rect = e.target.getBoundingClientRect();
+      this.mouse.x = e.clientX - rect.left;
+      this.mouse.y = e.clientY - rect.top;
+    },
     startRecord: function startRecord() {
       var canvasOutput = document.getElementById('canvas-output');
-      var canvasCtx = canvasOutput.getContext('2d');
-      canvasOutput.width = $('#toRecord').width();
-      canvasOutput.height = $('#toRecord').height(); // Video
+      var canvasOutputCtx = canvasOutput.getContext('2d');
+      var canvasPlaceholder = document.getElementById('canvas-placeholder');
+      var canvasCtx = canvasPlaceholder.getContext('2d');
+      canvasOutput.width = canvasPlaceholder.width = $('#toRecord').width();
+      canvasOutput.height = canvasPlaceholder.height = $('#toRecord').height(); // Video
 
       var video = this.video;
 
-      (function loop() {
+      (function loopVideo() {
         if (!video.paused && !video.ended) {
-          canvasCtx.drawImage(video, canvasOutput.width / 2, 0, canvasOutput.width / 2, canvasOutput.height);
-          setTimeout(loop, 1);
+          canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+          canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+          setTimeout(loopVideo, 1);
         }
       })(); // Images
 
 
       var images = document.getElementById('images');
+      var $this = this;
+      var cursor = new Image();
+      cursor.src = '/images/mouse.png';
 
-      (function loop() {
+      (function loopImages(test) {
         html2canvas(images, {
-          grabMouse: true,
+          grabMouse: false,
           onrendered: function onrendered(canvas) {
-            canvasCtx.clearRect(0, 0, canvasOutput.width, canvasOutput.height);
-            canvasCtx.drawImage(canvas, 0, 0, canvasOutput.width / 2, canvasOutput.height);
-            setTimeout(loop, 60);
+            if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+              var newCanvasCtx = canvas.getContext('2d');
+              newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
+            }
+
+            canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+            canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+            canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+            setTimeout(loopImages, 1);
           }
         });
+        /*html2canvas(images, {
+            allowTaint: true,
+            scale: 6,
+        }).then(canvas => {
+            if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+                let newCanvasCtx = canvas.getContext('2d');
+                newCanvasCtx.drawImage(cursor, $this.mouse.x + 70, $this.mouse.y + 70, 20, 20);
+            }
+             canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+            canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+            canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+            setTimeout(loopImages, 1);
+        });*/
       })();
 
       var finalStream = new MediaStream();
@@ -56172,6 +56207,14 @@ window.app = new Vue({
     stopRecord: function stopRecord() {
       this.videoRecorder.stopRecording(function (videoBlob) {
         window.open(videoBlob);
+        /*var url = videoBlob;
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        a.href = url;
+        a.download = 'test.webm';
+        a.click();
+        window.URL.revokeObjectURL(url);*/
       });
     }
   }
