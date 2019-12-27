@@ -218,15 +218,15 @@ window.app = new Vue({
             this.isRecording = false;
             this.videoRecorder.stopRecording( (videoBlob) => {
                 this.recorderStarted = false;
-                window.open(videoBlob);
-                /*var url = videoBlob;
+                //window.open(videoBlob);
+                var url = videoBlob;
                 var a = document.createElement("a");
                 document.body.appendChild(a);
                 a.style = "display: none";
                 a.href = url;
-                a.download = 'test.webm';
+                a.download = 'record.webm';
                 a.click();
-                window.URL.revokeObjectURL(url);*/
+                window.URL.revokeObjectURL(url);
             });
         },
     }
