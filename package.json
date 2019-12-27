@@ -30,6 +30,7 @@
         "dayjs": "^1.8.18",
         "detectrtc": "^1.3.9",
         "dom-to-image": "^2.6.0",
+        "dom-to-image-improved": "^2.8.0",
         "feather-icons": "^4.25.0",
         "html2canvas": "^1.0.0-rc.5",
         "jquery": "^3.4.1",
@@ -38,6 +39,7 @@
         "recordrtc": "^5.5.8",
         "socket.io": "^2.3.0",
         "videojs-record": "^3.8.0",
-        "vue": "^2.6.11"
+        "vue": "^2.6.11",
+        "vue-feather-icons": "^5.0.0"
     }
 }

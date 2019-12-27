@@ -15,17 +15,49 @@
         <div class="modal fade" id="recordVideoModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
-                    <div class="d-flex align-items-middle" id="toRecord">
-                        <div class="w-50 position-relative" id="images">
-                            <img src="/images/file1.jpg" class="w-100" alt="" @mousemove="imagesHover">
+                    <div class="position-relative">
+                        <div class="d-flex align-items-middle" id="toRecord">
+                            <div class="w-50 position-relative" id="images" :hidden="!hasImages">
+                                <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
+                                <div v-if="selectedImage" class="h-100">
+                                    <button style="top: 10px; left: 10px" class="position-absolute btn btn-circle bg-white" @click="selectedImage = null; pulses = []"><arrow-left-icon></arrow-left-icon></button>
+                                    <div class="image-selected h-100" :style="{backgroundImage: 'url('+selectedImage+')'}" @mousemove="imagesHover" @click="pulsingPoint"></div>
+                                </div>
+                                <div v-else class="p-3 bg-light h-100">
+                                    <div class="pl-1 mb-2">
+                                        Shared Files
+                                        <span class="float-right cursor-pointer" @click="hasImages = false">
+                                            <x-icon size="1.3x"></x-icon>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-wrap">
+                                        <div v-for="image in images" class="w-25 p-1">
+                                            <div class="rounded cursor-pointer image-preview" style="padding-top: 100%" :style="{backgroundImage: 'url('+image+')'}" @click="selectedImage = image">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-black text-center" :class="[hasImages ? 'w-50' : 'w-100']">
+                                <button v-if="!hasImages" style="top: 10px; left: 10px; z-index: 10" class="position-absolute btn bg-white" @click="hasImages = true">Browse Shared Files</button>
+                                <video id="videoFile" :class="[hasImages ? 'w-100' : 'w-50']"></video>
+                            </div>
                         </div>
-                        <div class="w-50 bg-black">
-                            <video id="videoFile" class="w-100"></video>
+
+                        <canvas id="canvas-placeholder" hidden></canvas> 
+                        <canvas id="canvas-output" hidden></canvas> 
+
+                        <div class="position-absolute text-center" id="recorder-controls">
+                            <button class="btn btn-success btn-lg" @click="startRecord" v-if="!isRecording">
+                                <video-icon></video-icon>
+                            </button>
+                            <button class="btn btn-red btn-danger btn-lg" @click="stopRecord" v-else>
+                                <circle-icon></circle-icon>
+                            </button>
                         </div>
                     </div>
 
-                    <button id="btn-start-recording" @click="startRecord">Start Recording</button>
-                    <button id="btn-start-recording" @click="stopRecord">Stop Recording</button>
 
                     <div class="modal-footer justify-content-between p-3">
                         <button type="button" class="btn" data-dismiss="modal" aria-label="Close">Cancel</button>
@@ -242,9 +274,6 @@
         
     </div>
 
-
-    <canvas id="canvas-placeholder" hidden></canvas> 
-    <canvas id="canvas-output" hidden></canvas> 
 
 <script src="/js/screenshot.js"></script>
 <script src="{{ mix('/js/app.js') }}"></script>
