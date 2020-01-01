@@ -71372,7 +71372,8 @@ window.app = new Vue({
     XIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["XIcon"],
     ArrowLeftIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["ArrowLeftIcon"],
     VideoIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["VideoIcon"],
-    CircleIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["CircleIcon"]
+    CircleIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["CircleIcon"],
+    PlayIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["PlayIcon"]
   },
   el: '#app',
   data: {
@@ -71388,7 +71389,10 @@ window.app = new Vue({
     recorderStarted: false,
     hasImages: true,
     images: ['/images/file1.jpg', '/images/file2.jpg', '/images/file3.jpg', '/images/file4.jpg', '/images/file5.jpg'],
-    selectedImage: null
+    selectedImage: null,
+    videoOutput: null,
+    videoPreview: null,
+    videoSent: false
   },
   mounted: function mounted() {
     var _this = this;
@@ -71422,8 +71426,11 @@ window.app = new Vue({
   created: function created() {},
   watch: {},
   methods: {
-    test: function test() {
-      alert('dsd');
+    playVideo: function playVideo() {
+      $('#videoPlayerModal').modal('show');
+    },
+    sendVideo: function sendVideo() {
+      this.videoSent = true;
     },
     removePulse: function removePulse(index) {
       this.pulses.splice(index, 1);
@@ -71469,19 +71476,17 @@ window.app = new Vue({
       var video = this.video;
 
       (function loopVideo() {
-        if ($this.isRecording) {
-          if (!video.paused && !video.ended) {
-            if ($this.hasImages) {
-              canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-            } else {
-              canvasCtx.fillStyle = "black";
-              canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-              canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-            }
-
-            canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-            setTimeout(loopVideo, 1);
+        if ($this.isRecording && !video.paused && !video.ended) {
+          if ($this.hasImages) {
+            canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+          } else {
+            canvasCtx.fillStyle = "black";
+            canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+            canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
           }
+
+          canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+          setTimeout(loopVideo, 1);
         }
       })(); // Images
 
@@ -71490,7 +71495,7 @@ window.app = new Vue({
       var cursor = new Image();
       cursor.src = '/images/mouse.png';
 
-      (function loopImages(test) {
+      (function loopImages() {
         if ($this.isRecording) {
           domtoimage.toJpeg(images).then(function (dataUrl) {
             if ($this.hasImages) {
@@ -71559,16 +71564,33 @@ window.app = new Vue({
 
       this.isRecording = false;
       this.videoRecorder.stopRecording(function (videoBlob) {
-        _this2.recorderStarted = false;
-        window.open(videoBlob);
-        /*var url = videoBlob;
+        _this2.recorderStarted = false; //window.open(videoBlob);
+        // generate thumbnail
+
+        _this2.videoOutput = URL.createObjectURL(_this2.videoRecorder.getBlob());
+        _this2.$refs['videoOutput'].src = _this2.videoOutput;
+        var $this = _this2;
+
+        _this2.$refs['videoOutput'].onloadeddata = function () {
+          var _this3 = this;
+
+          setTimeout(function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = _this3.videoWidth / 2;
+            canvas.height = _this3.videoHeight / 2;
+            canvas.getContext('2d').drawImage(_this3, 0, 0, canvas.width, canvas.height);
+            $this.videoPreview = canvas.toDataURL("image/jpeg", 0.8);
+          }, 500);
+        };
+
+        var url = videoBlob;
         var a = document.createElement("a");
         document.body.appendChild(a);
         a.style = "display: none";
         a.href = url;
-        a.download = 'test.webm';
-        a.click();
-        window.URL.revokeObjectURL(url);*/
+        a.download = 'record.webm'; //a.click();
+
+        window.URL.revokeObjectURL(url);
       });
     }
   }

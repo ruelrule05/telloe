@@ -10,11 +10,11 @@ const feather = require('feather-icons');
 //const html2canvas = require('html2canvas');
 //const domtoimage = require('dom-to-image-improved');
 const domtoimage = require('dom-to-image');
-import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon } from 'vue-feather-icons';
+import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon } from 'vue-feather-icons';
 
 
 window.app = new Vue({
-    components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon },
+    components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon },
     el: '#app',
     data: {
         videoRecorder: null,
@@ -37,6 +37,9 @@ window.app = new Vue({
             '/images/file5.jpg',
         ],
         selectedImage: null,
+        videoOutput: null,
+        videoPreview: null,
+        videoSent: false,
     },
 
 
@@ -72,8 +75,12 @@ window.app = new Vue({
     },
 
     methods: {
-        test() {
-            alert('dsd');
+        playVideo() {
+            $('#videoPlayerModal').modal('show');
+        },
+
+        sendVideo() {
+            this.videoSent = true;
         },
 
         removePulse(index) {
@@ -129,18 +136,16 @@ window.app = new Vue({
             // Video
             let video = this.video;
             (function loopVideo() {
-                if ($this.isRecording) {
-                    if (!video.paused && !video.ended) {
-                        if ($this.hasImages) {
-                            canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                        } else {
-                            canvasCtx.fillStyle = "black";
-                            canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                            canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                        }
-                        canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                        setTimeout(loopVideo, 1);
+                if ($this.isRecording && !video.paused && !video.ended) {
+                    if ($this.hasImages) {
+                        canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+                    } else {
+                        canvasCtx.fillStyle = "black";
+                        canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                        canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
                     }
+                    canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                    setTimeout(loopVideo, 1);
                 }
             })();
 
@@ -148,7 +153,7 @@ window.app = new Vue({
             let images = document.getElementById('images');
             let cursor = new Image();
             cursor.src = '/images/mouse.png';
-            (function loopImages(test) {
+            (function loopImages() {
                 if ($this.isRecording) {
                     domtoimage.toJpeg(images).then(dataUrl => {
                         if ($this.hasImages) {
@@ -219,13 +224,26 @@ window.app = new Vue({
             this.videoRecorder.stopRecording( (videoBlob) => {
                 this.recorderStarted = false;
                 //window.open(videoBlob);
+                // generate thumbnail
+                this.videoOutput = URL.createObjectURL(this.videoRecorder.getBlob());
+                this.$refs['videoOutput'].src = this.videoOutput;
+                let $this = this;
+                this.$refs['videoOutput'].onloadeddata = function() {
+                    setTimeout(() => {
+                        let canvas = document.createElement("canvas");
+                        canvas.width = this.videoWidth / 2;
+                        canvas.height = this.videoHeight / 2;
+                        canvas.getContext('2d').drawImage(this, 0, 0, canvas.width, canvas.height);
+                        $this.videoPreview = canvas.toDataURL("image/jpeg", 0.8);
+                    }, 500);
+                };
                 var url = videoBlob;
                 var a = document.createElement("a");
                 document.body.appendChild(a);
                 a.style = "display: none";
                 a.href = url;
                 a.download = 'record.webm';
-                a.click();
+                //a.click();
                 window.URL.revokeObjectURL(url);
             });
         },

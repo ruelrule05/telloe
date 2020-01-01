@@ -12,10 +12,25 @@
 </head>
 <body>
     <div id="app">
+
+        <div class="modal fade" id="videoPlayerModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
+                <div class="modal-content">
+                    <div>
+                        <video ref="videoOutput" class="w-100" playsinline controls :src="videoOutput"></video>
+                    </div>
+
+                    <div class="modal-footer justify-content-between p-3">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="recordVideoModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
-                    <div class="position-relative">
+                    <div class="position-relative" :hidden="videoOutput">
                         <div class="d-flex align-items-middle" id="toRecord">
                             <div class="w-50 position-relative" id="images" :hidden="!hasImages">
                                 <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
@@ -58,10 +73,14 @@
                         </div>
                     </div>
 
+                    <div :hidden="!videoOutput">
+                        <video ref="videoOutput" class="w-100" playsinline controls></video>
+                    </div>
+
 
                     <div class="modal-footer justify-content-between p-3">
                         <button type="button" class="btn" data-dismiss="modal" aria-label="Close">Cancel</button>
-                        <button type="button" class="btn btn-primary">Send</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" :disabled="!videoOutput" @click="sendVideo">Send</button>
                     </div>
                 </div>
             </div>
@@ -205,6 +224,7 @@
                     </div>
                     <div class="chat-body">
                         <div class="messages">
+
                             <div class="message-item">
                                 <div class="message-avatar">
                                     <figure class="avatar avatar-state-success">
@@ -219,6 +239,7 @@
                                     Hi Sarah please look at my video of my problem areas I would like to look better.
                                 </div>
                             </div>
+
                             <div class="message-item outgoing-message">
                                 <div class="message-avatar">
                                     <figure class="avatar avatar-state-success">
@@ -233,6 +254,28 @@
                                     Hi Margaretta, please view my feedback video
                                 </div>
                             </div>
+
+                            <div class="message-item outgoing-message" v-if="videoSent">
+                                <div class="message-avatar">
+                                    <figure class="avatar avatar-state-success">
+                                        <img src="https://via.placeholder.com/128X128" class="rounded-circle" alt="image">
+                                    </figure>
+                                    <div>
+                                        <h5>You</h5>
+                                        <div class="time">08:15AM on Sunday</div>
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    Hi Margaretta, please view my feedback video
+                                    <div class="mt-2 position-relative cursor-pointer" @click="playVideo">
+                                        <div class="position-absolute-center text-center">
+                                            <play-icon></play-icon>
+                                        </div>
+                                        <img :src="videoPreview" class="w-100 rounded" alt="">
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 

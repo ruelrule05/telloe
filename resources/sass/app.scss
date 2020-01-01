@@ -4220,3 +4220,11 @@ body.form-membership .form-wrapper hr {
 .btn-red{
   background-color: red !important;
 }
+
+
+.position-absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
