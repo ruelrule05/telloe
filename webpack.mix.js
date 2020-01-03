@@ -24,6 +24,9 @@ if (argv.indexOf('--css') > -1) {
             whitelist: [
                 'modal-backdrop', 
                 'text-warning',
+                'tooltip',
+                'tooltip',
+                'bs-tooltip-top',
             ]
         })
         .mergeManifest();
