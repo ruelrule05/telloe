@@ -9,6 +9,7 @@
     <!-- App styles -->
     <link rel="stylesheet" href="{{ mix('/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <meta name="google-site-verification" content="C30F1LP5GPgQEH098m_k0kJ6jxpOlIKov4XUpqmGkf8" />
 </head>
 <body>
     <div id="app">
