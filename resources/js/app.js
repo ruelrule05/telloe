@@ -34,7 +34,7 @@ window.app = new Vue({
             {src: '/images/file2.jpg', type: 'image', preview: '/images/file2.jpg'},
             {src: '/images/file3.jpg', type: 'image', preview: '/images/file3.jpg'},
             {src: '/images/file4.jpg', type: 'image', preview: '/images/file4.jpg'},
-            {src: '/images/video.webm', type: 'video', preview: '/images/video.png'},
+            {src: '/images/video1.webm', type: 'video', preview: '/images/video.png'},
         ],
         selectedImage: null,
         videoOutput: null,
@@ -95,21 +95,20 @@ window.app = new Vue({
             let canvasCtx = canvas.getContext('2d');
             canvasCtx.fillStyle = "black";
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-            let hRatio = (canvas.width / selectedVideo.videoWidth) * selectedVideo.videoHeight;
-            var y = hRatio * 0.5;
-            canvasCtx.drawImage(selectedVideo, 0, y, canvas.width, hRatio);
+            canvasCtx.drawImage(selectedVideo, 0, 0, canvas.width, canvas.height);
         },
 
         loadeddata(e) {
             setTimeout(() => {
+                let container = $('#images');
+                let containerWidth = container.width();
+                let containerHeight= container.height();
                 let selectedVideo = this.$refs['selectedVideo'];
                 let canvas = this.$refs['selectedVideoFrame'];
-                canvas.width = selectedVideo.videoWidth / 2;
-                canvas.height = selectedVideo.videoHeight;
+                canvas.width = containerWidth;
+                canvas.height = (containerWidth / selectedVideo.videoWidth) * selectedVideo.videoHeight;
                 let canvasCtx = canvas.getContext('2d');
-                let hRatio = (canvas.width / selectedVideo.videoWidth) * selectedVideo.videoHeight;
-                var y = hRatio * 0.5;
-                canvasCtx.drawImage(e.target, 0, y, canvas.width, hRatio);
+                canvasCtx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
             }, 200);
         },
 
@@ -126,6 +125,10 @@ window.app = new Vue({
                 $this.selectedVideo.duration = videoPlayer.duration;
                 $this.selectedVideo.formatDuration = format(parseInt(videoPlayer.duration) * 1000);
               }
+            } else {
+                videoPlayer.currentTime = 0.1;
+                $this.selectedVideo.duration = videoPlayer.duration;
+                $this.selectedVideo.formatDuration = format(parseInt(videoPlayer.duration) * 1000);
             }
         },
 
@@ -143,7 +146,7 @@ window.app = new Vue({
 
         pulsingPoint(e) {
             if (this.isRecording) {
-                let rect = e.target.getBoundingClientRect();
+                let rect = e.currentTarget.getBoundingClientRect();
                 this.pulses.push({
                     top: (e.clientY - rect.top) + 'px',
                     left: (e.clientX - rect.left) + 'px',

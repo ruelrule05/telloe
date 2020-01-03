@@ -39,8 +39,8 @@
                                     <button style="top: 10px; left: 10px; z-index: 1" class="position-absolute btn btn-circle bg-white" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'"><arrow-left-icon></arrow-left-icon></button>
                                     <div class="image-selected h-100" :style="{backgroundImage: 'url('+selectedImage.src+')'}" @click="pulsingPoint">
                                         <div v-if="selectedImage.type == 'video'" class="h-100">
-                                            <video hidden ref="selectedVideo" playsinline controlsList="nofullscreen nodownload noremoteplayback" :src="selectedImage.src" class="w-100 h-100" @loadedmetadata="loadedmetadata" @loadeddata="loadeddata"></video>
-                                            <canvas ref="selectedVideoFrame"></canvas>
+                                            <video hidden style="position: absolute; opacity: .5" ref="selectedVideo" playsinline controlsList="nofullscreen nodownload noremoteplayback" class="w-100" :src="selectedImage.src" @loadedmetadata="loadedmetadata" @loadeddata="loadeddata"></video>
+                                            <canvas ref="selectedVideoFrame" class="position-absolute-center" style="z-index: 0"></canvas>
                                             <div class="position-absolute text-white w-100 p-3" style="bottom: 0">
                                                 @{{ selectedVideo.currentTime }} / @{{ selectedVideo.formatDuration }}
                                                 <input type="range" @click.stop value="0" class="form-control-range" style="width: 95%" @input="setVideoCurrentTime">
