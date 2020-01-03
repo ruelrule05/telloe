@@ -86,6 +86,46 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/add-zero/index.js":
+/*!****************************************!*\
+  !*** ./node_modules/add-zero/index.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;(function(exports) {
+
+  'use strict';
+
+  function addZero(value, digits) {
+    digits = digits || 2;
+
+    var isNegative = Number(value) < 0;
+    var buffer = value.toString();
+    var size = 0;
+
+    // Strip minus sign if number is negative
+    if(isNegative) {
+      buffer = buffer.slice(1);
+    }
+
+    size = digits - buffer.length + 1;
+    buffer = new Array(size).join('0').concat(buffer);
+
+    // Adds back minus sign if needed
+    return (isNegative ? '-' : '') + buffer;
+  }
+
+  if(true) {
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return addZero; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+})(this);
+
+
+/***/ }),
+
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
   !*** ./node_modules/axios/index.js ***!
@@ -7822,6 +7862,30 @@ module.exports = __webpack_require__(/*! /home/travis/build/feathericons/feather
 /******/ });
 });
 //# sourceMappingURL=feather.js.map
+
+/***/ }),
+
+/***/ "./node_modules/format-duration/index.js":
+/*!***********************************************!*\
+  !*** ./node_modules/format-duration/index.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parseMs = __webpack_require__(/*! parse-ms */ "./node_modules/parse-ms/index.js")
+var addZero = __webpack_require__(/*! add-zero */ "./node_modules/add-zero/index.js")
+
+module.exports = function (ms, options) {
+  var leading = options && options.leading
+  var unsignedMs = ms < 0 ? -ms : ms
+  var sign = ms <= -1000 ? '-' : ''
+  var t = parseMs(unsignedMs)
+  var seconds = addZero(t.seconds)
+  if (t.days) return sign + t.days + ':' + addZero(t.hours) + ':' + addZero(t.minutes) + ':' + seconds
+  if (t.hours) return sign + (leading ? addZero(t.hours) : t.hours) + ':' + addZero(t.minutes) + ':' + seconds
+  return sign + (leading ? addZero(t.minutes) : t.minutes) + ':' + seconds
+}
+
 
 /***/ }),
 
@@ -35570,6 +35634,34 @@ return jQuery;
 }.call(this));
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+
+/***/ }),
+
+/***/ "./node_modules/parse-ms/index.js":
+/*!****************************************!*\
+  !*** ./node_modules/parse-ms/index.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = function (ms) {
+	if (typeof ms !== 'number') {
+		throw new TypeError('Expected a number');
+	}
+
+	var roundTowardZero = ms > 0 ? Math.floor : Math.ceil;
+
+	return {
+		days: roundTowardZero(ms / 86400000),
+		hours: roundTowardZero(ms / 3600000) % 24,
+		minutes: roundTowardZero(ms / 60000) % 60,
+		seconds: roundTowardZero(ms / 1000) % 60,
+		milliseconds: roundTowardZero(ms) % 1000
+	};
+};
+
 
 /***/ }),
 
@@ -71367,13 +71459,18 @@ var feather = __webpack_require__(/*! feather-icons */ "./node_modules/feather-i
 var domtoimage = __webpack_require__(/*! dom-to-image */ "./node_modules/dom-to-image/src/dom-to-image.js");
 
 
+
+var format = __webpack_require__(/*! format-duration */ "./node_modules/format-duration/index.js");
+
 window.app = new Vue({
   components: {
     XIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["XIcon"],
     ArrowLeftIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["ArrowLeftIcon"],
     VideoIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["VideoIcon"],
     CircleIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["CircleIcon"],
-    PlayIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["PlayIcon"]
+    PlayIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["PlayIcon"],
+    PauseIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["PauseIcon"],
+    CheckIcon: vue_feather_icons__WEBPACK_IMPORTED_MODULE_5__["CheckIcon"]
   },
   el: '#app',
   data: {
@@ -71388,16 +71485,47 @@ window.app = new Vue({
     isRecording: false,
     recorderStarted: false,
     hasImages: true,
-    images: ['/images/file1.jpg', '/images/file2.jpg', '/images/file3.jpg', '/images/file4.jpg', '/images/file5.jpg'],
+    files: [{
+      src: '/images/file1.jpg',
+      type: 'image',
+      preview: '/images/file1.jpg'
+    }, {
+      src: '/images/file2.jpg',
+      type: 'image',
+      preview: '/images/file2.jpg'
+    }, {
+      src: '/images/file3.jpg',
+      type: 'image',
+      preview: '/images/file3.jpg'
+    }, {
+      src: '/images/file4.jpg',
+      type: 'image',
+      preview: '/images/file4.jpg'
+    }, {
+      src: '/images/video.webm',
+      type: 'video',
+      preview: '/images/video.png'
+    }],
     selectedImage: null,
     videoOutput: null,
     videoPreview: null,
-    videoSent: false
+    videoSent: false,
+    hasRecorded: false,
+    selectedVideo: {
+      duration: 0,
+      formatDuration: 0,
+      currentTime: '0:00'
+    },
+    finalStream: null
   },
   mounted: function mounted() {
     var _this = this;
 
     feather.replace();
+    this.finalStream = new MediaStream();
+    this.videoRecorder = recordrtc__WEBPACK_IMPORTED_MODULE_4___default()(this.finalStream, {
+      type: 'video'
+    });
     this.video = document.querySelector('#videoFile');
     $('#recordVideoModal').on('shown.bs.modal', function (e) {
       navigator.mediaDevices.getUserMedia({
@@ -71426,6 +71554,51 @@ window.app = new Vue({
   created: function created() {},
   watch: {},
   methods: {
+    setVideoCurrentTime: function setVideoCurrentTime(e) {
+      var selectedVideo = this.$refs['selectedVideo'];
+      var currentTime = this.selectedVideo.duration * (e.target.value / 100);
+      this.selectedVideo.currentTime = format(parseInt(currentTime) * 1000);
+      selectedVideo.currentTime = currentTime;
+      var canvas = this.$refs['selectedVideoFrame'];
+      var canvasCtx = canvas.getContext('2d');
+      canvasCtx.fillStyle = "black";
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+      var hRatio = canvas.width / selectedVideo.videoWidth * selectedVideo.videoHeight;
+      var y = hRatio * 0.5;
+      canvasCtx.drawImage(selectedVideo, 0, y, canvas.width, hRatio);
+    },
+    loadeddata: function loadeddata(e) {
+      var _this2 = this;
+
+      setTimeout(function () {
+        var selectedVideo = _this2.$refs['selectedVideo'];
+        var canvas = _this2.$refs['selectedVideoFrame'];
+        canvas.width = selectedVideo.videoWidth / 2;
+        canvas.height = selectedVideo.videoHeight;
+        var canvasCtx = canvas.getContext('2d');
+        var hRatio = canvas.width / selectedVideo.videoWidth * selectedVideo.videoHeight;
+        var y = hRatio * 0.5;
+        canvasCtx.drawImage(e.target, 0, y, canvas.width, hRatio);
+      }, 200);
+    },
+    loadedmetadata: function loadedmetadata(e) {
+      var videoPlayer = e.target;
+      var $this = this;
+
+      if (videoPlayer.duration === Infinity) {
+        videoPlayer.currentTime = 1e101;
+
+        videoPlayer.ontimeupdate = function () {
+          this.ontimeupdate = function () {
+            return;
+          };
+
+          videoPlayer.currentTime = 0.1;
+          $this.selectedVideo.duration = videoPlayer.duration;
+          $this.selectedVideo.formatDuration = format(parseInt(videoPlayer.duration) * 1000);
+        };
+      }
+    },
     playVideo: function playVideo() {
       $('#videoPlayerModal').modal('show');
     },
@@ -71445,155 +71618,163 @@ window.app = new Vue({
       }
     },
     imagesHover: function imagesHover(e) {
-      var rect = e.target.getBoundingClientRect();
+      var rect = e.currentTarget.getBoundingClientRect();
       this.mouse.x = e.clientX - rect.left;
       this.mouse.y = e.clientY - rect.top;
     },
     recordCanvas: function recordCanvas(canvasOutput) {
-      var finalStream = new MediaStream();
+      var _this3 = this;
+
+      console.log('recordCanvas');
       var audioStream = new MediaStream(this.streams.getAudioTracks());
       audioStream.getTracks('audio').forEach(function (track) {
-        finalStream.addTrack(track);
+        _this3.finalStream.addTrack(track);
       });
       canvasOutput.captureStream().getTracks('video').forEach(function (track) {
-        finalStream.addTrack(track);
-      });
-      this.videoRecorder = recordrtc__WEBPACK_IMPORTED_MODULE_4___default()(finalStream, {
-        type: 'video'
+        _this3.finalStream.addTrack(track);
       });
       this.videoRecorder.startRecording();
     },
     startRecord: function startRecord() {
-      this.isRecording = true;
-      var canvasOutput = document.getElementById('canvas-output');
-      var canvasOutputCtx = canvasOutput.getContext('2d');
-      var canvasPlaceholder = document.getElementById('canvas-placeholder');
-      var canvasCtx = canvasPlaceholder.getContext('2d');
-      canvasOutput.width = canvasPlaceholder.width = $('#toRecord').width();
-      canvasOutput.height = canvasPlaceholder.height = $('#toRecord').height();
-      var $this = this; // Video
+      var $this = this;
+      $this.isRecording = true;
 
-      var video = this.video;
+      if ($this.videoRecorder.state === 'paused') {
+        $this.videoRecorder.resumeRecording();
+      } else {
+        var canvasOutput = document.getElementById('canvas-output');
+        var canvasOutputCtx = canvasOutput.getContext('2d');
+        var canvasPlaceholder = document.getElementById('canvas-placeholder');
+        var canvasCtx = canvasPlaceholder.getContext('2d');
+        canvasOutput.width = canvasPlaceholder.width = $('#toRecord').width();
+        canvasOutput.height = canvasPlaceholder.height = $('#toRecord').height(); // Video
 
-      (function loopVideo() {
-        if ($this.isRecording && !video.paused && !video.ended) {
-          if ($this.hasImages) {
-            canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-          } else {
-            canvasCtx.fillStyle = "black";
-            canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-            canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+        var video = $this.video;
+
+        (function loopVideo() {
+          if ($this.isRecording) {
+            if ($this.hasImages) {
+              canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+            } else {
+              canvasCtx.fillStyle = "black";
+              canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+              canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+            }
+
+            canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
           }
 
-          canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-          setTimeout(loopVideo, 1);
-        }
-      })(); // Images
+          requestAnimationFrame(loopVideo);
+        })(); // Images
 
 
-      var images = document.getElementById('images');
-      var cursor = new Image();
-      cursor.src = '/images/mouse.png';
+        var images = document.getElementById('images');
+        var cursor = new Image();
+        cursor.src = '/images/mouse.png';
 
-      (function loopImages() {
-        if ($this.isRecording) {
-          domtoimage.toJpeg(images).then(function (dataUrl) {
+        (function loopImages() {
+          if ($this.isRecording) {
             if ($this.hasImages) {
-              var img = new Image();
-              img.src = dataUrl;
+              domtoimage.toJpeg(images).then(function (dataUrl) {
+                var img = new Image();
+                img.src = dataUrl;
 
-              img.onload = function () {
-                var newCanvas = document.createElement('canvas');
-                var newCanvasCtx = newCanvas.getContext('2d');
-                newCanvas.width = img.width;
-                newCanvas.height = img.height;
-                newCanvasCtx.drawImage(img, 0, 0, img.width, img.height);
+                img.onload = function () {
+                  var newCanvas = document.createElement('canvas');
+                  var newCanvasCtx = newCanvas.getContext('2d');
+                  newCanvas.width = img.width;
+                  newCanvas.height = img.height;
+                  newCanvasCtx.drawImage(img, 0, 0, img.width, img.height);
 
-                if ($this.mouse.x > -1 && $this.mouse.y > -1) {
-                  newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
-                }
-
-                canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                canvasCtx.drawImage(newCanvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-
-                if (!$this.recorderStarted) {
-                  $this.recorderStarted = true;
-                  $this.recordCanvas(canvasOutput);
-                }
-
-                setTimeout(loopImages, 1);
-              };
-            } else {
-              setTimeout(loopImages, 1);
-            }
-          });
-        }
-        /*html2canvas(images, {
-            grabMouse: false,
-            onrendered: (canvas) => {
-                if ($this.mouse.x > -1 && $this.mouse.y > -1) {
-                    let newCanvasCtx = canvas.getContext('2d');
+                  if ($this.mouse.x > -1 && $this.mouse.y > -1) {
                     newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
-                }
-                 canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                setTimeout(loopImages, 1);
-            }
-         });*/
+                  } //canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
 
-        /*html2canvas(images, {
-            allowTaint: true,
-            scale: 6,
-        }).then(canvas => {
-            if ($this.mouse.x > -1 && $this.mouse.y > -1) {
-                let newCanvasCtx = canvas.getContext('2d');
-                newCanvasCtx.drawImage(cursor, $this.mouse.x + 70, $this.mouse.y + 70, 20, 20);
+
+                  canvasCtx.drawImage(newCanvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+                  canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+
+                  if (!$this.recorderStarted) {
+                    $this.recorderStarted = true;
+                    $this.recordCanvas(canvasOutput);
+                  }
+
+                  setTimeout(loopImages, 1);
+                };
+              });
             }
-             canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-            canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-            canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+          } else {
             setTimeout(loopImages, 1);
-        });*/
+          }
+          /*html2canvas(images, {
+              grabMouse: false,
+              onrendered: (canvas) => {
+                  if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+                      let newCanvasCtx = canvas.getContext('2d');
+                      newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
+                  }
+                   canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                  canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+                  canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                  setTimeout(loopImages, 1);
+              }
+           });*/
 
-      })();
+          /*html2canvas(images, {
+              allowTaint: true,
+              scale: 6,
+          }).then(canvas => {
+              if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+                  let newCanvasCtx = canvas.getContext('2d');
+                  newCanvasCtx.drawImage(cursor, $this.mouse.x + 70, $this.mouse.y + 70, 20, 20);
+              }
+               canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+              canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
+              canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+              setTimeout(loopImages, 1);
+          });*/
+
+        })();
+      }
     },
-    stopRecord: function stopRecord() {
-      var _this2 = this;
+    finishRecord: function finishRecord() {
+      var _this4 = this;
 
-      this.isRecording = false;
-      this.videoRecorder.stopRecording(function (videoBlob) {
-        _this2.recorderStarted = false; //window.open(videoBlob);
-        // generate thumbnail
+      this.videoRecorder.stopRecording(function () {
+        _this4.videoOutput = URL.createObjectURL(_this4.videoRecorder.getBlob());
+        _this4.$refs['videoOutput'].src = _this4.videoOutput;
+        var $this = _this4; // generate thumbnail
 
-        _this2.videoOutput = URL.createObjectURL(_this2.videoRecorder.getBlob());
-        _this2.$refs['videoOutput'].src = _this2.videoOutput;
-        var $this = _this2;
-
-        _this2.$refs['videoOutput'].onloadeddata = function () {
-          var _this3 = this;
+        _this4.$refs['videoOutput'].onloadeddata = function () {
+          var _this5 = this;
 
           setTimeout(function () {
             var canvas = document.createElement("canvas");
-            canvas.width = _this3.videoWidth / 2;
-            canvas.height = _this3.videoHeight / 2;
-            canvas.getContext('2d').drawImage(_this3, 0, 0, canvas.width, canvas.height);
+            canvas.width = _this5.videoWidth / 2;
+            canvas.height = _this5.videoHeight / 2;
+            canvas.getContext('2d').drawImage(_this5, 0, 0, canvas.width, canvas.height);
             $this.videoPreview = canvas.toDataURL("image/jpeg", 0.8);
           }, 500);
         };
 
-        var url = videoBlob;
-        var a = document.createElement("a");
-        document.body.appendChild(a);
-        a.style = "display: none";
-        a.href = url;
-        a.download = 'record.webm'; //a.click();
+        _this4.finalStream = new MediaStream();
 
-        window.URL.revokeObjectURL(url);
+        _this4.videoRecorder.reset();
+
+        _this4.recorderStarted = false;
+      });
+    },
+    pauseRecord: function pauseRecord() {
+      this.hasRecorded = true;
+      this.isRecording = false;
+      this.videoRecorder.pauseRecording(function (blob) {
+        console.log(blob);
       });
     }
   }
+});
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
 });
 
 /***/ }),

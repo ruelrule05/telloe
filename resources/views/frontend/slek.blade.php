@@ -33,11 +33,20 @@
                 <div class="modal-content">
                     <div class="position-relative" :hidden="videoOutput">
                         <div class="d-flex align-items-middle" id="toRecord">
-                            <div class="w-50 position-relative" id="images" :hidden="!hasImages">
+                            <div class="w-50 position-relative" id="images" :hidden="!hasImages" @mousemove="imagesHover">
                                 <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
                                 <div v-if="selectedImage" class="h-100">
-                                    <button style="top: 10px; left: 10px" class="position-absolute btn btn-circle bg-white" @click="selectedImage = null; pulses = []"><arrow-left-icon></arrow-left-icon></button>
-                                    <div class="image-selected h-100" :style="{backgroundImage: 'url('+selectedImage+')'}" @mousemove="imagesHover" @click="pulsingPoint"></div>
+                                    <button style="top: 10px; left: 10px; z-index: 1" class="position-absolute btn btn-circle bg-white" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'"><arrow-left-icon></arrow-left-icon></button>
+                                    <div class="image-selected h-100" :style="{backgroundImage: 'url('+selectedImage.src+')'}" @click="pulsingPoint">
+                                        <div v-if="selectedImage.type == 'video'" class="h-100">
+                                            <video hidden ref="selectedVideo" playsinline controlsList="nofullscreen nodownload noremoteplayback" :src="selectedImage.src" class="w-100 h-100" @loadedmetadata="loadedmetadata" @loadeddata="loadeddata"></video>
+                                            <canvas ref="selectedVideoFrame"></canvas>
+                                            <div class="position-absolute text-white w-100 p-3" style="bottom: 0">
+                                                @{{ selectedVideo.currentTime }} / @{{ selectedVideo.formatDuration }}
+                                                <input type="range" @click.stop value="0" class="form-control-range" style="width: 95%" @input="setVideoCurrentTime">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div v-else class="p-3 bg-light h-100">
                                     <div class="pl-1 mb-2">
@@ -47,9 +56,9 @@
                                         </span>
                                     </div>
                                     <div class="d-flex flex-wrap">
-                                        <div v-for="image in images" class="w-25 p-1">
-                                            <div class="rounded cursor-pointer image-preview" style="padding-top: 100%" :style="{backgroundImage: 'url('+image+')'}" @click="selectedImage = image">
-                                                
+                                        <div v-for="file in files" class="w-25 p-1">
+                                            <div class="rounded cursor-pointer image-preview position-relative" style="padding-top: 100%" :style="{backgroundImage: 'url('+file.preview+')'}" @click="selectedImage = file">
+                                                <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
                                             </div>
                                         </div>
                                     </div>
@@ -64,18 +73,21 @@
                         <canvas id="canvas-placeholder" hidden></canvas> 
                         <canvas id="canvas-output" hidden></canvas> 
 
-                        <div class="position-absolute text-center" id="recorder-controls">
-                            <button class="btn btn-success btn-lg" @click="startRecord" v-if="!isRecording">
-                                <video-icon></video-icon>
+                        <div class="position-absolute text-center w-auto" id="recorder-controls">
+                            <button class="btn btn-success btn-lg" @click="startRecord" :hidden="isRecording">
+                                <video-icon data-toggle="tooltip" data-title="Start Record"></video-icon>
                             </button>
-                            <button class="btn btn-red btn-danger btn-lg" @click="stopRecord" v-else>
-                                <circle-icon></circle-icon>
+                            <button class="btn btn-red btn-danger btn-lg" @click="pauseRecord" :hidden="!isRecording">
+                                <pause-icon data-toggle="tooltip" data-title="Pause Recording"></pause-icon>
+                            </button>
+                            <button class="btn btn-success btn-lg" @click="finishRecord" :hidden="!hasRecorded || isRecording">
+                                <check-icon data-toggle="tooltip" data-title="Finish Recording"></check-icon>
                             </button>
                         </div>
                     </div>
 
                     <div :hidden="!videoOutput">
-                        <video ref="videoOutput" class="w-100" playsinline controls></video>
+                        <video ref="videoOutput" class="w-100" style="outline: 0" playsinline controls></video>
                     </div>
 
 
@@ -294,7 +306,7 @@
                         </form>
                         <div class="mt-2">
                             <button class="btn btn-light" id="btn-recorxd-webm" data-target="#recordVideoModal" data-toggle="modal" title="Record video" type="button">
-                                <i data-feather="video"></i>
+                                <i data-feather="video" data-toggle="tooltip" data-title="Record Video"></i>
                             </button>
                             <button class="btn btn-light" data-toggle="tooltip" title="Record audio" type="button">
                                 <i data-feather="mic"></i>

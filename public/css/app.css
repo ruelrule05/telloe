@@ -3841,7 +3841,9 @@ body.form-membership .form-wrapper hr {
 
 #recorder-controls {
   bottom: 10px;
-  left: 0;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
   width: 100%;
 }
 
