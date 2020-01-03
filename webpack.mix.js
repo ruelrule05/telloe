@@ -26,6 +26,7 @@ if (argv.indexOf('--css') > -1) {
                 'text-warning',
                 'tooltip',
                 'tooltip',
+                'tooltip-inner',
                 'bs-tooltip-top',
             ]
         })
