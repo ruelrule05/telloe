@@ -87,6 +87,7 @@ window.app = new Vue({
 
     methods: {
         setVideoCurrentTime(e) {
+            this.pulses = [];
             let selectedVideo = this.$refs['selectedVideo'];
             let currentTime = this.selectedVideo.duration * (e.target.value / 100);
             this.selectedVideo.currentTime = format(parseInt(currentTime) * 1000);

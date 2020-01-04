@@ -41,7 +41,7 @@
                                         <div v-if="selectedImage.type == 'video'" class="h-100">
                                             <video hidden style="position: absolute; opacity: .5" ref="selectedVideo" playsinline controlsList="nofullscreen nodownload noremoteplayback" class="w-100" :src="selectedImage.src" @loadedmetadata="loadedmetadata" @loadeddata="loadeddata"></video>
                                             <canvas ref="selectedVideoFrame" class="position-absolute-center" style="z-index: 0"></canvas>
-                                            <div class="position-absolute text-white w-100 p-3" style="bottom: 0">
+                                            <div class="position-absolute text-white w-100 p-3" style="bottom: 0" :hidden="isRecording">
                                                 @{{ selectedVideo.currentTime }} / @{{ selectedVideo.formatDuration }}
                                                 <input type="range" @click.stop value="0" class="form-control-range" style="width: 95%" @input="setVideoCurrentTime">
                                             </div>
