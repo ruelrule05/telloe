@@ -41,34 +41,30 @@
                             <div class="d-flex align-items-middle" id="toRecord">
                                 <div class="w-50 position-relative h-100" id="images" :hidden="!hasImages" @mousemove="imagesHover">
                                     <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
-                                    <div :hidden="!selectedImage" class="h-100">
-                                        <button style="top: 10px; left: 10px; z-index: 1" class="position-absolute btn btn-circle bg-white shadow-sm" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'"><arrow-left-icon></arrow-left-icon></button>
+                                    <div :hidden="!selectedImage" class="h-100"    
+                                            @mousedown="mouseEvent"
+                                            @mousemove="mouseEvent"
+                                            @mouseup="mouseEvent"
+                                            @mouseleave="mousemove = false">
+                                        <button style="top: 10px; left: 10px; z-index: 2" class="position-absolute btn btn-circle bg-white shadow-sm" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'; clearSvg()"><arrow-left-icon></arrow-left-icon></button>
 
-                                        <div v-if="selectedImage && selectedImage.type == 'image'" class="position-relative h-100" 
-                                            @mousedown="drawBrush"
-                                            @mousemove="drawBrush"
-                                            @mouseup="drawBrush"
-                                            @mouseleave="mouseMove = false"
-                                            @click="pulsingPoint">
-                                            <image-to-canvas class="image-selected position-absolute-center w-100" :src="selectedImage.src"></image-to-canvas>
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svgElement" x="0px" y="0px" class="w-100 h-100" enable-background="new 0 0 600 400" xml:space="preserve" />
-                                                mouseDown: @{{ mouseDown }}
-                                                mousemove: @{{ mouseMove }}
-                                                mouseup: @{{ mouseUp }}
+                                        <div :hidden="!selectedImage || (selectedImage && selectedImage.type != 'image')" class="position-relative h-100">
+                                            <image-to-canvas v-if="selectedImage" class="image-selected position-absolute-center w-100" :src="selectedImage.src"></image-to-canvas>
                                         </div>
 
                                         <div v-if="selectedImage && selectedImage.type == 'video'" class="h-100 bg-black">
                                             <div :hidden="selectedVideoFrame" class="h-100">
-                                                <button @click.stop="snapVideo" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 1"><aperture-icon size="1x" class="mr-2"></aperture-icon>Snap this frame</button>
+                                                <button @click.stop="snapVideo" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 2"><aperture-icon size="1x" class="mr-2"></aperture-icon>Snap this frame</button>
                                                 <video ref="selectedVideo" playsinline controls controlsList="nofullscreen nodownload noremoteplayback" class="w-100 h-100 outline-0" :src="selectedImage.src" @loadedmetadata="loadedmetadata"></video>
                                             </div>
                                             <div :hidden="!selectedVideoFrame" class="h-100">
-                                                <button @click.stop="selectedVideoFrame = null; continueVideo(); pulses = []" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 1"><x-icon size="1x" class="mr-2"></x-icon>Unsnap frame</button>
-                                                <div class="h-100 position-relative" @click="pulsingPoint">
+                                                <button @click.stop="selectedVideoFrame = null; continueVideo(); pulses = []; clearSvg()" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 2"><x-icon size="1x" class="mr-2"></x-icon>Unsnap frame</button>
+                                                <div class="h-100 position-relative">
                                                     <canvas ref="selectedVideoFrame" class="w-100 position-absolute-center" style="z-index: 0"></canvas>
                                                 </div>
                                             </div>
                                         </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" ref="drawSvg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svgElement" x="0px" y="0px" class="w-100 h-100 position-absolute" style="z-index: 1; top: 0; left: 0" enable-background="new 0 0 600 400" xml:space="preserve" />
                                     </div>
                                     <div :hidden="selectedImage" class="p-3 bg-light h-100">
                                         <div class="pl-1 mb-2">
@@ -97,14 +93,14 @@
                             <canvas id="canvas-output" hidden></canvas> 
 
                             <div class="position-absolute text-center w-auto" id="recorder-controls">
-                                <button class="btn btn-success btn-lg" @click="startRecord" :hidden="isRecording">
-                                    <video-icon data-toggle="tooltip" data-title="Start Record"></video-icon>
+                                <button class="btn btn-success btn-lg" @click="startRecord" :hidden="isRecording" data-toggle="tooltip" data-title="Start Record">
+                                    <video-icon></video-icon>
                                 </button>
-                                <button class="btn btn-red btn-danger btn-lg" @click="pauseRecord" :hidden="!isRecording">
-                                    <pause-icon data-toggle="tooltip" data-title="Pause Recording"></pause-icon>
+                                <button class="btn btn-red btn-danger btn-lg" @click="pauseRecord" :hidden="!isRecording" data-toggle="tooltip" data-title="Pause Recording">
+                                    <pause-icon></pause-icon>
                                 </button>
-                                <button class="btn btn-success btn-lg" @click="finishRecord" :hidden="!hasRecorded || isRecording">
-                                    <check-icon data-toggle="tooltip" data-title="Finish Recording"></check-icon>
+                                <button class="btn btn-success btn-lg" @click="finishRecord" :hidden="!hasRecorded || isRecording" data-toggle="tooltip" data-title="Finish Recording">
+                                    <check-icon></check-icon>
                                 </button>
                             </div>
                         </div>

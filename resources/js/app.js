@@ -57,9 +57,10 @@ window.app = new Vue({
         cameraReady: false,
         DOMImages: null,
         cursor: null,
-        mouseDown: false,
-        mouseMove: false,
-        mouseUp: false
+        mousedown: false,
+        mousemove: false,
+        mouseup: false,
+        canDraw: false,
     },
 
 
@@ -96,6 +97,7 @@ window.app = new Vue({
             });
             this.videoRecorder = this.streams = null;
         });
+        this.svgDraw();
     },
 
     created() {
@@ -173,32 +175,33 @@ window.app = new Vue({
         },
 
         pulsingPoint(e) {
-            // if (this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame))) {
+            if (this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame))) {
                 let rect = e.currentTarget.getBoundingClientRect();
                 this.pulses.push({
                     top: (e.clientY - rect.top) + 'px',
                     left: (e.clientX - rect.left) + 'px',
                 });
-            //}
+            }
         },
 
-        drawBrush(e) {
-            this[e.type] = true;
-            return;
-            /*var strokeWidth = 2;
+        clearSvg() {
+            $(this.$refs['drawSvg']).find('path').remove();
+        },
+
+        svgDraw() {
+            var strokeWidth = 3;
             var bufferSize;
 
-            var svgElement = document.getElementById("svgElement");
-            var rect = svgElement.getBoundingClientRect();
+            var svgElement = this.$refs['drawSvg'];
             var path = null;
             var strPath;
             var buffer = []; // Contains the last positions of the mouse cursor
 
-            svgElement.addEventListener("mousedown", function (e) {
-                bufferSize = document.getElementById("cmbBufferSize").value;
+            svgElement.addEventListener("mousedown", (e) => {
+                bufferSize = 4;
                 path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 path.setAttribute("fill", "none");
-                path.setAttribute("stroke", "#000");
+                path.setAttribute("stroke", "red");
                 path.setAttribute("stroke-width", strokeWidth);
                 buffer = [];
                 var pt = getMousePosition(e);
@@ -208,23 +211,24 @@ window.app = new Vue({
                 svgElement.appendChild(path);
             });
 
-            svgElement.addEventListener("mousemove", function (e) {
-                if (path) {
+            svgElement.addEventListener("mousemove", (e) => {
+                if (path && this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame))) {
                     appendToBuffer(getMousePosition(e));
                     updateSvgPath();
                 }
             });
 
-            svgElement.addEventListener("mouseup", function () {
+            svgElement.addEventListener("mouseup", () => {
                 if (path) {
                     path = null;
                 }
             });
 
             var getMousePosition = function (e) {
+                var rect = e.currentTarget.getBoundingClientRect();
                 return {
-                    x: e.pageX - rect.left,
-                    y: e.pageY - rect.top
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
                 }
             };
 
@@ -275,7 +279,36 @@ window.app = new Vue({
                     // Set the complete current path coordinates
                     path.setAttribute("d", strPath + tmpPath);
                 }
-            };*/
+            };
+
+        },
+
+        mouseEvent(e) {
+            switch(e.type) {
+                case 'mousedown' :
+                    this.mousedown = true;
+                    this.mouseup = false;
+                    break;
+
+                case 'mousemove' :
+                    if (this.mousedown) {
+                        this.mousemove = true;
+                    } else {
+                        this.mousemove = false;
+                    }
+                    this.mouseup = false;
+                    break;
+
+                case 'mouseup' :
+                    if (!this.mousemove) {
+                        this.pulsingPoint(e);
+                    }
+                    this.mouseup = true;
+                    this.mousemove = false;
+                    this.mousedown = false;
+                    break;
+            }
+            return;
         },
 
         imagesHover(e) {
