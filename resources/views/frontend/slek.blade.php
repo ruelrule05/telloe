@@ -44,11 +44,20 @@
                                     <div :hidden="!selectedImage" class="h-100">
                                         <button style="top: 10px; left: 10px; z-index: 1" class="position-absolute btn btn-circle bg-white shadow-sm" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'"><arrow-left-icon></arrow-left-icon></button>
 
-                                        <div v-if="selectedImage && selectedImage.type == 'image'" class="p-1 position-relative h-100" @click="pulsingPoint">
+                                        <div v-if="selectedImage && selectedImage.type == 'image'" class="position-relative h-100" 
+                                            @mousedown="drawBrush"
+                                            @mousemove="drawBrush"
+                                            @mouseup="drawBrush"
+                                            @mouseleave="mouseMove = false"
+                                            @click="pulsingPoint">
                                             <image-to-canvas class="image-selected position-absolute-center w-100" :src="selectedImage.src"></image-to-canvas>
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svgElement" x="0px" y="0px" class="w-100 h-100" enable-background="new 0 0 600 400" xml:space="preserve" />
+                                                mouseDown: @{{ mouseDown }}
+                                                mousemove: @{{ mouseMove }}
+                                                mouseup: @{{ mouseUp }}
                                         </div>
 
-                                        <div v-if="selectedImage && selectedImage.type == 'video'" class="h-100">
+                                        <div v-if="selectedImage && selectedImage.type == 'video'" class="h-100 bg-black">
                                             <div :hidden="selectedVideoFrame" class="h-100">
                                                 <button @click.stop="snapVideo" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 1"><aperture-icon size="1x" class="mr-2"></aperture-icon>Snap this frame</button>
                                                 <video ref="selectedVideo" playsinline controls controlsList="nofullscreen nodownload noremoteplayback" class="w-100 h-100 outline-0" :src="selectedImage.src" @loadedmetadata="loadedmetadata"></video>
