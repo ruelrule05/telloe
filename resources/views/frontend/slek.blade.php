@@ -32,11 +32,11 @@
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
                     <div class="position-relative">
-                        <!-- <div class="position-absolute-center w-100 h-100 bg-white" style="z-index: 1" v-if="!cameraReady">
+                        <div class="position-absolute-center w-100 h-100 bg-white" style="z-index: 10" v-if="!cameraReady">
                             <div class="position-absolute-center">
                                 <div class="spinner-border text-primary" role="status"></div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="position-relative" :hidden="videoOutput">
                             <div class="d-flex align-items-middle" id="toRecord">
                                 <div class="w-50 position-relative h-100" id="images" :hidden="!hasImages" @mousemove="imagesHover">
