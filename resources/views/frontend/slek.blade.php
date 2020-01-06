@@ -31,63 +31,78 @@
         <div class="modal fade" id="recordVideoModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
-                    <div class="position-relative" :hidden="videoOutput">
-                        <div class="d-flex align-items-middle" id="toRecord">
-                            <div class="w-50 position-relative" id="images" :hidden="!hasImages" @mousemove="imagesHover">
-                                <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
-                                <div v-if="selectedImage" class="h-100">
-                                    <button style="top: 10px; left: 10px; z-index: 1" class="position-absolute btn btn-circle bg-white" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'"><arrow-left-icon></arrow-left-icon></button>
-                                    <div class="image-selected h-100" :style="{backgroundImage: 'url('+selectedImage.src+')'}" @click="pulsingPoint">
-                                        <div v-if="selectedImage.type == 'video'" class="h-100">
-                                            <video hidden style="position: absolute; opacity: .5" ref="selectedVideo" playsinline controlsList="nofullscreen nodownload noremoteplayback" class="w-100" :src="selectedImage.src" @loadedmetadata="loadedmetadata" @loadeddata="loadeddata"></video>
-                                            <canvas ref="selectedVideoFrame" class="position-absolute-center" style="z-index: 0"></canvas>
-                                            <div class="position-absolute text-white w-100 p-3" style="bottom: 0" :hidden="isRecording">
-                                                @{{ selectedVideo.currentTime }} / @{{ selectedVideo.formatDuration }}
-                                                <input type="range" @click.stop value="0" class="form-control-range" style="width: 95%" @input="setVideoCurrentTime">
+                    <div class="position-relative">
+                        <!-- <div class="position-absolute-center w-100 h-100 bg-white" style="z-index: 1" v-if="!cameraReady">
+                            <div class="position-absolute-center">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                        </div> -->
+                        <div class="position-relative" :hidden="videoOutput">
+                            <div class="d-flex align-items-middle" id="toRecord">
+                                <div class="w-50 position-relative h-100" id="images" :hidden="!hasImages" @mousemove="imagesHover">
+                                    <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
+                                    <div :hidden="!selectedImage" class="h-100">
+                                        <button style="top: 10px; left: 10px; z-index: 1" class="position-absolute btn btn-circle bg-white shadow-sm" @click="selectedImage = null; pulses = []; selectedVideo.currentTime = '0:00'"><arrow-left-icon></arrow-left-icon></button>
+
+                                        <div v-if="selectedImage && selectedImage.type == 'image'" class="p-1 position-relative h-100" @click="pulsingPoint">
+                                            <image-to-canvas class="image-selected position-absolute-center w-100" :src="selectedImage.src"></image-to-canvas>
+                                        </div>
+
+                                        <div v-if="selectedImage && selectedImage.type == 'video'" class="h-100">
+                                            <div :hidden="selectedVideoFrame" class="h-100">
+                                                <button @click.stop="snapVideo" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 1"><aperture-icon size="1x" class="mr-2"></aperture-icon>Snap this frame</button>
+                                                <video ref="selectedVideo" playsinline controls controlsList="nofullscreen nodownload noremoteplayback" class="w-100 h-100 outline-0" :src="selectedImage.src" @loadedmetadata="loadedmetadata"></video>
+                                            </div>
+                                            <div :hidden="!selectedVideoFrame" class="h-100">
+                                                <button @click.stop="selectedVideoFrame = null; continueVideo(); pulses = []" class="btn btn-white position-absolute d-flex align-items-center shadow-sm" style="top: 10px; right: 10px; z-index: 1"><x-icon size="1x" class="mr-2"></x-icon>Unsnap frame</button>
+                                                <div class="h-100 position-relative" @click="pulsingPoint">
+                                                    <canvas ref="selectedVideoFrame" class="w-100 position-absolute-center" style="z-index: 0"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div :hidden="selectedImage" class="p-3 bg-light h-100">
+                                        <div class="pl-1 mb-2">
+                                            Shared Files
+                                            <span class="float-right cursor-pointer" @click="hasImages = false">
+                                                <x-icon size="1.3x"></x-icon>
+                                            </span>
+                                        </div>
+                                        <div class="d-flex flex-wrap">
+                                            <div v-for="file in files" class="w-25 p-1">
+                                                <div class="position-relative bg-black rounded cursor-pointer" style="padding-top: 100%" @click="selectedImage = file">
+                                                    <image-to-canvas class="image-preview position-absolute-center w-100" :src="file.preview" @click="selectedImage = file"></image-to-canvas>
+                                                    <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div v-else class="p-3 bg-light h-100">
-                                    <div class="pl-1 mb-2">
-                                        Shared Files
-                                        <span class="float-right cursor-pointer" @click="hasImages = false">
-                                            <x-icon size="1.3x"></x-icon>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex flex-wrap">
-                                        <div v-for="file in files" class="w-25 p-1">
-                                            <div class="rounded cursor-pointer image-preview position-relative" style="padding-top: 100%" :style="{backgroundImage: 'url('+file.preview+')'}" @click="selectedImage = file">
-                                                <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="bg-black text-center h-100" :class="[hasImages ? 'w-50' : 'w-100']">
+                                    <button v-if="!hasImages" style="top: 10px; left: 10px; z-index: 10" class="position-absolute btn bg-white" @click="hasImages = true">Browse Shared Files</button>
+                                    <video id="videoFile" class="h-100" :class="[hasImages ? 'w-100' : 'w-50']"></video>
                                 </div>
                             </div>
-                            <div class="bg-black text-center" :class="[hasImages ? 'w-50' : 'w-100']">
-                                <button v-if="!hasImages" style="top: 10px; left: 10px; z-index: 10" class="position-absolute btn bg-white" @click="hasImages = true">Browse Shared Files</button>
-                                <video id="videoFile" :class="[hasImages ? 'w-100' : 'w-50']"></video>
+
+                            <canvas id="canvas-placeholder" hidden></canvas> 
+                            <canvas id="canvas-output" hidden></canvas> 
+
+                            <div class="position-absolute text-center w-auto" id="recorder-controls">
+                                <button class="btn btn-success btn-lg" @click="startRecord" :hidden="isRecording">
+                                    <video-icon data-toggle="tooltip" data-title="Start Record"></video-icon>
+                                </button>
+                                <button class="btn btn-red btn-danger btn-lg" @click="pauseRecord" :hidden="!isRecording">
+                                    <pause-icon data-toggle="tooltip" data-title="Pause Recording"></pause-icon>
+                                </button>
+                                <button class="btn btn-success btn-lg" @click="finishRecord" :hidden="!hasRecorded || isRecording">
+                                    <check-icon data-toggle="tooltip" data-title="Finish Recording"></check-icon>
+                                </button>
                             </div>
                         </div>
 
-                        <canvas id="canvas-placeholder" hidden></canvas> 
-                        <canvas id="canvas-output" hidden></canvas> 
-
-                        <div class="position-absolute text-center w-auto" id="recorder-controls">
-                            <button class="btn btn-success btn-lg" @click="startRecord" :hidden="isRecording">
-                                <video-icon data-toggle="tooltip" data-title="Start Record"></video-icon>
-                            </button>
-                            <button class="btn btn-red btn-danger btn-lg" @click="pauseRecord" :hidden="!isRecording">
-                                <pause-icon data-toggle="tooltip" data-title="Pause Recording"></pause-icon>
-                            </button>
-                            <button class="btn btn-success btn-lg" @click="finishRecord" :hidden="!hasRecorded || isRecording">
-                                <check-icon data-toggle="tooltip" data-title="Finish Recording"></check-icon>
-                            </button>
+                        <div :hidden="!videoOutput">
+                            <video ref="videoOutput" class="w-100" style="outline: 0" playsinline controls></video>
                         </div>
-                    </div>
-
-                    <div :hidden="!videoOutput">
-                        <video ref="videoOutput" class="w-100" style="outline: 0" playsinline controls></video>
                     </div>
 
 

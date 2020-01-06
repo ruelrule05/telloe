@@ -10,11 +10,17 @@ const feather = require('feather-icons');
 //const html2canvas = require('html2canvas');
 //const domtoimage = require('dom-to-image-improved');
 const domtoimage = require('dom-to-image');
-import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon } from 'vue-feather-icons';
+import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon } from 'vue-feather-icons';
 
 var format = require('format-duration');
+//const imageDataURI = require('image-data-uri');
+import VueObserveVisibility from 'vue-observe-visibility'
+ 
+Vue.use(VueObserveVisibility)
+
+Vue.component('image-to-canvas', require('./components/image-to-canvas.vue').default);
 window.app = new Vue({
-    components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon },
+    components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon },
     el: '#app',
     data: {
         videoRecorder: null,
@@ -47,6 +53,10 @@ window.app = new Vue({
             currentTime: '0:00',
         },
         finalStream: null,
+        selectedVideoFrame: null,
+        cameraReady: false,
+        DOMImages: null,
+        cursor: null,
     },
 
 
@@ -57,6 +67,9 @@ window.app = new Vue({
             type: 'video',
         });
         this.video = document.querySelector('#videoFile');
+        this.DOMImages = document.getElementById('images');
+        this.cursor = new Image();
+        this.cursor.src = '/images/mouse.png';
 
         $('#recordVideoModal').on('shown.bs.modal', (e) => {
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
@@ -65,6 +78,9 @@ window.app = new Vue({
                 this.video.volume = 0;
                 this.video.srcObject = new MediaStream(this.streams.getVideoTracks());
                 this.video.play();
+                this.video.onplaying = () => {
+                    this.cameraReady = true;
+                }
             }).catch(function(error) {
                 alert('Unable to capture your camera.');
                 console.error(error);
@@ -80,42 +96,50 @@ window.app = new Vue({
     },
 
     created() {
+        let origin = window.location.origin;
+       /* Object.keys(this.files).map(i => {
+            imageDataURI.encodeFromURL(origin + this.files[i].src)
+            .then(res => this.files[i].src = res);
+            imageDataURI.encodeFromURL(origin + this.files[i].preview)
+            .then(res => this.files[i].preview = res);
+        });*/
     },
 
     watch: {
     },
 
     methods: {
-        setVideoCurrentTime(e) {
+        continueVideo() {
+            this.$refs['selectedVideo'].play();
+        },
+
+        snapVideo() {
             this.pulses = [];
+            setTimeout(() => {
+
+            this.$refs['selectedVideo'].pause();
+            let container = $('#images');
+            let containerWidth = container.width();
+            let containerHeight= container.height();
             let selectedVideo = this.$refs['selectedVideo'];
-            let currentTime = this.selectedVideo.duration * (e.target.value / 100);
-            this.selectedVideo.currentTime = format(parseInt(currentTime) * 1000);
-            selectedVideo.currentTime = currentTime;
             let canvas = this.$refs['selectedVideoFrame'];
+            canvas.width = containerWidth;
+            canvas.height = (containerWidth / selectedVideo.videoWidth) * selectedVideo.videoHeight + 1;
             let canvasCtx = canvas.getContext('2d');
-            canvasCtx.fillStyle = "black";
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
             canvasCtx.drawImage(selectedVideo, 0, 0, canvas.width, canvas.height);
+            this.selectedVideoFrame = true;
+            });
         },
 
         loadeddata(e) {
             setTimeout(() => {
-                let container = $('#images');
-                let containerWidth = container.width();
-                let containerHeight= container.height();
-                let selectedVideo = this.$refs['selectedVideo'];
-                let canvas = this.$refs['selectedVideoFrame'];
-                canvas.width = containerWidth;
-                canvas.height = (containerWidth / selectedVideo.videoWidth) * selectedVideo.videoHeight;
-                let canvasCtx = canvas.getContext('2d');
-                canvasCtx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
             }, 200);
         },
 
         loadedmetadata(e) {
             let videoPlayer = e.target;
             let $this = this;
+            videoPlayer.play();
             if (videoPlayer.duration === Infinity) {
               videoPlayer.currentTime = 1e101;
               videoPlayer.ontimeupdate = function() {
@@ -146,7 +170,7 @@ window.app = new Vue({
         },
 
         pulsingPoint(e) {
-            if (this.isRecording) {
+            if (this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame))) {
                 let rect = e.currentTarget.getBoundingClientRect();
                 this.pulses.push({
                     top: (e.clientY - rect.top) + 'px',
@@ -162,15 +186,17 @@ window.app = new Vue({
         },
 
         recordCanvas(canvasOutput) {
-            console.log('recordCanvas');
-            let audioStream = new MediaStream(this.streams.getAudioTracks());
-            audioStream.getTracks('audio').forEach((track) => {
-                this.finalStream.addTrack(track);
-            });
-            canvasOutput.captureStream().getTracks('video').forEach((track) => {
-                this.finalStream.addTrack(track);
-            });
-            this.videoRecorder.startRecording();
+            if (!this.recorderStarted) {
+                this.recorderStarted = true;
+                let audioStream = new MediaStream(this.streams.getAudioTracks());
+                audioStream.getTracks('audio').forEach((track) => {
+                    this.finalStream.addTrack(track);
+                });
+                canvasOutput.captureStream().getTracks('video').forEach((track) => {
+                    this.finalStream.addTrack(track);
+                });
+                this.videoRecorder.startRecording();
+            }
         },
 
         startRecord() {
@@ -187,6 +213,7 @@ window.app = new Vue({
 
                 canvasOutput.width = canvasPlaceholder.width = $('#toRecord').width();
                 canvasOutput.height = canvasPlaceholder.height = $('#toRecord').height();
+
                 // Video
                 let video = $this.video;
                 (function loopVideo() {
@@ -228,51 +255,22 @@ window.app = new Vue({
                                     //canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
                                     canvasCtx.drawImage(newCanvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
                                     canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                                    if (!$this.recorderStarted) {
-                                        $this.recorderStarted = true;
-                                        $this.recordCanvas(canvasOutput);
-                                    }
+                                    $this.recordCanvas(canvasOutput);
                                     setTimeout(loopImages, 1);
                                 }
                             });
-                        }
-                    } else {
-                        setTimeout(loopImages, 1);
-                    }
-
-                    /*html2canvas(images, {
-                        grabMouse: false,
-                        onrendered: (canvas) => {
-                            if ($this.mouse.x > -1 && $this.mouse.y > -1) {
-                                let newCanvasCtx = canvas.getContext('2d');
-                                newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
-                            }
-
-                            canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                            canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                            canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                        } else {
+                            $this.recordCanvas(canvasOutput);
                             setTimeout(loopImages, 1);
                         }
-
-                    });*/
-
-                    /*html2canvas(images, {
-                        allowTaint: true,
-                        scale: 6,
-                    }).then(canvas => {
-                        if ($this.mouse.x > -1 && $this.mouse.y > -1) {
-                            let newCanvasCtx = canvas.getContext('2d');
-                            newCanvasCtx.drawImage(cursor, $this.mouse.x + 70, $this.mouse.y + 70, 20, 20);
-                        }
-
-                        canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                        canvasCtx.drawImage(canvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                        canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                    } else {
+                        $this.recordCanvas(canvasOutput);
                         setTimeout(loopImages, 1);
-                    });*/
+                    }
                 })();
             }
         },
+
         
         finishRecord() {
             this.videoRecorder.stopRecording(() => {

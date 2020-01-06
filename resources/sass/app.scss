@@ -4135,7 +4135,7 @@ body.form-membership .form-wrapper hr {
   -webkit-animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) 1;
           animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) 1;
   animation-fill-mode: forwards;
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
 }
 .pulsating-circle:after {
@@ -4178,6 +4178,7 @@ body.form-membership .form-wrapper hr {
 }
 #toRecord{
   min-height: 400px;
+  height: 400px;
 }
 .btn.btn-circle {
     height: 35px;
@@ -4198,9 +4199,7 @@ body.form-membership .form-wrapper hr {
     border-radius: 50%;
 }
 .image-preview{
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  top: 0;
 }
 .image-selected{
   background-color: #333;
@@ -4228,4 +4227,7 @@ body.form-membership .form-wrapper hr {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.outline-0{
+  outline: 0 !important;
 }

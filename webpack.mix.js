@@ -37,6 +37,9 @@ else if (argv.indexOf('--js') > -1) {
     console.log('Running js...');
     mix.js('resources/js/app.js', 'public/js')
         .webpackConfig({
+            node: {
+              fs: 'empty'
+            },
             output: {
                 chunkFilename: `js/chunks/[name]${timestamp}.js`
             },
