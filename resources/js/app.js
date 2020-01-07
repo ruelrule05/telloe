@@ -10,7 +10,7 @@ const feather = require('feather-icons');
 //const html2canvas = require('html2canvas');
 //const domtoimage = require('dom-to-image-improved');
 const domtoimage = require('dom-to-image');
-import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon } from 'vue-feather-icons';
+import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon, PenToolIcon } from 'vue-feather-icons';
 
 var format = require('format-duration');
 //const imageDataURI = require('image-data-uri');
@@ -18,9 +18,15 @@ import VueObserveVisibility from 'vue-observe-visibility'
  
 Vue.use(VueObserveVisibility)
 
+$(document).on('click', 'path', function(e){
+    if (!e.target.parentElement.classList.contains('feather')) {
+        e.target.remove();
+    }
+});
+
 Vue.component('image-to-canvas', require('./components/image-to-canvas.vue').default);
 window.app = new Vue({
-    components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon },
+    components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon, PenToolIcon },
     el: '#app',
     data: {
         videoRecorder: null,
@@ -61,6 +67,8 @@ window.app = new Vue({
         mousemove: false,
         mouseup: false,
         canDraw: false,
+        sharedFilesOpen: true,
+        drawTool: null
     },
 
 
@@ -101,13 +109,7 @@ window.app = new Vue({
     },
 
     created() {
-        let origin = window.location.origin;
-       /* Object.keys(this.files).map(i => {
-            imageDataURI.encodeFromURL(origin + this.files[i].src)
-            .then(res => this.files[i].src = res);
-            imageDataURI.encodeFromURL(origin + this.files[i].preview)
-            .then(res => this.files[i].preview = res);
-        });*/
+        this.selectedImage = this.files[0];
     },
 
     watch: {
@@ -144,7 +146,6 @@ window.app = new Vue({
         loadedmetadata(e) {
             let videoPlayer = e.target;
             let $this = this;
-            videoPlayer.play();
             if (videoPlayer.duration === Infinity) {
               videoPlayer.currentTime = 1e101;
               videoPlayer.ontimeupdate = function() {
@@ -175,7 +176,7 @@ window.app = new Vue({
         },
 
         pulsingPoint(e) {
-            if (this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame))) {
+            if (this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && e.target.nodeName != 'path' && this.drawTool == 'circle') {
                 let rect = e.currentTarget.getBoundingClientRect();
                 this.pulses.push({
                     top: (e.clientY - rect.top) + 'px',
@@ -212,7 +213,8 @@ window.app = new Vue({
             });
 
             svgElement.addEventListener("mousemove", (e) => {
-                if (path && this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame))) {
+                if (path && this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && this.drawTool == 'brush') {
+                //if (path) {
                     appendToBuffer(getMousePosition(e));
                     updateSvgPath();
                 }
@@ -435,6 +437,7 @@ window.app = new Vue({
     }
 });
 $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
 })
+
 

@@ -22,6 +22,13 @@ export default {
         this.image.src = this.src;
     },
 
+    watch: {
+        src: function() {
+            this.image.src = this.src;
+            this.visibilityChanged(true);
+        }
+    },
+
     mounted() {
         this.canvasCtx = this.$refs['canvas'].getContext('2d');
     },

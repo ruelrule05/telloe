@@ -4119,6 +4119,7 @@ body.form-membership .form-wrapper hr {
   width: 10px;
   height: 10px;
   z-index: 10;
+  cursor: pointer;
 }
 .pulsating-circle:before {
   content: '';
@@ -4231,4 +4232,48 @@ body.form-membership .form-wrapper hr {
 }
 .outline-0{
   outline: 0 !important;
+}
+path{
+  cursor: pointer;
+}
+* {
+    box-sizing: border-box;
+    }
+
+  *::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 6px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    border-radius: 30px;
+    background: rgba(black, 0.4);
+    -webkit-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 15px;
+  }
+.shared-files{
+  height: 130px;
+  position: absolute;
+  bottom: -102px;
+  left: 0;
+  width: 100%;
+  overflow-x: auto;
+  z-index: 4;
+  transition: bottom .15s;
+  .chevron-arrow {
+    transition: transform .3s !important;
+  }
+}
+.shared-files-open{ 
+  bottom: 0;
+  .chevron-arrow {
+    transform: rotate(180deg);
+  }
 }
