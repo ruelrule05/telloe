@@ -118,7 +118,6 @@ window.app = new Vue({
         this.cursor.src = '/images/mouse.png';
 
         $('#recordVideoModal').on('shown.bs.modal', (e) => {
-            this.cameraReady = false;
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
                 this.videoRecorder = RecordRTC(this.finalStream, {
                     type: 'video',
@@ -142,7 +141,7 @@ window.app = new Vue({
               track.stop();
             });
             this.videoRecorder = this.streams = this.videoOutput = null;
-            this.hasRecorded = false;
+            this.hasRecorded = this.cameraReady = false;
         });
         this.svgDraw();
     },
