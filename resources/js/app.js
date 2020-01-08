@@ -142,6 +142,8 @@ window.app = new Vue({
             });
             this.videoRecorder = this.streams = this.videoOutput = null;
             this.hasRecorded = this.cameraReady = false;
+            this.pulses = [];
+            this.clearSvg();
         });
         this.svgDraw();
     },
