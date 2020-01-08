@@ -3,8 +3,8 @@ const app = require('express')();
 if (process.argv.indexOf('--production') > -1) {
   const fs = require("fs");
   const sslOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/workhob.ph/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/workhob.ph/cert.pem')
+    key: fs.readFileSync('/etc/letsencrypt/live/snapturebox.com/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/snapturebox.com/cert.pem')
   };
   var server = require("https").Server(sslOptions, app);
 } else if (process.argv.indexOf('--dev') > -1) {
