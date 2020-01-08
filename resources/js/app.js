@@ -142,6 +142,7 @@ window.app = new Vue({
               track.stop();
             });
             this.videoRecorder = this.streams = this.videoOutput = null;
+            this.hasRecorded = false;
         });
         this.svgDraw();
     },
