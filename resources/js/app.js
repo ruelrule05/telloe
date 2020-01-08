@@ -171,6 +171,9 @@ window.app = new Vue({
             axios.post('/messages', data, {header : {'Content-Type' : 'multipart/form-data'}}).then((response) => {
                 this.messages.push(response.data);
                 this.newMessage.message = '';
+                this.newMessage.type = 'text';
+                this.newMessage.video = null;
+                this.newMessage.videoPreview = null;
                 this.socket.emit('message_sent', response.data);
                 this.scrollDown();
             });
