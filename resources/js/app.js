@@ -140,7 +140,7 @@ window.app = new Vue({
             this.streams.getTracks().forEach(function(track) {
               track.stop();
             });
-            this.videoRecorder = this.streams = null;
+            this.videoRecorder = this.streams = this.videoOutput = null;
         });
         this.svgDraw();
     },
