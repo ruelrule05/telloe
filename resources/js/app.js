@@ -112,9 +112,6 @@ window.app = new Vue({
     mounted() {
         feather.replace();
         this.finalStream = new MediaStream();
-        this.videoRecorder = RecordRTC(this.finalStream, {
-            type: 'video',
-        });
         this.video = document.querySelector('#videoFile');
         this.DOMImages = document.getElementById('images');
         this.cursor = new Image();
@@ -122,6 +119,9 @@ window.app = new Vue({
 
         $('#recordVideoModal').on('shown.bs.modal', (e) => {
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
+                this.videoRecorder = RecordRTC(this.finalStream, {
+                    type: 'video',
+                });
                 this.streams = streams;
                 this.video.muted = true;
                 this.video.volume = 0;
