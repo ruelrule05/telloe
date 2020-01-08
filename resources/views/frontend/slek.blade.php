@@ -32,11 +32,11 @@
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
                     <div class="position-relative">
-                        <!-- <div class="position-absolute-center w-100 h-100 bg-white" style="z-index: 10" v-if="!cameraReady">
+                        <div class="position-absolute-center w-100 h-100 bg-white" style="z-index: 10" v-if="!cameraReady">
                             <div class="position-absolute-center">
                                 <div class="spinner-border text-primary" role="status"></div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="position-relative" :hidden="videoOutput">
                             <div class="d-flex align-items-middle" id="toRecord">
                                 <div class="w-50 position-relative h-100 overflow-hidden" :hidden="!hasImages" @mousemove="imagesHover">
@@ -121,7 +121,7 @@
 
                     <div class="modal-footer justify-content-between px-2 pt-0 pb-1">
                         <button type="button" class="btn" data-dismiss="modal" aria-label="Close">Cancel</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" :disabled="!videoOutput" @click="sendVideo">Send</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" :disabled="!videoOutput" @click="newMessage.type = 'video'; send();">Send</button>
                     </div>
                 </div>
             </div>
@@ -263,40 +263,33 @@
                             </div>
                         </div>
                     </div>
-                    <div class="chat-body">
+                    <div class="chat-body" ref="message-group">
                         <div class="messages">
-
-                            <div class="message-item">
-                                <div class="message-avatar">
-                                    <figure class="avatar avatar-state-success">
-                                        <img src="https://via.placeholder.com/128X128" class="rounded-circle" alt="image">
-                                    </figure>
-                                    <div>
-                                        <h5>Margaretta Worvell</h5>
-                                        <div class="time">08:11AM on Sunday</div>
+                            <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
+                                <div class="message-item" v-for="message in grouped_message.messages" v-cloak :class="{'outgoing-message': message.sender == 'You'}">
+                                    <div class="message-avatar text-left">
+                                        <figure class="avatar avatar-state-success">
+                                            <img src="https://via.placeholder.com/128X128" class="rounded-circle" alt="image">
+                                        </figure>
+                                        <div>
+                                            <h5>@{{ message.sender }}</h5>
+                                            <div class="time">@{{ message.created_at }}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="message-content">
-                                    Hi Sarah please look at my video of my problem areas I would like to look better.
+                                    <div class="message-content">
+                                        <div class="mt-2 position-relative cursor-pointer" @click="playVideo(message.message)" v-if="message.type == 'video'">
+                                            <div class="position-absolute-center text-center">
+                                                <play-icon></play-icon>
+                                            </div>
+                                            <img :src="message.preview" class="w-100 rounded" alt="">
+                                        </div>
+                                        <span v-else>@{{ message.message }}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="message-item outgoing-message">
-                                <div class="message-avatar">
-                                    <figure class="avatar avatar-state-success">
-                                        <img src="https://via.placeholder.com/128X128" class="rounded-circle" alt="image">
-                                    </figure>
-                                    <div>
-                                        <h5>You</h5>
-                                        <div class="time">08:15AM on Sunday</div>
-                                    </div>
-                                </div>
-                                <div class="message-content">
-                                    Hi Margaretta, please view my feedback video
-                                </div>
-                            </div>
 
-                            <div class="message-item outgoing-message" v-if="videoSent">
+                            <!-- <div class="message-item outgoing-message" >
                                 <div class="message-avatar">
                                     <figure class="avatar avatar-state-success">
                                         <img src="https://via.placeholder.com/128X128" class="rounded-circle" alt="image">
@@ -315,14 +308,14 @@
                                         <img :src="videoPreview" class="w-100 rounded" alt="">
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                         </div>
                     </div>
 
                     <div class="chat-footer p-3">
-                        <form>
-                            <input type="text" class="form-control" placeholder="Write a message..">
+                        <form @submit.prevent="send">
+                            <input type="text" class="form-control" placeholder="Write a message.." v-model="newMessage.message" required>
                             <div class="form-buttons ml-1">
                                 <button class="btn btn-light m-0" data-toggle="tooltip" title="Emoji" type="button">
                                     <i data-feather="smile"></i>

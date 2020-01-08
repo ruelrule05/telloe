@@ -13,6 +13,21 @@ try {
 window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+/*window.axios.interceptors.request.use(
+    function(config) {
+        config.headers['Cache-Control'] = 'no-cache';
+
+        let prependAjax = config.headers.prependAjax == undefined ? true : config.headers.prependAjax;
+        if (prependAjax) {
+            config.url = '/ajax' + config.url;
+        }
+
+        return config;
+    },
+    function(error) {
+        return Promise.reject(error);
+    }
+);*/
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

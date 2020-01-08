@@ -14,7 +14,8 @@ import { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, Check
 
 var format = require('format-duration');
 //const imageDataURI = require('image-data-uri');
-import VueObserveVisibility from 'vue-observe-visibility'
+import VueObserveVisibility from 'vue-observe-visibility';
+import io from 'socket.io-client';
  
 Vue.use(VueObserveVisibility)
 
@@ -51,7 +52,6 @@ window.app = new Vue({
         selectedImage: null,
         videoOutput: null,
         videoPreview: null,
-        videoSent: false,
         hasRecorded: false,
         selectedVideo: {
             duration: 0,
@@ -68,9 +68,46 @@ window.app = new Vue({
         mouseup: false,
         canDraw: false,
         sharedFilesOpen: true,
-        drawTool: null
+        drawTool: null,
+        messages: [],
+        newMessage: {
+            inquiry_id: 1,
+            message: '',
+            type: 'text',
+            sender: 'You',
+        },
+        socket: null,
+        notification_sound: null
     },
 
+    computed: {
+        grouped_messages() {
+            const grouped_messages = [];
+            if (this.messages) {
+                // sort messages by timestamp
+                const messages = (this.messages || []).sort((a, b) => {
+                    return (parseInt(a.timestamp) > parseInt(b.timestamp)) ? 1 : -1;
+                });
+
+                for (var i = 0; i <= messages.length - 1; i++) {
+                    var message_group = { sender: messages[i].sender, messages: [messages[i]] };
+                    groupMessage();
+
+                    function groupMessage() {
+                        const next_message = messages[i + 1];
+                        if (next_message && next_message.sender == messages[i].sender) {
+                            message_group.messages.push(messages[i + 1]);
+                            i++;
+                            groupMessage();
+                        }
+                    }
+                    grouped_messages.push(message_group);
+                }
+            }
+
+            return grouped_messages;
+        },
+    },
 
     mounted() {
         feather.replace();
@@ -109,13 +146,53 @@ window.app = new Vue({
     },
 
     created() {
+        this.notification_sound = new Audio('/notifications/new_message.mp3');
         this.selectedImage = this.files[0];
+
+        this.socket = io(window.location.hostname + ':8443');
+        this.socket.on('new_message', (data) => {
+            this.messages.push(data);
+            this.notification_sound.play();
+            this.scrollDown();
+        });
+        this.getMessages();
     },
 
     watch: {
     },
 
     methods: {
+        send() {
+            let data = new FormData();
+            Object.keys(this.newMessage).map((k) => {
+                data.append(k, this.newMessage[k]);
+            });
+
+            axios.post('/messages', data, {header : {'Content-Type' : 'multipart/form-data'}}).then((response) => {
+                this.messages.push(response.data);
+                this.newMessage.message = '';
+                this.socket.emit('message_sent', response.data);
+                this.scrollDown();
+            });
+        },
+
+        scrollDown() {
+            setTimeout(() => {
+                const message_group = this.$refs['message-group'];
+                if (message_group) {
+                    message_group.scrollTop = message_group.scrollHeight;
+                }
+            });
+        },
+
+        getMessages() {
+            axios.get('/messages').then((response) => {
+                this.messages = response.data;
+                this.scrollDown();
+                console.log(this.grouped_messages);
+            });
+        },
+
         continueVideo() {
             this.$refs['selectedVideo'].play();
         },
@@ -163,13 +240,11 @@ window.app = new Vue({
             }
         },
 
-        playVideo() {
+        playVideo(videoSrc) {
+            this.videoOutput = videoSrc;
             $('#videoPlayerModal').modal('show');
         },
 
-        sendVideo() {
-            this.videoSent = true;
-        },
 
         removePulse(index) {
             this.pulses.splice(index, 1);
@@ -408,7 +483,9 @@ window.app = new Vue({
         
         finishRecord() {
             this.videoRecorder.stopRecording(() => {
-                this.videoOutput = URL.createObjectURL(this.videoRecorder.getBlob());
+                let videoBlob = this.videoRecorder.getBlob();
+                this.newMessage.video = videoBlob;
+                this.videoOutput = URL.createObjectURL(videoBlob);
                 this.$refs['videoOutput'].src = this.videoOutput;
                 let $this = this;
                 // generate thumbnail
@@ -419,6 +496,9 @@ window.app = new Vue({
                         canvas.height = this.videoHeight / 2;
                         canvas.getContext('2d').drawImage(this, 0, 0, canvas.width, canvas.height);
                         $this.videoPreview = canvas.toDataURL("image/jpeg", 0.8);
+                        canvas.toBlob((blob) => {
+                            $this.newMessage.videoPreview = blob;
+                        });
                     }, 500);
                 };
                 this.finalStream = new MediaStream();
@@ -430,9 +510,7 @@ window.app = new Vue({
         pauseRecord() {
             this.hasRecorded = true;
             this.isRecording = false;
-            this.videoRecorder.pauseRecording(blob => {
-                console.log(blob);
-            });
+            this.videoRecorder.pauseRecording();
         },
     }
 });

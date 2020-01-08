@@ -9,6 +9,9 @@ $front = 'boxbi.app';
  *
  *
  */
+
+Route::resource('messages', 'MessageController');
+
 Route::group(
     [
         'domain' => $front,
@@ -21,5 +24,7 @@ Route::group(
         })->where('any', '.*');
     }
 );
+
+
 
 

@@ -3815,9 +3815,8 @@ body.form-membership .form-wrapper hr {
           align-items: flex-start;
 }
 
-.layout .content .chat .chat-body .messages .message-item {
+.layout .content .chat .chat-body .messages .message-item .message-content {
   max-width: 75%;
-  margin-bottom: 3rem;
 }
 
 .layout .content .chat .chat-body .messages .message-item:last-child {
@@ -3835,11 +3834,11 @@ body.form-membership .form-wrapper hr {
      -moz-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .layout .content .chat .chat-body .messages .message-item .message-avatar .avatar {
-  margin-right: 1rem;
+  margin-right: 0.5rem;
 }
 
 .layout .content .chat .chat-body .messages .message-item .message-avatar h5 {
@@ -3865,10 +3864,7 @@ body.form-membership .form-wrapper hr {
 
 .layout .content .chat .chat-body .messages .message-item .message-content {
   background: #ebebeb;
-  -webkit-border-radius: 7px;
-     -moz-border-radius: 7px;
-          border-radius: 7px;
-  padding: 10px 20px;
+  display: inline-block;
 }
 
 .layout .content .chat .chat-body .messages .message-item .message-content.message-file {
@@ -3898,6 +3894,7 @@ body.form-membership .form-wrapper hr {
 
 .layout .content .chat .chat-body .messages .message-item.outgoing-message {
   margin-left: auto;
+  text-align: right;
 }
 
 .layout .content .chat .chat-body .messages .message-item.outgoing-message .message-avatar {
@@ -4277,3 +4274,47 @@ path{
     transform: rotate(180deg);
   }
 }
+[v-cloak] {
+  opacity: 0;
+}
+
+  .message-group{
+    margin-bottom: 1rem;
+    .message-item:not(:first-child):not(:only-child) .message-avatar {
+      display: none !important;
+    }
+  }
+  /* Message right */
+  .message-group .message-content {
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    border-top-left-radius: 1.5em;
+    border-bottom-left-radius: 1.5em;
+  }
+  .message-group .message-item.outgoing-message:only-child .message-content,
+  .message-group .message-item.outgoing-message:first-child .message-content{
+    border-top-right-radius: 1.5em;
+  }
+  .message-group .message-item.outgoing-message:only-child .message-content,
+  .message-group .message-item.outgoing-message:last-child:not(:only-child) .message-content {
+    border-bottom-right-radius: 1.5em;
+  }
+
+ 
+  /* Message right */
+  .message-group .message-item:not(.outgoing-message) .message-content {
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    border-top-right-radius: 1.5em;
+    border-bottom-right-radius: 1.5em;
+  }
+  .message-group .message-item:not(.outgoing-message):only-child .message-content,
+  .message-group .message-item:not(.outgoing-message):first-child .message-content{
+    border-top-left-radius: 1.5em;
+  }
+  .message-group .message-item:not(.outgoing-message):last-child:only-child .message-content,
+  .message-group .message-item:not(.outgoing-message):last-child:not(:only-child) .message-content {
+    border-bottom-left-radius: 1.5em;
+  }
