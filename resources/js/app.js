@@ -141,7 +141,7 @@ window.app = new Vue({
               track.stop();
             });
             this.videoRecorder = this.streams = this.videoOutput = null;
-            this.hasRecorded = this.cameraReady = false;
+            this.hasRecorded = this.cameraReady = this.isRecording = false;
             this.pulses = [];
             this.clearSvg();
         });
