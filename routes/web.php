@@ -1,7 +1,7 @@
 <?php
 
 $front = 'boxbi.app';
-
+$front = 'snapturebox.com';
 
 
 /*
