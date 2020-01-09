@@ -8,12 +8,12 @@
 
     <!-- App styles -->
     <link rel="stylesheet" href="{{ mix('/css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('/css/slek.css') }}">
     <meta name="google-site-verification" content="C30F1LP5GPgQEH098m_k0kJ6jxpOlIKov4XUpqmGkf8" />
 </head>
 <body>
     <div id="app">
-
+        <router-view></router-view>
         <div class="modal fade" id="videoPlayerModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
@@ -256,10 +256,11 @@
                                 <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i data-feather="user" style="height: 14px" class="align-middle"></i>&nbsp;<span class="align-middle">Anti Wrinkle Brisbane</span>
                                 </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <form method="POST" action="/logout" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @csrf
                                     <a class="dropdown-item" href="#">Account</a>
-                                    <a class="dropdown-item" href="#">Logout</a>
-                                </div>
+                                    <button class="dropdown-item outline-0" href="#" type="submit">Logout</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -351,8 +352,15 @@
         
     </div>
 
+    
+    <script src="/js/screenshot.js"></script>
 
-<script src="/js/screenshot.js"></script>
-<script src="{{ mix('/js/app.js') }}"></script>
+
+    <script>
+        window.mixins = [];
+        window.routes = [];
+    </script>
+    <script src="{{ mix('/js/dashboard.js') }}"></script>
+    <script src="{{ mix('/js/app.js') }}"></script>
 </body>
 </html>

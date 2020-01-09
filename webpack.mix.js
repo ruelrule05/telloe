@@ -15,6 +15,7 @@ if (argv.indexOf('--css') > -1) {
     console.log('Running css...');
     mix
         .sass('resources/sass/bootstrap.scss', 'public/css')
+        .sass('resources/sass/slek.scss', 'public/css')
         .sass('resources/sass/app.scss', 'public/css')
         .options({
             postCss: [require('postcss-css-variables')()]
@@ -35,11 +36,14 @@ if (argv.indexOf('--css') > -1) {
 
 else if (argv.indexOf('--js') > -1) { 
     console.log('Running js...');
-    mix.js('resources/js/app.js', 'public/js')
+    mix
+        .js('resources/js/app.js', 'public/js')
+        .js('resources/js/auth.js', 'public/js')
+        .js('resources/js/dashboard.js', 'public/js')
         .webpackConfig({
-            node: {
+            /*node: {
               fs: 'empty'
-            },
+            },*/
             output: {
                 chunkFilename: `js/chunks/[name]${timestamp}.js`
             },
@@ -53,9 +57,6 @@ else if (argv.indexOf('--js') > -1) {
             },
             resolve: {
                 alias: {
-                    videojs: 'video.js',
-                    WaveSurfer: 'wavesurfer.js',
-                    RecordRTC: 'recordrtc'
                 }
             },
             externals: {
