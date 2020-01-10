@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const postcss = require('postcss');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const dayjs =  require('dayjs');
@@ -79,4 +80,42 @@ else if (argv.indexOf('--js') > -1) {
         }
     });
 }
+
+
+
+
+else if (argv.indexOf('--widget') > -1) { 
+    console.log('Running widget js...');
+    mix
+        .js('resources/js/widget.js', 'public/js')
+        .webpackConfig({
+            module: {
+                rules: [
+                    {
+                        test:/\.(s*)css$/,
+                        exclude: /node_modules/,
+                        use: [
+                            {
+                                loader: 'postcss-loader'
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+    
+    mix.browserSync({
+        proxy: 'https://workhob.app',
+        host: 'workhob.app',
+        open: false,
+        port: 8000,
+        watch: true,
+        notify: false,
+        https: {
+            key: '/Users/cleidoscope/.config/valet/Certificates/workhob.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/workhob.app.crt'
+        }
+    });
+}
+
 

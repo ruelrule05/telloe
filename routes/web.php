@@ -1,9 +1,4 @@
 <?php
-
-$front = 'boxbi.app';
-$front = 'snapturebox.com';
-
-
 /*
  * Frontend Routes
  *
@@ -12,7 +7,7 @@ $front = 'snapturebox.com';
 
 Route::group(
     [
-        'domain' => $front,
+        'domain' => config('app.url'),
         'namespace' => 'Frontend'
     ],
     function () {
@@ -26,8 +21,8 @@ Route::group(
         Route::post('recover', 'AuthController@recover')->middleware('guest');
         Route::get('reset', 'AuthController@reset')->middleware('guest');
 		Route::post('reset', 'AuthController@reset')->middleware('guest');
-		Route::resource('messages', 'MessageController');
-		Route::resource('inquiries', 'InquiryController');
+		Route::resource('messages', 'MessageController')->middleware('auth');
+		Route::resource('inquiries', 'InquiryController')->middleware('auth');
         
        /* Route::get('/{any}', function () {
             return view('frontend.slek');
