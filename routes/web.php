@@ -48,7 +48,7 @@ Route::group(
 
         
 
-        Route::get('/facebook_page_tab', 'WidgetController@facebookPageTab');
+        Route::post('/facebook_page_tab', 'WidgetController@facebookPageTab');
         Route::get('/{slug}', 'WidgetController@showPublic');
     }
 );
