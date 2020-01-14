@@ -35,6 +35,8 @@ new SBVue({
         API: 'https://api.boxbi.app',
         widget: null,
         auth: null,
+        hidden: false,
+        open: false,
     },
 
     created() {
@@ -45,6 +47,22 @@ new SBVue({
         validateDomain() {
             SBAxios.get(`${this.API}/show?domain=${window.location.hostname}`).then((response) => {
                 this.widget = response.data;
+                let pageRule = this.widget.widget_rules.find((x) => x.page == window.location.pathname);
+                if (pageRule) {
+                    switch(pageRule.state) {
+                        case 'Open': 
+                            this.open = true;
+                            break;
+
+                        case 'Minimized': 
+                            this.open = false;
+                            break;
+
+                        case 'Hidden': 
+                            this.hidden = true;
+                            break;
+                    }
+                }
             }).catch(()=>{});
         },
 

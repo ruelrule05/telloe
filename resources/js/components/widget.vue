@@ -1,10 +1,10 @@
 <template>
-    <div v-if="$root.widget">
+    <div v-if="$root.widget && !$root.hidden">
        <div id="snapturebox-button" @click="toggleWidget">
            <message-circle-icon></message-circle-icon>
         </div>
 
-        <div id="snapturebox-window" :class="{'snapturebox-open': open}">
+        <div id="snapturebox-window" :class="{'snapturebox-open': $root.open}">
             <!-- Header -->
             <div id="snapturebox-header">
                 <div class="snapturebox-dropdown">
@@ -121,8 +121,6 @@ export default {
     components: { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon },
 
     data: () => ({
-        open: true,
-
         message: '',
         playing: false,
         member: 'Clinic Team',
@@ -537,8 +535,8 @@ export default {
         },
 
         toggleWidget() {
-            this.open = this.open ? false : true;
-            if (!this.open && this.$refs['snapturebox-intro']) {
+            this.$root.open = this.$root.open ? false : true;
+            if (!this.$root.open && this.$refs['snapturebox-intro']) {
                 this.playing = false;
                 this.$refs['snapturebox-intro'].pause();
             }

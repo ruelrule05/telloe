@@ -13,7 +13,6 @@
 </head>
 <body>
     <div id="app">
-        <router-view></router-view>
         <div class="modal fade" id="videoPlayerModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-zoom" role="document">
                 <div class="modal-content">
@@ -352,15 +351,10 @@
         
     </div>
 
-    
-    <script src="/js/screenshot.js"></script>
-
-
     <script>
         window.mixins = [];
         window.routes = [];
     </script>
-    <script src="{{ mix('/js/dashboard.js') }}"></script>
-    <script src="{{ mix('/js/app.js') }}"></script>
+    <script src="{{ mix('/js/slek.js') }}"></script>
 </body>
 </html>

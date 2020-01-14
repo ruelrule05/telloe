@@ -51,6 +51,7 @@ window.app = new Vue({
     components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon, PenToolIcon },
     el: '#app',
     mounted() {
+        console.log('dsd');
     }
 });
 $(function () {

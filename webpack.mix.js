@@ -16,7 +16,6 @@ if (argv.indexOf('--css') > -1) {
     console.log('Running css...');
     mix
         .sass('resources/sass/bootstrap.scss', 'public/css')
-        .sass('resources/sass/slek.scss', 'public/css')
         .sass('resources/sass/app.scss', 'public/css')
         .options({
             postCss: [require('postcss-css-variables')()]
@@ -83,6 +82,27 @@ else if (argv.indexOf('--js') > -1) {
 
 
 
+else if (argv.indexOf('--slek') > -1) { 
+    console.log('Running slek assets...');
+    mix
+        .sass('resources/sass/slek.scss', 'public/css')
+        .js('resources/js/slek.js', 'public/js')
+        .version()
+        .mergeManifest();
+    
+    mix.browserSync({
+        proxy: 'https://boxbi.app',
+        host: 'boxbi.app',
+        open: false,
+        port: 8000,
+        watch: true,
+        notify: false,
+        https: {
+            key: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.crt'
+        }
+    });
+}
 
 else if (argv.indexOf('--widget') > -1) { 
     console.log('Running widget js...');
@@ -102,7 +122,9 @@ else if (argv.indexOf('--widget') > -1) {
                     }
                 ]
             }
-        });
+        })
+        .version()
+        .mergeManifest();
     
     mix.browserSync({
         proxy: 'https://workhob.app',
