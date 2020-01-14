@@ -54,8 +54,33 @@ class WidgetController extends Controller
 
     public function facebookPageTab(Request $request)
     {
-        print_r($request->all());
-        return '<script>console.log("test");</script>';
+        if ($request->signed_request) :
+            print_r($this->parse_signed_request($request->signed_request));
+        endif;
+    }
+
+    public function parse_signed_request($signed_request) 
+    {
+        list($encoded_sig, $payload) = explode('.', $signed_request, 2); 
+        $secret = config('app.fb_app_secret'); // Use your app secret here
+
+        // decode the data
+        $sig = $this->base64_url_decode($encoded_sig);
+        $data = json_decode($this->base64_url_decode($payload), true);
+
+        // confirm the signature
+        $expected_sig = hash_hmac('sha256', $payload, $secret, $raw = true);
+        if ($sig !== $expected_sig) {
+            error_log('Bad Signed JSON signature!');
+            return null;
+        }
+
+        return $data;
+    }
+
+    public function base64_url_decode($input) 
+    {
+        return base64_decode(strtr($input, '-_', '+/'));
     }
 
 }

@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'fb_app_secret' => env('FB_APP_SECRET', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
