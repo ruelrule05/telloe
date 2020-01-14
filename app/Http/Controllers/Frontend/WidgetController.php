@@ -59,7 +59,7 @@ class WidgetController extends Controller
             $parsedRequest = $this->parseSignedRequest($request->signed_request);
             $pageID = $parsedRequest['page']['id'];
 
-            $widget = Widget::where('fb_page_id', $pageID)->first();
+            $widget = Widget::where('fb_page->id', $pageID)->first();
             if ($widget):
                 echo 'This page is registered to Snapturebox.';
             else :
@@ -126,7 +126,10 @@ class WidgetController extends Controller
         $graphNode = $response->getGraphNode();
 
         Auth::user()->widget->update([
-            'fb_page_id' => $request->id
+            'fb_page' => [
+                'id' => $request->id,
+                'name' => $request->name
+            ]
         ]);
 
         return response()->json($graphNode);
