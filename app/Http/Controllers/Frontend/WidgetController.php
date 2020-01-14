@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Models\Widget;
 use App\Models\WidgetRule;
+use Facebook\Facebook;
 
 class WidgetController extends Controller
 {
@@ -55,18 +56,26 @@ class WidgetController extends Controller
     public function facebookPageTab(Request $request)
     {
         if ($request->signed_request) :
-            print_r($this->parse_signed_request($request->signed_request));
+            $parsedRequest = $this->parseSignedRequest($request->signed_request);
+            $pageID = $parsedRequest['page']['id'];
+
+            $widget = Widget::where('fb_page_id', $pageID)->first();
+            if ($widget):
+                echo 'This page is registered to Snapturebox.';
+            else :
+                echo 'This page is NOT registered to Snapturebox.';
+            endif;
         endif;
     }
 
-    public function parse_signed_request($signed_request) 
+    public function parseSignedRequest($signed_request) 
     {
         list($encoded_sig, $payload) = explode('.', $signed_request, 2); 
         $secret = config('app.fb_app_secret'); // Use your app secret here
 
         // decode the data
-        $sig = $this->base64_url_decode($encoded_sig);
-        $data = json_decode($this->base64_url_decode($payload), true);
+        $sig = $this->base64UrlDecode($encoded_sig);
+        $data = json_decode($this->base64UrlDecode($payload), true);
 
         // confirm the signature
         $expected_sig = hash_hmac('sha256', $payload, $secret, $raw = true);
@@ -78,9 +87,50 @@ class WidgetController extends Controller
         return $data;
     }
 
-    public function base64_url_decode($input) 
+    public function base64UrlDecode($input) 
     {
         return base64_decode(strtr($input, '-_', '+/'));
     }
+
+
+    public function updateIntegration(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'id' => 'required',
+            'access_token' => 'required',
+        ]);
+
+        $fb_app_id = config('app.fb_app_id');
+        $fb_app_secret = config('app.fb_app_secret');
+
+        $fb = new Facebook([
+            'app_id' => $fb_app_id,
+            'app_secret' => $fb_app_secret,
+            'graph_api_version' => 'v5.0',
+        ]);
+
+        try {
+            $response = $fb->post(
+                '/1360249617370288/tabs',
+                [
+                    'app_id' => $fb_app_id
+                ],
+                $request->access_token
+            );
+        } catch(FacebookExceptionsFacebookResponseException $e) {
+          return abort(403, 'Graph returned an error: ' . $e->getMessage());
+        } catch(FacebookExceptionsFacebookSDKException $e) {
+          return abort(403, 'Facebook SDK returned an error: ' . $e->getMessage());
+        }
+        $graphNode = $response->getGraphNode();
+
+        Auth::user()->widget->update([
+            'fb_page_id' => $request->id
+        ]);
+
+        return response()->json($graphNode);
+    }
+
 
 }

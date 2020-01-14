@@ -15,6 +15,10 @@ window.routes = window.routes.concat([
                 path: 'settings',
                 component: () =>import(/* webpackChunkName: "settings" */ './components/dashboard/settings.vue')
             },
+            {
+                path: 'integration',
+                component: () =>import(/* webpackChunkName: "integration" */ './components/dashboard/integration.vue')
+            },
         ]
     }
 ]);
@@ -27,7 +31,6 @@ const dashboard = {
     },
 
     mounted() {
-        console.log('dsds');
     },
 
     created() {

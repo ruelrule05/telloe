@@ -13,6 +13,12 @@ class AuthController extends Controller
 {
     //
 
+    public function get(Request $request)
+    {
+        $user = Auth::user() ?? false;
+        return response()->json($user);
+    }
+
     public function login(Request $request) {
         if ($request->isMethod('post')) :
             $user = User::where('email', $request->email)->first();

@@ -50,8 +50,15 @@ window.app = new Vue({
     mixins: window.mixins || [],
     components: { XIcon, ArrowLeftIcon, VideoIcon, CircleIcon, PlayIcon, PauseIcon, CheckIcon, ApertureIcon, EditIcon, PenToolIcon },
     el: '#app',
-    mounted() {
-        console.log('dsd');
+    data: {
+        auth: null
+    },
+
+    created() {
+
+        axios.get('/auth').then((response) => {
+            this.auth = response.data;
+        });
     }
 });
 $(function () {

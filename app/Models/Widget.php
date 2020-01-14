@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     //
-    protected $fillable = ['user_id', 'domain', 'slug'];
+    protected $fillable = ['user_id', 'domain', 'slug', 'fb_page_id'];
 
     public function user()
     {
