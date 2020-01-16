@@ -30,7 +30,7 @@ new SBVue({
     el: '#snapturebox-widget',
 
     data: {
-        API: 'https://api.boxbi.app',
+        API: 'https://api.snapturebox.com',
         widget: null,
         auth: null,
         hidden: false,
