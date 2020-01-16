@@ -42,15 +42,13 @@ Route::group(
                 Route::get('widget', 'WidgetController@show');
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
-                Route::post('integration', 'WidgetController@updateIntegration');
+                Route::any('integration', 'WidgetController@updateIntegration');
             });
-        
-
         });
         
         Route::get('/dashboard/{any}', function () {
             return view('frontend.layouts.dashboard');
-        })->where('any', '.*');
+        })->where('any', '.*')->middleware('auth');
 
         
 

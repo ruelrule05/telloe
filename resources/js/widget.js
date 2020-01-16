@@ -21,15 +21,13 @@ import TextareaAutosize from 'vue-textarea-autosize';
 import VTooltip from 'v-tooltip';
 import RecordRTC from 'recordrtc';
 import io from 'socket.io-client';
-import { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon } from 'vue-feather-icons';
 import '../sass/widget.scss';
 
 SBVue.component('widget', require('./components/widget.vue').default)
+SBVue.component('vue-select', require('./components/vue-select.vue').default)
 SBVue.use(VueMasonry, VTooltip, TextareaAutosize);
 new SBVue({
     el: '#snapturebox-widget',
-
-    components: { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon },
 
     data: {
         API: 'https://api.boxbi.app',

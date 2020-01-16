@@ -1,18 +1,26 @@
 <template>
-	<div>
-		Integration
-		<button @click="FBDialog">INtegrate</button>
+	<div v-if="widget">
+		<div>
+			<button @click="FBDialog">Integrate</button>
+		</div>
 
-		<div v-for="page in pages">
+		<div v-if="widget.fb_page" class="alert alert-dark d-inline-block">
+			Selected page: {{ widget.fb_page.name }} ({{ widget.fb_page.id }}) <button :disabled="loading" class="btn btn-sm btn-primary shadow-none" @click="removeTab">Remove</button>
+		</div>
+			
+		<div v-else v-for="page in pages">
 			<button @click="setPage(page)" :disabled="page.fan_count < 2000">{{ page.name }} ({{ page.fan_count }})</button>
 		</div>
 	</div>
 </template>
 
 <script>
+//document.cookie = 'fblo_1187408638266444=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 export default {
 	data: () => ({
-		pages: []
+		pages: [],
+		widget: null,
+		loading: true
 	}),
 
 	computed: {},
@@ -21,36 +29,44 @@ export default {
 		let FBSDKScript = document.createElement('script');
 		FBSDKScript.setAttribute('src', 'https://connect.facebook.net/en_US/sdk.js');
 		document.head.appendChild(FBSDKScript);
-		window.fbAsyncInit = function() {
+		window.fbAsyncInit = () => {
 			FB.init({
 				appId: '1187408638266444',
 				cookie: true,
 				autoLogAppEvents: true,
 				xfbml: true,
 				version: 'v5.0',
-				status: true,
 			});
-			FB.Event.subscribe('auth.login', function(response) {
-			    console.log(response);
-			});
-			FB.getLoginStatus(function(response) {
-				console.log(response);
+			FB.getLoginStatus((response) => {
 			  	if (response.status === 'connected') {
-			    	console.log('connected');
-			  	} else if (response.status === 'not_authorized') {
-
-			 	} else {
-
+			  		this.FBPages();
+			  	} else {
+			  		this.loading = false;
 			  	}
 			});
 		};
 	},
 
-	created() {},
+	created() {
+    	axios.get('/dashboard/widget').then((response) => {
+    		this.widget = response.data;
+    	});
+	},
 
 	watch: {},
 
 	methods: {
+		removeTab() {
+			let page = this.pages.find((x) => x.id == this.widget.fb_page.id);
+			if (page) {
+				axios.delete('/dashboard/integration', {data: page}).then((response) => {
+					console.log(response.data);
+				});
+			} else {
+				this.FBDialog();
+			}
+		},
+
 		setPage(page) {
 			axios.post('/dashboard/integration', page).then((response) => {
 				console.log(response.data);
@@ -60,32 +76,18 @@ export default {
 		FBDialog() {
 			if (FB) {
 				FB.login((auth) => {
-					if (auth.authResponse) {
-						FB.api('/me/accounts', {fields: 'fan_count, access_token, name'}, async (response) => {
-							this.pages = response.data;
-						});
-					}
+					if (auth.authResponse) this.FBPages();
 				}, {perms: 'manage_pages'});
-				return;
-
-				FB.ui(
-					{
-						method: 'pagetab',
-						redirect_uri: 'https://boxbi.app/login',
-					},
-					(response) => {
-						console.log(response.tabs_added);
-						if (response && response.tabs_added) {
-							console.log(response.tabs_added[0]);
-							//FB.api(response.tabs_added[0])
-					    	/*axios.post('/dashboard/integration', {tabs_added: response.tabs_added}).then((response) => {
-					    		console.log(response);
-					    	});*/
-						}
-					},
-				);
 			}
 		},
+
+		FBPages() {
+			FB.api('/me/accounts', {fields: 'fan_count, access_token, name'}, async (response) => {
+				this.pages = response.data;
+				this.loading = false;
+			});
+		}
+
 	},
 };
 </script>

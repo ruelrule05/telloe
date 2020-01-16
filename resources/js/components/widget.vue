@@ -1,113 +1,116 @@
 <template>
     <div v-if="$root.widget && !$root.hidden">
-       <div id="snapturebox-button" @click="toggleWidget">
+       <div id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
            <message-circle-icon></message-circle-icon>
         </div>
 
-        <div id="snapturebox-window" :class="{'snapturebox-open': $root.open}">
-            <!-- Header -->
-            <div id="snapturebox-header">
-                <div class="snapturebox-dropdown">
-                    <button class="snapturebox-btn snapturebox-bg-white snapturebox-dropdown-toggle" type="button">{{ member }}<chevron-down-icon size="1x" class="snapturebox-pointer-events-none"></chevron-down-icon></button>
-                    <div class="snapturebox-dropdown-menu">
-                        <a class="snapturebox-dropdown-item" :class="{'snapturebox-active': member == cmember}" href="#" @click="setMember(cmember)" v-for="cmember in members">{{ cmember }}</a>
-                    </div>
-                     <button v-if="!sent" class="snapturebox-btn snapturebox-bg-white snapturebox-dropdown-toggle" :disabled="items.length == 0" data-toggle="modal" data-target="#authModal">Send Inquiry</button>
-                    <button v-else class="snapturebox-btn snapturebox-bg-white snapturebox-dropdown-toggle snapturebox-d-inline-flex snapturebox-align-items-center" disabled><check-circle-icon size="1x" class="snapturebox-mr-1"></check-circle-icon>Inquiry Sent</button>
-
-                    <button class="snapturebox-btn snapturebox-bg-white snapturebox-dropdown-toggle" type="button" data-toggle="modal" data-target="#offerModal">View Offer</button>
-                    <button class="snapturebox-btn snapturebox-bg-white snapturebox-dropdown-toggle" :disabled="repliesCount == 0" type="button" data-toggle="modal" data-target="#repliesModal">Replies <span class="snapturebox-badge snapturebox-badge-pill snapturebox-badge-primary snapturebox-ml-1" v-if="repliesCount > 0">{{ repliesCount }}</span></button>
-                </div>
-                <div class="snapturebox-ml-auto snapturebox-d-flex snapturebox-align-items-center">
-                    <div class="snapturebox-dropdown">
-                        <div class="snapturebox-dropdown-toggle snapturebox-cursor-pointer"><user-icon size="1x" class="snapturebox-pointer-events-none snapturebox-line-height-0"></user-icon></div>
-                        <div class="snapturebox-dropdown-menu snapturebox-dropdown-menu-right">
-                            <a class="snapturebox-dropdown-item" href="#">Login</a>
-                            <a class="snapturebox-dropdown-item" href="#">Sign up</a>
-                        </div>
-                    </div>
-                    <x-icon size="1.2x" class="snapturebox-cursor-pointer snapturebox-ml-1" @click="toggleWidget"></x-icon>
-                </div>
-            </div>
-
+        <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
             <div class="snapturebox-d-flex">
                 <!-- Left -->
-                <div class="snapturebox-d-flex snapturebox-flex-grow-1 snapturebox-flex-column snapturebox-position-relative snapturebox-border-right">
-                    <masonry :cols="2" :gutter="0" id="snapturebox-media-items" class="snapturebox-p-1">
-                        <div class="snapturebox-media-item snapturebox-p-2" v-if="items.length > 0" v-for="(item, index) in items">
-                            <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm snapturebox-position-relative">
-                                <div class="snapturebox-p-2 snapturebox-position-absolute" v-if="!sent" style="z-index: 1; right: 0">
-                                    <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-p-0 snapturebox-shadow-none snapturebox-line-height-0" @click="removeItem(index)">
-                                        <x-icon size="1.2x"></x-icon>
-                                    </button>
-                                </div>
-                                <img :src="item.item.preview" alt="" class="w-100 position-relative">
-                                
-                                <div class="snapturebox-p-2">
-                                    <div v-if="!sent">
-                                        <div class="position-relative" v-if="item.comment">
-                                            <textarea-autosize :disabled="!item.edit || sent" :class="{'border-0': !item.edit || sent}" :value="item.comment" class="form-control bg-white font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
-                                            <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px" v-if="!sent">
-                                                <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" :class="{'bg-white border-0 text-dark': !item.edit || sent}" @click="saveComment(index, $event)">
-                                                    <span v-if="item.edit">Save</span>
-                                                    <edit-icon size="1x" v-else></edit-icon>
-                                                </button>  
-                                            </div>
-                                        </div>
-
-                                        <div class="position-relative" v-else>
-                                            <textarea-autosize :disabled="sent" :value="item.comment" class="form-control font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
-                                                
-                                            <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px">
-                                                <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" @click="addComment(index, $event)">Add</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <p style="line-height: 1.5; margin-bottom: 0" v-else-if="item.comment">{{ item.comment }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- New items -->    
-                        <div class="snapturebox-media-item p-2" v-for="new_item in new_items" v-if="!sent">
-                            <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm">
-                                <div class="snapturebox-bg-secondary snapturebox-position-relative" style="height: 247px">
-                                    <div class="snapturebox-position-absolute-center">
-                                        <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click=" preview = ''" data-toggle="modal" data-target="#addItemModal">
-                                            <plus-icon size="1.2x"></plus-icon>
+                <div class="snapturebox-d-none">
+                    <div class="snapturebox-d-flex snapturebox-flex-grow-1 snapturebox-flex-column snapturebox-position-relative snapturebox-border-right">
+                        <masonry :cols="2" :gutter="0" id="snapturebox-media-items" class="snapturebox-p-1">
+                            <div class="snapturebox-media-item snapturebox-p-2" v-if="items.length > 0" v-for="(item, index) in items">
+                                <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm snapturebox-position-relative">
+                                    <div class="snapturebox-p-2 snapturebox-position-absolute" v-if="!sent" style="z-index: 1; right: 0">
+                                        <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-p-0 snapturebox-shadow-none snapturebox-line-height-0" @click="removeItem(index)">
+                                            <x-icon size="1.2x"></x-icon>
                                         </button>
                                     </div>
+                                    <img :src="item.item.preview" alt="" class="w-100 position-relative">
+                                    
+                                    <div class="snapturebox-p-2">
+                                        <div v-if="!sent">
+                                            <div class="position-relative" v-if="item.comment">
+                                                <textarea-autosize :disabled="!item.edit || sent" :class="{'border-0': !item.edit || sent}" :value="item.comment" class="form-control bg-white font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
+                                                <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px" v-if="!sent">
+                                                    <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" :class="{'bg-white border-0 text-dark': !item.edit || sent}" @click="saveComment(index, $event)">
+                                                        <span v-if="item.edit">Save</span>
+                                                        <edit-icon size="1x" v-else></edit-icon>
+                                                    </button>  
+                                                </div>
+                                            </div>
 
-                                    <div class="snapturebox-text-white snapturebox-media-item-bottom-buttons snapturebox-position-absolute snapturebox-px-3">
-                                        <video-icon class="snapturebox-cursor-pointer" size="1.4x" data-toggle="modal" data-target="#addItemModal"></video-icon>
-                                        <camera-icon class="snapturebox-cursor-pointer mx-2" size="1.4x" data-toggle="modal" data-target="#addItemModal"></camera-icon>
-                                        <file-text-icon class="snapturebox-cursor-pointer" size="1.4x" data-toggle="modal" data-target="#addItemModal"></file-text-icon>
+                                            <div class="position-relative" v-else>
+                                                <textarea-autosize :disabled="sent" :value="item.comment" class="form-control font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
+                                                    
+                                                <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px">
+                                                    <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" @click="addComment(index, $event)">Add</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <p style="line-height: 1.5; margin-bottom: 0" v-else-if="item.comment">{{ item.comment }}</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </masonry>
+
+                            <!-- New items -->    
+                            <div class="snapturebox-media-item p-2" v-for="new_item in new_items" v-if="!sent">
+                                <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm">
+                                    <div class="snapturebox-bg-secondary snapturebox-position-relative" style="height: 247px">
+                                        <div class="snapturebox-position-absolute-center">
+                                            <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click=" preview = ''" data-toggle="modal" data-target="#addItemModal">
+                                                <plus-icon size="1.2x"></plus-icon>
+                                            </button>
+                                        </div>
+
+                                        <div class="snapturebox-text-white snapturebox-media-item-bottom-buttons snapturebox-position-absolute snapturebox-px-3">
+                                            <video-icon class="snapturebox-cursor-pointer" size="1.4x" data-toggle="modal" data-target="#addItemModal"></video-icon>
+                                            <camera-icon class="snapturebox-cursor-pointer mx-2" size="1.4x" data-toggle="modal" data-target="#addItemModal"></camera-icon>
+                                            <file-text-icon class="snapturebox-cursor-pointer" size="1.4x" data-toggle="modal" data-target="#addItemModal"></file-text-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </masonry>
+                    </div>
                 </div>
                 
 
-                <!-- Right (intro) -->
-                <div id="snapturebox-convo">
-                       <div id="snapturebox-body">
-                            <div id="snapturebox-convo" style="display: flex; flex-direction: column; max-height: 400px;">
-                                <div style="overflow-y: auto; background-color: #fafafa" ref="snapturebox-scroll">
-                                    <img src="dist/poster.png" style="cursor: pointer;" class="snapturebox-w-100" alt="" data-toggle="modal" data-target="#introModal">
-                                    <div class="snapturebox-py-3 snapturebox-px-2">
-                                        <h6 class="snapturebox-text-center snapturebox-font-weight-bold">How Does It Work?</h6>
-                                        <ol class="snapturebox-pl-3 snapturebox-m-0" style="line-height: 1.4">
-                                            <li class="mb-2">Add photos or vidoes of areas you would like improved.</li>
-                                            <li>Receive back our recommendations and offer.</li>
-                                        </ol>
-                                    </div>
-                                </div>
+                <!-- Right -->
+                <div class="snapturebox-flex-grow-1 snapturebox-d-flex snapturebox-mw-100">
+                    <div class="snapturebox-px-3 snapturebox-py-4">
+                        <menu-icon></menu-icon>
+                    </div>
+                    <div class="snapturebox-bg-primary snapturebox-text-white snapturebox-p-4">
+                        <div class="snapturebox-position-absolute" style="top: 8px; right: 8px">
+                            <x-icon size="1.4x" class="snapturebox-cursor-pointer" @click="toggleWidget"></x-icon>
+                        </div>
+                        <strong>Send Inquiry</strong>
+                        <p class="snapturebox-h4 snapturebox-font-weight-normal my-4">You are currently sending an inquiry to <strong style="text-decoration: underline;">Anti Wrinkle & Skin Gold Coast</strong></p>
+                        <strong>Select Inquiry Type:</strong>
+
+                        <div class="snapturebox-mt-2 snapturebox-mb-3">
+                            <div class="snapturebox-d-flex">
+                              <div class="snapturebox-flex-grow-1">
+                                    <button class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block">General</button>
+                              </div>
+                              <div class="snapturebox-flex-grow-1 snapturebox-px-2">
+                                    <button class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block">Consultation</button>
+                              </div>
+                              <div class="snapturebox-flex-grow-1">
+                                    <button class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block">Treatment</button>
+                              </div>
                             </div>
-                       </div>
-                   </div>
+                        </div>
+
+                        <strong>Areas of Interests:</strong>
+                        <div class="snapturebox-mt-2 snapturebox-mb-3">
+                            <vue-select :options="[{text: 'test', value: 'test'}]" :value="{}" button_class="snapturebox-badge-pill" placeholder="Choose areas of interests"></vue-select>
+                        </div>
+
+
+                        <strong>Your Inquiry:</strong>
+                        <div class="snapturebox-mt-2 snapturebox-mb-3">
+                            <textarea rows="4" class="snapturebox-form-control snapturebox-rounded-lg" style="resize: none"></textarea>
+                        </div>
+
+                        <div class="snapturebox-text-right">
+                            <button class="snapturebox-btn snapturebox-px-5 snapturebox-btn-dark snapturebox-shadow-none snapturebox-rounded-lg snapturebox-d-inline-flex snapturebox-align-items-center">Send <arrow-right-icon size="1x" class="snapturebox-ml-2"></arrow-right-icon></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -115,10 +118,10 @@
 </template>
 
 <script>
-import { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon } from 'vue-feather-icons';
+import { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon } from 'vue-feather-icons';
 
 export default {
-    components: { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon },
+    components: { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon },
 
     data: () => ({
         message: '',
@@ -166,6 +169,7 @@ export default {
             type: 'text',
             sender: 'Margaretta Worvell',
         },
+        fullPage: false,
     }),
 
     computed: {

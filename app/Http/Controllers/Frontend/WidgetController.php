@@ -95,12 +95,7 @@ class WidgetController extends Controller
 
     public function updateIntegration(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'id' => 'required',
-            'access_token' => 'required',
-        ]);
-
+        $method = $request->method();
         $fb_app_id = config('app.fb_app_id');
         $fb_app_secret = config('app.fb_app_secret');
 
@@ -110,29 +105,62 @@ class WidgetController extends Controller
             'graph_api_version' => 'v5.0',
         ]);
 
-        try {
-            $response = $fb->post(
-                '/1360249617370288/tabs',
-                [
-                    'app_id' => $fb_app_id
-                ],
-                $request->access_token
-            );
-        } catch(FacebookExceptionsFacebookResponseException $e) {
-          return abort(403, 'Graph returned an error: ' . $e->getMessage());
-        } catch(FacebookExceptionsFacebookSDKException $e) {
-          return abort(403, 'Facebook SDK returned an error: ' . $e->getMessage());
-        }
-        $graphNode = $response->getGraphNode();
+        if ($method == 'POST') :
+            $this->validate($request, [
+                'name' => 'required',
+                'id' => 'required',
+                'access_token' => 'required',
+            ]);
 
-        Auth::user()->widget->update([
-            'fb_page' => [
-                'id' => $request->id,
-                'name' => $request->name
-            ]
-        ]);
+            try {
+                $response = $fb->post(
+                    '/1360249617370288/tabs',
+                    [
+                        'app_id' => $fb_app_id
+                    ],
+                    $request->access_token
+                );
+            } catch(FacebookExceptionsFacebookResponseException $e) {
+              return abort(403, 'Graph returned an error: ' . $e->getMessage());
+            } catch(FacebookExceptionsFacebookSDKException $e) {
+              return abort(403, 'Facebook SDK returned an error: ' . $e->getMessage());
+            }
+            $response = $response->getGraphNode();
 
-        return response()->json($graphNode);
+            Auth::user()->widget->update([
+                'fb_page' => [
+                    'id' => $request->id,
+                    'name' => $request->name
+                ]
+            ]);
+
+        elseif ($method == 'DELETE') :
+            $this->validate($request, [
+                'access_token' => 'required',
+            ]);
+            try {
+                $response = $fb->delete(
+                    '/1360249617370288/tabs',
+                    [
+                        'tab' => 'app_' . $fb_app_id
+                    ],
+                    $request->access_token
+                );
+            } catch(FacebookExceptionsFacebookResponseException $e) {
+              return abort(403, 'Graph returned an error: ' . $e->getMessage());
+            } catch(FacebookExceptionsFacebookSDKException $e) {
+              return abort(403, 'Facebook SDK returned an error: ' . $e->getMessage());
+            }
+            $response = ['success' => true];
+
+            Auth::user()->widget->update([
+                'fb_page' => NULL
+            ]);
+
+        endif;
+
+
+        return response()->json($response);
     }
 
 
