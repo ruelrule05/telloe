@@ -32,9 +32,6 @@ Route::group(
             Route::post('recover', 'AuthController@recover')->middleware('guest');
             Route::post('reset', 'AuthController@reset')->middleware('guest');
 
-
-
-        
             Route::group([
                 'prefix' => 'dashboard',
                 'middleware' => 'auth'

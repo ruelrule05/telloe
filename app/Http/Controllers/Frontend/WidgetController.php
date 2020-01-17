@@ -61,11 +61,11 @@ class WidgetController extends Controller
 
             $widget = Widget::where('fb_page->id', $pageID)->first();
             if ($widget):
-                echo 'This page is registered to Snapturebox.';
-            else :
-                echo 'This page is NOT registered to Snapturebox.';
+                return view('frontend.widget-fullpage', compact('widget'));
             endif;
         endif;
+
+        return abort(404);
     }
 
     public function parseSignedRequest($signed_request) 
