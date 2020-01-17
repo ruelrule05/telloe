@@ -11,6 +11,7 @@ class Ajax
         if (!$request->ajax() || !$request->wantsJson()) {
             return abort(403);
         }
+
         return $next($request);
     }
 }
