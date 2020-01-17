@@ -26,7 +26,6 @@
                 </div>
             </div>
         </div>
-
         <div class="multiple-values">
             <transition-group name="fade" tag="div" v-if="selected_value.length > 0" class="mt-1">
                 <span class="btn btn-xs btn-light bg-light text-black badge-pill border py-1 pl-3 pr-1 mt-1 mr-1 d-inline-flex align-items-center" v-for="(selected, index) in selected_value" :key="selected.value" @click.stop>
