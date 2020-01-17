@@ -38,7 +38,6 @@ Vue.use(Toasted, {
 });
 Vue.component('image-to-canvas', require('./components/image-to-canvas.vue').default);
 Vue.component('vue-button', require('./components/vue-button.vue').default);
-
 const router = new VueRouter({
     linkActiveClass: 'active',
     mode: 'history',

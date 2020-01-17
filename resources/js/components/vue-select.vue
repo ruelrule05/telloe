@@ -1,34 +1,34 @@
 <template>
-    <div class="snapturebox-vue-select">
-        <div class="snapturebox-dropdown-container snapturebox-overflow-visible" :class="drop" ref="dropdown" :disabled="disabled">
-            <button class="snapturebox-btn snapturebox-font-family-base snapturebox-font-smoothing-auto snapturebox-text-black snapturebox-dropdown-toggle snapturebox-border snapturebox-btn-block snapturebox-text-left snapturebox-shadow-none snapturebox-d-inline-flex" :class="toggle_button_class" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" :data-display="display" @click.prevent ref="dropdown-toggle">
+    <div class="vue-select">
+        <div class="dropdown-container overflow-visible" :class="drop" ref="dropdown" :disabled="disabled">
+            <button class="btn font-family-base font-smoothing-auto text-black dropdown-toggle border btn-block text-left shadow-none d-inline-flex" :class="toggle_button_class" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" :data-display="display" @click.prevent ref="dropdown-toggle">
                 <template v-if="searchable">
-                    <input type="text" @focus="inputFocused" spellcheck="false" v-model="search" class="snapturebox-outline-0 snapturebox-input-searchable snapturebox-w-100 snapturebox-bg-transparent snapturebox-line-height-1 snapturebox-font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
+                    <input type="text" @focus="inputFocused" spellcheck="false" v-model="search" class="outline-0 input-searchable w-100 bg-transparent line-height-1 font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
                 </template>
                 <template v-else>
-                    <div class="snapturebox-select-placeholder snapturebox-text-ellipsis">
-                        <span v-if="selected_value.value" class="snapturebox-font-weight-normal">{{ selected_value.text }}</span>
+                    <div class="select-placeholder text-ellipsis">
+                        <span v-if="selected_value.value" class="font-weight-normal">{{ selected_value.text }}</span>
                         <span v-else>{{ select_placeholder }}</span>
                     </div>
                 </template>
                 &nbsp;
             </button>
-            <div class="snapturebox-bg-white snapturebox-dropdown-menu snapturebox-fade snapturebox-border-0 snapturebox-rounded" ref="dropdown-menu">
-                <div class="snapturebox-scrollable-menu" ref="scrollable-menu">
-                <span class="snapturebox-dropdown-item snapturebox-disabled snapturebox-pl-3 snapturebox-font-weight-light" v-if="filtered_options.length == 0">
-                    <span v-if="show_no_results" class="snapturebox-text-gray">No results found</span>
+            <div class="bg-white dropdown-menu fade border-0 rounded" ref="dropdown-menu">
+                <div class="scrollable-menu" ref="scrollable-menu">
+                <span class="dropdown-item disabled pl-3 font-weight-light" v-if="filtered_options.length == 0">
+                    <span v-if="show_no_results" class="text-gray">No results found</span>
                 </span>
-                <a href="#" v-else class="snapturebox-dropdown-item snapturebox-cursor-pointer" :id="'item-' + option.value" :class="{active: selected_value.text && option.value == selected_value.value}" @click.prevent="updateValue(option)" v-for="option in filtered_options">
-                    <div class="snapturebox-text-ellipsis">
+                <a href="#" v-else class="dropdown-item cursor-pointer" :id="'item-' + option.value" :class="{active: selected_value.text && option.value == selected_value.value}" @click.prevent="updateValue(option)" v-for="option in filtered_options">
+                    <div class="text-ellipsis">
                         <span>{{ option.text }}</span>
                     </div>
                 </a>
                 </div>
             </div>
         </div>
-        <div class="snapturebox-multiple-values">
-            <transition-group name="fade" tag="div" v-if="selected_value.length > 0" class="snapturebox-mt-1">
-                <span class="snapturebox-btn snapturebox-btn-xs snapturebox-btn-light snapturebox-bg-light snapturebox-text-dark snapturebox-badge-pill snapturebox-border snapturebox-py-1 snapturebox-pl-3 snapturebox-pr-1 snapturebox-mt-1 snapturebox-mr-1 snapturebox-d-inline-flex snapturebox-align-items-center" v-for="(selected, index) in selected_value" :key="selected.value" @click.stop>
+        <div class="multiple-values">
+            <transition-group name="fade" tag="div" v-if="selected_value.length > 0" class="mt-1">
+                <span class="btn btn-xs btn-light bg-light text-dark badge-pill border py-1 pl-3 pr-1 mt-1 mr-1 d-inline-flex align-items-center" v-for="(selected, index) in selected_value" :key="selected.value" @click.stop>
                     {{ selected.text }}
                     <i class="eva eva-close-outline cursor-pointer font-size-15 line-height-0" @click="selected_value.splice(index, 1)"></i>
                 </span>

@@ -1,3 +1,7 @@
+try {
+    window.$ = window.jQuery = require('jquery');
+} catch (e) {}
+
 window.SBAxios = require('axios');
 window.SBVue = require('vue');
 
@@ -31,15 +35,21 @@ new SBVue({
     el: '#snapturebox-widget',
 
     data: {
-        API: 'https://api.snapturebox.com',
+        API: 'https://api.boxbi.app', //get from config
         widget: null,
         auth: null,
         hidden: false,
-        open: false,
+        open: true, // false
+        fullPage: false
     },
 
     created() {
-        this.validateDomain();
+        if (typeof widget == 'undefined') {
+            this.validateDomain();
+        } else {
+            this.widget = widget;
+            this.fullPage = true;
+        }
     },
 
     methods: {

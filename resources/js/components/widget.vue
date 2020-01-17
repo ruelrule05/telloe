@@ -1,19 +1,19 @@
 <template>
-    <div v-if="$root.widget && !$root.hidden">
-       <div id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
+    <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage' : $root.fullPage}">
+       <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
            <message-circle-icon></message-circle-icon>
         </div>
 
         <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
-            <div class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-mh-100" id="snapturebox-sections">
+            <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100">
                 <!-- Left -->
-                <div class="snapturebox-flex-fill snapturebox-position-relative" :class="{'snapturebox-opener': leftOpen}" id="snapturebox-section-left">
-                    <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-position-absolute" style="top: 0; right: 0; z-index: 1">
+                <div class="snapturebox-position-relative snapturebox-overflow-auto" :class="{'snapturebox-opener': leftOpen}" id="snapturebox-section-left">
+                    <div v-if="!$root.fullPage" class="snapturebox-px-1 snapturebox-py-3 snapturebox-position-absolute" style="top: 0; right: 0; z-index: 1">
                         <button class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-shadow-none" @click="leftOpen = leftOpen ? false : true;"><menu-icon></menu-icon></button>
                     </div>
 
                     <transition name="snapturebox-fade">
-                        <div v-if="leftOpen" class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100">
+                        <div v-if="leftOpen || $root.fullPage" class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100">
                             <div class="snapturebox-p-4 snapturebox-d-flex snapturebox-align-items-center">
                                 <img src="https://via.placeholder.com/40" alt="" class="rounded-circle">
                                 <ul class="snapturebox-nav snapturebox-nav-pills">
@@ -93,13 +93,12 @@
                         </div>
                     </transition>
                 </div>
-                
 
                 <!-- Right -->
-                <div class="snapturebox-flex-grow-1 snapturebox-d-flex snapturebox-mw-100" id="snapturebox-section-right">
+                <div class="snapturebox-d-flex snapturebox-overflow-auto" id="snapturebox-section-right">
                     <div class="snapturebox-text-white">
                         <div class="snapturebox-bg-primary snapturebox-p-4">
-                            <div class="snapturebox-position-absolute" style="top: 8px; right: 8px">
+                            <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 8px; right: 8px">
                                 <x-icon size="1.4x" class="snapturebox-cursor-pointer" @click="toggleWidget"></x-icon>
                             </div>
                             <strong>Send Inquiry</strong>
@@ -139,7 +138,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -195,7 +193,6 @@ export default {
             type: 'text',
             sender: 'Margaretta Worvell',
         },
-        fullPage: false,
         leftOpen: false,
     }),
 

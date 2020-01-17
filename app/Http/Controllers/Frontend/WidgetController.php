@@ -15,7 +15,7 @@ class WidgetController extends Controller
     public function showPublic($slug, Request $request)
     {	
     	$widget = Widget::where('slug', $slug)->firstOrfail();
-    	return 'dsds';
+    	return view('frontend.widget-fullpage', compact('widget'));
     }
 
     public function show(Request $request)
