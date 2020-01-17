@@ -196,7 +196,7 @@ export default {
             sender: 'Margaretta Worvell',
         },
         fullPage: false,
-        leftOpen: true,
+        leftOpen: false,
     }),
 
     computed: {
