@@ -15,7 +15,7 @@
 </template>
 
 <script>
-//document.cookie = 'fblo_1187408638266444=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+//document.cookie = 'fblo_1187408638266444=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';;
 export default {
 	data: () => ({
 		pages: [],
