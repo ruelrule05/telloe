@@ -27,12 +27,11 @@ SBVue.component('widget', require('./components/widget.vue').default)
 SBVue.component('vue-select', require('./components/vue-select.vue').default)
 SBVue.use(VueMasonry, VTooltip, TextareaAutosize);
 
-
 new SBVue({
     el: '#snapturebox-widget',
 
     data: {
-        API: 'https://api.snapturebox.com',
+        API: 'https://api.boxbi.app',
         widget: null,
         auth: null,
         hidden: false,

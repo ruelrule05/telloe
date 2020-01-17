@@ -160,4 +160,113 @@ $border-radius-lg: 1rem;
 	.snapturebox-line-height-0{
 		line-height: 0 !important;
 	}
+
+	
+	.vue-select {
+		.dropdown-menu {
+			width: 100%;
+			border: solid 1px $border-color !important;
+		}
+		.dropdown-toggle {
+			font-weight: 500;
+			transition: none !important;
+			position: relative;
+			z-index: 2;
+			background-color: white;
+			.select-placeholder {
+				position: relative;
+				z-index: 5;
+			}
+		}
+		.dropdown-item {
+			color: $black;
+			padding-left: 0.75rem;
+			&.active {
+				font-weight: 500;
+			}
+		}
+		.dropdown-container {
+			&.show {
+				.dropdown-toggle {
+					border-left-color: $primary !important;
+					border-right-color: $primary !important;
+					border-radius: $border-radius !important;
+					z-index: 3;
+				}
+				.dropdown-menu {
+					border: solid 1px $primary !important;
+					box-shadow: 0 0 0 0.15rem rgba($primary, 0.25) !important;
+					z-index: 2;
+				}
+			}
+
+			&.dropup {
+				.dropdown-menu {
+					bottom: -2px;
+					padding-bottom: 36px;
+				}
+				&.show {
+					.dropdown-toggle {
+						margin-top: 1px;
+						border-top: 0 !important;
+						border-bottom-color: $primary !important;
+						border-top-left-radius: 0 !important;
+						border-top-right-radius: 0 !important;
+					}
+				}
+			}
+
+			&.dropdown {
+				.dropdown-menu {
+					top: -2px;
+					padding-top: 36px;
+				}
+				&.show {
+					.dropdown-toggle {
+						margin-bottom: 1px;
+						border-bottom: 0 !important;
+						border-top-color: $primary !important;
+						border-bottom-left-radius: 0 !important;
+						border-bottom-right-radius: 0 !important;
+						z-index: 4;
+					}
+					.dropdown-menu {
+						z-index: 3;
+					}
+				}
+			}
+		}
+
+		.input-searchable {
+			border-color: transparent;
+			position: relative;
+			z-index: 5;
+			cursor: text !important;
+			&::placeholder {
+				color: $black;
+			}
+			&:focus::placeholder {
+				color: #999;
+			}
+		}
+		.multiple-values {
+			position: relative;
+			z-index: 1;
+			i {
+				padding: 3px 7px;
+				color: $gray-500;
+				&:hover {
+					color: $black;
+				}
+			}
+		}
+		&[disabled] {
+			.dropdown-toggle {
+				background-color: $input-disabled-bg;
+			}
+			* {
+				pointer-events: none;
+			}
+		}
+	}
 }
