@@ -11,8 +11,6 @@ use Auth;
 
 class AuthController extends Controller
 {
-    //
-
     public function get(Request $request)
     {
         $user = Auth::user() ?? false;
