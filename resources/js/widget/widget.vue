@@ -5,25 +5,36 @@
         </div>
 
         <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
-            <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100">
+            <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 justify-content-center">
                 <!-- Left -->
-                <div class="snapturebox-position-relative snapturebox-overflow-auto" :class="{'snapturebox-opener': leftOpen}" id="snapturebox-section-left">
-                    <div v-if="!$root.fullPage" class="snapturebox-px-1 snapturebox-py-3 snapturebox-position-absolute" style="top: 0; right: 0; z-index: 1">
-                        <button class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-shadow-none" @click="leftOpen = leftOpen ? false : true;"><menu-icon></menu-icon></button>
+                <div class="snapturebox-overflow-auto snapturebox-bg-white" :class="{'snapturebox-section-left-open': $root.leftOpen}" id="snapturebox-section-left">
+                    <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle">
+                        <button class="snapturebox-btn snapturebox-px-2 snapturebox-py-0" @click="$root.leftOpen = $root.leftOpen ? false : true;">
+                            <x-icon v-if="$root.fullPage"></x-icon>
+                            <menu-icon v-else></menu-icon>
+                        </button>
                     </div>
-
                     <transition name="snapturebox-fade">
-                        <div v-if="leftOpen || $root.fullPage" class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100">
-                            <div class="snapturebox-p-4 snapturebox-d-flex snapturebox-align-items-center">
-                                <img src="https://via.placeholder.com/40" alt="" class="rounded-circle">
-                                <ul class="snapturebox-nav snapturebox-nav-pills">
-                                    <li class="snapturebox-nav-item snapturebox-mx-4">
-                                        <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-bottom snapturebox-border-primary snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#">My Inquiries</a>
-                                    </li>
-                                    <li class="snapturebox-nav-item">
-                                        <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#">My Offers</a>
-                                    </li>
-                                </ul>
+                        <div v-if="$root.leftOpen || $root.fullPage" class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100">
+                            <div class="snapturebox-p-4">
+                                <div v-if="$root.auth" class="snapturebox-d-flex snapturebox-align-items-center">
+                                    <div class="dropdown">
+                                        <img src="https://via.placeholder.com/40" class="snapturebox-rounded-circle snapturebox-cursor-pointer snapturebox-dropdown-toggle">
+                                        <div class="snapturebox-dropdown-menu">
+                                            <a class="snapturebox-dropdown-item" href="#" @click.prevent="$root.logout">Logout</a>
+                                        </div>
+                                    </div>
+
+                                    <ul class="snapturebox-nav snapturebox-nav-pills">
+                                        <li class="snapturebox-nav-item snapturebox-mx-4">
+                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-bottom snapturebox-border-primary snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#">My Inquiries</a>
+                                        </li>
+                                        <li class="snapturebox-nav-item">
+                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#">My Offers</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button v-else class="snapturebox-btn snapturebox-btn-primary snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#loginModal', 'show')">Login to your account</button>
                             </div>
                             <div class="snapturebox-overflow-auto">
                                 <div class="snapturebox-px-4 snapturebox-py-3">
@@ -95,9 +106,12 @@
                 </div>
 
                 <!-- Right -->
-                <div class="snapturebox-d-flex snapturebox-overflow-auto" id="snapturebox-section-right">
-                    <div class="snapturebox-text-white">
-                        <div class="snapturebox-bg-primary snapturebox-p-4">
+                <div class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-bg-primary" id="snapturebox-section-right">
+                    <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle">
+                        <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true;"><menu-icon></menu-icon></button>
+                    </div>
+                    <div class="snapturebox-text-white snapturebox-h-100">
+                        <div class="snapturebox-p-4">
                             <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 8px; right: 8px">
                                 <x-icon size="1.4x" class="snapturebox-cursor-pointer" @click="toggleWidget"></x-icon>
                             </div>
@@ -138,6 +152,32 @@
                 </div>
             </div>
         </div>
+
+        <div class="snapturebox-modal" tabindex="-1" id="loginModal" v-if="!$root.auth">
+            <div class="snapturebox-modal-dialog snapturebox-modal-dialog-centered">
+                <div class="snapturebox-modal-content">
+                    <div class="snapturebox-modal-body">
+                        <button type="button" class="snapturebox-btn snapturebox-close snapturebox-position-absolute snapturebox-btn-close" @click="$root.toggleModal('#loginModal', 'hide'); $root.loginForm.loading = false;" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <vue-form-validate action="" @submit="$root.login">
+                            <h4 class="snapturebox-mb-4">Login to your account</h4>
+                            <div class="snapturebox-form-group">
+                                <input type="email" v-model="$root.loginForm.email" class="snapturebox-form-control" data-required placeholder="Email">
+                            </div>
+                            <div class="snapturebox-form-group">
+                                <input type="password" v-model="$root.loginForm.password" class="snapturebox-form-control" data-required placeholder="Password">
+                            </div>
+                            <vue-button type="submit" :loading="$root.loginForm.loading" button_class="snapturebox-btn snapturebox-btn-block snapturebox-btn-primary">Login</vue-button>
+                        </vue-form-validate>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <transition name="snapturebox-fade">
+            <div v-if="$root.backdrop" class="snapturebox-modal-backdrop"></div>
+        </transition>
     </div>
 </template>
 
@@ -193,7 +233,6 @@ export default {
             type: 'text',
             sender: 'Margaretta Worvell',
         },
-        leftOpen: false,
     }),
 
     computed: {

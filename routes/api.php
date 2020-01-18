@@ -14,12 +14,12 @@ use Illuminate\Http\Request;
 */
 
 Route::group([
-		'middleware' => 'api',
+ 		'prefix' => 'ajax',
+		'middleware' => ['api', 'ajax'],
 		'domain' => config('app.api_url'),
 		'namespace' => 'API' 
 ], function(){
 	Route::get('show', 'WidgetController@show');
-
 	Route::group(['prefix' => 'auth'], function() {
 		Route::post('login', 'AuthController@login');
 		Route::post('refresh', 'AuthController@refresh');

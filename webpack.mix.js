@@ -1,5 +1,4 @@
 const mix = require('laravel-mix');
-const postcss = require('postcss');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const dayjs =  require('dayjs');
@@ -17,20 +16,7 @@ if (argv.indexOf('--css') > -1) {
     mix
         .sass('resources/sass/bootstrap.scss', 'public/css')
         .sass('resources/sass/app.scss', 'public/css')
-        .options({
-            postCss: [require('postcss-css-variables')()]
-        })
         .version()
-        .purgeCss({
-            whitelist: [
-                'modal-backdrop', 
-                'text-warning',
-                'tooltip',
-                'tooltip',
-                'tooltip-inner',
-                'bs-tooltip-top',
-            ]
-        })
         .mergeManifest();
 }
 
@@ -107,22 +93,7 @@ else if (argv.indexOf('--slek') > -1) {
 else if (argv.indexOf('--widget') > -1) { 
     console.log('Running widget js...');
     mix
-        .js('resources/js/widget.js', 'public/js')
-        .webpackConfig({
-            module: {
-                rules: [
-                    {
-                        test:/\.(s*)css$/,
-                        exclude: /node_modules/,
-                        use: [
-                            {
-                                loader: 'postcss-loader'
-                            }
-                        ]
-                    }
-                ]
-            }
-        })
+        .js('resources/js/widget/widget.js', 'public/js')
         .version()
         .mergeManifest();
     

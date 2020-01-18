@@ -11,6 +11,13 @@ class Widget extends Model
     protected $casts = [
         'fb_page' => 'array'
     ];
+    protected $hidden = [
+        'id',
+        'user_id',
+        'fb_page',
+        'created_at',
+        'updated_at'
+    ];
 
     public function user()
     {
