@@ -26,7 +26,6 @@ class AuthController extends Controller
                 if (Auth::attempt(['email' => $request->email, 'password' => $request->password])):
                     $response = [
                         'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
-                        'auth' => Auth::user()
                     ]; 
                     return response()->json($response);
                 else:

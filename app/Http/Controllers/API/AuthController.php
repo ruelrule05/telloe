@@ -23,9 +23,29 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
+    public function signup(Request $request) {
+        $exists = User::where('email', $request->email)->first();
+        if ($exists) return abort(403, 'Email is already registered to another account.');
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+        ]);
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+        $token = JWTAuth::fromUser($user);
+        return $this->respondWithToken($token);
+    }
+
+
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(auth()->user()->load('inquiries') ?? false);
     }
 
     public function logout()
@@ -42,6 +62,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
+            'user' => auth()->user()->load('inquiries') ?? false,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60

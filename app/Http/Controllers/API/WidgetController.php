@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Widget;
+use App\Models\InquiryType;
 
 class WidgetController extends Controller
 {
@@ -19,5 +20,9 @@ class WidgetController extends Controller
     	if (!$widget) return abort(401, 'This domain is not registered to Snapturebox.');
 
     	return response()->json($widget);
+    }
+
+    public function inquiryTypes() {
+        return response()->json(InquiryType::orderBy('type', 'ASC')->get());
     }
 }

@@ -1,7 +1,7 @@
 <template>
-    <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage' : $root.fullPage}">
-       <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
-           <message-circle-icon></message-circle-icon>
+    <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage': $root.fullPage}">
+        <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
+            <message-circle-icon></message-circle-icon>
         </div>
 
         <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
@@ -9,7 +9,7 @@
                 <!-- Left -->
                 <div class="snapturebox-overflow-auto snapturebox-bg-white" :class="{'snapturebox-section-left-open': $root.leftOpen}" id="snapturebox-section-left">
                     <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle">
-                        <button class="snapturebox-btn snapturebox-px-2 snapturebox-py-0" @click="$root.leftOpen = $root.leftOpen ? false : true;">
+                        <button class="snapturebox-btn snapturebox-px-2 snapturebox-py-0" @click="$root.leftOpen = $root.leftOpen ? false : true">
                             <x-icon v-if="$root.fullPage"></x-icon>
                             <menu-icon v-else></menu-icon>
                         </button>
@@ -19,7 +19,7 @@
                             <div class="snapturebox-p-4">
                                 <div v-if="$root.auth" class="snapturebox-d-flex snapturebox-align-items-center">
                                     <div class="dropdown">
-                                        <img src="https://via.placeholder.com/40" class="snapturebox-rounded-circle snapturebox-cursor-pointer snapturebox-dropdown-toggle">
+                                        <img src="https://via.placeholder.com/40" class="snapturebox-rounded-circle snapturebox-cursor-pointer snapturebox-dropdown-toggle" />
                                         <div class="snapturebox-dropdown-menu">
                                             <a class="snapturebox-dropdown-item" href="#" @click.prevent="$root.logout">Logout</a>
                                         </div>
@@ -34,29 +34,33 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <button v-else class="snapturebox-btn snapturebox-btn-primary snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#loginModal', 'show')">Login to your account</button>
+                                <div v-else>
+                                    <button class="snapturebox-btn snapturebox-btn-primary snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#loginModal', 'show')">Log In</button>
+                                    <button class="snapturebox-btn snapturebox-btn-light snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#signupModal', 'show')">Sign Up</button>
+                                </div>
                             </div>
                             <div class="snapturebox-overflow-auto">
                                 <div class="snapturebox-px-4 snapturebox-py-3">
                                     <h5>Take Photos</h5>
                                     <span class="snapturebox-text-secondary">Here are examples of position to take.</span>
                                     <div class="snapturebox-mt-3">
-                                        <img src="https://via.placeholder.com/180X80" alt="" class="">
-                                        <img src="https://via.placeholder.com/180X80" alt="" class="">
-                                        <img src="https://via.placeholder.com/180X80" alt="" class="">
+                                        <img src="https://via.placeholder.com/180X80" alt="" class="" />
+                                        <img src="https://via.placeholder.com/180X80" alt="" class="" />
+                                        <img src="https://via.placeholder.com/180X80" alt="" class="" />
                                     </div>
                                 </div>
                                 <div class="snapturebox-d-flex snapturebox-flex-grow-1 snapturebox-flex-column snapturebox-position-relative">
+                                    <div v-tooltip.top="{content: 'Please add at least 1 photo or video', trigger: 'manual', show: enquiryMediaTooltip}"></div>
                                     <masonry :cols="2" :gutter="20" id="snapturebox-media-items" class="snapturebox-px-4">
-                                        <div class="snapturebox-media-item snapturebox-p-2" v-if="items.length > 0" v-for="(item, index) in items">
+                                        <div class="snapturebox-media-item snapturebox-mb-3" v-if="enquiry.items.length > 0" v-for="(item, index) in enquiry.items">
                                             <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm snapturebox-position-relative">
                                                 <div class="snapturebox-p-2 snapturebox-position-absolute" v-if="!sent" style="z-index: 1; right: 0">
                                                     <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-p-0 snapturebox-shadow-none snapturebox-line-height-0" @click="removeItem(index)">
                                                         <x-icon size="1.2x"></x-icon>
                                                     </button>
                                                 </div>
-                                                <img :src="item.item.preview" alt="" class="w-100 position-relative">
-                                                
+                                                <img :src="item.item.preview" alt="" class="w-100 position-relative" />
+
                                                 <div class="snapturebox-p-2">
                                                     <div v-if="!sent">
                                                         <div class="position-relative" v-if="item.comment">
@@ -65,13 +69,13 @@
                                                                 <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" :class="{'bg-white border-0 text-dark': !item.edit || sent}" @click="saveComment(index, $event)">
                                                                     <span v-if="item.edit">Save</span>
                                                                     <edit-icon size="1x" v-else></edit-icon>
-                                                                </button>  
+                                                                </button>
                                                             </div>
                                                         </div>
 
                                                         <div class="position-relative" v-else>
                                                             <textarea-autosize :disabled="sent" :value="item.comment" class="form-control font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
-                                                                
+
                                                             <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px">
                                                                 <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" @click="addComment(index, $event)">Add</button>
                                                             </div>
@@ -83,12 +87,19 @@
                                             </div>
                                         </div>
 
-                                        <!-- New items -->    
+                                        <!-- New items -->
                                         <div class="snapturebox-media-item snapturebox-mb-3" v-for="new_item in new_items" v-if="!sent">
                                             <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm">
                                                 <div class="snapturebox-border snapturebox-rounded snapturebox-position-relative" style="height: 220px">
                                                     <div class="snapturebox-position-absolute-center snapturebox-text-center">
-                                                        <button class="snapturebox-btn snapturebox-border snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click=" preview = ''" data-toggle="modal" data-target="#addItemModal">
+                                                        <button
+                                                            class="snapturebox-btn snapturebox-border snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0"
+                                                            @click="
+                                                                preview = '';
+                                                                initCamera();
+                                                                $root.toggleModal('#addMediaModal', 'show');
+                                                            "
+                                                        >
                                                             <plus-icon size="1.2x"></plus-icon>
                                                         </button>
                                                         <div class="snapturebox-text-secondary snapturebox-mt-3">
@@ -107,45 +118,58 @@
 
                 <!-- Right -->
                 <div class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-bg-primary" id="snapturebox-section-right">
-                    <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle">
-                        <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true;"><menu-icon></menu-icon></button>
+                    <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle snapturebox-d-flex snapturebox-align-items-center">
+                        <div class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white snapturebox-text-white">
+                            <info-icon size="1.2x"></info-icon>
+                        </div>
+                        <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true"><menu-icon></menu-icon></button>
                     </div>
-                    <div class="snapturebox-text-white snapturebox-h-100">
+                    <div class="snapturebox-text-white snapturebox-h-100 snapturebox-w-100">
                         <div class="snapturebox-p-4">
-                            <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 8px; right: 8px">
+                            <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 8px; right: 15px">
+                                <info-icon size="1.2x" class="snapturebox-cursor-pointer"></info-icon>
                                 <x-icon size="1.4x" class="snapturebox-cursor-pointer" @click="toggleWidget"></x-icon>
                             </div>
-                            <strong>Send Inquiry</strong>
-                            <p class="snapturebox-h4 snapturebox-font-weight-normal my-4">You are currently sending an inquiry to <strong style="text-decoration: underline;">Anti Wrinkle & Skin Gold Coast</strong></p>
-                            <strong>Select Inquiry Type:</strong>
+                            <p class="snapturebox-h4 snapturebox-font-weight-normal snapturebox-mb-4">
+                                Good morning! <br />
+                                <strong>How can we help you today?</strong>
+                            </p>
 
+                            <div class="snapturebox-my-4">
+                                <strong>Clinic Location: <span class="snapturebox-text-info">(change location)</span></strong>
+                                <h5 class="snapturebox-mt-1 snapturebox-font-weight-bold">Anti Wrinkle & Skin Gold Coast</h5>
+                            </div>
+
+                            <strong v-tooltip.right="{content: 'Please choose an enquiry type', trigger: 'manual', show: enquiryTypeTooltip}">Your enquiry type:</strong>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
                                 <div class="snapturebox-d-flex">
-                                  <div class="snapturebox-flex-grow-1">
-                                        <button class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block">General</button>
-                                  </div>
-                                  <div class="snapturebox-flex-grow-1 snapturebox-px-2">
-                                        <button class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block">Consultation</button>
-                                  </div>
-                                  <div class="snapturebox-flex-grow-1">
-                                        <button class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block">Treatment</button>
-                                  </div>
+                                    <div class="snapturebox-flex-grow-1" v-for="inquiry_type in $root.inquiry_types">
+                                        <button
+                                            class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block"
+                                            :class="{'snapturebox-active': enquiry.inquiry_type_id == inquiry_type.id}"
+                                            @click="
+                                                enquiry.inquiry_type_id = inquiry_type.id;
+                                                enquiryTypeTooltip = false;
+                                            "
+                                        >
+                                            {{ inquiry_type.type }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <strong>Areas of Interests:</strong>
+                            <strong v-tooltip.right="{content: 'Please choose an area interest', trigger: 'manual', show: enquiryInterestTooltip}">Areas of Interests:</strong>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
-                                <vue-select :options="[{text: 'test', value: 'test'}]" :value="{}" button_class="snapturebox-badge-pill" placeholder="Choose areas of interests"></vue-select>
+                                <vue-select v-model="enquiry.interest" :options="[{text: 'test', value: 'test'}]" :value="{}" button_class="snapturebox-badge-pill" placeholder="Choose areas of interests"></vue-select>
                             </div>
 
-
-                            <strong>Your Inquiry:</strong>
+                            <strong v-tooltip.right="{content: 'Please write your inquiry', trigger: 'manual', show: enquiryMessageTooltip}">Your Inquiry:</strong> <info-icon size="1x" class="snapturebox-cursor-pointer"></info-icon>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
-                                <textarea rows="8" class="snapturebox-form-control snapturebox-rounded-lg" style="resize: none"></textarea>
+                                <textarea v-model="enquiry.message" rows="8" class="snapturebox-form-control snapturebox-rounded-lg" placeholder="Please type your inquiry here" style="resize: none"></textarea>
                             </div>
 
                             <div class="snapturebox-text-right">
-                                <button class="snapturebox-btn snapturebox-px-5 snapturebox-btn-dark snapturebox-shadow-none snapturebox-rounded-lg snapturebox-d-inline-flex snapturebox-align-items-center">Send <arrow-right-icon size="1x" class="snapturebox-ml-2"></arrow-right-icon></button>
+                                <button class="snapturebox-btn snapturebox-px-5 snapturebox-btn-dark snapturebox-shadow-none snapturebox-rounded-lg snapturebox-d-inline-flex snapturebox-align-items-center" @click="send">Send <arrow-right-icon size="1x" class="snapturebox-ml-2"></arrow-right-icon></button>
                             </div>
                         </div>
                     </div>
@@ -153,28 +177,151 @@
             </div>
         </div>
 
-        <div class="snapturebox-modal" tabindex="-1" id="loginModal" v-if="!$root.auth">
-            <div class="snapturebox-modal-dialog snapturebox-modal-dialog-centered">
-                <div class="snapturebox-modal-content">
-                    <div class="snapturebox-modal-body">
-                        <button type="button" class="snapturebox-btn snapturebox-close snapturebox-position-absolute snapturebox-btn-close" @click="$root.toggleModal('#loginModal', 'hide'); $root.loginForm.loading = false;" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                        <vue-form-validate action="" @submit="$root.login">
-                            <h4 class="snapturebox-mb-4">Login to your account</h4>
-                            <div class="snapturebox-form-group">
-                                <input type="email" v-model="$root.loginForm.email" class="snapturebox-form-control" data-required placeholder="Email">
-                            </div>
-                            <div class="snapturebox-form-group">
-                                <input type="password" v-model="$root.loginForm.password" class="snapturebox-form-control" data-required placeholder="Password">
-                            </div>
-                            <vue-button type="submit" :loading="$root.loginForm.loading" button_class="snapturebox-btn snapturebox-btn-block snapturebox-btn-primary">Login</vue-button>
-                        </vue-form-validate>
+        <div v-if="!$root.auth">
+            <!-- Signup Modal -->
+            <div class="snapturebox-modal" tabindex="-1" id="signupModal">
+                <div class="snapturebox-modal-dialog snapturebox-modal-dialog-centered">
+                    <div class="snapturebox-modal-content">
+                        <div class="snapturebox-modal-body">
+                            <button
+                                type="button"
+                                class="snapturebox-btn snapturebox-position-absolute snapturebox-btn-close"
+                                @click="
+                                    $root.toggleModal('#signupModal', 'hide');
+                                    $root.signupForm.loading = false;
+                                "
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <vue-form-validate @submit="$root.signup">
+                                <h4 class="snapturebox-mb-4">Create your account</h4>
+                                <div class="snapturebox-form-group">
+                                    <input type="text" v-model="$root.signupForm.first_name" class="snapturebox-form-control" data-required placeholder="First Name" />
+                                </div>
+                                <div class="snapturebox-form-group">
+                                    <input type="text" v-model="$root.signupForm.last_name" class="snapturebox-form-control" data-required placeholder="Last Name" />
+                                </div>
+                                <div class="snapturebox-form-group">
+                                    <input type="email" v-model="$root.signupForm.email" class="snapturebox-form-control" data-required placeholder="Email" />
+                                </div>
+                                <div class="snapturebox-form-group">
+                                    <input type="tel" v-model="$root.signupForm.phone" class="snapturebox-form-control" data-required placeholder="Phone" />
+                                </div>
+                                <div class="snapturebox-form-group">
+                                    <input type="password" v-model="$root.signupForm.password" class="snapturebox-form-control" data-required placeholder="Password" />
+                                </div>
+
+                                <button type="button" class="snapturebox-btn snapturebox-btn-light" @click="$root.toggleModal('#signupModal', 'hide'); $root.toggleModal('#loginModal', 'show')">Log In</button>
+                                <vue-button type="submit" :loading="$root.signupForm.loading" button_class="snapturebox-btn snapturebox-float-right snapturebox-btn-primary">Sign Up</vue-button>
+                            </vue-form-validate>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Modal -->
+            <div class="snapturebox-modal" tabindex="-1" id="loginModal">
+                <div class="snapturebox-modal-dialog snapturebox-modal-dialog-centered">
+                    <div class="snapturebox-modal-content">
+                        <div class="snapturebox-modal-body">
+                            <button
+                                type="button"
+                                class="snapturebox-btn snapturebox-position-absolute snapturebox-btn-close"
+                                @click="
+                                    $root.toggleModal('#loginModal', 'hide');
+                                    $root.loginForm.loading = false;
+                                "
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <vue-form-validate @submit="$root.login">
+                                <h4 class="snapturebox-mb-4">Login to your account</h4>
+                                <div class="snapturebox-form-group">
+                                    <input type="email" v-model="$root.loginForm.email" class="snapturebox-form-control" data-required placeholder="Email" />
+                                </div>
+                                <div class="snapturebox-form-group">
+                                    <input type="password" v-model="$root.loginForm.password" class="snapturebox-form-control" data-required placeholder="Password" />
+                                </div>
+                                <button type="button" class="snapturebox-btn snapturebox-btn-light" @click="$root.toggleModal('#loginModal', 'hide'); $root.toggleModal('#signupModal', 'show')">Sign Up</button>
+                                <vue-button type="submit" :loading="$root.loginForm.loading" button_class="snapturebox-btn snapturebox-float-right snapturebox-btn-primary">Login</vue-button>
+                            </vue-form-validate>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
+        <div class="snapturebox-modal" tabindex="-1" id="addMediaModal">
+            <div class="snapturebox-modal-dialog snapturebox-modal-lg snapturebox-modal-dialog-centered" role="document">
+                <div class="snapturebox-modal-content snapturebox-overflow-hidden">
+                    <div class="snapturebox-modal-body snapturebox-bg-dark snapturebox-p-0" style="height: 400px">
+                        <button
+                            type="button"
+                            class="snapturebox-btn snapturebox-text-white snapturebox-position-absolute snapturebox-btn-close"
+                            @click="
+                                $root.toggleModal('#addMediaModal', 'hide');
+                                closeCamera();
+                                fileOutput = null;
+                            "
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
+                        <div class="snapturebox-position-absolute-center" v-if="!cameraReady">
+                            <div class="snapturebox-spinner-border snapturebox-text-primary" role="status"></div>
+                        </div>
+
+                        <video :hidden="fileOutput" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100"></video>
+                        <div v-if="fileOutput" class="snapturebox-h-100">
+                            <video v-if="fileOutput.type == 'video'" ref="fileOutput" class="snapturebox-w-100 snapturebox-h-100" :src="fileOutput.blob" style="outline: 0" playsinline controls @loadeddata="loadeddata"></video>
+                            <div v-else-if="fileOutput.type == 'image'" class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.preview + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+                        </div>
+
+                        <div class="snapturebox-position-absolute-center snapturebox-py-5 snapturebox-hover-opacity-1 snapturebox-w-100 snapturebox-text-center" v-if="fileOutput">
+                            <button class="snapturebox-btn snapturebox-btn-light snapturebox-shadow-none snapturebox-btn-circle snapturebox-line-height-0 snapturebox-opacity-0" v-tooltip.top="'Cancel'" @click="fileOutput = null">
+                                <x-icon size="1.2x" class="line-height-0"></x-icon>
+                            </button>
+                        </div>
+
+                        <div class="snapturebox-position-absolute w-100 snapturebox-text-center" style="bottom: 15px" :hidden="fileOutput || !cameraReady">
+                            <div v-if="!isRecording">
+                                <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" v-tooltip.top="'Record Video'" @click="startRecord">
+                                    <video-icon size="1.2x"></video-icon>
+                                </button>
+                                <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" v-tooltip.top="'Take Photo'" @click="takePhoto">
+                                    <camera-icon size="1.2x"></camera-icon>
+                                </button>
+                            </div>
+                            <div v-else>
+                                <button class="snapturebox-btn snapturebox-btn-danger snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" v-tooltip.top="'Stop Recording'" @click="stopRecord">
+                                    <pause-icon size="1.2x"></pause-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="snapturebox-p-2">
+                        <input type="file" hidden ref="addMedia" @change="setPreview" accept="image/x-png,image/gif,image/jpeg,video/mp4,video/x-m4v,video/*" />
+                        <button type="button" class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-border snapturebox-shadow-none" @click="browseMedia">Browse Media</button>
+                        <button
+                            type="button"
+                            class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-primary snapturebox-shadow-none snapturebox-float-right"
+                            :disabled="!fileOutput"
+                            @click="
+                                addMedia();
+                                $root.toggleModal('#addMediaModal', 'hide');
+                                closeCamera();
+                                fileOutput = null;
+                            "
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <transition name="snapturebox-fade">
             <div v-if="$root.backdrop" class="snapturebox-modal-backdrop"></div>
         </transition>
@@ -182,62 +329,48 @@
 </template>
 
 <script>
-import { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon } from 'vue-feather-icons';
+import RecordRTC from 'recordrtc';
+import {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon} from 'vue-feather-icons';
 
 export default {
-    components: { MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon },
+    components: {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon},
 
     data: () => ({
+        enquiry: {
+            message: 'tests',
+            inquiry_type_id: 2,
+            interest: {text: 'test', value: 'test'},
+            items: [],
+        },
+        enquiryTypeTooltip: false,
+        enquiryInterestTooltip: false,
+        enquiryMessageTooltip: false,
+        enquiryMediaTooltip: false,
+
         message: '',
         playing: false,
         member: 'Clinic Team',
         messages: [],
-        members: [
-            'Clinic Team',
-            'Dr. Zac Turner',
-            'Sally Woo RN',
-            'Trinh Nguyen RN',
-            'Chantelle Atkinson RN',
-            'Ebony Andrews RN',
-            'Jodie Church RN',
-        ],
-
-        signupForm: {
-            name: '',
-            email: '',
-            phone: '',
-            password: '',
-        },
         signupFormDisabled: false,
         messageInputDisabled: false,
-        items: [
-            /*{item: 'src/images/file1.jpg', comment: 'I am a comment', edit: false},
-            {item: 'src/images/file2.jpg', comment: '', edit: false},*/
-        ],
-        preview: '',
         sent: false,
 
-        videoRecorder: null,
-        streams: null,
-        video: null,
+        preview: '',
         cameraReady: false,
+        video: null,
+        videoRecorder: null,
+        streams: [],
+        streams: null,
         isRecording: false,
         fileOutput: null,
         socket: null,
-        domain: 'https://snapturebox.com',
         notification_sound: null,
         videoOutput: null,
-        newMessage: {
-            inquiry_id: 1,
-            message: '',
-            type: 'text',
-            sender: 'Margaretta Worvell',
-        },
     }),
 
     computed: {
         new_items() {
-            let new_items =  4 - this.items.length;
+            let new_items = 4 - this.enquiry.items.length;
             if (new_items < 1) new_items = 1;
             return new_items;
         },
@@ -252,11 +385,11 @@ export default {
             if (this.messages) {
                 // sort messages by timestamp
                 const messages = (this.messages || []).sort((a, b) => {
-                    return (parseInt(a.timestamp) > parseInt(b.timestamp)) ? 1 : -1;
+                    return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
                 });
 
                 for (var i = 0; i <= messages.length - 1; i++) {
-                    var message_group = { sender: messages[i].sender, messages: [messages[i]] };
+                    var message_group = {sender: messages[i].sender, messages: [messages[i]]};
                     groupMessage();
 
                     function groupMessage() {
@@ -276,15 +409,34 @@ export default {
     },
 
     mounted() {
-        //this.scrollDown();
-        /*setTimeout(() => {
-            this.video = document.querySelector('#videoFile');
-            $('#repliesModal').on('shown.bs.modal', (e) => {
-                this.scrollDown();
+        setTimeout(() => {
+            this.video = this.$refs['videoFile'];
+        });
+    },
+
+    created() {
+        this.notification_sound = new Audio('/notifications/new_message.mp3');
+        /*this.socket = io('https://snapturebox.com:8443');
+        this.socket.on('new_message', (data) => {
+            this.messages.push(data);
+            this.notification_sound.play();
+            this.scrollDown();
+        });*/
+    },
+
+    methods: {
+        closeCamera() {
+            this.streams.getTracks().forEach(function(track) {
+                track.stop();
             });
-            $('#addItemModal').on('shown.bs.modal', (e) => {
-                this.cameraReady = false;
-                navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
+        },
+
+        initCamera() {
+            this.cameraReady = false;
+            navigator.mediaDevices
+                .getUserMedia({audio: true, video: true})
+                .then((streams) => {
+                    this.streams = streams;
                     this.videoRecorder = RecordRTC(streams, {
                         type: 'video',
                     });
@@ -294,44 +446,43 @@ export default {
                     this.video.play();
                     this.video.onplaying = () => {
                         this.cameraReady = true;
-                    }
-                }).catch(function(error) {
+                    };
+                })
+                .catch(function(error) {
                     alert('Unable to capture your camera.');
                     console.error(error);
                 });
-            });
-
-            $('#addItemModal').on('hidden.bs.modal', (e) => {
-                this.fileOutput = null;
-            });
-        });*/
-    },
-
-    created() {
-        /*this.notification_sound = new Audio('/notifications/new_message.mp3');
-        this.socket = io('https://snapturebox.com:8443');
-        this.socket.on('new_message', (data) => {
-            this.messages.push(data);
-            this.notification_sound.play();
-            this.scrollDown();
-        });*/
-        //this.getMessages();
-    },
-
-    methods: {
+        },
 
         send() {
-            let data = new FormData();
-            Object.keys(this.newMessage).map((k) => {
-                data.append(k, this.newMessage[k]);
-            });
+            if (!this.enquiry.inquiry_type_id) {
+                this.enquiryTypeTooltip = true;
+                return;
+            } else this.enquiryTypeTooltip = false;
 
-            SBAxios.post(`${this.domain}/messages`, data, {header : {'Content-Type' : 'multipart/form-data'}}).then((response) => {
-                this.messages.push(response.data);
-                this.newMessage.message = '';
-                this.socket.emit('message_sent', response.data);
-                this.scrollDown();
-            });
+            if (!this.enquiry.interest) {
+                this.enquiryInterestTooltip = true;
+                return;
+            } else this.enquiryInterestTooltip = false;
+
+            if (!this.enquiry.message) {
+                this.enquiryMessageTooltip = true;
+                return;
+            } else this.enquiryMessageTooltip = false;
+
+            if (this.enquiry.items.length == 0) {
+                this.enquiryMediaTooltip = true;
+                return;
+            } else this.enquiryMediaTooltip = false;
+
+            if (this.$root.auth) {
+                SBAxios.post('/inquiries', this.enquiry).then((response) => {
+                    console.log(response.data);
+                    //this.socket.emit('message_sent', response.data);
+                });
+            } else {
+                this.$root.toggleModal('#loginModal', 'show');
+            }
         },
 
         scrollDown() {
@@ -350,13 +501,12 @@ export default {
         },
 
         loadeddata(e) {
-            let video = e.target;
             setTimeout(() => {
-                let canvas = document.createElement("canvas");
-                canvas.width = video.videoWidth / 2;
-                canvas.height = video.videoHeight / 2;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                this.fileOutput.preview = canvas.toDataURL("image/jpeg", 0.8);
+                let canvas = document.createElement('canvas');
+                canvas.width = this.video.videoWidth;
+                canvas.height = this.video.videoHeight;
+                canvas.getContext('2d').drawImage(this.video, 0, 0, canvas.width, canvas.height);
+                this.fileOutput.preview = canvas.toDataURL('image/jpeg', 0.8);
             }, 200);
         },
 
@@ -374,12 +524,17 @@ export default {
             };
         },
 
-
         stopRecord() {
             this.videoRecorder.stopRecording(() => {
-                this.fileOutput = {
-                    type: 'video',
-                    src: URL.createObjectURL(this.videoRecorder.getBlob()),
+                let videoBlob = this.videoRecorder.getBlob();
+                let reader = new window.FileReader();
+                reader.readAsDataURL(videoBlob); 
+                reader.onloadend = () => {
+                    this.fileOutput = {
+                        type: 'video',
+                        src: reader.result,
+                        blob: URL.createObjectURL(videoBlob)
+                    };
                 };
             });
             this.isRecording = false;
@@ -391,14 +546,20 @@ export default {
         },
 
         addComment(index, e) {
-            this.items[index].edit = false;
-            this.items[index].comment = $(e.currentTarget).parent().siblings('textarea').val();
+            this.enquiry.items[index].edit = false;
+            this.items[index].comment = $(e.currentTarget)
+                .parent()
+                .siblings('textarea')
+                .val();
         },
 
         saveComment(index, e) {
-            this.$set(this.items[index], 'edit', this.items[index].edit ? false : true);
-            if (!this.items[index].edit) {
-                this.items[index].comment = $(e.currentTarget).parent().siblings('textarea').val();
+            this.$set(this.enquiry.items[index], 'edit', this.enquiry.items[index].edit ? false : true);
+            if (!this.enquiry.items[index].edit) {
+                this.enquiry.items[index].comment = $(e.currentTarget)
+                    .parent()
+                    .siblings('textarea')
+                    .val();
             }
         },
 
@@ -409,7 +570,7 @@ export default {
         },
 
         removeItem(index) {
-            this.items.splice(index, 1);
+            this.enquiry.items.splice(index, 1);
         },
 
         setPreview(e) {
@@ -474,8 +635,8 @@ export default {
             this.$refs['addMedia'].click();
         },
 
-        addItem() {
-            this.items.push({
+        addMedia() {
+            this.enquiry.items.push({
                 item: this.fileOutput,
                 comment: '',
             });
@@ -490,7 +651,7 @@ export default {
             return password;
         },
 
-     /*   scrollDown() {
+        /*   scrollDown() {
             setTimeout(() => {
                 const message_group = this.$refs['snapturebox-scroll'];
                 if (message_group) {
@@ -529,28 +690,28 @@ export default {
                     sender: 'You',
                     message: 'Hi there please look at my photos of my problem areas I would like to look better.',
                     hasPhotos: true,
-                    time: 'Just now'
+                    time: 'Just now',
                 },
                 {
                     sender: this.member,
                     message: `Hi ${this.signupForm.name}, please view my feedback video`,
                     video: 'https://www.youtube.com/embed/oBDyhh5CEkI',
-                    time: 'Just now'
+                    time: 'Just now',
                 },
                 {
                     sender: this.member,
                     time: 'Just now',
-                    hasOffers: true
+                    hasOffers: true,
                 },
                 {
                     sender: 'You',
                     message: 'Thank you for sending your suggestions. I will get back to you soon I just need to talk to my sister.',
-                    time: 'Just now'
+                    time: 'Just now',
                 },
                 {
                     sender: this.member,
                     message: `No problems ${this.signupForm.name} I am here to help. Let me know if I can help more.`,
-                    time: 'Just now'
+                    time: 'Just now',
                 },
             ];
             var i = 0;
@@ -560,7 +721,6 @@ export default {
                 if (i == new_messages.length - 1) clearInterval(timeInterval);
                 i++;
             }, 1000);
-
         },
 
         /*send() {
@@ -597,9 +757,7 @@ export default {
             this.content = 'convo';
         },
 
-        signup() {
-            
-        },
+        signup() {},
 
         toggleWidget() {
             this.$root.open = this.$root.open ? false : true;
@@ -609,5 +767,5 @@ export default {
             }
         },
     },
-}
+};
 </script>

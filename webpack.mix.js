@@ -53,15 +53,15 @@ else if (argv.indexOf('--js') > -1) {
         .mergeManifest();
 
     mix.browserSync({
-        proxy: 'https://boxbi.app',
-        host: 'boxbi.app',
+        proxy: 'https://snapturebox.app',
+        host: 'snapturebox.app',
         open: false,
         port: 8000,
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
         }
     });
 }
@@ -77,15 +77,15 @@ else if (argv.indexOf('--slek') > -1) {
         .mergeManifest();
     
     mix.browserSync({
-        proxy: 'https://boxbi.app',
-        host: 'boxbi.app',
+        proxy: 'https://snapturebox.app',
+        host: 'snapturebox.app',
         open: false,
         port: 8000,
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
         }
     });
 }
@@ -98,15 +98,15 @@ else if (argv.indexOf('--widget') > -1) {
         .mergeManifest();
     
     mix.browserSync({
-        proxy: 'https://boxbi.app',
-        host: 'boxbi.app',
+        proxy: 'https://snapturebox.app',
+        host: 'snapturebox.app',
         open: false,
         port: 8000,
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/boxbi.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
         }
     });
 }

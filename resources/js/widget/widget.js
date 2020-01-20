@@ -1,4 +1,4 @@
-let API = 'https://api.snapturebox.com'; //get from config
+let API = 'https://api.snapturebox.app'; //get from config
 
 try {
     window.$ = window.jQuery = require('jquery');
@@ -10,19 +10,25 @@ window.SBVue = require('vue');
 window.SBAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.SBAxios.interceptors.request.use(
     function(config) {
+        let access_token = window.localStorage.getItem('snapturebox_access_token');
+        access_token = access_token ? `?token=${access_token}` : '';
         config.headers['Cache-Control'] = 'no-cache';
-        config.url = `${API}/ajax${config.url}`;
+        config.url = `${API}/ajax${config.url}${access_token}`;
         return config;
     },
     function(error) {
         return Promise.reject(error);
-    }
+    },
 );
 window.SBAxios.interceptors.response.use(
     function(response) {
         return response;
     },
     function(error) {
+        if (error.response.status == 401) {
+            let access_token = window.localStorage.getItem('snapturebox_access_token');
+            if (access_token) window.app.refreshToken();
+        }
         SBVue.toasted.error(error.response.data.message, {
             className: 'snapturebox-bg-red snapturebox-rounded-0 snapturebox-justify-content-center',
         });
@@ -38,7 +44,6 @@ document.body.appendChild(container);
 import VueMasonry from './../components/vue-masonry.js';
 import TextareaAutosize from 'vue-textarea-autosize';
 import VTooltip from 'v-tooltip';
-import RecordRTC from 'recordrtc';
 import io from 'socket.io-client';
 import '../../sass/widget.scss';
 import Toasted from 'vue-toasted';
@@ -47,7 +52,19 @@ SBVue.component('widget', require('./widget.vue').default);
 SBVue.component('vue-select', require('./../widget/vue-select.vue').default);
 SBVue.component('vue-button', require('./../components/vue-button.vue').default);
 SBVue.component('vue-form-validate', require('./../components/vue-form-validate.vue').default);
-SBVue.use(VueMasonry, VTooltip, TextareaAutosize);
+SBVue.use(VueMasonry);
+SBVue.use(TextareaAutosize);
+SBVue.use(VTooltip, {
+    defaultTemplate: '<div class="snapturebox-tooltip" role="tooltip"><div class="snapturebox-tooltip-arrow"></div><div class="snapturebox-tooltip-inner"></div></div>',
+    defaultClass: 'snapturebox',
+    defaultClass: 'snapturebox-tooltip',
+    defaultArrowSelector: '.snapturebox-tooltip-arrow',
+    defaultInnerSelector: '.snapturebox-tooltip-inner',
+    defaultHideOnTargetClick: true,
+    popover: {
+        defaultArrowClass: 'snapturebox-tooltip-arrow',
+    },
+});
 SBVue.use(Toasted, {
     position: 'bottom-center',
     singleton: true,
@@ -66,7 +83,7 @@ SBVue.use(Toasted, {
     },
 });
 
-new SBVue({
+window.app = new SBVue({
     el: '#snapturebox-widget',
 
     data: {
@@ -78,16 +95,23 @@ new SBVue({
         leftOpen: false,
         backdrop: false,
         loginForm: {
+            email: 'cleidoscope@gmail.com',
+            password: 'admin',
+            loading: false,
+        },
+        signupForm: {
+            first_name: '',
+            last_name: '',
             email: '',
+            phone: '',
             password: '',
             loading: false,
         },
+        inquiry_types: [],
     },
 
     created() {
-        if (typeof AUTH != 'undefined' && AUTH) {
-            this.auth = AUTH;
-        }
+        this.getData();
 
         if (typeof widget == 'undefined') {
             this.validateDomain();
@@ -98,14 +122,48 @@ new SBVue({
     },
 
     methods: {
+        refreshToken() {
+            SBAxios.post('/auth/refresh')
+                .then((response) => {
+                    this.auth = response.data;
+                    window.localStorage.setItem('snapturebox_access_token', response.data.access_token);
+                })
+                .catch(() => {
+                    this.auth = null;
+                    window.localStorage.removeItem('snapturebox_access_token');
+                });
+        },
+
+        async getData() {
+            let inquiry_types = await SBAxios.get('/inquiry_types');
+            if (inquiry_types) this.inquiry_types = inquiry_types.data;
+            let me = await SBAxios.get('/auth/me').catch(() => {});
+            if (me) this.auth = me.data;
+        },
+
+        signup() {
+            this.signupForm.loading = true;
+            SBAxios.post('/auth/signup', this.signupForm)
+                .then((response) => {
+                    this.signupForm.loading = false;
+                    this.signupForm.email = this.signupForm.password = '';
+                    this.toggleModal('#signupModal', 'hide');
+                    this.auth = response.data;
+                })
+                .catch(() => {
+                    this.signupForm.loading = false;
+                });
+        },
+
         login() {
             this.loginForm.loading = true;
-            SBAxios.post('/login', this.loginForm)
+            SBAxios.post('/auth/login', this.loginForm)
                 .then((response) => {
-                    this.auth = response.data.auth;
                     this.loginForm.loading = false;
                     this.loginForm.email = this.loginForm.password = '';
                     this.toggleModal('#loginModal', 'hide');
+                    this.auth = response.data;
+                    window.localStorage.setItem('snapturebox_access_token', this.auth.access_token);
                 })
                 .catch(() => {
                     this.loginForm.loading = false;
@@ -121,6 +179,7 @@ new SBVue({
                     });
                     modal.css('display', 'block');
                     this.backdrop = true;
+                    this.$emit('show');
                 } else if (status == 'hide') {
                     modal.removeClass('snapturebox-modal-show');
                     this.backdrop = false;
@@ -132,8 +191,9 @@ new SBVue({
         },
 
         logout() {
-            axios.post('/logout').then(() => {
+            SBAxios.post('/auth/logout').then(() => {
                 this.auth = null;
+                window.localStorage.removeItem('snapturebox_access_token');
             });
         },
 

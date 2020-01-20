@@ -20,11 +20,16 @@ Route::group([
 		'namespace' => 'API' 
 ], function(){
 	Route::get('show', 'WidgetController@show');
+	Route::get('inquiry_types', 'WidgetController@inquiryTypes');
+
 	Route::group(['prefix' => 'auth'], function() {
 		Route::post('login', 'AuthController@login');
+		Route::post('signup', 'AuthController@signup');
 		Route::post('refresh', 'AuthController@refresh');
 		Route::get('me', 'AuthController@me')->middleware('auth:api');
 		Route::post('logout', 'AuthController@logout')->middleware('auth:api');
 	});
+
+	Route::resource('inquiries', 'InquiryController')->middleware('auth:api');
 });
 
