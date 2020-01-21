@@ -162,8 +162,8 @@ window.app = new SBVue({
                     this.loginForm.loading = false;
                     this.loginForm.email = this.loginForm.password = '';
                     this.toggleModal('#loginModal', 'hide');
-                    this.auth = response.data;
-                    window.localStorage.setItem('snapturebox_access_token', this.auth.access_token);
+                    this.auth = response.data.user;
+                    window.localStorage.setItem('snapturebox_access_token', response.data.access_token);
                 })
                 .catch(() => {
                     this.loginForm.loading = false;

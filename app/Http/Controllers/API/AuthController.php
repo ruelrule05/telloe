@@ -45,7 +45,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(auth()->user()->load('inquiries') ?? false);
+        return response()->json(auth()->user()->load('inquiries.offers.user') ?? false);
     }
 
     public function logout()
@@ -62,7 +62,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'user' => auth()->user()->load('inquiries') ?? false,
+            'user' => auth()->user()->load('inquiries.offers.user') ?? false,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60

@@ -27,10 +27,10 @@
 
                                     <ul class="snapturebox-nav snapturebox-nav-pills">
                                         <li class="snapturebox-nav-item snapturebox-mx-4">
-                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-bottom snapturebox-border-primary snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#">My Inquiries</a>
+                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-primary snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#" @click.prevent="activeTab = 'inquiries'" :class="{'snapturebox-border-bottom': activeTab == 'inquiries'}">My Inquiries</a>
                                         </li>
                                         <li class="snapturebox-nav-item">
-                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#">My Offers</a>
+                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-primary  snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#" @click.prevent="activeTab = 'offers'" :class="{'snapturebox-border-bottom': activeTab == 'offers'}">My Offers</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -39,7 +39,9 @@
                                     <button class="snapturebox-btn snapturebox-btn-light snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#signupModal', 'show')">Sign Up</button>
                                 </div>
                             </div>
-                            <div class="snapturebox-overflow-auto">
+                            
+                            <!-- Inquiries -->
+                            <div class="snapturebox-overflow-auto" v-if="activeTab == 'inquiries'">
                                 <div class="snapturebox-px-4 snapturebox-py-3">
                                     <h5>Take Photos</h5>
                                     <span class="snapturebox-text-secondary">Here are examples of position to take.</span>
@@ -110,6 +112,46 @@
                                             </div>
                                         </div>
                                     </masonry>
+                                </div>
+                            </div>
+
+                            <!-- Offers -->
+                            <div class="snapturebox-overflow-auto" v-if="activeTab == 'offers' && $root.auth">
+                                <div class="snapturebox-row snapturebox-mx-0">
+                                    <div v-for="offer in offers" class="snapturebox-col-md-6">
+                                        <div class="snapturebox-px-3 snapturebox-py-2 snapturebox-border snapturebox-rounded snapturebox-shadow-sm">
+                                            <div class="snapturebox-media snapturebox-mb-3">
+                                                <div class="snapturebox-profile-image" :style="{'backgroundImage': 'url('+offer.user.profile_image+')'}"></div>
+                                                <div class="snapturebox-media-body snapturebox-ml-2">
+                                                    <div class="snapturebox-font-weight-bold snapturebox-mb-n1">{{ offer.user.first_name }} {{ offer.user.last_name }}</div>
+                                                    <small>{{ offer.created_at }}</small>
+                                                </div>
+                                            </div>
+                                            <div v-for="service in offer.services" class="snapturebox-mb-1">
+                                                <div class="snapturebox-d-flex">
+                                                    <div>{{ service.service }}</div>
+                                                    <div class="snapturebox-ml-auto">{{ format(service.price) }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="snapturebox-border-top snapturebox-border-bottom snapturebox-py-1 snapturebox-my-1" v-if="offer.discount">
+                                                <small class="snapturebox-text-muted">DISCOUNT</small>
+                                                <div class="snapturebox-d-flex">
+                                                    <div>{{ offer.discount_text }}</div>
+                                                    <div class="snapturebox-ml-auto">-{{ format(offer.discount) }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="snapturebox-d-flex snapturebox-justify-content-end">
+                                                <span>Subtotal:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal) }}</span>
+                                            </div>
+                                            <div class="snapturebox-d-flex snapturebox-justify-content-end">
+                                                <span>Discount:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(offer.discount) }}</span>
+                                            </div>
+                                            <div class="snapturebox-mt-2 snapturebox-d-flex snapturebox-font-weight-bold snapturebox-justify-content-end">
+                                                <span>Total:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal - offer.discount) }}</span>
+                                            </div>
+                                            <button :disabled="offer.booked" class="snapturebox-btn snapturebox-btn-primary snapturebox-btn-block snapturebox-mt-3">Book this offer</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -276,7 +318,7 @@
                         <video :hidden="fileOutput" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100"></video>
                         <div v-if="fileOutput" class="snapturebox-h-100">
                             <video v-if="fileOutput.type == 'video'" ref="fileOutput" class="snapturebox-w-100 snapturebox-h-100" :src="fileOutput.blob" style="outline: 0" playsinline controls @loadeddata="loadeddata"></video>
-                            <div v-else-if="fileOutput.type == 'image'" class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.preview + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
+                            <div v-else-if="fileOutput.type == 'image'" class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.src + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
                         </div>
 
                         <div class="snapturebox-position-absolute-center snapturebox-py-5 snapturebox-hover-opacity-1 snapturebox-w-100 snapturebox-text-center" v-if="fileOutput">
@@ -329,6 +371,8 @@
 </template>
 
 <script>
+let formatNumber = require('format-number');
+let format = formatNumber({prefix: '$', padRight: 2});
 import RecordRTC from 'recordrtc';
 import {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon} from 'vue-feather-icons';
 
@@ -336,6 +380,7 @@ export default {
     components: {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon},
 
     data: () => ({
+        format: format,
         enquiry: {
             message: 'tests',
             inquiry_type_id: 2,
@@ -366,9 +411,30 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
+        activeTab: 'offers'
     }),
 
     computed: {
+        offers() {
+            let offers = [];
+            this.$root.auth.inquiries.forEach((i) => {
+                if (i.offers.length > 0) offers = [...offers, ...i.offers];
+            });
+
+            return offers;
+        },
+
+        subTotal() {
+            let subTotal = 0;
+            this.offers.forEach((o) => {
+                o.services.forEach((s) => {
+                    subTotal += parseInt(s.price);
+                });
+            });
+
+            return subTotal;
+        },
+
         new_items() {
             let new_items = 4 - this.enquiry.items.length;
             if (new_items < 1) new_items = 1;
@@ -500,28 +566,38 @@ export default {
             });
         },
 
-        loadeddata(e) {
-            setTimeout(() => {
-                let canvas = document.createElement('canvas');
-                canvas.width = this.video.videoWidth;
-                canvas.height = this.video.videoHeight;
-                canvas.getContext('2d').drawImage(this.video, 0, 0, canvas.width, canvas.height);
-                this.fileOutput.preview = canvas.toDataURL('image/jpeg', 0.8);
-            }, 200);
-        },
 
         takePhoto() {
+            // Source
             let canvas = document.createElement('canvas');
             let context = canvas.getContext('2d');
             canvas.width = this.video.videoWidth;
             canvas.height = this.video.videoHeight;
             context.drawImage(this.video, 0, 0, canvas.width, canvas.height);
-            let dataUrl = canvas.toDataURL('image/jpeg');
+            let srcUrl = canvas.toDataURL('image/jpeg');
+            // Preview
+            let canvasPreview = document.createElement('canvas');
+            let contextPreview = canvasPreview.getContext('2d');
+            canvasPreview.width = this.video.videoWidth / 2;
+            canvasPreview.height = this.video.videoHeight / 2;
+            contextPreview.drawImage(this.video, 0, 0, canvasPreview.width, canvasPreview.height);
+            let previewUrl = canvasPreview.toDataURL('image/jpeg');
+
             this.fileOutput = {
                 type: 'image',
-                src: dataUrl,
-                preview: dataUrl,
+                src: srcUrl,
+                preview: previewUrl,
             };
+        },
+
+        loadeddata(e) {
+            setTimeout(() => {
+                let canvas = document.createElement('canvas');
+                canvas.width = this.video.videoWidth / 2;
+                canvas.height = this.video.videoHeight / 2;
+                canvas.getContext('2d').drawImage(this.video, 0, 0, canvas.width, canvas.height);
+                this.fileOutput.preview = canvas.toDataURL('image/jpeg', 0.8);
+            }, 200);
         },
 
         stopRecord() {

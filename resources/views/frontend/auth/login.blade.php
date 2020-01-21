@@ -36,7 +36,7 @@ $navbar = $footer = $app_padded = $navbar_login = false;
 					<input type="password" v-model="loginForm.password" class="form-control form-control-lg" data-required placeholder="Password">
 				</div>
 
-				<vue-button label="Log In" type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none"></vue-button>
+				<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none">Log In</vue-button>
 			</vue-form-validate>
 			<div class="mt-3 font-size-14">
 				<a href="/recover" class="font-size-small underline text-muted">Forgot password?</a>

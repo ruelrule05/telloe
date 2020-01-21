@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password',
+        'first_name', 'last_name', 'email', 'password', 'profile_image'
     ];
 
     /**
@@ -42,7 +42,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Widget::class);
     }
-
 
     public function inquiries()
     {
