@@ -18,6 +18,7 @@ class InquiryController extends Controller
     public function store(Request $request)
     {   
         $this->validate($request, [
+            'widget_id' => 'required|exists:widgets,id',
             'message' => 'required',
             'inquiry_type_id' => 'required|exists:inquiry_types,id',
             'interest' => 'required',
@@ -25,6 +26,7 @@ class InquiryController extends Controller
         ]);
 
         $inquiry = Inquiry::create([
+            'widget_id' => $request->widget_id,
             'user_id' => auth()->user()->id,
             'message' => $request->message,
             'inquiry_type_id' => $request->inquiry_type_id,

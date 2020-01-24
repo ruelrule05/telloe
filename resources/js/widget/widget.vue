@@ -39,7 +39,7 @@
                                     <button class="snapturebox-btn snapturebox-btn-light snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#signupModal', 'show')">Sign Up</button>
                                 </div>
                             </div>
-                            
+
                             <!-- Inquiries -->
                             <div class="snapturebox-overflow-auto" v-if="activeTab == 'inquiries'">
                                 <div class="snapturebox-px-4 snapturebox-py-3">
@@ -98,7 +98,6 @@
                                                             class="snapturebox-btn snapturebox-border snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0"
                                                             @click="
                                                                 preview = '';
-                                                                initCamera();
                                                                 $root.toggleModal('#addMediaModal', 'show');
                                                             "
                                                         >
@@ -118,12 +117,12 @@
                             <!-- Offers -->
                             <div class="snapturebox-overflow-auto" v-if="activeTab == 'offers' && $root.auth">
                                 <div class="snapturebox-row snapturebox-mx-0">
-                                    <div v-for="offer in offers" class="snapturebox-col-md-6">
+                                    <div v-for="offer in $root.auth.offers" class="snapturebox-col-md-6">
                                         <div class="snapturebox-px-3 snapturebox-py-2 snapturebox-border snapturebox-rounded snapturebox-shadow-sm">
                                             <div class="snapturebox-media snapturebox-mb-3">
-                                                <div class="snapturebox-profile-image" :style="{'backgroundImage': 'url('+offer.user.profile_image+')'}"></div>
+                                                <div class="snapturebox-profile-image" :style="{backgroundImage: 'url(' + offer.member.user.profile_image + ')'}"></div>
                                                 <div class="snapturebox-media-body snapturebox-ml-2">
-                                                    <div class="snapturebox-font-weight-bold snapturebox-mb-n1">{{ offer.user.first_name }} {{ offer.user.last_name }}</div>
+                                                    <div class="snapturebox-font-weight-bold snapturebox-mb-n1">{{ offer.member.user.first_name }} {{ offer.member.user.last_name }}</div>
                                                     <small>{{ offer.created_at }}</small>
                                                 </div>
                                             </div>
@@ -149,7 +148,16 @@
                                             <div class="snapturebox-mt-2 snapturebox-d-flex snapturebox-font-weight-bold snapturebox-justify-content-end">
                                                 <span>Total:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal - offer.discount) }}</span>
                                             </div>
-                                            <button :disabled="offer.booked" class="snapturebox-btn snapturebox-btn-primary snapturebox-btn-block snapturebox-mt-3">Book this offer</button>
+                                            <button
+                                                :disabled="offer.booked"
+                                                class="snapturebox-btn snapturebox-btn-primary snapturebox-btn-block snapturebox-mt-3"
+                                                @click="
+                                                    $root.customerForm.offer_id = offer.id;
+                                                    $root.toggleModal('#customerInfoModal', 'show');
+                                                "
+                                            >
+                                                {{ offer.booked ? 'Booked' : 'Book this offer' }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -219,6 +227,48 @@
             </div>
         </div>
 
+        <!-- Customer Info Modal -->
+        <div class="snapturebox-modal" tabindex="-1" id="customerInfoModal">
+            <div class="snapturebox-modal-dialog snapturebox-modal-dialog-centered">
+                <div class="snapturebox-modal-content">
+                    <div class="snapturebox-modal-body">
+                        <button
+                            :disabled="$root.customerForm.loading"
+                            type="button"
+                            class="snapturebox-btn snapturebox-position-absolute snapturebox-btn-close"
+                            @click="
+                                $root.toggleModal('#customerInfoModal', 'hide');
+                                $root.loginForm.loading = false;
+                            "
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <vue-form-validate @submit="$root.book">
+                            <h4 class="snapturebox-mb-4">Customer Information Form</h4>
+                            <div class="snapturebox-form-group">
+                                <input type="text" v-model="$root.customerForm.first_name" class="snapturebox-form-control" data-required placeholder="First Name" />
+                            </div>
+                            <div class="snapturebox-form-group">
+                                <input type="text" v-model="$root.customerForm.last_name" class="snapturebox-form-control" data-required placeholder="Last Name" />
+                            </div>
+                            <div class="snapturebox-form-group">
+                                <input type="email" v-model="$root.customerForm.email" class="snapturebox-form-control" data-required placeholder="Email" />
+                            </div>
+                            <div class="snapturebox-form-group">
+                                <input type="text" v-model="$root.customerForm.phone" class="snapturebox-form-control" data-required placeholder="Phone" />
+                            </div>
+
+                            <div class="snapturebox-text-right">
+                                <button v-if="$root.customerForm.skipButton" type="button" class="snapturebox-btn snapturebox-btn-light" @click="$root.book">Skip this step</button>
+                                <vue-button type="submit" :loading="$root.customerForm.loading" button_class="snapturebox-btn snapturebox-btn-primary">Submit and Book</vue-button>
+                            </div>
+                        </vue-form-validate>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div v-if="!$root.auth">
             <!-- Signup Modal -->
             <div class="snapturebox-modal" tabindex="-1" id="signupModal">
@@ -254,7 +304,16 @@
                                     <input type="password" v-model="$root.signupForm.password" class="snapturebox-form-control" data-required placeholder="Password" />
                                 </div>
 
-                                <button type="button" class="snapturebox-btn snapturebox-btn-light" @click="$root.toggleModal('#signupModal', 'hide'); $root.toggleModal('#loginModal', 'show')">Log In</button>
+                                <button
+                                    type="button"
+                                    class="snapturebox-btn snapturebox-btn-light"
+                                    @click="
+                                        $root.toggleModal('#signupModal', 'hide');
+                                        $root.toggleModal('#loginModal', 'show');
+                                    "
+                                >
+                                    Log In
+                                </button>
                                 <vue-button type="submit" :loading="$root.signupForm.loading" button_class="snapturebox-btn snapturebox-float-right snapturebox-btn-primary">Sign Up</vue-button>
                             </vue-form-validate>
                         </div>
@@ -286,7 +345,16 @@
                                 <div class="snapturebox-form-group">
                                     <input type="password" v-model="$root.loginForm.password" class="snapturebox-form-control" data-required placeholder="Password" />
                                 </div>
-                                <button type="button" class="snapturebox-btn snapturebox-btn-light" @click="$root.toggleModal('#loginModal', 'hide'); $root.toggleModal('#signupModal', 'show')">Sign Up</button>
+                                <button
+                                    type="button"
+                                    class="snapturebox-btn snapturebox-btn-light"
+                                    @click="
+                                        $root.toggleModal('#loginModal', 'hide');
+                                        $root.toggleModal('#signupModal', 'show');
+                                    "
+                                >
+                                    Sign Up
+                                </button>
                                 <vue-button type="submit" :loading="$root.loginForm.loading" button_class="snapturebox-btn snapturebox-float-right snapturebox-btn-primary">Login</vue-button>
                             </vue-form-validate>
                         </div>
@@ -299,32 +367,61 @@
             <div class="snapturebox-modal-dialog snapturebox-modal-lg snapturebox-modal-dialog-centered" role="document">
                 <div class="snapturebox-modal-content snapturebox-overflow-hidden">
                     <div class="snapturebox-modal-body snapturebox-bg-dark snapturebox-p-0" style="height: 400px">
-                        <button
-                            type="button"
-                            class="snapturebox-btn snapturebox-text-white snapturebox-position-absolute snapturebox-btn-close"
-                            @click="
-                                $root.toggleModal('#addMediaModal', 'hide');
-                                closeCamera();
-                                fileOutput = null;
-                            "
-                        >
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-
-                        <div class="snapturebox-position-absolute-center" v-if="!cameraReady">
-                            <div class="snapturebox-spinner-border snapturebox-text-primary" role="status"></div>
+                        <!-- Top buttons -->
+                        <div class="snapturebox-d-flex snapturebox-position-absolute snapturebox-w-100 snapturebox-pt-1" style="z-index: 10">
+                            <button v-if="mediaSource" type="button" class="snapturebox-btn snapturebox-text-white snapturebox-shadow-none" @click="closeCamera(); mediaSource = fileOutput = null">
+                                <arrow-left-icon></arrow-left-icon>
+                            </button>
+                            <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-ml-auto snapturebox-shadow-none" @click="$root.toggleModal('#addMediaModal', 'hide'); closeCamera(); mediaSource = fileOutput = null;">
+                                <x-icon></x-icon>
+                            </button>
                         </div>
 
-                        <video :hidden="fileOutput" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100"></video>
-                        <div v-if="fileOutput" class="snapturebox-h-100">
-                            <video v-if="fileOutput.type == 'video'" ref="fileOutput" class="snapturebox-w-100 snapturebox-h-100" :src="fileOutput.blob" style="outline: 0" playsinline controls @loadeddata="loadeddata"></video>
-                            <div v-else-if="fileOutput.type == 'image'" class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.src + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
-                        </div>
 
+                        <!-- Clear fileOutput -->
                         <div class="snapturebox-position-absolute-center snapturebox-py-5 snapturebox-hover-opacity-1 snapturebox-w-100 snapturebox-text-center" v-if="fileOutput">
                             <button class="snapturebox-btn snapturebox-btn-light snapturebox-shadow-none snapturebox-btn-circle snapturebox-line-height-0 snapturebox-opacity-0" v-tooltip.top="'Cancel'" @click="fileOutput = null">
                                 <x-icon size="1.2x" class="line-height-0"></x-icon>
                             </button>
+                        </div>
+
+                        
+                        <!-- Select source -->
+                        <div class="snapturebox-position-absolute-center snapturebox-text-white" style="z-index: 10" v-if="!mediaSource && !fileOutput">
+                            <camera-icon size="1.8x" class="snapturebox-cursor-pointer snapturebox-outline-0" v-tooltip.top="'From camera'" @click="initCamera(); mediaSource = 'camera'"></camera-icon>
+                            <plus-circle-icon size="1.8x" class="snapturebox-cursor-pointer snapturebox-outline-0 snapturebox-mx-3" v-tooltip.top="'Browse media'" @click="browseMedia"></plus-circle-icon>
+                            <instagram-icon size="1.8x" class="snapturebox-cursor-pointer snapturebox-outline-0" v-tooltip.top="'Search in Instagram'" @click="mediaSource = 'instagram'"></instagram-icon>
+                        </div>
+
+                        <div v-if="mediaSource == 'instagram'" class="snapturebox-px-3 snapturebox-pt-5 snapturebox-d-flex snapturebox-flex-column snapturebox-h-100">
+                            <div class="snapturebox-d-flex">
+                                <input type="text" v-model="igTag" class="snapturebox-form-control" placeholder="Search by tag..">
+                                <button :disabled="igSearchLoading" class="snapturebox-btn snapturebox-btn-primary snapturebox-ml-1" @click="getIGImages"><search-icon></search-icon></button>
+                            </div>
+                            <div class="snapturebox-position-relative h-100 snapturebox-overflow-y-only snapturebox-flex-grow-1 snapturebox-pt-3">
+                                <div v-if="igSearchLoading" class="snapturebox-position-absolute-center">
+                                    <div class="snapturebox-spinner-border snapturebox-spinner-border-sm snapturebox-text-light"></div>
+                                </div>
+                                <div v-lazy-container="{ selector: 'img' }" class="snapturebox-row snapturebox-px-2">
+                                    <div v-for="igImage in igImages" class="snapturebox-col-4 snapturebox-px-2 snapturebox-mb-3">
+                                        <div class="snapturebox-ig-image">
+                                            <button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-shadow-none snapturebox-position-absolute-center" @click="selectIGImage(igImage); mediaSource = null;">Choose</button>
+                                            <img :data-src="igImage" class="snapturebox-rounded snapturebox-w-100" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="snapturebox-position-absolute-center snapturebox-text-center" v-if="!cameraReady && mediaSource == 'camera'">
+                            <div class="snapturebox-spinner-border snapturebox-text-primary" role="status"></div>
+                            <div class="snapturebox-text-white">Loading camera..</div>
+                        </div>
+                        
+                        <video :hidden="fileOutput" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100"></video>
+                        <div v-if="fileOutput" class="snapturebox-h-100">
+                            <video v-if="fileOutput.type == 'video'" ref="fileOutput" class="snapturebox-w-100 snapturebox-h-100" :src="fileOutput.blob" style="outline: 0" playsinline controls @loadeddata="loadeddata"></video>
+                            <div v-else-if="fileOutput.type == 'image'" class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.src + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
                         </div>
 
                         <div class="snapturebox-position-absolute w-100 snapturebox-text-center" style="bottom: 15px" :hidden="fileOutput || !cameraReady">
@@ -343,10 +440,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="snapturebox-p-2">
+                    <div class="snapturebox-position-absolute snapturebox-p-3" style="right: 0; bottom: 0">
                         <input type="file" hidden ref="addMedia" @change="setPreview" accept="image/x-png,image/gif,image/jpeg,video/mp4,video/x-m4v,video/*" />
-                        <button type="button" class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-border snapturebox-shadow-none" @click="browseMedia">Browse Media</button>
                         <button
+                            v-if="fileOutput"
                             type="button"
                             class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-primary snapturebox-shadow-none snapturebox-float-right"
                             :disabled="!fileOutput"
@@ -371,13 +468,16 @@
 </template>
 
 <script>
+import io from 'socket.io-client';
 let formatNumber = require('format-number');
 let format = formatNumber({prefix: '$', padRight: 2});
 import RecordRTC from 'recordrtc';
-import {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon} from 'vue-feather-icons';
+import {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon, PlusCircleIcon, InstagramIcon, ArrowLeftIcon, SearchIcon} from 'vue-feather-icons';
 
+import VueLazyload from 'vue-lazyload';
+SBVue.use(VueLazyload);
 export default {
-    components: {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon},
+    components: {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon, PlusCircleIcon, InstagramIcon, ArrowLeftIcon, SearchIcon},
 
     data: () => ({
         format: format,
@@ -386,6 +486,7 @@ export default {
             inquiry_type_id: 2,
             interest: {text: 'test', value: 'test'},
             items: [],
+            widget_id: ''
         },
         enquiryTypeTooltip: false,
         enquiryInterestTooltip: false,
@@ -411,22 +512,17 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        activeTab: 'offers'
+        activeTab: 'inquiries',
+        mediaSource: '',
+        igImages: [],
+        igTag: '',
+        igSearchLoading: false,
     }),
 
     computed: {
-        offers() {
-            let offers = [];
-            this.$root.auth.inquiries.forEach((i) => {
-                if (i.offers.length > 0) offers = [...offers, ...i.offers];
-            });
-
-            return offers;
-        },
-
         subTotal() {
             let subTotal = 0;
-            this.offers.forEach((o) => {
+            this.$root.auth.offers.forEach((o) => {
                 o.services.forEach((s) => {
                     subTotal += parseInt(s.price);
                 });
@@ -474,15 +570,9 @@ export default {
         },
     },
 
-    mounted() {
-        setTimeout(() => {
-            this.video = this.$refs['videoFile'];
-        });
-    },
-
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        /*this.socket = io('https://snapturebox.com:8443');
+        /*this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
             this.messages.push(data);
             this.notification_sound.play();
@@ -490,11 +580,54 @@ export default {
         });*/
     },
 
+    mounted() {
+        setTimeout(() => {
+            this.video = this.$refs['videoFile'];
+        });
+    },
+
     methods: {
+        selectIGImage(url) {
+            let image = new Image();
+            image.setAttribute('crossorigin', 'anonymous');
+            image.src = url;
+            image.onload = () => {
+                let canvas = document.createElement('canvas');
+                let context = canvas.getContext('2d');
+                canvas.width = image.width;
+                canvas.height = image.height;
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                let srcUrl = canvas.toDataURL('image/jpeg');
+
+                this.fileOutput = {
+                    type: 'image',
+                    src: srcUrl,
+                    preview: srcUrl,
+                };
+            };
+
+        },
+
+        getIGImages() {
+            let igTag = this.igTag.trim();
+            if (igTag) {
+                this.igImages = [];
+                this.igSearchLoading = true;
+                SBAxios.get(`/get_ig_images?tag=${igTag}`).then((response) => {
+                    this.igImages = response.data;
+                    this.igSearchLoading = false;
+                }).catch(() => this.igSearchLoading = false);
+            }
+        },
+
         closeCamera() {
-            this.streams.getTracks().forEach(function(track) {
-                track.stop();
-            });
+            if (this.streams) {
+                this.streams.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+            }
+            this.cameraReady = false;
+            this.video.srcObject = null;
         },
 
         initCamera() {
@@ -542,6 +675,7 @@ export default {
             } else this.enquiryMediaTooltip = false;
 
             if (this.$root.auth) {
+                this.enquiry.widget_id = this.$root.widget.id;
                 SBAxios.post('/inquiries', this.enquiry).then((response) => {
                     console.log(response.data);
                     //this.socket.emit('message_sent', response.data);
@@ -565,7 +699,6 @@ export default {
                 this.messages = response.data;
             });
         },
-
 
         takePhoto() {
             // Source
@@ -604,12 +737,12 @@ export default {
             this.videoRecorder.stopRecording(() => {
                 let videoBlob = this.videoRecorder.getBlob();
                 let reader = new window.FileReader();
-                reader.readAsDataURL(videoBlob); 
+                reader.readAsDataURL(videoBlob);
                 reader.onloadend = () => {
                     this.fileOutput = {
                         type: 'video',
                         src: reader.result,
-                        blob: URL.createObjectURL(videoBlob)
+                        blob: URL.createObjectURL(videoBlob),
                     };
                 };
             });
@@ -716,6 +849,7 @@ export default {
                 item: this.fileOutput,
                 comment: '',
             });
+            this.mediaSource = this.fileOutput = null;
         },
 
         setMember(member) {

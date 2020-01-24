@@ -36,6 +36,7 @@ Route::group(
                 'prefix' => 'dashboard',
                 'middleware' => 'auth'
             ], function() {
+                Route::resource('inquiries', 'InquiryController');
                 Route::get('widget', 'WidgetController@show');
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
@@ -43,7 +44,7 @@ Route::group(
             });
         });
         
-        Route::get('/dashboard/{any}', function () {
+        Route::get('/dashboard{any}', function () {
             return view('frontend.layouts.dashboard');
         })->where('any', '.*')->middleware('auth');
 
@@ -51,6 +52,7 @@ Route::group(
 
         Route::any('/facebook_page_tab', 'WidgetController@facebookPageTab');
         Route::get('/{slug}', 'WidgetController@showPublic');
+        Route::get('/{slug}/customer-information', 'WidgetController@customerInformation');
     }
 );
 

@@ -54,10 +54,22 @@ window.app = new Vue({
     },
 
     created() {
-
         axios.get('/auth').then((response) => {
             this.auth = response.data;
         });
+    },
+
+    methods: {
+        logout() {
+            axios
+                .post('/logout')
+                .then((response) => {
+                    window.location.href = '/login';
+                })
+                .catch(() => {
+                    this.loading = false;
+                });
+        },
     }
 });
 $(function () {

@@ -16,6 +16,10 @@ class Message extends Model
     	return $this->belongsTo(Inquiry::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function getCreatedAtAttribute($value)
     {

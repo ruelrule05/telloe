@@ -12,9 +12,7 @@ class Widget extends Model
         'fb_page' => 'array'
     ];
     protected $hidden = [
-        'id',
         'user_id',
-        'fb_page',
         'created_at',
         'updated_at'
     ];
@@ -27,5 +25,15 @@ class Widget extends Model
     public function widgetRules()
     {
         return $this->hasMany(WidgetRule::class)->orderBy('created_at', 'DESC');
+    }
+
+    public function members()
+    {
+        return $this->hasMany(Member::class)->orderBy('created_at', 'DESC');
+    }
+
+    public function inquiries()
+    {
+        return $this->hasMany(Inquiry::class)->orderBy('created_at', 'DESC');
     }
 }

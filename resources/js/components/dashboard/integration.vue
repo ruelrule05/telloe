@@ -1,10 +1,10 @@
 <template>
 	<div v-if="widget">
 		<div>
-			<button @click="FBDialog">Integrate</button>
+			<button @click="FBDialog" class="btn btn-primary">Integrate</button>
 		</div>
 
-		<div v-if="widget.fb_page" class="alert alert-dark d-inline-block">
+		<div v-if="widget.fb_page" class="alert alert-dark d-inline-block mt-2">
 			Selected page: {{ widget.fb_page.name }} ({{ widget.fb_page.id }}) <button :disabled="loading" class="btn btn-sm btn-primary shadow-none" @click="removeTab">Remove</button>
 		</div>
 			
@@ -37,17 +37,18 @@ export default {
 				xfbml: true,
 				version: 'v5.0',
 			});
-			FB.getLoginStatus((response) => {
+			/*FB.getLoginStatus((response) => {
 			  	if (response.status === 'connected') {
 			  		this.FBPages();
 			  	} else {
 			  		this.loading = false;
 			  	}
-			});
+			});*/
 		};
 	},
 
 	created() {
+		this.$root.heading = 'Integration';
     	axios.get('/dashboard/widget').then((response) => {
     		this.widget = response.data;
     	});

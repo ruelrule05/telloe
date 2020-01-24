@@ -44,7 +44,6 @@ document.body.appendChild(container);
 import VueMasonry from './../components/vue-masonry.js';
 import TextareaAutosize from 'vue-textarea-autosize';
 import VTooltip from 'v-tooltip';
-import io from 'socket.io-client';
 import '../../sass/widget.scss';
 import Toasted from 'vue-toasted';
 
@@ -107,6 +106,15 @@ window.app = new SBVue({
             password: '',
             loading: false,
         },
+        customerForm: {
+            first_name: '',
+            last_name: '',
+            email: '',
+            phone: '',
+            offer_id: '',
+            loading: false,
+            skipButton: true,
+        },
         inquiry_types: [],
     },
 
@@ -122,6 +130,23 @@ window.app = new SBVue({
     },
 
     methods: {
+        book() {
+            this.customerForm.loading = true;
+            this.customerForm.skipButton = false;
+            SBAxios.post('/bookings', this.customerForm).then((response) => {
+                this.toggleModal('#customerInfoModal', 'hide');
+                let index = this.auth.offers.findIndex((x) => x.id == this.customerForm.offer_id);
+                if (index > -1) this.auth.offers[index] = response.data;
+                this.customerForm.first_name = 
+                this.customerForm.last_name = 
+                this.customerForm.email = 
+                this.customerForm.phone =
+                this.customerForm.offer_id = '';
+                this.customerForm.loading = false;
+                this.customerForm.skipButton = true;
+            });
+        },
+
         refreshToken() {
             SBAxios.post('/auth/refresh')
                 .then((response) => {

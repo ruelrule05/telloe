@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     public function get(Request $request)
     {
-        $user = Auth::user() ?? false;
+        $user = Auth::check() ? Auth::user()->load('widget.widgetRules') : false;
         return response()->json($user);
     }
 

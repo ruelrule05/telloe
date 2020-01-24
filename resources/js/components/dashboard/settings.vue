@@ -1,14 +1,30 @@
 <template>
-	<div class="container my-5 py-5" v-if="widget">
-		<div class="row">
-			<div class="col-md-7">
-				Rules
-				<form class="mt-2" @submit.prevent="addNewRule">
+	<div>
+		<ul class="nav nav-tabs bg-white position-relative">
+		  	<li class="nav-item">
+		    	<a class="nav-link active py-2" data-toggle="tab" href="#domain">Domain</a>
+		  	</li>
+		  	<li class="nav-item">
+		    	<a class="nav-link py-2" data-toggle="tab" href="#rules">Rules</a>
+		  	</li>
+		</ul>
+		<div class="tab-content border-left border-right border-bottom rounded p-3 mt-n1">
+		  	<!-- Domain -->
+		  	<div class="tab-pane fade show active" id="domain">
+		  		<div class="d-flex">
+			  		<input type="text" class="form-control" placeholder="Domain" :value="$root.auth.widget.domain">
+			  		<button class="btn btn-primary ml-1">Save</button>
+		  		</div>
+		  	</div>
+
+		  	<!-- Rules -->
+		  	<div class="tab-pane fade" id="rules" role="tabpanel" aria-labelledby="pills-profile-tab">
+				<form @submit.prevent="addNewRule">
 					<table class="table table-sm table-borderless mb-0">
 						<tbody>
 							<tr>
 								<td class="pl-0 pb-3">
-									<input type="text" ref="newWidgetPage" v-model="newWidget.page" class="form-control form-control-sm" placeholder="Page (example: /blog)" required>
+									<input type="text" ref="newWidgetPage" v-model="newWidget.page" class="form-control form-control-sm" placeholder="Page (example: /blog)" required />
 								</td>
 								<td class="px-0">
 									<select name="" id="" class="form-control form-control-sm" v-model="newWidget.state" required>
@@ -23,13 +39,13 @@
 								</td>
 							</tr>
 
-							<template v-if="widget.widget_rules.length > 0">
+							<template v-if="$root.auth.widget.widget_rules.length > 0">
 								<tr class="border bg-light">
 									<th>Page</th>
 									<th class="border-right">State</th>
 								</tr>
 
-								<tr v-for="rule in widget.widget_rules" class="border">
+								<tr v-for="rule in $root.auth.widget.widget_rules" class="border">
 									<td class="py-2">{{ rule.page }}</td>
 									<td class="px-0 py-2 border-right">
 										<span class="badge" :class="stateBadge(rule.state)">{{ rule.state }}</span>
@@ -42,71 +58,69 @@
 						</tbody>
 					</table>
 				</form>
-			</div>
+		  	</div>
 		</div>
 	</div>
 </template>
 
-
 <script>
-	export default {
-		data: () => ({
-			widget: null,
-			newWidget: {
-				page: 'test',
-				state: 'hidden'
+export default {
+	data: () => ({
+		newWidget: {
+			page: 'test',
+			state: 'hidden',
+		},
+	}),
+
+	computed: {},
+
+	mounted() {},
+
+	created() {
+		this.$root.heading = 'Settings';
+		axios.get('/dashboard/widget').then((response) => {
+			this.widget = response.data;
+		});
+	},
+
+	watch: {},
+
+	methods: {
+		deleteRule(rule) {
+			let index = this.widget.widget_rules.findIndex((x) => x.id == rule.id);
+			if (index > -1) {
+				axios.delete(`/dashboard/widget/rule/${rule.id}`).then((response) => {
+					this.widget.widget_rules.splice(index, 1);
+				});
 			}
-		}),
+		},
 
-	    computed: { },
+		stateBadge(state) {
+			let badgeState = 'badge-primary';
+			switch (state) {
+				case 'Minimized':
+					badgeState = 'badge-dark';
+					break;
 
-	    mounted() { },
+				case 'Hidden':
+					badgeState = 'badge-light';
+					break;
+			}
 
-	    created() { 
-	    	axios.get('/dashboard/widget').then((response) => {
-	    		this.widget = response.data;
-	    	});
-	    },
+			return badgeState;
+		},
 
-	    watch: {
-	    },
-
-	    methods: {
-	    	deleteRule(rule) {
-	    		let index = this.widget.widget_rules.findIndex((x) => x.id == rule.id);
-	    		if (index > -1) {
-			    	axios.delete(`/dashboard/widget/rule/${rule.id}`).then((response) => {
-	    				this.widget.widget_rules.splice(index, 1);
-			    	});
-	    		}
-	    	},
-
-	    	stateBadge(state) {
-	    		let badgeState = 'badge-primary';
-	    		switch(state) {
-	    			case 'Minimized':
-	    				badgeState = 'badge-dark';
-	    				break;
-
-	    			case 'Hidden':
-	    				badgeState = 'badge-light';
-	    				break;
-	    		}
-
-	    		return badgeState;
-	    	},
-
-	        addNewRule() {
-	        	let exists = this.widget.widget_rules.find((x) => x.page == this.newWidget.page);
-	        	if (!exists) {
-			    	axios.post('/dashboard/widget/rule', Object.assign({}, this.newWidget)).then((response) => {
-		        		this.widget.widget_rules.unshift(response.data);
-		        		this.newWidget.state = this.newWidget.page = '';
-			    	});
-	        	} else {
-	        		this.$refs['newWidgetPage'].focus();
-	        	}
-	        }
-	    }
-	}
+		addNewRule() {
+			let exists = this.widget.widget_rules.find((x) => x.page == this.newWidget.page);
+			if (!exists) {
+				axios.post('/dashboard/widget/rule', Object.assign({}, this.newWidget)).then((response) => {
+					this.widget.widget_rules.unshift(response.data);
+					this.newWidget.state = this.newWidget.page = '';
+				});
+			} else {
+				this.$refs['newWidgetPage'].focus();
+			}
+		},
+	},
+};
 </script>

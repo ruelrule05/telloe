@@ -44,7 +44,7 @@ const auth = {
                     .post('/login' + redirect_url, this.loginForm)
                     .then((response) => {
                         //window.location.href = response.data.redirect_url;
-                        window.location.href = '/inquiries';
+                        window.location.href = '/dashboard/inquiries';
                     })
                     .catch(() => {
                         this.loading = false;

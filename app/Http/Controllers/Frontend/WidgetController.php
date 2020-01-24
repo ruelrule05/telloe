@@ -163,5 +163,8 @@ class WidgetController extends Controller
         return response()->json($response);
     }
 
-
+    public function customerInformation($slug) {
+        $widget = Widget::where('slug', $slug)->firstOrfail();
+        return view('frontend.customer-information', compact('widget'));
+    }
 }

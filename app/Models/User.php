@@ -26,22 +26,19 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'id', 'password', 'remember_token', 'created_at', 'updated_at'
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    
+    protected $appends = ['full_name'];
+
+
 
     public function widget()
     {
         return $this->hasOne(Widget::class);
     }
+
 
     public function inquiries()
     {
@@ -49,6 +46,28 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    public function offers()
+    {
+        return $this->hasMany(Offer::class, 'customer_id')->orderBy('created_at', 'DESC');
+    }
+
+
+
+    public function getFullNameAttribute()
+    {
+        return $this->attributes['first_name'] .
+            ' ' .
+            $this->attributes['last_name'];
+    }
+
+
+
+
+
+
+
+
+    // JWT
     public function getJWTIdentifier()
     {
         return $this->getKey();

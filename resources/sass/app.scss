@@ -2,7 +2,7 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 
-$primary: #0a80ff;
+$primary: #6e82ea;
 $secondary: #637382;
 $bg-light: #f8f9fa;
 $media-md-break: 767.98px;
@@ -84,4 +84,15 @@ $viewport_heights: (
 }
 .cursor-pointer{
 	cursor: pointer !important;
+}
+.outline-0 {
+	outline: 0 !important;
+}
+.user-profile-image{
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
 }

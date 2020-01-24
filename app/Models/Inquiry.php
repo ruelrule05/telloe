@@ -7,7 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Inquiry extends Model
 {
     //
-    protected $fillable = ['inquiry_id', 'message', 'inquiry_type_id', 'interest'];
+    protected $fillable = ['widget_id', 'user_id', 'message', 'inquiry_type_id', 'interest'];
+
+    public function widget()
+    {
+        return $this->belongsTo(Widget::class);
+    }
+
+     public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function inquiryMedia()
     {
@@ -19,8 +29,13 @@ class Inquiry extends Model
         return $this->hasMany(Offer::class)->orderBy('created_at', 'DESC');
     }
 
-    public function message_sent()
+    public function messages()
     {
     	return $this->hasMany(Message::class);
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->diffForHumans();
     }
 }

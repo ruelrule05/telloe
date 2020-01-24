@@ -21,7 +21,12 @@ Route::group([
 ], function(){
 	Route::get('show', 'WidgetController@show');
 	Route::get('inquiry_types', 'WidgetController@inquiryTypes');
+	Route::resource('inquiries', 'InquiryController')->middleware('auth:api');
+	Route::resource('bookings', 'BookingController')->middleware('auth:api');
+	Route::get('get_ig_images', 'WidgetController@getIGImages');
+	
 
+	// Authentication
 	Route::group(['prefix' => 'auth'], function() {
 		Route::post('login', 'AuthController@login');
 		Route::post('signup', 'AuthController@signup');
@@ -30,6 +35,5 @@ Route::group([
 		Route::post('logout', 'AuthController@logout')->middleware('auth:api');
 	});
 
-	Route::resource('inquiries', 'InquiryController')->middleware('auth:api');
 });
 
