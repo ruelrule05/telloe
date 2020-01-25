@@ -8,6 +8,8 @@ use Auth;
 use App\Models\Widget;
 use App\Models\WidgetRule;
 use Facebook\Facebook;
+use Storage;
+use Image;
 
 class WidgetController extends Controller
 {
@@ -110,11 +112,12 @@ class WidgetController extends Controller
                 'name' => 'required',
                 'id' => 'required',
                 'access_token' => 'required',
+                'picture' => 'required',
             ]);
 
             try {
                 $response = $fb->post(
-                    '/1360249617370288/tabs',
+                    '/' . $request->id . '/tabs',
                     [
                         'app_id' => $fb_app_id
                     ],
@@ -127,12 +130,18 @@ class WidgetController extends Controller
             }
             $response = $response->getGraphNode();
 
-            Auth::user()->widget->update([
+            $fbPagePicture = 'storage/fb-page-pictures/' . $request->id . '.png';
+            Image::make($request->picture['data']['url'])->save($fbPagePicture);
+            $widget = Auth::user()->widget;
+            $widget->update([
                 'fb_page' => [
                     'id' => $request->id,
-                    'name' => $request->name
+                    'name' => $request->name,
+                    'picture' => '/' . $fbPagePicture,
                 ]
             ]);
+
+            $response = $widget->fb_page;
 
         elseif ($method == 'DELETE') :
             $this->validate($request, [
@@ -152,11 +161,11 @@ class WidgetController extends Controller
               return abort(403, 'Facebook SDK returned an error: ' . $e->getMessage());
             }
             $response = ['success' => true];
-
-            Auth::user()->widget->update([
+            $widget = Auth::user()->widget;
+            $widget->update([
                 'fb_page' => NULL
             ]);
-
+            $response = $widget->fb_page;
         endif;
 
 

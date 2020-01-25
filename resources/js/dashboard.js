@@ -29,7 +29,8 @@ window.routes = window.routes.concat([
 
 const dashboard = {
     data: {
-        heading: ''
+        heading: '',
+        pageloading: false,
     },
 
     computed: {},

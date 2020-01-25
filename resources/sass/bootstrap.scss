@@ -7,7 +7,8 @@ $border-radius-lg: .4rem;
 $container-max-widths: (
   xl: 1180px
 );
-$primary: #6e82ea;
+$primary: #4d65e5;
+$facebook: #4267B2;
 $secondary: #637382;
 @import "node_modules/bootstrap/scss/variables";
 $dropdown-color: $black;
@@ -21,8 +22,14 @@ $theme-colors: (
   "white": $white,
   "gray": #999,
   "secondary": rgba($gray-200, 70%),
-  "black": $black
+  "black": $black,
+  "facebook": $facebook,
 );
+$modal-header-border-width: 0;
+$modal-footer-border-width: 0;
+$input-focus-box-shadow: none;
+$btn-focus-width: 0;
+$input-focus-width: 0;
 $card-border-width: 0;
 $btn-transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out;
 $link-color: #1e70bf;
@@ -84,7 +91,6 @@ $input-focus-box-shadow:  0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $input-btn-focus-box-shadow:  0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $alert-padding-y: 0.35rem;
-$btn-focus-width: 0.15rem;
 $btn-border-width: 0;
 $badge-font-weight: 600;
 $badge-padding-x: 0.6em;
@@ -139,8 +145,8 @@ $input-color-placeholder: lighten($text-color, 30%);
 
 $spinner-width: 2rem;
 $spinner-height: 2rem;
-$spinner-border-width: .075em;
-$spinner-border-width-sm: .075rem;
+$spinner-border-width: .1em;
+$spinner-border-width-sm: .035rem;
 
 $list-group-color: darken($primary, 30%);
 $list-group-bg: transparent;

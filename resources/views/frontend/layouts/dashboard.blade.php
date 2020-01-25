@@ -9,9 +9,15 @@
 	</head>
 	<body>
 		@auth
-		<div v-if="auth" id="app" class="dashboard h-100vh" v-cloak>
-			<div class="d-flex h-100">
-				<div class="w-25 sidebar h-100vh border-right p-3">
+		<div v-if="auth" id="app" class="dashboard " v-cloak>
+			<div v-if="pageloading" class="pageloader">
+				<div class="position-absolute-center">
+					<div class="spinner-border text-primary" role="status"></div>
+				</div>
+			</div>
+
+			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch border">
+				<div class="w-25 sidebar border-right p-3 align-self-stretch">
 					<h1 class="h4 mb-3">{{ config('app.name') }}</h1>
 					<div class="list-group">
 					  	<router-link to="/dashboard" exact class="list-group-item list-group-item-action">Dashboard</router-link>
@@ -33,7 +39,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="h-100 p-3 bg-light">
+					<div class="bg-light position-relative h-100 overflow-hidden">
 						<router-view></router-view>
 					</div>
 				</div>
