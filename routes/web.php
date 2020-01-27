@@ -36,6 +36,7 @@ Route::group(
                 'prefix' => 'dashboard',
                 'middleware' => 'auth'
             ], function() {
+                Route::get('', 'AuthController@reports');
                 Route::resource('inquiries', 'InquiryController');
                 Route::get('widget', 'WidgetController@show');
                 Route::post('widget/rule', 'WidgetController@addRule');

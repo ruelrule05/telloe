@@ -13,7 +13,7 @@ class PageController extends Controller
     public function homepage(Request $request)
     {
     	if (Auth::check()) :
-    		return redirect('/dashboard/inquiries');
+    		return redirect('/dashboard');
     	endif;
 
     	return redirect('/login');

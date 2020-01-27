@@ -17,14 +17,14 @@
 			</div>
 
 			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch border">
-				<div class="w-25 sidebar border-right p-3 align-self-stretch">
+				<div class="w-25 sidebar border-right py-3 align-self-stretch">
 					<h1 class="h4 mb-3">{{ config('app.name') }}</h1>
 					<div class="list-group">
-					  	<router-link to="/dashboard" exact class="list-group-item list-group-item-action">Dashboard</router-link>
-					  	<router-link to="/dashboard/inquiries" class="list-group-item list-group-item-action">Inquiries</router-link>
-					  	<router-link to="/dashboard/bookings" class="list-group-item list-group-item-action">Bookings</router-link>
-					  	<router-link to="/dashboard/integration" class="list-group-item list-group-item-action">Integration</router-link>
-					  	<router-link to="/dashboard/settings" class="list-group-item list-group-item-action">Settings</router-link>
+					  	<router-link to="/dashboard" exact class="border-0 rounded-0 list-group-item list-group-item-action">Dashboard</router-link>
+					  	<router-link to="/dashboard/inquiries" class="border-0 rounded-0 list-group-item list-group-item-action">Inquiries</router-link>
+					  	<router-link to="/dashboard/bookings" class="border-0 rounded-0 list-group-item list-group-item-action">Bookings</router-link>
+					  	<router-link to="/dashboard/integration" class="border-0 rounded-0 list-group-item list-group-item-action">Integration</router-link>
+					  	<router-link to="/dashboard/settings" class="border-0 rounded-0 list-group-item list-group-item-action">Settings</router-link>
 					</div>
 				</div>
 				<div class="w-75 d-flex flex-column">
@@ -40,6 +40,11 @@
 						</div>
 					</div>
 					<div class="bg-light position-relative h-100 overflow-hidden">
+						<div class="contentloader position-absolute w-100 h-100" v-if="contentloading">
+							<div class="position-absolute-center">
+								<div class="spinner-border text-primary" role="status"></div>
+							</div>
+						</div>
 						<router-view></router-view>
 					</div>
 				</div>

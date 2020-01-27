@@ -8,6 +8,10 @@ window.routes = window.routes.concat([
         },
         children: [
             {
+                path: '',
+                component: () => import(/* webpackChunkName: "dashboard" */ './components/dashboard/dashboard.vue'),
+            },
+            {
                 path: 'inquiries',
                 component: () => import(/* webpackChunkName: "inquiries" */ './components/dashboard/inquiries/index.vue'),
             },
@@ -30,7 +34,7 @@ window.routes = window.routes.concat([
 const dashboard = {
     data: {
         heading: '',
-        pageloading: false,
+        contentloading: true,
     },
 
     computed: {},
@@ -39,7 +43,11 @@ const dashboard = {
 
     created() {},
 
-    watch: {},
+    watch: {
+        '$route.path': function() {
+            this.contentloading = true;
+        },
+    },
 
     methods: {
     },

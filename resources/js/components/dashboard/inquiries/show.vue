@@ -15,7 +15,7 @@
 			</masonry>
 		</div>
 
-		<div class="col-md-4 overflow-hidden h-100 d-flex flex-column p-0">
+		<div class="col-md-4 overflow-hidden h-100 d-flex flex-column p-0 border-left">
 			<div class="bg-white py-3 px-2 h6 shadow-sm">Messages</div>
 			<div class="h-100 d-flex flex-column overflow-hidden">
 				<div class="overflow-auto flex-grow-1 px-3 py-2">
@@ -98,6 +98,8 @@ export default {
 		getData() {
 			axios.get(`/dashboard/inquiries/${this.$route.params.id}`).then((response) => {
 				this.inquiry = response.data;
+				this.$root.contentloading = false;
+				console.log(1221653241202716673);
 			});
 		},
 

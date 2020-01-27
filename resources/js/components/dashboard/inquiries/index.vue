@@ -1,5 +1,5 @@
 <template>
-	<div class="row px-1">
+	<div class="row py-3 px-2 m-0">
 		<div class="col-md-4 mb-3 px-2" v-for="inquiry in inquiries">
 			<div class="shadow-sm cursor-pointer p-3 rounded bg-white" @click="goTo(inquiry.id)">
 				<div class="media align-items-center">
@@ -33,6 +33,7 @@ export default {
 		getData() {
 			axios.get('/dashboard/inquiries').then((response) => {
 				this.inquiries = response.data;
+				this.$root.contentloading = false;
 			});
 		},
 

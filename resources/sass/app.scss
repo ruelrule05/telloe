@@ -107,6 +107,12 @@ $viewport_heights: (
 	z-index: 99999;
 	background: rgba(white, 0.85);
 }
+.contentloader{
+	width: 100%;
+	height: 100%;
+	z-index: 33333;
+	background: white;
+}
 .btn{
 	&.disabled,
 	&:disabled{
@@ -140,6 +146,9 @@ $viewport_heights: (
 			opacity: 1;
 		}
 	}
+}
+.toasted-container{
+	z-index: 88888 !important;
 }
 .media-control{
 	z-index: 1;

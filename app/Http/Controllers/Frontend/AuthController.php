@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\PasswordReset;
+use App\Models\Inquiry;
+use App\Models\Booking;
 use Illuminate\Support\Str;
 use Auth;
 
@@ -120,6 +122,15 @@ class AuthController extends Controller
         endif;
 
         return view('frontend.auth.reset');
+    }
+
+
+    public function reports() {
+        $reports = [];
+        $reports['inquiries'] = Inquiry::all()->count();
+        $reports['bookings'] = Booking::all()->count();
+
+        return response()->json($reports);
     }
 
 }
