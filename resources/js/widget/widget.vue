@@ -515,8 +515,9 @@ export default {
         activeTab: 'inquiries',
         mediaSource: '',
         igImages: [],
-        igTag: '',
+        igTag: 'dog',
         igSearchLoading: false,
+        watermark: null,
     }),
 
     computed: {
@@ -571,6 +572,8 @@ export default {
     },
 
     created() {
+        this.watermark = new Image();
+        this.watermark.src = '/images/watermark.png';
         this.notification_sound = new Audio('/notifications/new_message.mp3');
         /*this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
@@ -597,6 +600,7 @@ export default {
                 canvas.width = image.width;
                 canvas.height = image.height;
                 context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                context.drawImage(this.watermark, canvas.width - 50, 0, 50, 50);
                 let srcUrl = canvas.toDataURL('image/jpeg');
 
                 this.fileOutput = {

@@ -11,6 +11,9 @@ Route::group(
         'namespace' => 'Frontend'
     ],
     function () {
+        Route::get('/slek', function() {
+            return view('frontend.slek');
+        });
         Route::get('/', 'PageController@homepage');
 		Route::get('login', 'AuthController@login')->middleware('guest');
 		Route::get('signup', 'AuthController@signup')->middleware('guest');

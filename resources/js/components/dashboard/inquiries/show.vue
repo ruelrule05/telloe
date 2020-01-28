@@ -19,22 +19,23 @@
 			<div class="bg-white py-3 px-2 h6 shadow-sm">Messages</div>
 			<div class="h-100 d-flex flex-column overflow-hidden">
 				<div class="overflow-auto flex-grow-1 px-3 py-2">
-					<p>{{ inquiry.message }}</p>
-					<p>{{ inquiry.message }}</p>
-					<p>{{ inquiry.message }}</p>
 				</div>
 				<div class="bg-white p-2 shadow-sm">
 					<div class="d-flex">
 						<input type="text" class="form-control form-control-sm" placeholder="Write your message..">
 						<button class="btn btn-primary btn-sm ml-1"><send-icon size="1x"></send-icon></button>
 					</div>
-					<button class="btn btn-sm">
-						<video-icon size="1.2x" class="cursor-pointer"></video-icon>
+					<button class="btn btn-sm shadow-none" data-toggle="modal" data-target="#recordVideoModal" data-backdrop="static" data-keyboard="false">
+						<video-icon size="1.2x"></video-icon>
 					</button>
-					<gift-icon size="1x" class="mx-1 cursor-pointer"></gift-icon>
+					<button class="btn btn-sm shadow-none">
+						<gift-icon size="1.2x"></gift-icon>
+					</button>
 				</div>
 			</div>
 		</div>
+
+		<video-recorder :files="inquiry.inquiry_media" id="recordVideoModal"></video-recorder>
 
 		<div class="modal fade" tabindex="-1" role="dialog" id="mediaViewModal">
 		  	<div class="modal-dialog modal-dialog-centered" role="document">
@@ -44,7 +45,7 @@
 				          	<span aria-hidden="true">&times;</span>
 				        </button>
 			      	</div>
-			      	<div class="modal-body p-0 rounded overflow-hidden">
+			      	<div class="modal-body p-0 rounded overflow-hidden" v-if="mediaViewIndex > -1">
 			      		<button v-if="mediaViewIndex > 0" class="btn bg-transparent outline-0 position-absolute h-50 shadow-none px-4 cursor-pointer media-control" @click="mediaViewIndex--">
 			      			<chevron-left-icon class="position-absolute-center text-white" size="2x"></chevron-left-icon>
 			      		</button>
@@ -67,7 +68,10 @@ import ChevronLeftIcon from 'vue-feather-icons/icons/ChevronLeftIcon';
 import ChevronRightIcon from 'vue-feather-icons/icons/ChevronRightIcon';
 import SendIcon from 'vue-feather-icons/icons/SendIcon';
 import GiftIcon from 'vue-feather-icons/icons/GiftIcon';
+import PauseIcon from 'vue-feather-icons/icons/PauseIcon';
+import CheckIcon from 'vue-feather-icons/icons/CheckIcon';
 import VueMasonry from './../../../components/vue-masonry.js';
+import VideoRecorder from './../../../components/video-recorder.vue';
 Vue.use(VueMasonry);
 
 export default {
@@ -78,11 +82,14 @@ export default {
 		ChevronRightIcon,
 		SendIcon,
 		GiftIcon,
+		PauseIcon,
+		CheckIcon,
+		VideoRecorder,
 	},
 
 	data: () => ({
 		inquiry: null,
-		mediaViewIndex: 0
+		mediaViewIndex: -1,
 	}),
 
 	computed: {},
@@ -99,7 +106,6 @@ export default {
 			axios.get(`/dashboard/inquiries/${this.$route.params.id}`).then((response) => {
 				this.inquiry = response.data;
 				this.$root.contentloading = false;
-				console.log(1221653241202716673);
 			});
 		},
 

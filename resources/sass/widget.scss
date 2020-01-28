@@ -14,6 +14,10 @@ $btn-focus-width: 0;
 $input-focus-width: 0;
 $input-focus-border-color: #999;
 $namespace: 'snapturebox';
+$spinner-width: 2rem;
+$spinner-height: 2rem;
+$spinner-border-width: .1em;
+$spinner-border-width-sm: .035rem;
 
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/variables';
