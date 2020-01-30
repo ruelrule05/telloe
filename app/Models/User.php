@@ -26,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'id', 'password', 'remember_token', 'created_at', 'updated_at'
+        'password', 'remember_token', 'created_at', 'updated_at'
     ];
 
     
@@ -51,6 +51,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Offer::class, 'customer_id')->orderBy('created_at', 'DESC');
     }
 
+    public function userPlan()
+    {
+        return $this->hasOne(UserPlan::class);
+    }
 
 
     public function getFullNameAttribute()

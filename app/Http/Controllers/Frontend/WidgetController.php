@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Models\Widget;
 use App\Models\WidgetRule;
+use App\Models\Plan;
 use Facebook\Facebook;
 use Storage;
 use Image;
+use DB;
 
 class WidgetController extends Controller
 {
@@ -175,5 +177,10 @@ class WidgetController extends Controller
     public function customerInformation($slug) {
         $widget = Widget::where('slug', $slug)->firstOrfail();
         return view('frontend.customer-information', compact('widget'));
+    }
+
+    public function plans() {
+        $plans = Plan::orderBy('price', 'ASC')->get();
+        return response()->json($plans);
     }
 }

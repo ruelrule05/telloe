@@ -395,7 +395,7 @@
 
                         <div v-if="mediaSource == 'instagram'" class="snapturebox-px-3 snapturebox-pt-5 snapturebox-d-flex snapturebox-flex-column snapturebox-h-100">
                             <div class="snapturebox-d-flex">
-                                <input type="text" v-model="igTag" class="snapturebox-form-control" placeholder="Search by tag..">
+                                <input type="text" v-model="igTag" class="snapturebox-form-control" placeholder="Search by tag.." @keydown="disableSpace" @change="removeSpaces">
                                 <button :disabled="igSearchLoading" class="snapturebox-btn snapturebox-btn-primary snapturebox-ml-1" @click="getIGImages"><search-icon></search-icon></button>
                             </div>
                             <div class="snapturebox-position-relative h-100 snapturebox-overflow-y-only snapturebox-flex-grow-1 snapturebox-pt-3">
@@ -590,6 +590,17 @@ export default {
     },
 
     methods: {
+        disableSpace(e) {
+            if (e.which === 32) {
+                e.preventDefault();
+                return false;
+            }
+        },
+
+        removeSpaces(e) {
+            this.igTag = this.igTag.replace(/\s/g, "");
+        },
+
         selectIGImage(url) {
             let image = new Image();
             image.setAttribute('crossorigin', 'anonymous');

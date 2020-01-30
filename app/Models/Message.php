@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Message extends Model
 {
     //
-    protected $fillable = ['inquiry_id', 'message', 'type', 'sender', 'preview'];
+    protected $fillable = ['inquiry_id', 'user_id', 'message', 'type', 'preview'];
     protected $appends = ['timestamp'];
 
     public function inquiry()

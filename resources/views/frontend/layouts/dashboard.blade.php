@@ -34,6 +34,8 @@
 							<div class="dropdown">
 							  	<button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">@{{ auth.full_name }}</button>
 							  	<div class="dropdown-menu dropdown-menu-right">
+							    	<router-link to="/dashboard/account" class="dropdown-item">Account</router-link>
+							    	<router-link to="/dashboard/billing" class="dropdown-item">Billing</router-link>
 							    	<a class="dropdown-item" href="#" @click.prevent="logout">Logout</a>
 							  	</div>
 							</div>

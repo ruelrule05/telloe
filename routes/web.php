@@ -20,7 +20,6 @@ Route::group(
         Route::get('recover', 'AuthController@recover')->middleware('guest');
         Route::get('reset', 'AuthController@reset')->middleware('guest');
 
-		Route::resource('messages', 'MessageController')->middleware('auth');
         Route::resource('inquiries', 'InquiryController')->middleware('auth');
 		Route::resource('widgets', 'WidgetController')->middleware('auth');
 
@@ -41,10 +40,12 @@ Route::group(
             ], function() {
                 Route::get('', 'AuthController@reports');
                 Route::resource('inquiries', 'InquiryController');
+                Route::post('inquiries/{id}/message', 'InquiryController@postMessage');
                 Route::get('widget', 'WidgetController@show');
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
                 Route::any('integration', 'WidgetController@updateIntegration');
+                Route::get('plans', 'WidgetController@plans');
             });
         });
         

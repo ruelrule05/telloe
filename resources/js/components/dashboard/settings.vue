@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<ul class="nav nav-tabs bg-white position-relative">
+	<div class="p-3">
+		<ul class="nav nav-tabs bg-whixte position-relative">
 		  	<li class="nav-item">
 		    	<a class="nav-link active py-2" data-toggle="tab" href="#domain">Domain</a>
 		  	</li>
@@ -74,23 +74,22 @@ export default {
 
 	computed: {},
 
-	mounted() {},
+	mounted() {
+		this.$root.contentloading = false;
+	},
 
 	created() {
 		this.$root.heading = 'Settings';
-		axios.get('/dashboard/widget').then((response) => {
-			this.widget = response.data;
-		});
 	},
 
 	watch: {},
 
 	methods: {
 		deleteRule(rule) {
-			let index = this.widget.widget_rules.findIndex((x) => x.id == rule.id);
+			let index = this.$root.auth.widget.widget_rules.findIndex((x) => x.id == rule.id);
 			if (index > -1) {
 				axios.delete(`/dashboard/widget/rule/${rule.id}`).then((response) => {
-					this.widget.widget_rules.splice(index, 1);
+					this.$root.auth.widget.widget_rules.splice(index, 1);
 				});
 			}
 		},
@@ -111,10 +110,10 @@ export default {
 		},
 
 		addNewRule() {
-			let exists = this.widget.widget_rules.find((x) => x.page == this.newWidget.page);
+			let exists = this.$root.auth.widget.widget_rules.find((x) => x.page == this.newWidget.page);
 			if (!exists) {
 				axios.post('/dashboard/widget/rule', Object.assign({}, this.newWidget)).then((response) => {
-					this.widget.widget_rules.unshift(response.data);
+					this.$root.auth.widget.widget_rules.unshift(response.data);
 					this.newWidget.state = this.newWidget.page = '';
 				});
 			} else {

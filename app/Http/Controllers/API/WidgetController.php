@@ -34,7 +34,7 @@ class WidgetController extends Controller
         $puppeteer = new Puppeteer;
         $browser = $puppeteer->launch();
         $page = $browser->newPage();
-        $page->goto('https://www.instagram.com/explore/tags/' . $request->tag);
+        $page->goto('https://www.instagram.com/explore/tags/' . preg_replace('/\s+/', '', $request->tag));
         $sharedData = $page->evaluate(JsFunction::createWithBody("
             return _sharedData;
         "));

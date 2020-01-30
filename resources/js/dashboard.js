@@ -27,6 +27,14 @@ window.routes = window.routes.concat([
                 path: 'integration',
                 component: () => import(/* webpackChunkName: "integration" */ './components/dashboard/integration.vue'),
             },
+            {
+                path: 'account',
+                component: () => import(/* webpackChunkName: "account" */ './components/dashboard/account.vue'),
+            },
+            {
+                path: 'billing',
+                component: () => import(/* webpackChunkName: "billing" */ './components/dashboard/billing.vue'),
+            },
         ],
     },
 ]);

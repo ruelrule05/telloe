@@ -24,4 +24,9 @@ class InquiryPolicy
     {
         return $user->widget_id == $inquiry->widget_id || $user->id == $inquiry->user_id;
     }
+
+    public function postMessage(User $user, Inquiry $inquiry)
+    {
+        return $inquiry->widget_id == $user->widget_id || $user->id == $inquiry->user_id;
+    }
 }

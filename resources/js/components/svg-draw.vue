@@ -1,5 +1,5 @@
 <template>
-	<svg @mousedown="svgDraw" @mousemove="svgDraw" xmlns="http://www.w3.org/2000/svg" ref="drawSvg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svgElement" x="0px" y="0px" class="w-100 h-100 position-absolute" style="z-index: 1; top: 0; left: 0;" enable-background="new 0 0 600 400" xml:space="preserve" />
+	<svg @click="removePath" @mousedown="svgDraw" @mousemove="svgDraw" @mouseup="svgDraw" xmlns="http://www.w3.org/2000/svg" ref="drawSvg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="svgElement" x="0px" y="0px" class="w-100 h-100 position-absolute" style="z-index: 1; top: 0; left: 0;" enable-background="new 0 0 600 400" xml:space="preserve" />
 </template>
 
 <script>
@@ -29,7 +29,6 @@ export default {
 	data: () => ({
 		strokeWidth: 3,
 		bufferSize: 0,
-		path: null,
 		strPath: '',
 		buffer: [],
 	}),
@@ -67,7 +66,7 @@ export default {
 				let count = 0;
 				for (i = offset; i < len; i++) {
 					count++;
-					pt = buffer[i];
+					pt = this.buffer[i];
 					totalX += pt.x;
 					totalY += pt.y;
 				}
@@ -90,7 +89,7 @@ export default {
 				// This part will change if the mouse moves again
 				let tmpPath = '';
 				for (let offset = 2; offset < this.buffer.length; offset += 2) {
-					pt = getAveragePoint(offset);
+					pt = this.getAveragePoint(offset);
 					tmpPath += ' L' + pt.x + ' ' + pt.y;
 				}
 
@@ -100,32 +99,34 @@ export default {
 		},
 
 		svgDraw(e) {
-			if (e.type == 'mousedown') {
-				this.bufferSize = 4;
-				this.path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-				this.path.setAttribute('fill', 'none');
-				this.path.setAttribute('stroke', 'red');
-				this.path.setAttribute('stroke-width', this.strokeWidth);
-				this.buffer = [];
-				let pt = this.getMousePosition(e);
-				this.appendToBuffer(pt);
-				this.strPath = 'M' + pt.x + ' ' + pt.y;
-				this.path.setAttribute('d', this.strPath);
-				svgElement.appendChild(this.path);
-			}
-			if (e.type == 'mousemove') {
-				if (this.path && this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && this.drawTool == 'brush') {
-					//if (path) {
-					this.appendToBuffer(this.getMousePosition(e));
-					this.updateSvgPath();
-				}
-			} 
-			if (e.type == 'mouseup') {
-				if (this.path) {
-					this.path = null;
+			if (!this.disabled) {
+				if (e.type == 'mousedown') {
+					this.bufferSize = 4;
+					this.path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+					this.path.setAttribute('fill', 'none');
+					this.path.setAttribute('stroke', 'red');
+					this.path.setAttribute('stroke-width', this.strokeWidth);
+					this.buffer = [];
+					let pt = this.getMousePosition(e);
+					this.appendToBuffer(pt);
+					this.strPath = 'M' + pt.x + ' ' + pt.y;
+					this.path.setAttribute('d', this.strPath);
+					svgElement.appendChild(this.path);
+				} else if (e.type == 'mousemove') {
+					//if (this.path && this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && this.drawTool == 'brush') {
+					if (this.path) {
+						this.appendToBuffer(this.getMousePosition(e));
+						this.updateSvgPath();
+					}
+				} else if (e.type == 'mouseup') {
+					if (this.path) this.path = null;
 				}
 			}
 		},
+
+		removePath(e) {
+			if (e.target.nodeName == 'path') e.target.remove();
+		}
 	},
 };
 </script>
