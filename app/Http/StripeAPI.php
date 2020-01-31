@@ -2,9 +2,6 @@
 namespace App\Http;
 
 use Stripe\Stripe;
-use App\Modules\Stripe\Config\StripeConfig;
-use DB;
-
 
 class StripeAPI
 {
@@ -14,12 +11,9 @@ class StripeAPI
     protected $referral_coupon = 'rIBzd73u';
 
 
-    public function __construct($secret_key = '')
+    public function __construct()
     {
         $this->secret_key = config('stripe.secret_key');
-        $this->product_id = config('stripe.product_id');
-
-        if( !empty( $secret_key ) ) $this->secret_key = $secret_key;
 
         Stripe::setApiKey($this->secret_key);
     }

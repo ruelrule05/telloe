@@ -55,6 +55,7 @@
         "recordrtc": "^5.5.8",
         "request": "^2.88.0",
         "socket.io": "^2.3.0",
+        "stripe-client": "^1.1.5",
         "tls": "0.0.1",
         "v-tooltip": "^2.0.2",
         "videojs-record": "^3.8.0",

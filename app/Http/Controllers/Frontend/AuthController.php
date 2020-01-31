@@ -15,7 +15,7 @@ class AuthController extends Controller
 {
     public function get(Request $request)
     {
-        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'userPlan') : false;
+        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription') : false;
         return response()->json($user);
     }
 

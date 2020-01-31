@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'profile_image'
+        'first_name', 'last_name', 'email', 'password', 'profile_image', 'stripe_customer_id'
     ];
 
     /**
@@ -51,9 +51,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Offer::class, 'customer_id')->orderBy('created_at', 'DESC');
     }
 
-    public function userPlan()
+    public function subscription()
     {
-        return $this->hasOne(UserPlan::class);
+        return $this->hasOne(Subscription::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
 

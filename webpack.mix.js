@@ -111,4 +111,26 @@ else if (argv.indexOf('--widget') > -1) {
     });
 }
 
+else if (argv.indexOf('--admin') > -1) { 
+    console.log('Running admin assets...');
+    mix
+        .sass('resources/sass/admin.scss', 'public/css')
+        .js('resources/js/admin.js', 'public/js')
+        .version()
+        .mergeManifest();
+    
+    mix.browserSync({
+        proxy: 'https://admin.snapturebox.app',
+        host: 'admin.snapturebox.app',
+        open: false,
+        port: 8000,
+        watch: true,
+        notify: false,
+        https: {
+            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+        }
+    });
+}
+
 

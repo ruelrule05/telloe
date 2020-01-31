@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserPlan extends Model
+class Subscription extends Model
 {
     //
-    protected $fillable = ['user_id', 'plan_id'];
+    protected $fillable = ['user_id', 'plan_id', 'stripe_subscription_id'];
 
     public function user()
     {

@@ -46,6 +46,8 @@ Route::group(
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
                 Route::any('integration', 'WidgetController@updateIntegration');
                 Route::get('plans', 'WidgetController@plans');
+                Route::get('stripe_publishable_key', 'WidgetController@stripePublishableKey');
+                Route::post('subscribe', 'WidgetController@subscribe');
             });
         });
         
@@ -61,6 +63,47 @@ Route::group(
     }
 );
 
+
+/*
+ * Admin Routes
+ *
+ *
+ */
+Route::group(
+    [
+        'domain' => config('app.admin_url'),
+        'namespace' => 'Admin'
+    ],
+    function () {
+        Route::group(
+            [
+                'middleware' => 'admin'
+            ],
+            function () {
+                Route::group(
+                    [
+                        'prefix' => 'ajax',
+                        'middleware' => 'ajax'
+                    ],
+                    function() {
+                        Route::resource('jobs', 'JobController');
+                        Route::resource('employers', 'EmployerController');
+                        Route::resource('assistants', 'AssistantController');
+                        Route::resource('applicants', 'ApplicantController');
+                        Route::put('assistants/{id}/verify', 'AssistantController@verify');
+                    }
+                );
+                
+                Route::get('{any}', function () {
+                    return view('admin.layout');
+                })->where('any', '.*');
+            }
+        );
+
+        // Authentication
+        Route::post('/admin/auth/login', 'AuthController@store');
+    }
+);
 
 
 
