@@ -19,7 +19,7 @@ class Admin
     {
         if ($this->auth->guest()) :
             return response( view('admin.auth.login') );
-        elseif (!$this->auth->user()->role->role == 'administrator') :
+        elseif ($this->auth->user()->role->role != 'administrator') :
             return abort(403);
         endif;
 

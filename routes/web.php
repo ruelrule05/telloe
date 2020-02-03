@@ -86,7 +86,7 @@ Route::group(
                         'middleware' => 'ajax'
                     ],
                     function() {
-                        Route::resource('jobs', 'JobController');
+                        Route::resource('areas-of-interests', 'AreasOfInterestController');
                         Route::resource('employers', 'EmployerController');
                         Route::resource('assistants', 'AssistantController');
                         Route::resource('applicants', 'ApplicantController');

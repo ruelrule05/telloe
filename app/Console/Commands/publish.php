@@ -43,6 +43,7 @@ class publish extends Command
             'storage/app/public/inquiry-media',
             'storage/app/public/profile-images',
             'storage/app/public/fb-page-pictures',
+            'storage/app/public/sample-images',
         ];
         foreach($publicFolders as $folder) :
             if (!File::exists($folder)) File::makeDirectory($folder);

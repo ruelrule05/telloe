@@ -26,13 +26,19 @@ Vue.use(Toasted, {
 Vue.use(VueRouter);
 Vue.component('vue-select', require('./components/vue-select.vue').default);
 Vue.component('vue-button', require('./components/vue-button.vue').default);
-
+Vue.component('icon', require('./icons/index.vue').default);
+Vue.component('vue-form-validate', require('./components/vue-form-validate.vue').default);
 
 const routes = [
     {
         path: '',
         component: () =>
-            import(/* webpackChunkName: "admin/jobs" */ './components/admin/dashboard.vue')
+            import(/* webpackChunkName: "admin/dashboard" */ './components/admin/dashboard.vue')
+    },
+    {
+        path: '/areas-of-interests',
+        component: () =>
+            import(/* webpackChunkName: "admin/areas-of-interests" */ './components/admin/areas-of-interests.vue')
     },
 ];
 const router = new VueRouter({
