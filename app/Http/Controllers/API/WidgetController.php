@@ -26,7 +26,7 @@ class WidgetController extends Controller
 
     public function inquiryTypes() 
     {
-        return response()->json(InquiryType::orderBy('type', 'ASC')->get());
+        return response()->json(InquiryType::orderBy('id', 'ASC')->get());
     }
 
     public function getIGImages(Request $request)

@@ -28,10 +28,12 @@ window.SBAxios.interceptors.response.use(
         if (error.response.status == 401) {
             let access_token = window.localStorage.getItem('snapturebox_access_token');
             if (access_token) window.app.refreshToken();
+        } else {
+            SBVue.toasted.error(error.response.data.message, {
+                className: 'snapturebox-bg-red snapturebox-rounded-0 snapturebox-justify-content-center',
+            });
         }
-        SBVue.toasted.error(error.response.data.message, {
-            className: 'snapturebox-bg-red snapturebox-rounded-0 snapturebox-justify-content-center',
-        });
+        
         return Promise.reject(error);
     },
 );
@@ -119,8 +121,6 @@ window.app = new SBVue({
     },
 
     created() {
-        this.getData();
-
         if (typeof widget == 'undefined') {
             this.validateDomain();
         } else {
@@ -225,6 +225,7 @@ window.app = new SBVue({
         validateDomain() {
             SBAxios.get(`/show?domain=${window.location.hostname}`)
                 .then((response) => {
+                    this.getData();
                     this.widget = response.data;
                     let pageRule = this.widget.widget_rules.find((x) => x.page == window.location.pathname);
                     if (pageRule) {
@@ -243,7 +244,9 @@ window.app = new SBVue({
                         }
                     }
                 })
-                .catch(() => {});
+                .catch((e) => {
+                    console.warn(e.response.data.message);
+                });
         },
 
         getAuth() {

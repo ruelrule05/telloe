@@ -1,181 +1,201 @@
 <template>
-    <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage': $root.fullPage}">
+    <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage': $root.fullPage}" v-cloak>
         <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
             <message-circle-icon></message-circle-icon>
         </div>
 
         <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
-            <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 justify-content-center">
+            <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 snapturebox-h-100 justify-content-center">
                 <!-- Left -->
                 <div class="snapturebox-overflow-auto snapturebox-bg-white" :class="{'snapturebox-section-left-open': $root.leftOpen}" id="snapturebox-section-left">
-                    <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle">
-                        <button class="snapturebox-btn snapturebox-px-2 snapturebox-py-0" @click="$root.leftOpen = $root.leftOpen ? false : true">
-                            <x-icon v-if="$root.fullPage"></x-icon>
-                            <menu-icon v-else></menu-icon>
-                        </button>
-                    </div>
-                    <transition name="snapturebox-fade">
-                        <div v-if="$root.leftOpen || $root.fullPage" class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100">
-                            <div class="snapturebox-p-4">
-                                <div v-if="$root.auth" class="snapturebox-d-flex snapturebox-align-items-center">
-                                    <div class="dropdown">
-                                        <img src="https://via.placeholder.com/40" class="snapturebox-rounded-circle snapturebox-cursor-pointer snapturebox-dropdown-toggle" />
-                                        <div class="snapturebox-dropdown-menu">
-                                            <a class="snapturebox-dropdown-item" href="#" @click.prevent="$root.logout">Logout</a>
-                                        </div>
-                                    </div>
+                    <div class="snapturebox-d-flex snapturebox-h-100">
 
-                                    <ul class="snapturebox-nav snapturebox-nav-pills">
-                                        <li class="snapturebox-nav-item snapturebox-mx-4">
-                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-primary snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#" @click.prevent="activeTab = 'inquiries'" :class="{'snapturebox-border-bottom': activeTab == 'inquiries'}">My Inquiries</a>
-                                        </li>
-                                        <li class="snapturebox-nav-item">
-                                            <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-primary  snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#" @click.prevent="activeTab = 'offers'" :class="{'snapturebox-border-bottom': activeTab == 'offers'}">My Offers</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div v-else>
-                                    <button class="snapturebox-btn snapturebox-btn-primary snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#loginModal', 'show')">Log In</button>
-                                    <button class="snapturebox-btn snapturebox-btn-light snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#signupModal', 'show')">Sign Up</button>
-                                </div>
+                        <!-- Left buttons -->
+                        <div class="snapturebox-h-100 snapturebox-pt-5 snapturebox-px-3 snapturebox-text-center">
+                            <div class="snapturebox-mb-2">
+                                <button class="snapturebox-btn snapturebox-p-0 snapturebox-section-left-open-toggle snapturebox-shadow-none" @click="$root.leftOpen = $root.leftOpen ? false : true">
+                                <x-icon v-if="$root.fullPage"></x-icon>
+                                <panel-arrow-right v-else-if="$root.leftOpen"></panel-arrow-right>
+                                <panel-arrow-left v-else></panel-arrow-left>
+                            </button>
                             </div>
-
-                            <!-- Inquiries -->
-                            <div class="snapturebox-overflow-auto" v-if="activeTab == 'inquiries'">
-                                <div class="snapturebox-px-4 snapturebox-py-3">
-                                    <h5>Take Photos</h5>
-                                    <span class="snapturebox-text-secondary">Here are examples of position to take.</span>
-                                    <div class="snapturebox-mt-3">
-                                        <img src="https://via.placeholder.com/180X80" alt="" class="" />
-                                        <img src="https://via.placeholder.com/180X80" alt="" class="" />
-                                        <img src="https://via.placeholder.com/180X80" alt="" class="" />
-                                    </div>
-                                </div>
-                                <div class="snapturebox-d-flex snapturebox-flex-grow-1 snapturebox-flex-column snapturebox-position-relative">
-                                    <div v-tooltip.top="{content: 'Please add at least 1 photo or video', trigger: 'manual', show: enquiryMediaTooltip}"></div>
-                                    <masonry :cols="2" :gutter="20" id="snapturebox-media-items" class="snapturebox-px-4">
-                                        <div class="snapturebox-media-item snapturebox-mb-3" v-if="enquiry.items.length > 0" v-for="(item, index) in enquiry.items">
-                                            <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm snapturebox-position-relative">
-                                                <div class="snapturebox-p-2 snapturebox-position-absolute" v-if="!sent" style="z-index: 1; right: 0">
-                                                    <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-p-0 snapturebox-shadow-none snapturebox-line-height-0" @click="removeItem(index)">
-                                                        <x-icon size="1.2x"></x-icon>
-                                                    </button>
-                                                </div>
-                                                <img :src="item.item.preview" alt="" class="w-100 position-relative" />
-
-                                                <div class="snapturebox-p-2">
-                                                    <div v-if="!sent">
-                                                        <div class="position-relative" v-if="item.comment">
-                                                            <textarea-autosize :disabled="!item.edit || sent" :class="{'border-0': !item.edit || sent}" :value="item.comment" class="form-control bg-white font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
-                                                            <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px" v-if="!sent">
-                                                                <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" :class="{'bg-white border-0 text-dark': !item.edit || sent}" @click="saveComment(index, $event)">
-                                                                    <span v-if="item.edit">Save</span>
-                                                                    <edit-icon size="1x" v-else></edit-icon>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="position-relative" v-else>
-                                                            <textarea-autosize :disabled="sent" :value="item.comment" class="form-control font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
-
-                                                            <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px">
-                                                                <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" @click="addComment(index, $event)">Add</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <p style="line-height: 1.5; margin-bottom: 0" v-else-if="item.comment">{{ item.comment }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- New items -->
-                                        <div class="snapturebox-media-item snapturebox-mb-3" v-for="new_item in new_items" v-if="!sent">
-                                            <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm">
-                                                <div class="snapturebox-border snapturebox-rounded snapturebox-position-relative" style="height: 220px">
-                                                    <div class="snapturebox-position-absolute-center snapturebox-text-center">
-                                                        <button
-                                                            class="snapturebox-btn snapturebox-border snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0"
-                                                            @click="
-                                                                preview = '';
-                                                                $root.toggleModal('#addMediaModal', 'show');
-                                                            "
-                                                        >
-                                                            <plus-icon size="1.2x"></plus-icon>
-                                                        </button>
-                                                        <div class="snapturebox-text-secondary snapturebox-mt-3">
-                                                            Add New Photos
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </masonry>
-                                </div>
+                            <div class="snapturebox-pt-2 snapturebox-pb-3">
+                                <img src="https://via.placeholder.com/32X32" alt="" class="snapturebox-rounded-circle snapturebox-w-1x00">
                             </div>
-
-                            <!-- Offers -->
-                            <div class="snapturebox-overflow-auto" v-if="activeTab == 'offers' && $root.auth">
-                                <div class="snapturebox-row snapturebox-mx-0">
-                                    <div v-for="offer in $root.auth.offers" class="snapturebox-col-md-6">
-                                        <div class="snapturebox-px-3 snapturebox-py-2 snapturebox-border snapturebox-rounded snapturebox-shadow-sm">
-                                            <div class="snapturebox-media snapturebox-mb-3">
-                                                <div class="snapturebox-profile-image" :style="{backgroundImage: 'url(' + offer.member.user.profile_image + ')'}"></div>
-                                                <div class="snapturebox-media-body snapturebox-ml-2">
-                                                    <div class="snapturebox-font-weight-bold snapturebox-mb-n1">{{ offer.member.user.first_name }} {{ offer.member.user.last_name }}</div>
-                                                    <small>{{ offer.created_at }}</small>
-                                                </div>
-                                            </div>
-                                            <div v-for="service in offer.services" class="snapturebox-mb-1">
-                                                <div class="snapturebox-d-flex">
-                                                    <div>{{ service.service }}</div>
-                                                    <div class="snapturebox-ml-auto">{{ format(service.price) }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="snapturebox-border-top snapturebox-border-bottom snapturebox-py-1 snapturebox-my-1" v-if="offer.discount">
-                                                <small class="snapturebox-text-muted">DISCOUNT</small>
-                                                <div class="snapturebox-d-flex">
-                                                    <div>{{ offer.discount_text }}</div>
-                                                    <div class="snapturebox-ml-auto">-{{ format(offer.discount) }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="snapturebox-d-flex snapturebox-justify-content-end">
-                                                <span>Subtotal:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal) }}</span>
-                                            </div>
-                                            <div class="snapturebox-d-flex snapturebox-justify-content-end">
-                                                <span>Discount:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(offer.discount) }}</span>
-                                            </div>
-                                            <div class="snapturebox-mt-2 snapturebox-d-flex snapturebox-font-weight-bold snapturebox-justify-content-end">
-                                                <span>Total:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal - offer.discount) }}</span>
-                                            </div>
-                                            <button
-                                                :disabled="offer.booked"
-                                                class="snapturebox-btn snapturebox-btn-primary snapturebox-btn-block snapturebox-mt-3"
-                                                @click="
-                                                    $root.customerForm.offer_id = offer.id;
-                                                    $root.toggleModal('#customerInfoModal', 'show');
-                                                "
-                                            >
-                                                {{ offer.booked ? 'Booked' : 'Book this offer' }}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="snapturebox-pt-2 snapturebox-pb-3">
+                                <widget-chat></widget-chat>
+                            </div>
+                            <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
+                                <small class="font-weight-bold">My <br /> Inquiries</small>
+                            </div>
+                            <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
+                                <small class="font-weight-bold">My <br /> Offers</small>
                             </div>
                         </div>
-                    </transition>
+    
+                        <transition name="snapturebox-fade">
+                            <div v-if="$root.leftOpen || $root.fullPage" class="snapturebox-d-flex snapturebox-bg-light snapturebox-flex-column snapturebox-mh-100">
+                                <!-- <div class="snapturebox-p-4">
+                                    <div v-if="$root.auth" class="snapturebox-d-flex snapturebox-align-items-center">
+                                        <div class="dropdown">
+                                            <img src="https://via.placeholder.com/40" class="snapturebox-rounded-circle snapturebox-cursor-pointer snapturebox-dropdown-toggle" />
+                                            <div class="snapturebox-dropdown-menu">
+                                                <a class="snapturebox-dropdown-item" href="#" @click.prevent="$root.logout">Logout</a>
+                                            </div>
+                                        </div>
+
+                                        <ul class="snapturebox-nav snapturebox-nav-pills">
+                                            <li class="snapturebox-nav-item snapturebox-mx-4">
+                                                <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-primary snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#" @click.prevent="activeTab = 'inquiries'" :class="{'snapturebox-border-bottom': activeTab == 'inquiries'}">My Inquiries</a>
+                                            </li>
+                                            <li class="snapturebox-nav-item">
+                                                <a class="snapturebox-nav-link snapturebox-p-2 snapturebox-border-primary  snapturebox-rounded-0 snapturebox-text-dark snapturebox-font-weight-bold" href="#" @click.prevent="activeTab = 'offers'" :class="{'snapturebox-border-bottom': activeTab == 'offers'}">My Offers</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div v-else>
+                                        <button class="snapturebox-btn snapturebox-btn-primary snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#loginModal', 'show')">Log In</button>
+                                        <button class="snapturebox-btn snapturebox-btn-light snapturebox-badge-pill snapturebox-px-3" @click="$root.toggleModal('#signupModal', 'show')">Sign Up</button>
+                                    </div>
+                                </div> -->
+
+                                <!-- Inquiries -->
+                                <div class="snapturebox-overflow-auto" v-if="activeTab == 'inquiries'">
+                                    <div class="snapturebox-px-4 snapturebox-pt-5 snapturebox-py-3">
+                                        <h5 class="snapturebox-font-montserrat">Please add a photo with your inquiry</h5>
+                                        <span class="snapturebox-text-secondary snapturebox-font-weight-light snapturebox-font-montserrat">Here are examples of best position to take for</span>
+                                        <div class="snapturebox-mt-3">
+                                            <img src="https://via.placeholder.com/180X80" alt="" class="" />
+                                            <img src="https://via.placeholder.com/180X80" alt="" class="" />
+                                            <img src="https://via.placeholder.com/180X80" alt="" class="" />
+                                        </div>
+                                    </div>
+                                    <div class="snapturebox-d-flex snapturebox-flex-grow-1 snapturebox-flex-column snapturebox-position-relative">
+                                        <div v-tooltip.top="{content: 'Please add at least 1 photo or video', trigger: 'manual', show: enquiryMediaTooltip}"></div>
+                                        <masonry :cols="2" :gutter="45" id="snapturebox-media-items" class="snapturebox-px-5 snapturebox-py-4">
+                                            <div class="snapturebox-media-item snapturebox-mb-4 snapturebox-pb-3" v-if="enquiry.items.length > 0" v-for="(item, index) in enquiry.items">
+                                                <div class="snapturebox-media-item-content snapturebox-overflow-hidden snapturebox-shadow-sm snapturebox-position-relative">
+                                                    <div class="snapturebox-p-2 snapturebox-position-absolute" v-if="!sent" style="z-index: 1; right: 0">
+                                                        <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-p-0 snapturebox-shadow-none snapturebox-line-height-0" @click="removeItem(index)">
+                                                            <x-icon size="1.2x"></x-icon>
+                                                        </button>
+                                                    </div>
+                                                    <img :src="item.item.preview" alt="" class="w-100 position-relative" />
+
+                                                    <div class="snapturebox-p-2">
+                                                        <div v-if="!sent">
+                                                            <div class="position-relative" v-if="item.comment">
+                                                                <textarea-autosize :disabled="!item.edit || sent" :class="{'border-0': !item.edit || sent}" :value="item.comment" class="form-control bg-white font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
+                                                                <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px" v-if="!sent">
+                                                                    <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" :class="{'bg-white border-0 text-dark': !item.edit || sent}" @click="saveComment(index, $event)">
+                                                                        <span v-if="item.edit">Save</span>
+                                                                        <edit-icon size="1x" v-else></edit-icon>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="position-relative" v-else>
+                                                                <textarea-autosize :disabled="sent" :value="item.comment" class="form-control font-weight-normal form-control-sm shadow-none" placeholder="Add comment.." rows="1" style="padding-right: 46px" />
+
+                                                                <div class="position-absolute" style="top: 0; right: 0; padding: 2px; height: 30px">
+                                                                    <button class="btn btn-primary btn-sm shadow-none h-100 py-0 line-height-0" @click="addComment(index, $event)">Add</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <p style="line-height: 1.5; margin-bottom: 0" v-else-if="item.comment">{{ item.comment }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- New items -->
+                                            <div class="snapturebox-media-item snapturebox-mb-4 snapturebox-pb-3" v-for="new_item in new_items" v-if="!sent">
+                                                <div class="snapturebox-media-item-content snapturebox-overflow-hidden">
+                                                    <div class="snapturebox-rounded-lg snapturebox-position-relative" style="height: 220px">
+                                                        <div class="snapturebox-position-absolute-center snapturebox-text-center">
+                                                            <button
+                                                                class="snapturebox-btn snapturebox-border snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0"
+                                                                @click="
+                                                                    preview = '';
+                                                                    $root.toggleModal('#addMediaModal', 'show');
+                                                                "
+                                                            >
+                                                                <plus-icon size="1.2x"></plus-icon>
+                                                            </button>
+                                                            <div class="snapturebox-text-secondary snapturebox-mt-3">
+                                                                Add New Photos
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </masonry>
+                                    </div>
+                                </div>
+
+                                <!-- Offers -->
+                                <div class="snapturebox-overflow-auto" v-if="activeTab == 'offers' && $root.auth">
+                                    <div class="snapturebox-row snapturebox-mx-0">
+                                        <div v-for="offer in $root.auth.offers" class="snapturebox-col-md-6">
+                                            <div class="snapturebox-px-3 snapturebox-py-2 snapturebox-border snapturebox-rounded snapturebox-shadow-sm">
+                                                <div class="snapturebox-media snapturebox-mb-3">
+                                                    <div class="snapturebox-profile-image" :style="{backgroundImage: 'url(' + offer.member.user.profile_image + ')'}"></div>
+                                                    <div class="snapturebox-media-body snapturebox-ml-2">
+                                                        <div class="snapturebox-font-weight-bold snapturebox-mb-n1">{{ offer.member.user.first_name }} {{ offer.member.user.last_name }}</div>
+                                                        <small>{{ offer.created_at }}</small>
+                                                    </div>
+                                                </div>
+                                                <div v-for="service in offer.services" class="snapturebox-mb-1">
+                                                    <div class="snapturebox-d-flex">
+                                                        <div>{{ service.service }}</div>
+                                                        <div class="snapturebox-ml-auto">{{ format(service.price) }}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="snapturebox-border-top snapturebox-border-bottom snapturebox-py-1 snapturebox-my-1" v-if="offer.discount">
+                                                    <small class="snapturebox-text-muted">DISCOUNT</small>
+                                                    <div class="snapturebox-d-flex">
+                                                        <div>{{ offer.discount_text }}</div>
+                                                        <div class="snapturebox-ml-auto">-{{ format(offer.discount) }}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="snapturebox-d-flex snapturebox-justify-content-end">
+                                                    <span>Subtotal:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal) }}</span>
+                                                </div>
+                                                <div class="snapturebox-d-flex snapturebox-justify-content-end">
+                                                    <span>Discount:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(offer.discount) }}</span>
+                                                </div>
+                                                <div class="snapturebox-mt-2 snapturebox-d-flex snapturebox-font-weight-bold snapturebox-justify-content-end">
+                                                    <span>Total:</span><span class="snapturebox-w-25 snapturebox-text-right">{{ format(subTotal - offer.discount) }}</span>
+                                                </div>
+                                                <button
+                                                    :disabled="offer.booked"
+                                                    class="snapturebox-btn snapturebox-btn-primary snapturebox-btn-block snapturebox-mt-3"
+                                                    @click="
+                                                        $root.customerForm.offer_id = offer.id;
+                                                        $root.toggleModal('#customerInfoModal', 'show');
+                                                    "
+                                                >
+                                                    {{ offer.booked ? 'Booked' : 'Book this offer' }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </transition>
+                    </div>
                 </div>
 
                 <!-- Right -->
                 <div class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-bg-primary" id="snapturebox-section-right">
                     <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle snapturebox-d-flex snapturebox-align-items-center">
-                        <div class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white snapturebox-text-white">
+                        <!-- <div class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white snapturebox-text-white">
                             <info-icon size="1.2x"></info-icon>
-                        </div>
+                        </div> -->
                         <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true"><menu-icon></menu-icon></button>
                     </div>
                     <div class="snapturebox-text-white snapturebox-h-100 snapturebox-w-100">
-                        <div class="snapturebox-p-4">
+                        <div class="snapturebox-p-4 snapturebox-pt-5">
                             <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 8px; right: 15px">
                                 <info-icon size="1.2x" class="snapturebox-cursor-pointer"></info-icon>
                                 <x-icon size="1.4x" class="snapturebox-cursor-pointer" @click="toggleWidget"></x-icon>
@@ -186,36 +206,36 @@
                             </p>
 
                             <div class="snapturebox-my-4">
-                                <strong>Clinic Location: <span class="snapturebox-text-info">(change location)</span></strong>
-                                <h5 class="snapturebox-mt-1 snapturebox-font-weight-bold">Anti Wrinkle & Skin Gold Coast</h5>
+                                Clinic Location: <span class="snapturebox-text-info snapturebox-text-underline">(change location)</span>
+                                <h5 class="snapturebox-mt-1 snapturebox-font-weight-bold">{{ $root.widget.heading }}</h5>
                             </div>
 
-                            <strong v-tooltip.right="{content: 'Please choose an enquiry type', trigger: 'manual', show: enquiryTypeTooltip}">Your enquiry type:</strong>
+                            <span class="snapturebox-font-montserrat" v-tooltip.right="{content: 'Please choose an enquiry type', trigger: 'manual', show: enquiryTypeTooltip}">Your enquiry type:</span>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
-                                <div class="snapturebox-d-flex">
-                                    <div class="snapturebox-flex-grow-1" v-for="inquiry_type in $root.inquiry_types">
+                                <div class="snapturebox-d-flex mx-n1">
+                                    <div class="snapturebox-flex-grow-1 px-1" v-for="inquiry_type in $root.inquiry_types">
                                         <button
-                                            class="snapturebox-btn snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block"
+                                            class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block snapturebox-line-height-0"
                                             :class="{'snapturebox-active': enquiry.inquiry_type_id == inquiry_type.id}"
                                             @click="
                                                 enquiry.inquiry_type_id = inquiry_type.id;
                                                 enquiryTypeTooltip = false;
                                             "
                                         >
-                                            {{ inquiry_type.type }}
+                                            <small class="snapturebox-font-weight-bold">{{ inquiry_type.type }}</small>
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <strong v-tooltip.right="{content: 'Please choose an area interest', trigger: 'manual', show: enquiryInterestTooltip}">Areas of Interests:</strong>
+                            <span class="snapturebox-font-montserrat" v-tooltip.right="{content: 'Please choose an area interest', trigger: 'manual', show: enquiryInterestTooltip}">Areas of Interests:</span>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
-                                <vue-select v-model="enquiry.interest" :options="[{text: 'test', value: 'test'}]" :value="{}" button_class="snapturebox-badge-pill" placeholder="Choose areas of interests"></vue-select>
+                                <vue-select searchable multiple v-model="enquiry.interest" :options="[{text: 'test', value: 'test'}]" :value="{}" button_class="snapturebox-badge-pill" placeholder="Choose areas of interests"></vue-select>
                             </div>
 
                             <strong v-tooltip.right="{content: 'Please write your inquiry', trigger: 'manual', show: enquiryMessageTooltip}">Your Inquiry:</strong> <info-icon size="1x" class="snapturebox-cursor-pointer"></info-icon>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
-                                <textarea v-model="enquiry.message" rows="8" class="snapturebox-form-control snapturebox-rounded-lg" placeholder="Please type your inquiry here" style="resize: none"></textarea>
+                                <textarea v-model="enquiry.message" rows="6" class="snapturebox-form-control snapturebox-rounded-lg" placeholder="Please type your inquiry here" style="resize: none"></textarea>
                             </div>
 
                             <div class="snapturebox-text-right">
@@ -369,14 +389,29 @@
                     <div class="snapturebox-modal-body snapturebox-bg-dark snapturebox-p-0" style="height: 400px">
                         <!-- Top buttons -->
                         <div class="snapturebox-d-flex snapturebox-position-absolute snapturebox-w-100 snapturebox-pt-1" style="z-index: 10">
-                            <button v-if="mediaSource" type="button" class="snapturebox-btn snapturebox-text-white snapturebox-shadow-none" @click="closeCamera(); mediaSource = fileOutput = null">
+                            <button
+                                v-if="mediaSource"
+                                type="button"
+                                class="snapturebox-btn snapturebox-text-white snapturebox-shadow-none"
+                                @click="
+                                    closeCamera();
+                                    mediaSource = fileOutput = null;
+                                "
+                            >
                                 <arrow-left-icon></arrow-left-icon>
                             </button>
-                            <button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-ml-auto snapturebox-shadow-none" @click="$root.toggleModal('#addMediaModal', 'hide'); closeCamera(); mediaSource = fileOutput = null;">
+                            <button
+                                type="button"
+                                class="snapturebox-btn snapturebox-text-white snapturebox-ml-auto snapturebox-shadow-none"
+                                @click="
+                                    $root.toggleModal('#addMediaModal', 'hide');
+                                    closeCamera();
+                                    mediaSource = fileOutput = null;
+                                "
+                            >
                                 <x-icon></x-icon>
                             </button>
                         </div>
-
 
                         <!-- Clear fileOutput -->
                         <div class="snapturebox-position-absolute-center snapturebox-py-5 snapturebox-hover-opacity-1 snapturebox-w-100 snapturebox-text-center" v-if="fileOutput">
@@ -385,27 +420,42 @@
                             </button>
                         </div>
 
-                        
                         <!-- Select source -->
                         <div class="snapturebox-position-absolute-center snapturebox-text-white" style="z-index: 10" v-if="!mediaSource && !fileOutput">
-                            <camera-icon size="1.8x" class="snapturebox-cursor-pointer snapturebox-outline-0" v-tooltip.top="'From camera'" @click="initCamera(); mediaSource = 'camera'"></camera-icon>
+                            <camera-icon
+                                size="1.8x"
+                                class="snapturebox-cursor-pointer snapturebox-outline-0"
+                                v-tooltip.top="'From camera'"
+                                @click="
+                                    initCamera();
+                                    mediaSource = 'camera';
+                                "
+                            ></camera-icon>
                             <plus-circle-icon size="1.8x" class="snapturebox-cursor-pointer snapturebox-outline-0 snapturebox-mx-3" v-tooltip.top="'Browse media'" @click="browseMedia"></plus-circle-icon>
                             <instagram-icon size="1.8x" class="snapturebox-cursor-pointer snapturebox-outline-0" v-tooltip.top="'Search in Instagram'" @click="mediaSource = 'instagram'"></instagram-icon>
                         </div>
 
                         <div v-if="mediaSource == 'instagram'" class="snapturebox-px-3 snapturebox-pt-5 snapturebox-d-flex snapturebox-flex-column snapturebox-h-100">
                             <div class="snapturebox-d-flex">
-                                <input type="text" v-model="igTag" class="snapturebox-form-control" placeholder="Search by tag.." @keydown="disableSpace" @change="removeSpaces">
+                                <input type="text" v-model="igTag" class="snapturebox-form-control" placeholder="Search by tag.." @keydown="disableSpace" @change="removeSpaces" />
                                 <button :disabled="igSearchLoading" class="snapturebox-btn snapturebox-btn-primary snapturebox-ml-1" @click="getIGImages"><search-icon></search-icon></button>
                             </div>
                             <div class="snapturebox-position-relative h-100 snapturebox-overflow-y-only snapturebox-flex-grow-1 snapturebox-pt-3">
                                 <div v-if="igSearchLoading" class="snapturebox-position-absolute-center">
                                     <div class="snapturebox-spinner-border snapturebox-spinner-border-sm snapturebox-text-light"></div>
                                 </div>
-                                <div v-lazy-container="{ selector: 'img' }" class="snapturebox-row snapturebox-px-2">
+                                <div v-lazy-container="{selector: 'img'}" class="snapturebox-row snapturebox-px-2">
                                     <div v-for="igImage in igImages" class="snapturebox-col-4 snapturebox-px-2 snapturebox-mb-3">
                                         <div class="snapturebox-ig-image">
-                                            <button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-shadow-none snapturebox-position-absolute-center" @click="selectIGImage(igImage); mediaSource = null;">Choose</button>
+                                            <button
+                                                class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-shadow-none snapturebox-position-absolute-center"
+                                                @click="
+                                                    selectIGImage(igImage);
+                                                    mediaSource = null;
+                                                "
+                                            >
+                                                Choose
+                                            </button>
                                             <img :data-src="igImage" class="snapturebox-rounded snapturebox-w-100" />
                                         </div>
                                     </div>
@@ -417,7 +467,7 @@
                             <div class="snapturebox-spinner-border snapturebox-text-primary" role="status"></div>
                             <div class="snapturebox-text-white">Loading camera..</div>
                         </div>
-                        
+
                         <video :hidden="fileOutput" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100"></video>
                         <div v-if="fileOutput" class="snapturebox-h-100">
                             <video v-if="fileOutput.type == 'video'" ref="fileOutput" class="snapturebox-w-100 snapturebox-h-100" :src="fileOutput.blob" style="outline: 0" playsinline controls @loadeddata="loadeddata"></video>
@@ -472,21 +522,24 @@ import io from 'socket.io-client';
 let formatNumber = require('format-number');
 let format = formatNumber({prefix: '$', padRight: 2});
 import RecordRTC from 'recordrtc';
+import PanelArrowLeft from '../icons/panel-arrow-left.vue';
+import PanelArrowRight from '../icons/panel-arrow-right.vue';
+import WidgetChat from '../icons/widget-chat.vue';
 import {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon, PlusCircleIcon, InstagramIcon, ArrowLeftIcon, SearchIcon} from 'vue-feather-icons';
 
 import VueLazyload from 'vue-lazyload';
 SBVue.use(VueLazyload);
 export default {
-    components: {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon, PlusCircleIcon, InstagramIcon, ArrowLeftIcon, SearchIcon},
+    components: {MessageCircleIcon, SendIcon, VideoIcon, MicIcon, CameraIcon, PlayIcon, PauseIcon, ChevronDownIcon, SmileIcon, XIcon, UserIcon, AtSignIcon, SmartphoneIcon, LockIcon, MoreVerticalIcon, InfoIcon, FileTextIcon, PhoneIcon, PlusIcon, EditIcon, CheckCircleIcon, ArrowRightIcon, MenuIcon, PlusCircleIcon, InstagramIcon, ArrowLeftIcon, SearchIcon, PanelArrowLeft, PanelArrowRight, WidgetChat},
 
     data: () => ({
         format: format,
         enquiry: {
             message: 'tests',
-            inquiry_type_id: 2,
-            interest: {text: 'test', value: 'test'},
+            inquiry_type_id: '',
+            interest: [],
             items: [],
-            widget_id: ''
+            widget_id: '',
         },
         enquiryTypeTooltip: false,
         enquiryInterestTooltip: false,
@@ -533,7 +586,7 @@ export default {
         },
 
         new_items() {
-            let new_items = 4 - this.enquiry.items.length;
+            let new_items = 2 - this.enquiry.items.length;
             if (new_items < 1) new_items = 1;
             return new_items;
         },
@@ -598,7 +651,7 @@ export default {
         },
 
         removeSpaces(e) {
-            this.igTag = this.igTag.replace(/\s/g, "");
+            this.igTag = this.igTag.replace(/\s/g, '');
         },
 
         selectIGImage(url) {
@@ -620,7 +673,6 @@ export default {
                     preview: srcUrl,
                 };
             };
-
         },
 
         getIGImages() {
@@ -628,10 +680,12 @@ export default {
             if (igTag) {
                 this.igImages = [];
                 this.igSearchLoading = true;
-                SBAxios.get(`/get_ig_images?tag=${igTag}`).then((response) => {
-                    this.igImages = response.data;
-                    this.igSearchLoading = false;
-                }).catch(() => this.igSearchLoading = false);
+                SBAxios.get(`/get_ig_images?tag=${igTag}`)
+                    .then((response) => {
+                        this.igImages = response.data;
+                        this.igSearchLoading = false;
+                    })
+                    .catch(() => (this.igSearchLoading = false));
             }
         },
 

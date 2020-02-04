@@ -169,8 +169,8 @@ export default {
 
     methods: {
         inputFocused(e) {
-            if (!$(this.$refs['dropdown-menu']).hasClass('show') && e.relatedTarget && e.relatedTarget.type == 'submit') {
-                $(this.$refs['dropdown-toggle']).dropdown('show');
+            if (!$(this.$refs['dropdown-menu']).hasClass('snapturebox-show')) {
+                $(this.$refs['dropdown-menu']).addClass('snapturebox-show');
             }
         },
 
