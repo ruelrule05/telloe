@@ -196,7 +196,7 @@
                     </div>
                     <div class="snapturebox-text-white snapturebox-h-100 snapturebox-w-100">
                         <div class="snapturebox-p-4 snapturebox-pt-5">
-                            <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 8px; right: 15px">
+                            <div v-if="!$root.fullPage" class="snapturebox-position-absolute" style="top: 15px; right: 15px">
                                 <info-icon size="1.2x" class="snapturebox-cursor-pointer"></info-icon>
                                 <x-icon size="1.4x" class="snapturebox-cursor-pointer" @click="toggleWidget"></x-icon>
                             </div>
@@ -235,7 +235,7 @@
 
                             <strong v-tooltip.right="{content: 'Please write your inquiry', trigger: 'manual', show: enquiryMessageTooltip}">Your Inquiry:</strong> <info-icon size="1x" class="snapturebox-cursor-pointer"></info-icon>
                             <div class="snapturebox-mt-2 snapturebox-mb-3">
-                                <textarea v-model="enquiry.message" rows="6" class="snapturebox-form-control snapturebox-rounded-lg" placeholder="Please type your inquiry here" style="resize: none"></textarea>
+                                <textarea v-model="enquiry.message" rows="7" class="snapturebox-form-control snapturebox-rounded-lg" placeholder="Please type your inquiry here" style="resize: none"></textarea>
                             </div>
 
                             <div class="snapturebox-text-right">
