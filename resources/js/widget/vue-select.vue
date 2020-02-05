@@ -1,24 +1,26 @@
 <template>
     <div class="snapturebox-vue-select">
         <div class="snapturebox-dropdown-container snapturebox-overflow-visible" :class="drop" ref="dropdown" :disabled="disabled">
-            <button class="snapturebox-btn snapturebox-font-family-base snapturebox-font-smoothing-auto snapturebox-text-black snapturebox-dropdown-toggle snapturebox-border snapturebox-btn-block snapturebox-text-left snapturebox-d-inline-flex" :class="toggle_button_class" @click.prevent ref="dropdown-toggle">
+            <button @click="showMenu()" class="snapturebox-btn snapturebox-btn-sm snapturebox-font-family-base snapturebox-font-smoothing-auto snapturebox-text-black snapturebox-dropdown-toggle snapturebox-btn-block snapturebox-text-left snapturebox-d-inline-flex" :class="toggle_button_class" @click.prevent ref="dropdown-toggle">
                 <template v-if="searchable">
-                    <input type="text" @focus="inputFocused" spellcheck="false" v-model="search" class="snapturebox-outline-0 snapturebox-input-searchable snapturebox-w-100 snapturebox-bg-transparent snapturebox-line-height-1 snapturebox-font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
+                    <input type="text" @focus="showMenu()" spellcheck="false" v-model="search" class="snapturebox-outline-0 snapturebox-input-searchable snapturebox-w-100 snapturebox-bg-transparent snapturebox-line-height-1 snapturebox-font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
                 </template>
                 <template v-else>
-                    <div class="snapturebox-select-placeholder snapturebox-text-ellipsis">
+                    <div class="snapturebox-select-placeholder snapturebox-text-ellipsis snapturebox-pointer-events-none">
                         <span v-if="selected_value.value" class="font-weight-normal">{{ selected_value.text }}</span>
                         <span v-else>{{ select_placeholder }}</span>
                     </div>
                 </template>
                 &nbsp;
+                <chevron-down height="28" width="28"></chevron-down>
             </button>
-            <div class="snapturebox-bg-white snapturebox-dropdown-menu snapturebox-fade snapturebox-border-0 snapturebox-rounded" ref="dropdown-menu">
+
+            <div class="snapturebox-bg-white snapturebox-dropdown-menu snapturebox-rounded-lg snapturebox-fade snapturebox-border-0" ref="dropdown-menu">
                 <div class="snapturebox-scrollable-menu" ref="scrollable-menu">
                 <span class="snapturebox-dropdown-item snapturebox-disabled snapturebox-pl-3 snapturebox-font-weight-light" v-if="filtered_options.length == 0">
                     <span v-if="show_no_results" class="snapturebox-text-gray">No results found</span>
                 </span>
-                <a href="#" v-else class="snapturebox-dropdown-item snapturebox-cursor-pointer" :id="'item-' + option.value" :class="{active: selected_value.text && option.value == selected_value.value}" @click.prevent="updateValue(option)" v-for="option in filtered_options">
+                <a href="#" v-else class="snapturebox-dropdown-item snapturebox-cursor-pointer" :id="'item-' + option.value" :class="{active: selected_value.text && option.value == selected_value.value}" @click.prevent="updateValue(option);hideMenu();" v-for="option in filtered_options">
                     <div class="snapturebox-text-ellipsis">
                         <span>{{ option.text }}</span>
                     </div>
@@ -26,11 +28,12 @@
                 </div>
             </div>
         </div>
+
         <div class="snapturebox-multiple-values">
             <transition-group name="fade" tag="div" v-if="selected_value.length > 0" class="snapturebox-mt-1">
-                <span class="snapturebox-btn snapturebox-btn-xs snapturebox-btn-light snapturebox-bg-light snapturebox-text-dark snapturebox-badge-pill snapturebox-border snapturebox-py-1 snapturebox-pl-3 snapturebox-pr-1 snapturebox-mt-1 snapturebox-mr-1 snapturebox-d-inline-flex snapturebox-align-items-center" v-for="(selected, index) in selected_value" :key="selected.value" @click.stop>
+                <span class="snapturebox-badge snapturebox-line-height-0 snapturebox-badge-pill snapturebox-d-inline-flex snapturebox-align-items-center snapturebox-ml-1" v-for="(selected, index) in selected_value" :key="selected.value" @click.stop>
                     {{ selected.text }}
-                    <i class="eva eva-close-outline cursor-pointer font-size-15 line-height-0" @click="selected_value.splice(index, 1)"></i>
+                    <close fill="white" width="18" height="20" @click.native="selected_value.splice(index, 1)" class="snapturebox-cursor-pointer"></close>
                 </span>
             </transition-group>
         </div>
@@ -38,11 +41,14 @@
 </template>
 
 <script>
+import ChevronDown from '../icons/chevron-down.vue';
+import Close from '../icons/close.vue';
 export default {
+    components: {ChevronDown, Close},
     props: {
         drop: {
             type: String,
-            default: 'dropdown'
+            default: 'snapturebox-dropdown'
         },
 
         placeholder: {
@@ -101,6 +107,20 @@ export default {
 
     created() {
         this.selected_value = this.value;
+        document.onclick = (e) => {
+            let element = e.target;
+            let dropdown = null;
+            if (element.classList.contains('snapturebox-dropdown-toggle') || element.classList.contains('snapturebox-input-searchable')) {
+                dropdown = $(element).parentsUntil('.snapturebox-vue-select').find('.snapturebox-dropdown-menu')[0];
+            }
+
+            let visibleDropdowns = this.$el.querySelectorAll('.snapturebox-show');
+            if (visibleDropdowns.length > 0) {
+                visibleDropdowns.forEach((vd) => {
+                    if (vd != dropdown || !dropdown) vd.classList.remove('snapturebox-show');
+                });
+            }
+        };
     },
 
     mounted() {
@@ -168,10 +188,12 @@ export default {
     },
 
     methods: {
-        inputFocused(e) {
-            if (!$(this.$refs['dropdown-menu']).hasClass('snapturebox-show')) {
-                $(this.$refs['dropdown-menu']).addClass('snapturebox-show');
-            }
+        hideMenu() {
+            $(this.$refs['dropdown-menu']).removeClass('snapturebox-show');
+        },
+
+        showMenu(e) {
+            $(this.$refs['dropdown-menu']).addClass('snapturebox-show');
         },
 
         updateValue(option) {

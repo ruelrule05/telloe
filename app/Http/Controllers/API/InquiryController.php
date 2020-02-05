@@ -21,7 +21,7 @@ class InquiryController extends Controller
             'widget_id' => 'required|exists:widgets,id',
             'message' => 'required',
             'inquiry_type_id' => 'required|exists:inquiry_types,id',
-            'interest' => 'required',
+            'interests' => 'required|array',
             'items' => 'required|array',
         ]);
 

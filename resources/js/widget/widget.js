@@ -11,7 +11,9 @@ window.SBAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.SBAxios.interceptors.request.use(
     function(config) {
         let access_token = window.localStorage.getItem('snapturebox_access_token');
-        access_token = access_token ? `?token=${access_token}` : '';
+        let concat = '?';
+        if (config.url.indexOf('?') > -1) concat = '&';
+        access_token = access_token ? `${concat}token=${access_token}` : '';
         config.headers['Cache-Control'] = 'no-cache';
         config.url = `${API}/ajax${config.url}${access_token}`;
         return config;
@@ -40,7 +42,7 @@ window.SBAxios.interceptors.response.use(
 
 let container = document.createElement('div');
 container.id = 'snapturebox-widget';
-container.innerHTML = '<widget @click.native="widgetClicked" />';
+container.innerHTML = '<widget />';
 document.body.appendChild(container);
 
 import VueMasonry from './../components/vue-masonry.js';
@@ -88,12 +90,13 @@ window.app = new SBVue({
     el: '#snapturebox-widget',
 
     data: {
+        API: API,
         widget: null,
         auth: null,
         hidden: false,
         open: true, // false
         fullPage: false,
-        leftOpen: false,
+        leftOpen: false, // false
         backdrop: false,
         loginForm: {
             email: 'cleidoscope@gmail.com',
@@ -245,7 +248,7 @@ window.app = new SBVue({
                     }
                 })
                 .catch((e) => {
-                    console.warn(e.response.data.message);
+                    if(e.response) console.warn(e.response.data.message);
                 });
         },
 
@@ -253,21 +256,6 @@ window.app = new SBVue({
             SBAxios.get(`/auth/me`).then((response) => {
                 this.auth = response.data;
             });
-        },
-
-        widgetClicked(e) {
-            let dropdown = null;
-            if (e.target.classList.contains('snapturebox-dropdown-toggle')) {
-                dropdown = e.target.parentNode.querySelector('.snapturebox-dropdown-menu');
-                if (dropdown) dropdown.classList.toggle('snapturebox-show');
-            }
-
-            let visibleDropdowns = this.$el.querySelectorAll('.snapturebox-show');
-            if (visibleDropdowns.length > 0) {
-                visibleDropdowns.forEach((vd) => {
-                    if (vd != dropdown || !dropdown) vd.classList.remove('snapturebox-show');
-                });
-            }
         },
     },
 });

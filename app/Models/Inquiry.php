@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Inquiry extends Model
 {
     //
-    protected $fillable = ['widget_id', 'user_id', 'message', 'inquiry_type_id', 'interest'];
+    protected $fillable = ['widget_id', 'user_id', 'message', 'inquiry_type_id', 'interests'];
+    protected $casts = [
+        'interests' => 'array'
+    ];
 
     public function widget()
     {

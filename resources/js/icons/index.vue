@@ -29,6 +29,7 @@ import At from './at.vue';
 import Comment from './comment.vue';
 import Trash from './trash.vue';
 import Plus from './plus.vue';
+import Camera from './camera.vue';
 
 export default {
 	props: {
@@ -72,6 +73,7 @@ export default {
 		Comment,
 		Trash,
 		Plus,
+		Camera
 	},
 };
 </script>

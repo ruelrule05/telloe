@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     //
-    protected $fillable = ['user_id', 'heading', 'domain', 'slug', 'fb_page'];
+    protected $fillable = ['user_id', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id'];
     protected $casts = [
         'fb_page' => 'array'
     ];
@@ -35,5 +35,10 @@ class Widget extends Model
     public function inquiries()
     {
         return $this->hasMany(Inquiry::class)->orderBy('created_at', 'DESC');
+    }
+
+    public function widgetType()
+    {
+        return $this->belongsTo(WidgetType::class);
     }
 }

@@ -18,7 +18,7 @@ class WidgetController extends Controller
 
     public function show(Request $request)
     {
-    	$widget = Widget::with('widgetRules')->where('domain', $request->domain)->first();
+    	$widget = Widget::with('widgetRules', 'widgetType')->where('domain', $request->domain)->first();
     	if (!$widget) return abort(401, 'This domain is not registered to Snapturebox.');
 
     	return response()->json($widget);
