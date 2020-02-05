@@ -254,8 +254,8 @@
                                         multiple
                                         v-model="enquiry.interests"
                                         :options="[
-                                            {text: 'test', value: 'test'},
-                                            {text: 'gaga', value: 'gaga'},
+                                            {text: 'Bridal Hair', value: 'Bridal Hair'},
+                                            {text: 'Chignon Hair', value: 'Chignon Hair'},
                                         ]"
                                         :value="{}"
                                         button_class="snapturebox-badge-pill"
