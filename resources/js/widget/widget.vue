@@ -44,7 +44,7 @@
                                 <!-- Inquiries -->
                                 <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative" v-if="activeTab == 'inquiries'">
                                     <div class="snapturebox-px-4 snapturebox-pt-5 snapturebox-py-3">
-                                        <h5 class="snapturebox-font-montserrat">Upload Photos</h5>
+                                        <h4 class="snapturebox-font-montserrat">Upload Photos</h4>
                                         <span class="snapturebox-text-secondary snapturebox-font-weight-light snapturebox-font-montserrat">{{ $root.widget.widget_type.upload_description }}</span>
                                         <div class="snapturebox-mt-5">
                                             <!-- Salon -->
