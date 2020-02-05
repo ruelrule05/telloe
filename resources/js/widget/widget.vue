@@ -443,9 +443,9 @@
 
                             <div class="snapturebox-position-absolute snapturebox-w-100 snapturebox-text-center" style="bottom: 15px" :hidden="fileOutput || !cameraReady">
                                 <div v-if="!isRecording">
-                                    <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click="startRecord">
+                                    <!-- <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click="startRecord">
                                         <video-icon size="1.2x"></video-icon>
-                                    </button>
+                                    </button> -->
                                     <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click="takePhoto">
                                         <camera-icon size="1.2x"></camera-icon>
                                     </button>
