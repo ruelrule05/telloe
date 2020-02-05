@@ -11,7 +11,6 @@
                         <span v-else>{{ select_placeholder }}</span>
                     </div>
                 </template>
-                &nbsp;
                 <chevron-down height="28" width="28"></chevron-down>
             </button>
 
