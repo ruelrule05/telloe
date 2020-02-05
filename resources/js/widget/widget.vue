@@ -75,7 +75,7 @@
                                                         <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
                                                             <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2" v-for="(image, index) in enquiry.items" v-if="image.type != 'sample'">
                                                                 <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native="enquiry.items.splice(index, 1)"></close>
-                                                                <img :src="image.preview" class="w-100">
+                                                                <img :src="image.preview" class="snapturebox-w-100">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -107,7 +107,7 @@
                                                             <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
                                                                 <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2" v-for="(image, index) in enquiry.items" v-if="image.type == 'sample'">
                                                                     <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native="enquiry.items.splice(index, 1)"></close>
-                                                                    <img :src="image.preview" class="w-100">
+                                                                    <img :src="image.preview" class="snapturebox-w-100">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -232,7 +232,7 @@
                                 <span class="snapturebox-font-montserrat">Your enquiry type:</span>
                                 <div class="snapturebox-mt-2 snapturebox-mb-3">
                                     <div class="snapturebox-d-flex mx-n1">
-                                        <div class="snapturebox-flex-grow-1 px-1" v-for="inquiry_type in $root.inquiry_types">
+                                        <div class="snapturebox-flex-grow-1 snapturebox-px-1" v-for="inquiry_type in $root.inquiry_types">
                                             <button
                                                 class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-info snapturebox-badge-pill snapturebox-shadow-none snapturebox-border-white snapturebox-text-white snapturebox-btn-block snapturebox-line-height-0"
                                                 :class="{'snapturebox-active': enquiry.inquiry_type_id == inquiry_type.id}"
@@ -441,7 +441,7 @@
                                 <div v-else class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.src + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat; position: relative; left: -1px; z-index: 0"></div>
                             </div>
 
-                            <div class="snapturebox-position-absolute w-100 snapturebox-text-center" style="bottom: 15px" :hidden="fileOutput || !cameraReady">
+                            <div class="snapturebox-position-absolute snapturebox-w-100 snapturebox-text-center" style="bottom: 15px" :hidden="fileOutput || !cameraReady">
                                 <div v-if="!isRecording">
                                     <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click="startRecord">
                                         <video-icon size="1.2x"></video-icon>
@@ -506,7 +506,7 @@ export default {
     data: () => ({
         format: format,
         enquiry: {
-            message: 'tests',
+            message: '',
             inquiry_type_id: '',
             interests: [],
             items: [],
@@ -537,7 +537,7 @@ export default {
         videoOutput: null,
         activeTab: 'inquiries',
         igImages: [],
-        igTag: 'dog',
+        igTag: '',
         igSearchLoading: false,
         watermark: null,
         instagramSearchOpen: false,
