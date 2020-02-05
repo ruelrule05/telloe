@@ -26,13 +26,13 @@
                                     <widget-chat></widget-chat>
                                 </div>
                                 <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
-                                    <small class="font-weight-bold"
+                                    <small class="snapturebox-font-weight-bold"
                                         >My <br />
                                         Inquiries</small
                                     >
                                 </div>
                                 <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
-                                    <small class="font-weight-bold"
+                                    <small class="snapturebox-font-weight-bold"
                                         >My <br />
                                         Offers</small
                                     >
