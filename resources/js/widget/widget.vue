@@ -82,7 +82,7 @@
                                                 </div>
 
                                                 <!-- Dream hair -->
-                                                <div class="mt-5">
+                                                <div class="snapturebox-mt-5">
                                                     <div class="snapturebox-d-flex">
                                                         <div class="snapturebox-flex-25 snapturebox-line-height-0">
                                                             <h6 class="snapturebox-font-montserrat snapturebox-mb-3">Dream Hair</h6>
