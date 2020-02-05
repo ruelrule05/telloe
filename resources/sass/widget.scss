@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600&display=swap');
 $primary: #6e82ea;
-$secondary: #A9ABC6;
-$link-color: #3399FF;
+$secondary: #a9abc6;
+$link-color: #3399ff;
 $info: #85d1df;
 $enable-caret: false;
 $btn-padding-x: 0.5rem;
@@ -19,38 +19,25 @@ $input-focus-border-color: #999;
 $namespace: 'snapturebox';
 $spinner-width: 2rem;
 $spinner-height: 2rem;
-$spinner-border-width: .1em;
-$spinner-border-width-sm: .035rem;
+$spinner-border-width: 0.1em;
+$spinner-border-width-sm: 0.035rem;
 $line-height-sm: 1.2;
 $btn-font-family: 'Montserrat';
 $input-border-width: 0;
 $input-box-shadow: 0;
-$input-padding-y: .2rem;
+$input-padding-y: 0.2rem;
 $btn-focus-box-shadow: 0;
 $btn-active-box-shadow: 0;
-$border-radius: .5rem;
+$border-radius: 0.5rem;
 $theme-colors: (
-  "primary": $primary,
-  "gray": #999,
+	'primary': $primary,
+	'gray': #999,
 );
 
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 @import 'node_modules/bootstrap/scss/utilities';
-
-@import 'node_modules/bootstrap/scss/reboot';
-@import 'node_modules/bootstrap/scss/grid';
-@import 'node_modules/bootstrap/scss/buttons';
-@import 'node_modules/bootstrap/scss/dropdown';
-@import 'node_modules/bootstrap/scss/badge';
-@import 'node_modules/bootstrap/scss/type';
-@import 'node_modules/bootstrap/scss/nav';
-@import 'node_modules/bootstrap/scss/forms';
-@import 'node_modules/bootstrap/scss/modal';
-@import 'node_modules/bootstrap/scss/spinners';
-@import 'node_modules/bootstrap/scss/card';
-@import 'node_modules/bootstrap/scss/media';
 
 $widget-height: 676px;
 #widget {
@@ -149,7 +136,7 @@ $widget-height: 676px;
 			position: relative;
 			overflow-x: hidden;
 			.left-content {
-				transition: margin-right .15s, opacity 1s ease;
+				transition: margin-right 0.15s, opacity 1s ease;
 				width: 785px;
 				max-width: 100%;
 				padding-bottom: 110px;
@@ -304,7 +291,7 @@ $widget-height: 676px;
 			z-index: 1;
 			.badge-pill {
 				border: solid 1px white;
-				background: rgba(black, .1);
+				background: rgba(black, 0.1);
 				padding-top: 0;
 				padding-bottom: 0;
 				font-weight: normal;
@@ -320,7 +307,6 @@ $widget-height: 676px;
 			}
 		}
 	}
-
 
 	// Full page styles
 	.fullpage {
@@ -408,7 +394,7 @@ $widget-height: 676px;
 			opacity: 1;
 		}
 	}
-	.profile-image{
+	.profile-image {
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
@@ -416,16 +402,16 @@ $widget-height: 676px;
 		background-repeat: no-repeat;
 		background-position: center;
 	}
-	.text-underline{
+	.text-underline {
 		text-decoration: underline !important;
 	}
 
 	.border-dashed {
 		border: dashed 2px $gray-200;
 	}
-	.or-vertical{
+	.or-vertical {
 		padding: 10px 0;
-		&:before{
+		&:before {
 			content: '';
 			position: absolute;
 			width: 1px;
@@ -446,13 +432,13 @@ $widget-height: 676px;
 			transform: translate(-50%, -50%);
 		}
 	}
-	#instagram-search{
+	#instagram-search {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		width: 100%;
 		> div {
-			background-color: #F3F6FD;
+			background-color: #f3f6fd;
 		}
 		#instagram-results {
 			border: solid 1px $light;
@@ -470,7 +456,7 @@ $widget-height: 676px;
 			}
 		}
 	}
-	.form-group-icon{
+	.form-group-icon {
 		position: relative;
 		input {
 			padding-left: 34px;
@@ -482,33 +468,39 @@ $widget-height: 676px;
 			transform: translateY(-50%);
 		}
 	}
-	.close-right{
+	.close-right {
 		position: absolute;
 		top: 0;
 		right: 0;
 	}
-	.flex-25{
+	.flex-25 {
 		flex: 0 0 25%;
 	}
-	.flex-50{
+	.flex-50 {
 		flex: 0 0 50%;
 	}
-	small{
+	small {
 		line-height: 1.3;
 	}
-	img {
-	    vertical-align: middle;
-	    border-style: none;
-	}
+	@import 'node_modules/bootstrap/scss/grid';
+	@import 'node_modules/bootstrap/scss/buttons';
+	@import 'node_modules/bootstrap/scss/dropdown';
+	@import 'node_modules/bootstrap/scss/badge';
+	@import 'node_modules/bootstrap/scss/type';
+	@import 'node_modules/bootstrap/scss/nav';
+	@import 'node_modules/bootstrap/scss/forms';
+	@import 'node_modules/bootstrap/scss/modal';
+	@import 'node_modules/bootstrap/scss/spinners';
+	@import 'node_modules/bootstrap/scss/card';
+	@import 'node_modules/bootstrap/scss/media';
+	@import 'node_modules/bootstrap/scss/reboot';
 }
 .btn-xs {
-	font-size: 12px;
+	font-size: 12px !important;
 }
-.font-montserrat{
+.font-montserrat {
 	font-family: 'Montserrat', sans-serif;
 }
-
-
 
 // Tooltips
 .tooltip {
@@ -625,7 +617,7 @@ $widget-height: 676px;
 .toasted {
 	z-index: 99999 !important;
 }
-.opacity-0{
+.opacity-0 {
 	opacity: 0;
 }
 .hover-opacity-1:hover {
@@ -637,7 +629,7 @@ $widget-height: 676px;
 	cursor: default !important;
 	pointer-events: none !important;
 }
-.outline-0{
+.outline-0 {
 	outline: 0 !important;
 }
 .ig-image {
@@ -650,13 +642,13 @@ $widget-height: 676px;
 		opacity: 0;
 		z-index: 1;
 	}
-	&:hover{
+	&:hover {
 		button,
-		&:before{
+		&:before {
 			opacity: 1;
 		}
 	}
-	&:before{
+	&:before {
 		content: '';
 		position: absolute;
 		width: 100%;
@@ -667,7 +659,7 @@ $widget-height: 676px;
 		top: 0;
 		left: 0;
 	}
-	.ig-watermark{
+	.ig-watermark {
 		position: absolute;
 		top: 10px;
 		right: 10px;
@@ -675,7 +667,7 @@ $widget-height: 676px;
 		width: 20px;
 	}
 }
-.overflow-y-only{
+.overflow-y-only {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
