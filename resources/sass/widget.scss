@@ -441,7 +441,6 @@ $widget-height: 676px;
 			background-color: #f3f6fd;
 		}
 		#instagram-results {
-			border: solid 1px $light;
 			height: 200px;
 			margin-bottom: -215px;
 			transition: $transition-base;
@@ -504,8 +503,12 @@ $widget-height: 676px;
 
 // Tooltips
 .tooltip {
-	display: block !important;
 	z-index: 99999;
+	position: absolute;
+	width: auto;
+	white-space: nowrap;
+	font-weight: normal !important;
+	font-size: 13px;
 
 	.tooltip-inner {
 		background: black;
@@ -520,13 +523,14 @@ $widget-height: 676px;
 		height: 0;
 		border-style: solid;
 		position: absolute;
-		margin: 5px;
 		border-color: black;
 		z-index: 1;
 	}
 
 	&[x-placement^='top'] {
-		margin-bottom: 5px;
+		bottom: calc(100% + 7px);
+		left: 50%;
+		transform: translateX(-50%);
 
 		.tooltip-arrow {
 			border-width: 5px 5px 0 5px;
@@ -542,6 +546,8 @@ $widget-height: 676px;
 
 	&[x-placement^='bottom'] {
 		margin-top: 5px;
+		left: 50%;
+		transform: translateX(-50%);
 
 		.tooltip-arrow {
 			border-width: 0 5px 5px 5px;
@@ -556,7 +562,9 @@ $widget-height: 676px;
 	}
 
 	&[x-placement^='right'] {
-		margin-left: 5px;
+		margin-left: calc(100% + 7px);
+		top: 50%;
+		transform: translateY(-50%);
 
 		.tooltip-arrow {
 			border-width: 5px 5px 5px 0;
@@ -564,22 +572,26 @@ $widget-height: 676px;
 			border-top-color: transparent !important;
 			border-bottom-color: transparent !important;
 			left: -4px;
-			top: calc(50% - 5px);
+			top: 50%;
+			transform: translateY(-50%);
 			margin-left: 0;
 			margin-right: 0;
 		}
 	}
 
 	&[x-placement^='left'] {
-		margin-right: 5px;
+		right: calc(100% + 7px);
+		top: 50%;
+		transform: translateY(-50%);
 
 		.tooltip-arrow {
 			border-width: 5px 0 5px 5px;
 			border-top-color: transparent !important;
 			border-right-color: transparent !important;
 			border-bottom-color: transparent !important;
-			right: -5px;
-			top: calc(50% - 5px);
+			right: -4px;
+			top: 50%;
+			transform: translateY(-50%);
 			margin-left: 0;
 			margin-right: 0;
 		}

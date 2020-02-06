@@ -31,10 +31,14 @@ class WidgetController extends Controller
 
     public function getIGImages(Request $request)
     {
+        $this->validate($request, [
+            'tag' => 'required'
+        ]);
         $puppeteer = new Puppeteer;
         $browser = $puppeteer->launch();
         $page = $browser->newPage();
-        $page->goto('https://www.instagram.com/explore/tags/' . preg_replace('/\s+/', '', $request->tag));
+        $tag = ltrim($request->tag, '#');
+        $page->goto('https://www.instagram.com/explore/tags/' . preg_replace('/\s+/', '', $tag));
         $sharedData = $page->evaluate(JsFunction::createWithBody("
             return _sharedData;
         "));

@@ -31,9 +31,9 @@ window.SBAxios.interceptors.response.use(
             let access_token = window.localStorage.getItem('snapturebox_access_token');
             if (access_token) window.app.refreshToken();
         } else {
-            SBVue.toasted.error(error.response.data.message, {
+            /*SBVue.toasted.error(error.response.data.message, {
                 className: 'snapturebox-bg-red snapturebox-rounded-0 snapturebox-justify-content-center',
-            });
+            });*/
         }
         
         return Promise.reject(error);
@@ -46,17 +46,16 @@ container.innerHTML = '<widget />';
 document.body.appendChild(container);
 
 import VueMasonry from './../components/vue-masonry.js';
-import TextareaAutosize from 'vue-textarea-autosize';
-import VTooltip from 'v-tooltip';
+//import TextareaAutosize from 'vue-textarea-autosize';
 import '../../sass/widget.scss';
-import Toasted from 'vue-toasted';
+//import Toasted from 'vue-toasted';
 
 SBVue.component('widget', require('./widget.vue').default);
 SBVue.component('vue-select', require('./../widget/vue-select.vue').default);
 SBVue.component('vue-button', require('./../components/vue-button.vue').default);
 SBVue.component('vue-form-validate', require('./../components/vue-form-validate.vue').default);
 SBVue.use(VueMasonry);
-SBVue.use(TextareaAutosize);
+/*SBVue.use(TextareaAutosize);
 SBVue.use(VTooltip, {
     defaultTemplate: '<div class="snapturebox-tooltip" role="tooltip"><div class="snapturebox-tooltip-arrow"></div><div class="snapturebox-tooltip-inner"></div></div>',
     defaultClass: 'snapturebox',
@@ -67,8 +66,8 @@ SBVue.use(VTooltip, {
     popover: {
         defaultArrowClass: 'snapturebox-tooltip-arrow',
     },
-});
-SBVue.use(Toasted, {
+});*/
+/*SBVue.use(Toasted, {
     position: 'bottom-center',
     singleton: true,
     duration: 3000,
@@ -84,9 +83,9 @@ SBVue.use(Toasted, {
             toastObject.goAway(0);
         },
     },
-});
+});*/
 
-window.app = new SBVue({
+window.snapturebox = new SBVue({
     el: '#snapturebox-widget',
 
     data: {
@@ -252,10 +251,6 @@ window.app = new SBVue({
                 });
         },
 
-        getAuth() {
-            SBAxios.get(`/auth/me`).then((response) => {
-                this.auth = response.data;
-            });
-        },
+       
     },
 });
