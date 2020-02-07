@@ -24,7 +24,7 @@
 						<div v-else class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.src + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat; position: relative; left: -1px; z-index: 0"></div>
 					</div>
 
-					<div class="snapturebox-position-absolute snapturebox-w-100 snapturebox-text-center" style="bottom: 15px" :hidden="fileOutput || !cameraReady">
+					<div class="snapturebox-position-absolute snapturebox-w-100 snapturebox-text-center" style="bottom: 15px; z-index: 2" :hidden="fileOutput || !cameraReady">
 						<div v-if="!isRecording">
 							<!-- <button class="snapturebox-btn snapturebox-btn-light snapturebox-btn-circle snapturebox-shadow-none snapturebox-line-height-0" @click="startRecord">
                                         <video-icon size="1.2x"></video-icon>
@@ -39,14 +39,17 @@
 							</button>
 						</div>
 					</div>
-				</div>
-				<div v-if="fileOutput" class="snapturebox-position-absolute snapturebox-p-3 snapturebox-d-flex snapturebox-w-100" style="right: 0; bottom: 0">
-					<button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-shadow-none snapturebox-float-right" @click="fileOutput = null">
-						Retake
-					</button>
-					<button type="button" class="snapturebox-ml-auto snapturebox-btn snapturebox-btn-sm snapturebox-btn-primary snapturebox-shadow-none" @click="submit()">
-						Add
-					</button>
+
+					<div v-if="hasFlash" class="snapturebox-camera-flash"></div>
+
+					<div v-if="fileOutput" class="snapturebox-position-absolute snapturebox-p-3 snapturebox-d-flex snapturebox-w-100" style="right: 0; bottom: 0">
+						<button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-shadow-none snapturebox-float-right" @click="fileOutput = null">
+							Retake
+						</button>
+						<button type="button" class="snapturebox-ml-auto snapturebox-btn snapturebox-btn-sm snapturebox-btn-primary snapturebox-shadow-none" @click="submit()">
+							Add
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -73,9 +76,14 @@ export default {
 		streams: [],
 		streams: null,
 		isRecording: false,
+		shutter: null,
+		hasFlash: false //false
 	}),
 
-	created() {},
+	created() {
+        this.shutter = new Audio('/notifications/shutter.mp3');
+        this.shutter.load();
+	},
 
 	mounted() {},
 
@@ -90,6 +98,12 @@ export default {
 		},
 
 		takePhoto() {
+			this.shutter.currentTime = 0;
+			this.shutter.play();
+			this.hasFlash = true;
+			setTimeout(() => {
+				this.hasFlash = false;
+			}, 200);
 			// Source
 			let canvas = document.createElement('canvas');
 			let context = canvas.getContext('2d');

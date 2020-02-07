@@ -47,7 +47,7 @@ document.body.appendChild(container);
 
 import VueMasonry from './../components/vue-masonry.js';
 //import TextareaAutosize from 'vue-textarea-autosize';
-import '../../sass/widget.scss';
+import './widget.scss';
 //import Toasted from 'vue-toasted';
 
 SBVue.component('widget', require('./widget.vue').default);
@@ -55,35 +55,6 @@ SBVue.component('vue-select', require('./../widget/vue-select.vue').default);
 SBVue.component('vue-button', require('./../components/vue-button.vue').default);
 SBVue.component('vue-form-validate', require('./../components/vue-form-validate.vue').default);
 SBVue.use(VueMasonry);
-/*SBVue.use(TextareaAutosize);
-SBVue.use(VTooltip, {
-    defaultTemplate: '<div class="snapturebox-tooltip" role="tooltip"><div class="snapturebox-tooltip-arrow"></div><div class="snapturebox-tooltip-inner"></div></div>',
-    defaultClass: 'snapturebox',
-    defaultClass: 'snapturebox-tooltip',
-    defaultArrowSelector: '.snapturebox-tooltip-arrow',
-    defaultInnerSelector: '.snapturebox-tooltip-inner',
-    defaultHideOnTargetClick: true,
-    popover: {
-        defaultArrowClass: 'snapturebox-tooltip-arrow',
-    },
-});*/
-/*SBVue.use(Toasted, {
-    position: 'bottom-center',
-    singleton: true,
-    duration: 3000,
-    iconPack: 'custom-class',
-    containerClass: 'snapturebox-toasted',
-    className: 'snapturebox-bg-primary snapturebox-rounded-0 snapturebox-justify-content-center',
-    fullWidth: true,
-    fitToScreen: true,
-    action: {
-        icon: 'eva eva-close-outline font-size-20',
-        class: 'font-weight-light text-white',
-        onClick: (e, toastObject) => {
-            toastObject.goAway(0);
-        },
-    },
-});*/
 
 window.snapturebox = new SBVue({
     el: '#snapturebox-widget',
@@ -95,7 +66,7 @@ window.snapturebox = new SBVue({
         hidden: false,
         open: true, // false
         fullPage: false,
-        leftOpen: false, // false
+        leftOpen: true, // false
         backdrop: false,
         loginForm: {
             email: 'cleidoscope@gmail.com',

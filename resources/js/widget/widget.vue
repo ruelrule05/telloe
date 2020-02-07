@@ -4,7 +4,6 @@
             <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
                 <comment fill="white" stroke="white" stroke-width="1"></comment>
             </div>
-
             <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
                 <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 snapturebox-h-100 justify-content-center">
                     <!-- Left -->
@@ -26,19 +25,12 @@
                                     <widget-chat></widget-chat>
                                 </div>
                                 <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
-                                    <small class="snapturebox-font-weight-bold"
-                                        >My <br />
-                                        Inquiries</small
-                                    >
+                                    <small class="snapturebox-font-weight-bold">My <br />Inquiries</small>
                                 </div>
                                 <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
-                                    <small class="snapturebox-font-weight-bold"
-                                        >My <br />
-                                        Offers</small
-                                    >
+                                    <small class="snapturebox-font-weight-bold">My <br />Offers</small>
                                 </div>
                             </div>
-
                             <!-- Left content -->
                             <div class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100 snapturebox-left-content snapturebox-overflow-auto snapturebox-position-relative">
                                 <!-- Inquiries -->
@@ -58,29 +50,43 @@
                                                     <div class="snapturebox-pl-5 snapturebox-flex-grow-1 snapturebox-position-relative">
                                                         <div class="snapturebox-border-dashed snapturebox-rounded-lg snapturebox-d-flex snapturebox-align-items-center snapturebox-position-relative">
                                                             <div class="snapturebox-flex-50 snapturebox-text-center snapturebox-py-3">
-                                                                <div><camera width="20" height="20" stroke-width="1" stroke="black"></camera></div>
-                                                                <span class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold" @click="itemType = 'image'; $root.toggleModal('#addMediaModal', 'show'); $refs['addMediaModal'].initCamera();">Take photo</span>
+                                                                <div>
+                                                                    <camera width="20" height="20" stroke-width="1" stroke="black"></camera>
+                                                                </div>
+                                                                <span
+                                                                    class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold"
+                                                                    @click="
+                                                                        itemType = 'image';
+                                                                        $root.toggleModal('#addMediaModal', 'show');
+                                                                        $refs['addMediaModal'].initCamera();
+                                                                    "
+                                                                    >Take photo</span
+                                                                >
                                                             </div>
                                                             <div class="snapturebox-position-absolute-center snapturebox-or-vertical h-100"><span>or</span></div>
                                                             <div class="snapturebox-position-relative snapturebox-flex-50">
                                                                 <div class="snapturebox-text-center">
-                                                                    <div class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark" @click="itemType = 'image'; $refs['addMedia'].click()">
+                                                                    <div
+                                                                        class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark"
+                                                                        @click="
+                                                                            itemType = 'image';
+                                                                            $refs['addMedia'].click();
+                                                                        "
+                                                                    >
                                                                         <div class="snapturebox-font-weight-bold snapturebox-mb-1">click here</div>
                                                                         to upload photo
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
-                                                            <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2" v-for="(image, index) in enquiry.items" v-if="image.type != 'sample'">
-                                                                <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native="enquiry.items.splice(index, 1)"></close>
-                                                                <img :src="image.preview" class="snapturebox-w-100">
+                                                            <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'image'" @click="selectedMedia = {media: image, index: index, total: sampleImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
+                                                                <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
+                                                                <img :src="image.preview" class="snapturebox-w-100" />
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
                                                 <!-- Dream hair -->
                                                 <div class="snapturebox-mt-5">
                                                     <div class="snapturebox-d-flex">
@@ -91,13 +97,29 @@
                                                         <div class="snapturebox-pl-5 snapturebox-flex-grow-1 snapturebox-position-relative">
                                                             <div class="snapturebox-border-dashed snapturebox-rounded-lg snapturebox-d-flex snapturebox-py-3 snapturebox-position-relative">
                                                                 <div class="snapturebox-w-50 snapturebox-text-center">
-                                                                    <div><camera width="20" height="20" stroke-width="1" stroke="black"></camera></div>
-                                                                    <span class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold" @click="itemType = 'sample'; $root.toggleModal('#addMediaModal', 'show'); $refs['addMediaModal'].initCamera();">Take photo</span>
+                                                                    <div>
+                                                                        <camera width="20" height="20" stroke-width="1" stroke="black"></camera>
+                                                                    </div>
+                                                                    <span
+                                                                        class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold"
+                                                                        @click="
+                                                                            itemType = 'sample';
+                                                                            $root.toggleModal('#addMediaModal', 'show');
+                                                                            $refs['addMediaModal'].initCamera();
+                                                                        "
+                                                                        >Take photo</span
+                                                                    >
                                                                 </div>
                                                                 <div class="snapturebox-position-absolute-center snapturebox-or-vertical h-100"><span>or</span></div>
                                                                 <div class="snapturebox-position-relative snapturebox-w-50 curs">
                                                                     <div class="snapturebox-position-absolute-center snapturebox-text-center">
-                                                                        <div class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark" @click="itemType = 'sample'; $refs['addMedia'].click()">
+                                                                        <div
+                                                                            class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark"
+                                                                            @click="
+                                                                                itemType = 'sample';
+                                                                                $refs['addMedia'].click();
+                                                                            "
+                                                                        >
                                                                             <div class="snapturebox-font-weight-bold snapturebox-mb-1">click here</div>
                                                                             to upload photo
                                                                         </div>
@@ -105,33 +127,29 @@
                                                                 </div>
                                                             </div>
                                                             <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
-                                                                <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2" v-for="(image, index) in enquiry.items" v-if="image.type == 'sample'">
-                                                                    <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native="enquiry.items.splice(index, 1)"></close>
-                                                                    <img :src="image.preview" class="snapturebox-w-100">
+                                                                <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'sample'" @click="selectedMedia = {media: image, index: index, total: customerImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
+                                                                    <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
+                                                                    <img :src="image.preview" class="snapturebox-w-100" />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
                                                 </div>
-
                                             </template>
                                         </div>
                                     </div>
                                 </div>
-
-                      
                                 <!-- Instagram search -->
                                 <instagram-search @select="selectIGImage" ref="instagramSearch"></instagram-search>
                             </div>
                         </div>
-
                     </div>
-
                     <!-- Right -->
                     <div class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-bg-primary" id="snapturebox-section-right">
                         <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle snapturebox-d-flex snapturebox-align-items-center">
-                            <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true"><menu-icon></menu-icon></button>
+                            <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true">
+                                <menu-icon></menu-icon>
+                            </button>
                         </div>
                         <div class="snapturebox-text-white snapturebox-h-100 snapturebox-w-100">
                             <div class="snapturebox-p-4 snapturebox-pt-5">
@@ -143,12 +161,10 @@
                                     Good morning! <br />
                                     <strong>How can we help you today?</strong>
                                 </p>
-
                                 <div class="snapturebox-my-4">
                                     Clinic Location: <span class="snapturebox-text-info snapturebox-text-underline">(change location)</span>
                                     <h5 class="snapturebox-mt-1 snapturebox-font-weight-bold">{{ $root.widget.heading }}</h5>
                                 </div>
-
                                 <span class="snapturebox-font-montserrat" v-tooltip.right="{content: 'Choose an enquiry type', show: enquiryTypeTooltip}">Your enquiry type:</span>
                                 <div class="snapturebox-mt-2 snapturebox-mb-3">
                                     <div class="snapturebox-d-flex mx-n1">
@@ -166,7 +182,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="snapturebox-mt-2 snapturebox-mb-3" v-tooltip.top="{content: 'Choose an area of interest', show: enquiryInterestTooltip}">
                                     <vue-select
                                         searchable
@@ -181,12 +196,11 @@
                                         placeholder="Choose areas of interests"
                                     ></vue-select>
                                 </div>
-
-                                <strong v-tooltip.right="{content: 'Write your inquiry', show: enquiryMessageTooltip}">Your Inquiry:</strong> <exclamation-circle fill="white" width="14" height="14" stroke="white" stroke-width="1" class="snapturebox-cursor-pointer"></exclamation-circle>
+                                <strong v-tooltip.right="{content: 'Write your inquiry', show: enquiryMessageTooltip}">Your Inquiry:</strong>
+                                <exclamation-circle fill="white" width="14" height="14" stroke="white" stroke-width="1" class="snapturebox-cursor-pointer"></exclamation-circle>
                                 <div class="snapturebox-mt-2 snapturebox-mb-3">
                                     <textarea v-model="enquiry.message" rows="7" class="snapturebox-font-montserrat snapturebox-form-control snapturebox-rounded-lg" placeholder="Please type your inquiry here" style="resize: none"></textarea>
                                 </div>
-
                                 <div class="snapturebox-text-right">
                                     <button class="snapturebox-btn snapturebox-px-5 snapturebox-btn-dark snapturebox-shadow-none snapturebox-rounded-lg snapturebox-d-inline-flex snapturebox-align-items-center" @click="send">Send <arrow-right stroke="white" stroke-width="1" fill="white" class="snapturebox-ml-2"></arrow-right></button>
                                 </div>
@@ -195,21 +209,21 @@
                     </div>
                 </div>
             </div>
-            
 
-            
             <!-- Modals -->
             <add-media-modal @submit="addMedia" :itemType="itemType" ref="addMediaModal"></add-media-modal>
             <signup-modal ref="signupModal"></signup-modal>
             <login-modal ref="loginModal"></login-modal>
+            <manage-media-modal :media="selectedMedia" @submit="updateMedia" @deleteMedia="deleteMedia"></manage-media-modal>
+
             <transition name="snapturebox-fade">
                 <div v-if="$root.backdrop" class="snapturebox-modal-backdrop"></div>
             </transition>
         </div>
-        <input type="file" hidden ref="addMedia" @change="setPreview" accept="image/x-png,image/gif,image/jpeg,video/mp4,video/x-m4v,video/*" />
+        <!-- <input type="file" hidden ref="addMedia" @change="setPreview" accept="image/x-png,image/gif,image/jpeg,video/mp4,video/x-m4v,video/*" /> -->
+        <input type="file" hidden ref="addMedia" @change="setPreview" accept="image/x-png,image/gif,image/jpeg" />
     </div>
 </template>
-
 <script>
 import io from 'socket.io-client';
 /*let formatNumber = require('format-number');
@@ -227,16 +241,14 @@ import ArrowRight from '../icons/arrow-right';
 import AddMediaModal from './modals/add-media';
 import SignupModal from './modals/signup';
 import LoginModal from './modals/login';
+import ManageMediaModal from './modals/manage-media';
 import InstagramSearch from './instagram-search';
 import Tooltip from './directives/tooltip.js';
-
 import VueLazyload from 'vue-lazyload';
 SBVue.use(VueLazyload);
 export default {
-    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal},
-
+    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal, ManageMediaModal},
     directives: {Tooltip},
-
     data: () => ({
         //format: format,
         enquiry: {
@@ -250,23 +262,28 @@ export default {
         enquiryInterestTooltip: false,
         enquiryMessageTooltip: false,
         enquiryMediaTooltip: false,
-
         message: '',
         playing: false,
-        member: 'Clinic Team',
         messages: [],
         signupFormDisabled: false,
         messageInputDisabled: false,
         sent: false,
-
         socket: null,
         notification_sound: null,
         videoOutput: null,
         activeTab: 'inquiries',
         itemType: '',
+        selectedMedia: null,
     }),
-
     computed: {
+        customerImagesCount() {
+            return this.enquiry.items.filter((i) => i.type == 'image').length;
+        },
+
+        sampleImagesCount() {
+            return this.enquiry.items.filter((i) => i.type == 'sample').length;
+        },
+
         implodeInterests() {
             let implodeInterests = [];
             this.enquiry.interests.forEach((i) => {
@@ -274,7 +291,6 @@ export default {
             });
             return [implodeInterests.slice(0, -1).join(', '), implodeInterests.slice(-1)[0]].join(implodeInterests.length < 2 ? '' : ' and ');
         },
-
         subTotal() {
             let subTotal = 0;
             this.$root.auth.offers.forEach((o) => {
@@ -282,10 +298,8 @@ export default {
                     subTotal += parseInt(s.price);
                 });
             });
-
             return subTotal;
         },
-
         new_items() {
             let new_items = 2 - this.enquiry.items.length;
             if (new_items < 1) new_items = 1;
@@ -296,7 +310,6 @@ export default {
                 return m.sender == 'You';
             }).length;
         },
-
         grouped_messages() {
             const grouped_messages = [];
             if (this.messages) {
@@ -304,9 +317,8 @@ export default {
                 const messages = (this.messages || []).sort((a, b) => {
                     return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
                 });
-
-                for (var i = 0; i <= messages.length - 1; i++) {
-                    var message_group = {sender: messages[i].sender, messages: [messages[i]]};
+                for (let i = 0; i <= messages.length - 1; i++) {
+                    let message_group = {sender: messages[i].sender, messages: [messages[i]]};
                     groupMessage();
 
                     function groupMessage() {
@@ -320,11 +332,9 @@ export default {
                     grouped_messages.push(message_group);
                 }
             }
-
             return grouped_messages;
         },
     },
-
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
         /*this.socket = io('https://snapturebox.app:8443');
@@ -334,11 +344,14 @@ export default {
             this.scrollDown();
         });*/
     },
-
-    mounted() {
-    },
-
-    methods: { 
+    mounted() {},
+    methods: {
+        deleteMedia(newMedia) {
+            this.enquiry.items.splice(newMedia.index, 1);
+        },
+        updateMedia(newMedia) {
+            this.enquiry.items[newMedia.index] = newMedia.media;
+        },
         selectIGImage(igImage) {
             let exists = this.enquiry.items.find((x) => x.url == igImage.url);
             if (!exists) {
@@ -346,32 +359,27 @@ export default {
                 this.$refs['instagramSearch'].open = false;
             }
         },
-
         send() {
             if (!this.enquiry.inquiry_type_id) {
                 this.enquiryTypeTooltip = true;
                 console.log('1');
                 return;
             } else this.enquiryTypeTooltip = false;
-
             if (this.enquiry.interests.length == 0) {
                 this.enquiryInterestTooltip = true;
                 console.log('2');
                 return;
             } else this.enquiryInterestTooltip = false;
-
             if (!this.enquiry.message) {
                 this.enquiryMessageTooltip = true;
                 console.log('3');
                 return;
             } else this.enquiryMessageTooltip = false;
-
             if (this.enquiry.items.length == 0) {
                 this.enquiryMediaTooltip = true;
                 console.log('4');
                 return;
             } else this.enquiryMediaTooltip = false;
-
             if (this.$root.auth) {
                 this.enquiry.widget_id = this.$root.widget.id;
                 SBAxios.post('/inquiries', this.enquiry).then((response) => {
@@ -382,7 +390,6 @@ export default {
                 this.$root.toggleModal('#loginModal', 'show');
             }
         },
-
         scrollDown() {
             setTimeout(() => {
                 const message_group = this.$refs['message-group'];
@@ -391,13 +398,11 @@ export default {
                 }
             });
         },
-
         getMessages() {
             SBAxios.get(`${this.domain}/messages`).then((response) => {
                 this.messages = response.data;
             });
         },
-
         loadeddata(e) {
             setTimeout(() => {
                 let canvas = document.createElement('canvas');
@@ -407,7 +412,6 @@ export default {
                 this.fileOutput.preview = canvas.toDataURL('image/jpeg', 0.8);
             }, 200);
         },
-
         stopRecord() {
             this.videoRecorder.stopRecording(() => {
                 let videoBlob = this.videoRecorder.getBlob();
@@ -423,12 +427,10 @@ export default {
             });
             this.isRecording = false;
         },
-
         startRecord() {
             this.videoRecorder.startRecording();
             this.isRecording = true;
         },
-
         addComment(index, e) {
             this.enquiry.items[index].edit = false;
             this.items[index].comment = $(e.currentTarget)
@@ -436,7 +438,6 @@ export default {
                 .siblings('textarea')
                 .val();
         },
-
         saveComment(index, e) {
             this.$set(this.enquiry.items[index], 'edit', this.enquiry.items[index].edit ? false : true);
             if (!this.enquiry.items[index].edit) {
@@ -446,38 +447,32 @@ export default {
                     .val();
             }
         },
-
         authSubmit() {
             this.sent = true;
             $('#authModal').modal('hide');
             $('.modal-backdrop').remove();
         },
-
         setPreview(e) {
-            var input = $(e.currentTarget);
-            var file = input[0].files[0];
+            let input = $(e.currentTarget);
+            let file = input[0].files[0];
             if (file) {
                 if (file.type.match('image/jpeg') || file.type.match('image/png')) {
-                    var photosize = file.size / 1000000;
+                    let photosize = file.size / 1000000;
                     if (photosize > 5) {
                         alert('Error: Image file too big. Please select image file less than 5MB.');
                     } else {
-                        var img = document.createElement('img');
-                        var reader = new FileReader();
+                        let img = document.createElement('img');
+                        let reader = new FileReader();
                         reader.readAsDataURL(file);
-
                         reader.onload = (oFREvent) => {
-                            var canvas = document.createElement('canvas');
+                            let canvas = document.createElement('canvas');
                             img.src = oFREvent.target.result;
                             img.addEventListener('load', () => {
-                                var ctx = canvas.getContext('2d');
-                                ctx.drawImage(img, 0, 0);
-
-                                var MAX_WIDTH = 600;
-                                var MAX_HEIGHT = 600;
-                                var width = img.width;
-                                var height = img.height;
-
+                                let ctx = canvas.getContext('2d');
+                                let MAX_WIDTH = 600;
+                                let MAX_HEIGHT = 600;
+                                let width = img.width;
+                                let height = img.height;
                                 if (width > height) {
                                     if (width > MAX_WIDTH) {
                                         height *= MAX_WIDTH / width;
@@ -491,10 +486,8 @@ export default {
                                 }
                                 canvas.width = width;
                                 canvas.height = height;
-                                var ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0, width, height);
-
-                                var dataurl = canvas.toDataURL('image/jpg');
+                                let dataurl = canvas.toDataURL('image/jpeg');
                                 this.enquiry.items.push({
                                     type: this.itemType,
                                     preview: dataurl,
@@ -511,12 +504,10 @@ export default {
             } else {
             }
         },
-
         addMedia(fileOutput) {
             this.enquiry.items.push(fileOutput);
             this.fileOutput = null;
         },
-
         /*   scrollDown() {
             setTimeout(() => {
                 const message_group = this.$refs['snapturebox-scroll'];
@@ -525,7 +516,6 @@ export default {
                 }
             });
         },*/
-
         togglePlay() {
             this.playing = this.playing ? false : true;
             if (this.playing) {
@@ -534,7 +524,6 @@ export default {
                 this.$refs['snapturebox-intro'].pause();
             }
         },
-
         signupContinue() {
             this.messages.push({
                 sender: 'You',
@@ -545,7 +534,7 @@ export default {
             this.signupFormDisabled = true;
             this.messageInputDisabled = false;
             this.scrollDown();
-            var new_messages = [
+            let new_messages = [
                 {
                     sender: 'You',
                     message: 'Hi there please look at my photos of my problem areas I would like to look better.',
@@ -574,15 +563,14 @@ export default {
                     time: 'Just now',
                 },
             ];
-            var i = 0;
-            var timeInterval = setInterval(() => {
+            let i = 0;
+            let timeInterval = setInterval(() => {
                 this.messages.push(new_messages[i]);
                 this.scrollDown();
                 if (i == new_messages.length - 1) clearInterval(timeInterval);
                 i++;
             }, 1000);
         },
-
         toggleWidget() {
             this.$root.open = this.$root.open ? false : true;
             if (!this.$root.open && this.$refs['snapturebox-intro']) {

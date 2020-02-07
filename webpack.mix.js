@@ -98,15 +98,15 @@ else if (argv.indexOf('--widget') > -1) {
         .mergeManifest();
     
     mix.browserSync({
-        proxy: 'https://workhob.app',
-        host: 'workhob.app',
+        proxy: 'https://snapturebox.app',
+        host: 'snapturebox.app',
         open: false,
         port: 8000,
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/workhob.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/workhob.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
         }
     });
 }
