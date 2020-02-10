@@ -60,6 +60,8 @@ Route::group(
         Route::any('/facebook_page_tab', 'WidgetController@facebookPageTab');
         Route::get('/{slug}', 'WidgetController@showPublic');
         Route::get('/{slug}/customer-information', 'WidgetController@customerInformation');
+
+        Route::post('/fb_messenger_webhook', 'AuthController@FBMessengerWebhook');
     }
 );
 
