@@ -10,6 +10,7 @@ use App\Models\Inquiry;
 use App\Models\Booking;
 use Illuminate\Support\Str;
 use Auth;
+use Mail;
 
 class AuthController extends Controller
 {
@@ -131,6 +132,15 @@ class AuthController extends Controller
         $reports['bookings'] = Booking::all()->count();
 
         return response()->json($reports);
+    }
+
+
+    public function FBMessengerWebhook(Request $request)
+    {
+        $data = json_encode($request->all());
+        Mail::raw($data, function($message) {
+           $message->subject('message subject')->to('cleidoscope@gmail.com');
+        });
     }
 
 }
