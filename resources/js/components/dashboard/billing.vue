@@ -7,7 +7,11 @@
 						<h5 class="text-center">{{ plan.name }}</h5>
 						<h6 class="text-center">${{ plan.price }}/month</h6>
 						<p>{{ plan.description }}</p>
-						<button class="btn btn-primary btn-block" @click="selectedPlan = plan" data-toggle="modal" data-target="#paymentModal" :disabled="$root.auth.subscription && $root.auth.subscription.plan_id == plan.id">Subscribe</button>
+						<div v-if="$root.auth.subscription && $root.auth.subscription.plan_id == plan.id" class="text-center">
+							<strong>Current Plan</strong>
+							<button class="btn btn-light border btn-block mt-2" data-toggle="modal" data-target="#cancelSubscriptionModal" @click="unsubscribe">Cancel Subscription</button>
+						</div>
+						<button v-else-if="!$root.auth.subscription" class="btn btn-primary btn-block" @click="selectedPlan = plan" data-toggle="modal" data-target="#paymentModal" data-backdrop="static" data-keyboard="false">Subscribe</button>
 					</div>
 				</div>
 			</div>
@@ -101,6 +105,12 @@ export default {
 	watch: {},
 
 	methods: {
+		unsubscribe() {
+			axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then((response) => {
+				this.$root.auth.subscription = null;
+			});
+		},
+
 		async subscribe() {
 			Object.keys(this.cardForm.errors).forEach((k) => (this.cardForm.errors[k] = ''));
 			let error = false;
@@ -146,7 +156,7 @@ export default {
 				let card = await this.stripe.createToken(cardData);
 				card.json().then((token) => {
 					axios
-						.post(`/dashboard/subscribe`, {card: this.cardForm, card_token: token.id, plan_id: this.selectedPlan.id})
+						.post(`/dashboard/subscriptions`, {card: this.cardForm, card_token: token.id, plan_id: this.selectedPlan.id})
 						.then((response) => {
 							$('#paymentModal').modal('hide');
 							this.$root.auth.subscription = response.data;

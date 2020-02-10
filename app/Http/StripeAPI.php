@@ -100,7 +100,6 @@ class StripeAPI
                 return $plan;
                 break;
 
-
             case 'update' :
                 $plan = \Stripe\Plan::retrieve($params['stripe_plan_id']);
                 $plan->nickname = $params['nickname'];
@@ -108,6 +107,7 @@ class StripeAPI
 
                 return $plan;
                 break;
+
 
         endswitch;
     }
@@ -135,7 +135,7 @@ class StripeAPI
 
             case 'cancel' :
                 $subscription = \Stripe\Subscription::retrieve($params['subscription_id']);
-                $subscription->cancel();
+                $subscription->delete();
                 break;
 
             case 'apply_referral_coupon' :

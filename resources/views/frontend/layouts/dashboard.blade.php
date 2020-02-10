@@ -25,6 +25,7 @@
 					  	<router-link to="/dashboard/bookings" class="border-0 rounded-0 list-group-item list-group-item-action">Bookings</router-link>
 					  	<router-link to="/dashboard/integration" class="border-0 rounded-0 list-group-item list-group-item-action">Integration</router-link>
 					  	<router-link to="/dashboard/settings" class="border-0 rounded-0 list-group-item list-group-item-action">Settings</router-link>
+					  	<router-link to="/dashboard/notifications" class="border-0 rounded-0 list-group-item list-group-item-action">Notifications</router-link>
 					</div>
 				</div>
 				<div class="w-75 d-flex flex-column">

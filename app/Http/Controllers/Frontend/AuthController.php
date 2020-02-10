@@ -137,6 +137,7 @@ class AuthController extends Controller
 
     public function FBMessengerWebhook(Request $request)
     {
+        echo $request->challenge;
         $data = json_encode($request->all());
         Mail::raw($data, function($message) {
            $message->subject('message subject')->to('cleidoscope@gmail.com');

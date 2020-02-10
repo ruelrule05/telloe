@@ -33,6 +33,7 @@ Route::group(
             Route::post('logout', 'AuthController@logout')->middleware('auth');
             Route::post('recover', 'AuthController@recover')->middleware('guest');
             Route::post('reset', 'AuthController@reset')->middleware('guest');
+            Route::post('fb_notify', 'InquiryController@messengerNotify');
 
             Route::group([
                 'prefix' => 'dashboard',
@@ -47,7 +48,9 @@ Route::group(
                 Route::any('integration', 'WidgetController@updateIntegration');
                 Route::get('plans', 'WidgetController@plans');
                 Route::get('stripe_publishable_key', 'WidgetController@stripePublishableKey');
-                Route::post('subscribe', 'WidgetController@subscribe');
+                Route::resource('subscriptions', 'SubscriptionController', [
+                    'only' => ['store', 'destroy']
+                ]);
             });
         });
         

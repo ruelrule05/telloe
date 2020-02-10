@@ -29,7 +29,7 @@
                                 </div>
                             </div>
                             <div class="message-content">
-                                <div v-if="message.type == 'video'" class="position-relative cursor-pointer" @click="playVideo(message.message)">
+                                <div v-if="message.type != 'text'" class="position-relative cursor-pointer" data-toggle="modal" data-target="#messageMediaModal" @click="messageMedia = message">
                                     <div class="position-absolute-center text-center">
                                         <play-icon></play-icon>
                                     </div>
@@ -56,7 +56,23 @@
 		</div>
 
 		<video-recorder :files="inquiry.inquiry_media" id="recordVideoModal" @submit="sendVideo"></video-recorder>
+		
 
+		<div class="modal fade" tabindex="-1" role="dialog" id="messageMediaModal">
+		  	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			    <div class="modal-content bg-black">
+			      	<div class="modal-header p-0">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="messageMedia = null">
+				          	<span aria-hidden="true">&times;</span>
+				        </button>
+			      	</div>
+			      	<div class="modal-body p-0 rounded overflow-hidden" v-if="messageMedia">
+			      		<img v-if="messageMedia.type == 'image'" :src="messageMedia.message" class="w-100">
+			      		<video v-else-if="messageMedia.type == 'video'" :src="messageMedia.message" controls autoplay class="w-100 outline-0"></video>
+			      	</div>
+			    </div>
+		  	</div>
+		</div>
 		<div class="modal fade" tabindex="-1" role="dialog" id="mediaViewModal">
 		  	<div class="modal-dialog modal-dialog-centered" role="document">
 			    <div class="modal-content bg-black">
@@ -121,6 +137,7 @@ export default {
             video: '',
             videoPreview: '',
         },
+        messageMedia: null,
 	}),
 
 
@@ -198,11 +215,6 @@ export default {
                     message_group.scrollTop = message_group.scrollHeight;
                 }
             });
-        },
-
-        playVideo(videoSrc) {
-            this.videoOutput = videoSrc;
-            $('#videoPlayerModal').modal('show');
         },
 
 		goTo(id) {

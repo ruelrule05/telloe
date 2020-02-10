@@ -28,6 +28,10 @@ window.routes = window.routes.concat([
                 component: () => import(/* webpackChunkName: "integration" */ './components/dashboard/integration.vue'),
             },
             {
+                path: 'notifications',
+                component: () => import(/* webpackChunkName: "notifications" */ './components/dashboard/notifications.vue'),
+            },
+            {
                 path: 'account',
                 component: () => import(/* webpackChunkName: "account" */ './components/dashboard/account.vue'),
             },
@@ -47,9 +51,26 @@ const dashboard = {
 
     computed: {},
 
-    mounted() {},
+    created() {
+        (function(d) {
+            var js,
+                id = 'facebook-jssdk',
+                ref = d.getElementsByTagName('script')[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement('script');
+            js.id = id;
+            js.async = true;
+            js.src = '//connect.facebook.net/en_US/all.js';
+            ref.parentNode.insertBefore(js, ref);
+        })(document);
+    },
 
-    created() {},
+
+    mounted() {
+        this.FBInit();
+    },
 
     watch: {
         '$route.path': function() {
@@ -58,6 +79,28 @@ const dashboard = {
     },
 
     methods: {
+        FBInit() {
+            let params = {
+                appId: '1187408638266444',
+                cookie: true,
+                autoLogAppEvents: true,
+                xfbml: true,
+                version: 'v5.0',
+            };
+            window.fbAsyncInit = () => {
+                FB.init(params);
+                this.$emit('FBInit');
+            };
+        },
+
+        FBParse() {
+            return new Promise((resolve, reject) => {
+                FB.XFBML.parse(null, () => {
+                    resolve();
+                });
+            });
+        }
+
     },
 };
 

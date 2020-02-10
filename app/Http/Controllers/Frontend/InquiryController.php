@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Inquiry;
 use App\Models\Message;
 use Auth;
+use \Facebook\Facebook;
+use \Facebook\FacebookRequest;
 
 class InquiryController extends Controller
 {
@@ -58,5 +60,29 @@ class InquiryController extends Controller
             'preview' => $preview,
         ]);
         return response()->json($message->load('user'));
+    }
+
+    public function messengerNotify()
+    {
+        $facebook = new Facebook([
+            'app_id' => '1187408638266444',
+            'app_secret' => '89e9f7be3a3d38d7e0b0f332d7a5fc02',
+            'graph_api_version' => 'v5.0',
+        ]);
+        $facebookRequest = $facebook->request(
+            'POST',
+            '/me/messages',
+            [
+                'access_token' => 
+            'EAAQ38R4WTEwBAAArvJrFSYHsF3WHSpaV4NcVk9spHu1l8BPz59nwJqw4yovYWzcx1OUirdR6OblqTds5kLDpXT57pyh0eoSXTBWwf61jpZCuhqIdTv2qy7s7QvXsOmMzMY4a9TYJvCQzW2K9nVJgM0Ao1B6D6ZA0j87pEtVjhKex4Npv4N',
+                'recipient' => [
+                    'id' => '3011644205562087'
+                ],
+                'message' => [
+                    'text' => 'test message'
+                ]
+            ]
+        );
+        $response = $facebook->getClient()->sendRequest($facebookRequest);
     }
 }
