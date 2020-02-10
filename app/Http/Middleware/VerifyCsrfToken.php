@@ -21,6 +21,8 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         //
         'messages',
-        'facebook_page_tab'
+        'facebook_page_tab',
+        'facebook_page_tab',
+        'fb_messenger_webhook'
     ];
 }
