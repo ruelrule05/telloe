@@ -16,20 +16,44 @@
 				</div>
 			</div>
 
-			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch border">
-				<div class="w-25 sidebar border-right py-3 align-self-stretch">
-					<h1 class="h4 mb-3">{{ config('app.name') }}</h1>
-					<div class="list-group">
-					  	<router-link to="/dashboard" exact class="border-0 rounded-0 list-group-item list-group-item-action">Dashboard</router-link>
-					  	<router-link to="/dashboard/inquiries" class="border-0 rounded-0 list-group-item list-group-item-action">Inquiries</router-link>
-					  	<router-link to="/dashboard/bookings" class="border-0 rounded-0 list-group-item list-group-item-action">Bookings</router-link>
-					  	<router-link to="/dashboard/integration" class="border-0 rounded-0 list-group-item list-group-item-action">Integration</router-link>
-					  	<router-link to="/dashboard/settings" class="border-0 rounded-0 list-group-item list-group-item-action">Settings</router-link>
-					  	<router-link to="/dashboard/notifications" class="border-0 rounded-0 list-group-item list-group-item-action">Notifications</router-link>
+			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch">
+				<div class="sidebar border-right py-3 align-self-stretch text-center bg-white">
+					<div class="user-profile d-inline-block mb-2" :style="{backgroundImage: 'url('+auth.profile_image+')'}"></div>
+					<h1 class="h6 mb-4">@{{ auth.full_name }}</h1>
+					<div class="mb-2">
+						<div class="d-inline-block" v-tooltip.right="'Notifications'">
+							<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
+						</div>
+					</div>
+
+					<div class="py-2">
+						<div class="d-inline-block" v-tooltip.right="'Dashboard'">
+							<router-link to="/dashboard" exact><grid-icon height="26" width="26"></grid-icon></router-link>
+						</div>
+					</div>
+
+					<div class="py-2">
+						<div class="d-inline-block" v-tooltip.right="'Inquiries'">
+							<router-link to="/dashboard/inquiries" exact><chat-icon height="26" width="26"></chat-icon></router-link>
+						</div>
+					</div>
+
+					<div class="py-2">
+						<div class="d-inline-block" v-tooltip.right="'Bookings'">
+							<router-link to="/dashboard/bookings" exact><notebook-icon height="26" width="26"></notebook-icon></router-link>
+						</div>
+					</div>
+
+					<div class="py-2">
+						<div class="d-inline-block" v-tooltip.right="'Settings'">
+							<router-link to="/dashboard/settings" exact><cog-icon height="26" width="26"></cog-icon></router-link>
+						</div>
 					</div>
 				</div>
-				<div class="w-75 d-flex flex-column">
-					<div class="p-2 border-bottom shadow-sm d-flex align-items-center">
+
+
+				<div class="d-flex flex-column flex-grow-1">
+					<!-- <div class="p-2 border-bottom shadow-sm d-flex align-items-center">
 						<div class="pl-2"><strong>@{{ heading }}</strong></div>
 						<div class="ml-auto">
 							<div class="dropdown">
@@ -41,7 +65,8 @@
 							  	</div>
 							</div>
 						</div>
-					</div>
+					</div> -->
+
 					<div class="bg-light position-relative h-100 overflow-hidden">
 						<div class="contentloader position-absolute w-100 h-100" v-if="contentloading">
 							<div class="position-absolute-center">

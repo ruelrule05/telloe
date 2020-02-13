@@ -11,15 +11,21 @@ class Inquiry extends Model
     protected $casts = [
         'interests' => 'array'
     ];
+    protected $appends = ['excerpt'];
 
     public function widget()
     {
         return $this->belongsTo(Widget::class);
     }
 
-     public function user()
+    public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+     public function inquiryType()
+    {
+        return $this->belongsTo(InquiryType::class);
     }
 
     public function inquiryMedia()
@@ -40,5 +46,10 @@ class Inquiry extends Model
     public function getCreatedAtAttribute($value)
     {
         return \Carbon\Carbon::parse($value)->diffForHumans();
+    }
+
+    public function getExcerptAttribute($value)
+    {
+        return \Str::limit($this->attributes['message'], 80);
     }
 }

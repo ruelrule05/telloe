@@ -1,62 +1,104 @@
 <template>
-	<div v-if="inquiry" class="row h-100 m-0">
-		<div class="col-md-7 h-100 overflow-auto p-3">
-			<div class="text-center">
-				<img :src="inquiry.user.profile_image" width="80" class="rounded-circle" alt="" />
-				<h5 class="my-2">{{ inquiry.user.full_name }}</h5>
-			</div>
-			<p>{{ inquiry.message }}</p>
-			<masonry :cols="{default: 3, 991: 2, 768: 1}" :gutter="20">
-				<div v-for="(media, index) in inquiry.inquiry_media" class="mb-3 cursor-pointer position-relative inquiry-media" data-toggle="modal" data-target="#mediaViewModal" @click="mediaViewIndex = index">
-					<img :src="media.preview" alt="" class="w-100 rounded" />
-					<image-icon v-if="media.type == 'image'" class="text-white position-absolute-center"></image-icon>
-					<video-icon v-else-if="media.type == 'video'" class="text-white position-absolute-center"></video-icon>
-				</div>
-			</masonry>
-		</div>
+	<div class="h-100 w-100 overflow-hidden">
+		<div v-if="inquiry" class="d-flex h-100">
+			<div class="h-100 d-flex ml-auto flex-grow-1 justify-content-end">
+				<div class="h-100 overflow-hidden d-flex flex-column w-50">
+					<div class="overflow-auto flex-grow-1 bg-white" ref="message-group">
+						<div class="px-4 pt-4">
+		                    <div class="w-100 message-group">
+								<div class="media mb-1">
+				                    <img :src="inquiry.user.profile_image ? inquiry.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="rounded-circle" alt="image">
+				                    <div class="media-body pl-3">
+				                        <div class="font-weight-bold mb-1 line-height-1">{{ inquiry.user.full_name }} <small class="text-gray">{{ inquiry.created_at }}</small></div>
+				                		<p>{{ inquiry.message }}</p>
+				                		<div class="d-flex bg-light rounded p-3">
+				                			<div class="w-50">
+				                				<h5>Inquiry</h5>
+				                				<strong>Inquiry Type</strong>
+				                				<div>
+				                					{{ inquiry.inquiry_type.type }}
+				                				</div>
+				                			</div>
 
-		<div class="col-md-5 overflow-hidden h-100 d-flex flex-column p-0 border-left">
-			<div class="bg-white py-3 px-2 h6 shadow-sm">Messages</div>
-			<div class="h-100 d-flex flex-column overflow-hidden">
-				<div class="overflow-auto flex-grow-1 px-3 py-2" ref="message-group">
-                    <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
-                        <div class="message-item" v-for="message in grouped_message.messages" v-cloak :class="{'outgoing-message': message.user.id == $root.auth.id}">
-                            <div class="media align-items-center mb-1">
-                                <img :src="message.user.profile_image ? message.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="rounded-circle" alt="image">
-                                <div class="media-body pl-1">
-                                    <div class="font-weight-bold mb-n1">{{ message.user.id == $root.auth.id ? 'You' : message.user.full_name }}</div>
-                                    <small class="text-gray">{{ message.created_at }}</small>
-                                </div>
-                            </div>
-                            <div class="message-content">
-                                <div v-if="message.type != 'text'" class="position-relative cursor-pointer" data-toggle="modal" data-target="#messageMediaModal" @click="messageMedia = message">
-                                    <div class="position-absolute-center text-center">
-                                        <play-icon></play-icon>
-                                    </div>
-                                    <img :src="message.preview" class="w-100 rounded" alt="">
-                                </div>
-                                <span v-else>{{ message.message }}</span>
-                            </div>
-                        </div>
-                    </div>
-				</div>
-				<div class="bg-white p-2 shadow-sm">
-					<div class="d-flex">
-						<input type="text" class="form-control form-control-sm" placeholder="Write your message..">
-						<button class="btn btn-primary btn-sm ml-1"><send-icon size="1x"></send-icon></button>
+				                			<div class="w-50">
+				                				<strong>Attached Photos</strong>
+					                			<masonry :cols="{default: 3, 991: 2, 768: 1}" :gutter="10" class="mt-3">
+													<div v-for="(media, index) in inquiry.inquiry_media" class="mb-3 cursor-pointer position-relative inquiry-media" data-toggle="modal" data-target="#mediaViewModal" @click="mediaViewIndex = index">
+														<img :src="media.preview" alt="" class="w-100 rounded" />
+														<image-icon v-if="media.type == 'image'" class="text-white position-absolute-center"></image-icon>
+														<video-icon v-else-if="media.type == 'video'" class="text-white position-absolute-center"></video-icon>
+													</div>
+												</masonry>
+				                			</div>
+				                		</div>
+				                    </div>
+				                </div>
+			                </div>
+			            </div>
+
+						<div class="px-4 pt-4x">
+		                    <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
+		                        <div class="message-item" v-for="message in grouped_message.messages" v-cloak :class="{'outgoing-message': message.user.id == $root.auth.id}">
+		                            <div class="media mb-n2">
+		                                <img :src="message.user.profile_image ? message.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="rounded-circle" alt="image">
+		                                <div class="media-body pl-3">
+		                                    <div class="font-weight-bold line-height-1">{{ message.user.id == $root.auth.id ? 'You' : message.user.full_name }} <small class="text-gray">{{ message.created_at }}</small></div>
+		                                </div>
+		                            </div>
+		                            <div class="pl-5">
+			                            <div class="message-content">
+			                                <div v-if="message.type != 'text'" class="position-relative cursor-pointer" data-toggle="modal" data-target="#messageMediaModal" @click="messageMedia = message">
+			                                    <div class="position-absolute-center text-center">
+			                                        <play-icon></play-icon>
+			                                    </div>
+			                                    <img :src="message.preview" class="w-100 rounded" alt="">
+			                                </div>
+			                                <p class="mb-0" v-else>{{ message.message }}</p>
+			                            </div>
+		                            </div>
+		                        </div>
+		                    </div>
+						</div>
 					</div>
-					<button class="btn btn-sm shadow-none" data-toggle="modal" data-target="#recordVideoModal" data-backdrop="static" data-keyboard="false">
-						<video-icon size="1.2x"></video-icon>
-					</button>
-					<button class="btn btn-sm shadow-none">
-						<gift-icon size="1.2x"></gift-icon>
-					</button>
+
+					<div class="bg-white p-3 border-top shadow-sm">
+						<div class="d-flex align-items-center">
+							<input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Write your message..">
+							<button type="button" class="btn btn-dark badge-pill px-3 btn-sm">Send</button>
+							<div class="cursor-pointer mx-2" v-tooltip.top="'Record video'" @click="videoRecorderOpen = true; $refs['videoRecorder'].initCamera()"><file-video-icon size="1x"></file-video-icon></div>
+							<div class="cursor-pointer"><comment-icon size="1x"></comment-icon></div>
+						</div>
+					</div>
+				</div>
+				
+				<video-recorder :inquiry="inquiry" class="flex-grxow-1" :class="{'video-recorder-open': videoRecorderOpen}" @hide="videoRecorderOpen = false" @submit="sendVideo" ref="videoRecorder"></video-recorder>
+			</div>
+
+			<div class="py-3 px-2 bg-light border-left text-center shadow ml-auto rightbar text-break">
+				<div class="user-profile mb-4 d-inline-block" :style="{backgroundImage: 'url('+inquiry.user.profile_image+')'}"></div>
+				<div class="py-3">
+					<panel-arrow-left-icon height="26" width="26" class="cursor-pointer" @click.native="$emit('hide')"></panel-arrow-left-icon>
+				</div>
+				<div class="py-3">
+					<search-icon height="26" width="26"></search-icon>
+				</div>
+				<div class="py-3">
+					<strong>Client Files</strong>
+				</div>
+				<div class="py-3 text-wrap">
+					<strong>Inquiries/Reply</strong>
+				</div>
+				<div class="py-3">
+					<strong>Offers</strong>
 				</div>
 			</div>
 		</div>
 
-		<video-recorder :files="inquiry.inquiry_media" id="recordVideoModal" @submit="sendVideo"></video-recorder>
-		
+
+
+		<div v-else>
+			Loading..
+		</div>
 
 		<div class="modal fade" tabindex="-1" role="dialog" id="messageMediaModal">
 		  	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -98,6 +140,7 @@
 </template>
 
 <script>
+import Tooltip from './../../../directives/tooltip.js';
 import ImageIcon from 'vue-feather-icons/icons/ImageIcon';
 import VideoIcon from 'vue-feather-icons/icons/VideoIcon';
 import ChevronLeftIcon from 'vue-feather-icons/icons/ChevronLeftIcon';
@@ -109,9 +152,17 @@ import CheckIcon from 'vue-feather-icons/icons/CheckIcon';
 import PlayIcon from 'vue-feather-icons/icons/PlayIcon';
 import VueMasonry from './../../../components/vue-masonry.js';
 import VideoRecorder from './../../../components/video-recorder.vue';
+
+
+import SearchIcon from '../../../icons/search';
+import PanelArrowLeftIcon from '../../../icons/panel-arrow-left';
+import FileVideoIcon from '../../../icons/file-video';
+import CommentIcon from '../../../icons/comment';
 Vue.use(VueMasonry);
 
 export default {
+	directives: {Tooltip},
+
 	components: {
 		ImageIcon,
 		VideoIcon,
@@ -123,6 +174,16 @@ export default {
 		CheckIcon,
 		PlayIcon,
 		VideoRecorder,
+		SearchIcon,
+		PanelArrowLeftIcon,
+		FileVideoIcon,
+		CommentIcon,
+	},
+
+	props: {
+		id: {
+			type: Number,
+		}
 	},
 
 	data: () => ({
@@ -138,6 +199,7 @@ export default {
             videoPreview: '',
         },
         messageMedia: null,
+        videoRecorderOpen: false
 	}),
 
 
@@ -171,7 +233,7 @@ export default {
     },
 
 	mounted() {
-		
+		this.scrollDown();
 	},
 
 	created() {
@@ -201,10 +263,10 @@ export default {
         },
 
 		getData() {
-			axios.get(`/dashboard/inquiries/${this.$route.params.id}`).then((response) => {
+			axios.get(`/dashboard/inquiries/${this.id}`).then((response) => {
 				this.inquiry = response.data;
 				this.$root.contentloading = false;
-				this.scrollDown();
+				//this.scrollDown();
 			});
 		},
 
@@ -214,7 +276,7 @@ export default {
                 if (message_group) {
                     message_group.scrollTop = message_group.scrollHeight;
                 }
-            });
+            }, 10);
         },
 
 		goTo(id) {

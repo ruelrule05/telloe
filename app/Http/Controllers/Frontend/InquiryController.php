@@ -16,14 +16,14 @@ class InquiryController extends Controller
 
     public function index(Request $request)
     {
-        $inquiries = Auth::user()->widget->inquiries->load('user');
+        $inquiries = Auth::user()->widget->inquiries->load('user', 'inquiryType');
 
         return response()->json($inquiries);
     }
 
     public function show($id, Request $request)
     {
-        $inquiry = Inquiry::with('user', 'messages.user', 'inquiryMedia')->findOrFail($id);
+        $inquiry = Inquiry::with('user', 'messages.user', 'inquiryMedia', 'inquiryType')->findOrFail($id);
         $this->authorize('show', $inquiry);
 
         return response()->json($inquiry);

@@ -16,20 +16,8 @@ window.routes = window.routes.concat([
                 component: () => import(/* webpackChunkName: "inquiries" */ './components/dashboard/inquiries/index.vue'),
             },
             {
-                path: 'inquiries/:id',
-                component: () => import(/* webpackChunkName: "inquiries-show" */ './components/dashboard/inquiries/show.vue'),
-            },
-            {
                 path: 'settings',
                 component: () => import(/* webpackChunkName: "settings" */ './components/dashboard/settings.vue'),
-            },
-            {
-                path: 'integration',
-                component: () => import(/* webpackChunkName: "integration" */ './components/dashboard/integration.vue'),
-            },
-            {
-                path: 'notifications',
-                component: () => import(/* webpackChunkName: "notifications" */ './components/dashboard/notifications.vue'),
             },
             {
                 path: 'account',
@@ -42,8 +30,17 @@ window.routes = window.routes.concat([
         ],
     },
 ]);
-
+import Tooltip from './directives/tooltip.js';
+import BellIcon from './icons/bell';
+import GridIcon from './icons/grid';
+import ChatIcon from './icons/chat';
+import NotebookIcon from './icons/notebook';
+import CogIcon from './icons/cog';
 const dashboard = {
+    directives: {Tooltip},
+    
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon},
+
     data: {
         heading: '',
         contentloading: true,

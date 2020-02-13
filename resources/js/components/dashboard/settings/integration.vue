@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="$root.auth.widget.fb_page && $root.auth.widget.fb_page.id" class="position-absolute-center text-center">
+		<div v-if="$root.auth.widget.fb_page && $root.auth.widget.fb_page.id" class="text-center">
 			<img :src="$root.auth.widget.fb_page.picture" alt="" class="rounded-circle" />
 			<h1 class="h4 mt-1 mb-0">{{ $root.auth.widget.fb_page.name }}</h1>
 			<div class="text-gray mb-3">{{ $root.auth.widget.fb_page.id }}</div>
@@ -57,7 +57,6 @@ export default {
 	},
 
 	created() {
-		this.$root.heading = 'Integration';
 		axios.get('/dashboard/widget').then((response) => {
 			this.widget = response.data;
 			this.$root.contentloading = false;

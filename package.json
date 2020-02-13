@@ -57,6 +57,7 @@
         "socket.io": "^2.3.0",
         "stripe-client": "^1.1.5",
         "tls": "0.0.1",
+        "v-color": "^1.1.2",
         "v-tooltip": "^2.0.2",
         "videojs-record": "^3.8.0",
         "vue": "^2.6.11",

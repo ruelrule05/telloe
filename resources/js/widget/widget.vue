@@ -243,7 +243,7 @@ import SignupModal from './modals/signup';
 import LoginModal from './modals/login';
 import ManageMediaModal from './modals/manage-media';
 import InstagramSearch from './instagram-search';
-import Tooltip from './directives/tooltip.js';
+import Tooltip from './tooltip.js';
 import VueLazyload from 'vue-lazyload';
 SBVue.use(VueLazyload);
 export default {

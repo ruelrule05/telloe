@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     //
-    protected $fillable = ['user_id', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id'];
+    protected $fillable = ['user_id', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms'];
     protected $casts = [
-        'fb_page' => 'array'
+        'fb_page' => 'array',
+        'colors' => 'array',
+        'notify_messenger' => 'boolean',
+        'notify_sms' => 'boolean',
     ];
     protected $hidden = [
         'user_id',
