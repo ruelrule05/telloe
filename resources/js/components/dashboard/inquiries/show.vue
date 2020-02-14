@@ -199,7 +199,7 @@ export default {
             videoPreview: '',
         },
         messageMedia: null,
-        videoRecorderOpen: false
+        videoRecorderOpen: true,
 	}),
 
 
@@ -266,7 +266,7 @@ export default {
 			axios.get(`/dashboard/inquiries/${this.id}`).then((response) => {
 				this.inquiry = response.data;
 				this.$root.contentloading = false;
-				//this.scrollDown();
+				this.scrollDown();
 			});
 		},
 

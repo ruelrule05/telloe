@@ -1,6 +1,6 @@
 <template>
     <div id="video-recorder" class="bg-light overflow-auto border-left position-relative">
-        <close-icon class="position-absolute cursor-pointer" fill="white" @click.native="closeCamera(); $emit('hide');"></close-icon>
+        <close-icon v-if="!isRecording" class="position-absolute cursor-pointer" fill="white" @click.native="closeCamera(); $emit('hide');"></close-icon>
         <div id="video-viewer" class="position-relative bg-black">
             <!-- Spinner -->
             <div class="position-absolute-center text-center" v-if="!cameraReady">
@@ -73,10 +73,16 @@
                     </div>
                     <canvas id="canvas-placeholder" hidden></canvas> 
                     <canvas id="canvas-output" hidden></canvas> 
-                    
                 </div>
-
-                 <video :hidden="!videoOutput" ref="videoOutput" class="w-100" style="outline: 0" playsinline controls preload></video>
+                
+                <!-- Video output -->
+                <div id="videoOutput" class="hover-opacity-1" :hidden="!videoOutput">
+                    <div class="position-absolute-center opacity-0">
+                        <button class="btn btn-light badge-pill btn-sm" @click="resetRecorder()">Cancel</button>
+                        <button class="btn btn-primary ml-2 badge-pill btn-sm" @click="submit()">Send</button>
+                    </div>
+                    <video ref="videoOutput" class="w-100" style="outline: 0" playsinline controls preload></video>
+                </div>
 
                 <!-- Controls -->
                 <div id="recorderControls" class="position-absolute w-100 text-center" v-if="cameraReady">
@@ -97,13 +103,19 @@
             </div>
 
             <div class="p-4">
-                <h4>{{ inquiry.user.full_name }}</h4>
+                <h5>{{ inquiry.user.full_name }}</h5>
+                <div class="text-center">
+                    <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'photos'}" @click="activeTab = 'photos'">Photos</button>
+                    <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'files'}" @click="activeTab = 'files'">Client Files</button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import Timer from 'tiny-timer/dist/tiny-timer.js';
+const timer = new Timer();
 const feather = require('feather-icons');
 const domtoimage = require('dom-to-image');
 const format = require('format-duration');
@@ -172,8 +184,10 @@ export default {
         format: format,
         recordInterval: null,
         currentTime: 0,
-        limit: 3000, // 30 seconds
+        limit: 30000, // 30 seconds
         cameraFull: false,
+        timer: timer,
+        activeTab: 'photos',
     }),
 
     created() {
@@ -187,10 +201,10 @@ export default {
         this.cursor = new Image();
         this.cursor.src = '/images/mouse.png';
         this.selectedImage = this.inquiry.inquiry_media[0];
-       /*
-        $(this.$refs['modal']).on('hidden.bs.modal', (e) => {
-            this.closeCamera();
-        });*/
+
+        /*this.timer.start(this.limit);
+        this.timer.on('tick', (ms) => console.log(this.timer.status))
+        this.timer.on('done', () => this.stopRecording());*/
     },
 
     methods: {
@@ -203,6 +217,8 @@ export default {
 
         submit() {
             this.$emit('submit', this.video);
+            this.resetRecorder();
+            this.$emit('hide');
         },
 
         initCamera() {
@@ -222,6 +238,14 @@ export default {
                 alert('Unable to capture your camera.');
                 console.error(error);
             });
+        },
+
+        resetRecorder() {
+           this.videoOutput = null; 
+           this.hasRecorded = this.recorderStarted = false; 
+           this.videoRecorder.reset();
+           this.clearSvg();
+           this.pulses = [];
         },
 
         closeCamera() {
@@ -330,7 +354,7 @@ export default {
         },
 
         recordCanvas(canvasOutput) {
-            if (!this.recorderStarted && this.currentTime < this.limit) {
+            if (!this.recorderStarted) {
                 this.recorderStarted = true;
                 let audioStream = new MediaStream(this.streams.getAudioTracks());
                 audioStream.getTracks('audio').forEach((track) => {
@@ -342,11 +366,70 @@ export default {
                 this.videoRecorder.setRecordingDuration(this.limit).onRecordingStopped(() => {
                     this.pauseRecord();
                 });
-                this.videoRecorder.onTimeStamp((timestamp) => {
-                    console.log(timestamp);
-                });
                 this.videoRecorder.startRecording();
             }
+        },
+
+        loopRecordVideoCamera(canvasCtx, canvasOutputCtx, canvasOutput, canvasPlaceholder) {
+            let $this = this;
+            let video = this.$refs['cameraPreview'];
+            (function loopVideo() {
+                if ($this.isRecording) {
+                    canvasCtx.save();
+                    /*canvasCtx.fillStyle = "black";
+                    canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);*/
+                    if ($this.cameraFull) {
+                        canvasCtx.drawImage(video, (canvasPlaceholder.width - video.offsetWidth) / 2, 0, (canvasPlaceholder.height/video.videoHeight) * canvasPlaceholder.width, canvasPlaceholder.height);
+                    } else {
+                        canvasCtx.beginPath();
+                        canvasCtx.arc(60, canvasPlaceholder.height - 60, 50, 0, 6.28, false); //draw the circle
+                        canvasCtx.clip(); //call the clip method so the next render is clipped in last path
+                        canvasCtx.closePath();
+                        canvasCtx.drawImage(video, -5, canvasPlaceholder.height - 108, video.offsetWidth, video.offsetHeight);
+                    }
+                    canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                    canvasCtx.restore();
+                }
+                requestAnimationFrame(loopVideo);
+            })();
+        },
+
+        loopRecordImages(canvasCtx, canvasOutputCtx, canvasOutput, canvasPlaceholder) {
+            let $this = this;
+            let images = document.getElementById('images');
+            let cursor = new Image();
+            cursor.src = '/images/mouse.png';
+
+            (function loopImages() {
+                if ($this.isRecording) {
+                    if (!$this.cameraFull) {
+                        domtoimage.toJpeg(images).then(dataUrl => {
+                            let img = new Image();
+                            img.src = dataUrl;
+                            img.onload = () => {
+                                let newCanvas = document.createElement('canvas');
+                                let newCanvasCtx = newCanvas.getContext('2d');
+                                newCanvas.width = img.width;
+                                newCanvas.height = img.height;
+                                newCanvasCtx.drawImage(img, 0, 0, img.width, img.height);
+
+                                if ($this.mouse.x > -1 && $this.mouse.y > -1) {
+                                    newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
+                                }
+
+                                //canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                                canvasCtx.drawImage(newCanvas, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                                canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
+                                $this.recordCanvas(canvasOutput);
+                                setTimeout(loopImages, 1);
+                            }
+                        });
+                    } else {
+                        $this.recordCanvas(canvasOutput);
+                        setTimeout(loopImages, 1);
+                    }
+                }
+            })();
         },
 
         startRecord() {
@@ -364,63 +447,11 @@ export default {
                 canvasOutput.width = canvasPlaceholder.width = $('#toRecord').width();
                 canvasOutput.height = canvasPlaceholder.height = $('#toRecord').height();
 
-                // Video
-                let video = $this.$refs['cameraPreview'];
-                (function loopVideo() {
-                    if ($this.isRecording) {
-                        if ($this.hasImages) {
-                            canvasCtx.drawImage(video, canvasPlaceholder.width / 2, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                        } else {
-                            canvasCtx.fillStyle = "black";
-                            canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                            canvasCtx.drawImage(video, canvasPlaceholder.width / 4, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                        }
-                        canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                    }
-                    requestAnimationFrame(loopVideo);
-                })();
-
-                // Images
-                let images = document.getElementById('images');
-                let cursor = new Image();
-                cursor.src = '/images/mouse.png';
-
-                (function loopImages() {
-                    if ($this.isRecording) {
-                        if ($this.hasImages) {
-                            domtoimage.toJpeg(images).then(dataUrl => {
-                                let img = new Image();
-                                img.src = dataUrl;
-                                img.onload = () => {
-                                    let newCanvas = document.createElement('canvas');
-                                    let newCanvasCtx = newCanvas.getContext('2d');
-                                    newCanvas.width = img.width;
-                                    newCanvas.height = img.height;
-                                    newCanvasCtx.drawImage(img, 0, 0, img.width, img.height);
-
-                                    if ($this.mouse.x > -1 && $this.mouse.y > -1) {
-                                        newCanvasCtx.drawImage(cursor, $this.mouse.x, $this.mouse.y, 20, 20);
-                                    }
-
-                                    //canvasCtx.clearRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                                    canvasCtx.drawImage(newCanvas, 0, 0, canvasPlaceholder.width / 2, canvasPlaceholder.height);
-                                    canvasOutputCtx.drawImage(canvasPlaceholder, 0, 0, canvasPlaceholder.width, canvasPlaceholder.height);
-                                    $this.recordCanvas(canvasOutput);
-                                    setTimeout(loopImages, 1);
-                                }
-                            });
-                        } else {
-                            $this.recordCanvas(canvasOutput);
-                            setTimeout(loopImages, 1);
-                        }
-                    } else {
-                        $this.recordCanvas(canvasOutput);
-                        setTimeout(loopImages, 1);
-                    }
-                })();
+                this.loopRecordVideoCamera(canvasCtx, canvasOutputCtx, canvasOutput, canvasPlaceholder);
+                this.loopRecordImages(canvasCtx, canvasOutputCtx, canvasOutput, canvasPlaceholder);
             }
         },
-        
+
         finishRecord() {
             this.videoRecorder.stopRecording(() => {
                 let videoBlob = this.videoRecorder.getBlob();
@@ -443,7 +474,7 @@ export default {
                 };
                 this.finalStream = new MediaStream();
                 this.videoRecorder.reset();
-                this.recorderStarted = false;
+                this.recorderStarted = this.isRecording = false;
             });
         },
 

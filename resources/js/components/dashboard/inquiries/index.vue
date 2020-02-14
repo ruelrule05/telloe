@@ -83,7 +83,7 @@ export default {
 		getData() {
 			axios.get('/dashboard/inquiries').then((response) => {
 				this.inquiries = response.data;
-				//this.selectedInquiry = this.inquiries[0];
+				this.selectedInquiry = this.inquiries[0];
 				this.$root.contentloading = false;
 			});
 		},
