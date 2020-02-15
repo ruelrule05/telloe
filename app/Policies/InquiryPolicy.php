@@ -22,7 +22,7 @@ class InquiryPolicy
 
     public function show(User $user, Inquiry $inquiry)
     {
-        return $user->widget_id == $inquiry->widget_id || $user->id == $inquiry->user_id;
+        return $user->widget->id == $inquiry->widget_id || $user->id == $inquiry->user_id;
     }
 
     public function postMessage(User $user, Inquiry $inquiry)
