@@ -37,7 +37,7 @@ export default {
 
 	mounted() {
 		this.$root.contentloading = false;
-		this.selectedTab = 'Colors';
+		this.selectedTab = 'Domain';
 	},
 
 	created() {
