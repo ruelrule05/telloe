@@ -250,6 +250,8 @@ export default {
 		sendText() {
 			this.newMessage.type = 'text';
 			this.newMessage.message = this.textMessage;
+            this.newMessage.video = null;
+            this.newMessage.videoPreview = null;
             let data = new FormData();
             Object.keys(this.newMessage).map((k) => {
                 data.append(k, this.newMessage[k]);
