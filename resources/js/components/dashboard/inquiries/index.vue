@@ -9,7 +9,7 @@
 					<h6 class="mb-3">New Inquiries</h6>
 					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="selectedInquiry = inquiry" v-for="inquiry in inquiries">
 						<div class="media">
-							<div class="user-profile-image mr-2" :style="{backgroundImage: 'url(' + inquiry.user.profile_image + ')'}"></div>
+							<div class="user-profile-image mr-2" :style="[inquiry.user.profile_image ? {backgroundImage: 'url(' + inquiry.user.profile_image + ')'} : '']"></div>
 							<div class="media-body">
 								<div class="font-weight-bold mb-n1">{{ inquiry.user.full_name }}</div>
 								<small class="text-gray">{{ inquiry.created_at }}</small>
@@ -26,7 +26,7 @@
 					<h6 class="mb-3">Existing Patients</h6>
 					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="selectedInquiry = inquiry" v-for="inquiry in inquiries">
 						<div class="media">
-							<div class="user-profile-image mr-2" :style="{backgroundImage: 'url(' + inquiry.user.profile_image + ')'}"></div>
+							<div class="user-profile-image mr-2" :style="[inquiry.user.profile_image ? {backgroundImage: 'url(' + inquiry.user.profile_image + ')'} : '']"></div>
 							<div class="media-body">
 								<div class="font-weight-bold mb-n1">{{ inquiry.user.full_name }}</div>
 								<small class="text-gray">{{ inquiry.created_at }}</small>
@@ -43,7 +43,7 @@
 					<h6 class="mb-3">Follow Up Patients</h6>
 					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="selectedInquiry = inquiry" v-for="inquiry in inquiries">
 						<div class="media">
-							<div class="user-profile-image mr-2" :style="{backgroundImage: 'url(' + inquiry.user.profile_image + ')'}"></div>
+							<div class="user-profile-image mr-2" :style="[inquiry.user.profile_image ? {backgroundImage: 'url(' + inquiry.user.profile_image + ')'} : '']"></div>
 							<div class="media-body">
 								<div class="font-weight-bold mb-n1">{{ inquiry.user.full_name }}</div>
 								<small class="text-gray">{{ inquiry.created_at }}</small>

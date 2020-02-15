@@ -7,7 +7,7 @@
 						<div class="px-4 pt-4">
 		                    <div class="w-100 message-group">
 								<div class="media mb-1">
-				                    <img :src="inquiry.user.profile_image ? inquiry.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="rounded-circle" alt="image">
+									<div class="user-profile-image mr-2" :style="[inquiry.user.profile_image ? {backgroundImage: 'url(' + inquiry.user.profile_image + ')'} : '']"></div>
 				                    <div class="media-body pl-3">
 				                        <div class="font-weight-bold mb-1 line-height-1">{{ inquiry.user.full_name }} <small class="text-gray">{{ inquiry.created_at }}</small></div>
 				                		<p>{{ inquiry.message }}</p>
@@ -75,7 +75,7 @@
 			</div>
 
 			<div class="py-3 px-2 bg-light border-left text-center shadow ml-auto rightbar text-break">
-				<div class="user-profile mb-4 d-inline-block" :style="{backgroundImage: 'url('+inquiry.user.profile_image+')'}"></div>
+				<div class="user-profile mb-4 d-inline-block" :style="[inquiry.user.profile_image ? {backgroundImage: 'url(' + inquiry.user.profile_image + ')'} : '']"></div>
 				<div class="py-3">
 					<panel-arrow-left-icon height="26" width="26" class="cursor-pointer" @click.native="$emit('hide')"></panel-arrow-left-icon>
 				</div>

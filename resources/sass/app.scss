@@ -100,7 +100,7 @@ $viewport_heights: (
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: $dark;
+    background-color: $gray-400 !important;
 }
 .pageloader {
     position: fixed;
@@ -345,6 +345,7 @@ $viewport_heights: (
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-color: $gray-400 !important;
 }
 .sidebar {
     flex: 0 0 100px;

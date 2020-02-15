@@ -19,7 +19,7 @@
 			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch">
 				<div class="sidebar border-right py-3 align-self-stretch text-center bg-white">
 					<div class="dropdown">
-						<div class="user-profile d-inline-block mb-2 cursor-pointer" :style="{backgroundImage: 'url('+auth.profile_image+')'}" data-toggle="dropdown"></div>
+						<div class="user-profile d-inline-block mb-2 cursor-pointer" :style="[auth.profile_image ? {backgroundImage: 'url(' + auth.profile_image + ')'} : '']" data-toggle="dropdown"></div>
 						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 					    	<router-link to="/dashboard/account" class="dropdown-item">Account</router-link>
 					    	<router-link to="/dashboard/billing" class="dropdown-item">Billing</router-link>
