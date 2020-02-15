@@ -24,12 +24,16 @@
 
 				<div class="col-md-6 col-lg-4 mb-3 px-2">
 					<h6 class="mb-3">Existing Patients</h6>
-					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="goTo(inquiry.id)" v-for="inquiry in inquiries">
-						<div class="media align-items-center">
+					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="selectedInquiry = inquiry" v-for="inquiry in inquiries">
+						<div class="media">
 							<div class="user-profile-image mr-2" :style="{backgroundImage: 'url(' + inquiry.user.profile_image + ')'}"></div>
 							<div class="media-body">
-								<div class="font-weight-bold">{{ inquiry.user.full_name }}</div>
-								<span class="text-gray">{{ inquiry.created_at }}</span>
+								<div class="font-weight-bold mb-n1">{{ inquiry.user.full_name }}</div>
+								<small class="text-gray">{{ inquiry.created_at }}</small>
+								<p class="my-2">{{ inquiry.excerpt }}</p>
+
+								<div><strong>Enquiry Type:</strong> {{ inquiry.inquiry_type.type }}</div>
+								<div><strong>Areas of Interestes:</strong> {{ inquiry.inquiry_type.type }}</div>
 							</div>
 						</div>
 					</div>
@@ -37,12 +41,16 @@
 
 				<div class="col-md-6 col-lg-4 mb-3 px-2">
 					<h6 class="mb-3">Follow Up Patients</h6>
-					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="goTo(inquiry.id)" v-for="inquiry in inquiries">
-						<div class="media align-items-center">
+					<div class="shadow-sm cursor-pointer p-3 rounded bg-white mb-3" @click="selectedInquiry = inquiry" v-for="inquiry in inquiries">
+						<div class="media">
 							<div class="user-profile-image mr-2" :style="{backgroundImage: 'url(' + inquiry.user.profile_image + ')'}"></div>
 							<div class="media-body">
-								<div class="font-weight-bold">{{ inquiry.user.full_name }}</div>
-								<span class="text-gray">{{ inquiry.created_at }}</span>
+								<div class="font-weight-bold mb-n1">{{ inquiry.user.full_name }}</div>
+								<small class="text-gray">{{ inquiry.created_at }}</small>
+								<p class="my-2">{{ inquiry.excerpt }}</p>
+
+								<div><strong>Enquiry Type:</strong> {{ inquiry.inquiry_type.type }}</div>
+								<div><strong>Areas of Interestes:</strong> {{ inquiry.inquiry_type.type }}</div>
 							</div>
 						</div>
 					</div>

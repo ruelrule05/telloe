@@ -127,7 +127,7 @@
 			      		<button v-if="mediaViewIndex > 0" class="btn bg-transparent outline-0 position-absolute h-50 shadow-none px-4 cursor-pointer media-control" @click="mediaViewIndex--">
 			      			<chevron-left-icon class="position-absolute-center text-white" size="2x"></chevron-left-icon>
 			      		</button>
-			      		<img v-if="inquiry.inquiry_media[mediaViewIndex].type == 'image'" :src="inquiry.inquiry_media[mediaViewIndex].media" class="w-100">
+			      		<img v-if="inquiry.inquiry_media[mediaViewIndex].type == 'image' || inquiry.inquiry_media[mediaViewIndex].type == 'sample'" :src="inquiry.inquiry_media[mediaViewIndex].media" class="w-100">
 			      		<video v-else-if="inquiry.inquiry_media[mediaViewIndex].type == 'video'" :src="inquiry.inquiry_media[mediaViewIndex].media" controls autoplay class="w-100 outline-0"></video>
 			      		<button class="btn bg-transparent outline-0 position-absolute h-50 shadow-none px-4 cursor-pointer media-control" style="right: 0" @click="mediaViewIndex++" v-if="mediaViewIndex < inquiry.inquiry_media.length - 1">
 			      			<chevron-right-icon class="position-absolute-center text-white" size="2x"></chevron-right-icon>
@@ -159,6 +159,7 @@ import SearchIcon from '../../../icons/search';
 import PanelArrowLeftIcon from '../../../icons/panel-arrow-left';
 import FileVideoIcon from '../../../icons/file-video';
 import CommentIcon from '../../../icons/comment';
+import CloseIcon from '../../../icons/close';
 Vue.use(VueMasonry);
 
 export default {
@@ -180,6 +181,7 @@ export default {
 		PanelArrowLeftIcon,
 		FileVideoIcon,
 		CommentIcon,
+		CloseIcon,
 	},
 
 	props: {
