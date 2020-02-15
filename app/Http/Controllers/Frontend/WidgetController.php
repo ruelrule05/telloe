@@ -189,4 +189,25 @@ class WidgetController extends Controller
         $stripePublishableKey = config('stripe.publishable_key');
         return response($stripePublishableKey);
     }
+
+
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            'heading' => 'nullable',
+            'domain' => 'required',
+            'slug' => 'required',
+            'fb_page' => 'required',
+            'colors' => 'nullable',
+            'notify_messenger' => 'required',
+            'notify_sms' => 'required',
+        ]);
+        $slugExists = Widget::where('slug', $request->slug)->where('id', '<>', Auth::user()->widget->id)->first();
+        if($slugExists) return abort(403, 'Slug already exists.');
+
+        $widget = Auth::user()->widget;
+        $widget->update($request->all());
+
+        return response()->json($widget->load('widgetRules'));
+    }
 }

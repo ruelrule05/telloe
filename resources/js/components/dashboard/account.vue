@@ -7,7 +7,7 @@
 				<div class="card shadow-sm mb-3">
 					<div class="card-body">
 						<h5>Profile</h5>
-						<vue-form-validate action="">
+						<vue-form-validate @submit="save">
 							<div class="form-group">
 								<label class="form-label required">First Name</label>
 								<input type="text" class="form-control" data-required placeholder="First Name" v-model="user.first_name">
@@ -28,7 +28,7 @@
 				</div>
 
 				<!-- Security -->
-				<div class="card shadow-sm">
+				<!-- <div class="card shadow-sm">
 					<div class="card-body">
 						<h5>Security</h5>
 						<vue-form-validate action="">
@@ -49,7 +49,7 @@
 							</div>
 						</vue-form-validate>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
@@ -75,6 +75,12 @@ export default {
 
 
 	methods: {
+		save() {
+			axios.put('/dashboard/auth', this.user).then((response) => {
+				this.$root.auth.widget = response.data;
+				this.$toasted.success('Account updated');
+			});
+		}
 	},
 };
 </script>

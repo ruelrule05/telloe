@@ -62,12 +62,12 @@
 					</div>
 
 					<div class="bg-white p-3 border-top shadow-sm">
-						<div class="d-flex align-items-center">
-							<input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Write your message..">
-							<button type="button" class="btn btn-dark badge-pill px-3 btn-sm">Send</button>
+						<vue-form-validate class="d-flex align-items-center" @submit="sendText()">
+							<input type="text" class="form-control form-control-sm border-0 shadow-none" v-model="textMessage" data-required placeholder="Write your message..">
+							<button type="submit" class="btn btn-dark badge-pill px-3 btn-sm">Send</button>
 							<div class="cursor-pointer mx-2" v-tooltip.top="'Record video'" @click="videoRecorderOpen = true; $refs['videoRecorder'].initCamera()"><file-video-icon size="1x"></file-video-icon></div>
 							<div class="cursor-pointer"><comment-icon size="1x"></comment-icon></div>
-						</div>
+						</vue-form-validate>
 					</div>
 				</div>
 				
@@ -140,6 +140,7 @@
 </template>
 
 <script>
+import VueFormValidate from './../../../components/vue-form-validate.vue';
 import Tooltip from './../../../directives/tooltip.js';
 import ImageIcon from 'vue-feather-icons/icons/ImageIcon';
 import VideoIcon from 'vue-feather-icons/icons/VideoIcon';
@@ -164,6 +165,7 @@ export default {
 	directives: {Tooltip},
 
 	components: {
+		VueFormValidate,
 		ImageIcon,
 		VideoIcon,
 		ChevronLeftIcon,
@@ -191,7 +193,7 @@ export default {
 		mediaViewIndex: -1,
         messages: [],
         newMessage: {
-            inquiry_id: 1,
+            inquiry_id: 0,
             message: '',
             type: '',
             preview: '',
@@ -199,7 +201,8 @@ export default {
             videoPreview: '',
         },
         messageMedia: null,
-        videoRecorderOpen: true,
+        videoRecorderOpen: false,
+        textMessage: ''
 	}),
 
 
@@ -242,6 +245,24 @@ export default {
 	},
 
 	methods: {
+		sendText() {
+			this.newMessage.type = 'text';
+			this.newMessage.message = this.textMessage;
+            let data = new FormData();
+            Object.keys(this.newMessage).map((k) => {
+                data.append(k, this.newMessage[k]);
+            });
+            axios.post(`/dashboard/inquiries/${this.inquiry.id}/message`, data, {header : {'Content-Type' : 'multipart/form-data'}}).then((response) => {
+                this.inquiry.messages.push(response.data);
+                this.newMessage.message = '';
+                this.newMessage.type = 'text';
+                this.newMessage.video = null;
+                this.newMessage.videoPreview = null;
+                //this.socket.emit('message_sent', response.data);
+                this.scrollDown();
+            });
+		},
+
         sendVideo(video) {
             this.newMessage.type = 'video';
             this.newMessage.video = video.blob;
@@ -265,6 +286,7 @@ export default {
 		getData() {
 			axios.get(`/dashboard/inquiries/${this.id}`).then((response) => {
 				this.inquiry = response.data;
+				this.newMessage.inquiry_id = this.inquiry.id;
 				this.$root.contentloading = false;
 				this.scrollDown();
 			});

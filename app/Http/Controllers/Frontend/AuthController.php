@@ -144,4 +144,17 @@ class AuthController extends Controller
         });
     }
 
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            'first_name' => 'nullable',
+            'last_name' => 'required',
+            'email' => 'required|email',
+        ]);
+        $emailExists = User::where('email', $request->email)->where('id', '<>', Auth::user()->id)->first();
+        if($emailExists) return abort(403, 'Email already exists.');
+
+        Auth::user()->update($request->all());
+        return $this->get($request);
+    }
 }

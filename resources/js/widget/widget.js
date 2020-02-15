@@ -47,8 +47,8 @@ document.body.appendChild(container);
 
 import VueMasonry from './../components/vue-masonry.js';
 //import TextareaAutosize from 'vue-textarea-autosize';
-let style = require('./widget.scss');
-console.log(style);
+import './widget.scss';
+// console.log(style);
 //import Toasted from 'vue-toasted';
 
 SBVue.component('widget', require('./widget.vue').default);

@@ -18,7 +18,14 @@
 
 			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch">
 				<div class="sidebar border-right py-3 align-self-stretch text-center bg-white">
-					<div class="user-profile d-inline-block mb-2" :style="{backgroundImage: 'url('+auth.profile_image+')'}"></div>
+					<div class="dropdown">
+						<div class="user-profile d-inline-block mb-2 cursor-pointer" :style="{backgroundImage: 'url('+auth.profile_image+')'}" data-toggle="dropdown"></div>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					    	<router-link to="/dashboard/account" class="dropdown-item">Account</router-link>
+					    	<router-link to="/dashboard/billing" class="dropdown-item">Billing</router-link>
+					    	<a class="dropdown-item" href="#" @click.prevent="logout">Logout</a>
+						</div>
+					</div>
 					<h1 class="h6 mb-4">@{{ auth.full_name }}</h1>
 					<div class="mb-2">
 						<div class="d-inline-block" v-tooltip.right="'Notifications'">

@@ -9,6 +9,7 @@
             </div>
             <!-- End Spinner -->
 
+
             <div class="d-flex flex-column h-100">
                 <div class="position-relative z-index-0 h-100" :hidden="videoOutput || !cameraReady">
                     <div class="h-100" id="toRecord">
@@ -19,18 +20,18 @@
                             </div>
                             
                             <div v-if="selectedImage.type == 'video'" class="position-absolute" style="top: 10px; right: 10px; z-index: 2">
-                                <button v-if="!selectedVideoFrame" @click.stop="snapVideo" class="btn btn-white d-flex align-items-center shadow-sm"><aperture-icon size="1x" class="mr-2"></aperture-icon>Snap this frame</button>
-                                <button v-else @click.stop="selectedVideoFrame = null; continueVideo(); pulses = []; clearSvg()" class="btn btn-white d-flex align-items-center shadow-sm"><x-icon size="1x" class="mr-2"></x-icon>Unsnap frame</button>
+                                <button v-if="!selectedVideoFrame" @click.stop="snapVideo" class="btn btn-danger btn-sm d-flex align-items-center shadow-sm badge-pill py-1 px-2">Snap this frame</button>
+                                <button v-else @click.stop="selectedVideoFrame = null; continueVideo(); pulses = []; clearSvg()" class="btn btn-danger btn-sm d-flex align-items-center shadow-sm badge-pill py-1 px-2">Unsnap frame</button>
                             </div>
 
-                            <div id="images" class="w-100 h-100" @click="sharedFilesOpen = false">
+                            <div id="images" class="w-100 h-100">
                                 <div class="pulsating-circle" v-for="pulse, index in pulses" @click="removePulse(index)" :style="{top: pulse.top, left: pulse.left}"></div>
                                 <div class="h-100 position-relative"    
                                         @mousedown="mouseEvent"
                                         @mousemove="mouseEvent"
                                         @mouseup="mouseEvent"
                                         @mouseleave="mousemove = false">
-                                    <div v-if="selectedImage.type == 'image'" class="position-relative h-100">
+                                    <div v-if="selectedImage.type == 'image' || selectedImage.type == 'sample'" class="position-relative h-100">
                                         <image-to-canvas class="image-selected position-absolute-center w-100 bg-black" :src="selectedImage.media"></image-to-canvas>
                                     </div>
 
@@ -48,19 +49,6 @@
                                 </div>
                             </div>
 
-                            <!-- Shared Files -->
-                            <!-- <div class="p-1 bg-white-75 shared-files" :class="{'shared-files-open': sharedFilesOpen}">
-                                <div class="pl-1 cursor-pointer d-flex align-items-center" @click="sharedFilesOpen = sharedFilesOpen ? false : true">Shared Files <i data-feather="chevron-up" class="chevron-arrow" style="height: 20px"></i></div>
-                                <div class="overflow-auto text-nowrap w-100" style="font-size: 0">
-                                    <div v-for="file in files" class="p-1 d-inline-block" style="width: 90px">
-                                        <div class="position-relative bg-black rounded shadow-sm overflow-hidden cursor-pointer" style="padding-top: 100%" @click="selectedImage = file; pulses = []; clearSvg(); sharedFilesOpen = false;">
-                                            <image-to-canvas class="position-absolute-center w-100" :src="file.preview" @click="selectedImage = file"></image-to-canvas>
-                                            <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
-                            <!-- End Shared Files -->
                         </div>
                     </div>
 
@@ -108,6 +96,20 @@
                     <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'photos'}" @click="activeTab = 'photos'">Photos</button>
                     <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'files'}" @click="activeTab = 'files'">Client Files</button>
                 </div>
+
+
+                <!-- Shared Files -->
+                <div class="p-1 bg-white-7 mt-4" v-if="activeTab == 'photos'">
+                    <div class="overflow-auto text-nowrap w-100">
+                        <div v-for="file in inquiry.inquiry_media" class="p-1 d-inline-block" style="width: 90px">
+                            <div class="position-relative bg-black rounded shadow-sm overflow-hidden cursor-pointer" style="padding-top: 100%" @click="selectedImage = file; pulses = []; clearSvg();">
+                                <image-to-canvas class="position-absolute-center w-100" :src="file.preview" @click="selectedImage = file"></image-to-canvas>
+                                <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Shared Files -->
             </div>
         </div>
     </div>
@@ -173,7 +175,6 @@ export default {
         pulses: [],
         isRecording: false,
         recorderStarted: false,
-        sharedFilesOpen: true,
         hasRecorded: false,
         selectedVideoFrame: null,
         drawTool: null,
@@ -200,7 +201,7 @@ export default {
         this.DOMImages = document.getElementById('images');
         this.cursor = new Image();
         this.cursor.src = '/images/mouse.png';
-        this.selectedImage = this.inquiry.inquiry_media[0];
+        this.selectedImage = this.inquiry.inquiry_media[1];
 
         /*this.timer.start(this.limit);
         this.timer.on('tick', (ms) => console.log(this.timer.status))
@@ -269,18 +270,21 @@ export default {
         snapVideo() {
             this.pulses = [];
             setTimeout(() => {
+                let selectedVideo = this.$refs['selectedVideo'];
+                selectedVideo.pause();
+                let container = $('#images');
+                let containerWidth = container.width();
+                let containerHeight= container.height();
+                let canvas = this.$refs['selectedVideoFrame'];
+                canvas.width = containerWidth;
+                canvas.height = containerHeight;
+                let canvasCtx = canvas.getContext('2d');
 
-            this.$refs['selectedVideo'].pause();
-            let container = $('#images');
-            let containerWidth = container.width();
-            let containerHeight= container.height();
-            let selectedVideo = this.$refs['selectedVideo'];
-            let canvas = this.$refs['selectedVideoFrame'];
-            canvas.width = containerWidth;
-            canvas.height = (containerWidth / selectedVideo.videoWidth) * selectedVideo.videoHeight + 1;
-            let canvasCtx = canvas.getContext('2d');
-            canvasCtx.drawImage(selectedVideo, 0, 0, canvas.width, canvas.height);
-            this.selectedVideoFrame = true;
+
+                canvasCtx.drawImage(selectedVideo, 90, 0, (canvas.height/selectedVideo.videoHeight) * canvas.width - 3, canvas.height);
+                console.log(canvas.width);
+                console.log(selectedVideo.clientWidth);
+                this.selectedVideoFrame = true;
             });
         },
 
@@ -310,7 +314,7 @@ export default {
         },
 
         pulsingPoint(e) {
-            if (this.isRecording && (this.selectedImage.type == 'image' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && e.target.nodeName != 'path' && this.drawTool == 'circle') {
+            if (this.isRecording && (this.selectedImage.type == 'image' || this.selectedImage.type == 'sample' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && e.target.nodeName != 'path' && this.drawTool == 'circle') {
                 let rect = e.currentTarget.getBoundingClientRect();
                 this.pulses.push({
                     top: (e.clientY - rect.top) + 'px',

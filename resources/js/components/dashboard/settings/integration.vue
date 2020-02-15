@@ -10,13 +10,11 @@
 			<button class="btn btn-sm btn-white shadow-sm" @click="removeTab">Remove Page</button>
 		</div>
 
-		<div v-else>
-			<div class="position-absolute-center text-center">
-				<p>
-					To ensure tabs lead to high-quality, accurate content, the Page Tabs feature is only available to Pages with 2000 or more likes.
-				</p>
-				<button @click="FBDialog" class="btn btn-facebook">Add Facebook Page</button>
-			</div>
+		<div v-else class="text-center py-5">
+			<p>
+				To ensure tabs lead to high-quality, accurate content, the Page Tabs feature is only available to Pages with 2000 or more likes.
+			</p>
+			<button @click="FBDialog" class="btn btn-facebook">Add Facebook Page</button>
 			<div class="modal fade" tabindex="-1" role="dialog" id="selectPageModal">
 				<div class="modal-dialog modal-dialog-centered" role="document">
 					<div class="modal-content">

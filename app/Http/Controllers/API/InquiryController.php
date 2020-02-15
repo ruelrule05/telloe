@@ -37,7 +37,7 @@ class InquiryController extends Controller
         $time = time();
         foreach ($request->items as $item) :
             // Source
-            $source = $item['item']['src'];
+            $source = $item['src'];
             $mime = substr($source, 5, strpos($source, ';')-5);
             $extension = explode('/', $mime)[1];
             $filename = $time . '-media-' . $i;
@@ -46,7 +46,7 @@ class InquiryController extends Controller
             File::put($mediaDestination, $media);
 
             // Preview
-            $source = $item['item']['preview'];
+            $source = $item['preview'];
             $mime = substr($source, 5, strpos($source, ';')-5);
             $extension = explode('/', $mime)[1];
             $filename = $time . '-preview-' . $i;
@@ -57,7 +57,7 @@ class InquiryController extends Controller
             InquiryMedia::create([
                 'inquiry_id' => $inquiry->id,
                 'media' => '/' . $mediaDestination,
-                'type' => $item['item']['type'],
+                'type' => $item['type'],
                 'preview' => '/' . $previewDestination
             ]);
 

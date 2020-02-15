@@ -18,7 +18,8 @@ class WidgetController extends Controller
 
     public function show(Request $request)
     {
-    	$widget = Widget::with('widgetRules', 'widgetType')->where('domain', $request->domain)->first()->makeHidden('fb_page');
+    	$widget = Widget::with('widgetRules', 'widgetType')->where('domain', $request->domain)->first();
+        if ($widget) $widget->makeHidden('fb_page');
     	if (!$widget) return abort(401, 'This domain is not registered to Snapturebox.');
 
     	return response()->json($widget);

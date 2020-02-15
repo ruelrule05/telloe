@@ -1,12 +1,12 @@
 <template>
 	<form @submit.prevent="addNewRule">
-		<table class="table table-sm table-borderless mb-0">
+		<table class="table table-sm table-borderless mb-0 w-100">
 			<tbody>
 				<tr>
 					<td class="pl-0 pb-3">
 						<input type="text" ref="newWidgetPage" v-model="newWidget.page" class="form-control form-control-sm" placeholder="Page (example: /blog)" required />
 					</td>
-					<td class="px-0">
+					<td class="px-0 pb-3">
 						<select name="" id="" class="form-control form-control-sm" v-model="newWidget.state" required>
 							<option value="" disabled selected>Select widget state</option>
 							<option value="minimized">Minimized</option>
@@ -14,19 +14,19 @@
 							<option value="hidden">Hidden</option>
 						</select>
 					</td>
-					<td class="pr-0">
+					<td class="pr-0 pb-3">
 						<button type="submit" class="btn btn-primary btn-block btn-sm shadow-none">+ Add Rule</button>
 					</td>
 				</tr>
 
 				<template v-if="$root.auth.widget.widget_rules.length > 0">
 					<tr class="border bg-light">
-						<th>Page</th>
+						<th class="pl-2">Page</th>
 						<th class="border-right">State</th>
 					</tr>
 
 					<tr v-for="rule in $root.auth.widget.widget_rules" class="border">
-						<td class="py-2">{{ rule.page }}</td>
+						<td class="py-2 pl-2">{{ rule.page }}</td>
 						<td class="px-0 py-2 border-right">
 							<span class="badge" :class="stateBadge(rule.state)">{{ rule.state }}</span>
 							<div class="float-right pr-2">
@@ -45,8 +45,8 @@
 export default {
 	data: () => ({
 		newWidget: {
-			page: 'test',
-			state: 'hidden',
+			page: '',
+			state: '',
 		},
 	}),
 

@@ -552,6 +552,7 @@ $viewport_heights: (
 #cameraPreviewWrapper{
     bottom: 10px;
     left: 10px;
+    z-index: 10;
     div {
         width: 100px;
         height: 100px;

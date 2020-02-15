@@ -7,9 +7,7 @@
 		</ul>
 
 		<div class="bg-white tab-content border-left border-right border-bottom rounded p-3 mt-n1">
-		  	<transition name="fade">
-		  		<Component :is="tabComponent"></Component>
-		  	</transition>
+		  	<Component :is="tabComponent"></Component>
 		</div>
 	</div>
 </template>

@@ -43,6 +43,8 @@ Route::group(
                 Route::resource('inquiries', 'InquiryController');
                 Route::post('inquiries/{id}/message', 'InquiryController@postMessage');
                 Route::get('widget', 'WidgetController@show');
+                Route::put('widget', 'WidgetController@update');
+                Route::put('auth', 'AuthController@update');
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
                 Route::any('integration', 'WidgetController@updateIntegration');
