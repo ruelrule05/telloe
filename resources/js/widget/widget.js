@@ -67,7 +67,7 @@ window.snapturebox = new SBVue({
         hidden: false,
         open: true, // false
         fullPage: false,
-        leftOpen: true, // false
+        leftOpen: false, // false
         backdrop: false,
         loginForm: {
             email: 'cleidoscope@gmail.com',

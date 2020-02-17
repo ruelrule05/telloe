@@ -46,7 +46,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(auth()->user()->load('inquiries', 'offers.member.user') ?? false);
+        return response()->json(auth()->user()->load('inquiries', 'offers.member.user', 'convoUsers') ?? false);
     }
 
     public function logout()

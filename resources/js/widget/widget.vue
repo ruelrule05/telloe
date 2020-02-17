@@ -19,7 +19,7 @@
                                     </button>
                                 </div>
                                 <div class="snapturebox-pt-2 snapturebox-pb-3">
-                                    <img src="https://via.placeholder.com/32X32" alt="" class="snapturebox-rounded-circle snapturebox-w-1x00" />
+                                    <img src="https://via.placeholder.com/32X32" alt="" @click="$root.toggleModal('#loginModal', 'show')" class="snapturebox-rounded-circle snapturebox-w-1x00" />
                                 </div>
                                 <div class="snapturebox-pt-2 snapturebox-pb-3">
                                     <widget-chat></widget-chat>
@@ -144,8 +144,17 @@
                             </div>
                         </div>
                     </div>
+
+
                     <!-- Right -->
-                    <div class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-bg-primary" id="snapturebox-section-right">
+
+                    <!-- Messages -->
+                    <div v-if="rightContent == 'messages'" id="snapturebox-section-right" class="snapturebox-p-4">
+                        Messages
+                    </div>
+
+                    <!-- Inquiry form -->
+                    <div v-else-if="rightContent == 'form'" class="snapturebox-d-flex snapturebox-overflow-auto snapturebox-bg-primary" id="snapturebox-section-right">
                         <div class="snapturebox-px-1 snapturebox-py-3 snapturebox-section-left-open-toggle snapturebox-d-flex snapturebox-align-items-center">
                             <button v-if="$root.fullPage" class="snapturebox-btn snapturebox-px-2 snapturebox-py-0 snapturebox-text-white" @click="$root.leftOpen = $root.leftOpen ? false : true">
                                 <menu-icon></menu-icon>
@@ -274,6 +283,7 @@ export default {
         activeTab: 'inquiries',
         itemType: '',
         selectedMedia: null,
+        rightContent: 'messages'
     }),
     computed: {
         customerImagesCount() {

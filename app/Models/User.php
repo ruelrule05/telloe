@@ -70,6 +70,12 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    public function convoUsers()
+    {
+        return $this->hasMany(ConvoUser::class);
+    }
+
+
 
 
 
