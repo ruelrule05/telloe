@@ -32,7 +32,7 @@ $navbar = $footer = $app_padded = $navbar_login = false;
 				<div class="form-group">
 					<input type="email" v-model="recoverForm.email" class="form-control form-control-lg" data-required placeholder="Email">
 				</div>
-				<vue-button label="Send reset link" type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none"></vue-button>
+				<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none">Send reset link</vue-button>
 				<a href="/login" class="btn btn-link pl-0 text-black btn-sm"><arrow-left-icon size="1x"></arrow-left-icon> Log In</a>
 			</vue-form-validate>
 		</div>

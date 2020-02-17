@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\PasswordReset;
 use App\Models\Inquiry;
 use App\Models\Booking;
+use App\Models\Widget;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
@@ -58,6 +59,9 @@ class AuthController extends Controller
                 'password' => bcrypt($request->password),
             ]);
     		Auth::login($user);
+            Widget::firstOrCreate([
+                'user_id' => $user->id
+            ]);
             
     		return response()->json($user);
     	endif;

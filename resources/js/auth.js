@@ -57,7 +57,7 @@ const auth = {
                 this.loading = true;
                 axios.post(`/signup`, this.signupForm).then((response) => {
                     //window.location.href = response.data.redirect_url;
-                    window.location.href = '/inquiries';
+                    window.location.href = '/dashboard/inquiries';
                 })
                 .catch(() => {
                     this.loading = false;

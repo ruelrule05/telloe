@@ -15,8 +15,9 @@ class InquiryController extends Controller
     //
 
     public function index(Request $request)
-    {
-        $inquiries = Auth::user()->widget->inquiries->load('user', 'inquiryType');
+    {   
+        $inquiries = [];
+        if(Auth::user()->widget) $inquiries = Auth::user()->widget->inquiries->load('user', 'inquiryType');
 
         return response()->json($inquiries);
     }

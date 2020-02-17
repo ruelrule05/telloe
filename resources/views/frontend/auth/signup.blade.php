@@ -37,7 +37,7 @@ $navbar = $footer = $app_padded = false;
 
 				<div class="margin-bottom font-size-14 text-muted">By clicking the sign up button, you agree that you've read and accepted {{ config('app.name') }}'s <a href="/terms-of-service" target="_blank" class="underline">Terms of Service</a> and <a href="/privacy-policy" class="underline" target="_blank">Privacy Policy</a>.</div>
 
-				<vue-button label="Sign Up" type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none mt-3"></vue-button>
+				<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none mt-3">Sign Up</vue-button>
 				<a href="/login" class="btn btn-link pl-0 text-black btn-sm"><arrow-left-icon size="1x"></arrow-left-icon> Log In</a>
 			</vue-form-validate>
 		</div>
