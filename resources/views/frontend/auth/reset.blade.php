@@ -33,7 +33,7 @@ $navbar = $footer = $app_padded = false;
 						</div>
 					</fieldset>
 					<div class="text-right">
-						<vue-button :loading="loading" type="submit" label="Update Password" button_class="btn-primary"></vue-button>
+						<vue-button :loading="loading" type="submit" button_class="btn-primary">Update Password</vue-button>
 					</div>
 				</vue-form-validate>
 			</div>

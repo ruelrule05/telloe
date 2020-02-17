@@ -93,7 +93,9 @@ class AuthController extends Controller
                 );
 
                 // send email
-                //Mail::to($passwordReset->email)->queue(new \App\Mail\SendPasswordReset($passwordReset));
+                $email = new \App\Mail\SendPasswordReset($passwordReset);
+                Mail::to($user->email)->send($email);
+  
 
                 return response()->json(['success' => true]); 
             else:
