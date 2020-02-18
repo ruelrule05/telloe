@@ -52,4 +52,27 @@ class WidgetController extends Controller
 
         return response()->json($images);
     }
+
+    public function getPageSourceCode(Request $request)
+    {
+        $this->validate($request, [
+            'url' => 'required'
+        ]);
+        $data = [
+            'title' => $request->url,
+            'description' => '', 
+            'favicon' => '',
+            'url' => $request->url,
+        ];
+        $puppeteer = new Puppeteer;
+        $browser = $puppeteer->launch();
+        $page = $browser->newPage();
+        $page->goto($request->url);
+        $data['title'] = $page->title(); 
+        $data['description'] = $page->querySelector("head > meta[name*='description']")->getProperty('content')->jsonValue();
+        $data['favicon'] = $page->querySelector("link[rel*='icon']")->getProperty('href')->jsonValue();
+        $browser->close();
+
+        return response()->json($data);
+    }
 }

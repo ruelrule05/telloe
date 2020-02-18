@@ -29,13 +29,13 @@ window.SBAxios.interceptors.response.use(
     function(error) {
         if (error.response.status == 401) {
             let access_token = window.localStorage.getItem('snapturebox_access_token');
-            if (access_token) window.app.refreshToken();
+            if (access_token) window.snapturebox.refreshToken();
         } else {
             /*SBVue.toasted.error(error.response.data.message, {
                 className: 'snapturebox-bg-red snapturebox-rounded-0 snapturebox-justify-content-center',
             });*/
         }
-        
+
         return Promise.reject(error);
     },
 );
@@ -92,6 +92,7 @@ window.snapturebox = new SBVue({
             skipButton: true,
         },
         inquiry_types: [],
+        classPrefix: 'snapturebox-',
     },
 
     created() {
@@ -111,11 +112,7 @@ window.snapturebox = new SBVue({
                 this.toggleModal('#customerInfoModal', 'hide');
                 let index = this.auth.offers.findIndex((x) => x.id == this.customerForm.offer_id);
                 if (index > -1) this.auth.offers[index] = response.data;
-                this.customerForm.first_name = 
-                this.customerForm.last_name = 
-                this.customerForm.email = 
-                this.customerForm.phone =
-                this.customerForm.offer_id = '';
+                this.customerForm.first_name = this.customerForm.last_name = this.customerForm.email = this.customerForm.phone = this.customerForm.offer_id = '';
                 this.customerForm.loading = false;
                 this.customerForm.skipButton = true;
             });
@@ -219,10 +216,8 @@ window.snapturebox = new SBVue({
                     }
                 })
                 .catch((e) => {
-                    if(e.response) console.warn(e.response.data.message);
+                    if (e.response) console.warn(e.response.data.message);
                 });
         },
-
-       
     },
 });

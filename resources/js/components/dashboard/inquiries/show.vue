@@ -36,7 +36,7 @@
 			                </div>
 			            </div>
 
-						<div class="px-4 pt-4x">
+						<div class="px-4">
 		                    <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
 		                        <div class="message-item" v-for="message in grouped_message.messages" v-cloak :class="{'outgoing-message': message.user.id == $root.auth.id}">
 		                            <div class="media mb-n2">

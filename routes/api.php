@@ -24,6 +24,7 @@ Route::group([
 	Route::resource('inquiries', 'InquiryController')->middleware('auth:api');
 	Route::resource('bookings', 'BookingController')->middleware('auth:api');
 	Route::get('get_ig_images', 'WidgetController@getIGImages');
+	Route::get('get_page_source_code', 'WidgetController@getPageSourceCode');
 	
 
 	// Authentication

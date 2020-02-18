@@ -149,8 +149,8 @@
                     <!-- Right -->
 
                     <!-- Messages -->
-                    <div v-if="rightContent == 'messages'" id="snapturebox-section-right" class="snapturebox-p-4">
-                        Messages
+                    <div v-if="rightContent == 'messages'" id="snapturebox-section-right">
+                        <messages :messages="messages" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal"></messages>
                     </div>
 
                     <!-- Inquiry form -->
@@ -224,6 +224,7 @@
             <signup-modal ref="signupModal"></signup-modal>
             <login-modal ref="loginModal"></login-modal>
             <manage-media-modal :media="selectedMedia" @submit="updateMedia" @deleteMedia="deleteMedia"></manage-media-modal>
+            <message-media-modal :message="selectedMessage"></message-media-modal>
 
             <transition name="snapturebox-fade">
                 <div v-if="$root.backdrop" class="snapturebox-modal-backdrop"></div>
@@ -234,6 +235,7 @@
     </div>
 </template>
 <script>
+import dayjs from 'dayjs';
 import io from 'socket.io-client';
 /*let formatNumber = require('format-number');
 let format = formatNumber({prefix: '$', padRight: 2});*/
@@ -251,12 +253,15 @@ import AddMediaModal from './modals/add-media';
 import SignupModal from './modals/signup';
 import LoginModal from './modals/login';
 import ManageMediaModal from './modals/manage-media';
+import MessageMediaModal from './modals/message-media';
 import InstagramSearch from './instagram-search';
 import Tooltip from './directives/tooltip.js';
 import VueLazyload from 'vue-lazyload';
+import Messages from './messages';
+import getUrls from 'get-urls';
 SBVue.use(VueLazyload);
 export default {
-    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal, ManageMediaModal},
+    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal, ManageMediaModal, Messages, MessageMediaModal},
     directives: {Tooltip},
     data: () => ({
         //format: format,
@@ -283,7 +288,9 @@ export default {
         activeTab: 'inquiries',
         itemType: '',
         selectedMedia: null,
-        rightContent: 'messages'
+        rightContent: 'messages',
+        messages: [],
+        selectedMessage: {},
     }),
     computed: {
         customerImagesCount() {
@@ -354,8 +361,36 @@ export default {
             this.scrollDown();
         });*/
     },
-    mounted() {},
+    mounted() {
+    },
     methods: {
+        openMedia(message) {
+            this.selectedMessage = message;
+            this.$root.toggleModal('#messageMediaModal', 'show');
+        },
+
+        openAddMediaModal() {
+            this.itemType = 'message';
+            this.$root.toggleModal('#addMediaModal', 'show');
+            this.$refs['addMediaModal'].initCamera();
+        },
+
+        sendMessage(message) {
+            if (message.type == 'text') {
+                let links = [...getUrls(message.message)];
+                let preview = false;
+                if (links.length > 0) {
+                    message.preview = true;
+                    SBAxios.get(`/get_page_source_code?url=${links[0]}`).then((response) => {
+                        let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
+                        console.log(index);
+                        if (index > -1) this.messages[index].preview = response.data;
+                    });
+                }
+            }
+            this.messages.push(message);
+        },
+
         deleteMedia(newMedia) {
             this.enquiry.items.splice(newMedia.index, 1);
         },
@@ -515,8 +550,22 @@ export default {
             }
         },
         addMedia(fileOutput) {
-            this.enquiry.items.push(fileOutput);
-            this.fileOutput = null;
+            if (this.itemType == 'message') {
+                const timestamp = dayjs().valueOf();
+                this.messages.push({
+                    user: this.$root.auth,
+                    message: {
+                        src: fileOutput.src,
+                        preview: fileOutput.preview
+                    },
+                    type: 'image',
+                    timestamp: dayjs().valueOf(),
+                    created_at: dayjs(timestamp).format('hh:mm A')
+                });
+            } else {
+                this.enquiry.items.push(fileOutput);
+                this.fileOutput = null;
+            }
         },
         /*   scrollDown() {
             setTimeout(() => {
