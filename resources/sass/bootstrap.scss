@@ -30,6 +30,7 @@ $theme-colors: (
     'dark': $dark,
     'danger': $danger,
     'success': $success,
+    'warning': $warning,
 );
 $modal-header-border-width: 0;
 $modal-footer-border-width: 0;
@@ -57,6 +58,7 @@ $dropdown-font-size: 0.95rem;
 $input-transition: none;
 $navbar-nav-link-padding-x: 0.75rem;
 $dropdown-divider-margin-y: 0.45rem;
+$enable-caret: false;
 .modal {
     .modal-dialog {
         .close {
