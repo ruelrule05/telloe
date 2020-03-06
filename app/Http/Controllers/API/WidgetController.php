@@ -8,6 +8,7 @@ use App\Models\Widget;
 use App\Models\InquiryType;
 use Nesk\Puphpeteer\Puppeteer;
 use Nesk\Rialto\Data\JsFunction;
+use DB;
 
 class WidgetController extends Controller
 {
@@ -18,11 +19,22 @@ class WidgetController extends Controller
 
     public function show(Request $request)
     {
-    	$widget = Widget::with('widgetRules', 'widgetType')->where('domain', $request->domain)->first();
+        $widget = Widget::with('widgetRules', 'widgetType')->where('domain', $request->domain)->first();
         if ($widget) $widget->makeHidden('fb_page');
-    	if (!$widget) return abort(401, 'This domain is not registered to Snapturebox.');
 
-    	return response()->json($widget);
+        /*$authorizedDomain = ($request->domain == env('AUTHORIZED_DOMAINS'));
+        if ($authorizedDomain) :
+            $url_parts = array_diff(explode('/', parse_url($request->server('HTTP_REFERER'), PHP_URL_PATH)), ['']);
+            $post_name = end($url_parts);
+            $domain_name = explode('.', $request->domain)[0];
+            $post = DB::connection($domain_name)->table('wp_posts')->where('post_name', $post_name)->first();
+            print_r($post);
+            return;
+        endif;*/
+
+        if (!$widget) return abort(401, 'This domain is not registered to Snapturebox.');
+
+        return response()->json($widget);
     }
 
     public function inquiryTypes() 
@@ -69,8 +81,10 @@ class WidgetController extends Controller
         $page = $browser->newPage();
         $page->goto($request->url);
         $data['title'] = $page->title(); 
-        $data['description'] = $page->querySelector("head > meta[name*='description']")->getProperty('content')->jsonValue();
-        $data['favicon'] = $page->querySelector("link[rel*='icon']")->getProperty('href')->jsonValue();
+        $metaDescription = $page->querySelector("head > meta[name*='description']");
+        if ($metaDescription) $data['description'] = $metaDescription->getProperty('content')->jsonValue();
+        $favicon = $page->querySelector("link[rel*='icon']");
+        if ($favicon) $data['favicon'] = $favicon->getProperty('href')->jsonValue();
         $browser->close();
 
         return response()->json($data);

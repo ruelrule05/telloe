@@ -1,4 +1,5 @@
-@import 'public/fonts/montserrat';
+//@import 'public/fonts/montserrat';
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600');
 $primary: #6e82ea;
 $secondary: #a9abc6;
 $link-color: #3399ff;
@@ -40,6 +41,9 @@ $theme-colors: (
 @import 'node_modules/bootstrap/scss/utilities';
 
 $widget-height: 676px;
+html {
+	font-size: 1rem;
+}
 #widget {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	* {
@@ -103,7 +107,7 @@ $widget-height: 676px;
 		opacity: 0;
 		max-height: 85vh;
 		height: $widget-height;
-		&.open {
+		&.window-open {
 			transform: scale(1);
 			opacity: 1;
 		}
@@ -137,11 +141,13 @@ $widget-height: 676px;
 			overflow-x: hidden;
 			.left-content {
 				transition: margin-right 0.15s, opacity 1s ease;
-				width: 785px;
+				width: 350px;
 				max-width: 100%;
-				padding-bottom: 110px;
-				margin-right: -785px;
+				margin-right: -351px;
 				opacity: 0;
+				.left-content-inquiries{
+					padding-bottom: 110px;
+				}
 			}
 			&.section-left-open {
 				width: auto;

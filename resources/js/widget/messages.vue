@@ -4,7 +4,7 @@
             <div v-for="grouped_message in grouped_messages" class="snapturebox-w-100 snapturebox-message-group">
                 <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': message.user.id == $root.auth.id}">
                     <div class="snapturebox-media snapturebox-mb-1 snapturebox-text-left snapturebox-d-inline-flex">
-                        <img :src="message.user.profile_image ? message.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="snapturebox-rounded-circle" alt="image">
+                        <img :src="message.user.profile_image ? $root.API+message.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="snapturebox-rounded-circle" alt="image">
                         <div class="snapturebox-media-body snapturebox-pl-2">
                             <div class="snapturebox-font-weight-bold snapturebox-line-height-sm snapturebox-mb-n1">{{ message.user.id == $root.auth.id ? 'You' : message.user.full_name }}</div>
                             <small class="snapturebox-text-gray">{{ message.created_at }}</small>

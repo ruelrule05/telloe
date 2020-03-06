@@ -40,6 +40,11 @@ class Widget extends Model
         return $this->hasMany(Inquiry::class)->orderBy('created_at', 'DESC');
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class)->orderBy('created_at', 'DESC');
+    }
+
     public function widgetType()
     {
         return $this->belongsTo(WidgetType::class);

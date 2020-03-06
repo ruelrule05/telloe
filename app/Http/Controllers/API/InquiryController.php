@@ -21,8 +21,8 @@ class InquiryController extends Controller
             'widget_id' => 'required|exists:widgets,id',
             'message' => 'required',
             'inquiry_type_id' => 'required|exists:inquiry_types,id',
-            'interests' => 'required|array',
-            'items' => 'required|array',
+            'interests' => 'nullable|array',
+            'items' => 'nullable|array',
         ]);
 
         $inquiry = Inquiry::create([
@@ -31,6 +31,7 @@ class InquiryController extends Controller
             'message' => $request->message,
             'inquiry_type_id' => $request->inquiry_type_id,
             'interest' => $request->interest['value'],
+            'source_url' => $request->server('HTTP_REFERER')
         ]);
 
         $i = 1;

@@ -81,7 +81,7 @@ export default {
 	}),
 
 	created() {
-        this.shutter = new Audio('/notifications/shutter.mp3');
+        this.shutter = new Audio(`${this.$root.API}/notifications/shutter.mp3`);
         this.shutter.load();
 	},
 

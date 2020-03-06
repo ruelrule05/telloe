@@ -4,10 +4,10 @@
             <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
                 <comment fill="white" stroke="white" stroke-width="1"></comment>
             </div>
-            <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-open': $root.open}">
+            <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-window-open': $root.open}">
                 <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 snapturebox-h-100 justify-content-center">
                     <!-- Left -->
-                    <div class="snapturebox-overflow-hidden snapturebox-bg-white" :class="{'snapturebox-section-left-open': $root.leftOpen}" id="snapturebox-section-left">
+                    <div class="snapturebox-overflow-hidden snapturebox-bg-white snapturebox-border-right" :class="{'snapturebox-section-left-open': $root.leftOpen}" id="snapturebox-section-left">
                         <div class="snapturebox-d-flex snapturebox-h-100">
                             <!-- Left buttons -->
                             <div class="snapturebox-h-100 snapturebox-pt-5 snapturebox-px-3 snapturebox-text-center snapturebox-border-right">
@@ -22,7 +22,7 @@
                                     <img src="https://via.placeholder.com/32X32" alt="" @click="$root.toggleModal('#loginModal', 'show')" class="snapturebox-rounded-circle snapturebox-w-1x00" />
                                 </div>
                                 <div class="snapturebox-pt-2 snapturebox-pb-3">
-                                    <widget-chat></widget-chat>
+                                    <widget-chat class="snapturebox-cursor-pointer" @click.native="rightContent = 'messages'"></widget-chat>
                                 </div>
                                 <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
                                     <small class="snapturebox-font-weight-bold">My <br />Inquiries</small>
@@ -34,76 +34,30 @@
                             <!-- Left content -->
                             <div class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100 snapturebox-left-content snapturebox-overflow-auto snapturebox-position-relative">
                                 <!-- Inquiries -->
-                                <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative" v-if="activeTab == 'inquiries'">
-                                    <div class="snapturebox-px-4 snapturebox-pt-5 snapturebox-py-3">
-                                        <h4 class="snapturebox-font-montserrat">Upload Photos</h4>
-                                        <span class="snapturebox-text-secondary snapturebox-font-weight-light snapturebox-font-montserrat">{{ $root.widget.widget_type.upload_description }}</span>
-                                        <div class="snapturebox-mt-5">
-                                            <!-- Salon -->
-                                            <template v-if="$root.widget.widget_type.type == 'Salon'">
-                                                <!-- Current hair -->
-                                                <div class="snapturebox-d-flex">
-                                                    <div class="snapturebox-flex-25 snapturebox-line-height-0">
-                                                        <h6 class="snapturebox-font-montserrat snapturebox-mb-3">Current Hair</h6>
-                                                        <small class="snapturebox-text-muted snapturebox-font-montserrat">Tips: Upload photos of your current hair style in natural form possible.</small>
-                                                    </div>
-                                                    <div class="snapturebox-pl-5 snapturebox-flex-grow-1 snapturebox-position-relative">
-                                                        <div class="snapturebox-border-dashed snapturebox-rounded-lg snapturebox-d-flex snapturebox-align-items-center snapturebox-position-relative">
-                                                            <div class="snapturebox-flex-50 snapturebox-text-center snapturebox-py-3">
-                                                                <div>
-                                                                    <camera width="20" height="20" stroke-width="1" stroke="black"></camera>
-                                                                </div>
-                                                                <span
-                                                                    class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold"
-                                                                    @click="
-                                                                        itemType = 'image';
-                                                                        $root.toggleModal('#addMediaModal', 'show');
-                                                                        $refs['addMediaModal'].initCamera();
-                                                                    "
-                                                                    >Take photo</span
-                                                                >
-                                                            </div>
-                                                            <div class="snapturebox-position-absolute-center snapturebox-or-vertical h-100"><span>or</span></div>
-                                                            <div class="snapturebox-position-relative snapturebox-flex-50">
-                                                                <div class="snapturebox-text-center">
-                                                                    <div
-                                                                        class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark"
-                                                                        @click="
-                                                                            itemType = 'image';
-                                                                            $refs['addMedia'].click();
-                                                                        "
-                                                                    >
-                                                                        <div class="snapturebox-font-weight-bold snapturebox-mb-1">click here</div>
-                                                                        to upload photo
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
-                                                            <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'image'" @click="selectedMedia = {media: image, index: index, total: sampleImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
-                                                                <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
-                                                                <img :src="image.preview" class="snapturebox-w-100" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Dream hair -->
-                                                <div class="snapturebox-mt-5">
+                                <div v-if="activeTab == 'inquiries'" class="snapturebox-h-100 snapturebox-left-content-inquiries">
+                                    <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative">
+                                        <div class="snapturebox-px-4 snapturebox-pt-5 snapturebox-py-3">
+                                            <h4 class="snapturebox-font-montserrat">Upload Photos</h4>
+                                            <span class="snapturebox-text-secondary snapturebox-font-weight-light snapturebox-font-montserrat">{{ $root.widget.widget_type.upload_description }}</span>
+                                            <div class="snapturebox-mt-5">
+                                                <!-- Salon -->
+                                                <template v-if="$root.widget.widget_type.type == 'Salon'">
+                                                    <!-- Current hair -->
                                                     <div class="snapturebox-d-flex">
                                                         <div class="snapturebox-flex-25 snapturebox-line-height-0">
-                                                            <h6 class="snapturebox-font-montserrat snapturebox-mb-3">Dream Hair</h6>
-                                                            <small class="snapturebox-text-muted snapturebox-font-montserrat">Tips: Upload examples of the hairstyle you want or search the Instagram Gallery below and add in your favorite images.</small>
+                                                            <h6 class="snapturebox-font-montserrat snapturebox-mb-3">Current Hair</h6>
+                                                            <small class="snapturebox-text-muted snapturebox-font-montserrat">Tips: Upload photos of your current hair style in natural form possible.</small>
                                                         </div>
                                                         <div class="snapturebox-pl-5 snapturebox-flex-grow-1 snapturebox-position-relative">
-                                                            <div class="snapturebox-border-dashed snapturebox-rounded-lg snapturebox-d-flex snapturebox-py-3 snapturebox-position-relative">
-                                                                <div class="snapturebox-w-50 snapturebox-text-center">
+                                                            <div class="snapturebox-border-dashed snapturebox-rounded-lg snapturebox-d-flex snapturebox-align-items-center snapturebox-position-relative">
+                                                                <div class="snapturebox-flex-50 snapturebox-text-center snapturebox-py-3">
                                                                     <div>
                                                                         <camera width="20" height="20" stroke-width="1" stroke="black"></camera>
                                                                     </div>
                                                                     <span
                                                                         class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold"
                                                                         @click="
-                                                                            itemType = 'sample';
+                                                                            itemType = 'image';
                                                                             $root.toggleModal('#addMediaModal', 'show');
                                                                             $refs['addMediaModal'].initCamera();
                                                                         "
@@ -111,12 +65,12 @@
                                                                     >
                                                                 </div>
                                                                 <div class="snapturebox-position-absolute-center snapturebox-or-vertical h-100"><span>or</span></div>
-                                                                <div class="snapturebox-position-relative snapturebox-w-50 curs">
-                                                                    <div class="snapturebox-position-absolute-center snapturebox-text-center">
+                                                                <div class="snapturebox-position-relative snapturebox-flex-50">
+                                                                    <div class="snapturebox-text-center">
                                                                         <div
                                                                             class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark"
                                                                             @click="
-                                                                                itemType = 'sample';
+                                                                                itemType = 'image';
                                                                                 $refs['addMedia'].click();
                                                                             "
                                                                         >
@@ -127,20 +81,73 @@
                                                                 </div>
                                                             </div>
                                                             <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
-                                                                <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'sample'" @click="selectedMedia = {media: image, index: index, total: customerImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
+                                                                <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'image'" @click="selectedMedia = {media: image, index: index, total: sampleImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
                                                                     <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
                                                                     <img :src="image.preview" class="snapturebox-w-100" />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </template>
+                                                    <!-- Dream hair -->
+                                                    <div class="snapturebox-mt-5">
+                                                        <div class="snapturebox-d-flex">
+                                                            <div class="snapturebox-flex-25 snapturebox-line-height-0">
+                                                                <h6 class="snapturebox-font-montserrat snapturebox-mb-3">Dream Hair</h6>
+                                                                <small class="snapturebox-text-muted snapturebox-font-montserrat">Tips: Upload examples of the hairstyle you want or search the Instagram Gallery below and add in your favorite images.</small>
+                                                            </div>
+                                                            <div class="snapturebox-pl-5 snapturebox-flex-grow-1 snapturebox-position-relative">
+                                                                <div class="snapturebox-border-dashed snapturebox-rounded-lg snapturebox-d-flex snapturebox-py-3 snapturebox-position-relative">
+                                                                    <div class="snapturebox-w-50 snapturebox-text-center">
+                                                                        <div>
+                                                                            <camera width="20" height="20" stroke-width="1" stroke="black"></camera>
+                                                                        </div>
+                                                                        <span
+                                                                            class="snapturebox-btn snapturebox-btn-sm snapturebox-mt-2 snapturebox-btn-link snapturebox-p-0 snapturebox-font-weight-bold"
+                                                                            @click="
+                                                                                itemType = 'sample';
+                                                                                $root.toggleModal('#addMediaModal', 'show');
+                                                                                $refs['addMediaModal'].initCamera();
+                                                                            "
+                                                                            >Take photo</span
+                                                                        >
+                                                                    </div>
+                                                                    <div class="snapturebox-position-absolute-center snapturebox-or-vertical h-100"><span>or</span></div>
+                                                                    <div class="snapturebox-position-relative snapturebox-w-50 curs">
+                                                                        <div class="snapturebox-position-absolute-center snapturebox-text-center">
+                                                                            <div
+                                                                                class="snapturebox-btn snapturebox-btn-link snapturebox-btn-sm snapturebox-p-0 snapturebox-text-dark"
+                                                                                @click="
+                                                                                    itemType = 'sample';
+                                                                                    $refs['addMedia'].click();
+                                                                                "
+                                                                            >
+                                                                                <div class="snapturebox-font-weight-bold snapturebox-mb-1">click here</div>
+                                                                                to upload photo
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
+                                                                    <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'sample'" @click="selectedMedia = {media: image, index: index, total: customerImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
+                                                                        <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
+                                                                        <img :src="image.preview" class="snapturebox-w-100" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
                                         </div>
                                     </div>
+                                    <!-- Instagram search -->
+                                    <instagram-search @select="selectIGImage" ref="instagramSearch"></instagram-search>
                                 </div>
-                                <!-- Instagram search -->
-                                <instagram-search @select="selectIGImage" ref="instagramSearch"></instagram-search>
+
+                                <!-- DateTimePicker -->
+                                <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative snapturebox-p-4" v-else-if="activeTab == 'datetimepicker'">
+                                    <DateTimePicker :businessHours="$root.widget_business_hours"></DateTimePicker>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -254,6 +261,7 @@ import SignupModal from './modals/signup';
 import LoginModal from './modals/login';
 import ManageMediaModal from './modals/manage-media';
 import MessageMediaModal from './modals/message-media';
+import DateTimePicker from './datetimepicker';
 import InstagramSearch from './instagram-search';
 import Tooltip from './directives/tooltip.js';
 import VueLazyload from 'vue-lazyload';
@@ -261,7 +269,7 @@ import Messages from './messages';
 import getUrls from 'get-urls';
 SBVue.use(VueLazyload);
 export default {
-    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal, ManageMediaModal, Messages, MessageMediaModal},
+    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal, ManageMediaModal, Messages, MessageMediaModal, DateTimePicker},
     directives: {Tooltip},
     data: () => ({
         //format: format,
@@ -285,10 +293,10 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        activeTab: 'inquiries',
+        activeTab: 'datetimepicker', //inquiries, datetimepicker
         itemType: '',
         selectedMedia: null,
-        rightContent: 'messages',
+        rightContent: 'form', //form
         messages: [],
         selectedMessage: {},
     }),
@@ -353,7 +361,7 @@ export default {
         },
     },
     created() {
-        this.notification_sound = new Audio('/notifications/new_message.mp3');
+        this.notification_sound = new Audio(`${this.$root.API}/notifications/new_message.mp3`);
         /*this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
             this.messages.push(data);
@@ -376,17 +384,23 @@ export default {
         },
 
         sendMessage(message) {
+            console.log(message);
             if (message.type == 'text') {
                 let links = [...getUrls(message.message)];
-                let preview = false;
                 if (links.length > 0) {
                     message.preview = true;
                     SBAxios.get(`/get_page_source_code?url=${links[0]}`).then((response) => {
                         let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
-                        console.log(index);
                         if (index > -1) this.messages[index].preview = response.data;
+                    }).catch(() => {
+                        let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
+                        if (index > -1) this.messages[index].preview = false;
                     });
                 }
+                message.widget_id = this.$root.widget.id;
+                message.inquiry_type_id = 1;
+                message.interests = [];
+                
             }
             this.messages.push(message);
         },

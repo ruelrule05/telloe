@@ -8,12 +8,12 @@ use Carbon\Carbon;
 class Message extends Model
 {
     //
-    protected $fillable = ['inquiry_id', 'user_id', 'message', 'type', 'preview'];
+    protected $fillable = ['user_id', 'widget_id', 'message', 'type', 'preview'];
     protected $appends = ['timestamp'];
 
-    public function inquiry()
+    public function widget()
     {
-    	return $this->belongsTo(Inquiry::class);
+    	return $this->belongsTo(Widget::class);
     }
 
     public function user()
@@ -26,7 +26,7 @@ class Message extends Model
     	return Carbon::parse($value)->format('h:iA \\o\\n D');
     }
 
-     public function getTimestampAttribute($value)
+    public function getTimestampAttribute($value)
     {
         return Carbon::parse($this->attributes['created_at'])->timestamp;
     }

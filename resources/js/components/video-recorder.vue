@@ -14,9 +14,11 @@
                 <div class="position-relative z-index-0 h-100" :hidden="videoOutput || !cameraReady">
                     <div class="h-100" id="toRecord">
                         <div class="position-relative overflow-hidden h-100" @mousemove="imagesHover">
-                            <div v-if="isRecording" class="position-absolute d-flex" style="top: 10px; left: 10px; z-index: 2">
-                                <button @click="drawTool = 'brush'" class="btn btn-sm p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'brush' ? 'btn-danger text-white' : 'btn-white']"><pen-tool-icon size="1x"></pen-tool-icon></button>
-                                <button @click="drawTool = 'circle'" class="ml-1 btn-sm btn p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'circle' ? 'btn-danger text-white' : 'btn-white']"><circle-icon size="1x"></circle-icon></button>
+                            <div v-if="isRecording" class="position-absolute" style="top: 20px; left: 20px; z-index: 2">
+                                <button @click="drawTool = 'circle'" class="btn-sm btn p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'circle' ? 'btn-danger text-white' : 'btn-white']"><circle-icon size="1x"></circle-icon></button>
+                                <div>
+                                    <button @click="drawTool = 'brush'" class="mt-2 btn btn-sm p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'brush' ? 'btn-danger text-white' : 'btn-white']"><pencil-circle-icon width="16" height="16"></pencil-circle-icon></button>
+                                </div>
                             </div>
                             
                             <div v-if="selectedImage.type == 'video'" class="position-absolute" style="top: 10px; right: 10px; z-index: 2">
@@ -124,7 +126,6 @@ const format = require('format-duration');
 import RecordRTC from 'recordrtc';
 import PlayIcon from 'vue-feather-icons/icons/PlayIcon';
 import ApertureIcon from 'vue-feather-icons/icons/ApertureIcon';
-import PenToolIcon from 'vue-feather-icons/icons/PenToolIcon';
 import CircleIcon from 'vue-feather-icons/icons/CircleIcon';
 import XIcon from 'vue-feather-icons/icons/XIcon';
 import SvgDraw from '../components/svg-draw.vue';
@@ -133,6 +134,7 @@ import CollapseIcon from '../icons/collapse';
 import PauseAltIcon from '../icons/pause-alt';
 import VideoIcon from '../icons/video';
 import CheckmarkIcon from '../icons/checkmark';
+import PencilCircleIcon from '../icons/pencil-circle';
 import CloseIcon from '../icons/close';
 import Tooltip from './../directives/tooltip.js';
 export default {
@@ -142,7 +144,7 @@ export default {
         VideoIcon,
         PlayIcon,
         ApertureIcon,
-        PenToolIcon,
+        PencilCircleIcon,
         CircleIcon,
         XIcon,
         SvgDraw,

@@ -1,5 +1,7 @@
 let API = 'https://api.snapturebox.app'; //get from config
 
+const widget_business_hours = {"Monday":{"start":"8:00","end":"18:00"},"Tuesday":{"start":"8:00","end":"18:00"},"Wednesday":{"start":"8:00","end":"18:00"},"Thursday":{"start":"8:00","end":"18:00"},"Friday":{"start":"8:00","end":"18:00"},"Saturday":{"start":"9:00","end":"17:00"}}
+
 try {
     window.$ = window.jQuery = require('jquery');
 } catch (e) {}
@@ -67,7 +69,7 @@ window.snapturebox = new SBVue({
         hidden: false,
         open: true, // false
         fullPage: false,
-        leftOpen: false, // false
+        leftOpen: true, // false
         backdrop: false,
         loginForm: {
             email: 'cleidoscope@gmail.com',
@@ -93,6 +95,7 @@ window.snapturebox = new SBVue({
         },
         inquiry_types: [],
         classPrefix: 'snapturebox-',
+        widget_business_hours: null
     },
 
     created() {
@@ -102,6 +105,12 @@ window.snapturebox = new SBVue({
             this.widget = widget;
             this.fullPage = this.leftOpen = true;
         }
+
+        if (typeof widget_business_hours != 'undefined') {
+           this.widget_business_hours = widget_business_hours;
+        }
+
+        
     },
 
     methods: {
