@@ -30,7 +30,6 @@ class WidgetController extends Controller
         endif;*/
         $request->widget->load('bookings');
         if ($request->wp_post_id) :
-            $url_parts = array_diff(explode('/', parse_url($request->server('HTTP_REFERER'), PHP_URL_PATH)), ['']);
             $domain = parse_url($request->server('HTTP_REFERER'), PHP_URL_HOST);
             $domain_name = explode('.', $domain)[0];
             $post = DB::connection($domain_name)->table('wp_posts')->where('ID', $request->wp_post_id)->first();
