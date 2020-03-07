@@ -49,4 +49,10 @@ class Widget extends Model
     {
         return $this->belongsTo(WidgetType::class);
     }
+
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class)->orderBy('created_at', 'DESC');
+    }
 }

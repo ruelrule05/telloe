@@ -3,7 +3,7 @@
         <div class="snapturebox-dropdown-container snapturebox-overflow-visible" :class="drop" ref="dropdown" :disabled="disabled">
             <button @click="showMenu()" class="snapturebox-btn snapturebox-btn-sm snapturebox-font-family-base snapturebox-font-smoothing-auto snapturebox-text-black snapturebox-dropdown-toggle snapturebox-btn-block snapturebox-text-left snapturebox-d-inline-flex" :class="toggle_button_class" @click.prevent ref="dropdown-toggle">
                 <template v-if="searchable">
-                    <input type="text" @focus="showMenu()" spellcheck="false" v-model="search" class="snapturebox-outline-0 snapturebox-input-searchable snapturebox-w-100 snapturebox-bg-transparent snapturebox-line-height-1 snapturebox-font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
+                    <input type="text" @focus="showMenu()" spellcheck="false" v-model="search" class="snapturebox-outline-0 snapturebox-input-searchable snapturebox-w-100 snapturebox-bg-transparent snapturebox-line-height-1 snapturebox-font-smoothing-auto snapturebox-form-control" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
                 </template>
                 <template v-else>
                     <div class="snapturebox-select-placeholder snapturebox-text-ellipsis snapturebox-pointer-events-none">

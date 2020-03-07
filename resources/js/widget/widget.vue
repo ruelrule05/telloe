@@ -1,10 +1,10 @@
- <template>
-    <div>
+<template>
+    <div v-if="$root.ready">
         <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage': $root.fullPage}" v-cloak>
             <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
                 <comment fill="white" stroke="white" stroke-width="1"></comment>
             </div>
-            <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow" :class="{'snapturebox-window-open': $root.open}">
+            <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow snapturebox-border" :class="{'snapturebox-window-open': $root.open}">
                 <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 snapturebox-h-100 justify-content-center">
                     <!-- Left -->
                     <div class="snapturebox-overflow-hidden snapturebox-bg-white snapturebox-border-right" :class="{'snapturebox-section-left-open': $root.leftOpen}" id="snapturebox-section-left">
@@ -18,8 +18,9 @@
                                         <panel-arrow-left v-else></panel-arrow-left>
                                     </button>
                                 </div>
-                                <div class="snapturebox-pt-2 snapturebox-pb-3">
-                                    <img src="https://via.placeholder.com/32X32" alt="" @click="$root.toggleModal('#loginModal', 'show')" class="snapturebox-rounded-circle snapturebox-w-1x00" />
+                                <div class="snapturebox-pt-2 snapturebox-pb-3 snapturebox-text-center">
+                                    <div v-if="$root.auth" class="snapturebox-profile-image" :style="{backgroundImage: 'url('+$root.API + $root.auth.profile_image+')'}"></div>
+                                    <a href="#" v-else class="snapturebox-text-dark" @click.prevent="$root.toggleModal('#loginModal', 'show')"><small class="snapturebox-font-weight-bold">Login</small></a>
                                 </div>
                                 <div class="snapturebox-pt-2 snapturebox-pb-3">
                                     <widget-chat class="snapturebox-cursor-pointer" @click.native="rightContent = 'messages'"></widget-chat>
@@ -30,6 +31,17 @@
                                 <div class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm">
                                     <small class="snapturebox-font-weight-bold">My <br />Offers</small>
                                 </div>
+                                <a
+                                    v-if="$root.widget_business_hours"
+                                    href="#"
+                                    @click.prevent="
+                                        activeTab = 'book';
+                                        $root.leftOpen = true;
+                                    "
+                                    class="snapturebox-py-2 snapturebox-text-center snapturebox-font-montserrat snapturebox-line-height-sm snapturebox-text-dark"
+                                >
+                                    <small class="snapturebox-font-weight-bold">Book</small>
+                                </a>
                             </div>
                             <!-- Left content -->
                             <div class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100 snapturebox-left-content snapturebox-overflow-auto snapturebox-position-relative">
@@ -81,7 +93,15 @@
                                                                 </div>
                                                             </div>
                                                             <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
-                                                                <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'image'" @click="selectedMedia = {media: image, index: index, total: sampleImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
+                                                                <div
+                                                                    class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer"
+                                                                    v-for="(image, index) in enquiry.items"
+                                                                    v-if="image.type == 'image'"
+                                                                    @click="
+                                                                        selectedMedia = {media: image, index: index, total: sampleImagesCount};
+                                                                        $root.toggleModal('#manageMediaModal', 'show');
+                                                                    "
+                                                                >
                                                                     <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
                                                                     <img :src="image.preview" class="snapturebox-w-100" />
                                                                 </div>
@@ -128,7 +148,15 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="snapturebox-row snapturebox-mx-n1 snapturebox-mx-0 snapturebox-mt-3">
-                                                                    <div class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer" v-for="(image, index) in enquiry.items" v-if="image.type == 'sample'" @click="selectedMedia = {media: image, index: index, total: customerImagesCount}; $root.toggleModal('#manageMediaModal', 'show')">
+                                                                    <div
+                                                                        class="snapturebox-col-md-3 snapturebox-position-relative snapturebox-px-1 snapturebox-mb-2 snapturebox-cursor-pointer"
+                                                                        v-for="(image, index) in enquiry.items"
+                                                                        v-if="image.type == 'sample'"
+                                                                        @click="
+                                                                            selectedMedia = {media: image, index: index, total: customerImagesCount};
+                                                                            $root.toggleModal('#manageMediaModal', 'show');
+                                                                        "
+                                                                    >
                                                                         <close fill="white" width="28" class="snapturebox-close-right snapturebox-cursor-pointer" @click.native.stop="enquiry.items.splice(index, 1)"></close>
                                                                         <img :src="image.preview" class="snapturebox-w-100" />
                                                                     </div>
@@ -145,13 +173,12 @@
                                 </div>
 
                                 <!-- DateTimePicker -->
-                                <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative snapturebox-p-4" v-else-if="activeTab == 'datetimepicker'">
+                                <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative snapturebox-p-4" v-else-if="activeTab == 'book'">
                                     <DateTimePicker :businessHours="$root.widget_business_hours"></DateTimePicker>
                                 </div>
                             </div>
                         </div>
                     </div>
-
 
                     <!-- Right -->
 
@@ -293,10 +320,10 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        activeTab: 'datetimepicker', //inquiries, datetimepicker
+        activeTab: 'book', //inquiries, book
         itemType: '',
         selectedMedia: null,
-        rightContent: 'form', //form
+        rightContent: 'messages', //form
         messages: [],
         selectedMessage: {},
     }),
@@ -369,8 +396,7 @@ export default {
             this.scrollDown();
         });*/
     },
-    mounted() {
-    },
+    mounted() {},
     methods: {
         openMedia(message) {
             this.selectedMessage = message;
@@ -389,18 +415,19 @@ export default {
                 let links = [...getUrls(message.message)];
                 if (links.length > 0) {
                     message.preview = true;
-                    SBAxios.get(`/get_page_source_code?url=${links[0]}`).then((response) => {
-                        let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
-                        if (index > -1) this.messages[index].preview = response.data;
-                    }).catch(() => {
-                        let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
-                        if (index > -1) this.messages[index].preview = false;
-                    });
+                    SBAxios.get(`/get_page_source_code?url=${links[0]}`)
+                        .then((response) => {
+                            let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
+                            if (index > -1) this.messages[index].preview = response.data;
+                        })
+                        .catch(() => {
+                            let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
+                            if (index > -1) this.messages[index].preview = false;
+                        });
                 }
                 message.widget_id = this.$root.widget.id;
                 message.inquiry_type_id = 1;
                 message.interests = [];
-                
             }
             this.messages.push(message);
         },
@@ -570,11 +597,11 @@ export default {
                     user: this.$root.auth,
                     message: {
                         src: fileOutput.src,
-                        preview: fileOutput.preview
+                        preview: fileOutput.preview,
                     },
                     type: 'image',
                     timestamp: dayjs().valueOf(),
-                    created_at: dayjs(timestamp).format('hh:mm A')
+                    created_at: dayjs(timestamp).format('hh:mm A'),
                 });
             } else {
                 this.enquiry.items.push(fileOutput);

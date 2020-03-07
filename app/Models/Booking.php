@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     //
-    protected $fillable = ['offer_id', 'services', 'customer_info'];
+    protected $fillable = ['widget_id', 'user_id', 'date', 'time', 'metadata'];
     protected $casts = [
-        'services' => 'array',
-        'customer_info' => 'array',
+        'metadata' => 'array',
     ];
 
-    public function offer()
+    public function widget()
     {
-    	return $this->belongsTo(Offer::class);
+    	return $this->belongsTo(Widget::class);
     }
 
     public function user()

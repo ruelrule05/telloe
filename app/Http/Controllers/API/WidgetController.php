@@ -19,9 +19,6 @@ class WidgetController extends Controller
 
     public function show(Request $request)
     {
-        $widget = Widget::with('widgetRules', 'widgetType')->where('domain', $request->domain)->first();
-        if ($widget) $widget->makeHidden('fb_page');
-
         /*$authorizedDomain = ($request->domain == env('AUTHORIZED_DOMAINS'));
         if ($authorizedDomain) :
             $url_parts = array_diff(explode('/', parse_url($request->server('HTTP_REFERER'), PHP_URL_PATH)), ['']);
@@ -31,10 +28,19 @@ class WidgetController extends Controller
             print_r($post);
             return;
         endif;*/
+        $request->widget->load('bookings');
+        if ($request->wp_post_id) :
+            $url_parts = array_diff(explode('/', parse_url($request->server('HTTP_REFERER'), PHP_URL_PATH)), ['']);
+            $domain = parse_url($request->server('HTTP_REFERER'), PHP_URL_HOST);
+            $domain_name = explode('.', $domain)[0];
+            $post = DB::connection($domain_name)->table('wp_posts')->where('ID', $request->wp_post_id)->first();
+            if ($post) :
+                $wp_post_bookings = DB::table('bookings')->whereJsonContains('metadata->post_id', $post->ID)->get();
+                $request->widget->setRelation('bookings', $wp_post_bookings);
+            endif;
+        endif;
 
-        if (!$widget) return abort(401, 'This domain is not registered to Snapturebox.');
-
-        return response()->json($widget);
+        return response()->json($request->widget);
     }
 
     public function inquiryTypes() 

@@ -71,6 +71,9 @@ html {
 	.line-height-sm {
 		line-height: $line-height-sm;
 	}
+	.line-height-1 {
+		line-height: 1;
+	}
 	#button {
 		line-height: 1;
 		width: 50px;
@@ -174,6 +177,9 @@ html {
 	}
 	.cursor-pointer {
 		cursor: pointer !important;
+	}
+	.cursor-auto {
+		cursor: auto !important;
 	}
 	.pointer-events-none {
 		pointer-events: none !important;
@@ -798,6 +804,60 @@ html {
             }
         }
     }
+}
+.datepicker{
+	background-color: #E9ECEF;
+	> svg {
+		position: absolute;
+		right: 4px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+.vc-day-content{
+	line-height: 1 !important;
+}
+.form-control {
+    display: block !important;
+    width: 100% !important;
+    height: calc(1.5em + 0.4rem) !important;
+    padding: 0.2rem 0.75rem !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: #495057 !important;
+    background-color: #fff !important;
+    background-clip: padding-box !important;
+    border: 0 solid #ced4da !important;
+    border-radius: 0.5rem !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+.form-control-sm {
+    height: calc(1.2em + 0.5rem) !important;
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.2 !important;
+    border-radius: 0.2rem !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+.btn {
+    .spinner {
+        position: absolute;
+        z-index: 1;
+        top: 49%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 26px;
+    }
+}
+.profile-image{
+	width: 30px;
+	height: 30px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: inline-block;
 }
 
 @import 'node_modules/bootstrap/scss/grid';

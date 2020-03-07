@@ -5,7 +5,7 @@ module.exports = {
      	prefixer(
      		{
             	prefix: 'snapturebox-',
-        		ignore: [/snapturebox-/, /flatpickr-/, /animate/, /^.open/, /arrowTop/, /centerMost/]
+        		ignore: [/snapturebox-/, /flatpickr-/, /animate/, /^.open/, /arrowTop/, /centerMost/, /vc-/]
           	}
        	)
   	]

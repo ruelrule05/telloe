@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::group([
  		'prefix' => 'ajax',
-		'middleware' => ['api', 'ajax'],
+		'middleware' => ['api', 'ajax', 'widget'],
 		'domain' => config('app.api_url'),
 		'namespace' => 'API' 
 ], function(){

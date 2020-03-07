@@ -1,9 +1,9 @@
 let API = 'https://api.snapturebox.app'; //get from config
 
-const widget_business_hours = {"Monday":{"start":"8:00","end":"18:00"},"Tuesday":{"start":"8:00","end":"18:00"},"Wednesday":{"start":"8:00","end":"18:00"},"Thursday":{"start":"8:00","end":"18:00"},"Friday":{"start":"8:00","end":"18:00"},"Saturday":{"start":"9:00","end":"17:00"}}
+//const widget_business_hours = {"Monday":{"start":"8:00","end":"18:00"},"Tuesday":{"start":"8:00","end":"18:00"},"Wednesday":{"start":"8:00","end":"18:00"},"Thursday":{"start":"8:00","end":"18:00"},"Friday":{"start":"8:00","end":"18:00"},"Saturday":{"start":"9:00","end":"17:00"}}
 
 try {
-    window.$ = window.jQuery = require('jquery');
+    window.$ = require('jquery');
 } catch (e) {}
 
 window.SBAxios = require('axios');
@@ -15,7 +15,7 @@ window.SBAxios.interceptors.request.use(
         let access_token = window.localStorage.getItem('snapturebox_access_token');
         let concat = '?';
         if (config.url.indexOf('?') > -1) concat = '&';
-        access_token = access_token ? `${concat}token=${access_token}` : '';
+        access_token = (access_token && config.url != '/auth/login') ? `${concat}token=${access_token}` : '';
         config.headers['Cache-Control'] = 'no-cache';
         config.url = `${API}/ajax${config.url}${access_token}`;
         return config;
@@ -54,8 +54,8 @@ import './widget.scss';
 //import Toasted from 'vue-toasted';
 
 SBVue.component('widget', require('./widget.vue').default);
-SBVue.component('vue-select', require('./../widget/vue-select.vue').default);
-SBVue.component('vue-button', require('./../components/vue-button.vue').default);
+SBVue.component('vue-select', require('./vue-select.vue').default);
+SBVue.component('vue-button', require('./vue-button.vue').default);
 SBVue.component('vue-form-validate', require('./../components/vue-form-validate.vue').default);
 SBVue.use(VueMasonry);
 
@@ -65,6 +65,7 @@ window.snapturebox = new SBVue({
     data: {
         API: API,
         widget: null,
+        ready: false,
         auth: null,
         hidden: false,
         open: true, // false
@@ -94,23 +95,27 @@ window.snapturebox = new SBVue({
             skipButton: true,
         },
         inquiry_types: [],
-        classPrefix: 'snapturebox-',
-        widget_business_hours: null
+
+        // Wordpress Cocoach
+        widget_business_hours: null,
+        wp_post_id: null,
     },
 
     created() {
+        if (typeof widget_business_hours != 'undefined') {
+           this.widget_business_hours = widget_business_hours;
+        }
+
+        if (typeof wp_post_id != 'undefined') {
+           this.wp_post_id = wp_post_id;
+        }
+        
         if (typeof widget == 'undefined') {
             this.validateDomain();
         } else {
             this.widget = widget;
             this.fullPage = this.leftOpen = true;
         }
-
-        if (typeof widget_business_hours != 'undefined') {
-           this.widget_business_hours = widget_business_hours;
-        }
-
-        
     },
 
     methods: {
@@ -130,7 +135,7 @@ window.snapturebox = new SBVue({
         refreshToken() {
             SBAxios.post('/auth/refresh')
                 .then((response) => {
-                    this.auth = response.data;
+                    if (response.data.id) this.auth = response.data;
                     window.localStorage.setItem('snapturebox_access_token', response.data.access_token);
                 })
                 .catch(() => {
@@ -144,6 +149,7 @@ window.snapturebox = new SBVue({
             if (inquiry_types) this.inquiry_types = inquiry_types.data;
             let me = await SBAxios.get('/auth/me').catch(() => {});
             if (me) this.auth = me.data;
+            this.ready = true;
         },
 
         signup() {
@@ -203,7 +209,9 @@ window.snapturebox = new SBVue({
         },
 
         validateDomain() {
-            SBAxios.get(`/show?domain=${window.location.hostname}`)
+            let url = '/show';
+            if (this.wp_post_id) url += `?wp_post_id=${this.wp_post_id}`;
+            SBAxios.get(url)
                 .then((response) => {
                     this.getData();
                     this.widget = response.data;
