@@ -21,7 +21,7 @@
 					<video :hidden="fileOutput" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100"></video>
 					<div v-if="fileOutput" class="snapturebox-h-100">
 						<video v-if="fileOutput.type == 'video'" ref="fileOutput" class="snapturebox-w-100 snapturebox-h-100" :src="fileOutput.blob" style="outline: 0" playsinline controls @loadeddata="loadeddata"></video>
-						<div v-else class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.src + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat; position: relative; left: -1px; z-index: 0"></div>
+						<div v-else class="snapturebox-w-100 snapturebox-h-100" :style="{backgroundImage: 'url(' + fileOutput.source + ')'}" style="background-size: contain; background-position: center; background-repeat: no-repeat; position: relative; left: -1px; z-index: 0"></div>
 					</div>
 
 					<div class="snapturebox-position-absolute snapturebox-w-100 snapturebox-text-center" style="bottom: 15px; z-index: 2" :hidden="fileOutput || !cameraReady">
@@ -121,7 +121,7 @@ export default {
 
 			this.fileOutput = {
 				type: this.itemType,
-				src: srcUrl,
+				source: srcUrl,
 				preview: previewUrl,
 			};
 		},

@@ -31,7 +31,10 @@ class BookingController extends Controller
         $domain_name = explode('.', $request->domain)[0];
         try {
             $post = DB::connection($domain_name)->table('wp_posts')->where('post_name', $post_name)->first();
-            if ($post) $metadata['post_id'] = $post->ID;
+            if ($post) :
+                $metadata['wp_post_id'] = $post->ID;
+                $metadata['wp_user_id'] = $post->post_author;
+            endif;
         } catch (\Exception $e) {}
 
 

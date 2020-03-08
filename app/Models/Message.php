@@ -8,12 +8,15 @@ use Carbon\Carbon;
 class Message extends Model
 {
     //
-    protected $fillable = ['user_id', 'widget_id', 'message', 'type', 'preview'];
+    protected $fillable = ['convo_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata'];
     protected $appends = ['timestamp'];
+    protected $casts = [
+        'metadata' => 'array',
+    ];
 
-    public function widget()
+    public function convo()
     {
-    	return $this->belongsTo(Widget::class);
+    	return $this->belongsTo(Convo::class);
     }
 
     public function user()

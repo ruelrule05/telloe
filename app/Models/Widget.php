@@ -55,4 +55,9 @@ class Widget extends Model
     {
         return $this->hasMany(Booking::class)->orderBy('created_at', 'DESC');
     }
+
+    public function convos()
+    {
+        return $this->hasMany(Convo::class)->orderBy('created_at', 'DESC');
+    }
 }

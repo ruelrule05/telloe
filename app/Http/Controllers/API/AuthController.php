@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use JWTAuth;
 use Auth;
 use App\Models\User;
+use App\Models\Convo;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -44,9 +45,14 @@ class AuthController extends Controller
     }
 
 
-    public function me()
+    public function me(Request $request)
     {
-        return response()->json(auth()->user()->load('inquiries', 'offers.member.user', 'convoUsers') ?? false);
+        $convo = Convo::with('messages.user')->firstOrCreate([
+            'widget_id' => $request->widget->id,
+            'user_id' => auth()->user()->id
+        ]);
+        auth()->user()->convo = $convo;
+        return response()->json(auth()->user()->load('inquiries', 'offers.member.user') ?? false);
     }
 
     public function logout()

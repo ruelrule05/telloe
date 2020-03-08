@@ -7,8 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Convo extends Model
 {
     //
-    public function users()
+    protected $fillable = ['widget_id', 'user_id', 'metadata'];
+    public function widget()
     {
-    	return $this->hasMany(ConvoUser::class);
+    	return $this->belongsTo(Widget::class);
+    }
+
+    public function user()
+    {
+    	return $this->belongsTo(User::class);
+    }
+
+    public function messages()
+    {
+    	return $this->hasMany(Message::class);
     }
 }

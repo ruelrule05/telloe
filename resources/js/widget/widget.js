@@ -13,11 +13,13 @@ window.SBAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.SBAxios.interceptors.request.use(
     function(config) {
         let access_token = window.localStorage.getItem('snapturebox_access_token');
-        let concat = '?';
-        if (config.url.indexOf('?') > -1) concat = '&';
-        access_token = (access_token && config.url != '/auth/login') ? `${concat}token=${access_token}` : '';
+        let params = [];
+        if (access_token && config.url != '/auth/login') params.push(`token=${access_token}`);
+        if (params.length == 0) params = '';
+        else params = '?' + params.join('&');
+
         config.headers['Cache-Control'] = 'no-cache';
-        config.url = `${API}/ajax${config.url}${access_token}`;
+        config.url = `${API}/ajax${config.url}${params}`;
         return config;
     },
     function(error) {
@@ -29,7 +31,7 @@ window.SBAxios.interceptors.response.use(
         return response;
     },
     function(error) {
-        if (error.response.status == 401) {
+        if (error.response && error.response.status == 401) {
             let access_token = window.localStorage.getItem('snapturebox_access_token');
             if (access_token) window.snapturebox.refreshToken();
         } else {
@@ -98,16 +100,11 @@ window.snapturebox = new SBVue({
 
         // Wordpress Cocoach
         widget_business_hours: null,
-        wp_post_id: null,
     },
 
     created() {
         if (typeof widget_business_hours != 'undefined') {
            this.widget_business_hours = widget_business_hours;
-        }
-
-        if (typeof wp_post_id != 'undefined') {
-           this.wp_post_id = wp_post_id;
         }
         
         if (typeof widget == 'undefined') {
@@ -210,7 +207,6 @@ window.snapturebox = new SBVue({
 
         validateDomain() {
             let url = '/show';
-            if (this.wp_post_id) url += `?wp_post_id=${this.wp_post_id}`;
             SBAxios.get(url)
                 .then((response) => {
                     this.getData();

@@ -33,6 +33,7 @@ $border-radius: 0.5rem;
 $theme-colors: (
 	'primary': $primary,
 	'gray': #999,
+	'gray-100': #EEE,
 );
 
 @import 'node_modules/bootstrap/scss/functions';
@@ -73,6 +74,9 @@ html {
 	}
 	.line-height-1 {
 		line-height: 1;
+	}
+	.line-height-base {
+		line-height: $line-height-base;
 	}
 	#button {
 		line-height: 1;

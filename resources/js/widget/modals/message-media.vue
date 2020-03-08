@@ -10,8 +10,8 @@
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-		      		<img v-if="message.type == 'image'" :src="message.message.src" class="snapturebox-w-100">
-		      		<video v-else-if="message.type == 'video'" :src="message.message.src" controls autoplay class="snapturebox-w-100 snapturebox-outline-0"></video>
+		      		<img v-if="message.type == 'image'" :src="$root.API + message.source" class="snapturebox-w-100">
+		      		<video v-else-if="message.type == 'video'" :src="$root.API + message.source" controls autoplay class="snapturebox-w-100 snapturebox-outline-0"></video>
 		      	</div>
 		    </div>
 	  	</div>

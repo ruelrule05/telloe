@@ -184,7 +184,7 @@
 
                     <!-- Messages -->
                     <div v-if="rightContent == 'messages'" id="snapturebox-section-right">
-                        <messages :messages="messages" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal"></messages>
+                        <messages :messages="$root.auth.convo.messages" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal" ref="messages"></messages>
                     </div>
 
                     <!-- Inquiry form -->
@@ -313,7 +313,6 @@ export default {
         enquiryMediaTooltip: false,
         message: '',
         playing: false,
-        messages: [],
         signupFormDisabled: false,
         messageInputDisabled: false,
         sent: false,
@@ -324,7 +323,6 @@ export default {
         itemType: '',
         selectedMedia: null,
         rightContent: 'messages', //form
-        messages: [],
         selectedMessage: {},
     }),
     computed: {
@@ -410,26 +408,49 @@ export default {
         },
 
         sendMessage(message) {
-            console.log(message);
-            if (message.type == 'text') {
-                let links = [...getUrls(message.message)];
+            if (!this.$root.auth) {
+                this.$root.toggleModal('#loginModal', 'show');
+            } else {
+                let messageCopy = Object.assign({}, message);
+                if (messageCopy.metadata) messageCopy.metadata = JSON.stringify(messageCopy.metadata);
+                delete messageCopy.user;
+                if (message.type == 'file') message.source = null;
+
+                SBAxios.post('/messages', messageCopy).then((response) => {
+                    let index = this.$root.auth.convo.messages.findIndex((x) => x.timestamp == messageCopy.timestamp);
+                    if (index > -1) {
+                        if (messageCopy.type == 'file') {
+                            this.$root.auth.convo.messages[index].source = response.data.source;
+                        }
+                        this.$root.auth.convo.messages[index].id = response.data.id;
+                    }
+                });
+
+                let links = [];
+                if (message.message) links = [...getUrls(message.message)];
                 if (links.length > 0) {
                     message.preview = true;
-                    SBAxios.get(`/get_page_source_code?url=${links[0]}`)
+                    SBAxios.get(`/get_page_preview?url=${links[0]}`)
                         .then((response) => {
-                            let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
-                            if (index > -1) this.messages[index].preview = response.data;
+                            let index = this.$root.auth.convo.messages.findIndex((x) => x.timestamp == message.timestamp);
+                            if (index > -1) {
+                                this.$root.auth.convo.messages[index].preview = response.data;
+                                this.$refs['messages'].scrollDown();
+                                if (this.$root.auth.convo.messages[index].id) {
+                                    SBAxios.put(`/messages/${this.$root.auth.convo.messages[index].id}`, {preview: response.data});
+                                }
+                                let messageCopy = Object.assign({}, message);
+                            }
                         })
                         .catch(() => {
-                            let index = this.messages.findIndex((x) => x.timestamp == message.timestamp);
-                            if (index > -1) this.messages[index].preview = false;
+                            let index = this.$root.auth.convo.messages.findIndex((x) => x.timestamp == message.timestamp);
+                            if (index > -1) this.$root.auth.convo.messages[index].preview = null;
                         });
                 }
-                message.widget_id = this.$root.widget.id;
-                message.inquiry_type_id = 1;
-                message.interests = [];
+
+
+                this.$root.auth.convo.messages.push(message);
             }
-            this.messages.push(message);
         },
 
         deleteMedia(newMedia) {
@@ -475,14 +496,6 @@ export default {
             } else {
                 this.$root.toggleModal('#loginModal', 'show');
             }
-        },
-        scrollDown() {
-            setTimeout(() => {
-                const message_group = this.$refs['message-group'];
-                if (message_group) {
-                    message_group.scrollTop = message_group.scrollHeight;
-                }
-            });
         },
         getMessages() {
             SBAxios.get(`${this.domain}/messages`).then((response) => {
@@ -593,16 +606,21 @@ export default {
         addMedia(fileOutput) {
             if (this.itemType == 'message') {
                 const timestamp = dayjs().valueOf();
-                this.messages.push({
+                let message = {
                     user: this.$root.auth,
-                    message: {
-                        src: fileOutput.src,
-                        preview: fileOutput.preview,
-                    },
+                    source: fileOutput.source,
+                    preview: fileOutput.preview,
                     type: 'image',
                     timestamp: dayjs().valueOf(),
                     created_at: dayjs(timestamp).format('hh:mm A'),
-                });
+                };
+                this.$root.auth.convo.messages.push(message);
+                this.$refs['messages'].scrollDown();
+
+
+                let messageCopy = Object.assign({}, message);
+                delete messageCopy.user;
+                SBAxios.post('/messages', messageCopy);
             } else {
                 this.enquiry.items.push(fileOutput);
                 this.fileOutput = null;
@@ -623,53 +641,6 @@ export default {
             } else {
                 this.$refs['snapturebox-intro'].pause();
             }
-        },
-        signupContinue() {
-            this.messages.push({
-                sender: 'You',
-                message: 'Your details: ',
-                time: 'Just now',
-                signupDetails: true,
-            });
-            this.signupFormDisabled = true;
-            this.messageInputDisabled = false;
-            this.scrollDown();
-            let new_messages = [
-                {
-                    sender: 'You',
-                    message: 'Hi there please look at my photos of my problem areas I would like to look better.',
-                    hasPhotos: true,
-                    time: 'Just now',
-                },
-                {
-                    sender: this.member,
-                    message: `Hi ${this.signupForm.name}, please view my feedback video`,
-                    video: 'https://www.youtube.com/embed/oBDyhh5CEkI',
-                    time: 'Just now',
-                },
-                {
-                    sender: this.member,
-                    time: 'Just now',
-                    hasOffers: true,
-                },
-                {
-                    sender: 'You',
-                    message: 'Thank you for sending your suggestions. I will get back to you soon I just need to talk to my sister.',
-                    time: 'Just now',
-                },
-                {
-                    sender: this.member,
-                    message: `No problems ${this.signupForm.name} I am here to help. Let me know if I can help more.`,
-                    time: 'Just now',
-                },
-            ];
-            let i = 0;
-            let timeInterval = setInterval(() => {
-                this.messages.push(new_messages[i]);
-                this.scrollDown();
-                if (i == new_messages.length - 1) clearInterval(timeInterval);
-                i++;
-            }, 1000);
         },
         toggleWidget() {
             this.$root.open = this.$root.open ? false : true;
