@@ -1,4 +1,4 @@
-let API = 'https://api.snapturebox.app'; //get from config
+let API = 'https://api.snapturebox.com'; //get from config
 
 //const widget_business_hours = {"Monday":{"start":"8:00","end":"18:00"},"Tuesday":{"start":"8:00","end":"18:00"},"Wednesday":{"start":"8:00","end":"18:00"},"Thursday":{"start":"8:00","end":"18:00"},"Friday":{"start":"8:00","end":"18:00"},"Saturday":{"start":"9:00","end":"17:00"}}
 

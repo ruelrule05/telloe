@@ -761,6 +761,10 @@ html {
         max-width: 90%;
         text-align: left;
         line-height: 1.4;
+        p:not(.h2) {
+        	font-size: 0.85rem;
+        	line-height: 1.4;
+        }
     }
 
     /* Message right */
