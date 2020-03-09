@@ -131,7 +131,7 @@ export default {
     methods: {
         downloadMedia(message) {
             if (message.source) {
-                fetch(this.$root.API + message.source, {mode: 'no-cors'})
+                fetch(message.source, {mode: 'no-cors'})
                   .then(resp => resp.blob())
                   .then(blob => {
                     const url = window.URL.createObjectURL(blob);
