@@ -184,7 +184,7 @@
 
                     <!-- Messages -->
                     <div v-if="rightContent == 'messages'" id="snapturebox-section-right">
-                        <messages :messages="$root.auth.convo.messages" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal" ref="messages"></messages>
+                        <messages :messages="$root.auth ? $root.auth.convo.messages : []" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal" ref="messages"></messages>
                     </div>
 
                     <!-- Inquiry form -->
