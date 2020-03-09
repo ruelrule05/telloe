@@ -18,7 +18,7 @@
                             <p class="snapturebox-mb-0 snapturebox-h2" v-if="message.type == 'emoji'">{{ message.message }}</p>
 
                             <p class="snapturebox-mb-0" v-else-if="message.type == 'image'">
-                                <img class="snapturebox-w-100 snapturebox-rounded snapturebox-cursor-pointer" :src="$root.API + message.preview" @click="$emit('openMedia', message)" />
+                                <img class="snapturebox-w-100 snapturebox-rounded snapturebox-cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
                             </p>
 
                             <p class="snapturebox-mb-0" v-else-if="message.type == 'file'">

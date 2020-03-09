@@ -33,4 +33,14 @@ class Message extends Model
     {
         return Carbon::parse($this->attributes['created_at'])->timestamp;
     }
+
+    public function getSourceAttribute($value)
+    {
+        return config('app.url') . $value;
+    }
+
+    public function getPreviewAttribute($value)
+    {
+        return config('app.url') . $value;
+    }
 }
