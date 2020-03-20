@@ -5,6 +5,8 @@
  *
  */
 
+Route::any('/botman', 'API\MessageController@botman');
+
 Route::group(
     [
         'domain' => config('app.url'),
@@ -53,6 +55,8 @@ Route::group(
                 Route::resource('subscriptions', 'SubscriptionController', [
                     'only' => ['store', 'destroy']
                 ]);
+                Route::resource('chatbots', 'ChatbotController');
+                Route::resource('chatboxes', 'ChatboxController');
             });
         });
         

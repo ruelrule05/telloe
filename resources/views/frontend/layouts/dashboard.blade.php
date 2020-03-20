@@ -56,6 +56,12 @@
 							<router-link to="/dashboard/settings" exact><cog-icon height="26" width="26"></cog-icon></router-link>
 						</div>
 					</div>
+
+					<div class="py-2">
+						<div class="d-inline-block" v-tooltip.right="'Chatbot'">
+							<router-link to="/dashboard/chatbots" exact><virtual-reality-icon height="26" width="26"></virtual-reality-icon></router-link>
+						</div>
+					</div>
 				</div>
 
 
@@ -92,7 +98,10 @@
 			window.mixins = [];
 			window.routes = [];
 		</script>
+
 		<script src="{{ mix('js/dashboard.js') }}"></script>
+		<script src="/js/leader-line.min.js"></script>
+		<script src="/js/plain-draggable.min.js"></script>
 		@include('frontend.partials.scripts')
 	</body>
 </html>

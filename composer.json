@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "botman/botman": "^2.5",
+        "botman/driver-web": "^1.5",
         "facebook/graph-sdk": "^5.7",
         "fideloper/proxy": "^4.0",
         "intervention/image": "^2.5",

@@ -27,6 +27,14 @@ window.routes = window.routes.concat([
                 path: 'billing',
                 component: () => import(/* webpackChunkName: "billing" */ './components/dashboard/billing.vue'),
             },
+            {
+                path: 'chatbots',
+                component: () => import(/* webpackChunkName: "chatbots" */ './components/dashboard/chatbots/index.vue'),
+            },
+            {
+                path: 'chatbots/:id',
+                component: () => import(/* webpackChunkName: "chatbots-show" */ './components/dashboard/chatbots/show.vue'),
+            },
         ],
     },
 ]);
@@ -36,10 +44,11 @@ import GridIcon from './icons/grid';
 import ChatIcon from './icons/chat';
 import NotebookIcon from './icons/notebook';
 import CogIcon from './icons/cog';
+import VirtualRealityIcon from './icons/virtual-reality';
 const dashboard = {
     directives: {Tooltip},
     
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon},
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon},
 
     data: {
         heading: '',
@@ -72,6 +81,7 @@ const dashboard = {
     watch: {
         '$route.path': function() {
             this.contentloading = true;
+            $('.leader-line').remove();
         },
     },
 

@@ -9,6 +9,9 @@ use App\Models\Convo;
 use App\Models\Message;
 use File;
 use Nesk\Puphpeteer\Puppeteer;
+use BotMan\BotMan\BotMan;
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Drivers\DriverManager;
 
 class MessageController extends Controller
 {
@@ -119,4 +122,26 @@ class MessageController extends Controller
         return;
     }
 
+
+
+    public function botman()
+    {
+        $config = [
+            // Your driver-specific configuration
+            // "telegram" => [
+            //    "token" => "TOKEN"
+            // ]
+        ];
+
+        // Create an instance
+        $botman = BotManFactory::create($config);
+
+        // Give the bot something to listen for.
+        $botman->hears('hello', function (BotMan $bot) {
+            $bot->reply('Hello yourself.');
+        });
+
+        // Start listening
+        $botman->listen();
+    }
 }

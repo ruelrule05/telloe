@@ -23,6 +23,7 @@ class VerifyCsrfToken extends Middleware
         'messages',
         'facebook_page_tab',
         'facebook_page_tab',
-        'fb_messenger_webhook'
+        'fb_messenger_webhook',
+        'botman',
     ];
 }
