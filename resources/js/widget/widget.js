@@ -46,10 +46,10 @@ window.SBAxios.interceptors.response.use(
 
 let container = document.createElement('div');
 container.id = 'snapturebox-widget';
-container.innerHTML = '<widget />';
+container.innerHTML = '<widget v-if="ready" />';
 document.body.appendChild(container);
 
-import VueMasonry from './../components/vue-masonry.js';
+//import VueMasonry from './../components/vue-masonry.js';
 //import TextareaAutosize from 'vue-textarea-autosize';
 import './widget.scss';
 // console.log(style);
@@ -59,7 +59,7 @@ SBVue.component('widget', require('./widget.vue').default);
 SBVue.component('vue-select', require('./vue-select.vue').default);
 SBVue.component('vue-button', require('./vue-button.vue').default);
 SBVue.component('vue-form-validate', require('./../components/vue-form-validate.vue').default);
-SBVue.use(VueMasonry);
+//SBVue.use(VueMasonry);
 
 window.snapturebox = new SBVue({
     el: '#snapturebox-widget',
@@ -67,12 +67,11 @@ window.snapturebox = new SBVue({
     data: {
         API: API,
         widget: null,
-        ready: false,
         auth: null,
         hidden: false,
         open: true, // false
         fullPage: false,
-        leftOpen: true, // false
+        leftOpen: false, // false
         backdrop: false,
         loginForm: {
             email: 'cleidoscope@gmail.com',
@@ -100,6 +99,7 @@ window.snapturebox = new SBVue({
 
         // Wordpress Cocoach
         widget_business_hours: null,
+        ready: false,
     },
 
     created() {
@@ -206,8 +206,7 @@ window.snapturebox = new SBVue({
         },
 
         validateDomain() {
-            let url = '/show';
-            SBAxios.get(url)
+            SBAxios.get('/show')
                 .then((response) => {
                     this.getData();
                     this.widget = response.data;

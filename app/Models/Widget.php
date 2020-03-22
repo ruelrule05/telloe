@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     //
-    protected $fillable = ['user_id', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms'];
+    protected $fillable = ['user_id', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms', 'default_chatbot'];
     protected $casts = [
         'fb_page' => 'array',
         'colors' => 'array',
@@ -59,5 +59,10 @@ class Widget extends Model
     public function convos()
     {
         return $this->hasMany(Convo::class)->orderBy('created_at', 'DESC');
+    }
+
+    public function defaultChatbot()
+    {
+        return $this->belongsTo(Chatbot::class, 'default_chatbot');
     }
 }

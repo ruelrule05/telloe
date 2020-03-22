@@ -15,12 +15,16 @@
                     </div>
                     <div>
                         <div class="snapturebox-message-content snapturebox-d-inline-block snapturebox-message-content snapturebox-text-break">
+
+                            <!-- Emoji -->
                             <p class="snapturebox-mb-0 snapturebox-h2" v-if="message.type == 'emoji'">{{ message.message }}</p>
 
+                            <!-- Image -->
                             <p class="snapturebox-mb-0" v-else-if="message.type == 'image'">
                                 <img class="snapturebox-w-100 snapturebox-rounded snapturebox-cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
                             </p>
 
+                            <!-- File -->
                             <p class="snapturebox-mb-0" v-else-if="message.type == 'file'">
                                 <img v-if="isImage(message.metadata.extension)" class="snapturebox-w-100 snapturebox-rounded snapturebox-cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
                                 <span class=" snapturebox-cursor-pointer" @click="downloadMedia(message)">
@@ -31,14 +35,35 @@
                                 </span>
                             </p>
 
+                            <!-- Text -->
                             <div class="snapturebox-mb-0" v-else-if="message.type == 'text'">
-                                <p class="snapturebox-mb-0">{{ message.message }}</p>
-                                <div v-if="message.preview">
-                                    <div v-if="typeof message.preview == 'boolean'" class="snapturebox-text-center">
-                                        <div class="snapturebox-spinner-border snapturebox-spinner-border-sm" role="status"></div>
+                                <span v-if="message.status == 'is_writing'" class="snapturebox-typing-indicator">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </span>
+                                <template v-else>
+                                    <p class="snapturebox-mb-0">{{ message.message }}</p>
+                                    <div v-if="message.preview">
+                                        <div v-if="typeof message.preview == 'boolean'" class="snapturebox-text-center">
+                                            <div class="snapturebox-spinner-border snapturebox-spinner-border-sm" role="status"></div>
+                                        </div>
+                                        <div v-else v-html="message.preview"></div>
                                     </div>
-                                    <div v-else v-html="message.preview"></div>
-                                </div>
+                                </template>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="snapturebox-mb-0" v-else-if="message.type == 'buttons'">
+                                <span v-if="message.status == 'is_writing'" class="snapturebox-typing-indicator">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </span>
+                                <template v-else>
+                                    <p class="snapturebox-mb-0">{{ message.message }}</p>
+                                    <button class="snapturebox-mt-2 snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-badge-pill" v-for="button in message.buttons">{{ button.text }}</button>
+                                </template>
                             </div>
                         </div>
                     </div>

@@ -12,6 +12,8 @@ use Nesk\Puphpeteer\Puppeteer;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
+use App\Http\Conversations\OnboardingConversation;
+use BotMan\BotMan\Cache\LaravelCache;
 
 class MessageController extends Controller
 {
@@ -124,7 +126,7 @@ class MessageController extends Controller
 
 
 
-    public function botman()
+    public function botman(Request $request)
     {
         $config = [
             // Your driver-specific configuration
@@ -133,15 +135,24 @@ class MessageController extends Controller
             // ]
         ];
 
-        // Create an instance
-        $botman = BotManFactory::create($config);
+        $chatbot = $request->widget->defaultChatbot;
+        if($chatbot) :
+            /*if(!$request->chatbox_id) :
+            endif;*/
 
-        // Give the bot something to listen for.
-        $botman->hears('hello', function (BotMan $bot) {
-            $bot->reply('Hello yourself.');
-        });
+            // Create an instance
+            $botman = BotManFactory::create($config, new LaravelCache());
+            $botman->hears('(.*?)', function(BotMan $bot) use($chatbot) {
+                $bot->startConversation(new OnboardingConversation($chatbot));
+            });
 
-        // Start listening
-        $botman->listen();
+            /*// Give the bot something to listen for.
+            $botman->hears('hello', function (BotMan $bot) {
+                $bot->reply('Hello yourself.');
+            });*/
+
+            // Start listening
+            $botman->listen();
+        endif;
     }
 }

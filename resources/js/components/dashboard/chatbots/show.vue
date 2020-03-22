@@ -1,29 +1,50 @@
 <template>
 	<div v-if="chatbot" class="h-100 w-100 position-relative">
-		<h5 class="p-3 position-absolute pointer-events-none" style="z-index: 200">{{ chatbot.title }}</h5>
-
 		<div class="position-relative h-100 w-100 chat-creator-parent">
-			<div class="chatbox moveable border bg-white shadow-sm rounded" :data-top="draggable.top" :data-left="draggable.left" :id="'draggable-' + draggable.id" :data-id="draggable.id" :data-target="draggable.target" v-for="draggable in chatboxes" v-if="!draggable.removed">
-				<div v-if="!draggable.target" class="moveable line-creator"></div>
-				<div class="chatbox-controls">
-					<button v-if="draggable.type == 'buttons'" class="btn btn-sm p-0 shadow-none" @click="addButton(draggable)"><plus-icon height="15" width="15"></plus-icon></button>
-					<button class="btn btn-sm p-0 shadow-none" @click="deleteChatbox(draggable.id)"><trash-icon height="15" width="15"></trash-icon></button>
+
+			<div class="chatbox-start d-inline-block text-center pt-4">
+				<h5 class="pointer-events-none">{{ chatbot.title }}</h5>
+				<div class="bg-white border border-primary text-primary shadow-sm rounded px-5 py-2 position-relative" id="start" data-id="start">
+					START
+					<div class="moveable line-creator" v-if="!startData.target" data-id="start"></div>
 				</div>
-				<div @mouseover="moveableHover" @mouseout="moveableMouseout">
-					<div class="pt-1 px-2 dragger bg-lightx font-weight-bold mr-5">
-						<small class="text-uppercase">{{ draggable.type }}</small>
+			</div>
+
+			<div class="chatbox moveable border bg-white shadow-sm rounded" :data-top="draggable.top" :data-left="draggable.left" :id="'draggable-' + draggable.id" :data-start="draggable.is_start" :data-id="draggable.id" :data-target="draggable.target" v-for="draggable in chatboxes" v-if="!draggable.removed">
+				<template v-if="draggable.id != 'start'">
+					<div v-if="!draggable.target" class="moveable line-creator"></div>
+					<div class="chatbox-controls">
+						<button v-if="draggable.type == 'buttons'" class="btn btn-sm p-0 shadow-none" @click="addButton(draggable)"><plus-icon height="15" width="15"></plus-icon></button>
+						<button class="btn btn-sm p-0 shadow-none" @click="deleteChatbox(draggable.id)"><trash-icon height="15" width="15"></trash-icon></button>
 					</div>
-					<div class="p-2">
-						<div class="text-center position-absolute w-100" style="top: 0"></div>
-						<chat-autosize spellcheck="false" :data-id="draggable.id" @resize="autosizeInput" @blur="autosizeBlur" v-model="draggable.message" class="form-control form-control-sm shadow-none border-0 outline-0 chatbot-message d-inline-block" rows="1">{{ draggable.message }}</chat-autosize>
-						<div v-if="draggable.buttons" class="mt-2">
-							<button v-for="button in draggable.buttons" :id="'button-' + button.id" :data-parent="draggable.id" :data-id="button.id" class="mr-2 mb-2 btn btn-sm btn-outline-primary border border-primary badge-pill position-relative">
-								<span v-if="!button.target" class="moveable line-creator"></span>
-								<span class="outline-0">{{ button.text }}</span>
-							</button>
+					<div @mouseover="moveableHover" @mouseout="moveableMouseout">
+						<div class="pt-1 px-2 dragger font-weight-bold mr-5">
+							<small class="text-uppercase">{{ draggable.type }}</small>
+						</div>
+						<div class="p-2">
+							<div class="text-center position-absolute w-100" style="top: 0"></div>
+							<chat-autosize spellcheck="false" :data-id="draggable.id" @resize="autosizeInput" @blur="autosizeBlur" v-model="draggable.message" class="form-control form-control-sm shadow-none border-0 outline-0 chatbot-message d-inline-block" rows="1">{{ draggable.message }}</chat-autosize>
+							<div v-if="draggable.buttons" class="mt-2">
+								<button v-for="button in draggable.buttons" :id="'button-' + button.id" :data-parent="draggable.id" :data-id="button.id" class="mr-2 mb-2 btn btn-sm btn-outline-primary border border-primary badge-pill position-relative">
+									<span v-if="!button.target" class="moveable line-creator"></span>
+									<span class="outline-0">{{ button.text }}</span>
+								</button>
+							</div>
+							<div v-if="draggable.type == 'user_input'" class="form-group mb-0">
+								<div class="d-flex">
+									<div class="w-50 mr-1">
+										<label class="form-label mb-0">Type</label>
+										<vue-select :value="ObjectifyInputType(draggable.input_type)" @change="updateInputType($event, draggable)" :options="inputTypes" button_class="btn-sm" dropdown_class="w-100" placeholder="Select data type"></vue-select>
+									</div>
+									<div class="w-50 ml-1">
+										<label class="form-label mb-0">Variable</label>
+										<input type="text" :value="draggable.variable" @blur="updateVariable($event, draggable)" placeholder="Variable" class="form-control form-control-sm py-3">
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
+				</template>
 			</div>
 
 			<div class="chatbox-types">
@@ -102,8 +123,9 @@ import PlusIcon from './../../../icons/plus';
 import InfoCircleIcon from './../../../icons/info-circle';
 import dayjs from 'dayjs';
 import VueFormValidate from './../../../components/vue-form-validate';
+import VueSelect from './../../../components/vue-select';
 export default {
-	components: {VueFormValidate, ChatAutosize, DragIcon, TrashIcon, AlignVIcon, UserInterviewIcon, SendIcon, DuplicateAltIcon, PlusIcon, InfoCircleIcon},
+	components: {VueFormValidate, VueSelect, ChatAutosize, DragIcon, TrashIcon, AlignVIcon, UserInterviewIcon, SendIcon, DuplicateAltIcon, PlusIcon, InfoCircleIcon},
 	directives: {Tooltip},
 	data: () => ({
 		chatbot: null,
@@ -157,6 +179,20 @@ export default {
 		hoveredMoveable: null,
 		isCreatingLine: false,
 		newTargetMoveable: null,
+		startData: {
+			target: '',
+			leaderline: null
+		},
+		inputTypes: [
+			{
+				text: 'Email',
+				value: 'email'
+			},
+			{
+				text: 'Phone',
+				value: 'phone'
+			},
+		]
 	}),
 
 	computed: {},
@@ -168,11 +204,31 @@ export default {
 		}
 	},
 
-	mounted() {
-		
-	},
+	mounted() {},
 
 	methods: {
+		ObjectifyInputType(input_type) {
+			let data = {};
+			if(input_type) {
+				data = {
+					text: input_type.charAt(0).toUpperCase() + input_type.slice(1),
+					value: input_type,
+				};
+			}
+			return data;
+		},
+
+
+		updateVariable(e, chatbox) {
+			this.$set(chatbox, 'variable', e.currentTarget.value);
+			this.updateChatbox(chatbox);
+		},
+
+		updateInputType(value, chatbox) {
+			this.$set(chatbox, 'input_type', value.value);
+			this.updateChatbox(chatbox);
+		},
+
 		updateChatbox(chatbox) {
 			axios.put(`/dashboard/chatboxes/${chatbox.id}`, chatbox).then((response) => {
 				//console.log(response.data);
@@ -223,15 +279,22 @@ export default {
 			let onDragEndLeaderLine = null;
 			let onDragLeaderLine = null;
 
+			if(el.getAttribute('data-start')) {
+				let leaderLine = this.createLeaderLine(document.querySelector('#start'), el, null, {}, true);
+				this.startData.target = el.getAttribute('data-id');
+				this.startData.leaderline = leaderLine;
+			}
+
 			let index = this.chatboxes.findIndex((x) => x.id == el.getAttribute('data-id'));
 			if (index > -1) {
 				//leaderLineOptions.middleLabel = LeaderLine.captionLabel('x');
 				this.chatboxes[index].draggable = draggable;
 				if (this.chatboxes[index].target) {
-					let leaderLine = this.createLeaderLine(el, document.getElementById('draggable-' + this.chatboxes[index].target), this.chatboxes[index]);
+					let leaderLine = this.createLeaderLine(el, document.getElementById('draggable-' + this.chatboxes[index].target), this.chatboxes[index], {hide: true});
 					this.chatboxes[index].leaderline = leaderLine;
 					setTimeout(() => {
 						leaderLine.position();
+						leaderLine.show('none');
 					});
 				}
 
@@ -345,6 +408,12 @@ export default {
 						}
 					});
 				}
+				if(this.startData.target == chatbox.id) {
+					this.startData.leaderline.remove();
+					this.startData.leaderline = null;
+					this.startData.target = '';
+					this.createLineCreator(document.querySelector('#start'));
+				}
 				this.chatboxes.forEach((d) => {
 					if(d.target == id && d.leaderline) {
 						d.leaderline.remove();
@@ -393,6 +462,7 @@ export default {
 		},
 
 		moveableMouseout(e) {
+			e.currentTarget.parentNode.style.zIndex = 'auto';
 			e.currentTarget.parentNode.classList.remove('border-primary');
 			this.hoveredMoveable = null;
 			this.newTargetMoveable = null;
@@ -400,15 +470,18 @@ export default {
 
 		moveableHover(e) {
 			this.hoveredMoveable = e.currentTarget.parentNode;
-			if (this.isCreatingLine && this.isCreatingLine != e.currentTarget.parentNode && this.isCreatingLine.getAttribute('data-id') != e.currentTarget.parentNode.getAttribute('data-target') && this.isCreatingLine.getAttribute('data-parent') != e.currentTarget.parentNode.getAttribute('data-id')) {
-				e.currentTarget.parentNode.classList.add('border-primary');
-				this.newTargetMoveable = e.currentTarget.parentNode.getAttribute('data-id');
+			if (this.isCreatingLine && 
+				this.isCreatingLine != e.currentTarget.parentNode && 
+				this.isCreatingLine.getAttribute('data-id') != e.currentTarget.parentNode.getAttribute('data-target') && 
+				this.isCreatingLine.getAttribute('data-parent') != e.currentTarget.parentNode.getAttribute('data-id')) {
+					e.currentTarget.parentNode.classList.add('border-primary');
+					this.newTargetMoveable = e.currentTarget.parentNode.getAttribute('data-id');
 			} else {
 				this.newTargetMoveable = null;
 			}
 		},
 
-		createLeaderLine(start, end, container = null, options = {}) {
+		createLeaderLine(start, end, container = null, options = {}, isStart = false) {
 			let leaderLineOptions = {
 				size: 3,
 				color: '#6e82ea',
@@ -422,14 +495,27 @@ export default {
 				leaderLineOptions[k] = options[k];
 			});
 			let leaderLine = new LeaderLine(start, end, leaderLineOptions);
-			if(container) {
+			if(container || isStart) {
 				document.querySelector('.leader-line:last-of-type text').onclick = () => {
 					leaderLine.remove();
-					this.$delete(container, 'leaderline');
-					this.$delete(container, 'target');
+					if(isStart) {
+						let startChatbox = this.chatboxes.find((x) => x.id == this.startData.target);
+						if(startChatbox) {
+							startChatbox.is_start = false;
+							this.updateChatbox(startChatbox);
+						}
+						this.startData.target = '';
+						this.startData.leaderline = null;
+
+					}
+					if(container) {
+						this.$delete(container, 'leaderline');
+						this.$delete(container, 'target');
+						container.target = null;
+						this.updateChatbox(container);
+					}
+
 					this.createLineCreator(start);
-					container.target = null;
-					this.updateChatbox(container);
 				};
 			}
 			return leaderLine;
@@ -474,21 +560,37 @@ export default {
 				this.isCreatingLine = false;
 				if (this.newTargetMoveable) {
 					let data = null;
+					let isStart = false;
 					if (el.parentNode.tagName == 'BUTTON') {
 						let parentIndex = this.chatboxes.findIndex((x) => x.id == el.parentNode.getAttribute('data-parent'));
 						if (parentIndex > -1 && this.chatboxes[parentIndex].buttons.length > 0) {
 							let buttonIndex = this.chatboxes[parentIndex].buttons.findIndex((b) => b.id == el.parentNode.getAttribute('data-id'));
 							if (buttonIndex > -1) data = this.chatboxes[parentIndex].buttons[buttonIndex];
 						}
+					} else if(el.getAttribute('data-id') == 'start') { 
+						isStart = true;
 					} else {
 						let index = this.chatboxes.findIndex((x) => x.id == el.parentNode.getAttribute('data-id'));
 						if (index > -1) data = this.chatboxes[index];
-						data.target = this.newTargetMoveable;
-						this.updateChatbox(data);
+						if(data) {
+							data.target = this.newTargetMoveable;
+							this.updateChatbox(data);
+						}
 					}
-					let leaderLine = this.createLeaderLine(el.parentNode, document.getElementById('draggable-' + this.newTargetMoveable), data);
-					this.$set(data, 'target', this.newTargetMoveable);
-					this.$set(data, 'leaderline', leaderLine);
+					let leaderLine = this.createLeaderLine(el.parentNode, document.getElementById('draggable-' + this.newTargetMoveable), data, {}, isStart);
+					if(data) {
+						this.$set(data, 'target', this.newTargetMoveable);
+						this.$set(data, 'leaderline', leaderLine);
+					}
+					if(el.getAttribute('data-id') == 'start') {
+						this.startData.target = this.newTargetMoveable;
+						this.startData.leaderline = leaderLine;
+						let startChatbox = this.chatboxes.find((x) => x.id == this.newTargetMoveable);
+						if(startChatbox) {
+							startChatbox.is_start = true;
+							this.updateChatbox(startChatbox);
+						}
+					}
 					if(onDragEndLeaderLine) onDragEndLeaderLine.remove();
 				} else {
 					if(onDragEndLeaderLine) {
@@ -538,6 +640,9 @@ export default {
 							if (b.leaderline) b.leaderline.position();
 						});
 					}
+
+					// check if start
+					if(this.startData.target == this.chatboxes[index].id && this.startData.leaderline) this.startData.leaderline.position();
 				}
 
 				//parents
@@ -557,6 +662,7 @@ export default {
 						});
 					}
 				});
+
 			}
 		},
 	},

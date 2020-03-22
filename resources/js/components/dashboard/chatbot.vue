@@ -283,6 +283,7 @@ export default {
 		},
 
 		moveableHover(e) {
+			console.log(e.currentTarget.parentNode.getAttribute('data-target'));
 			this.hoveredMoveable = e.currentTarget.parentNode;
 			if (this.isCreatingLine && this.isCreatingLine != e.currentTarget.parentNode && this.isCreatingLine.getAttribute('data-id') != e.currentTarget.parentNode.getAttribute('data-target') && this.isCreatingLine.getAttribute('data-parent') != e.currentTarget.parentNode.getAttribute('data-id')) {
 				e.currentTarget.parentNode.classList.add('border-primary');

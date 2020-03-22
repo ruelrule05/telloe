@@ -5,7 +5,6 @@
  *
  */
 
-Route::any('/botman', 'API\MessageController@botman');
 
 Route::group(
     [

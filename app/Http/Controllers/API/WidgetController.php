@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Widget;
 use App\Models\InquiryType;
+use App\Models\Chatbox;
+use App\Models\Chatbot;
 use Nesk\Puphpeteer\Puppeteer;
 use Nesk\Rialto\Data\JsFunction;
 use DB;

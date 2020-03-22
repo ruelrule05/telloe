@@ -26,6 +26,7 @@ Route::group([
 	Route::resource('messages', 'MessageController')->middleware('auth:api');
 	Route::get('get_ig_images', 'WidgetController@getIGImages');
 	Route::get('get_page_preview', 'MessageController@getPagePreview');
+	Route::match(['GET', 'POST'],'botman', 'MessageController@botman')->middleware('auth:api');
 	
 
 	// Authentication

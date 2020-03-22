@@ -709,3 +709,37 @@ svg.leader-line {
 .pointer-events-none {
     pointer-events: none !important;
 }
+.chat-creator-parent{
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+    background-image: -webkit-linear-gradient(black 0, transparent 0%),
+                  -webkit-linear-gradient(left, black 0, transparent 0%),
+                  -webkit-linear-gradient(rgba(0,0,0,.05) 1px, transparent 0%),
+                  -webkit-linear-gradient(left, rgba(0,0,0,.05) 1px, transparent 0%);
+    background-image: -o-linear-gradient(black 0, transparent 0%),
+                  -o-linear-gradient(left, black 0, transparent 0%),
+                  -o-linear-gradient(rgba(0,0,0,.05) 1px, transparent 0%),
+                  -o-linear-gradient(left, rgba(0,0,0,.05) 1px, transparent 0%);
+    background-image: linear-gradient(black 0, transparent 0%),
+                  linear-gradient(to right, black 0, transparent 0%),
+                  linear-gradient(rgba(0,0,0,.05) 1px, transparent 0%),
+                  linear-gradient(to right, rgba(0,0,0,.05) 1px, transparent 0%);
+    -pie-background: linear-gradient(black 0, transparent 2px) -2px -2px / 100px,
+                 linear-gradient(90deg, black 0, transparent 2px) -2px -2px / 100px,
+                 linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px) -1px -1px / 20px,
+                 linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px) -1px -1px / 20px,
+                 #269;
+}
+.chatbox-start {
+    position: absolute;
+    top: 30px;
+    left: 45%;
+    transform: translateY(-50%);
+    .line-creator {
+        top: auto;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -8px;
+    }
+}

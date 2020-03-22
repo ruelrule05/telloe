@@ -869,6 +869,32 @@ html {
 	display: inline-block;
 }
 
+.typing-indicator {
+  width: auto;
+  border-radius: 50px;
+  margin: 0 auto;
+  position: relative;
+  span {
+    height: 8px;
+    width: 8px;
+    display: inline-block;
+    background-color: #9E9EA1;
+    border-radius: 50%;
+    opacity: 0.4;
+    @for $i from 1 through 3 {
+      &:nth-of-type(#{$i}) {
+        animation: 1s blink infinite ($i * .3333s);
+      }
+    }
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 1;
+  }
+}
+
 @import 'node_modules/bootstrap/scss/grid';
 @import 'node_modules/bootstrap/scss/buttons';
 @import 'node_modules/bootstrap/scss/dropdown';

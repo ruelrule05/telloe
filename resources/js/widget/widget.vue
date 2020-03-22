@@ -2,7 +2,7 @@
     <div v-if="$root.ready">
         <div v-if="$root.widget && !$root.hidden" :class="{'snapturebox-fullpage': $root.fullPage}" v-cloak>
             <div v-if="!$root.fullPage" id="snapturebox-button" class="snapturebox-bg-primary snapturebox-shadow" @click="toggleWidget">
-                <comment fill="white" stroke="white" stroke-width="1"></comment>
+                <comment-icon fill="white" stroke="white" stroke-width="1"></comment-icon>
             </div>
             <div id="snapturebox-window" class="snapturebox-rounded-lg snapturebox-shadow snapturebox-border" :class="{'snapturebox-window-open': $root.open}">
                 <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 snapturebox-h-100 justify-content-center">
@@ -13,7 +13,7 @@
                             <div class="snapturebox-h-100 snapturebox-pt-5 snapturebox-px-3 snapturebox-text-center snapturebox-border-right">
                                 <div class="snapturebox-mb-2">
                                     <button class="snapturebox-btn snapturebox-p-0 snapturebox-section-left-open-toggle snapturebox-shadow-none" @click="$root.leftOpen = $root.leftOpen ? false : true">
-                                        <x-icon v-if="$root.fullPage"></x-icon>
+                                        <close-icon v-if="$root.fullPage"></close-icon>
                                         <panel-arrow-right v-else-if="$root.leftOpen"></panel-arrow-right>
                                         <panel-arrow-left v-else></panel-arrow-left>
                                     </button>
@@ -184,7 +184,7 @@
 
                     <!-- Messages -->
                     <div v-if="rightContent == 'messages'" id="snapturebox-section-right">
-                        <messages :messages="$root.auth ? $root.auth.convo.messages : []" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal" ref="messages"></messages>
+                        <messages :messages="messages" @send="sendMessage" @openMedia="openMedia" @addMedia="openAddMediaModal" ref="messages"></messages>
                     </div>
 
                     <!-- Inquiry form -->
@@ -277,26 +277,26 @@ import PanelArrowLeft from '../icons/panel-arrow-left';
 import PanelArrowRight from '../icons/panel-arrow-right';
 import WidgetChat from '../icons/widget-chat';
 import ChevronDown from '../icons/chevron-down';
-import Camera from '../icons/camera';
-import Search from '../icons/search';
-import Close from '../icons/close';
-import Comment from '../icons/comment';
-import ExclamationCircle from '../icons/exclamation-circle';
-import ArrowRight from '../icons/arrow-right';
+import CloseIcon from '../icons/close';
+import CameraIcon from '../icons/camera';
+import SearchIcon from '../icons/search';
+import CommentIcon from '../icons/comment';
+import ExclamationCircleIcon from '../icons/exclamation-circle';
+import ArrowRightIcon from '../icons/arrow-right';
 import AddMediaModal from './modals/add-media';
 import SignupModal from './modals/signup';
 import LoginModal from './modals/login';
 import ManageMediaModal from './modals/manage-media';
 import MessageMediaModal from './modals/message-media';
 import DateTimePicker from './datetimepicker';
-import InstagramSearch from './instagram-search';
+//import InstagramSearch from './instagram-search';
 import Tooltip from './directives/tooltip.js';
-import VueLazyload from 'vue-lazyload';
+//import VueLazyload from 'vue-lazyload';
 import Messages from './messages';
 import getUrls from 'get-urls';
-SBVue.use(VueLazyload);
+//SBVue.use(VueLazyload);
 export default {
-    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, Camera, ChevronDown, Search, Close, Comment, ExclamationCircle, ArrowRight, AddMediaModal, InstagramSearch, SignupModal, LoginModal, ManageMediaModal, Messages, MessageMediaModal, DateTimePicker},
+    components: {PanelArrowLeft, PanelArrowRight, WidgetChat, CameraIcon, ChevronDown, CloseIcon, SearchIcon, CommentIcon, ExclamationCircleIcon, ArrowRightIcon, AddMediaModal, SignupModal, LoginModal, ManageMediaModal, Messages, MessageMediaModal, DateTimePicker},
     directives: {Tooltip},
     data: () => ({
         //format: format,
@@ -324,6 +324,7 @@ export default {
         selectedMedia: null,
         rightContent: 'messages', //form
         selectedMessage: {},
+        messages: []
     }),
     computed: {
         customerImagesCount() {
@@ -393,9 +394,58 @@ export default {
             this.notification_sound.play();
             this.scrollDown();
         });*/
+        //this.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
+        if(this.$root.widget.default_chatbot && this.$root.auth) this.callChatbot();
     },
-    mounted() {},
+    mounted() {
+    },
     methods: {
+        callChatbot() {
+            let bodyFormData = new FormData();
+            bodyFormData.set('message', 'stop');
+            bodyFormData.set('userId', this.$root.auth.id);
+            bodyFormData.set('driver', 'web');
+            bodyFormData.set('interactive', 0);
+            SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
+                let timeout = 0;
+                for(let message of response.data.messages) {
+                    await this.sendChatbotMessage(message, timeout);
+                    timeout = 2500;
+                }
+            });
+        },
+
+        async sendChatbotMessage(message, timeout = 0) {
+            return new Promise((resolve, reject) => {
+                if(message.additionalParameters.end) {
+                    console.log('ended');
+                    return resolve();
+                }
+                if(!message.text) {
+                    return resolve();
+                }
+                let type = message.additionalParameters.type || 'text';
+                setTimeout(() => {
+                    let timestamp = dayjs().valueOf();
+                    this.messages.push({
+                        message: message.text,
+                        type: type,
+                        buttons: message.additionalParameters.buttons,
+                        user: this.$root.widget,
+                        timestamp: timestamp,
+                        created_at: timestamp,
+                        status: 'is_writing'
+                    });
+                    setTimeout(() => {
+                        let message = this.messages.find((m) => m.timestamp == timestamp);
+                        if(message) message.status = 'visible';
+                    }, 1500);
+                    this.$refs['messages'].scrollDown();
+                    return resolve();
+                }, timeout);
+            });
+        },
+
         openMedia(message) {
             this.selectedMessage = message;
             this.$root.toggleModal('#messageMediaModal', 'show');
@@ -408,7 +458,28 @@ export default {
         },
 
         sendMessage(message) {
-            if (!this.$root.auth) {
+            this.messages.push({
+                message: message.message,
+                type: 'text',
+                user: this.$root.auth,
+                timestamp: dayjs().valueOf(),
+                created_at: dayjs().valueOf(),
+            });
+            this.$refs['messages'].scrollDown();
+            let bodyFormData = new FormData();
+            bodyFormData.set('message', message.message);
+            bodyFormData.set('userId', this.$root.auth.id);
+            bodyFormData.set('driver', 'web');
+            bodyFormData.set('interactive', 0);
+            bodyFormData.set('attachment', 0);
+            SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
+                let timeout = 0;
+                for(let message of response.data.messages) {
+                    await this.sendChatbotMessage(message, timeout);
+                    timeout = 2500;
+                }
+            })
+            /*if (!this.$root.auth) {
                 this.$root.toggleModal('#loginModal', 'show');
             } else {
                 let messageCopy = Object.assign({}, message);
@@ -450,7 +521,7 @@ export default {
 
 
                 this.$root.auth.convo.messages.push(message);
-            }
+            }*/
         },
 
         deleteMedia(newMedia) {
