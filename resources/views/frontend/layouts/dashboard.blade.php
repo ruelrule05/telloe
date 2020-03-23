@@ -16,7 +16,7 @@
 				</div>
 			</div>
 
-			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch">
+			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch w-100">
 				<div class="sidebar border-right py-3 align-self-stretch text-center bg-white">
 					<div class="dropdown">
 						<div class="user-profile d-inline-block mb-2 cursor-pointer" :style="[auth.profile_image ? {backgroundImage: 'url(' + auth.profile_image + ')'} : '']" data-toggle="dropdown"></div>
@@ -65,7 +65,7 @@
 				</div>
 
 
-				<div class="d-flex flex-column flex-grow-1">
+				<div class="d-flex flex-column flex-grow-1 w-100">
 					<!-- <div class="p-2 border-bottom shadow-sm d-flex align-items-center">
 						<div class="pl-2"><strong>@{{ heading }}</strong></div>
 						<div class="ml-auto">
@@ -99,9 +99,9 @@
 			window.routes = [];
 		</script>
 
-		<script src="{{ mix('js/dashboard.js') }}"></script>
 		<script src="/js/leader-line.min.js"></script>
 		<script src="/js/plain-draggable.min.js"></script>
+		<script src="{{ mix('js/dashboard.js') }}"></script>
 		@include('frontend.partials.scripts')
 	</body>
 </html>
