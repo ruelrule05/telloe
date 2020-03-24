@@ -135,8 +135,14 @@ class MessageController extends Controller
             //    "token" => "TOKEN"
             // ]
         ];
-    
-        $chatbot = $request->widget->defaultChatbot;
+        $chatbot = null;
+        if($request->bot_id) :
+            $chatbot = Chatbot::where('bot_id', $request->bot_id)->firstOrFail();
+            $this->authorize('show', $chatbot);
+        else :
+            $chatbot = $request->widget->defaultChatbot;
+        endif;
+
         if($chatbot) :
             /*if(!$request->chatbox_id) :
             endif;*/
