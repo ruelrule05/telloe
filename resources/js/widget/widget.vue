@@ -400,6 +400,15 @@ export default {
     mounted() {
     },
     methods: {
+        openURL(url) {
+            let link = document.createElement("a");
+            link.href = url;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        },
+
         callChatbot() {
             let bodyFormData = new FormData();
             bodyFormData.set('message', 'stop');
@@ -417,6 +426,23 @@ export default {
 
         async sendChatbotMessage(message, timeout = 0) {
             return new Promise((resolve, reject) => {
+                // if type is action
+                if(message.additionalParameters.type == 'action') {
+                    switch(message.additionalParameters.action) {
+                        case 'open_url' :
+                            this.openURL(message.text);
+                            break;
+
+                        case 'download_file' :
+                            this.openURL(message.text);
+                            break;
+
+                        case 'trigger_chatbot' :
+                            break;
+                    }
+                    return resolve();
+                }
+
                 if(message.additionalParameters.end) {
                     console.log('ended');
                     return resolve();
@@ -439,9 +465,9 @@ export default {
                     setTimeout(() => {
                         let message = this.messages.find((m) => m.timestamp == timestamp);
                         if(message) message.status = 'visible';
-                    }, 1500);
+                        return resolve();
+                    }, 1000);
                     this.$refs['messages'].scrollDown();
-                    return resolve();
                 }, timeout);
             });
         },
@@ -457,10 +483,10 @@ export default {
             this.$refs['addMediaModal'].initCamera();
         },
 
-        sendMessage(message) {
+        sendMessage(message, type = 'text') {
             this.messages.push({
                 message: message.message,
-                type: 'text',
+                type: type,
                 user: this.$root.auth,
                 timestamp: dayjs().valueOf(),
                 created_at: dayjs().valueOf(),

@@ -47,4 +47,18 @@ class ChatboxController extends Controller
 
         return response()->json(['deleted' => true]);
     }
+
+    public function uploadFile(Request $request)
+    {
+        $this->validate($request, [
+            'file' => 'required|file',
+        ]);
+        $file = $request->file;
+        $filename = $file->getClientOriginalName();
+        $srcDestination = '/chatbox-media/';
+        $file->storeAs('/public' . $srcDestination, $filename);
+        $sourceFile = '/storage' . $srcDestination . $filename;
+
+        return response()->json(['file' => $sourceFile]);
+    }
 }

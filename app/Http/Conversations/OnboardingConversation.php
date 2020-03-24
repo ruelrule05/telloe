@@ -40,13 +40,34 @@ class OnboardingConversation extends Conversation
 		endif;
     }
 
+    public function getButtonFromAnswer($buttons, Answer $answer)
+    {
+    	$button = false;
+    	$answer = $answer->getText();
+    	foreach($buttons as $button) :
+		    if ($button->id == $answer) :
+		        $button = $button;
+		        break;
+		    endif;
+		endforeach;
+		return $button;
+    }
+
     public function init(Chatbox $chatbox)
     {
     	switch($chatbox->type) :
     		// Buttons
     		case 'buttons':
     			// ask which button is clicked
-				$this->say($this->parseMessage($chatbox->message), ['type' => 'buttons', 'buttons' => $chatbox->buttons]);
+				$this->ask($this->parseMessage($chatbox->message),
+				function(Answer $answer) use ($chatbox) {
+					$button = $this->getButtonFromAnswer($chatbox->metadata->buttons, $answer);
+					if($button) :
+						$this->getNext($button);
+					endif;
+				},
+				['type' => 'buttons', 'buttons' => $chatbox->metadata->buttons]
+				);
     			break;
 
 
@@ -76,6 +97,29 @@ class OnboardingConversation extends Conversation
 					});
 				endif;
     			break;
+
+
+    		// Action
+    		case 'action':
+    			$message = null;
+    			switch($chatbox->metadata->action) :
+    				case 'open_url':
+	    				$message = $chatbox->metadata->url;
+    					break;
+
+    				case 'download_file':
+	    				$message = url($chatbox->metadata->file->source);
+    					break;
+
+    				case 'trigger_chatbot':
+	    				$message = $chatbox->metadata->bot_id;
+    					break;
+    			endswitch;
+
+    			if($message) $this->say($message, ['type' => 'action', 'action' => $chatbox->metadata->action]);
+				$this->getNext($chatbox);
+    			break;
+
 
     		// Default (text type)
     		default:

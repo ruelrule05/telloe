@@ -56,6 +56,7 @@ Route::group(
                 ]);
                 Route::resource('chatbots', 'ChatbotController');
                 Route::resource('chatboxes', 'ChatboxController');
+                Route::post('upload_file', 'ChatboxController@uploadFile');
             });
         });
         

@@ -13,7 +13,7 @@
 
 				<div class="chatbox moveable border bg-white shadow-sm rounded" :data-top="draggable.top" :data-left="draggable.left" :id="'draggable-' + draggable.id" :data-start="draggable.is_start" :data-id="draggable.id" :data-target="draggable.target" v-for="draggable in chatboxes" v-if="!draggable.removed">
 					<template v-if="draggable.id != 'start'">
-						<div v-if="!draggable.target" class="moveable line-creator"></div>
+						<div v-if="!draggable.target && draggable.type != 'buttons'" class="moveable line-creator"></div>
 						<div class="chatbox-controls">
 							<button v-if="draggable.type == 'buttons'" class="btn btn-sm p-0 shadow-none" @click="addButton(draggable)"><plus-icon height="15" width="15"></plus-icon></button>
 							<button class="btn btn-sm p-0 shadow-none" @click="deleteChatbox(draggable.id)"><trash-icon height="15" width="15"></trash-icon></button>
@@ -23,19 +23,19 @@
 								<small class="text-uppercase">{{ draggable.type }}</small>
 							</div>
 							<div class="p-2">
-								<div class="text-center position-absolute w-100" style="top: 0"></div>
-								<chat-autosize spellcheck="false" :data-id="draggable.id" @resize="updateLeaderlines" @blur="updateMessage" v-model="draggable.message" placeholder="Write your message.."></chat-autosize>
-
-								<div v-if="draggable.buttons" class="mt-1">
-									<div class="position-relative mr-2 mb-1 w-100" v-for="button in draggable.buttons" :data-id="button.id">
-
-										<chat-autosize @resize="updateLeaderlines" @blur="updateButton" :id="'button-' + button.id" :data-parent="draggable.id" :key="button.id" wrapper_class="w-100" textarea_class="text-center w-100 text-primary border border-primary" v-model="button.text" placeholder="Name your button..">
+								<chat-autosize v-if="draggable.type != 'action'" spellcheck="false" :data-id="draggable.id" @resize="updateLeaderlines" @blur="updateMessage" v-model="draggable.message" placeholder="Write your message.."></chat-autosize>
+								
+								<!-- buttons -->
+								<div v-if="draggable.type == 'buttons' && draggable.metadata && draggable.metadata.buttons" class="mt-1">
+									<div class="position-relative mr-2 mb-1 w-100" v-for="button in draggable.metadata.buttons" :data-id="button.id" :class="{'d-none': button.removed}">
+										<chat-autosize @resize="updateLeaderlines" @blur="updateUserInput" :id="'button-' + button.id" :data-parent="draggable.id" :key="button.id" wrapper_class="w-100" textarea_class="text-center w-100 text-primary border border-primary" v-model="button.text" placeholder="Name your button..">
 										</chat-autosize>
 										<span v-if="!button.target" class="moveable line-creator" data-type="button" :data-parent="draggable.id"></span>
 										<button class="delete-button btn btn-sm p-0 shadow-none" @click="deleteButton(button.id, draggable.id)"><trash-icon height="15" width="15"></trash-icon></button>
 									</div>
 								</div>
 
+								<!-- user input -->
 								<div v-if="draggable.type == 'user_input'" class="form-group mb-0">
 									<div class="d-flex">
 										<div class="w-50 mr-1">
@@ -45,6 +45,45 @@
 										<div class="w-50 ml-1">
 											<label class="form-label mb-0">Variable</label>
 											<input type="text" :value="draggable.variable" @blur="updateVariable($event, draggable)" placeholder="Variable" class="form-control form-control-sm py-3">
+										</div>
+									</div>
+									<div v-if="draggable.input_type == 'options'">
+										<div class="btn btn-sm btn-light p-1 font-weight-normal border rounded my-1 d-flex align-items-center justify-content-center" @click="addOption(draggable)"><plus-icon height="14" width="14"></plus-icon> Add Option</div>
+										<div v-if="draggable.metadata && draggable.metadata.options">
+											<div v-for="option in draggable.metadata.options" class="mb-1 position-relative" :class="{'d-none': option.removed}">
+												<chat-autosize @resize="updateLeaderlines" @blur="updateUserInput" :id="'option-' + option.id" :data-parent="draggable.id" :key="option.id" wrapper_class="w-100" textarea_class="text-center w-100 text-primary border border-primary" v-model="option.text" placeholder="Name your option..">
+												</chat-autosize>
+												<button class="delete-button btn btn-sm p-0 shadow-none" @click="deleteOption(option.id, draggable.id)"><trash-icon height="15" width="15"></trash-icon></button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- action -->
+								<div v-if="draggable.type == 'action'" class="form-group mb-0">
+									<label class="form-label">Choose action</label>
+									<vue-select :value="ObjectifyInputType(draggable.metadata ? draggable.metadata.action : '')" @change="updateActionType($event, draggable)" :options="actionTypes" button_class="btn-sm" dropdown_class="w-100" placeholder="Select action"></vue-select>
+									<div v-if="draggable.metadata">
+										<!-- download file -->
+										<div v-if="draggable.metadata.action == 'download_file'">
+											<div v-if="!draggable.metadata.file">
+												<div class="btn btn-sm btn-light p-1 font-weight-normal border rounded my-1 d-flex align-items-center justify-content-center" @click="addDownloadFile(draggable)"><plus-icon height="14" width="14"></plus-icon> Add File</div>
+												<input type="file" :id="'draggable-' + draggable.id + '-download_file'" @change="uploadFile($event, draggable)" hidden>
+											</div>
+											<div v-else class="d-flex align-items-center">
+												<div class="font-weight-normal"><small>{{ draggable.metadata.file.filename }}</small></div>
+												<button class="btn btn-sm ml-1 p-0 shadow-none" @click="deleteDownloadFile(draggable)"><trash-icon height="15" width="15"></trash-icon></button>
+											</div>
+										</div>
+
+										<!-- open URL -->
+										<div v-else-if="draggable.metadata.action == 'open_url'" class="mt-1">
+											<input type="text" class="form-control form-control-sm" :value="draggable.metadata.url" placeholder="Add URL" @blur="updateOpenUrl($event, draggable)">
+										</div>
+
+										<!-- trigger chatbot -->
+										<div v-else-if="draggable.metadata.action == 'trigger_chatbot'" class="mt-1">
+											<vue-select :value="{text: draggable.metadata.bot_name, value: draggable.metadata.bot_id}" @change="updateTriggerChatbot($event, draggable)" :options="filteredChatbots" button_class="btn-sm" dropdown_class="w-100" placeholder="Select chatbot"></vue-select>
 										</div>
 									</div>
 								</div>
@@ -58,7 +97,7 @@
 				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'Message with buttons'" @click="addChatbox('buttons')"><align-v-icon width="20"></align-v-icon></button>
 				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'User input'" @click="addChatbox('user_input')"><user-interview-icon width="20"></user-interview-icon></button>
 				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'Quick reply'" @click="addChatbox('quick_reply')"><send-icon width="20"></send-icon></button>
-				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'Action'"><duplicate-alt-icon width="20"></duplicate-alt-icon></button>
+				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'Action'" @click="addChatbox('action')"><duplicate-alt-icon width="20"></duplicate-alt-icon></button>
 				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'Edit details'" data-toggle="modal" data-target="#editDetails"><info-circle-icon width="20"></info-circle-icon></button>
 			</div>
 
@@ -68,9 +107,6 @@
 				<button class="btn btn-white shadow-sm border badge-pill btn-block" v-tooltip.left="'Zoom Out'" @click="scale -= 0.25"><minus-icon width="20"></minus-icon></button>
 			</div>
 		</div>
-
-
-
 
 
 		<div class="modal fade" tabindex="-1" role="dialog" id="editDetails">
@@ -143,54 +179,11 @@ export default {
 	components: {VueFormValidate, VueSelect, ChatAutosize, DragIcon, TrashIcon, AlignVIcon, UserInterviewIcon, SendIcon, DuplicateAltIcon, PlusIcon, MinusIcon, InfoCircleIcon},
 	directives: {Tooltip},
 	data: () => ({
+		chatbots: [],
 		chatbot: null,
 		chatboxes: [],
 		title: '',
 		description: '',
-		reports: [],
-		draggables: [
-			{
-				id: 1,
-				message: 'This is the start of the conversation',
-				target: 2,
-				type: 'Start',
-				x: 200,
-				y: 50,
-			},
-			{
-				id: 2,
-				type: 'Buttons',
-				message: 'This is a message w/ buttons',
-				target: 3,
-				x: 550,
-				y: 150,
-				buttons: [
-					{
-						id: 4,
-						text: 'Booking',
-						target: 6,
-					},
-					{
-						id: 5,
-						text: 'General Inquiry',
-					},
-				],
-			},
-			{
-				id: 3,
-				message: 'This is a quick reply message',
-				type: 'Quick reply',
-				x: 900,
-				y: 250,
-			},
-			{
-				id: 6,
-				message: 'Can I have your email please?',
-				type: 'User input',
-				x: 418,
-				y: 350,
-			},
-		],
 		hoveredMoveable: null,
 		isCreatingLine: false,
 		newTargetMoveable: null,
@@ -200,6 +193,10 @@ export default {
 		},
 		inputTypes: [
 			{
+				text: 'Text',
+				value: 'text'
+			},
+			{
 				text: 'Email',
 				value: 'email'
 			},
@@ -207,11 +204,40 @@ export default {
 				text: 'Phone',
 				value: 'phone'
 			},
+			{
+				text: 'Options',
+				value: 'options'
+			},
+		],
+		actionTypes: [
+			{
+				text: 'Download file',
+				value: 'download_file'
+			},
+			{
+				text: 'Open URL',
+				value: 'open_url'
+			},
+			{
+				text: 'Trigger Chatbot',
+				value: 'trigger_chatbot'
+			},
 		],
 		scale: 1,
 	}),
 
-	computed: {},
+	computed: {
+		filteredChatbots() {
+			let filteredChatbots = this.chatbots.filter((c) => c.id != this.chatbot.id);
+			filteredChatbots = filteredChatbots.map((c) => {
+				return {
+					text: c.title,
+					value: c.bot_id
+				};
+			});
+			return filteredChatbots;
+		}
+	},
 
 	watch: {
 		scale: function(value) {
@@ -231,13 +257,66 @@ export default {
 	mounted() {},
 
 	methods: {
+		updateTriggerChatbot(e, chatbox) {
+			this.$set(chatbox.metadata, 'bot_name', e.text);
+			this.$set(chatbox.metadata, 'bot_id', e.value);
+			this.updateChatbox(chatbox);
+		},
+
+		updateOpenUrl(e, chatbox) {
+			this.$set(chatbox.metadata, 'url', e.target.value);
+			this.updateChatbox(chatbox);
+		},
+
+		deleteDownloadFile(chatbox) {
+			this.$delete(chatbox.metadata, 'file');
+			this.updateChatbox(chatbox);
+		},
+
+		uploadFile(e, chatbox) {
+			let files = e.target.files;
+			if(files.length > 0) {
+				let filename = files[0].name;
+				let bodyFormData = new FormData();
+				bodyFormData.append('file', files[0]);
+				axios.post('/dashboard/upload_file', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
+					let file = {
+						filename: filename,
+						source: response.data.file
+					};
+					this.$set(chatbox.metadata, 'file', file);
+					this.updateChatbox(chatbox);
+				});
+			}
+		},
+
+		addDownloadFile(chatbox) {
+			document.querySelector(`#draggable-${chatbox.id}-download_file`).click();
+		},
+
+		addOption(chatbox){
+			if(!chatbox.metadata || !chatbox.metadata.options) {
+				chatbox.metadata = {options: []};
+			}
+			let timestamp = dayjs().valueOf();
+			if(chatbox.input_type == 'options') {
+				let timestamp = dayjs().valueOf();
+				chatbox.metadata.options.push({
+					id: timestamp,
+					text: 'New option',
+					type: 'option',
+					parent: chatbox.id
+				});
+				this.updateChatbox(chatbox);
+			}
+		},
+
 		updateLeaderlines() {
-			console.log('updateLeaderlines');
 			// reposition all leaderline
 			this.chatboxes.forEach((d) => {
 				if (d.leaderline) d.leaderline.position();
-				if (d.buttons) {
-					d.buttons.forEach((b) => {
+				if (d.metadata && d.metadata.buttons) {
+					d.metadata.buttons.forEach((b) => {
 						if (b.leaderline && typeof b.leaderline.position === "function") b.leaderline.position();
 					});
 				}
@@ -253,7 +332,7 @@ export default {
 			let data = {};
 			if(input_type) {
 				data = {
-					text: input_type.charAt(0).toUpperCase() + input_type.slice(1),
+					text: (input_type.charAt(0).toUpperCase() + input_type.slice(1)).replace('_', ' '),
 					value: input_type,
 				};
 			}
@@ -262,6 +341,14 @@ export default {
 
 		updateVariable(e, chatbox) {
 			this.$set(chatbox, 'variable', e.currentTarget.value);
+			this.updateChatbox(chatbox);
+		},
+
+		updateActionType(value, chatbox) {
+			if(!chatbox.metadata || !chatbox.metadata.action) {
+				chatbox.metadata = {action: null};
+			}
+			this.$set(chatbox.metadata, 'action', value.value);
 			this.updateChatbox(chatbox);
 		},
 
@@ -304,6 +391,9 @@ export default {
 					}
 				});
 			});
+			axios.get('/dashboard/chatbots').then((response) => {
+				this.chatbots = response.data;
+			});
 		},
 
 		setupChatbox(el) {
@@ -343,8 +433,8 @@ export default {
 				}
 
 				// Buttons
-				if (chatbox.buttons && chatbox.buttons.length > 0) {
-					chatbox.buttons.forEach((b) => {
+				if (chatbox.metadata && chatbox.metadata.buttons && chatbox.metadata.buttons.length > 0) {
+					chatbox.metadata.buttons.forEach((b) => {
 						if (b.target) {
 							let start = document.getElementById('button-' + b.id);
 							let end = document.getElementById('draggable-' + b.target);
@@ -384,12 +474,15 @@ export default {
 		},
 
 		addButton(chatbox){
-			chatbox.buttons = chatbox.buttons || [];
+			if(!chatbox.metadata.buttons) {
+				this.$set(chatbox.metadata, 'buttons', []);
+				chatbox.metadata.buttons = [];
+			}
 			let $this = this;
 			let timestamp = dayjs().valueOf();
 			if(chatbox.type == 'buttons') {
 				let timestamp = dayjs().valueOf();
-				chatbox.buttons.push({
+				chatbox.metadata.buttons.push({
 					id: timestamp,
 					text: 'New button',
 					type: 'button',
@@ -405,7 +498,6 @@ export default {
 				});
 				this.updateChatbox(chatbox);
 			}
-			// ajax post to save and update ID
 		},
 
 		addChatbox(type) {
@@ -415,10 +507,11 @@ export default {
 				id: timestamp,
 				message: '',
 				type: type,
-				buttons: []
+				metadata: {}
 			};
-			if(type == 'buttons') chatbox.buttons = [];
+			if(type == 'buttons') chatbox.metadata.buttons = [];
 			this.chatboxes.push(chatbox);
+
 
 			this.$nextTick(() => {
 				axios.post(`/dashboard/chatboxes`, {chatbot_id: this.chatbot.id, type: type}).then((response) => {
@@ -437,20 +530,36 @@ export default {
 			});
 		},
 
+		deleteOption(option_id, chatbox_id) {
+			let chatbox = this.chatboxes.find((x) => x.id == chatbox_id);
+			if (chatbox) {
+				let option = chatbox.metadata.options.find((x) => x.id == option_id);
+				if(option) {
+					this.$set(option, 'removed', true);
+					let parsedChatbox = JSON.parse(JSON.stringify(chatbox));
+					let options = parsedChatbox.metadata.options.filter((b) => !b.removed);
+					parsedChatbox.metadata.options = options;
+					this.updateChatbox(parsedChatbox);
+					setTimeout(() => {
+						this.updateLeaderlines();
+					});
+				}
+			}
+		},
+
 		deleteButton(button_id, chatbox_id) {
 			let chatbox = this.chatboxes.find((x) => x.id == chatbox_id);
 			if (chatbox) {
-				let buttonIndex = chatbox.buttons.findIndex((x) => x.id == button_id);
-				if(buttonIndex > -1) {
-					if(chatbox.buttons[buttonIndex].leaderline && typeof chatbox.buttons[buttonIndex].leaderline.remove === "function") chatbox.buttons[buttonIndex].leaderline.remove();
-					this.$delete(chatbox.buttons, buttonIndex);
-					this.updateChatbox(chatbox);
-					chatbox.buttons.forEach((b) => {
-						if (b.leaderline && typeof b.leaderline.position === "function") {
-							setTimeout(() => {
-								b.leaderline.position();
-							});
-						}
+				let button = chatbox.metadata.buttons.find((x) => x.id == button_id);
+				if(button) {
+					if(button.leaderline && typeof button.leaderline.remove === "function") button.leaderline.remove();
+					this.$set(button, 'removed', true);
+					let parsedChatbox = JSON.parse(JSON.stringify(chatbox));
+					let buttons = parsedChatbox.metadata.buttons.filter((b) => !b.removed);
+					parsedChatbox.metadata.buttons = buttons;
+					this.updateChatbox(parsedChatbox);
+					setTimeout(() => {
+						this.updateLeaderlines();
 					});
 				}
 			}
@@ -464,8 +573,8 @@ export default {
 					chatbox.leaderline.remove();
 					this.$delete(chatbox, 'leaderline');
 				}
-				if(chatbox.buttons) {
-					chatbox.buttons.forEach((b) => {
+				if(chatbox.metadata && chatbox.metadata.buttons) {
+					chatbox.metadata.buttons.forEach((b) => {
 						if(b.leaderline && typeof b.leaderline.remove === "function") {
 							b.leaderline.remove();
 							this.$delete(b, 'leaderline');
@@ -479,25 +588,28 @@ export default {
 					this.createLineCreator(document.querySelector('#start'));
 				}
 				this.chatboxes.forEach((d) => {
+					let updateD = false;
 					if(d.target == id && d.leaderline) {
 						if(typeof d.leaderline.remove === "function") d.leaderline.remove();
 						this.$delete(d, 'leaderline');
 						this.$delete(d, 'target');
 						this.createLineCreator(document.querySelector(`#draggable-${d.id}`));
 						d.target = null;
+						updateD = true;
 					}
-					if(d.buttons) {
-						d.buttons.forEach((b) => {
+					if(d.metadata && d.metadata.buttons) {
+						d.metadata.buttons.forEach((b) => {
 							if(b.target == id && b.leaderline && typeof b.leaderline.position === "function") {
 								if(typeof b.leaderline.remove === "function") b.leaderline.remove();
 								this.$delete(b, 'leaderline');
 								this.$delete(b, 'target');
 								this.createLineCreator(document.querySelector(`#button-${b.id}`));
 								b.target = null;
+								updateD = true;
 							}
 						})
 					}
-					this.updateChatbox(d);
+					if(updateD) this.updateChatbox(d);
 				});
 				this.$set(chatbox, 'removed', true);
 				axios.delete(`/dashboard/chatboxes/${chatbox.id}`);
@@ -514,11 +626,11 @@ export default {
 			}
 		},
 
-		updateButton(e, component) {
+		updateUserInput(e, component) {
 			if (e && component) {
-				let buttonParent_id = component.$el.getAttribute('data-parent');
-				if(buttonParent_id) {
-					let chatbox = this.chatboxes.find((x) => x.id == buttonParent_id);
+				let inputParent_id = component.$el.getAttribute('data-parent');
+				if(inputParent_id) {
+					let chatbox = this.chatboxes.find((x) => x.id == inputParent_id);
 					if(chatbox) this.updateChatbox(chatbox);
 				}
 			}
@@ -635,7 +747,7 @@ export default {
 					if (el.getAttribute('data-type') == 'button') {
 						let buttonParent = this.chatboxes.find((x) => x.id == el.getAttribute('data-parent'));
 						if(buttonParent) {
-							let chatboxButton = buttonParent.buttons.find((b) => b.id == el.parentNode.getAttribute('data-id'));
+							let chatboxButton = buttonParent.metadata.buttons.find((b) => b.id == el.parentNode.getAttribute('data-id'));
 							if(chatboxButton) {
 								data = chatboxButton;
 								data.target = this.newTargetMoveable;
@@ -718,8 +830,8 @@ export default {
 					let leaderline = chatbox.leaderline;
 					if (leaderline) leaderline.position();
 					//buttons
-					if (chatbox.buttons) {
-						chatbox.buttons.forEach((b) => {
+					if (chatbox.metadata && chatbox.metadata.buttons) {
+						chatbox.metadata.buttons.forEach((b) => {
 							if (b.leaderline && typeof b.leaderline.position === "function") b.leaderline.position();
 						});
 					}
@@ -739,8 +851,8 @@ export default {
 
 				//connected buttons
 				this.chatboxes.forEach((cb) => {
-					if (cb.buttons && !cb.removed) {
-						cb.buttons.forEach((b) => {
+					if (cb.metadata && cb.metadata.buttons && !cb.removed) {
+						cb.metadata.buttons.forEach((b) => {
 							if (b.target == el.getAttribute('data-id') && b.leaderline && typeof b.leaderline.position === "function") b.leaderline.position();
 						});
 					}

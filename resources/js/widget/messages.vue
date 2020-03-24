@@ -5,7 +5,7 @@
                 {{ $root.widget.welcome_message }}
             </small>
             <div v-for="grouped_message in grouped_messages" class="snapturebox-w-100 snapturebox-message-group">
-                <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': message.user.id == $root.auth.id}">
+                <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': message.user.id == $root.auth.id}" v-if="message.type != 'action'">
                     <div class="snapturebox-media snapturebox-mb-1 snapturebox-text-left snapturebox-d-inline-flex">
                         <img :src="message.user.profile_image ? $root.API + message.user.profile_image : 'https://via.placeholder.com/34X34'" width="34" class="snapturebox-rounded-circle" alt="image" />
                         <div class="snapturebox-media-body snapturebox-pl-2">
@@ -62,7 +62,7 @@
                                 </span>
                                 <template v-else>
                                     <p class="snapturebox-mb-0">{{ message.message }}</p>
-                                    <button class="snapturebox-mt-2 snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-badge-pill" v-for="button in message.buttons">{{ button.text }}</button>
+                                    <button class="snapturebox-mt-2 snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-badge-pill" v-for="button in message.buttons" @click="$parent.sendMessage({message: button.id}, 'action')">{{ button.text }}</button>
                                 </template>
                             </div>
                         </div>
