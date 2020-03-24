@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Convo;
 use App\Models\Message;
+use App\Models\Chatbot;
 use File;
 use Nesk\Puphpeteer\Puppeteer;
 use BotMan\BotMan\BotMan;
@@ -134,7 +135,7 @@ class MessageController extends Controller
             //    "token" => "TOKEN"
             // ]
         ];
-
+    
         $chatbot = $request->widget->defaultChatbot;
         if($chatbot) :
             /*if(!$request->chatbox_id) :

@@ -324,7 +324,7 @@ export default {
         selectedMedia: null,
         rightContent: 'messages', //form
         selectedMessage: {},
-        messages: []
+        messages: [],
     }),
     computed: {
         customerImagesCount() {
@@ -412,16 +412,18 @@ export default {
         callChatbot() {
             let bodyFormData = new FormData();
             bodyFormData.set('message', 'stop');
-            bodyFormData.set('userId', this.$root.auth.id);
-            bodyFormData.set('driver', 'web');
-            bodyFormData.set('interactive', 0);
             SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
-                let timeout = 0;
-                for(let message of response.data.messages) {
-                    await this.sendChatbotMessage(message, timeout);
-                    timeout = 2500;
-                }
+                this.loopChatbotMessages(response.data.messages);
             });
+        },
+
+        async loopChatbotMessages(messages) {
+            let timeout = 0;
+            for(let message of messages) {
+                await this.sendChatbotMessage(message, timeout);
+                timeout = 1000;
+            }
+            console.log('ready to listen');
         },
 
         async sendChatbotMessage(message, timeout = 0) {
@@ -429,15 +431,26 @@ export default {
                 // if type is action
                 if(message.additionalParameters.type == 'action') {
                     switch(message.additionalParameters.action) {
-                        case 'open_url' :
+                        case 'open_url':
                             this.openURL(message.text);
                             break;
 
-                        case 'download_file' :
+                        case 'download_file':
                             this.openURL(message.text);
                             break;
 
-                        case 'trigger_chatbot' :
+                        case 'trigger_chatbot':
+                            //this.bot_id = message.text;
+                            /*let bodyFormData = new FormData();
+                            bodyFormData.set('bot_id', this.bot_id);
+                            SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
+                                let timeout = 0;
+                                for(let message of response.data.messages) {
+                                    await this.sendChatbotMessage(message, timeout);
+                                    timeout = 2500;
+                                }
+                            });*/
+                            //this.callChatbot(false);
                             break;
                     }
                     return resolve();
@@ -494,17 +507,14 @@ export default {
             this.$refs['messages'].scrollDown();
             let bodyFormData = new FormData();
             bodyFormData.set('message', message.message);
-            bodyFormData.set('userId', this.$root.auth.id);
+            /*bodyFormData.set('userId', this.$root.auth.id);
             bodyFormData.set('driver', 'web');
             bodyFormData.set('interactive', 0);
             bodyFormData.set('attachment', 0);
+            bodyFormData.set('bot_id', this.bot_id);*/
             SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
-                let timeout = 0;
-                for(let message of response.data.messages) {
-                    await this.sendChatbotMessage(message, timeout);
-                    timeout = 2500;
-                }
-            })
+                this.loopChatbotMessages(response.data.messages);
+            });
             /*if (!this.$root.auth) {
                 this.$root.toggleModal('#loginModal', 'show');
             } else {

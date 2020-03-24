@@ -7,6 +7,7 @@ use BotMan\BotMan\Messages\Incoming\IncomingMessage;
 use App\Models\Chatbot;
 use App\Models\Chatbox;
 use Validator;
+use Illuminate\Support\Facades\Log;
 
 class OnboardingConversation extends Conversation
 {
@@ -58,7 +59,7 @@ class OnboardingConversation extends Conversation
     	switch($chatbox->type) :
     		// Buttons
     		case 'buttons':
-    			// ask which button is clicked
+    			// check which button is clicked
 				$this->ask($this->parseMessage($chatbox->message),
 				function(Answer $answer) use ($chatbox) {
 					$button = $this->getButtonFromAnswer($chatbox->metadata->buttons, $answer);
@@ -112,12 +113,18 @@ class OnboardingConversation extends Conversation
     					break;
 
     				case 'trigger_chatbot':
-	    				$message = $chatbox->metadata->bot_id;
+	    				$nextChatbot = Chatbot::where('bot_id', $chatbox->metadata->bot_id)->first();
+	    				if($nextChatbot && auth()->user()->can('show', $nextChatbot)) :
+	    					$this->chatbot = $nextChatbot;
+	    					$this->run();
+	    				endif;
     					break;
     			endswitch;
 
-    			if($message) $this->say($message, ['type' => 'action', 'action' => $chatbox->metadata->action]);
-				$this->getNext($chatbox);
+    			if($message) :
+    				$this->say($message, ['type' => 'action', 'action' => $chatbox->metadata->action]);
+	    			$this->getNext($chatbox);
+    			endif;
     			break;
 
 
@@ -128,36 +135,6 @@ class OnboardingConversation extends Conversation
 
     	endswitch;
 
-
-
-
-
-
-		/*if (isset($this->chatbot->chatboxes[$index])) :
-	    	for(; $index <= count($this->chatbot->chatboxes) - 1; $index++) :
-				$chatbox = $this->chatbot->chatboxes[$index];
-	    		if($chatbox->input_type) :
-	    			$this->ask($chatbox->message, function(Answer $answer) use ($index, $chatbox) {
-	    				// validate answer
-	    				$answer = $answer->getText();
-	    				$validator = false;
-	    				switch($chatbox->input_type) :
-	    					case 'email':
-	    						$validator = Validator::make(['email' => $answer], ['email' => 'required|email']);
-	    						if($validator->fails()) :
-	    							$this->say("Sorry, that doesn't seem to be a valid " . $chatbox->input_type);
-	    							$this->repeat();
-	    						endif;
-	    						break;
-	    				endswitch;
-	    				$this->init($index+1);
-	    			});
-			        break;
-	    		endif;
-	    		$this->say($chatbox->message);
-	    	endfor;
-	    endif;*/
-		
     }
 
     public function run()
