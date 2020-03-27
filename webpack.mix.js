@@ -73,42 +73,49 @@ else if (argv.indexOf('--slek') > -1) {
     mix
         .sass('resources/sass/slek.scss', 'public/css')
         .js('resources/js/slek.js', 'public/js')
-        .version()
-        .mergeManifest();
-    
-    mix.browserSync({
-        proxy: 'https://snapturebox.app',
-        host: 'snapturebox.app',
-        open: false,
-        port: 8000,
-        watch: true,
-        notify: false,
-        https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
-        }
-    });
+        .browserSync({
+            proxy: 'https://snapturebox.app',
+            host: 'snapturebox.app',
+            open: false,
+            port: 8000,
+            watch: true,
+            notify: false,
+            https: {
+                key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+            }
+        });
 }
 
 else if (argv.indexOf('--widget') > -1) { 
     console.log('Running widget js...');
     mix
-        .js('resources/js/widget/widget.js', 'public/js')
-        .version()
-        .mergeManifest();
-    
-    mix.browserSync({
-        proxy: 'https://snapturebox.app',
-        host: 'snapturebox.app',
-        open: false,
-        port: 8000,
-        watch: true,
-        notify: false,
-        https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
-        }
-    });
+        .js('resources/js/widget/widget.js', 'public/js/widget')
+        .webpackConfig({
+            output: {
+                chunkFilename: `js/widget/chunks/[name]${timestamp}.js`
+            },
+            optimization: {
+                splitChunks: {
+                    chunks: 'all',
+                    cacheGroups: {
+                        vendors: false
+                    }
+                }
+            }
+        })
+        .browserSync({
+            proxy: 'https://snapturebox.app',
+            host: 'snapturebox.app',
+            open: false,
+            port: 8000,
+            watch: true,
+            notify: false,
+            https: {
+                key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+            }
+        });
 }
 
 else if (argv.indexOf('--admin') > -1) { 

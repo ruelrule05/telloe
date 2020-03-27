@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import ChevronDown from '../icons/chevron-down';
-import Search from '../icons/search';
+import ChevronDown from '../../icons/chevron-down';
+import Search from '../../icons/search';
 export default {
 	components: {ChevronDown, Search},
 

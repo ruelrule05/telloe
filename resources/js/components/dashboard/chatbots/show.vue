@@ -13,7 +13,7 @@
 
 				<div class="chatbox moveable border bg-white shadow-sm rounded" :data-top="draggable.top" :data-left="draggable.left" :id="'draggable-' + draggable.id" :data-start="draggable.is_start" :data-id="draggable.id" :data-target="draggable.target" v-for="draggable in chatboxes" v-if="!draggable.removed">
 					<template v-if="draggable.id != 'start'">
-						<div v-if="!draggable.target && draggable.type != 'buttons'" class="moveable line-creator"></div>
+						<div v-if="!draggable.target && draggable.type != 'buttons' && draggable.metadata.action != 'trigger_chatbot'" class="moveable line-creator"></div>
 						<div class="chatbox-controls">
 							<button v-if="draggable.type == 'buttons'" class="btn btn-sm p-0 shadow-none" @click="addButton(draggable)"><plus-icon height="15" width="15"></plus-icon></button>
 							<button class="btn btn-sm p-0 shadow-none" @click="deleteChatbox(draggable.id)"><trash-icon height="15" width="15"></trash-icon></button>
@@ -84,6 +84,11 @@
 										<!-- trigger chatbot -->
 										<div v-else-if="draggable.metadata.action == 'trigger_chatbot'" class="mt-1">
 											<vue-select :value="{text: draggable.metadata.bot_name, value: draggable.metadata.bot_id}" @change="updateTriggerChatbot($event, draggable)" :options="filteredChatbots" button_class="btn-sm" dropdown_class="w-100" placeholder="Select chatbot"></vue-select>
+										</div>
+
+										<!-- open panel -->
+										<div v-else-if="draggable.metadata.action == 'open_panel'" class="mt-1">
+											<vue-select :value="{text: draggable.metadata.panel, value: draggable.metadata.panel}" @change="updateOpenPanel($event, draggable)" :options="panels" button_class="btn-sm" dropdown_class="w-100" placeholder="Select panel"></vue-select>
 										</div>
 									</div>
 								</div>
@@ -222,6 +227,28 @@ export default {
 				text: 'Trigger Chatbot',
 				value: 'trigger_chatbot'
 			},
+			{
+				text: 'Open panel',
+				value: 'open_panel'
+			},
+		],
+		panels: [
+			{
+				text: 'Inquiry form',
+				value: 'inquiry_form'
+			},
+			{
+				text: 'Booking',
+				value: 'booking'
+			},
+			{
+				text: 'Send video message',
+				value: 'send_video'
+			},
+			{
+				text: 'Send audio message',
+				value: 'send_audio'
+			},
 		],
 		scale: 1,
 	}),
@@ -257,6 +284,11 @@ export default {
 	mounted() {},
 
 	methods: {
+		updateOpenPanel(e, chatbox) {
+			this.$set(chatbox.metadata, 'panel', e.text);
+			this.updateChatbox(chatbox);
+		},
+
 		updateTriggerChatbot(e, chatbox) {
 			this.$set(chatbox.metadata, 'bot_name', e.text);
 			this.$set(chatbox.metadata, 'bot_id', e.value);

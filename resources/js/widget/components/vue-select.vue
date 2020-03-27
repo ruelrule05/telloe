@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import ChevronDown from '../icons/chevron-down.vue';
-import Close from '../icons/close.vue';
+import ChevronDown from '../../icons/chevron-down.vue';
+import Close from '../../icons/close.vue';
 export default {
     components: {ChevronDown, Close},
     props: {

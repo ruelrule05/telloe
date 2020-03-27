@@ -11,12 +11,22 @@ use App\Models\Chatbot;
 use Nesk\Puphpeteer\Puppeteer;
 use Nesk\Rialto\Data\JsFunction;
 use DB;
+use Response;
+use File;
 
 class WidgetController extends Controller
 {
     public function __construct()
     {
         auth()->setDefaultDriver('api');
+    }
+
+    public function script()
+    {
+        $script = File::get(public_path().'/js/widget/widget.js');
+        $response = Response::make($script);
+        $response->header('Content-Type', "text/js");
+        return $response;
     }
 
     public function show(Request $request)

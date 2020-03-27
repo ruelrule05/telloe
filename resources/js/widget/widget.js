@@ -56,8 +56,8 @@ import './widget.scss';
 //import Toasted from 'vue-toasted';
 
 SBVue.component('widget', require('./widget.vue').default);
-SBVue.component('vue-select', require('./vue-select.vue').default);
-SBVue.component('vue-button', require('./vue-button.vue').default);
+SBVue.component('vue-select', require('./components/vue-select.vue').default);
+SBVue.component('vue-button', require('./components/vue-button.vue').default);
 SBVue.component('vue-form-validate', require('./../components/vue-form-validate.vue').default);
 //SBVue.use(VueMasonry);
 

@@ -47,9 +47,9 @@ var isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(customParseFormat);
 dayjs.extend(isSameOrAfter);
 import DatePicker from 'v-calendar/lib/components/date-picker.umd';
-import CalendarIcon from '../icons/calendar';
-import CloseIcon from '../icons/close';
-import CheckmarkCircleIcon from '../icons/checkmark-circle';
+import CalendarIcon from '../../icons/calendar';
+import CloseIcon from '../../icons/close';
+import CheckmarkCircleIcon from '../../icons/checkmark-circle';
 export default {
     components: {DatePicker, CalendarIcon, CloseIcon, CheckmarkCircleIcon},
     props: {

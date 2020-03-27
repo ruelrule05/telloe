@@ -43,15 +43,15 @@ class OnboardingConversation extends Conversation
 
     public function getButtonFromAnswer($buttons, Answer $answer)
     {
-    	$button = false;
+    	$buttonFound = false;
     	$answer = $answer->getText();
     	foreach($buttons as $button) :
 		    if ($button->id == $answer) :
-		        $button = $button;
+		        $buttonFound = $button;
 		        break;
 		    endif;
 		endforeach;
-		return $button;
+		return $buttonFound;
     }
 
     public function init(Chatbox $chatbox)
@@ -75,8 +75,10 @@ class OnboardingConversation extends Conversation
     		// User input
     		case 'user_input':
 	    		if($chatbox->input_type) :
+	    			$additionalParams = [];
+	    			if($chatbox->input_type == 'options') $additionalParams = ['type' => 'options', 'options' => $chatbox->metadata->options];
 					$this->ask($chatbox->message, function(Answer $answer) use ($chatbox) {
-						$answer = $answer->getText();
+						$answerText = $answer->getText();
 						$valid = false;
 						switch($chatbox->input_type) :
 							case 'text' :
@@ -84,7 +86,19 @@ class OnboardingConversation extends Conversation
 								break;
 
 							case 'email':
-								$valid = !Validator::make(['email' => $answer], ['email' => 'required|email'])->fails();
+								$valid = !Validator::make(['email' => $answerText], ['email' => 'required|email'])->fails();
+								break;
+
+							case 'phone' :
+								$valid = true;
+								break;
+
+							case 'options' :
+								$option = $this->getButtonFromAnswer($chatbox->metadata->options, $answer);
+								if($option) :
+									$valid = true;
+									$answerText = $option->text;
+								endif;
 								break;
 						endswitch;
 
@@ -92,10 +106,12 @@ class OnboardingConversation extends Conversation
 							$this->say("Sorry, that doesn't seem to be a valid " . $chatbox->input_type);
 							$this->repeat();
 						else :
-							if($chatbox->variable) $this->data[$chatbox->variable] = $answer;
+							if($chatbox->variable) $this->data[$chatbox->variable] = $answerText;
 							$this->getNext($chatbox);
 						endif;
-					});
+					},
+					$additionalParams
+				);
 				endif;
     			break;
 
