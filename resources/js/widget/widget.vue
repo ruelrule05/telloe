@@ -132,7 +132,18 @@ export default {
         selectedMedia: null,
         rightContent: 'messages', //form
         selectedMessage: {},
-        messages: [],
+        messages: [
+            {
+                id: 1,
+                timestamp: 1,
+                user: {id: 1},
+                message: {
+                    source: '/notifications/new_message.mp3',
+                    duration: '00:12',
+                },
+                type: 'audio',
+            }
+        ],
     }),
     computed: {
         customerImagesCount() {
@@ -211,7 +222,7 @@ export default {
     },
     methods: {
         sendAudio(audio) {
-            this.sendMessage(audio, 'audio');
+            this.sendMessage({message: audio}, 'audio');
         },
         
         openPanel(panel) {

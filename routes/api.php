@@ -18,6 +18,7 @@ Route::group([
 		'namespace' => 'API' 
 ], function(){
 	Route::get('js/widget.js', 'WidgetController@script');
+	Route::get('media/{media}', 'WidgetController@getMedia')->where('media', '(.*)');
 	Route::group([
 		'middleware' => ['api', 'ajax', 'widget'],
  		'prefix' => 'ajax',

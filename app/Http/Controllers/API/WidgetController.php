@@ -68,4 +68,14 @@ class WidgetController extends Controller
         return response()->json($images);
     }
 
+    public function getMedia($media)
+    {
+        $file = public_path().'/'.$media;
+        if(!File::exists($file)) return abort(404);
+        
+        $media = File::get($file);
+        $response = Response::make($media);
+        return $media;
+    }
+
 }

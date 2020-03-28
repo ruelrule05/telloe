@@ -108,7 +108,7 @@ export default {
 		    //backend: 'MediaElement',
 		    height: 200,
 		    barWidth: 3,
-    		barHeight: 2,
+    		barHeight: 1,
     		barRadius: 3,
   			interact: true,
   			cursorWidth: 1,
@@ -158,7 +158,7 @@ export default {
 			    });
 			    let audio = {
 			    	source: file,
-			    	duration: this.wavesurfer.getDuration()
+			    	duration: this.secondsToDuration(this.wavesurfer.getDuration(), 14, 5)
 			    };
 			  	this.$emit('submit', audio);
 			  	this.reset();
@@ -179,10 +179,10 @@ export default {
 			}
 		},
 
-		secondsToDuration(seconds) {
+		secondsToDuration(seconds, limit = 11, end = 8) {
 			let date = new Date(0);
 			date.setSeconds(seconds);
-			let timeString = date.toISOString().substr(11, 8);
+			let timeString = date.toISOString().substr(limit, end);
 			return timeString;
 		},
 

@@ -48,9 +48,9 @@
                             </p>
 
                             <!-- Audio -->
-                            <p class="snapturebox-mb-0" v-else-if="message.type == 'audio'">
-                                {{ message.message }}
-                            </p>
+                            <div v-else-if="message.type == 'audio'">
+                                <waveplayer :theme="message.user.id == $root.auth.id ? 'light': ''" :source="message.message.source" :duration="message.message.duration"></waveplayer>
+                            </div>
 
                             <!-- File -->
                             <p class="snapturebox-mb-0" v-else-if="message.type == 'file'">
@@ -145,8 +145,9 @@ import FileArchiveIcon from '../../icons/file-archive';
 import DocumentIcon from '../../icons/document';
 import ArrowCircleDownIcon from '../../icons/arrow-circle-down';
 import MicrophoneIcon from '../../icons/microphone';
+import Waveplayer from './waveplayer';
 export default {
-    components: {VEmojiPicker, SmileIcon, VideoIcon, SendIcon, CameraIcon, AddNoteIcon, ArrowCircleDownIcon, FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, MicrophoneIcon},
+    components: {VEmojiPicker, SmileIcon, VideoIcon, SendIcon, CameraIcon, AddNoteIcon, ArrowCircleDownIcon, FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, MicrophoneIcon, Waveplayer},
     props: {
         messages: {
             type: Array,
