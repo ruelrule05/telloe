@@ -127,7 +127,7 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        leftContent: 'audio-recorder', //inquiries, book
+        leftContent: 'video-recorder', //inquiries, book
         itemType: '',
         selectedMedia: null,
         rightContent: 'messages', //form

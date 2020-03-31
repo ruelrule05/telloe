@@ -21,7 +21,7 @@
 								<span class="snapturebox-chat-status snapturebox-bg-danger">&nbsp;</span>&nbsp;
 								<small class="snapturebox-text-secondary">Rec</small>
 							</template>
-							<template v-else-if="recorderStatus == 'stopped'">
+							<template v-else-if="recorderStatus == 'paused'">
 								<span class="snapturebox-chat-status snapturebox-bg-gray">&nbsp;</span>&nbsp;
 								<small class="snapturebox-text-secondary">Paused</small>
 							</template>
@@ -32,7 +32,7 @@
 				<!-- wavesurfer -->
 				<div class="snapturebox-position-absolute-center snapturebox-w-100 snapturebox-wavesurfer-container">
 					<div id="wavesurfer"></div>
-					<div v-if="hasRecorded && recorderStatus == 'stopped'" class="snapturebox-player-control snapturebox-position-absolute-center">
+					<div v-if="hasRecorded && recorderStatus == 'paused'" class="snapturebox-player-control snapturebox-position-absolute-center">
 						<button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-white snapturebox-border-0 snapturebox-badge-pill snapturebox-py-2" @click="togglePlayer">
 							<play-icon width="15" height="15" v-if="playerStatus == 'paused'"></play-icon>
 							<pause-icon width="15" height="15" v-else-if="playerStatus == 'playing'"></pause-icon>
@@ -51,14 +51,14 @@
 					</div>
 
 					<div class="snapturebox-flex-grow-1">
-						<button v-if="recorderStatus == 'recording'" class="snapturebox-audio-control snapturebox-audio-pause" @click="stopRecord"></button>
+						<button v-if="recorderStatus == 'recording'" class="snapturebox-audio-control snapturebox-audio-pause" @click="pauseRecord"></button>
 						<button v-else class="snapturebox-audio-control snapturebox-audio-record" @click="startRecord">
 							<microphone-icon fill="white"></microphone-icon>
 						</button>
 					</div>
 
 					<div class="snapturebox-w-25">
-						<button @click="submit" v-if="hasRecorded && recorderStatus == 'stopped'" class="snapturebox-btn snapturebox-font-weight-bold snapturebox-ml-auto">Send</button>
+						<button @click="submit" v-if="hasRecorded && recorderStatus == 'paused'" class="snapturebox-btn snapturebox-font-weight-bold snapturebox-ml-auto">Send</button>
 					</div>
 				</div>
 			</div>
@@ -68,7 +68,6 @@
 
 <script>
 import dayjs from 'dayjs';
-import RecordRTC from 'recordrtc';
 import WaveSurfer from 'wavesurfer.js';
 import WaveSurferMicrophone from '../plugins/wavesurfer.microphone.min.js';
 import WaveSurferCursor from '../plugins/wavesurfer.cursor.min.js';
@@ -98,7 +97,11 @@ export default {
 	},
 
 	beforeDestroy() {
-		this.audioRecorder.destroy();
+		if (this.streams) {
+			this.streams.getTracks().forEach(function(track) {
+				track.stop();
+			});
+		}
 	},
 
 	mounted() {
@@ -148,6 +151,7 @@ export default {
 			this.timer = null;
 			this.wavesurfer.setCursorColor('transparent');
 			this.wavesurfer.empty();
+			this.audioRecorder.stop();
 		},
 
 		submit() {
@@ -186,22 +190,20 @@ export default {
 			return timeString;
 		},
 
-		stopRecord() {
+		pauseRecord() {
 			if(this.audioRecorder) {
 				clearInterval(this.timer);
-				this.recorderStatus = 'stopped';
-				this.audioRecorder.stopRecording(() => {
-				    let newBlob = this.audioRecorder.getBlob();
-				    this.blobs.push(newBlob);
-				    let blob = new Blob(this.blobs, {
-				        type: 'audio/mp3'
-				    });
-					this.wavesurfer.microphone.stop();
-					this.wavesurfer.setCursorColor('#aaa');
-					this.wavesurfer.setProgressColor('#6e82ea');
-					this.wavesurfer.setWaveColor('#b5bce5');
-					this.wavesurfer.loadBlob(blob);
-				});
+				this.recorderStatus = 'paused';
+				this.audioRecorder.requestData();
+				this.audioRecorder.pause();
+			    let blob = new Blob(this.blobs, {
+			        type: 'audio/mp3'
+			    });
+				this.wavesurfer.microphone.stop();
+				this.wavesurfer.setCursorColor('#aaa');
+				this.wavesurfer.setProgressColor('#6e82ea');
+				this.wavesurfer.setWaveColor('#b5bce5');
+				this.wavesurfer.loadBlob(blob);
 			}
 		},
 
@@ -210,9 +212,13 @@ export default {
 				this.timer = setInterval(() => {
 					this.duration += 0.01;
 				}, 10)
+				if(this.hasRecorded) {
+					this.audioRecorder.resume();
+				} else {
+					this.audioRecorder.start(30);
+				}
 				this.hasRecorded = true;
 				this.recorderStatus = 'recording';
-				this.audioRecorder.startRecording();
 				this.wavesurfer.setCursorColor('transparent');
 				this.wavesurfer.setProgressColor('#6e82ea');
 				this.wavesurfer.setWaveColor('#6e82ea');
@@ -225,18 +231,9 @@ export default {
 				.getUserMedia({audio: true})
 				.then((streams) => {
 					this.streams = streams;
-					this.audioRecorder = RecordRTC(streams, {
-						type: 'audio',
-						numberOfAudioChannels: 2,
-						timeSlice: 100,
-						/*onTimeStamp: (timestamp, timestamps) => {
-			                let duration = (new Date().getTime() - timestamps[0]) / 1000;
-			                if(duration <= 0) return;
-			                if(this.recorderStatus == 'recording') this.duration += 0.1;
-			            },
-			            ondataavailable: (blob) => {
-			            }*/
-					});
+
+					this.audioRecorder = new MediaRecorder(streams);
+    				this.audioRecorder.ondataavailable = e => this.blobs.push(e.data);
 					this.micReady = true;
 					/*this.$refs['audioFile'].muted = true;
 					this.$refs['audioFile'].volume = 0;

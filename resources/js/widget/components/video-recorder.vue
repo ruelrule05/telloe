@@ -7,16 +7,16 @@
 
 		<div class="snapturebox-d-flex snapturebox-flex-column snapturebox-h-100">
 			<div class="snapturebox-d-flex snapturebox-w-100" style="z-index: 10">
-				<button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-ml-auto snapturebox-shadow-none" @click="closeCamera();fileOutput = null;$parent.leftContent = '';">
+				<button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-ml-auto snapturebox-shadow-none" @click="$parent.leftContent = '';">
 					<close-icon height="36" width="36"></close-icon>
 				</button>
 			</div>
 
 			<!-- video recorder live preview -->
 			<div class="snapturebox-flex-grow-1 snapturebox-h-100 snapturebox-d-flex snapturebox-flex-column">
-				<div class="snapturebox-video-container">
-					<video :hidden="fileOutput || !cameraReady" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100 snapturebox-bg-black"></video>
-					<video v-if="fileOutput" class="snapturebox-w-100 snapturebox-h-100 snapturebox-bg-black" :src="fileOutput" style="outline: 0" playsinline controls></video>
+				<div class="snapturebox-video-container snapturebox-position-relative">
+					<video ref="videoPreview" :hidden="!cameraReady || isRecording || !hasRecorded" class="snapturebox-w-100 snapturebox-h-100 snapturebox-bg-black snapturebox-position-absolute snapturebox-video-preview snapturebox-outline-0" playsinline controls></video>
+					<video :hidden="!cameraReady" ref="videoFile" class="snapturebox-w-100 snapturebox-h-100 snapturebox-bg-black"></video>
 				</div>
 
 				<div class="snapturebox-flex-grow-1 snapturebox-w-100 snapturebox-position-relative snapturebox-text-center">
@@ -28,11 +28,18 @@
 								<small class="snapturebox-text-secondary">Rec</small>
 							</div>
 						</div>
+
 						<div class="snapturebox-d-flex snapturebox-justify-content-between snapturebox-align-items-center snapturebox-text-center">
-							<div class="">dsds</div>
-							<button v-if="isRecording" class="snapturebox-video-control snapturebox-video-pause" @click="pauseRecord"></button>
-							<button v-else class="snapturebox-video-control snapturebox-video-record" @click="startRecord"></button>
-							<div class="snapturebox">dsds</div>
+							<div class="snapturebox-w-25">
+								<button v-if="hasRecorded" @click="$parent.leftContent = '';" class="snapturebox-btn snapturebox-font-weight-bold snapturebox-mr-auto">Cancel</button>
+							</div>
+							<div class="snapturebox-flex-grow-1">
+								<button v-if="isRecording" class="snapturebox-video-control snapturebox-video-pause" @click="pauseRecord"></button>
+								<button v-else class="snapturebox-video-control snapturebox-video-record" @click="startRecord"></button>
+							</div>
+							<div class="snapturebox-w-25">
+								<button @click="submit" v-if="hasRecorded && recorderStatus == 'paused'" class="snapturebox-btn snapturebox-font-weight-bold snapturebox-ml-auto">Send</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -41,19 +48,12 @@
 
 		<div v-if="hasFlash" class="snapturebox-camera-flash"></div>
 
-		<div v-if="fileOutput" class="snapturebox-position-absolute snapturebox-p-3 snapturebox-d-flex snapturebox-w-100" style="right: 0; bottom: 0">
-			<button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-light snapturebox-shadow-none snapturebox-float-right" @click="fileOutput = null">
-				Retake
-			</button>
-			<button type="button" class="snapturebox-ml-auto snapturebox-btn snapturebox-btn-sm snapturebox-btn-primary snapturebox-shadow-none" @click="submit()">
-				Add
-			</button>
-		</div>
+		
 	</div>
 </template>
 
 <script>
-import RecordRTC from 'recordrtc';
+import dayjs from 'dayjs';
 import CameraIcon from '../../icons/camera.vue';
 import CloseIcon from '../../icons/close.vue';
 import PauseAltIcon from '../../icons/pause-alt';
@@ -71,17 +71,25 @@ export default {
 		shutter: null,
 		hasFlash: false, //false
 		blobs: [],
-		duration: 0
+		duration: 0,
+		timer: null,
+		hasRecorded: false,
+		recorderStatus: '',
 	}),
 
 	created() {
 		this.shutter = new Audio(`${this.$root.API}/notifications/shutter.mp3`);
 		this.shutter.load();
 	},
-	
+
 	beforeDestroy() {
-		this.videoRecorder.destroy();
+		if (this.streams) {
+			this.streams.getTracks().forEach(function(track) {
+				track.stop();
+			});
+		}
 	},
+
 
 	mounted() {
 		this.initCamera();
@@ -90,6 +98,14 @@ export default {
 	computed: {},
 
 	methods: {
+		reset() {
+			this.blobs = [];
+			this.duration = 0;
+			this.hasRecorded = false;
+			this.timer = null;
+			this.recorderStatus = '';
+		},
+
 		secondsToDuration(seconds) {
 			let date = new Date(0);
 			date.setSeconds(seconds);
@@ -98,27 +114,66 @@ export default {
 		},
 
 		submit() {
-			this.$emit('submit', this.fileOutput);
-			this.$root.toggleModal('#addMediaModal', 'hide');
-			this.closeCamera();
-			this.fileOutput = null;
+			this.videoRecorder.stop();
+			if(this.blobs.length > 0) {
+                const timestamp = dayjs().valueOf();
+			    let file = new File(this.blobs, timestamp, {
+			        type: this.blobs[0].type
+			    });
+			    let duration = '';
+			    this.$refs['videoPreview'].play().then(() => {
+			    	this.$refs['videoPreview'].currentTime = 10e99;
+			        this.$refs['videoPreview'].onseeked = () => {
+			          	this.$refs['videoPreview'].currentTime = 0;
+			          	this.$refs['videoPreview'].pause();
+			          	this.$refs['videoPreview'].onseeked = null;
+			          	duration = this.$refs['videoPreview'].duration;
+					    let video = {
+					    	source: file,
+					    	duration: duration
+					    };
+					    console.log(video);
+					  	this.$emit('submit', video);
+			        }
+			    });
+			  	this.reset();
+		  	}
 		},
 
 		pauseRecord() {
 			if(this.videoRecorder) {
+				clearInterval(this.timer);
+				this.recorderStatus = 'paused';
 				this.isRecording = false;
-				this.videoRecorder.pauseRecording();
-			    let blob = new File(this.blobs, 'video.webm', {
-			        type: 'video/webm'
+				this.videoRecorder.pause();
+				this.videoRecorder.requestData();
+		    	let blob = new Blob(this.blobs);
+		    	this.$refs['videoPreview'].src = URL.createObjectURL(blob);
+		    	this.$refs['videoPreview'].load();
+			    this.$refs['videoPreview'].play().then(() => {
+			    	this.$refs['videoPreview'].currentTime = 10e99;
+			        this.$refs['videoPreview'].onseeked = () => {
+			          this.$refs['videoPreview'].currentTime = 0;
+			          this.$refs['videoPreview'].pause();
+			          this.$refs['videoPreview'].onseeked = null;
+			        }
 			    });
-			    this.fileOutput = URL.createObjectURL(blob);
 			}
 		},
 
 		startRecord() {
 			if(this.videoRecorder) {
+				this.timer = setInterval(() => {
+					this.duration += 0.01;
+				}, 10)
 				this.isRecording = true;
-				this.videoRecorder.startRecording();
+				this.recorderStatus = 'recording';
+				if(this.hasRecorded) {
+					this.videoRecorder.resume();
+				} else {
+					this.videoRecorder.start(30);
+				}
+				this.hasRecorded = true;
 			}
 		},
 
@@ -167,22 +222,20 @@ export default {
 				.getUserMedia({audio: true, video: true})
 				.then((streams) => {
 					this.streams = streams;
-					this.videoRecorder = RecordRTC(streams, {
+					/*this.videoRecorder = RecordRTC(streams, {
 						type: 'video',
-						timeSlice: 1000,
-						onTimeStamp: (timestamp, timestamps) => {
-			                let duration = (new Date().getTime() - timestamps[0]) / 1000;
-			                if(duration < 0) return;
-			                this.duration = duration;
-			            },
-						ondataavailable: (blob) => {
-					        this.blobs.push(blob);
-					    }
-					});
+    					disableLogs: true,
+    					timeSlice: 100,
+    					ondataavailable: (blob) => {
+    						this.blobs.push(blob);
+    					}
+					});*/
+					this.videoRecorder = new MediaRecorder(streams);
+    				this.videoRecorder.ondataavailable = e => this.blobs.push(e.data);
     				this.videoRecorder.camera = streams;
 					this.$refs['videoFile'].muted = true;
 					this.$refs['videoFile'].volume = 0;
-					this.$refs['videoFile'].srcObject = new MediaStream(streams.getVideoTracks());
+					this.$refs['videoFile'].srcObject = streams;
 					this.$refs['videoFile'].play();
 					this.$refs['videoFile'].onplaying = () => {
 						this.cameraReady = true;
@@ -204,6 +257,9 @@ export default {
 }
 .video-recorder {
 	width: 480px;
+}
+.video-preview{
+	z-index: 2;
 }
 .video-control{
 	border: 0 !important;

@@ -26,7 +26,7 @@
 					    	<a class="dropdown-item" href="#" @click.prevent="logout">Logout</a>
 						</div>
 					</div>
-					<h1 class="h6 mb-4">@{{ auth.full_name }}</h1>
+					<h1 class="h6 mb-4 font-heading">@{{ auth.full_name }}</h1>
 					<div class="mb-2">
 						<div class="d-inline-block" v-tooltip.right="'Notifications'">
 							<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
@@ -40,8 +40,8 @@
 					</div>
 
 					<div class="py-2">
-						<div class="d-inline-block" v-tooltip.right="'Inquiries'">
-							<router-link to="/dashboard/inquiries" exact><chat-icon height="26" width="26"></chat-icon></router-link>
+						<div class="d-inline-block" v-tooltip.right="'Messages'">
+							<router-link to="/dashboard/messages" exact><chat-icon height="26" width="26"></chat-icon></router-link>
 						</div>
 					</div>
 

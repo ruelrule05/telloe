@@ -8,15 +8,15 @@ use Carbon\Carbon;
 class Message extends Model
 {
     //
-    protected $fillable = ['convo_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata'];
-    protected $appends = ['timestamp'];
+    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
+        'is_read' => 'boolean',
     ];
 
-    public function convo()
+    public function conversation()
     {
-    	return $this->belongsTo(Convo::class);
+    	return $this->belongsTo(Conversation::class);
     }
 
     public function user()
@@ -27,11 +27,6 @@ class Message extends Model
     public function getCreatedAtAttribute($value)
     {
     	return Carbon::parse($value)->format('h:iA \\o\\n D');
-    }
-
-    public function getTimestampAttribute($value)
-    {
-        return Carbon::parse($this->attributes['created_at'])->timestamp;
     }
 
     public function getSourceAttribute($value)

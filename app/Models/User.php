@@ -70,12 +70,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function convoUsers()
-    {
-        return $this->hasMany(ConvoUser::class);
-    }
-
-
     public function chatbots()
     {
         return $this->hasMany(Chatbot::class)->orderBy('created_at', 'DESC');

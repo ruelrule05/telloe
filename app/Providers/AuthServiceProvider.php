@@ -19,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Message' => 'App\Policies\MessagePolicy',
         'App\Models\Chatbot' => 'App\Policies\ChatbotPolicy',
         'App\Models\Chatbox' => 'App\Policies\ChatboxPolicy',
+        'App\Models\Conversation' => 'App\Policies\ConversationPolicy',
     ];
 
     /**

@@ -2,6 +2,8 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 @import 'node_modules/v-color/dist/index';
+@import 'public/fonts/google/nunito-sans';
+@import 'public/fonts/google/open-sans';
 
 $primary: #6e82ea;
 $secondary: #637382;
@@ -114,6 +116,9 @@ $viewport_heights: (
     height: 100%;
     z-index: 33333;
     background: white;
+}
+.font-heading{
+    font-family: 'Nunito Sans', sans-serif;
 }
 .btn {
     &.disabled,
@@ -249,65 +254,6 @@ $viewport_heights: (
     bottom: 0;
     .chevron-arrow {
         transform: rotate(180deg);
-    }
-}
-.message-group {
-    margin-bottom: 1.5rem;
-    .message-item:not(:first-child):not(:only-child) {
-        .media {
-            display: none !important;
-        }
-    }
-    .message-content {
-        padding: 6px 10px;
-        border-radius: 4px;
-        margin-bottom: 2px;
-        font-size: 14px;
-    }
-
-    /* Message right */
-    .message-item {
-        &.outgoing-message {
-            &:only-child,
-            &:first-child {
-                .message-content {
-                    border-top-right-radius: 1.5em;
-                }
-            }
-            &:only-child,
-            &:last-child:not(:only-child) {
-                .message-content {
-                    border-bottom-right-radius: 1.5em;
-                }
-            }
-            .message-content {
-                background-color: $primary;
-                color: white;
-                border-top-left-radius: 1.5em;
-                border-bottom-left-radius: 1.5em;
-            }
-        }
-    }
-
-    /* Message left */
-    .message-item:not(.outgoing-message) {
-        .message-content {
-            border-top-right-radius: 1.5em;
-            border-bottom-right-radius: 1.5em;
-            background-color: $gray-300;
-        }
-        &:only-child,
-        &:first-child {
-            .message-content {
-                border-top-left-radius: 1.5em;
-            }
-        }
-        &:only-child,
-        &:last-child:not(:only-child) {
-            .message-content {
-                border-bottom-left-radius: 1.5em;
-            }
-        }
     }
 }
 

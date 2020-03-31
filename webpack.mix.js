@@ -50,20 +50,19 @@ else if (argv.indexOf('--js') > -1) {
             }
         })
         .version()
-        .mergeManifest();
-
-    mix.browserSync({
-        proxy: 'https://snapturebox.app',
-        host: 'snapturebox.app',
-        open: false,
-        port: 8000,
-        watch: true,
-        notify: false,
-        https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
-        }
-    });
+        .mergeManifest()
+        .browserSync({
+            proxy: 'https://snapturebox.app',
+            host: 'snapturebox.app',
+            open: false,
+            port: 8000,
+            watch: true,
+            notify: false,
+            https: {
+                key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+            }
+        });
 }
 
 
