@@ -9,30 +9,14 @@
         </div>
 
         <div class="snapturebox-bg-white snapturebox-flex-grow-1 snapturebox-overflow-auto snapturebox-p-3" id="snapturebox-message-group-container" ref="message-group-container">
-    
-            <div v-if="$root.widget.welcome_message" class="snapturebox-w-100 snapturebox-message-group">
-                <div class="snapturebox-message-item">
-                    <div class="snapturebox-media snapturebox-mb-1 snapturebox-text-left snapturebox-d-inline-flex snapturebox-align-items-center">
-                        <img :src="$root.API + $root.auth.profile_image" width="30" class="snapturebox-rounded-circle" alt="image" />
-                        <div class="snapturebox-media-body snapturebox-pl-2">
-                            <div class="snapturebox-font-weight-bold snapturebox-line-height-1 snapturebox-message-name">Genie</div>
-                            <small class="snapturebox-text-secondary">{{ dayjs().format('hh:mm A') }}</small>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="snapturebox-message-content snapturebox-d-inline-block snapturebox-message-content snapturebox-text-break snapturebox-mt-1">
-                            <p class="snapturebox-mb-0">{{ $root.widget.welcome_message }}</p>
-                        </div>
-                    </div>
-               </div>
-           </div>
-
             <div v-for="grouped_message in grouped_messages" class="snapturebox-w-100 snapturebox-message-group">
-                <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': message.user.id == $root.auth.id}" v-if="message.type != 'action'">
+                <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': $root.auth && $root.auth.auth.id == message.user.id || message.user.id == $root.guest_cookie}" v-if="message.type != 'action'">
                     <div class="snapturebox-media snapturebox-mb-2 snapturebox-text-left snapturebox-d-inline-flex snapturebox-align-items-center">
-                        <img :src="message.user.profile_image ? $root.API + message.user.profile_image : 'https://via.placeholder.com/30X30'" width="30" class="snapturebox-rounded-circle" alt="image" />
+                        <div class="snapturebox-profile-image" :style="[message.user.profile_image ? {backgroundImage: 'url('+$root.API + message.user.profile_image+')'} : '']">
+                            <span>{{ message.user.initials }}</span>
+                        </div>
                         <div class="snapturebox-media-body snapturebox-pl-2 snapturebox-d-flex snapturebox-align-items-center">
-                            <div class="snapturebox-font-weight-bold snapturebox-line-height-sm snapturebox-message-name">{{ message.user.id == $root.auth.id ? 'You' : message.user.full_name }}</div>
+                            <div class="snapturebox-font-weight-bold snapturebox-line-height-sm snapturebox-message-name">{{ $root.auth && $root.auth.id == message.user.id || message.user.id == $root.guest_cookie ? 'You' : message.user.full_name }}</div>
                             <small class="snapturebox-text-secondary snapturebox-ml-1">{{ message.created_at }}</small>
                         </div>
                     </div>
@@ -49,7 +33,7 @@
 
                             <!-- Audio -->
                             <div v-else-if="message.type == 'audio'">
-                                <waveplayer :theme="message.user.id == $root.auth.id ? 'light': ''" :source="message.message.source" :duration="message.message.duration"></waveplayer>
+                                <waveplayer :theme=" $root.auth && $root.auth.id == message.user.id ? 'light': ''" :source="message.message.source" :duration="message.message.duration"></waveplayer>
                             </div>
 
                             <!-- File -->
@@ -111,10 +95,10 @@
                 </div>
             </div>
         </div>
-
-        <vue-form-validate @submit="sendText" class="snapturebox-border-top snapturebox-shadow-sm snapturebox-p-2 snapturebox-d-flex snapturebox-align-items-center snapturebox-bg-white">
-            <input type="text" v-model="textMessage" class="snapturebox-form-control snapturebox-form-control-sm snapturebox-pl-0" placeholder="Write a message.." data-required />
-            <!-- <button class="snapturebox-btn snapturebox-px-0" type="submit" :disabled="textMessage.trim().length == 0"><send-icon width="20" height="20"></send-icon></button> -->
+        <div class="snapturebox-border-top snapturebox-shadow-sm snapturebox-p-2 snapturebox-d-flex snapturebox-align-items-center snapturebox-bg-white">
+            <vue-form-validate @submit="sendText" class="snapturebox-w-100">
+                <input type="text" v-model="textMessage" class="snapturebox-form-control snapturebox-form-control-sm snapturebox-pl-0" placeholder="Write a message.." data-required />
+            </vue-form-validate>
             <button type="button" class="snapturebox-line-height-sm snapturebox-ml-2 snapturebox-btn snapturebox-px-0 snapturebox-emojipicker" @blur="emojipicker = false" :class="{'snapturebox-emojipicker-open': emojipicker}">
                 <smile-icon width="20" height="20" class="snapturebox-cursor-pointer" @click.native="emojipicker = emojipicker ? false : true"></smile-icon>
                 <VEmojiPicker :emojisByRow="6" @select="selectEmoji" />
@@ -123,7 +107,7 @@
             <button class="snapturebox-line-height-sm snapturebox-ml-2 snapturebox-btn snapturebox-px-0" type="button" @click="$parent.openPanel('audio-recorder')"><microphone-icon width="20" height="20"></microphone-icon></button>
             <button class="snapturebox-line-height-sm snapturebox-ml-2 snapturebox-btn snapturebox-px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
             <input type="file" hidden ref="fileMedia" @change="addFile" />
-        </vue-form-validate>
+        </div>
     </div>
 </template>
 
@@ -151,7 +135,7 @@ export default {
     props: {
         messages: {
             type: Array,
-            default: [],
+            default: function () { return [] },
             required: true,
         },
     },
@@ -171,8 +155,8 @@ export default {
                     return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
                 });
 
-                for (var i = 0; i <= messages.length - 1; i++) {
-                    var message_group = {sender: messages[i].user.id, messages: [messages[i]]};
+                for (let i = 0; i <= messages.length - 1; i++) {
+                    let message_group = {sender: messages[i].user.id, messages: [messages[i]]};
                     groupMessage();
 
                     function groupMessage() {
@@ -239,7 +223,7 @@ export default {
                 let fileExtension = fileInput.value.split('.').pop();
                 if (this.isImage(fileExtension)) {
                     message.type = 'image';
-                    var img = new Image();
+                    let img = new Image();
                     img.src = URL.createObjectURL(fileInput.files[0]);
                     img.onload = () => {
                         let canvas = document.createElement('canvas');
@@ -277,12 +261,14 @@ export default {
 
         sendText() {
             const timestamp = dayjs().valueOf();
+            let user = this.$root.auth || {id: this.$root.guest_cookie, initials: 'G'};
             this.$emit('send', {
-                user: this.$root.auth,
+                user: user,
                 message: this.textMessage.trim(),
                 type: 'text',
                 timestamp: timestamp,
                 created_at: dayjs(timestamp).format('hh:mm A'),
+                metadata: {guest_cookie: this.$root.guest_cookie},
             });
             this.textMessage = '';
             this.scrollDown();

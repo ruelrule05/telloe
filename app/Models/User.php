@@ -30,7 +30,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'initials'];
 
 
 
@@ -75,6 +75,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Chatbot::class)->orderBy('created_at', 'DESC');
     }
 
+
+    public function getInitialsAttribute()
+    {
+        return strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1));
+    }
 
 
 

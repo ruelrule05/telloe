@@ -1,39 +1,39 @@
 <template>
-	<div class="snapturebox-audio-recorder snapturebox-h-100 snapturebox-overflow-hidden">
-		<div class="snapturebox-d-flex snapturebox-flex-column snapturebox-h-100">
-			<div class="snapturebox-d-flex snapturebox-w-100">
-				<button type="button" class="snapturebox-btn snapturebox-text-white snapturebox-ml-auto snapturebox-shadow-none" @click="$parent.leftContent = '';">
+	<div class="audio-recorder h-100 overflow-hidden">
+		<div class="d-flex flex-column h-100">
+			<div class="d-flex w-100">
+				<button type="button" class="btn text-white ml-auto shadow-none" @click="$parent.leftContent = '';">
 					<close-icon height="36" width="36"></close-icon>
 				</button>
 			</div>
 
-			<div class="snapturebox-flex-grow-1 snapturebox-h-100 snapturebox-d-flex snapturebox-flex-column snapturebox-position-relative snapturebox-text-center">
+			<div class="flex-grow-1 h-100 d-flex flex-column position-relative text-center">
 
-				<div v-if="!hasRecorded" class="snapturebox-text-center snapturebox-position-absolute-center snapturebox-w-100">
-					<div class="snapturebox-h6 snapturebox-mb-0">Click to start recording</div>
+				<div v-if="!hasRecorded" class="text-center position-absolute-center w-100">
+					<div class="h6 mb-0">Click to start recording</div>
 				</div>
 
 				<div v-if="duration || recorderStatus">
-					<div class="snapturebox-pt-4 snapturebox-d-inline-block snapturebox-text-center snapturebox-font-weight-light">
-						<div class="snapturebox-h2 snapturebox-mb-0">{{ secondsToDuration(duration) }}</div>
-						<div class="snapturebox-d-flex snapturebox-align-items-center">
+					<div class="pt-4 d-inline-block text-center font-weight-light">
+						<div class="h2 mb-0">{{ secondsToDuration(duration) }}</div>
+						<div class="d-flex align-items-center">
 							<template v-if="recorderStatus == 'recording'">
-								<span class="snapturebox-chat-status snapturebox-bg-danger">&nbsp;</span>&nbsp;
-								<small class="snapturebox-text-secondary">Rec</small>
+								<span class="chat-status bg-danger">&nbsp;</span>&nbsp;
+								<small class="text-secondary">Rec</small>
 							</template>
 							<template v-else-if="recorderStatus == 'paused'">
-								<span class="snapturebox-chat-status snapturebox-bg-gray">&nbsp;</span>&nbsp;
-								<small class="snapturebox-text-secondary">Paused</small>
+								<span class="chat-status bg-gray">&nbsp;</span>&nbsp;
+								<small class="text-secondary">Paused</small>
 							</template>
 						</div>
 					</div>
 				</div>
 
 				<!-- wavesurfer -->
-				<div class="snapturebox-position-absolute-center snapturebox-w-100 snapturebox-wavesurfer-container">
+				<div class="position-absolute-center w-100 wavesurfer-container">
 					<div id="wavesurfer"></div>
-					<div v-if="hasRecorded && recorderStatus == 'paused'" class="snapturebox-player-control snapturebox-position-absolute-center">
-						<button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-white snapturebox-border-0 snapturebox-badge-pill snapturebox-py-2" @click="togglePlayer">
+					<div v-if="hasRecorded && recorderStatus == 'paused'" class="player-control position-absolute-center">
+						<button class="btn btn-sm btn-white border-0 badge-pill py-2" @click="togglePlayer">
 							<play-icon width="15" height="15" v-if="playerStatus == 'paused'"></play-icon>
 							<pause-icon width="15" height="15" v-else-if="playerStatus == 'playing'"></pause-icon>
 						</button>
@@ -44,21 +44,21 @@
 			
 
 			<!-- Controls -->
-			<div v-if="micReady" class="snapturebox-flex-fill snapturebox-w-100 snapturebox-text-center snapturebox-px-5 snapturebox-pb-5">
-				<div class="snapturebox-d-flex snapturebox-align-items-center snapturebox-text-center">
-					<div class="snapturebox-w-25">
-						<button v-if="hasRecorded" @click="$parent.leftContent = '';" class="snapturebox-btn snapturebox-font-weight-bold snapturebox-mr-auto">Cancel</button>
+			<div v-if="micReady" class="flex-fill w-100 text-center px-5 pb-5">
+				<div class="d-flex align-items-center text-center">
+					<div class="w-25">
+						<button v-if="hasRecorded" @click="$parent.leftContent = '';" class="btn font-weight-bold mr-auto">Cancel</button>
 					</div>
 
-					<div class="snapturebox-flex-grow-1">
-						<button v-if="recorderStatus == 'recording'" class="snapturebox-audio-control snapturebox-audio-pause" @click="pauseRecord"></button>
-						<button v-else class="snapturebox-audio-control snapturebox-audio-record" @click="startRecord">
+					<div class="flex-grow-1">
+						<button v-if="recorderStatus == 'recording'" class="audio-control audio-pause" @click="pauseRecord"></button>
+						<button v-else class="audio-control audio-record" @click="startRecord">
 							<microphone-icon fill="white"></microphone-icon>
 						</button>
 					</div>
 
-					<div class="snapturebox-w-25">
-						<button @click="submit" v-if="hasRecorded && recorderStatus == 'paused'" class="snapturebox-btn snapturebox-font-weight-bold snapturebox-ml-auto">Send</button>
+					<div class="w-25">
+						<button @click="submit" v-if="hasRecorded && recorderStatus == 'paused'" class="btn font-weight-bold ml-auto">Send</button>
 					</div>
 				</div>
 			</div>
@@ -69,14 +69,14 @@
 <script>
 import dayjs from 'dayjs';
 import WaveSurfer from 'wavesurfer.js';
-import WaveSurferMicrophone from '../../plugins/wavesurfer.microphone.min.js';
-import WaveSurferCursor from '../../plugins/wavesurfer.cursor.min.js';
-import CameraIcon from '../../icons/camera.vue';
-import CloseIcon from '../../icons/close.vue';
-import PauseAltIcon from '../../icons/pause-alt';
-import MicrophoneIcon from '../../icons/microphone';
-import PlayIcon from '../../icons/play';
-import PauseIcon from '../../icons/pause';
+import WaveSurferMicrophone from '../plugins/wavesurfer.microphone.min.js';
+import WaveSurferCursor from '../plugins/wavesurfer.cursor.min.js';
+import CameraIcon from '../icons/camera.vue';
+import CloseIcon from '../icons/close.vue';
+import PauseAltIcon from '../icons/pause-alt';
+import MicrophoneIcon from '../icons/microphone';
+import PlayIcon from '../icons/play';
+import PauseIcon from '../icons/pause';
 export default {
 	components: {CameraIcon, CloseIcon, PauseAltIcon, MicrophoneIcon, PlayIcon, PauseIcon},
 

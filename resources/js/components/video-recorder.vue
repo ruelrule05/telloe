@@ -1,5 +1,5 @@
 <template>
-    <div id="video-recorder" class="bg-light overflow-auto border-left position-relative">
+    <div id="video-recorder" class="bg-light overflow-auto position-relative h-100">
         <close-icon v-if="!isRecording" class="position-absolute cursor-pointer" fill="white" @click.native="closeCamera(); $emit('hide');"></close-icon>
         <div id="video-viewer" class="position-relative bg-black">
             <!-- Spinner -->
@@ -58,7 +58,7 @@
                         <collapse-icon v-if="cameraFull" fill="white" width="20" class="cursor-pointer" @click.native="cameraFull = false"></collapse-icon>
                         <expand-alt-icon v-else fill="white" width="20" class="cursor-pointer" @click.native="cameraFull = true"></expand-alt-icon>
                         <div class="position-relative overflow-hidden bg-black" :class="{'w-100 h-100': cameraFull, 'rounded-circle' : !cameraFull}">
-                            <video ref="cameraPreview" class="h-100 position-absolute-center"></video>
+                            <video ref="cameraPreview" class="h-100 position-absolute-center" :class="{'w-100': cameraFull}"></video>
                         </div>
                     </div>
                     <canvas id="canvas-placeholder" hidden></canvas> 
@@ -93,7 +93,6 @@
             </div>
 
             <div class="p-4">
-                <h5>{{ inquiry.user.full_name }}</h5>
                 <div class="text-center">
                     <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'photos'}" @click="activeTab = 'photos'">Photos</button>
                     <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'files'}" @click="activeTab = 'files'">Client Files</button>
@@ -103,7 +102,7 @@
                 <!-- Shared Files -->
                 <div class="p-1 bg-white-7 mt-4" v-if="activeTab == 'photos'">
                     <div class="overflow-auto text-nowrap w-100">
-                        <div v-for="file in inquiry.inquiry_media" class="p-1 d-inline-block" style="width: 90px">
+                        <div v-for="file in conversation.conversation_media" class="p-1 d-inline-block" style="width: 90px">
                             <div class="position-relative bg-black rounded shadow-sm overflow-hidden cursor-pointer" style="padding-top: 100%" @click="selectedImage = file; pulses = []; clearSvg();">
                                 <image-to-canvas class="position-absolute-center w-100" :src="file.preview" @click="selectedImage = file"></image-to-canvas>
                                 <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
@@ -120,14 +119,9 @@
 <script>
 import Timer from 'tiny-timer/dist/tiny-timer.js';
 const timer = new Timer();
-const feather = require('feather-icons');
 const domtoimage = require('dom-to-image');
 const format = require('format-duration');
 import RecordRTC from 'recordrtc';
-import PlayIcon from 'vue-feather-icons/icons/PlayIcon';
-import ApertureIcon from 'vue-feather-icons/icons/ApertureIcon';
-import CircleIcon from 'vue-feather-icons/icons/CircleIcon';
-import XIcon from 'vue-feather-icons/icons/XIcon';
 import SvgDraw from '../components/svg-draw.vue';
 import ExpandAltIcon from '../icons/expand-alt';
 import CollapseIcon from '../icons/collapse';
@@ -136,6 +130,7 @@ import VideoIcon from '../icons/video';
 import CheckmarkIcon from '../icons/checkmark';
 import PencilCircleIcon from '../icons/pencil-circle';
 import CloseIcon from '../icons/close';
+import PlayIcon from '../icons/play';
 import Tooltip from './../directives/tooltip.js';
 export default {
     directives: {Tooltip},
@@ -143,10 +138,7 @@ export default {
     components: {
         VideoIcon,
         PlayIcon,
-        ApertureIcon,
         PencilCircleIcon,
-        CircleIcon,
-        XIcon,
         SvgDraw,
         ExpandAltIcon,
         CollapseIcon,
@@ -156,7 +148,7 @@ export default {
     },
 
     props: {
-        inquiry: {
+        conversation: {
             type: Object,
             default: [],
         }
@@ -194,16 +186,14 @@ export default {
     }),
 
     created() {
-        if (this.inquiry.inquiry_media.length > 0) this.selectedImage = this.inquiry.inquiry_media[0]
     },
 
     mounted() {
-        feather.replace();
         this.finalStream = new MediaStream();
         this.DOMImages = document.getElementById('images');
         this.cursor = new Image();
         this.cursor.src = '/images/mouse.png';
-        this.selectedImage = this.inquiry.inquiry_media[1];
+        this.initCamera();
 
         /*this.timer.start(this.limit);
         this.timer.on('tick', (ms) => console.log(this.timer.status))
@@ -492,3 +482,16 @@ export default {
     },
 };
 </script>
+
+<style scoped lang="scss">
+    #video-recorder {
+        #video-viewer {
+            height: 350px;
+        }
+        > svg {
+            top: 5px;
+            left: 5px;
+            z-index: 10;
+        }
+    }
+</style>

@@ -53,7 +53,7 @@
                     <!-- Right -->
                     <!-- Messages -->
                     <div v-if="rightContent == 'messages'" class="snapturebox-shadow snapturebox-position-relative" id="snapturebox-section-right">
-                        <messages :messages="messages" @send="sendMessage" ref="messages"></messages>
+                        <messages :messages="$root.messages" @send="sendMessage" ref="messages"></messages>
                     </div>
                 </div>
             </div>
@@ -127,13 +127,13 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        leftContent: 'video-recorder', //inquiries, book
+        leftContent: '', //inquiries, book
         itemType: '',
         selectedMedia: null,
         rightContent: 'messages', //form
         selectedMessage: {},
         messages: [
-            {
+            /*{
                 id: 1,
                 timestamp: 1,
                 user: {id: 1},
@@ -142,8 +142,11 @@ export default {
                     duration: '00:12',
                 },
                 type: 'audio',
-            }
+            }*/
         ],
+        chatbot_listen: false,
+        chatbot_pending_messages: [],
+        guest_replied: false,
     }),
     computed: {
         customerImagesCount() {
@@ -176,53 +179,28 @@ export default {
             return new_items;
         },
         repliesCount() {
-            return this.messages.filter((m) => {
+            return this.$root.messages.filter((m) => {
                 return m.sender == 'You';
             }).length;
-        },
-        grouped_messages() {
-            const grouped_messages = [];
-            if (this.messages) {
-                // sort messages by timestamp
-                const messages = (this.messages || []).sort((a, b) => {
-                    return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
-                });
-                for (let i = 0; i <= messages.length - 1; i++) {
-                    let message_group = {sender: messages[i].sender, messages: [messages[i]]};
-                    groupMessage();
-
-                    function groupMessage() {
-                        const next_message = messages[i + 1];
-                        if (next_message && next_message.sender == messages[i].sender) {
-                            message_group.messages.push(messages[i + 1]);
-                            i++;
-                            groupMessage();
-                        }
-                    }
-                    grouped_messages.push(message_group);
-                }
-            }
-            return grouped_messages;
         },
     },
     created() {
         this.notification_sound = new Audio(`${this.$root.API}/notifications/new_message.mp3`);
         /*this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
-            this.messages.push(data);
+            this.$root.messages.push(data);
             this.notification_sound.play();
             this.scrollDown();
         });*/
-        //this.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
+        //this.$root.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
 
-
-        //if(this.$root.widget.default_chatbot && this.$root.auth) this.callChatbot();
+        //if(this.$root.widget.default_chatbot) this.callChatbot();
     },
     mounted() {
     },
     methods: {
         sendAudio(audio) {
-            this.sendMessage({message: audio}, 'audio');
+            this.sendMessage(audio);
         },
         
         openPanel(panel) {
@@ -247,12 +225,14 @@ export default {
         },
 
         async loopChatbotMessages(messages) {
+            this.chatbot_listen = false;
             let timeout = 0;
             for(let message of messages) {
                 await this.sendChatbotMessage(message, timeout);
                 timeout = 1000;
             }
             console.log('ready to listen');
+            this.chatbot_listen = true;
         },
 
         async sendChatbotMessage(message, timeout = 0) {
@@ -295,18 +275,28 @@ export default {
                 let type = message.additionalParameters.type || 'text';
                 setTimeout(() => {
                     let timestamp = dayjs().valueOf();
-                    this.messages.push({
+                    let chatbotMessage = {
                         message: message.text,
                         type: type,
                         metadata: message.additionalParameters,
-                        user: {full_name: 'Genie'},
+                        user: {id: 'chatbot', full_name: 'Genie', profile_image: '/images/chatbot.png'},
                         timestamp: timestamp,
                         created_at: dayjs(timestamp).format('hh:mm A'),
-                        status: 'is_writing'
-                    });
+                        status: 'is_writing',
+                        metadata: {
+                            is_chatbot: true,
+                            guest_cookie: this.$root.guest_cookie
+                        }
+                    };
+                    if(!this.$root.auth && !this.guest_replied) {
+                        this.chatbot_pending_messages.push(chatbotMessage);
+                    } else {
+                        this.sendMessage(chatbotMessage, false, false);
+                    }
+                    this.$root.messages.push(chatbotMessage);
                     setTimeout(() => {
-                        let message = this.messages.find((m) => m.timestamp == timestamp);
-                        if(message) message.status = 'visible';
+                        let chatbotMessage = this.$root.messages.find((m) => m.timestamp == timestamp);
+                        if(chatbotMessage) chatbotMessage.status = 'visible';
                         return resolve();
                     }, 1000);
                     this.$refs['messages'].scrollDown();
@@ -325,26 +315,41 @@ export default {
             this.$refs['addMediaModal'].initCamera();
         },
 
-        sendMessage(message, type = 'text', messageAnswer = false) {
+        sendMessage(message, messageAnswer = false, push = true) {
             if(messageAnswer && !messageAnswer.message.answer) {
                 this.$set(messageAnswer.message, 'answer', messageAnswer.answer);
             }
-            if(type != 'action') {
-                this.messages.push({
-                    message: message.message,
-                    type: type,
-                    user: this.$root.auth,
-                    timestamp: dayjs().valueOf(),
-                    created_at: dayjs().valueOf(),
-                });
+            if(message.type != 'action' && push) {
+                this.$root.messages.push(message);
                 this.$refs['messages'].scrollDown();
             }
-            let bodyFormData = new FormData();
-            bodyFormData.set('message', message.message);
-            /*SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
-                this.loopChatbotMessages(response.data.messages);
-            });*/
 
+            if(this.chatbot_listen) {
+                let bodyFormData = new FormData();
+                bodyFormData.set('message', message.message);
+                SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
+                    this.loopChatbotMessages(response.data.messages);
+                });
+            }
+
+            if(!this.$root.auth && !this.guest_replied) {
+                this.chatbot_pending_messages.forEach((pm) => {
+                    SBAxios.post('/messages', pm).then((response) => {
+                    });
+                });
+                this.chatbot_pending_messages = [];
+            }
+            this.guest_replied = true;
+
+            SBAxios.post('/messages', message).then((response) => {
+                let index = this.$root.messages.findIndex((x) => x.timestamp == message.timestamp);
+                if (index > -1) {
+                    if (message.type == 'file') {
+                        this.$root.messages[index].source = response.data.source;
+                    }
+                    this.$root.messages[index].id = response.data.id;
+                }
+            });
 
             /*if (!this.$root.auth) {
                 this.$root.toggleModal('#loginModal', 'show');
@@ -430,7 +435,7 @@ export default {
         },
         getMessages() {
             SBAxios.get(`${this.domain}/messages`).then((response) => {
-                this.messages = response.data;
+                this.$root.messages = response.data;
             });
         },
         loadeddata(e) {

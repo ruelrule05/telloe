@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use JWTAuth;
 use Auth;
 use App\Models\User;
-use App\Models\Convo;
+use App\Models\Conversation;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -47,7 +47,7 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        $convo = Convo::with('messages.user')->firstOrCreate([
+        $convo = Conversation::with('messages.user')->firstOrCreate([
             'widget_id' => $request->widget->id,
             'user_id' => auth()->user()->id
         ]);

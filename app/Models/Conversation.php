@@ -10,7 +10,10 @@ class Conversation extends Model
 {
     //
     protected $fillable = ['widget_id', 'user_id', 'metadata'];
-    public $appends = ['last_message'];
+    public $appends = ['user', 'last_message'];
+    protected $casts = [
+        'metadata' => 'array',
+    ];
 
     public function widget()
     {
@@ -32,8 +35,8 @@ class Conversation extends Model
     {
         $last_message = Message::where('conversation_id', $this->attributes['id'])->latest('created_at')->first();
         if ($last_message){
-            $last_message = $last_message->load('user')->toArray();
-            if ($last_message['user_id'] == Auth::user()->id)
+            $last_message = $last_message->toArray();
+            if (Auth::check() && $last_message['user_id'] == Auth::user()->id)
             {
                 $last_message['message'] = 'You: ' . $last_message['message'];
                 $last_message['is_read'] = 1;
@@ -45,5 +48,22 @@ class Conversation extends Model
             'is_read' => 1, 
             'message' => '<span class="font-weight-light">No messages yet</span>' 
         ];
+    }
+
+    
+    public function getUserAttribute()
+    {
+        if($this->attributes['user_id']) :
+            $user = User::findOrFail($this->attributes['user_id']);
+        else:
+            $metadata = json_decode($this->attributes['metadata'], true);
+            $user = [
+                'id' => $metadata['guest_cookie'] ?? '',
+                'full_name' =>  $metadata['name'] ?? '',
+                'initials' => 'G',
+            ];
+        endif;
+
+        return $user;
     }
 }

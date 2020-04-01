@@ -52,6 +52,7 @@ document.body.appendChild(container);
 //import VueMasonry from './../components/vue-masonry.js';
 //import TextareaAutosize from 'vue-textarea-autosize';
 import './widget.scss';
+import dayjs from 'dayjs';
 // console.log(style);
 //import Toasted from 'vue-toasted';
 
@@ -73,6 +74,7 @@ window.snapturebox = new SBVue({
         fullPage: false,
         leftOpen: false, // false
         backdrop: false,
+        guest_cookie: null,
         loginForm: {
             email: 'cleidoscope@gmail.com',
             password: 'admin',
@@ -100,6 +102,7 @@ window.snapturebox = new SBVue({
         // Wordpress Cocoach
         widget_business_hours: null,
         ready: false,
+        messages: []
     },
 
     created() {
@@ -144,10 +147,55 @@ window.snapturebox = new SBVue({
         async getData() {
             let inquiry_types = await SBAxios.get('/inquiry_types');
             if (inquiry_types) this.inquiry_types = inquiry_types.data;
-            let me = await SBAxios.get('/auth/me').catch(() => {});
+            let me = await SBAxios.get('/auth/me').catch(() => {this.guestCookie()});
             if (me) this.auth = me.data;
             this.ready = true;
         },
+
+        getGuestMessages() {
+            SBAxios.get(`/messages?guest=${this.guest_cookie}`, ).then((response) => {
+                //console.log(response.data.messages);
+                this.messages = response.data.messages || [];
+            });
+        },
+
+        guestCookie() {
+            let guest_cookie = null;
+            let cookie = this.getCookie();
+            if(cookie){
+                guest_cookie = cookie;
+            } else {
+                let exdays = 14; //2 weeks
+                let randomString = require('random-string');
+                let rndString = randomString({length: 12});
+                const timestamp = `${dayjs().valueOf()}${rndString}`;
+                let d = new Date();
+                d.setTime(d.getTime() + (exdays*24*60*60*1000));
+                let expires = "expires="+ d.toUTCString();
+                document.cookie = 'snapturebox_guest_cookie' + "=" + timestamp + ";" + expires + ";path=/";
+                guest_cookie = timestamp;
+            }
+            this.guest_cookie = guest_cookie;
+            this.getGuestMessages();
+        },
+
+        getCookie() {
+            let cname = 'snapturebox_guest_cookie';
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+            }
+            return "";
+        },
+
 
         signup() {
             this.signupForm.loading = true;

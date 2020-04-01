@@ -28,10 +28,10 @@ Route::group([
 		Route::get('inquiry_types', 'WidgetController@inquiryTypes');
 		Route::resource('inquiries', 'InquiryController')->middleware('auth:api');
 		Route::resource('bookings', 'BookingController')->middleware('auth:api');
-		Route::resource('messages', 'MessageController')->middleware('auth:api');
+		Route::resource('messages', 'MessageController');
 		Route::get('get_ig_images', 'WidgetController@getIGImages');
 		Route::get('get_page_preview', 'MessageController@getPagePreview');
-		Route::match(['GET', 'POST'],'botman', 'MessageController@botman')->middleware('auth:api');
+		Route::match(['GET', 'POST'],'botman', 'MessageController@botman');
 		
 
 		// Authentication

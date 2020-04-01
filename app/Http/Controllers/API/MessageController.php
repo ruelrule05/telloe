@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Models\Convo;
+use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Chatbot;
 use File;
@@ -23,50 +23,80 @@ class MessageController extends Controller
         auth()->setDefaultDriver('api');
     }
 
+    public function index(Request $request)
+    {
+        $conversation = null;
+        if(auth()->check()) :
+
+        elseif($request->guest) :
+            $conversation = Conversation::with('messages')->where('metadata->guest_cookie', $request->guest)->first();
+        endif;
+
+        return response()->json($conversation);
+    }
+
     public function store(Request $request)
     {
         $this->validate($request, [
             'type' => 'required',
         ]);
+        $conversation = null;
 
-        $convo = Convo::firstOrCreate([
-            'widget_id' => $request->widget->id,
-            'user_id' => auth()->user()->id
-        ]);
-
-        $time = time();
-
-        $sourceFile = null;
-        if ($request->source) :
-            $source = $request->source;
-            $filename = $time . '-source';
-            $srcDestination = 'storage/message-media/' . $filename;
-            $src = base64_decode(substr($source, strpos($source, ',') + 1));
-            File::put($srcDestination, $src);
-            $sourceFile = '/' . $srcDestination;
+        if(auth()->check()) :
+            $conversation = Conversation::firstOrCreate([
+                'widget_id' => $request->widget->id,
+                'user_id' => auth()->user()->id,
+            ]);
+        else :
+            $metadata = $request->metadata;
+            $metadata['name'] = $request->ip();
+            $request->merge([
+                'metadata' => $metadata
+            ]);
+            $conversation = Conversation::where('metadata->guest_cookie', $request->metadata['guest_cookie'])->firstOrCreate([
+                'widget_id' => $request->widget->id
+            ]);
+            $conversation->update([
+                'metadata' => $request->metadata
+            ]);
         endif;
 
-        $previewFile = null;
-        if ($request->preview) :
-            $source = $request->preview;
-            $filename = $time . '-preview';
-            $previewDestination = 'storage/message-media/' . $filename;
-            $preview = base64_decode(substr($source, strpos($source, ',') + 1));
-            File::put($previewDestination, $preview);
-            $previewFile = '/' . $previewDestination;
+        if($conversation) :
+            $time = time();
+
+            $sourceFile = null;
+            if ($request->source) :
+                $source = $request->source;
+                $filename = $time . '-source';
+                $srcDestination = 'storage/message-media/' . $filename;
+                $src = base64_decode(substr($source, strpos($source, ',') + 1));
+                File::put($srcDestination, $src);
+                $sourceFile = '/' . $srcDestination;
+            endif;
+
+            $previewFile = null;
+            if ($request->preview) :
+                $source = $request->preview;
+                $filename = $time . '-preview';
+                $previewDestination = 'storage/message-media/' . $filename;
+                $preview = base64_decode(substr($source, strpos($source, ',') + 1));
+                File::put($previewDestination, $preview);
+                $previewFile = '/' . $previewDestination;
+            endif;
+
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => auth()->user()->id ?? null,
+                'message' => $request->message,
+                'type' => $request->type,
+                'source' => $sourceFile,
+                'preview' => $previewFile,
+                'timestamp' => $request->timestamp,
+                'metadata' => $request->metadata,
+            ]);
+
+            return response()->json($message);
         endif;
-
-        $message = Message::create([
-            'convo_id' => $convo->id,
-            'user_id' => auth()->user()->id,
-            'message' => $request->message,
-            'type' => $request->type,
-            'source' => $sourceFile,
-            'preview' => $previewFile,
-            'metadata' => json_decode($request->metadata),
-        ]);
-
-        return response()->json($message);
     }
 
     public function update($id, Request $request)

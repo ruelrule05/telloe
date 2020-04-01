@@ -103,6 +103,14 @@ $viewport_heights: (
     background-repeat: no-repeat;
     background-position: center;
     background-color: $gray-400 !important;
+    position: relative;
+    span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $gray-500;
+    }
 }
 .pageloader {
     position: fixed;
@@ -475,22 +483,6 @@ $viewport_heights: (
     z-index: 55555;
     &.inquiry-details-open {
         right: 0;
-    }
-}
-#video-recorder {
-    flex: 0 0 50%;
-    margin-right: -50%;
-    transition: margin-right 0.15s ease;
-    &.video-recorder-open {
-        margin-right: 0;
-    }
-    #video-viewer {
-        height: 350px;
-    }
-    > svg {
-        top: 5px;
-        left: 5px;
-        z-index: 10;
     }
 }
 .rightbar {
