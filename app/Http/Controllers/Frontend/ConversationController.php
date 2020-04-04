@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Conversation;
+use App\Models\Message;
 use Auth;
 
 class ConversationController extends Controller
@@ -32,5 +33,24 @@ class ConversationController extends Controller
         endif;
 
         return response()->json($conversation);
+    }
+
+    public function postMessage($id, Request $request)
+    {
+        $this->validate($request, [
+            'type' => 'required',
+            'timestamp' => 'required',
+        ]);
+        $conversation = Conversation::findOrFail($id);
+        $this->authorize('postMessage', $conversation);
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => Auth::user()->id,
+            'type' => $request->type,
+            'message' => $request->message,
+            'timestamp' => $request->timestamp,
+        ]);
+
+        return response()->json($message);
     }
 }

@@ -128,12 +128,29 @@ export default {
 			          	this.$refs['videoPreview'].pause();
 			          	this.$refs['videoPreview'].onseeked = null;
 			          	duration = this.$refs['videoPreview'].duration;
+            			let user = this.$root.auth || {id: this.$root.guest_cookie, initials: 'G'};
 					    let video = {
+					    	user: user,
 					    	source: file,
-					    	duration: duration
+					    	duration: duration,
+					    	type: 'video',
+					    	timestamp: timestamp,
+               				created_at: dayjs(timestamp).format('hh:mm A'),
 					    };
-					    console.log(video);
-					  	this.$emit('submit', video);
+	                    setTimeout(() => {
+	                        let canvas = document.createElement("canvas");
+	                        canvas.width = this.$refs['videoPreview'].videoWidth / 2;
+	                        canvas.height = this.$refs['videoPreview'].videoHeight / 2;
+	                        canvas.getContext('2d').drawImage(this.$refs['videoPreview'], 0, 0, canvas.width, canvas.height);
+	                        canvas.toBlob((blob) => {
+				  				let reader = new FileReader();
+							    reader.onload = () => {
+		                            video.preview = reader.result;
+					  				this.$emit('submit', video);
+							    };
+							    reader.readAsDataURL(blob);
+	                        });
+	                   });
 			        }
 			    });
 			  	this.reset();

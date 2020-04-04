@@ -44,7 +44,7 @@ class Conversation extends Model
         }
 
         return $last_message ?? [ 
-            'timestamp' => Carbon::now()->valueOf(),
+            'timestamp' => 0,
             'is_read' => 1, 
             'message' => '<span class="font-weight-light">No messages yet</span>' 
         ];

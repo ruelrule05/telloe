@@ -8,7 +8,6 @@ import 'bootstrap/js/dist/tab';
 import VueRouter from 'vue-router';
 import Toasted from 'vue-toasted';
 import VueObserveVisibility from 'vue-observe-visibility';
- 
 Vue.use(VueObserveVisibility);
 Vue.use(VueRouter);
 Vue.use(Toasted, {

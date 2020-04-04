@@ -40,14 +40,14 @@ else if (argv.indexOf('--js') > -1) {
                         vendors: false
                     }
                 }
-            },
+            },/*
             resolve: {
                 alias: {
                 }
             },
             externals: {
                 moment: 'moment'
-            }
+            }*/
         })
         .version()
         .mergeManifest()

@@ -10,7 +10,7 @@
 
         <!-- Audio -->
         <div v-else-if="message.type == 'audio'">
-            <waveplayer :source="message.message.source" :duration="message.message.duration"></waveplayer>
+            <waveplayer :source="message.source" :duration="message.metadata.duration"></waveplayer>
         </div>
 
         <!-- File -->

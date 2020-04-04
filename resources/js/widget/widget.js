@@ -165,7 +165,7 @@ window.snapturebox = new SBVue({
             if(cookie){
                 guest_cookie = cookie;
             } else {
-                let exdays = 14; //2 weeks
+                let exdays = 30; // 1 month
                 let randomString = require('random-string');
                 let rndString = randomString({length: 12});
                 const timestamp = `${dayjs().valueOf()}${rndString}`;

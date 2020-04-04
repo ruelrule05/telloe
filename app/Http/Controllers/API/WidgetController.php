@@ -68,14 +68,21 @@ class WidgetController extends Controller
         return response()->json($images);
     }
 
-    public function getMedia($media)
+    public function getMedia($media, Request $request)
     {
         $file = public_path().'/'.$media;
         if(!File::exists($file)) return abort(404);
         
         $media = File::get($file);
         $response = Response::make($media);
-        return $media;
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Content-Type', 'application/octet-stream');
+        $response->headers->set('Access-Control-Allow-Headers', '*');
+        if($request->filename) :
+            $response->headers->set('Content-disposition','attachment; filename="'.$request->filename.'"');
+        endif;
+        
+        return $response;
     }
 
 }

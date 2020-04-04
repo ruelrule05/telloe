@@ -50,42 +50,50 @@
 				</div>
 				<div class="p-3 overflow-auto flex-grow-1" ref="message-group-container">
 	                <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
-	                    <div class="message-item" v-for="message in grouped_message.messages" v-cloak>
-	                    	<!-- outgoing message -->
-	                        <div class="media outgoing-message" v-if="message.user.id == $root.auth.id">
-	                            <div class="media-body pr-2 text-right">
-	                                <div class="font-weight-bold line-height-1">You</div>
-		                            <div class="message-content mt-2 text-wrap">
-		                            	<message-type :message="message"></message-type>
+	                    <!-- outgoing message -->
+	                	<div class="media outgoing-message" v-if="grouped_message.sender.id == $root.auth.id || grouped_message.sender.id == 'chatbot'">
+	                		<div class="media-body pr-2 text-right">
+                                <div class="font-weight-bold line-height-1">{{ grouped_message.sender.is_chatbot ? 'Genie' : 'You' }}</div>
+	                            <div class="mt-2">
+	                            	<div v-for="message in grouped_message.messages" v-cloak class="message-item">
+			                            <div class="message-content text-wrap">
+			                            	<message-type :message="message"></message-type>
+			                            </div>
+		                            	<small class="text-gray d-block">{{ message.created_at }}</small>
 		                            </div>
-		                            <small class="text-gray d-block">{{ message.created_at }}</small>
-		                        </div>
-						  		<div class="user-profile-image" :style="{backgroundImage: 'url('+message.user.profile_image+')'}">
-									<span v-if="!message.user.profile_image">{{ message.user.initials }}</span>
-						  		</div>
+	                            </div>
 	                        </div>
-	                    	<!-- incoming message -->
-	                        <div class="media" v-else>
-						  		<div class="user-profile-image" :style="{backgroundImage: 'url('+message.user.profile_image+')'}">
-									<span v-if="!message.user.profile_image">{{ message.user.initials }}</span>
-						  		</div>
-	                            <div class="media-body pl-2">
-	                                <div class="font-weight-bold line-height-1">{{ message.user.full_name }}</div>
-		                            <div class="message-content mt-2 text-wrap">
-		                            	<message-type :message="message"></message-type>
+					  		<div class="user-profile-image" :style="{backgroundImage: 'url('+grouped_message.sender.profile_image+')'}">
+								<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
+					  		</div>
+	                	</div>
+						
+						<!-- incoming message -->
+	                	<div class="media" v-else>
+					  		<div class="user-profile-image" :style="{backgroundImage: 'url('+grouped_message.sender.profile_image+')'}">
+								<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
+					  		</div>
+	                		<div class="media-body pl-2">
+                                <div class="font-weight-bold line-height-1">{{ grouped_message.sender.full_name }}</div>
+                                <div class="mt-2">
+		                            <div v-for="message in grouped_message.messages" v-cloak class="message-item">
+			                            <div class="message-content text-wrap">
+			                            	<message-type :message="message"></message-type>
+			                            </div>
+		                            	<small class="text-gray d-block">{{ message.created_at }}</small>
 		                            </div>
-		                            <small class="text-gray d-block">{{ message.created_at }}</small>
-		                        </div>
+	                            </div>
 	                        </div>
-	                    </div>
+	                	</div>
+	                    
 	                </div>
                 </div>
 
 				<div class="px-3 pb-3">
 					<vue-form-validate class="d-flex align-items-center border shadow-sm py-3 px-2 rounded" @submit="sendText()">
 						<input type="text" class="form-control form-control-sm border-0 shadow-none" v-model="textMessage" data-required placeholder="Write your message..">
-			            <button type="button" class="line-height-sm ml-2 btn px-0 emojipicker" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
-			                <smile-icon width="20" height="20" class="cursor-pointer" @click.native="emojipicker = emojipicker ? false : true"></smile-icon>
+			            <button type="button" class="line-height-sm ml-2 btn px-0 emojipicker">
+                            <emojipicker @select="sendEmoji"></emojipicker>
 			            </button>
 			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
 			            <input type="file" hidden ref="fileMedia" @change="addFile" />
@@ -104,6 +112,13 @@
 					<span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
 				</div>
 				<h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
+                <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-white border">Files</button>
+                    <button type="button" class="btn btn-white border-top border-bottom">Inquiries</button>
+                    <button type="button" class="btn btn-white border-top border-bottom border-left">Bookings</button>
+                    <button type="button" class="btn btn-white border">History</button>
+                </div>
+
 			</div>
 		</div>
 	</div>
@@ -119,12 +134,12 @@ import VideoRecorder from '../../components/video-recorder';
 import CommentIcon from '../../icons/comment';
 import FileVideoIcon from '../../icons/file-video';
 import Tooltip from './../../directives/tooltip.js';
-import SmileIcon from '../../icons/smile';
 import CameraIcon from '../../icons/camera';
 import MicrophoneIcon from '../../icons/microphone';
 import AddNoteIcon from '../../icons/add-note';
+import Emojipicker from '../../components/emojipicker';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, FileVideoIcon, SmileIcon, CameraIcon, MicrophoneIcon, AddNoteIcon},
+	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, FileVideoIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker},
 	directives: {Tooltip},
 
     data: () => ({
@@ -133,7 +148,6 @@ export default {
     	selectedConversation: null,
     	convoLoading: false,
     	textMessage: '',
-        emojipicker: false,
         recorder: '',
     }),
 
@@ -147,12 +161,12 @@ export default {
                 });
 
                 for (var i = 0; i <= messages.length - 1; i++) {
-                    var message_group = { sender: messages[i].user_id, messages: [messages[i]] };
+                    let message_group = { sender: messages[i].user || (messages[i].metadata.is_chatbot ? {id: 'chatbot'} : ''), messages: [messages[i]] };
                     groupMessage();
 
                     function groupMessage() {
                         const next_message = messages[i + 1];
-                        if (next_message && next_message.user_id == messages[i].user_id) {
+                        if (next_message && next_message.user.id == message_group.sender.id) {
                             message_group.messages.push(messages[i + 1]);
                             i++;
                             groupMessage();
@@ -171,6 +185,23 @@ export default {
     },
 
     methods: {
+        sendMessage(message) {
+            if(this.selectedConversation) {
+                this.selectedConversation.messages.push(message);
+                this.scrollDown();
+                let bodyFormData = new FormData();
+                Object.keys(message).map((k) => {
+                    bodyFormData.set(k, message[k]);
+                });
+                axios.post(`/dashboard/messages/${this.selectedConversation.id}`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
+                    let index = this.selectedConversation.messages.findIndex((x) => x.id == message.id);
+                    if(index > -1) {
+                        this.selectedConversation.messages[index] = response.data;
+                    }
+                });
+            }
+        },
+
         sendAudio(audio) {
             if(this.selectedConversation) {
                 const timestamp = dayjs().valueOf();
@@ -187,19 +218,14 @@ export default {
 
         downloadMedia(message) {
             if (message.source) {
-                fetch(message.source, {mode: 'no-cors'})
-                  .then(resp => resp.blob())
-                  .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = message.metadata.filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    a.remove();
-                  });
+                let link = document.createElement("a");
+                link.href = message.source;
+                link.download = message.metadata.filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                console.log(link);
             }
         },
 
@@ -267,21 +293,28 @@ export default {
             return imageExtensions.indexOf(extension) > -1;
         },
 
-        selectEmoji(emoji) {
+        sendEmoji(emoji) {
             const timestamp = dayjs().valueOf();
-            this.emojipicker = false;
-            this.$emit('send', {
+            let message = {
                 user: this.$root.auth,
-                message: emoji.data,
+                message: emoji,
                 type: 'emoji',
                 timestamp: dayjs().valueOf(),
                 created_at: dayjs(timestamp).format('hh:mm A'),
-            });
-            this.scrollDown();
+            };
+            this.sendMessage(message);
         },
 
     	sendText() {
-
+            const timestamp = dayjs().valueOf();
+            let message = {
+                user: this.$root.auth,
+                message: this.textMessage.trim(),
+                type: 'text',
+                timestamp: dayjs().valueOf(),
+                created_at: dayjs(timestamp).format('hh:mm A'),
+            };
+            this.sendMessage(message);
     	},
 
     	getData() {
@@ -308,6 +341,7 @@ export default {
             axios.get(`/dashboard/messages/${conversation.id}?is_read=true`).then((response) => {
                 this.convoLoading = false;
                 this.selectedConversation = response.data;
+                this.scrollDown();
             });
         },
 
@@ -390,14 +424,13 @@ export default {
 	}
 	.message-group {
 	    margin-bottom: 1.5rem;
-	    .message-item:not(:first-child):not(:only-child) {
-	        .media {
-	            display: none !important;
-	        }
+	    .media .media-body .message-item:not(:last-child):not(:only-child) {
+	    	small {
+	    		display: none !important;
+	    	}
 	    }
 	    .message-content {
 	        padding: 10px 14px;
-	        border-radius: $border-radius;
 	        margin-bottom: 2px;
 	        font-size: 14px;
 	        display: inline-block;
@@ -405,51 +438,47 @@ export default {
 	    }
 
 	    /* Outgoing message */
-	    .message-item {
-	        .outgoing-message {
-	        	padding-left: 45px;
-	            .message-content {
-		            background-color: #DAE3EC;
-	                border-top-left-radius: $border-radius;
-	                border-bottom-left-radius: $border-radius;
-	            }
-	            &:only-child,
-	            &:first-child {
-	                .message-content {
-	                    border-top-right-radius: $border-radius;
-	                }
-	            }
-	            &:only-child,
-	            &:last-child:not(:only-child) {
-	                .message-content {
-	                    border-bottom-right-radius: $border-radius;
-	                }
-	            }
-	        }
-	    }
+        .outgoing-message {
+        	padding-left: 45px;
+            .message-content {
+	            background-color: #DAE3EC;
+                border-top-left-radius: $border-radius;
+                border-bottom-left-radius: $border-radius;
+            }
+            .message-item:only-child,
+            .message-item:first-child {
+                .message-content {
+                    border-top-right-radius: $border-radius;
+                }
+            }
+            .message-item:only-child,
+            .message-item:last-child:not(:only-child) {
+                .message-content {
+                    border-bottom-right-radius: $border-radius;
+                }
+            }
+        }
 
 	    /* Incoming message */
-	    .message-item{
-		    .media:not(.outgoing-message) {
-	        	padding-right: 45px;
-		        .message-content {
-	                background-color: #f3f4f9;
-		            border-top-right-radius: $border-radius;
-		            border-bottom-right-radius: $border-radius;
-		        }
-		        &:only-child,
-		        &:first-child {
-		            .message-content {
-		                border-top-left-radius: $border-radius;
-		            }
-		        }
-		        &:only-child,
-		        &:last-child:not(:only-child) {
-		            .message-content {
-		                border-bottom-left-radius: $border-radius;
-		            }
-		        }
-		    }
+	    .media:not(.outgoing-message) {
+        	padding-right: 45px;
+	        .message-content {
+                background-color: #f3f4f9;
+	            border-top-right-radius: $border-radius;
+	            border-bottom-right-radius: $border-radius;
+	        }
+	        .message-item:only-child,
+	        .message-item:first-child {
+	            .message-content {
+	                border-top-left-radius: $border-radius;
+	            }
+	        }
+	        .message-item:only-child,
+	        .message-item:last-child:not(:only-child) {
+	            .message-content {
+	                border-bottom-left-radius: $border-radius;
+	            }
+	        }
 	    }
 	}
 </style>

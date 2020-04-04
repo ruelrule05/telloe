@@ -39,7 +39,7 @@
                             <div class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100 snapturebox-h-100 snapturebox-overflow-auto snapturebox-position-relative">
                                 <!-- Inquiries -->
                                <inquiry-form v-if="leftContent == 'inquiry-form'"></inquiry-form>
-                               <video-recorder v-else-if="leftContent == 'video-recorder'"></video-recorder>
+                               <video-recorder v-else-if="leftContent == 'video-recorder'" @submit="sendVideo"></video-recorder>
                                <audio-recorder v-else-if="leftContent == 'audio-recorder'" @submit="sendAudio"></audio-recorder>
 
                                 <!-- DateTimePicker -->
@@ -76,8 +76,6 @@
 <script>
 import dayjs from 'dayjs';
 import io from 'socket.io-client';
-/*let formatNumber = require('format-number');
-let format = formatNumber({prefix: '$', padRight: 2});*/
 import PanelArrowLeft from '../icons/panel-arrow-left';
 import PanelArrowRight from '../icons/panel-arrow-right';
 import WidgetChat from '../icons/widget-chat';
@@ -88,16 +86,8 @@ import SearchIcon from '../icons/search';
 import CommentIcon from '../icons/comment';
 import ExclamationCircleIcon from '../icons/exclamation-circle';
 import ArrowRightIcon from '../icons/arrow-right';
-/*import SignupModal from './modals/signup';
-import LoginModal from './modals/login';
-import ManageMediaModal from './modals/manage-media';
-import MessageMediaModal from './modals/message-media';*/
 import Tooltip from './directives/tooltip.js';
-//import VueLazyload from 'vue-lazyload';
 import Messages from './components/messages';
-//import VideoRecorder from './components/video-recorder';
-//import getUrls from 'get-urls';
-//SBVue.use(VueLazyload);
 export default {
     components: {PanelArrowLeft, PanelArrowRight, WidgetChat, CameraIcon, ChevronDown, CloseIcon, SearchIcon, CommentIcon, ExclamationCircleIcon, ArrowRightIcon, Messages, 
         'video-recorder': () => import(/* webpackChunkName: "video-recorder" */ './components/video-recorder'),
@@ -107,7 +97,6 @@ export default {
     },
     directives: {Tooltip},
     data: () => ({
-        //format: format,
         enquiry: {
             message: '',
             inquiry_type_id: '',
@@ -127,23 +116,12 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        leftContent: '', //inquiries, book
+        leftContent: 'audio-recorder', //inquiries, book
         itemType: '',
         selectedMedia: null,
         rightContent: 'messages', //form
         selectedMessage: {},
-        messages: [
-            /*{
-                id: 1,
-                timestamp: 1,
-                user: {id: 1},
-                message: {
-                    source: '/notifications/new_message.mp3',
-                    duration: '00:12',
-                },
-                type: 'audio',
-            }*/
-        ],
+        messages: [],
         chatbot_listen: false,
         chatbot_pending_messages: [],
         guest_replied: false,
@@ -199,6 +177,10 @@ export default {
     mounted() {
     },
     methods: {
+        sendVideo(video) {
+            this.sendMessage(video);
+        },
+
         sendAudio(audio) {
             this.sendMessage(audio);
         },
@@ -275,18 +257,16 @@ export default {
                 let type = message.additionalParameters.type || 'text';
                 setTimeout(() => {
                     let timestamp = dayjs().valueOf();
+                    let metadata = message.additionalParameters;
+                    metadata.is_chatbot = true;
                     let chatbotMessage = {
                         message: message.text,
                         type: type,
-                        metadata: message.additionalParameters,
+                        metadata: metadata,
                         user: {id: 'chatbot', full_name: 'Genie', profile_image: '/images/chatbot.png'},
                         timestamp: timestamp,
                         created_at: dayjs(timestamp).format('hh:mm A'),
                         status: 'is_writing',
-                        metadata: {
-                            is_chatbot: true,
-                            guest_cookie: this.$root.guest_cookie
-                        }
                     };
                     if(!this.$root.auth && !this.guest_replied) {
                         this.chatbot_pending_messages.push(chatbotMessage);
@@ -316,6 +296,14 @@ export default {
         },
 
         sendMessage(message, messageAnswer = false, push = true) {
+            let bodyFormData = new FormData();
+            Object.keys(message).map((k) => {
+                bodyFormData.set(k, message[k]);
+            });
+            message.metadata = typeof message.metadata == 'object' ? message.metadata : {};
+            message.metadata.guest_cookie = this.$root.guest_cookie;
+            bodyFormData.set('metadata', JSON.stringify(Object.assign({}, message.metadata)));
+
             if(messageAnswer && !messageAnswer.message.answer) {
                 this.$set(messageAnswer.message, 'answer', messageAnswer.answer);
             }
@@ -334,6 +322,8 @@ export default {
 
             if(!this.$root.auth && !this.guest_replied) {
                 this.chatbot_pending_messages.forEach((pm) => {
+                    pm.metadata = Object.assign({}, message.metadata);
+                    pm.metadata.is_chatbot = true;
                     SBAxios.post('/messages', pm).then((response) => {
                     });
                 });
@@ -341,13 +331,39 @@ export default {
             }
             this.guest_replied = true;
 
-            SBAxios.post('/messages', message).then((response) => {
-                let index = this.$root.messages.findIndex((x) => x.timestamp == message.timestamp);
-                if (index > -1) {
-                    if (message.type == 'file') {
-                        this.$root.messages[index].source = response.data.source;
+            SBAxios.post('/messages', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
+                if(response.data.type == 'action') {
+                    switch(response.data.metadata.action) {
+                        case 'open_url':
+                            this.openURL(response.data.metadata.url);
+                            break;
+
+                        case 'download_file':
+                            this.openURL(this.$root.API + response.data.metadata.file.source);
+                            break;
+
+                        case 'trigger_chatbot':
+                            //this.bot_id = message.text;
+                            let bodyFormData = new FormData();
+                            bodyFormData.set('bot_id', this.bot_id);
+                            SBAxios.post('/botman', bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then(async (response) => {
+                                let timeout = 0;
+                                for(let message of response.data.messages) {
+                                    await this.sendChatbotMessage(message, timeout);
+                                    timeout = 2500;
+                                }
+                            });
+                            //this.callChatbot(false);
+                            break;
                     }
-                    this.$root.messages[index].id = response.data.id;
+                } else {
+                    let index = this.$root.messages.findIndex((x) => x.timestamp == message.timestamp);
+                    if (index > -1) {
+                        if (message.type == 'file') {
+                            this.$root.messages[index].source = response.data.source;
+                        }
+                        this.$root.messages[index] = response.data;
+                    }
                 }
             });
 

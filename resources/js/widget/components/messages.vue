@@ -33,7 +33,15 @@
 
                             <!-- Audio -->
                             <div v-else-if="message.type == 'audio'">
-                                <waveplayer :theme=" $root.auth && $root.auth.id == message.user.id ? 'light': ''" :source="message.message.source" :duration="message.message.duration"></waveplayer>
+                                <waveplayer :theme=" $root.auth && $root.auth.id == message.user.id || message.user.id == $root.guest_cookie ? 'light': ''" :source="message.source" :duration="message.metadata.duration"></waveplayer>
+                            </div>
+
+                            <!-- Video -->
+                            <div v-else-if="message.type == 'video'" class="snapturebox-position-relative">
+                                <div class="snapturebox-position-absolute-center snapturebox-text-center snapturebox-message-play-icon snapturebox-cursor-pointer">
+                                    <play-icon></play-icon>
+                                </div>
+                                <img class="snapturebox-w-100 snapturebox-rounded" :src="message.preview" />
                             </div>
 
                             <!-- File -->
@@ -74,7 +82,7 @@
                                 </span>
                                 <template v-else>
                                     <p class="snapturebox-mb-0">{{ message.message }}</p>
-                                    <button class="snapturebox-mt-2 snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-badge-pill snapturebox-mr-1" v-for="button in message.metadata.buttons" @click="$parent.sendMessage({message: button.id}, 'action')">{{ button.text }}</button>
+                                    <button class="snapturebox-mt-2 snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-badge-pill snapturebox-mr-1" v-for="button in message.metadata.buttons" @click="$parent.sendMessage({message: button.id, type: 'action', target: button.target})">{{ button.text }}</button>
                                 </template>
                             </div>
 
@@ -129,9 +137,10 @@ import FileArchiveIcon from '../../icons/file-archive';
 import DocumentIcon from '../../icons/document';
 import ArrowCircleDownIcon from '../../icons/arrow-circle-down';
 import MicrophoneIcon from '../../icons/microphone';
+import PlayIcon from '../../icons/play';
 import Waveplayer from './waveplayer';
 export default {
-    components: {VEmojiPicker, SmileIcon, VideoIcon, SendIcon, CameraIcon, AddNoteIcon, ArrowCircleDownIcon, FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, MicrophoneIcon, Waveplayer},
+    components: {VEmojiPicker, SmileIcon, VideoIcon, SendIcon, CameraIcon, AddNoteIcon, ArrowCircleDownIcon, FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, MicrophoneIcon, PlayIcon, Waveplayer},
     props: {
         messages: {
             type: Array,
@@ -184,19 +193,14 @@ export default {
     methods: {
         downloadMedia(message) {
             if (message.source) {
-                fetch(message.source, {mode: 'no-cors'})
-                  .then(resp => resp.blob())
-                  .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = message.metadata.filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    a.remove();
-                  });
+                let sourceURL = new URL(message.source);
+                let link = document.createElement("a");
+                link.href = `${this.$root.API}/media${sourceURL.pathname}?filename=${message.metadata.filename}`;
+                link.target = '_blank';
+                link.download =  message.metadata.filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
             }
         },
 
@@ -209,12 +213,14 @@ export default {
             });
         },
 
-        async addFile() {
+        async addFile(e) {
             let fileInput = this.$refs['fileMedia'];
             if (fileInput.value) {
+                let file  = e.target.files[0];
                 const timestamp = dayjs().valueOf();
+                let user = this.$root.auth || {id: this.$root.guest_cookie, initials: 'G'};
                 let message = {
-                    user: this.$root.auth,
+                    user: user,
                     timestamp: dayjs().valueOf(),
                     type: 'file',
                     created_at: dayjs(timestamp).format('hh:mm A'),
@@ -226,12 +232,6 @@ export default {
                     let img = new Image();
                     img.src = URL.createObjectURL(fileInput.files[0]);
                     img.onload = () => {
-                        let canvas = document.createElement('canvas');
-                        let context = canvas.getContext('2d');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        let srcUrl = canvas.toDataURL('image/jpeg');
                         // Preview
                         let canvasPreview = document.createElement('canvas');
                         let contextPreview = canvasPreview.getContext('2d');
@@ -239,19 +239,18 @@ export default {
                         canvasPreview.height = img.height / 2;
                         contextPreview.drawImage(img, 0, 0, canvasPreview.width, canvasPreview.height);
                         let previewUrl = canvasPreview.toDataURL('image/jpeg');
-                        message.source = srcUrl;
+                        message.source = file;
                         message.preview = previewUrl;
                         this.$emit('send', message);
                         this.scrollDown();
                     };
                 } else {
-                    let fileBase64 = await this.fileToBase64(this.$refs['fileMedia'].files[0]);
                     let messageData = {
                         filename: fileInput.value.split(/(\\|\/)/g).pop(),
                         extension: fileExtension,
                         size: filesize(fileInput.files[0].size, {round: 0}),
                     };
-                    message.source = fileBase64;
+                    message.source = file;
                     message.metadata = messageData;
                     this.$emit('send', message);
                     this.scrollDown();
@@ -268,21 +267,22 @@ export default {
                 type: 'text',
                 timestamp: timestamp,
                 created_at: dayjs(timestamp).format('hh:mm A'),
-                metadata: {guest_cookie: this.$root.guest_cookie},
             });
             this.textMessage = '';
             this.scrollDown();
         },
 
         selectEmoji(emoji) {
+            let user = this.$root.auth || {id: this.$root.guest_cookie, initials: 'G'};
             const timestamp = dayjs().valueOf();
             this.emojipicker = false;
             this.$emit('send', {
-                user: this.$root.auth,
+                user: user,
                 message: emoji.data,
                 type: 'emoji',
                 timestamp: dayjs().valueOf(),
                 created_at: dayjs(timestamp).format('hh:mm A'),
+                metadata: {guest_cookie: this.$root.guest_cookie},
             });
             this.scrollDown();
         },
@@ -355,6 +355,11 @@ export default {
 
 <style scoped lang="scss">
     @import "../variables.scss";
+    .message-play-icon{
+        background: rgba(255,255,255,0.7);
+        border-radius: 50%;
+        padding: 10px;
+    }
     .message-group {
         margin-bottom: 1.5rem;
         .message-item:not(:first-child):not(:only-child) {

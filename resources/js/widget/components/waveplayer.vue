@@ -50,7 +50,9 @@ export default {
 		}
 
 		if(typeof this.source == 'string') {
-			this.wavesurfer.load(`${this.$root.API}/media${this.source}`);
+			let sourceURL = new URL(this.source);
+			this.wavesurfer.load(`${this.$root.API}/media${sourceURL.pathname}`);
+			//this.wavesurfer.load(`${this.$root.API}/media/notifications/new_message.mp3`);
 		} else if(typeof this.source == 'object') {
 			this.wavesurfer.load(window.URL.createObjectURL(this.source));
 		}

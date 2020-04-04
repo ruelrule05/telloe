@@ -160,9 +160,14 @@ export default {
 			    let file = new File(this.blobs, timestamp, {
 			        type: this.blobs[0].type
 			    });
+			    let user = this.$root.auth || {id: this.$root.guest_cookie, initials: 'G'};
 			    let audio = {
+			    	user: user,
 			    	source: file,
-			    	duration: this.secondsToDuration(this.wavesurfer.getDuration(), 14, 5)
+					type: 'audio',
+			    	timestamp: timestamp,
+					created_at: dayjs(timestamp).format('hh:mm A'),
+					metadata: {duration: this.secondsToDuration(this.wavesurfer.getDuration(), 14, 5)}
 			    };
 			  	this.$emit('submit', audio);
 			  	this.reset();
