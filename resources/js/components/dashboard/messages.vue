@@ -24,25 +24,23 @@
 					  		<span v-if="!conversation.user.profile_image">{{ conversation.user.initials }}</span>
 					  	</div>
 					  	<div class="media-body pl-2">
-					    	<h6 class="mt-0 mb-0">{{ conversation.user.full_name }}</h6>
+					    	<div class="d-flex">
+                                 <h6 class="mt-0 mb-0">{{ conversation.user.full_name }}</h6>
+                                 <small class="ml-auto text-gray">{{ conversation.last_message.created_diff }}</small>              
+                            </div>
 					    	<small v-html="conversation.last_message.message" class="mb-0 text-gray str-limit" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></small>
+                            <div class="text-right mt-2">
+                                <div class="user-profile-image user-profile-image-sm ml-auto" :style="{backgroundImage: 'url('+$root.auth.profile_image+')'}"></div>
+                            </div>
 					  	</div>
 					</div>
 				</div>
-			</div>
-
-			<!-- Recorder -->
-			<div v-if="selectedConversation" class="recorder position-absolute bg-white" :class="{'open': recorder}">
-				<audio-recorder v-if="recorder == 'audio'" @submit="sendAudio"></audio-recorder>
-				<video-recorder v-else-if="recorder == 'video'" :conversation="selectedConversation"></video-recorder>
 			</div>
 		</div>
 
 
 
-
-
-		<!-- Conversations messages -->
+		<!-- Messages list -->
 		<div class="conversation-messages border-left text-nowrap flex-grow-1 bg-white overflow-hidden position-relative">
 			<div v-if="selectedConversation" class="d-flex flex-column h-100">
 				<div class="p-3 bg-white border-bottom position-relative">
@@ -56,7 +54,12 @@
                                 <div class="font-weight-bold line-height-1">{{ grouped_message.sender.is_chatbot ? 'Genie' : 'You' }}</div>
 	                            <div class="mt-2">
 	                            	<div v-for="message in grouped_message.messages" v-cloak class="message-item">
-			                            <div class="message-content text-wrap">
+			                            <div class="message-content text-wrap position-relative">
+                                            <div class="message-actions p-1 position-absolute bg-white d-flex rounded shadow-sm" :class="{show: message.is_history}">
+                                                <div v-tooltip.top="'Mark as history'" class="cursor-pointer" @click="markHistory(message)">
+                                                    <bookmark-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''"></bookmark-icon>
+                                                </div>
+                                            </div>
 			                            	<message-type :message="message"></message-type>
 			                            </div>
 		                            	<small class="text-gray d-block">{{ message.created_at }}</small>
@@ -85,25 +88,26 @@
 	                            </div>
 	                        </div>
 	                	</div>
-	                    
 	                </div>
                 </div>
 
 				<div class="px-3 pb-3">
-					<vue-form-validate class="d-flex align-items-center border shadow-sm py-3 px-2 rounded" @submit="sendText()">
+					<vue-form-validate class="d-flex align-items-center border shadow-sm py-3 px-2 rounded message-form" @submit="sendText()">
 						<input type="text" class="form-control form-control-sm border-0 shadow-none" v-model="textMessage" data-required placeholder="Write your message..">
 			            <button type="button" class="line-height-sm ml-2 btn px-0 emojipicker">
                             <emojipicker @select="sendEmoji"></emojipicker>
 			            </button>
 			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
 			            <input type="file" hidden ref="fileMedia" @change="addFile" />
-			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="recorder = 'audio'"><microphone-icon width="20" height="20"></microphone-icon></button>
-			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="recorder = 'video'"><camera-icon width="20" height="20"></camera-icon></button>
+			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
+			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><camera-icon width="20" height="20"></camera-icon></button>
 						<button type="submit" class="btn btn-dark badge-pill px-3 btn-sm ml-3">Send</button>
 					</vue-form-validate>
 				</div>
 			</div>
 		</div>
+
+
 
 		<!-- Conversations details -->
 		<div class="conversation-details text-center p-3">
@@ -113,14 +117,72 @@
 				</div>
 				<h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
                 <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-white border">Files</button>
-                    <button type="button" class="btn btn-white border-top border-bottom">Inquiries</button>
-                    <button type="button" class="btn btn-white border-top border-bottom border-left">Bookings</button>
-                    <button type="button" class="btn btn-white border">History</button>
+                    <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
+                    <button type="button" class="btn btn-white border-top border-bottom" :class="{'active': detailsTab == 'inquiries'}" @click="detailsTab = 'inquiries'">Inquiries</button>
+                    <button type="button" class="btn btn-white border-top border-bottom border-left" :class="{'active': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button>
+                    <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button>
                 </div>
 
+                <div class="mt-2">
+                    <div v-if="detailsTab == 'files'">
+                        <select class="form-control form-control-sm mb-2" v-model="fileType">
+                            <option value="all">All Files</option>
+                            <option value="image">Photos</option>
+                            <option value="video">Videos</option>
+                            <option value="audio">Audios</option>
+                            <option value="file">Documents & Others</option>
+                        </select>
+
+                        <div class="d-flex flex-wrap mx-n1">
+                            <div v-for="file in selectedConversation.messages" v-if="isFile(file) && (file.type == fileType || fileType == 'all')" class="w-25 px-1 mb-2" style="height: 70px">
+                                <div class="rounded shadow-sm h-100 w-100 overflow-hidden cursor-pointer bg-white position-relative">
+                                    <div v-if="file.type == 'image' || file.type == 'video'" :style="{backgroundImage: 'url('+file.preview+')'}" class="file-thumbnail">
+                                        <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
+                                            <play-icon height="15" width="15"></play-icon>
+                                        </div>
+                                    </div>
+                                    <div v-else-if="file.type == 'audio'">
+                                        <file-audio-icon height="30" width="30" class="position-absolute-center"></file-audio-icon>
+                                    </div>
+                                    <div v-else-if="file.type == 'file'" class="p-1">
+                                        <component height="30" width="30" class="position-absolute-center" :is="fileIcon(file.metadata.extension)"></component>
+                                        <span class="preview-filename text-muted position-absolute w-100 text-center px-1 text-nowrap text-ellipsis">{{ file.metadata.filename }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 			</div>
 		</div>
+
+
+        <!-- Audio Recorder modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="audioRecorderModal">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div v-if="selectedConversation && recorder" class="h-100">
+                            <audio-recorder @submit="sendAudio" @close="closeRecorder('audio')"></audio-recorder>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Video Recorder modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="videoRecorderModal">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content overflow-hidden rounded">
+                    <div class="modal-body p-0">
+                        <div v-if="selectedConversation && recorder" class="h-100">
+                            <video-recorder @submit="sendVideo" @close="closeRecorder('video')" :conversation="selectedConversation"></video-recorder>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 </template>
 
@@ -132,14 +194,20 @@ import MessageType from '../../components/message-type';
 import AudioRecorder from '../../components/audio-recorder';
 import VideoRecorder from '../../components/video-recorder';
 import CommentIcon from '../../icons/comment';
-import FileVideoIcon from '../../icons/file-video';
+import DocumentIcon from '../../icons/document';
+import FileAudioIcon from '../../icons/file-audio';
+import FilePdfIcon from '../../icons/file-pdf';
+import FileArchiveIcon from '../../icons/file-archive';
+import PlayIcon from '../../icons/play';
 import Tooltip from './../../directives/tooltip.js';
 import CameraIcon from '../../icons/camera';
 import MicrophoneIcon from '../../icons/microphone';
 import AddNoteIcon from '../../icons/add-note';
+import MoreHIcon from '../../icons/more-h';
+import BookmarkIcon from '../../icons/bookmark';
 import Emojipicker from '../../components/emojipicker';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, FileVideoIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker},
+	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, FileAudioIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon},
 	directives: {Tooltip},
 
     data: () => ({
@@ -148,7 +216,9 @@ export default {
     	selectedConversation: null,
     	convoLoading: false,
     	textMessage: '',
-        recorder: '',
+        detailsTab: 'files',
+        fileType: 'all',
+        recorder: ''
     }),
 
     computed: {
@@ -185,21 +255,101 @@ export default {
     },
 
     methods: {
+        markHistory(message) {
+            let is_history = message.is_history ? false : true;
+            this.$set(message, 'is_history', is_history);
+            axios.put(`/dashboard/messages/${message.id}`, message).then((response) => {
+            });
+        },
+
+        closeRecorder(type) {
+            $(`#${type}RecorderModal`).modal('hide');
+            this.recorder = '';
+        },
+        openRecorder(type) {
+            this.recorder = type;
+            $(`#${type}RecorderModal`).modal('show');
+        },
+
+        fileIcon(extension) {
+            let iconComponent = 'document-icon';
+            let videoExtensions = ['mp4', 'webm'];
+            let audioExtensions = ['mp3', 'wav'];
+            if (videoExtensions.indexOf(extension) > -1) {
+                iconComponent = 'file-video-icon';
+            } else if (audioExtensions.indexOf(extension) > -1) {
+                iconComponent = 'file-audio-icon';
+            } else {
+                switch (extension) {
+                    case 'pdf':
+                        iconComponent = 'file-pdf-icon';
+                        break;
+
+                    case 'zip':
+                        iconComponent = 'file-archive-icon';
+                        break;
+
+                    case 'rar':
+                        iconComponent = 'file-archive-icon';
+                        break;
+
+                    case 'docx':
+                        iconComponent = 'document-icon';
+                        break;
+
+                    case 'doc':
+                        iconComponent = 'document-icon';
+                        break;
+
+                    case 'txt':
+                        iconComponent = 'document-icon';
+                        break;
+
+                    case 'xls':
+                        break;
+
+                    case 'xlsx':
+                        break;
+                }
+            }
+
+            return iconComponent;
+        },
+
+        isFile(message) {
+            let fileTypes = ['image', 'video', 'audio', 'file'];
+            return fileTypes.indexOf(message.type) > -1;
+        },
+
         sendMessage(message) {
             if(this.selectedConversation) {
                 this.selectedConversation.messages.push(message);
+                let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
+                let messageCopy = Object.assign({}, message);
+                if(conversationData) {
+                    messageCopy.message = `You: ${messageCopy.message}`;
+                    this.$set(conversationData, 'last_message', messageCopy);
+                }
                 this.scrollDown();
+                this.orderConversations();
+
+                messageCopy = Object.assign({}, message);
                 let bodyFormData = new FormData();
-                Object.keys(message).map((k) => {
-                    bodyFormData.set(k, message[k]);
+                if(messageCopy.metadata) messageCopy.metadata = JSON.stringify(messageCopy.metadata);
+                Object.keys(messageCopy).map((k) => {
+                    bodyFormData.set(k, messageCopy[k]);
                 });
                 axios.post(`/dashboard/messages/${this.selectedConversation.id}`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
-                    let index = this.selectedConversation.messages.findIndex((x) => x.id == message.id);
+                    let index = this.selectedConversation.messages.findIndex((x) => x.id == messageCopy.id);
                     if(index > -1) {
-                        this.selectedConversation.messages[index] = response.data;
+                        this.$set(this.selectedConversation.messages[index], 'id', response.data.id);
                     }
                 });
             }
+        },
+
+        sendVideo(video) {
+
         },
 
         sendAudio(audio) {
@@ -207,12 +357,16 @@ export default {
                 const timestamp = dayjs().valueOf();
             	let message = {
                     user: this.$root.auth,
-                    message: audio,
+                    source: audio.source,
                     timestamp: dayjs().valueOf(),
                     type: 'audio',
                     created_at: dayjs(timestamp).format('hh:mm A'),
+                    is_read: 1,
+                    created_diff: 'Just now',
+                    metadata: {duration: audio.duration}
                 };
-            	this.selectedConversation.messages.push(message);
+            	this.sendMessage(message);
+                this.closeRecorder('audio');
             }
         },
 
@@ -246,7 +400,11 @@ export default {
                     user: this.$root.auth,
                     timestamp: dayjs().valueOf(),
                     type: 'file',
+                    source: fileInput.files[0],
+                    timestamp: dayjs().valueOf(),
                     created_at: dayjs(timestamp).format('hh:mm A'),
+                    is_read: 1,
+                    created_diff: 'Just now',
                 };
 
                 let fileExtension = fileInput.value.split('.').pop();
@@ -268,10 +426,8 @@ export default {
                         canvasPreview.height = img.height / 2;
                         contextPreview.drawImage(img, 0, 0, canvasPreview.width, canvasPreview.height);
                         let previewUrl = canvasPreview.toDataURL('image/jpeg');
-                        message.source = srcUrl;
                         message.preview = previewUrl;
-                        this.selectedConversation.messages.push(message);
-                        this.scrollDown();
+                        this.sendMessage(message);
                     };
                 } else {
                     let fileBase64 = await this.fileToBase64(this.$refs['fileMedia'].files[0]);
@@ -280,10 +436,8 @@ export default {
                         extension: fileExtension,
                         size: filesize(fileInput.files[0].size, {round: 0}),
                     };
-                    message.source = fileBase64;
                     message.metadata = messageData;
-                    this.selectedConversation.messages.push(message);
-                    this.scrollDown();
+                    this.sendMessage(message);
                 }
             }
         },
@@ -301,6 +455,8 @@ export default {
                 type: 'emoji',
                 timestamp: dayjs().valueOf(),
                 created_at: dayjs(timestamp).format('hh:mm A'),
+                is_read: 1,
+                created_diff: 'Just now',
             };
             this.sendMessage(message);
         },
@@ -311,10 +467,13 @@ export default {
                 user: this.$root.auth,
                 message: this.textMessage.trim(),
                 type: 'text',
+                is_read: 1,
                 timestamp: dayjs().valueOf(),
                 created_at: dayjs(timestamp).format('hh:mm A'),
+                created_diff: 'Just now',
             };
             this.sendMessage(message);
+            this.textMessage = '';
     	},
 
     	getData() {
@@ -358,15 +517,41 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
-	.recorder{
-		height: 100%;
-		width: 100%;
-		right: -100%;
-		transition: right 0.15s;
-		&.open{
-			right: 0;
-		}
-	}
+    .message-form svg {
+        transition: $transition-base;
+    }
+    .message-form svg:hover{
+        transform: scale(1.1);
+    }
+    #videoRecorderModal .modal-content{
+        height: 500px;
+    }
+    #audioRecorderModal .modal-content{
+        height: 500px;
+    }
+    .preview-video-play{
+        line-height: 0;
+        border-radius: 50%;
+        background-color: rgba(255,255,255,0.75);
+        padding: 5px;
+    }
+    .preview-filename{
+        bottom: 2px;
+        left: 0;
+        font-size: 9px;
+        font-weight: 200;
+    }
+    .file-thumbnail{
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .user-profile-image-sm{
+        width: 25px !important;
+        height: 25px !important;
+    }
 	.conversation-messages{
 		width: 0;
 	}
@@ -455,6 +640,30 @@ export default {
             .message-item:last-child:not(:only-child) {
                 .message-content {
                     border-bottom-right-radius: $border-radius;
+                }
+            }
+            .message-content:hover {
+                .message-actions{
+                    visibility:visible;
+                    opacity: 1;
+                }
+            }
+            .message-actions.show{
+                visibility:visible;
+                opacity: 1;
+            }
+            .message-actions{
+                visibility: hidden;
+                opacity: 0;
+                top: 0;
+                left: -25px;
+                z-index: 10;
+                transition: visibility 0s, opacity 0.14s;
+                svg {
+                    transition: $transition-base;
+                    &:hover{
+                        transform: scale(1.1);
+                    }
                 }
             }
         }

@@ -303,7 +303,7 @@ $viewport_heights: (
 }
 .sidebar {
     flex: 0 0 100px;
-    z-index: 66666;
+    z-index: 1000;
     a {
         svg {
             transition: all 0.15s;
@@ -321,6 +321,13 @@ $viewport_heights: (
             }
         }
     }
+}
+.chat-status {
+    line-height: 0;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
 }
 
 // Tooltips
@@ -688,4 +695,9 @@ svg.leader-line {
     position: absolute;
     right: 10px;
     top: 3px;
+}
+.text-ellipsis{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

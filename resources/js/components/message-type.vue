@@ -8,6 +8,12 @@
             <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
         </p>
 
+
+        <!-- Video -->
+        <p class="mb-0" v-else-if="message.type == 'video'">
+            <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
+        </p>
+
         <!-- Audio -->
         <div v-else-if="message.type == 'audio'">
             <waveplayer :source="message.source" :duration="message.metadata.duration"></waveplayer>
@@ -45,6 +51,7 @@ import FileVideoIcon from '../icons/file-video';
 import FileAudioIcon from '../icons/file-audio';
 import FilePdfIcon from '../icons/file-pdf';
 import FileArchiveIcon from '../icons/file-archive';
+import DocumentIcon from '../icons/document';
 import ArrowCircleDownIcon from '../icons/arrow-circle-down';
 import Waveplayer from './waveplayer';
 export default {
@@ -54,11 +61,11 @@ export default {
 		}
 	},
 
-    components: {FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, ArrowCircleDownIcon, Waveplayer},
+    components: {FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, ArrowCircleDownIcon, Waveplayer},
 
 	methods: {
         fileIcon(extension) {
-            let iconComponent = 'file-empty-icon';
+            let iconComponent = 'document-icon';
             let videoExtensions = ['mp4', 'webm'];
             let audioExtensions = ['mp3', 'wav'];
 

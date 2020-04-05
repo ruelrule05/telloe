@@ -42,8 +42,9 @@ Route::group(
             ], function() {
                 Route::get('', 'AuthController@reports');
                 Route::resource('inquiries', 'InquiryController');
-                Route::resource('messages', 'ConversationController');
                 Route::post('messages/{conversation_id}', 'ConversationController@postMessage');
+                Route::put('messages/{message_id}', 'ConversationController@updateMessage');
+                Route::resource('messages', 'ConversationController');
                 Route::post('inquiries/{id}/message', 'InquiryController@postMessage');
                 Route::get('widget', 'WidgetController@show');
                 Route::put('widget', 'WidgetController@update');

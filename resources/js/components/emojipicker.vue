@@ -40,6 +40,12 @@ export default {
 
 <style scoped lang="scss">
 @import '../../sass/variables';
+.emoji-invoker svg {
+	transition: $transition-base;
+}
+.emoji-invoker svg:hover{
+	transform: scale(1.1);
+}
 .emoji-picker {
 	bottom: 80px;
 	right: 20px;

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Conversation;
 use App\Models\Message;
 use Auth;
+use File;
 
 class ConversationController extends Controller
 {
@@ -43,14 +44,47 @@ class ConversationController extends Controller
         ]);
         $conversation = Conversation::findOrFail($id);
         $this->authorize('postMessage', $conversation);
+
+        $time = time();
+        $sourceFile = null;
+        if ($request->hasFile('source')) :
+            $filename = $time . '-source';
+            $srcDestination = 'storage/message-media/' . $filename;
+            $request->file('source')->storeAs('public/message-media/', $filename);
+            $sourceFile = '/' . $srcDestination;
+        endif;
+
+        $previewFile = null;
+        if ($request->preview) :
+            $source = $request->preview;
+            $filename = $time . '-preview';
+            $previewDestination = 'storage/message-media/' . $filename;
+            $preview = base64_decode(substr($source, strpos($source, ',') + 1));
+            File::put($previewDestination, $preview);
+            $previewFile = '/' . $previewDestination;
+        endif;
+
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'user_id' => Auth::user()->id,
             'type' => $request->type,
             'message' => $request->message,
             'timestamp' => $request->timestamp,
+            'source' => $sourceFile,
+            'preview' => $previewFile,
+            'metadata' => json_decode($request->metadata),
         ]);
 
+        return response()->json($message);
+    }
+
+    public function updateMessage($id, Request $request)
+    {
+        $message = Message::findOrFail($id);
+        $this->authorize('update', $message);
+        $message->update([
+            'is_history' => $request->is_history
+        ]);
         return response()->json($message);
     }
 }

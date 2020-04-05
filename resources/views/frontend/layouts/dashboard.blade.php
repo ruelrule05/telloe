@@ -18,6 +18,11 @@
 
 			<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch w-100">
 				<div class="sidebar border-right py-3 align-self-stretch text-center bg-white">
+					<div class="mb-3">
+						<div class="d-inline-block" v-tooltip.right="'Notifications'">
+							<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
+						</div>
+					</div>
 					<div class="dropdown">
 						<div class="user-profile d-inline-block mb-2 cursor-pointer" :style="[auth.profile_image ? {backgroundImage: 'url(' + auth.profile_image + ')'} : '']" data-toggle="dropdown"></div>
 						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -27,11 +32,6 @@
 						</div>
 					</div>
 					<h1 class="h6 mb-4 font-heading">@{{ auth.full_name }}</h1>
-					<div class="mb-2">
-						<div class="d-inline-block" v-tooltip.right="'Notifications'">
-							<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
-						</div>
-					</div>
 
 					<div class="py-2">
 						<div class="d-inline-block" v-tooltip.right="'Dashboard'">

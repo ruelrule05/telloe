@@ -2,7 +2,7 @@
 	<div class="audio-recorder h-100 overflow-hidden">
 		<div class="d-flex flex-column h-100">
 			<div class="d-flex w-100">
-				<button type="button" class="btn text-white ml-auto shadow-none" @click="$parent.leftContent = '';">
+				<button type="button" class="btn ml-auto shadow-none" @click="close">
 					<close-icon height="36" width="36"></close-icon>
 				</button>
 			</div>
@@ -19,11 +19,11 @@
 						<div class="d-flex align-items-center">
 							<template v-if="recorderStatus == 'recording'">
 								<span class="chat-status bg-danger">&nbsp;</span>&nbsp;
-								<small class="text-secondary">Rec</small>
+								<small class="text-gray">Rec</small>
 							</template>
 							<template v-else-if="recorderStatus == 'paused'">
 								<span class="chat-status bg-gray">&nbsp;</span>&nbsp;
-								<small class="text-secondary">Paused</small>
+								<small class="text-gray">Paused</small>
 							</template>
 						</div>
 					</div>
@@ -47,7 +47,7 @@
 			<div v-if="micReady" class="flex-fill w-100 text-center px-5 pb-5">
 				<div class="d-flex align-items-center text-center">
 					<div class="w-25">
-						<button v-if="hasRecorded" @click="$parent.leftContent = '';" class="btn font-weight-bold mr-auto">Cancel</button>
+						<button v-if="hasRecorded" @click="close" class="btn font-weight-bold mr-auto">Cancel</button>
 					</div>
 
 					<div class="flex-grow-1">
@@ -142,6 +142,10 @@ export default {
 	computed: {},
 
 	methods: {
+		close() {
+			this.$emit('close');
+		},
+
 		reset() {
 			this.blobs = [];
 			this.recorderStatus = '';
@@ -264,7 +268,6 @@ export default {
 	}
 }
 .audio-recorder {
-	width: 380px;
 }
 .player-control{
 	z-index: 10;

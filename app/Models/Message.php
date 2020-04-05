@@ -8,11 +8,12 @@ use Carbon\Carbon;
 class Message extends Model
 {
     //
-    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp'];
-    protected $appends = ['user'];
+    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history'];
+    protected $appends = ['user', 'created_diff'];
     protected $casts = [
         'metadata' => 'array',
         'is_read' => 'boolean',
+        'is_history' => 'boolean',
     ];
 
     public function conversation()
@@ -28,6 +29,12 @@ class Message extends Model
     public function getCreatedAtAttribute($value)
     {
     	return Carbon::parse($value)->format('h:iA \\o\\n D');
+    }
+
+
+    public function getCreatedDiffAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->diffForHumans();
     }
 
     public function getSourceAttribute($value)

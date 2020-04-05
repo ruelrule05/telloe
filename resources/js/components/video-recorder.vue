@@ -1,7 +1,7 @@
 <template>
-    <div id="video-recorder" class="bg-light overflow-auto position-relative h-100">
-        <close-icon v-if="!isRecording" class="position-absolute cursor-pointer" fill="white" @click.native="closeCamera(); $emit('hide');"></close-icon>
-        <div id="video-viewer" class="position-relative bg-black">
+    <div id="video-recorder" class="bg-light overflow-auto position-relative h-100 d-flex flex-column">
+        <close-icon v-if="!isRecording" class="position-absolute cursor-pointer" fill="white" @click.native="close"></close-icon>
+        <div id="video-viewer" class="position-relative bg-black flex-grow-1">
             <!-- Spinner -->
             <div class="position-absolute-center text-center" v-if="!cameraReady">
                 <div class="spinner-border text-primary" role="status"></div>
@@ -15,13 +15,13 @@
                     <div class="h-100" id="toRecord">
                         <div class="position-relative overflow-hidden h-100" @mousemove="imagesHover">
                             <div v-if="isRecording" class="position-absolute" style="top: 20px; left: 20px; z-index: 2">
-                                <button @click="drawTool = 'circle'" class="btn-sm btn p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'circle' ? 'btn-danger text-white' : 'btn-white']"><circle-icon size="1x"></circle-icon></button>
+                                <button @click="drawTool = 'circle'" class="btn-sm btn p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'circle' ? 'btn-danger text-white' : 'btn-white']"><shape-circle-icon size="1x"></shape-circle-icon></button>
                                 <div>
                                     <button @click="drawTool = 'brush'" class="mt-2 btn btn-sm p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'brush' ? 'btn-danger text-white' : 'btn-white']"><pencil-circle-icon width="16" height="16"></pencil-circle-icon></button>
                                 </div>
                             </div>
                             
-                            <div v-if="selectedImage.type == 'video'" class="position-absolute" style="top: 10px; right: 10px; z-index: 2">
+                            <div v-if="selectedFile.type == 'video'" class="position-absolute" style="top: 10px; right: 10px; z-index: 2">
                                 <button v-if="!selectedVideoFrame" @click.stop="snapVideo" class="btn btn-danger btn-sm d-flex align-items-center shadow-sm badge-pill py-1 px-2">Snap this frame</button>
                                 <button v-else @click.stop="selectedVideoFrame = null; continueVideo(); pulses = []; clearSvg()" class="btn btn-danger btn-sm d-flex align-items-center shadow-sm badge-pill py-1 px-2">Unsnap frame</button>
                             </div>
@@ -33,13 +33,13 @@
                                         @mousemove="mouseEvent"
                                         @mouseup="mouseEvent"
                                         @mouseleave="mousemove = false">
-                                    <div v-if="selectedImage.type == 'image' || selectedImage.type == 'sample'" class="position-relative h-100">
-                                        <image-to-canvas class="image-selected position-absolute-center w-100 bg-black" :src="selectedImage.media"></image-to-canvas>
+                                    <div v-if="selectedFile.type == 'image' || selectedFile.type == 'sample'" class="position-relative h-100">
+                                        <image-to-canvas class="image-selected position-absolute-center w-100 bg-black" :src="selectedFile.source"></image-to-canvas>
                                     </div>
 
-                                    <div v-else-if="selectedImage.type == 'video'" class="h-100 bg-black">
+                                    <div v-else-if="selectedFile.type == 'video'" class="h-100 bg-black">
                                         <div :hidden="selectedVideoFrame" class="h-100">
-                                            <video ref="selectedVideo" playsinline controls controlsList="nofullscreen nodownload noremoteplayback" class="w-100 h-100 outline-0" :src="selectedImage.media" @loadedmetadata="loadedmetadata"></video>
+                                            <video ref="selectedVideo" playsinline controls controlsList="nofullscreen nodownload noremoteplayback" class="w-100 h-100 outline-0 position-absolute" :src="selectedFile.source" @loadedmetadata="loadedmetadata"></video>
                                         </div>
                                         <div :hidden="!selectedVideoFrame" class="h-100">
                                             <div class="h-100 position-relative">
@@ -47,7 +47,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <svg-draw ref="svgDraw" :hidden="selectedImage.type == 'video' && !selectedVideoFrame" :disabled="drawTool != 'brush' || !isRecording"></svg-draw>
+                                    <svg-draw ref="svgDraw" :hidden="selectedFile.type == 'video' && !selectedVideoFrame" :disabled="drawTool != 'brush' || !isRecording"></svg-draw>
                                 </div>
                             </div>
 
@@ -91,34 +91,27 @@
                     <!-- <button type="button" class="btn btn-primary" data-dismiss="modal" :disabled="!videoOutput" @click="submit">Send</button> -->
                 <!-- End Footer -->
             </div>
-
-            <div class="p-4">
-                <div class="text-center">
-                    <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'photos'}" @click="activeTab = 'photos'">Photos</button>
-                    <button class="btn border-bottom-primary pb-2 px-4 shadow-none" :class="{'active': activeTab == 'files'}" @click="activeTab = 'files'">Client Files</button>
-                </div>
+        </div>
 
 
-                <!-- Shared Files -->
-                <div class="p-1 bg-white-7 mt-4" v-if="activeTab == 'photos'">
-                    <div class="overflow-auto text-nowrap w-100">
-                        <div v-for="file in conversation.conversation_media" class="p-1 d-inline-block" style="width: 90px">
-                            <div class="position-relative bg-black rounded shadow-sm overflow-hidden cursor-pointer" style="padding-top: 100%" @click="selectedImage = file; pulses = []; clearSvg();">
-                                <image-to-canvas class="position-absolute-center w-100" :src="file.preview" @click="selectedImage = file"></image-to-canvas>
-                                <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
-                            </div>
+        <div class="p-2 border" v-if="files.length > 0">
+            <!-- Shared Files -->
+            <div class="p-1 bg-white-7">
+                <div class="overflow-auto text-nowrap w-100">
+                    <div v-for="file in files" class="p-1 d-inline-block" style="width: 90px">
+                        <div class="position-relative bg-black rounded shadow-sm overflow-hidden cursor-pointer" style="padding-top: 100%" @click="selectedFile = file; pulses = []; clearSvg();">
+                            <image-to-canvas class="position-absolute-center w-100" :src="file.preview" @click="selectedFile = file"></image-to-canvas>
+                            <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
                         </div>
                     </div>
                 </div>
-                <!-- End Shared Files -->
             </div>
+            <!-- End Shared Files -->
         </div>
     </div>
 </template>
 
 <script>
-import Timer from 'tiny-timer/dist/tiny-timer.js';
-const timer = new Timer();
 const domtoimage = require('dom-to-image');
 const format = require('format-duration');
 import RecordRTC from 'recordrtc';
@@ -130,6 +123,7 @@ import VideoIcon from '../icons/video';
 import CheckmarkIcon from '../icons/checkmark';
 import PencilCircleIcon from '../icons/pencil-circle';
 import CloseIcon from '../icons/close';
+import ShapeCircleIcon from '../icons/shape-circle';
 import PlayIcon from '../icons/play';
 import Tooltip from './../directives/tooltip.js';
 export default {
@@ -145,6 +139,7 @@ export default {
         PauseAltIcon,
         CheckmarkIcon,
         CloseIcon,
+        ShapeCircleIcon,
     },
 
     props: {
@@ -157,7 +152,7 @@ export default {
     data: () => ({
         cameraReady: false,
         videoOutput: null,
-        selectedImage: {
+        selectedFile: {
             type: '',
             src: '',
         },
@@ -181,11 +176,19 @@ export default {
         currentTime: 0,
         limit: 30000, // 30 seconds
         cameraFull: false,
-        timer: timer,
-        activeTab: 'photos',
     }),
 
+    computed: {
+        files() {
+            let fileTypes = ['image', 'video'];
+            return this.conversation.messages.filter((file) => {
+                return fileTypes.indexOf(file.type) > -1;
+            });
+        }
+    },
+
     created() {
+        if(this.files.length > 0) this.selectedFile = this.files[0];
     },
 
     mounted() {
@@ -198,6 +201,15 @@ export default {
         /*this.timer.start(this.limit);
         this.timer.on('tick', (ms) => console.log(this.timer.status))
         this.timer.on('done', () => this.stopRecording());*/
+    },
+
+    
+    beforeDestroy() {
+        if (this.streams) {
+            this.streams.getTracks().forEach(function(track) {
+                track.stop();
+            });
+        }
     },
 
     methods: {
@@ -241,14 +253,8 @@ export default {
            this.pulses = [];
         },
 
-        closeCamera() {
-            this.streams.getTracks().forEach(function(track) {
-              track.stop();
-            });
-            this.videoRecorder = this.streams = this.videoOutput = null;
-            this.hasRecorded = this.cameraReady = this.isRecording = false;
-            this.pulses = [];
-            this.clearSvg();
+        close() {
+            this.$emit('close');
         },
 
         clearSvg() {
@@ -306,7 +312,7 @@ export default {
         },
 
         pulsingPoint(e) {
-            if (this.isRecording && (this.selectedImage.type == 'image' || this.selectedImage.type == 'sample' || (this.selectedImage.type == 'video' && this.selectedVideoFrame)) && e.target.nodeName != 'path' && this.drawTool == 'circle') {
+            if (this.isRecording && (this.selectedFile.type == 'image' || this.selectedFile.type == 'sample' || (this.selectedFile.type == 'video' && this.selectedVideoFrame)) && e.target.nodeName != 'path' && this.drawTool == 'circle') {
                 let rect = e.currentTarget.getBoundingClientRect();
                 this.pulses.push({
                     top: (e.clientY - rect.top) + 'px',
@@ -485,9 +491,6 @@ export default {
 
 <style scoped lang="scss">
     #video-recorder {
-        #video-viewer {
-            height: 350px;
-        }
         > svg {
             top: 5px;
             left: 5px;

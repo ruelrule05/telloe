@@ -22,6 +22,6 @@ class MessagePolicy
 
     public function update(User $user, Message $message)
     {
-        return $message->user_id == $user->id;
+        return $message->conversation->widget->user_id == $user->id;
     }
 }
