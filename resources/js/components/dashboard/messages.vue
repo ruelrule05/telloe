@@ -46,14 +46,14 @@
 				<div class="p-3 bg-white border-bottom position-relative">
 					<strong class="font-heading">{{ selectedConversation.user.full_name }}</strong>
 				</div>
-				<div class="p-3 overflow-auto flex-grow-1" ref="message-group-container">
+				<div class="p-3 overflow-auto flex-grow-1" ref="message-group-container" id="message-group-container">
 	                <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
 	                    <!-- outgoing message -->
 	                	<div class="media outgoing-message" v-if="grouped_message.sender.id == $root.auth.id || grouped_message.sender.id == 'chatbot'">
 	                		<div class="media-body pr-2 text-right">
                                 <div class="font-weight-bold line-height-1">{{ grouped_message.sender.is_chatbot ? 'Genie' : 'You' }}</div>
 	                            <div class="mt-2">
-	                            	<div v-for="message in grouped_message.messages" v-cloak class="message-item">
+	                            	<div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
 			                            <div class="message-content text-wrap position-relative">
                                             <div class="message-actions p-1 position-absolute bg-white d-flex rounded shadow-sm" :class="{show: message.is_history}">
                                                 <div v-tooltip.top="'Mark as history'" class="cursor-pointer" @click="markHistory(message)">
@@ -79,10 +79,15 @@
 	                		<div class="media-body pl-2">
                                 <div class="font-weight-bold line-height-1">{{ grouped_message.sender.full_name }}</div>
                                 <div class="mt-2">
-		                            <div v-for="message in grouped_message.messages" v-cloak class="message-item">
-			                            <div class="message-content text-wrap">
-			                            	<message-type :message="message"></message-type>
-			                            </div>
+		                            <div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
+			                            <div class="message-content text-wrap position-relative">
+                                            <div class="message-actions p-1 position-absolute bg-white d-flex rounded shadow-sm" :class="{show: message.is_history}">
+                                                <div v-tooltip.top="'Mark as history'" class="cursor-pointer" @click="markHistory(message)">
+                                                    <bookmark-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''"></bookmark-icon>
+                                                </div>
+                                            </div>
+                                            <message-type :message="message"></message-type>
+                                        </div>
 		                            	<small class="text-gray d-block">{{ message.created_at }}</small>
 		                            </div>
 	                            </div>
@@ -110,20 +115,22 @@
 
 
 		<!-- Conversations details -->
-		<div class="conversation-details text-center p-3">
-			<div v-if="selectedConversation">
-				<div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
-					<span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
-				</div>
-				<h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
-                <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
-                    <button type="button" class="btn btn-white border-top border-bottom" :class="{'active': detailsTab == 'inquiries'}" @click="detailsTab = 'inquiries'">Inquiries</button>
-                    <button type="button" class="btn btn-white border-top border-bottom border-left" :class="{'active': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button>
-                    <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button>
+		<div class="conversation-details text-center p-3 h-100">
+			<div v-if="selectedConversation" class="d-flex flex-column h-100">
+				<div>
+                    <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
+                        <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
+                    </div>
+                    <h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
+                    <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
+                        <button type="button" class="btn btn-white border-top border-bottom" :class="{'active': detailsTab == 'inquiries'}" @click="detailsTab = 'inquiries'">Inquiries</button>
+                        <button type="button" class="btn btn-white border-top border-bottom border-left" :class="{'active': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button>
+                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button>
+                    </div>            
                 </div>
 
-                <div class="mt-2">
+                <div class="mt-2 overflow-auto flex-grow-1 h-100">
                     <div v-if="detailsTab == 'files'">
                         <select class="form-control form-control-sm mb-2" v-model="fileType">
                             <option value="all">All Files</option>
@@ -135,14 +142,15 @@
 
                         <div class="d-flex flex-wrap mx-n1">
                             <div v-for="file in selectedConversation.messages" v-if="isFile(file) && (file.type == fileType || fileType == 'all')" class="w-25 px-1 mb-2" style="height: 70px">
-                                <div class="rounded shadow-sm h-100 w-100 overflow-hidden cursor-pointer bg-white position-relative">
+                                <div class="rounded shadow-sm h-100 w-100 overflow-hidden cursor-pointer bg-white position-relative" @click="openFile(file)">
                                     <div v-if="file.type == 'image' || file.type == 'video'" :style="{backgroundImage: 'url('+file.preview+')'}" class="file-thumbnail">
                                         <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
                                             <play-icon height="15" width="15"></play-icon>
                                         </div>
                                     </div>
                                     <div v-else-if="file.type == 'audio'">
-                                        <file-audio-icon height="30" width="30" class="position-absolute-center"></file-audio-icon>
+                                        <volume-mid-icon height="30" width="30" class="position-absolute-center"></volume-mid-icon>
+                                        <span class="preview-filename text-muted position-absolute w-100 text-center px-1 text-nowrap text-ellipsis">{{ file.metadata.duration }}</span>
                                     </div>
                                     <div v-else-if="file.type == 'file'" class="p-1">
                                         <component height="30" width="30" class="position-absolute-center" :is="fileIcon(file.metadata.extension)"></component>
@@ -152,9 +160,78 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div v-else-if="detailsTab == 'history'" class="message-group">
+                        <div v-for="history in selectedConversation.messages" v-if="history.is_history">
+                            <div class="media outgoing-message my-3" v-if="history.user.id == $root.auth.id || history.user.id == 'chatbot'">
+                                <div class="media-body pr-2 text-right overflow-hidden">
+                                    <div class="font-weight-bold line-height-1">{{ history.user.is_chatbot ? 'Genie' : 'You' }}</div>
+                                    <div class="mt-2 overflow-hidden">
+                                        <div class="message-content rounded position-relative mw-100 cursor-pointer" v-scroll-to="{el: '#message-'+history.id, container: '#message-group-container', offset: -10, onStart: highlightMessage, onDone: removeHiglightMessage}">
+                                            <message-type :click="false" :message="history"></message-type>
+                                        </div>
+                                        <small class="text-gray d-block">{{ history.created_at }}</small>
+                                    </div>
+                                </div>
+                                <div class="user-profile-image user-profile-image-message" :style="{backgroundImage: 'url('+history.user.profile_image+')'}">
+                                    <span v-if="!history.user.profile_image">{{ history.user.initials }}</span>
+                                </div>
+                            </div>
+                            <div class="media my-3 text-left" v-else>
+                                <div class="user-profile-image user-profile-image-message" :style="{backgroundImage: 'url('+history.user.profile_image+')'}">
+                                    <span v-if="!history.user.profile_image">{{ history.user.initials }}</span>
+                                </div>
+                                <div class="media-body pl-2 overflow-hidden">
+                                    <div class="font-weight-bold line-height-1">{{ history.user.full_name }}</div>
+                                    <div class="mt-2">
+                                        <div class="message-content rounded text-wrap position-relative mw-100" v-scroll-to="{el: '#message-'+history.id, container: '#message-group-container', offset: -10, onStart: highlightMessage, onDone: removeHiglightMessage}">
+                                            <message-type :click="false" :message="history"></message-type>
+                                        </div>
+                                        <small class="text-gray d-block">{{ history.created_at }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 			</div>
 		</div>
+
+
+
+        <!-- Audio view modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="audioViewModal">
+            <div class="modal-dialog modal-dialog-centered" :class="{'modal-lg': selectedFile && selectedFile.type == 'video'}" role="document">
+                <div class="modal-content overflow-hidden">
+                    <button type="button" class="close position-absolute" data-dismiss="modal" aria-label="Close" @click="selectedFile = null">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="modal-body">
+                        <div v-if="selectedFile" class="pt-5 w-100">
+                            <waveplayer v-if="selectedFile.type == 'audio'" :source="selectedFile.source" :duration="selectedFile.metadata.duration"></waveplayer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File view modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="fileViewModal">
+            <div class="modal-dialog modal-dialog-centered" :class="{'modal-lg': selectedFile && selectedFile.type == 'video'}" role="document">
+                <div class="modal-content overflow-hidden">
+                    <button type="button" class="close position-absolute" data-dismiss="modal" aria-label="Close" @click="selectedFile = null">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="modal-body p-0">
+                        <div v-if="selectedFile" class="h-100">
+                            <img v-if="selectedFile.type =='image'" :src="selectedFile.source" class="w-100">
+                            <video controls v-else-if="selectedFile.type =='video'" :src="selectedFile.source" class="w-100 d-block bg-black"></video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <!-- Audio Recorder modal -->
@@ -187,6 +264,7 @@
 </template>
 
 <script>
+import io from 'socket.io-client';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
 import VueFormValidate from '../../components/vue-form-validate';
@@ -195,7 +273,7 @@ import AudioRecorder from '../../components/audio-recorder';
 import VideoRecorder from '../../components/video-recorder';
 import CommentIcon from '../../icons/comment';
 import DocumentIcon from '../../icons/document';
-import FileAudioIcon from '../../icons/file-audio';
+import VolumeMidIcon from '../../icons/volume-mid';
 import FilePdfIcon from '../../icons/file-pdf';
 import FileArchiveIcon from '../../icons/file-archive';
 import PlayIcon from '../../icons/play';
@@ -206,9 +284,11 @@ import AddNoteIcon from '../../icons/add-note';
 import MoreHIcon from '../../icons/more-h';
 import BookmarkIcon from '../../icons/bookmark';
 import Emojipicker from '../../components/emojipicker';
+import Waveplayer from '../../components/waveplayer';
+import VueScrollTo from 'vue-scrollto';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, FileAudioIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon},
-	directives: {Tooltip},
+	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, Waveplayer},
+	directives: {Tooltip, VueScrollTo},
 
     data: () => ({
     	conversationTab: 'chats',
@@ -218,10 +298,16 @@ export default {
     	textMessage: '',
         detailsTab: 'files',
         fileType: 'all',
-        recorder: ''
+        recorder: '',
+        selectedFile: null,
+        notification_sound: null,
     }),
 
     computed: {
+        historyMessages() {
+
+        },
+
         grouped_messages() {
             const grouped_messages = [];
             if (this.selectedConversation.messages) {
@@ -251,10 +337,53 @@ export default {
     },
 
     created() {
+        this.notification_sound = new Audio('/notifications/new_message.mp3');
+        this.socket = io('https://snapturebox.app:8443');
+        this.socket.on('new_message', (data) => {
+            if(data.conversation.widget_id == this.$root.auth.widget.id) {
+                if(this.selectedConversation && this.selectedConversation.id == data.conversation_id) {
+                    this.selectedConversation.messages.push(data);
+                    let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
+                    if(conversationData) {
+                        this.$set(conversationData, 'last_message', data);
+                    }
+                    this.notification_sound.play();
+                    this.scrollDown();
+                } else {
+                    let conversationData = this.conversations.find((x) => x.id == data.conversation_id);
+                    if(conversationData) {
+                        this.$set(conversationData, 'last_message', data);
+                    } else {
+                        this.conversations.push(data.conversation);
+                    }
+                }
+                this.setConversation(data.conversation);
+                this.orderConversations();
+            }
+        });
     	this.getData();
     },
 
     methods: {
+        removeHiglightMessage(message) {
+            $(`#${message.id} .message-content`).removeClass('bg-primary');
+        },
+
+        highlightMessage(message) {
+            $(`#${message.id} .message-content`).addClass('bg-primary');
+        },
+
+        openFile(file) {
+            this.selectedFile = file;
+            if(file.type == 'image' || file.type == 'video') {
+                $('#fileViewModal').modal('show');
+            } else if(file.type == 'audio'){
+                $('#audioViewModal').modal('show');
+            } else {
+                this.downloadMedia(file);
+            }
+        },
+
         markHistory(message) {
             let is_history = message.is_history ? false : true;
             this.$set(message, 'is_history', is_history);
@@ -343,13 +472,28 @@ export default {
                     let index = this.selectedConversation.messages.findIndex((x) => x.id == messageCopy.id);
                     if(index > -1) {
                         this.$set(this.selectedConversation.messages[index], 'id', response.data.id);
+                        this.socket.emit('message_sent', response.data);
                     }
                 });
             }
         },
 
         sendVideo(video) {
-
+            if(this.selectedConversation) {
+                const timestamp = dayjs().valueOf();
+                let message = {
+                    user: this.$root.auth,
+                    source: video.source,
+                    preview: video.preview,
+                    timestamp: dayjs().valueOf(),
+                    type: 'video',
+                    created_at: dayjs(timestamp).format('hh:mm A'),
+                    is_read: 1,
+                    created_diff: 'Just now',
+                };
+                this.sendMessage(message);
+                this.closeRecorder('video');
+            }
         },
 
         sendAudio(audio) {
@@ -379,7 +523,6 @@ export default {
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
-                console.log(link);
             }
         },
 
@@ -506,9 +649,9 @@ export default {
 
         scrollDown() {
             setTimeout(() => {
-                const message_group = this.$refs['message-group-container'];
-                if (message_group) {
-                    message_group.scrollTop = message_group.scrollHeight;
+                const message_container = this.$refs['message-group-container'];
+                if (message_container) {
+                    message_container.scrollTop = message_container.scrollHeight;
                 }
             }, 50);
         },
@@ -517,6 +660,11 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
+    #fileViewModal {
+        img, video {
+            height: 500px;
+        }
+    }
     .message-form svg {
         transition: $transition-base;
     }
@@ -566,6 +714,10 @@ export default {
 			span {
 				font-size: 18px;
 			}
+            &.user-profile-image-message{
+                width: 35px;
+                height: 35px;
+            }
 		}
 	}
 	.btn-tab{
@@ -620,7 +772,33 @@ export default {
 	        font-size: 14px;
 	        display: inline-block;
 	        text-align: left;
+            transition: $transition-base;
 	    }
+
+
+        .message-content:hover {
+            .message-actions{
+                visibility:visible;
+                opacity: 1;
+            }
+        }
+        .message-actions.show{
+            visibility:visible;
+            opacity: 1;
+        }
+        .message-actions{
+            visibility: hidden;
+            opacity: 0;
+            top: 0;
+            z-index: 10;
+            transition: visibility 0s, opacity 0.14s;
+            svg {
+                transition: $transition-base;
+                &:hover{
+                    transform: scale(1.1);
+                }
+            }
+        }
 
 	    /* Outgoing message */
         .outgoing-message {
@@ -642,29 +820,8 @@ export default {
                     border-bottom-right-radius: $border-radius;
                 }
             }
-            .message-content:hover {
-                .message-actions{
-                    visibility:visible;
-                    opacity: 1;
-                }
-            }
-            .message-actions.show{
-                visibility:visible;
-                opacity: 1;
-            }
             .message-actions{
-                visibility: hidden;
-                opacity: 0;
-                top: 0;
                 left: -25px;
-                z-index: 10;
-                transition: visibility 0s, opacity 0.14s;
-                svg {
-                    transition: $transition-base;
-                    &:hover{
-                        transform: scale(1.1);
-                    }
-                }
             }
         }
 
@@ -688,6 +845,9 @@ export default {
 	                border-bottom-left-radius: $border-radius;
 	            }
 	        }
+            .message-actions{
+                right: -25px;
+            }
 	    }
 	}
 </style>

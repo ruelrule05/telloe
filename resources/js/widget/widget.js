@@ -46,7 +46,7 @@ window.SBAxios.interceptors.response.use(
 
 let container = document.createElement('div');
 container.id = 'snapturebox-widget';
-container.innerHTML = '<widget v-if="ready" />';
+container.innerHTML = '<widget v-if="ready" ref="widget" />';
 document.body.appendChild(container);
 
 //import VueMasonry from './../components/vue-masonry.js';
@@ -75,19 +75,6 @@ window.snapturebox = new SBVue({
         leftOpen: false, // false
         backdrop: false,
         guest_cookie: null,
-        loginForm: {
-            email: 'cleidoscope@gmail.com',
-            password: 'admin',
-            loading: false,
-        },
-        signupForm: {
-            first_name: '',
-            last_name: '',
-            email: '',
-            phone: '',
-            password: '',
-            loading: false,
-        },
         customerForm: {
             first_name: '',
             last_name: '',
@@ -102,7 +89,7 @@ window.snapturebox = new SBVue({
         // Wordpress Cocoach
         widget_business_hours: null,
         ready: false,
-        messages: []
+        conversation: {messages: []}
     },
 
     created() {
@@ -144,18 +131,23 @@ window.snapturebox = new SBVue({
                 });
         },
 
-        async getData() {
-            let inquiry_types = await SBAxios.get('/inquiry_types');
-            if (inquiry_types) this.inquiry_types = inquiry_types.data;
-            let me = await SBAxios.get('/auth/me').catch(() => {this.guestCookie()});
-            if (me) this.auth = me.data;
-            this.ready = true;
+         getData() {
+            /*SBAxios.get('/inquiry_types').then((response) => {
+                this.inquiry_types = response.data;
+            });*/
+            SBAxios.get('/auth/me').then((response) => {
+                this.auth = response.data.user;
+                this.conversation = response.data.conversation;
+                this.ready = true;
+            }).catch(() => {this.guestCookie()});
+         
         },
 
         getGuestMessages() {
             SBAxios.get(`/messages?guest=${this.guest_cookie}`, ).then((response) => {
                 //console.log(response.data.messages);
-                this.messages = response.data.messages || [];
+                if(response.data.id) this.conversation = response.data;
+                this.ready = true;
             });
         },
 
@@ -197,34 +189,6 @@ window.snapturebox = new SBVue({
         },
 
 
-        signup() {
-            this.signupForm.loading = true;
-            SBAxios.post('/auth/signup', this.signupForm)
-                .then((response) => {
-                    this.signupForm.loading = false;
-                    this.signupForm.email = this.signupForm.password = '';
-                    this.toggleModal('#signupModal', 'hide');
-                    this.auth = response.data;
-                })
-                .catch(() => {
-                    this.signupForm.loading = false;
-                });
-        },
-
-        login() {
-            this.loginForm.loading = true;
-            SBAxios.post('/auth/login', this.loginForm)
-                .then((response) => {
-                    this.loginForm.loading = false;
-                    this.loginForm.email = this.loginForm.password = '';
-                    this.toggleModal('#loginModal', 'hide');
-                    this.auth = response.data.user;
-                    window.localStorage.setItem('snapturebox_access_token', response.data.access_token);
-                })
-                .catch(() => {
-                    this.loginForm.loading = false;
-                });
-        },
 
         toggleModal(el, status) {
             let modal = $(el);
@@ -247,8 +211,9 @@ window.snapturebox = new SBVue({
         },
 
         logout() {
+            this.auth = null;
+            this.conversation = {messages: []};
             SBAxios.post('/auth/logout').then(() => {
-                this.auth = null;
                 window.localStorage.removeItem('snapturebox_access_token');
             });
         },

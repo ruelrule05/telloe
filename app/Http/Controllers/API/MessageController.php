@@ -99,7 +99,7 @@ class MessageController extends Controller
                     'timestamp' => $request->timestamp,
                     'metadata' => $request->metadata,
                 ]);
-
+                $message->load('conversation');
                 return response()->json($message);
             endif;
         endif;

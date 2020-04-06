@@ -9,7 +9,7 @@ use Auth;
 class Conversation extends Model
 {
     //
-    protected $fillable = ['widget_id', 'metadata'];
+    protected $fillable = ['widget_id', 'user_id', 'metadata'];
     public $appends = ['user', 'last_message'];
     protected $casts = [
         'members' => 'array',
@@ -49,13 +49,12 @@ class Conversation extends Model
     
     public function getUserAttribute()
     {
-        if($this->attributes['user_id']) :
-            $user = User::findOrFail($this->attributes['user_id']);
+        if($this->user_id) :
+            $user = User::findOrFail($this->user_id);
         else:
-            $metadata = json_decode($this->attributes['metadata'], true);
             $user = [
-                'id' => $metadata['guest_cookie'] ?? '',
-                'full_name' =>  $metadata['name'] ?? '',
+                'id' => $this->metadata['guest_cookie'] ?? '',
+                'full_name' =>  $this->metadata['name'] ?? '',
                 'initials' => 'G',
             ];
         endif;

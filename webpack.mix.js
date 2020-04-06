@@ -103,6 +103,7 @@ else if (argv.indexOf('--widget') > -1) {
                 }
             }
         })
+        .mergeManifest()
         .browserSync({
             proxy: 'https://snapturebox.app',
             host: 'snapturebox.app',

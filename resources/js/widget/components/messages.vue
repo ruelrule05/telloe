@@ -9,11 +9,28 @@
         </div>
 
         <div class="snapturebox-bg-white snapturebox-flex-grow-1 snapturebox-overflow-auto snapturebox-p-3" id="snapturebox-message-group-container" ref="message-group-container">
+
+            <!-- Login/Signup -->
+            <div v-if="!$root.auth" class="snapturebox-mb-3">
+                <div class="snapturebox-d-flex snapturebox-mx-n1">
+                    <div class="snapturebox-flex-grow-1 snapturebox-px-1">
+                        <button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-btn-block" :class="{'snapturebox-active': authAction == 'login'}" @click="authAction = authAction == 'login' ? '' : 'login'">Log In</button>
+                    </div>
+                    <div class="snapturebox-flex-grow-1 snapturebox-px-1">
+                        <button class="snapturebox-btn snapturebox-btn-sm snapturebox-btn-outline-primary snapturebox-btn-block" :class="{'snapturebox-active': authAction == 'register'}" @click="authAction = authAction == 'register' ? '' : 'register'">Signup</button>
+                    </div>
+                </div>
+                <div class="snapturebox-mt-2" v-if="authAction">
+                    <login v-if="authAction == 'login'"></login>
+                    <register v-else-if="authAction == 'register'"></register>
+                </div>
+            </div>            
+
             <div v-for="grouped_message in grouped_messages" class="snapturebox-w-100 snapturebox-message-group">
-                <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': $root.auth && $root.auth.auth.id == message.user.id || message.user.id == $root.guest_cookie}" v-if="message.type != 'action'">
+                <div class="snapturebox-message-item" v-for="message in grouped_message.messages" v-cloak :class="{'snapturebox-outgoing-message': $root.auth && $root.auth.id == message.user.id || message.user.id == $root.guest_cookie}" v-if="message.type != 'action'">
                     <div class="snapturebox-media snapturebox-mb-2 snapturebox-text-left snapturebox-d-inline-flex snapturebox-align-items-center">
                         <div class="snapturebox-profile-image" :style="[message.user.profile_image ? {backgroundImage: 'url('+$root.API + message.user.profile_image+')'} : '']">
-                            <span>{{ message.user.initials }}</span>
+                            <span v-if="!message.user.profile_image">{{ message.user.initials }}</span>
                         </div>
                         <div class="snapturebox-media-body snapturebox-pl-2 snapturebox-d-flex snapturebox-align-items-center">
                             <div class="snapturebox-font-weight-bold snapturebox-line-height-sm snapturebox-message-name">{{ $root.auth && $root.auth.id == message.user.id || message.user.id == $root.guest_cookie ? 'You' : message.user.full_name }}</div>
@@ -140,7 +157,10 @@ import MicrophoneIcon from '../../icons/microphone';
 import PlayIcon from '../../icons/play';
 import Waveplayer from './waveplayer';
 export default {
-    components: {VEmojiPicker, SmileIcon, VideoIcon, SendIcon, CameraIcon, AddNoteIcon, ArrowCircleDownIcon, FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, MicrophoneIcon, PlayIcon, Waveplayer},
+    components: {VEmojiPicker, SmileIcon, VideoIcon, SendIcon, CameraIcon, AddNoteIcon, ArrowCircleDownIcon, FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, MicrophoneIcon, PlayIcon, Waveplayer,
+        'login': () => import(/* webpackChunkName: "login" */ './login'),
+        'register': () => import(/* webpackChunkName: "register" */ './register'),
+    },
     props: {
         messages: {
             type: Array,
@@ -153,6 +173,7 @@ export default {
         emojipicker: false,
         textMessage: '',
         dayjs: dayjs,
+        authAction: 'register',
     }),
 
     computed: {

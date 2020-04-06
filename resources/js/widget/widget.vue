@@ -7,13 +7,18 @@
             <div id="snapturebox-window" :class="{'snapturebox-window-open': $root.open}">
                 <div class="snapturebox-d-flex snapturebox-overflow-hidden snapturebox-mh-100 snapturebox-h-100 justify-content-center">
                     <!-- Left -->
-                    <div class="snapturebox-overflow-hidden" id="snapturebox-section-left">
+                    <div id="snapturebox-section-left">
                         <div class="snapturebox-d-flex snapturebox-h-100">
                             <!-- Left buttons -->
                             <div class="snapturebox-h-100 snapturebox-bg-white snapturebox-pt-3 snapturebox-px-3 snapturebox-text-center">
-                                <div class="snapturebox-pb-3 snapturebox-text-center">
-                                    <div v-if="$root.auth" class="snapturebox-profile-image" :style="{backgroundImage: 'url('+$root.API + $root.auth.profile_image+')'}"></div>
-                                    <a href="#" v-else class="snapturebox-text-dark" @click.prevent="$root.toggleModal('#loginModal', 'show')"><span class="snapturebox-font-weight-bold">Login</span></a>
+                                <div v-if="$root.auth" class="snapturebox-pb-3 snapturebox-text-center">
+                                    <button class="snapturebox-profile-image snapturebox-position-relative snapturebox-outline-0 snapturebox-border-0" :style="{backgroundImage: 'url('+$root.API + $root.auth.profile_image+')'}" @blur="accountMenu = false" @click="accountMenu = accountMenu ? false : true">
+                                        <div class="snapturebox-list-group snapturebox-account-menu snapturebox-rounded snapturebox-bg-white snapturebox-shadow-sm snapturebox-text-nowrap snapturebox-text-left snapturebox-border" :class="{'snapturebox-account-menu-show': accountMenu}">
+                                            <div class="snapturebox-list-group-item snapturebox-list-group-item-action snapturebox-px-3 snapturebox-py-2 snapturebox-cursor-pointer snapturebox-border-0">My Bookings</div>
+                                            <div class="snapturebox-list-group-item snapturebox-list-group-item-action snapturebox-px-3 snapturebox-py-2 snapturebox-cursor-pointer snapturebox-border-0">My Account</div>
+                                            <div class="snapturebox-list-group-item snapturebox-list-group-item-action snapturebox-px-3 snapturebox-py-2 snapturebox-cursor-pointer snapturebox-border-0" @click="$root.logout">Logout</div>
+                                        </div>
+                                    </button>
                                 </div>
                                 <div class="snapturebox-pt-2 snapturebox-pb-3">
                                     <widget-chat class="snapturebox-cursor-pointer" @click.native="rightContent = 'messages'"></widget-chat>
@@ -53,7 +58,7 @@
                     <!-- Right -->
                     <!-- Messages -->
                     <div v-if="rightContent == 'messages'" class="snapturebox-shadow snapturebox-position-relative" id="snapturebox-section-right">
-                        <messages :messages="$root.messages" @send="sendMessage" ref="messages"></messages>
+                        <messages :messages="$root.conversation.messages" @send="sendMessage" ref="messages"></messages>
                     </div>
                 </div>
             </div>
@@ -116,15 +121,15 @@ export default {
         socket: null,
         notification_sound: null,
         videoOutput: null,
-        leftContent: 'audio-recorder', //inquiries, book
+        leftContent: '', //inquiries, book
         itemType: '',
         selectedMedia: null,
         rightContent: 'messages', //form
         selectedMessage: {},
-        messages: [],
         chatbot_listen: false,
         chatbot_pending_messages: [],
         guest_replied: false,
+        accountMenu: false,
     }),
     computed: {
         customerImagesCount() {
@@ -157,25 +162,32 @@ export default {
             return new_items;
         },
         repliesCount() {
-            return this.$root.messages.filter((m) => {
+            return this.$root.conversation.messages.filter((m) => {
                 return m.sender == 'You';
             }).length;
         },
     },
     created() {
         this.notification_sound = new Audio(`${this.$root.API}/notifications/new_message.mp3`);
-        /*this.socket = io('https://snapturebox.app:8443');
+        this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
-            this.$root.messages.push(data);
-            this.notification_sound.play();
-            this.scrollDown();
-        });*/
-        //this.$root.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
+            if(data.conversation_id == this.$root.conversation.id) {
+                this.$root.conversation.messages.push(data);
+                this.notification_sound.play();
+                this.$refs['messages'].scrollDown();
+            }
+        });
+        //this.$root.conversation.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
 
         //if(this.$root.widget.default_chatbot) this.callChatbot();
     },
-    mounted() {
+
+    watch: {
+        '$root.auth': function(){
+            this.accountMenu = false;
+        }
     },
+
     methods: {
         sendVideo(video) {
             this.sendMessage(video);
@@ -273,9 +285,9 @@ export default {
                     } else {
                         this.sendMessage(chatbotMessage, false, false);
                     }
-                    this.$root.messages.push(chatbotMessage);
+                    this.$root.conversation.messages.push(chatbotMessage);
                     setTimeout(() => {
-                        let chatbotMessage = this.$root.messages.find((m) => m.timestamp == timestamp);
+                        let chatbotMessage = this.$root.conversation.messages.find((m) => m.timestamp == timestamp);
                         if(chatbotMessage) chatbotMessage.status = 'visible';
                         return resolve();
                     }, 1000);
@@ -308,7 +320,7 @@ export default {
                 this.$set(messageAnswer.message, 'answer', messageAnswer.answer);
             }
             if(message.type != 'action' && push) {
-                this.$root.messages.push(message);
+                this.$root.conversation.messages.push(message);
                 this.$refs['messages'].scrollDown();
             }
 
@@ -357,14 +369,16 @@ export default {
                             break;
                     }
                 } else {
-                    let index = this.$root.messages.findIndex((x) => x.timestamp == message.timestamp);
+                    let index = this.$root.conversation.messages.findIndex((x) => x.timestamp == message.timestamp);
                     if (index > -1) {
                         if (message.type == 'file') {
-                            this.$root.messages[index].source = response.data.source;
+                            this.$root.conversation.messages[index].source = response.data.source;
                         }
-                        this.$root.messages[index] = response.data;
+                        this.$root.conversation.messages[index] = response.data;
+                        this.socket.emit('message_sent', response.data);
                     }
                 }
+                if(!this.$root.conversation.id) this.$root.conversation.id = response.data.conversation.id;
             });
 
             /*if (!this.$root.auth) {
@@ -449,11 +463,11 @@ export default {
                 this.$root.toggleModal('#loginModal', 'show');
             }
         },
-        getMessages() {
+        /*getMessages() {
             SBAxios.get(`${this.domain}/messages`).then((response) => {
-                this.$root.messages = response.data;
+                this.$root.conversation.messages = response.data;
             });
-        },
+        },*/
         loadeddata(e) {
             setTimeout(() => {
                 let canvas = document.createElement('canvas');

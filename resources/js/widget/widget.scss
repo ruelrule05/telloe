@@ -106,7 +106,6 @@ $widget-height: 710px;
 		}
 		#section-left {
 			position: relative;
-			overflow-x: hidden;
 		}
 		#section-right {
 			width: 380px;
@@ -692,14 +691,12 @@ $widget-height: 710px;
 		display: block !important;
 		width: 100% !important;
 		height: calc(1.5em + 0.4rem) !important;
-		padding: 0.2rem 0.75rem !important;
-		font-size: 1rem !important;
+		padding: 1rem 0.75rem !important;
+		font-size: 0.9rem !important;
 		font-weight: 400 !important;
 		line-height: 1.5 !important;
 		color: #495057 !important;
-		background-color: #fff !important;
 		background-clip: padding-box !important;
-		border: 0 solid #ced4da !important;
 		border-radius: 0.5rem !important;
 		transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
 	}
@@ -716,10 +713,10 @@ $widget-height: 710px;
 		.spinner {
 			position: absolute;
 			z-index: 1;
-			top: 49%;
+			top: 50%;
 			left: 50%;
 			transform: translate(-50%, -50%);
-			height: 26px;
+			line-height: 0;
 		}
 	}
 	.profile-image {
@@ -747,11 +744,25 @@ $widget-height: 710px;
         height: 8px;
         border-radius: 50%;
     }
+    .account-menu{
+    	visibility:hidden;
+    	opacity: 0;
+    	position: absolute;
+    	top: 0;
+    	left: 100%;
+    	z-index: 10;
+    	transition: visibility 0s, opacity 0.15s;
+    	&.account-menu-show{
+    		opacity: 1;
+    		visibility: visible;
+    	}
+    }
 
 
 	@import 'node_modules/bootstrap/scss/grid';
 	@import 'node_modules/bootstrap/scss/buttons';
 	@import 'node_modules/bootstrap/scss/dropdown';
+	@import 'node_modules/bootstrap/scss/list-group';
 	@import 'node_modules/bootstrap/scss/badge';
 	@import 'node_modules/bootstrap/scss/type';
 	@import 'node_modules/bootstrap/scss/nav';

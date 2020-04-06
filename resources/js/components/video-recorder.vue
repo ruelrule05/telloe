@@ -15,7 +15,7 @@
                     <div class="h-100" id="toRecord">
                         <div class="position-relative overflow-hidden h-100" @mousemove="imagesHover">
                             <div v-if="isRecording" class="position-absolute" style="top: 20px; left: 20px; z-index: 2">
-                                <button @click="drawTool = 'circle'" class="btn-sm btn p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'circle' ? 'btn-danger text-white' : 'btn-white']"><shape-circle-icon size="1x"></shape-circle-icon></button>
+                                <button @click="drawTool = 'circle'" class="btn-sm btn p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'circle' ? 'btn-danger text-white' : 'btn-white']"><shape-circle-icon height="16" width="16"></shape-circle-icon></button>
                                 <div>
                                     <button @click="drawTool = 'brush'" class="mt-2 btn btn-sm p-1 line-height-0 badge-pill shadow-sm" :class="[drawTool == 'brush' ? 'btn-danger text-white' : 'btn-white']"><pencil-circle-icon width="16" height="16"></pencil-circle-icon></button>
                                 </div>
@@ -39,7 +39,7 @@
 
                                     <div v-else-if="selectedFile.type == 'video'" class="h-100 bg-black">
                                         <div :hidden="selectedVideoFrame" class="h-100">
-                                            <video ref="selectedVideo" playsinline controls controlsList="nofullscreen nodownload noremoteplayback" class="w-100 h-100 outline-0 position-absolute" :src="selectedFile.source" @loadedmetadata="loadedmetadata"></video>
+                                            <video ref="selectedVideo" playsinline class="w-100 h-100 outline-0 position-absolute" :src="selectedFile.source" @loadedmetadata="loadedmetadata"></video>
                                         </div>
                                         <div :hidden="!selectedVideoFrame" class="h-100">
                                             <div class="h-100 position-relative">
@@ -68,7 +68,7 @@
                 <!-- Video output -->
                 <div id="videoOutput" class="hover-opacity-1" :hidden="!videoOutput">
                     <div class="position-absolute-center opacity-0">
-                        <button class="btn btn-light badge-pill btn-sm" @click="resetRecorder()">Cancel</button>
+                        <button class="btn btn-light badge-pill btn-sm" @click="close">Cancel</button>
                         <button class="btn btn-primary ml-2 badge-pill btn-sm" @click="submit()">Send</button>
                     </div>
                     <video ref="videoOutput" class="w-100" style="outline: 0" playsinline controls preload></video>
@@ -85,7 +85,7 @@
                     <button v-tooltip.top="'Finish recording'" class="btn btn-primary btn-lg badge-pill line-height-1 px-2" @click="finishRecord" :hidden="!hasRecorded || isRecording">
                         <checkmark-icon fill="white"></checkmark-icon>
                     </button>
-                    <span class="text-white">{{ format(limit - currentTime, { leading: true }) }}</span>
+                    <!-- <span class="text-white">{{ format(limit - currentTime, { leading: true }) }}</span> -->
                 </div>
 
                     <!-- <button type="button" class="btn btn-primary" data-dismiss="modal" :disabled="!videoOutput" @click="submit">Send</button> -->
@@ -101,7 +101,9 @@
                     <div v-for="file in files" class="p-1 d-inline-block" style="width: 90px">
                         <div class="position-relative bg-black rounded shadow-sm overflow-hidden cursor-pointer" style="padding-top: 100%" @click="selectedFile = file; pulses = []; clearSvg();">
                             <image-to-canvas class="position-absolute-center w-100" :src="file.preview" @click="selectedFile = file"></image-to-canvas>
-                            <play-icon class="position-absolute-center text-white" v-if="file.type == 'video'"></play-icon>
+                            <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
+                                <play-icon height="15" width="15"></play-icon>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,10 +280,36 @@ export default {
                 canvas.height = containerHeight;
                 let canvasCtx = canvas.getContext('2d');
 
+                let imageAspectRatio = selectedVideo.videoWidth / selectedVideo.videoHeight;
+                let canvasAspectRatio = canvas.width / canvas.height;
+                let renderableHeight, renderableWidth, xStart, yStart;
 
-                canvasCtx.drawImage(selectedVideo, 90, 0, (canvas.height/selectedVideo.videoHeight) * canvas.width - 3, canvas.height);
-                console.log(canvas.width);
-                console.log(selectedVideo.clientWidth);
+                // If image's aspect ratio is less than canvas's we fit on height
+                // and place the image centrally along width
+                if(imageAspectRatio < canvasAspectRatio) {
+                    renderableHeight = canvas.height;
+                    renderableWidth = selectedVideo.videoWidth * (renderableHeight / selectedVideo.videoHeight);
+                    xStart = (canvas.width - renderableWidth) / 2;
+                    yStart = 0;
+                }
+
+                // If image's aspect ratio is greater than canvas's we fit on width
+                // and place the image centrally along height
+                else if(imageAspectRatio > canvasAspectRatio) {
+                    renderableWidth = canvas.width
+                    renderableHeight = selectedVideo.videoHeight * (renderableWidth / selectedVideo.videoWidth);
+                    xStart = 0;
+                    yStart = (canvas.height - renderableHeight) / 2;
+                }
+
+                // Happy path - keep aspect ratio
+                else {
+                    renderableHeight = canvas.height;
+                    renderableWidth = canvas.width;
+                    xStart = 0;
+                    yStart = 0;
+                }
+                canvasCtx.drawImage(selectedVideo, xStart - 1, yStart - 1, renderableWidth + 1, renderableHeight + 1);
                 this.selectedVideoFrame = true;
             });
         },
@@ -381,7 +409,36 @@ export default {
                     /*canvasCtx.fillStyle = "black";
                     canvasCtx.fillRect(0, 0, canvasPlaceholder.width, canvasPlaceholder.height);*/
                     if ($this.cameraFull) {
-                        canvasCtx.drawImage(video, (canvasPlaceholder.width - video.offsetWidth) / 2, 0, (canvasPlaceholder.height/video.videoHeight) * canvasPlaceholder.width, canvasPlaceholder.height);
+                        let imageAspectRatio = video.videoWidth / video.videoHeight;
+                        let canvasAspectRatio = canvasPlaceholder.width / canvasPlaceholder.height;
+                        let renderableHeight, renderableWidth, xStart, yStart;
+
+                        // If image's aspect ratio is less than canvas's we fit on height
+                        // and place the image centrally along width
+                        if(imageAspectRatio < canvasAspectRatio) {
+                            renderableHeight = canvasPlaceholder.height;
+                            renderableWidth = video.videoWidth * (renderableHeight / video.videoHeight);
+                            xStart = (canvasPlaceholder.width - renderableWidth) / 2;
+                            yStart = 0;
+                        }
+
+                        // If image's aspect ratio is greater than canvas's we fit on width
+                        // and place the image centrally along height
+                        else if(imageAspectRatio > canvasAspectRatio) {
+                            renderableWidth = canvasPlaceholder.width
+                            renderableHeight = video.videoHeight * (renderableWidth / video.videoWidth);
+                            xStart = 0;
+                            yStart = (canvasPlaceholder.height - renderableHeight) / 2;
+                        }
+
+                        // Happy path - keep aspect ratio
+                        else {
+                            renderableHeight = canvasPlaceholder.height;
+                            renderableWidth = canvasPlaceholder.width;
+                            xStart = 0;
+                            yStart = 0;
+                        }
+                        canvasCtx.drawImage(video, xStart - 1, yStart - 1, renderableWidth + 1, renderableHeight + 1);
                     } else {
                         canvasCtx.beginPath();
                         canvasCtx.arc(60, canvasPlaceholder.height - 60, 50, 0, 6.28, false); //draw the circle
@@ -457,7 +514,7 @@ export default {
         finishRecord() {
             this.videoRecorder.stopRecording(() => {
                 let videoBlob = this.videoRecorder.getBlob();
-                this.video.blob = videoBlob;
+                this.video.source = videoBlob;
                 this.videoOutput = URL.createObjectURL(videoBlob);
                 this.$refs['videoOutput'].src = this.videoOutput;
                 this.$refs['videoOutput'].load();
@@ -470,7 +527,11 @@ export default {
                         canvas.height = this.videoHeight / 2;
                         canvas.getContext('2d').drawImage(this, 0, 0, canvas.width, canvas.height);
                         canvas.toBlob((blob) => {
-                            $this.video.preview = blob;
+                            let reader = new FileReader();
+                            reader.onload = () => {
+                                $this.video.preview = reader.result;
+                            };
+                            reader.readAsDataURL(blob);
                         });
                    });
                 };
@@ -496,5 +557,11 @@ export default {
             left: 5px;
             z-index: 10;
         }
+    }
+    .preview-video-play{
+        line-height: 0;
+        border-radius: 50%;
+        background-color: rgba(255,255,255,0.75);
+        padding: 5px;
     }
 </style>

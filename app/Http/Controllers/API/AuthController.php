@@ -47,12 +47,12 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        $convo = Conversation::with('messages.user')->firstOrCreate([
+        $user = auth()->user();
+        $conversation = Conversation::with('messages')->firstOrCreate([
             'widget_id' => $request->widget->id,
-            'user_id' => auth()->user()->id
+            'user_id' => $user->id
         ]);
-        auth()->user()->convo = $convo;
-        return response()->json(auth()->user()->load('inquiries', 'offers.member.user') ?? false);
+        return response()->json($user ? ['user' => $user, 'conversation' => $conversation] : false);
     }
 
     public function logout()

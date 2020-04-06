@@ -1,10 +1,10 @@
 <template>
-	<div class="d-flex align-items-center w-100">
+	<div class="d-flex align-items-center justify-content-between w-100">
 		<button class="audio-control shadow-sm position-relative p-0 mr-2" @click="togglePlayer">
 			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="#999"></play-icon>
 			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="#999"></pause-icon>
 		</button>
-		<div ref="waveplayer" class="waveplayer"></div>
+		<div ref="waveplayer" class="waveplayer flex-grow-1"></div>
 		<span class="text-nowrap pl-2">{{ duration }}</span>
 	</div>
 </template>
@@ -26,6 +26,10 @@ export default {
 		wavesurfer: null,
 		playerStatus: 'paused',
 	}),
+
+	beforeDestroy() {
+		this.wavesurfer.stop();
+	},
 
 	async mounted() {
 		this.wavesurfer = WaveSurfer.create({

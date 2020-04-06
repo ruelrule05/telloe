@@ -5,13 +5,13 @@
 
         <!-- Image -->
         <p class="mb-0" v-else-if="message.type == 'image'">
-            <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
+            <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="$parent.openFile(message)" />
         </p>
 
 
         <!-- Video -->
         <p class="mb-0" v-else-if="message.type == 'video'">
-            <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
+            <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="click ? $parent.openFile(message) : null" />
         </p>
 
         <!-- Audio -->
@@ -21,12 +21,15 @@
 
         <!-- File -->
         <p class="mb-0" v-else-if="message.type == 'file'">
-            <img v-if="$parent.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" @click="$emit('openMedia', message)" />
-            <span class=" cursor-pointer" @click="$parent.downloadMedia(message)">
+            <img v-if="$parent.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" />
+            <span class=" cursor-pointer" @click="click ? $parent.downloadMedia(message) : null">
                 <span class="d-block text-center">
                     <component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)"></component>
                 </span>
-                <span class="d-flex align-items-center"> <arrow-circle-down-icon height="15" width="15"></arrow-circle-down-icon>&nbsp;{{ message.metadata.filename }} </span>
+                <div class="d-flex align-items-center">
+                    <arrow-circle-down-icon height="15" width="15"></arrow-circle-down-icon>&nbsp;
+                    <small class="text-ellipsis text-gray">{{ message.metadata.filename }}</small>
+                </div>
             </span>
         </p>
 
@@ -58,7 +61,11 @@ export default {
 	props: {
 		message: {
 			type: Object
-		}
+		},
+        click: {
+            type: Boolean,
+            default: true,
+        }
 	},
 
     components: {FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, ArrowCircleDownIcon, Waveplayer},
