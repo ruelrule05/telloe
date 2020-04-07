@@ -2,9 +2,6 @@
 	<div class="d-flex h-100">
 		<!-- Conversations list -->
 		<div class="conversation-list d-flex flex-column position-relative">
-			<div class="p-3 bg-white border-bottom position-relative">
-				<strong class="font-heading">Academic English</strong>
-			</div>
 			<div class="bg-white shadow-sm d-flex">
 				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'active'}">
 					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'active'">Chats</button>
@@ -145,7 +142,7 @@
                     </div> -->
 
                     <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-white border py-2" :class="{'overview': detailsTab == 'overview'}" @click="detailsTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'overview'}" @click="detailsTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'"><small class="font-weight-bold d-block">Files</small></button>
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'notes'}" @click="detailsTab = 'notes'"><small class="font-weight-bold d-block">Notes</small></button>
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'"><small class="font-weight-bold d-block">History</small></button>
