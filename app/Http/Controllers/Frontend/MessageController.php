@@ -4,39 +4,67 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Conversation;
 use App\Models\Message;
 use File;
+use Auth;
 
 class MessageController extends Controller
 {
     //
 
-    public function index(Request $request)
+    public function store(Request $request)
     {
-    	$messages = Message::orderBy('created_at', 'ASC')->get();
-    	return response()->json($messages);
+        $this->validate($request, [
+            'conversation_id' => 'required|exists:conversations,id',
+            'type' => 'required',
+            'timestamp' => 'required',
+        ]);
+        $conversation = Conversation::findOrFail($request->conversation_id);
+        $this->authorize('postMessage', $conversation);
+
+        $time = time();
+        $sourceFile = null;
+        if ($request->hasFile('source')) :
+            $filename = $time . '-source';
+            $srcDestination = 'storage/message-media/' . $filename;
+            $request->file('source')->storeAs('public/message-media/', $filename);
+            $sourceFile = '/' . $srcDestination;
+        endif;
+
+        $previewFile = null;
+        if ($request->preview) :
+            $source = $request->preview;
+            $filename = $time . '-preview';
+            $previewDestination = 'storage/message-media/' . $filename;
+            $preview = base64_decode(substr($source, strpos($source, ',') + 1));
+            File::put($previewDestination, $preview);
+            $previewFile = '/' . $previewDestination;
+        endif;
+
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => Auth::user()->id,
+            'type' => $request->type,
+            'message' => $request->message,
+            'timestamp' => $request->timestamp,
+            'source' => $sourceFile,
+            'preview' => $previewFile,
+            'metadata' => json_decode($request->metadata),
+        ]);
+
+        return response()->json($message);
     }
 
-    public function store(Request $request)
-    {	
-    	$requestData = $request->all();
-    	if ($request->type == 'video' && $request->hasFile('video') && $request->file('video')->isValid()) :
-	    	if ($request->hasFile('video') && $request->file('video')->isValid()) :
-	    	 	$extension = $request->video->extension();
-	            $fileName = 'video-' . time() . '.' . $extension;
-	            $request->file('video')->storeAs('public/message-media/', $fileName);
-	            $destination ='storage/message-media/' . $fileName;
-	           	$requestData['message'] = '/' . $destination;
-	        endif;
-	    	if ($request->hasFile('videoPreview') && $request->file('videoPreview')->isValid()) :
-	    	 	$extension = $request->videoPreview->extension();
-	            $fileName = 'preview-' . time() . '.' . $extension;
-	            $request->file('videoPreview')->storeAs('public/message-media/', $fileName);
-	            $destination ='storage/message-media/' . $fileName;
-	           	$requestData['preview'] = '/' . $destination;
-	        endif;
-        endif;
-    	$message = Message::create($requestData);
-    	return response()->json($message);
+
+
+    public function update($id, Request $request)
+    {
+        $message = Message::findOrFail($id);
+        $this->authorize('update', $message);
+        $message->update([
+            'is_history' => $request->is_history
+        ]);
+        return response()->json($message);
     }
 }

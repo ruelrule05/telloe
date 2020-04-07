@@ -124,13 +124,15 @@
                     <h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
                     <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
-                        <button type="button" class="btn btn-white border-top border-bottom" :class="{'active': detailsTab == 'inquiries'}" @click="detailsTab = 'inquiries'">Inquiries</button>
-                        <button type="button" class="btn btn-white border-top border-bottom border-left" :class="{'active': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button>
+                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'inquiries'}" @click="detailsTab = 'inquiries'">Inquiries</button>
+                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button>
                         <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button>
+                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'notes'}" @click="detailsTab = 'notes'">Notes</button>
                     </div>            
                 </div>
 
                 <div class="mt-2 overflow-auto flex-grow-1 h-100">
+                    <!-- Files -->
                     <div v-if="detailsTab == 'files'">
                         <select class="form-control form-control-sm mb-2" v-model="fileType">
                             <option value="all">All Files</option>
@@ -161,7 +163,7 @@
                         </div>
                     </div>
 
-
+                    <!-- History -->
                     <div v-else-if="detailsTab == 'history'" class="message-group">
                         <div v-for="history in selectedConversation.messages" v-if="history.is_history">
                             <div class="media outgoing-message my-3" v-if="history.user.id == $root.auth.id || history.user.id == 'chatbot'">
@@ -185,13 +187,32 @@
                                 <div class="media-body pl-2 overflow-hidden">
                                     <div class="font-weight-bold line-height-1">{{ history.user.full_name }}</div>
                                     <div class="mt-2">
-                                        <div class="message-content rounded text-wrap position-relative mw-100" v-scroll-to="{el: '#message-'+history.id, container: '#message-group-container', offset: -10, onStart: highlightMessage, onDone: removeHiglightMessage}">
+                                        <div class="message-content rounded text-wrap position-relative mw-100 cursor-pointer" v-scroll-to="{el: '#message-'+history.id, container: '#message-group-container', offset: -10, onStart: highlightMessage, onDone: removeHiglightMessage}">
                                             <message-type :click="false" :message="history"></message-type>
                                         </div>
                                         <small class="text-gray d-block">{{ history.created_at }}</small>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div v-else-if="detailsTab == 'notes'" class="text-left">
+                        <button class="btn btn-sm btn-outline-primary mb-2" @click="addingNote = true">+ Add Note</button>
+                        <vue-form-validate v-if="addingNote" @submit="addNote" class="mb-3">
+                            <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none" placeholder="Add note.."></textarea>
+                            <div class="d-flex align-items-center mt-1">
+                                <div class="ml-auto">
+                                    <button class="btn btn-sm btn-link text-body pl-0" @click="addingNote = false">Cancel</button>
+                                    <button type="submit" class="btn btn-sm btn-primary ml-auto">Add</button>
+                                </div>
+                            </div>
+                        </vue-form-validate>
+                        <div v-for="note in selectedConversation.notes" class="mb-2 position-relative note">
+                            <trash-icon fill="red" class="position-absolute cursor-pointer delete-note opacity-0" height="18" width="18" @click.native="deleteNote(note)"></trash-icon>
+                            <p class="bg-white border rounded px-3 py-2 mb-0">{{ note.notes }}</p>
+                            <small class="text-gray">{{ note.created_at }}</small>
                         </div>
                     </div>
                 </div>
@@ -283,11 +304,12 @@ import MicrophoneIcon from '../../icons/microphone';
 import AddNoteIcon from '../../icons/add-note';
 import MoreHIcon from '../../icons/more-h';
 import BookmarkIcon from '../../icons/bookmark';
+import TrashIcon from '../../icons/trash';
 import Emojipicker from '../../components/emojipicker';
 import Waveplayer from '../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, Waveplayer},
+	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, Waveplayer},
 	directives: {Tooltip, VueScrollTo},
 
     data: () => ({
@@ -301,6 +323,8 @@ export default {
         recorder: '',
         selectedFile: null,
         notification_sound: null,
+        addingNote: false,
+        newNote: '',
     }),
 
     computed: {
@@ -338,7 +362,7 @@ export default {
 
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        this.socket = io('https://snapturebox.app:8443');
+        /*this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
             if(data.conversation.widget_id == this.$root.auth.widget.id) {
                 if(this.selectedConversation && this.selectedConversation.id == data.conversation_id) {
@@ -360,11 +384,33 @@ export default {
                 this.setConversation(data.conversation);
                 this.orderConversations();
             }
-        });
+        });*/
     	this.getData();
     },
 
     methods: {
+        deleteNote(note) {
+            if(this.selectedConversation) {
+                let index = this.selectedConversation.notes.findIndex((x) => x.id == note.id);
+                if(index > -1) this.selectedConversation.notes.splice(index, 1);
+                axios.delete(`/dashboard/notes/${note.id}`);
+            }
+        },
+
+        addNote() {
+            if(this.selectedConversation) {
+                let note = {
+                    conversation_id: this.selectedConversation.id,
+                    notes: this.newNote,
+                };
+                axios.post('/dashboard/notes', note).then((response) => {
+                    this.newNote = '';
+                    this.addingNote = false;
+                    this.selectedConversation.notes.push(response.data);
+                });
+            }
+        },
+
         removeHiglightMessage(message) {
             $(`#${message.id} .message-content`).removeClass('bg-primary');
         },
@@ -468,7 +514,8 @@ export default {
                 Object.keys(messageCopy).map((k) => {
                     bodyFormData.set(k, messageCopy[k]);
                 });
-                axios.post(`/dashboard/messages/${this.selectedConversation.id}`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
+                bodyFormData.set('conversation_id', this.selectedConversation.id)
+                axios.post(`/dashboard/messages`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
                     let index = this.selectedConversation.messages.findIndex((x) => x.id == messageCopy.id);
                     if(index > -1) {
                         this.$set(this.selectedConversation.messages[index], 'id', response.data.id);
@@ -620,7 +667,7 @@ export default {
     	},
 
     	getData() {
-    		axios.get('/dashboard/messages').then((response) => {
+    		axios.get('/dashboard/conversations').then((response) => {
     			this.conversations = response.data;
                 this.orderConversations();
     			this.$root.contentloading = false;
@@ -640,7 +687,7 @@ export default {
 
         setConversation(conversation) {
         	this.$set(conversation.last_message, 'is_read', true);
-            axios.get(`/dashboard/messages/${conversation.id}?is_read=true`).then((response) => {
+            axios.get(`/dashboard/conversations/${conversation.id}?is_read=true`).then((response) => {
                 this.convoLoading = false;
                 this.selectedConversation = response.data;
                 this.scrollDown();
@@ -660,6 +707,14 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
+    .note:hover .delete-note{
+        opacity: 1;
+    }
+    .delete-note{
+        top: 5px;
+        right: 5px;
+        transition: $transition-base;
+    }
     #fileViewModal {
         img, video {
             height: 500px;

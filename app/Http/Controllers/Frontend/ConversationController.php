@@ -19,7 +19,7 @@ class ConversationController extends Controller
 
     public function show($id, Request $request)
     {
-    	$conversation = Conversation::with('messages')->findOrfail($id);
+    	$conversation = Conversation::with('messages', 'notes')->findOrfail($id);
     	$this->authorize('show', $conversation);
 
     	if ($conversation && $request->is_read) :
@@ -34,57 +34,5 @@ class ConversationController extends Controller
         endif;
 
         return response()->json($conversation);
-    }
-
-    public function postMessage($id, Request $request)
-    {
-        $this->validate($request, [
-            'type' => 'required',
-            'timestamp' => 'required',
-        ]);
-        $conversation = Conversation::findOrFail($id);
-        $this->authorize('postMessage', $conversation);
-
-        $time = time();
-        $sourceFile = null;
-        if ($request->hasFile('source')) :
-            $filename = $time . '-source';
-            $srcDestination = 'storage/message-media/' . $filename;
-            $request->file('source')->storeAs('public/message-media/', $filename);
-            $sourceFile = '/' . $srcDestination;
-        endif;
-
-        $previewFile = null;
-        if ($request->preview) :
-            $source = $request->preview;
-            $filename = $time . '-preview';
-            $previewDestination = 'storage/message-media/' . $filename;
-            $preview = base64_decode(substr($source, strpos($source, ',') + 1));
-            File::put($previewDestination, $preview);
-            $previewFile = '/' . $previewDestination;
-        endif;
-
-        $message = Message::create([
-            'conversation_id' => $conversation->id,
-            'user_id' => Auth::user()->id,
-            'type' => $request->type,
-            'message' => $request->message,
-            'timestamp' => $request->timestamp,
-            'source' => $sourceFile,
-            'preview' => $previewFile,
-            'metadata' => json_decode($request->metadata),
-        ]);
-
-        return response()->json($message);
-    }
-
-    public function updateMessage($id, Request $request)
-    {
-        $message = Message::findOrFail($id);
-        $this->authorize('update', $message);
-        $message->update([
-            'is_history' => $request->is_history
-        ]);
-        return response()->json($message);
     }
 }

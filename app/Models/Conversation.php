@@ -27,6 +27,12 @@ class Conversation extends Model
     }
 
 
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
+
+
     public function getLastMessageAttribute()
     {
         $last_message = Message::where('conversation_id', $this->attributes['id'])->latest('created_at')->first();
