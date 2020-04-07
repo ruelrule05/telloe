@@ -169,7 +169,7 @@ export default {
     },
     created() {
         this.notification_sound = new Audio(`${this.$root.API}/notifications/new_message.mp3`);
-        this.socket = io('https://snapturebox.app:8443');
+        this.socket = io('https://snapturebox.com:8443');
         this.socket.on('new_message', (data) => {
             if(data.conversation_id == this.$root.conversation.id) {
                 this.$root.conversation.messages.push(data);
