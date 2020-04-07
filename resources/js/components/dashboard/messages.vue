@@ -6,29 +6,40 @@
 				<strong class="font-heading">Academic English</strong>
 			</div>
 			<div class="bg-white shadow-sm d-flex">
-				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'chats'}">
-					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'chats'">Chats</button>
+				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'active'}">
+					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'active'">Chats</button>
 				</div>
-				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'favorites'}">
-					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'favorites'">Favorites</button>
-				</div>
-				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'hidden'}">
-					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'hidden'">Hidden</button>
+				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'archive'}">
+					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'archive'">Archives</button>
 				</div>
 			</div>
 
 			<div class="overflow-auto p-2">
-				<div v-for="conversation in conversations" class="conversation-preview rounded shadow-sm p-3 cursor-pointer mb-2" :class="{'active': selectedConversation && selectedConversation.id == conversation.id}" @click="setConversation(conversation)">
-					<div class="media">
+				<div v-for="conversation in conversations" v-if="conversation.status == conversationTab" class="conversation-preview rounded shadow-sm p-2 cursor-pointer mb-2 position-relative" :class="{'active': selectedConversation && selectedConversation.id == conversation.id}">
+                    <div class="position-absolute conversation-dropdown dropright opacity-0">
+                        <more-h-icon data-toggle="dropdown"></more-h-icon>
+                        <div class="dropdown-menu py-1">
+                            <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
+                            <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2"" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                        </div>
+                    </div>
+					<div class="media" @click="setConversation(conversation)">
 					  	<div class="user-profile-image" :style="{backgroundImage: 'url('+conversation.user.profile_image+')'}">
 					  		<span v-if="!conversation.user.profile_image">{{ conversation.user.initials }}</span>
 					  	</div>
 					  	<div class="media-body pl-2">
 					    	<div class="d-flex">
-                                 <h6 class="mt-0 mb-0">{{ conversation.user.full_name }}</h6>
-                                 <small class="ml-auto text-gray">{{ conversation.last_message.created_diff }}</small>              
+                                 <div class="mb-2">
+                                    <div class="h6 mb-0">{{ conversation.user.full_name }}</div>
+                                    <div v-if="conversation.source">
+                                        <sign-in-icon height="14" width="14"></sign-in-icon> <small class="text-primary">{{ conversation.source }}</small>
+                                    </div>
+                                </div>           
                             </div>
-					    	<small v-html="conversation.last_message.message" class="mb-0 text-gray str-limit" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></small>
+					    	<div class="d-flex">
+                                <small v-html="conversation.last_message.message" class="mb-0 text-gray str-limit" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></small>    
+                                 <small class="ml-auto text-gray-400 text-nowrap">{{ conversation.last_message.created_diff }}</small>                 
+                            </div>
                             <div class="text-right mt-2">
                                 <div class="user-profile-image user-profile-image-sm ml-auto" :style="{backgroundImage: 'url('+$root.auth.profile_image+')'}"></div>
                             </div>
@@ -46,7 +57,7 @@
 				<div class="p-3 bg-white border-bottom position-relative">
 					<strong class="font-heading">{{ selectedConversation.user.full_name }}</strong>
 				</div>
-				<div class="p-3 overflow-auto flex-grow-1" ref="message-group-container" id="message-group-container">
+				<div class="p-3 overflow-y-auto flex-grow-1" ref="message-group-container" id="message-group-container">
 	                <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
 	                    <!-- outgoing message -->
 	                	<div class="media outgoing-message" v-if="grouped_message.sender.id == $root.auth.id || grouped_message.sender.id == 'chatbot'">
@@ -122,16 +133,44 @@
                         <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
                     </div>
                     <h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
+
+                    <!-- <div class="px-5">
+                        <select class="form-control form-control-sm cursor-pointer" v-model="detailsTab">
+                            <option value="overview">Overview</option>
+                            <option value="files">Files</option>
+                            <option value="notes">Notes</option>
+                            <option value="history">History</option>
+                            <option value="chat_data">Chat Data</option>
+                        </select>
+                    </div> -->
+
                     <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
-                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'inquiries'}" @click="detailsTab = 'inquiries'">Inquiries</button>
-                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button>
-                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button>
-                        <button type="button" class="btn btn-white border" :class="{'active': detailsTab == 'notes'}" @click="detailsTab = 'notes'">Notes</button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'overview': detailsTab == 'overview'}" @click="detailsTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'"><small class="font-weight-bold d-block">Files</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'notes'}" @click="detailsTab = 'notes'"><small class="font-weight-bold d-block">Notes</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'history'}" @click="detailsTab = 'history'"><small class="font-weight-bold d-block">History</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'chat_data': detailsTab == 'chat_data'}" @click="detailsTab = 'inquiries'"><small class="font-weight-bold d-block">Chat Data</small></button>
                     </div>            
                 </div>
 
-                <div class="mt-2 overflow-auto flex-grow-1 h-100">
+                <div class="mt-3 overflow-auto flex-grow-1 h-100 text-left">
+                    <!-- Overview -->
+                    <div v-if="detailsTab == 'overview'">
+                        <h6 class="font-weight-bolder mb-3">Details</h6>
+                        <div class="form-group">
+                            <strong class="text-gray">Email:</strong>
+                            <div class="font-weight-bold">{{ selectedConversation.user.email }}</div>
+                        </div>
+                        <div class="form-group">
+                            <strong class="text-gray">Phone:</strong>
+                            <div class="font-weight-bold">{{ selectedConversation.user.phone }}</div>
+                        </div>
+                        <div class="form-group">
+                            <strong class="text-gray">Tags:</strong>
+                            <div class="font-weight-bold"></div>
+                        </div>
+                    </div>
+
                     <!-- Files -->
                     <div v-if="detailsTab == 'files'">
                         <select class="form-control form-control-sm mb-2" v-model="fileType">
@@ -209,9 +248,9 @@
                                 </div>
                             </div>
                         </vue-form-validate>
-                        <div v-for="note in selectedConversation.notes" class="mb-2 position-relative note">
+                        <div v-for="note in selectedConversation.notes" class="mb-2 py-2 position-relative note border-bottom">
                             <trash-icon fill="red" class="position-absolute cursor-pointer delete-note opacity-0" height="18" width="18" @click.native="deleteNote(note)"></trash-icon>
-                            <p class="bg-white border rounded px-3 py-2 mb-0">{{ note.notes }}</p>
+                            <p class="mb-0">{{ note.notes }}</p>
                             <small class="text-gray">{{ note.created_at }}</small>
                         </div>
                     </div>
@@ -305,20 +344,23 @@ import AddNoteIcon from '../../icons/add-note';
 import MoreHIcon from '../../icons/more-h';
 import BookmarkIcon from '../../icons/bookmark';
 import TrashIcon from '../../icons/trash';
+import ArchiveIcon from '../../icons/archive';
+import SignInIcon from '../../icons/sign-in';
+import DownloadIcon from '../../icons/download';
 import Emojipicker from '../../components/emojipicker';
 import Waveplayer from '../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, Waveplayer},
+	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, Waveplayer},
 	directives: {Tooltip, VueScrollTo},
 
     data: () => ({
-    	conversationTab: 'chats',
+    	conversationTab: 'active',
     	conversations: [],
     	selectedConversation: null,
     	convoLoading: false,
     	textMessage: '',
-        detailsTab: 'files',
+        detailsTab: 'overview',
         fileType: 'all',
         recorder: '',
         selectedFile: null,
@@ -389,6 +431,10 @@ export default {
     },
 
     methods: {
+        updateConversation(conversation) {
+            axios.put(`/dashboard/conversations/${conversation.id}`, conversation);
+        },
+
         deleteNote(note) {
             if(this.selectedConversation) {
                 let index = this.selectedConversation.notes.findIndex((x) => x.id == note.id);
@@ -671,7 +717,8 @@ export default {
     			this.conversations = response.data;
                 this.orderConversations();
     			this.$root.contentloading = false;
-    			this.setConversation(this.conversations[0]);
+                let firstConversation = this.conversations.find((x) => x.status == 'active');
+    			if(firstConversation) this.setConversation(firstConversation);
     		});
     	},
 
@@ -707,6 +754,11 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
+    .conversation-dropdown{
+        top: 8px;
+        right: 5px;
+        z-index: 5;
+    }
     .note:hover .delete-note{
         opacity: 1;
     }
@@ -809,10 +861,14 @@ export default {
 	.conversation-preview{
 		background-color: white;
 		transition: $transition-base;
-		&:hover,
 		&.active{
 			background-color: #f7f8fc;
 		}
+        &:hover{
+            .conversation-dropdown{
+                opacity: 1;
+            }
+        }
 	}
 	.message-group {
 	    margin-bottom: 1.5rem;

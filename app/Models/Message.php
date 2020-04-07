@@ -34,7 +34,8 @@ class Message extends Model
 
     public function getCreatedDiffAttribute()
     {
-        return Carbon::parse($this->attributes['created_at'])->diffForHumans();
+        $created_diff = Carbon::parse($this->attributes['created_at'])->diffForHumans(null, true);
+        return str_replace(['hour', 'hours', 'minute', 'minutes'], ['hr', 'hrs', 'min', 'mins'], $created_diff);
     }
 
     public function getSourceAttribute($value)

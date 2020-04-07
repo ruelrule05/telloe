@@ -9,7 +9,7 @@ use Auth;
 class Conversation extends Model
 {
     //
-    protected $fillable = ['widget_id', 'user_id', 'metadata'];
+    protected $fillable = ['widget_id', 'user_id', 'metadata', 'source', 'status'];
     public $appends = ['user', 'last_message'];
     protected $casts = [
         'members' => 'array',

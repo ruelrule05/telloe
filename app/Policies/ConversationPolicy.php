@@ -25,6 +25,12 @@ class ConversationPolicy
         return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id;
     }
 
+
+    public function update(User $user, Conversation $conversation)
+    {
+        return $user->widget->id == $conversation->widget_id;
+    }
+
     public function postMessage(User $user, Conversation $conversation)
     {
         return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id;

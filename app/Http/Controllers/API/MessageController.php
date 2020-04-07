@@ -53,6 +53,7 @@ class MessageController extends Controller
                 $conversation = Conversation::firstOrCreate([
                     'widget_id' => $request->widget->id,
                     'user_id' => auth()->user()->id,
+                    'source' => 'Widget',
                 ]);
             else :
                 $metadata = json_decode($request->metadata);
@@ -61,7 +62,8 @@ class MessageController extends Controller
                     'metadata' => $metadata
                 ]);
                 $conversation = Conversation::where('metadata->guest_cookie', $request->metadata->guest_cookie)->firstOrCreate([
-                    'widget_id' => $request->widget->id
+                    'widget_id' => $request->widget->id,
+                    'source' => 'Widget',
                 ]);
                 $conversation->update([
                     'metadata' => $request->metadata

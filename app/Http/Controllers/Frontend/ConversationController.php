@@ -22,7 +22,7 @@ class ConversationController extends Controller
     	$conversation = Conversation::with('messages', 'notes')->findOrfail($id);
     	$this->authorize('show', $conversation);
 
-    	if ($conversation && $request->is_read) :
+    	if ($request->is_read) :
             // set is_read of opposite sender
             $conversation->messages()
                 ->where(function($query) {
@@ -32,6 +32,18 @@ class ConversationController extends Controller
                 ->where('is_read', 0)
                 ->update(['is_read' => 1]);
         endif;
+
+        return response()->json($conversation);
+    }
+
+    public function update($id, Request $request)
+    {
+        $conversation = Conversation::findOrfail($id);
+        $this->authorize('update', $conversation);
+
+        $conversation->update([
+            'status' => $request->status
+        ]);
 
         return response()->json($conversation);
     }
