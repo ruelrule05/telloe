@@ -173,7 +173,7 @@ export default {
         emojipicker: false,
         textMessage: '',
         dayjs: dayjs,
-        authAction: 'register',
+        authAction: '',
     }),
 
     computed: {
