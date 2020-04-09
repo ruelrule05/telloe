@@ -10,6 +10,7 @@ $container-max-widths: (
 );
 $primary: #4d65e5;
 $facebook: #4267b2;
+$google: #DC3E29;
 $secondary: #637382;
 @import 'node_modules/bootstrap/scss/variables';
 $border-color: $gray-200;
@@ -26,6 +27,7 @@ $theme-colors: (
     'secondary': rgba($gray-200, 70%),
     'black': $black,
     'facebook': $facebook,
+    'google': $google,
     'light': $light,
     'dark': $dark,
     'danger': $danger,

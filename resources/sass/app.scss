@@ -704,3 +704,22 @@ svg.leader-line {
 .resize-none{
     resize: none !important;
 }
+hr.hr-text {
+    position: relative;
+    border: none;
+    height: 1px;
+    background: $gray-300;
+}
+
+hr.hr-text::before {
+    content: attr(data-content);
+    display: inline-block;
+    background: #fff;
+    color: $gray-800;
+    border-radius: 30rem;
+    padding: 0.2rem 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

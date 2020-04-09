@@ -11,6 +11,11 @@
 <body class=@yield('body-class')>
 
 <div id="app">
+	<div v-if="pageloading" class="pageloader">
+		<div class="position-absolute-center">
+			<div class="spinner-border text-primary" role="status"></div>
+		</div>
+	</div>
 	@if ($navbar ?? true)
 		@include('frontend.partials.navbar')
 	@endif

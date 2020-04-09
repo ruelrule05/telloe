@@ -30,6 +30,8 @@ Route::group(
         ], function() {
             Route::get('auth', 'AuthController@get');
             Route::post('login', 'AuthController@login')->middleware('guest');
+            Route::post('login/facebook', 'AuthController@loginFacebook')->middleware('guest');
+            Route::post('login/google', 'AuthController@loginGoogle')->middleware('guest');
             Route::post('signup', 'AuthController@signup')->middleware('guest');
             Route::post('logout', 'AuthController@logout')->middleware('auth');
             Route::post('recover', 'AuthController@recover')->middleware('guest');
@@ -60,6 +62,7 @@ Route::group(
                 Route::resource('chatbots', 'ChatbotController');
                 Route::resource('chatboxes', 'ChatboxController');
                 Route::post('upload_file', 'ChatboxController@uploadFile');
+                Route::get('users', 'UserController@search');
             });
         });
         

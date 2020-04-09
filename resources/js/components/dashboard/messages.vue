@@ -2,13 +2,19 @@
 	<div class="d-flex h-100">
 		<!-- Conversations list -->
 		<div class="conversation-list d-flex flex-column position-relative">
-			<div class="bg-white shadow-sm d-flex">
+			<div class="bg-white shadow-sm d-flex align-items-center">
 				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'active'}">
 					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'active'">Chats</button>
 				</div>
 				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'archive'}">
 					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'archive'">Archives</button>
 				</div>
+                <div class="ml-auto dropleft">
+                    <button class="btn p-0 pr-2" data-toggle="dropdown"><plus-icon></plus-icon></button>
+                    <div class="dropdown-menu py-1">
+                        <span class="dropdown-item cursor-pointer d-flex align-items-center" @click="openCreateGroupChatModal()"><users-icon height="18" width="18" class="mr-2"></users-icon>Create group chat</span>
+                    </div>
+                </div>
 			</div>
 
 			<div class="overflow-auto p-2">
@@ -27,7 +33,7 @@
 					  	<div class="media-body pl-2">
 					    	<div class="d-flex">
                                  <div class="mb-2">
-                                    <div class="h6 mb-0">{{ conversation.user.full_name }}</div>
+                                    <div class="h6 mb-0">{{ conversation.user.full_name || conversation.name }}</div>
                                     <div v-if="conversation.source">
                                         <sign-in-icon height="14" width="14"></sign-in-icon> <small class="text-primary">{{ conversation.source }}</small>
                                     </div>
@@ -254,7 +260,58 @@
                 </div>
 			</div>
 		</div>
+        
 
+        <!-- Create group chat modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="groupChatCreateModal">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content overflow-hidden">
+                    <div class="modal-header pb-0">
+                        <h5 class="modal-title">Create group chat</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                         <vue-form-validate @submit="createGroup">
+                                <div class="form-group mb-1">
+                                    <input type="text" placeholder="Group name" v-model="newGroup.name" data-required class="form-control">
+                                </div>
+                                <div class="form-group form-icon mb-0">
+                                    <search-icon height="20" width="20" fill="#999"></search-icon>
+                                    <input type="text" placeholder="Add members" @input="searchMembers" class="form-control">
+                                </div>
+                                <small class="text-danger" v-if="newGroup.createGroupError">{{ newGroup.createGroupError }}</small>
+                                <div class="mt-2">
+                                    <div v-for="member, index in newGroup.selectedGroupMembers" class="font-weight-bold d-inline-block badge badge-pill badge-primary py-2 px-3 mr-1 mb-2">
+                                    {{ member.full_name }}&nbsp;
+                                        <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer" @click.native="newGroup.selectedGroupMembers.splice(index, 1)"></close-icon>
+                                    </div>
+                                </div>
+                                <div class="position-relative mt-1 overflow-auto members-search-container">
+                                    <div v-if="newGroup.searchingMembers" class="text-center">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                    </div>
+                                    <div v-if="newGroup.groupMembersResults.length > 0">
+                                        <div class="media cursor-pointer border-top py-2 px-2 member-result" v-for="member in newGroup.groupMembersResults" v-if="!newGroup.selectedGroupMembers.find((x) => x.id == member.id)" @click="newGroup.selectedGroupMembers.push(member)">
+                                            <div class="user-profile-image user-profile-image-sm align-self-center" :style="{backgroundImage: 'url('+member.profile_image+')'}">
+                                                <span v-if="!member.profile_image">{{ member.initials }}</span>
+                                            </div>
+                                            <div class="media-body pl-2">
+                                                <div class="font-weight-bold mb-n1">{{ member.full_name }}</div>
+                                                <small class="ml-auto text-gray text-nowrap">{{ member.email }}</small>           
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right mt-3">
+                                    <vue-button :loading="newGroup.createGroupLoading" button_class="btn btn-primary" type="submit"">Create</vue-button>
+                                </div>
+                         </vue-form-validate>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <!-- Audio view modal -->
@@ -344,11 +401,15 @@ import TrashIcon from '../../icons/trash';
 import ArchiveIcon from '../../icons/archive';
 import SignInIcon from '../../icons/sign-in';
 import DownloadIcon from '../../icons/download';
+import PlusIcon from '../../icons/plus';
+import UsersIcon from '../../icons/users';
+import SearchIcon from '../../icons/search';
+import CloseIcon from '../../icons/close';
 import Emojipicker from '../../components/emojipicker';
 import Waveplayer from '../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, Waveplayer},
+	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, Waveplayer},
 	directives: {Tooltip, VueScrollTo},
 
     data: () => ({
@@ -364,6 +425,14 @@ export default {
         notification_sound: null,
         addingNote: false,
         newNote: '',
+        newGroup: {
+            name: '',
+            searchingMembers: false,
+            groupMembersResults: [],
+            selectedGroupMembers: [],
+            createGroupError: '',
+            createGroupLoading: false
+        }
     }),
 
     computed: {
@@ -427,7 +496,42 @@ export default {
     	this.getData();
     },
 
+    mounted() {
+        this.openCreateGroupChatModal();
+    },
+
     methods: {
+        createGroup() {
+            if(this.newGroup.selectedGroupMembers.length > 0) {
+                this.newGroup.createGroupLoading = true;
+                let selectedGroupMembers = [];
+                this.newGroup.selectedGroupMembers.forEach((m) => {
+                    selectedGroupMembers.push(m.id);
+                });
+                axios.post('/dashboard/conversations', {name: this.newGroup.name, members: selectedGroupMembers}).then((response) => {
+                    console.log(response.data);
+                });
+            } else {
+                this.newGroup.createGroupError = 'Please add at leat one (1) member';
+            }
+        },
+
+        searchMembers(e) {
+            if(!this.newGroup.searchingMembers) {
+                this.newGroup.searchingMembers = true;
+                setTimeout(() => {
+                    axios.get(`/dashboard/users?search=${e.target.value.trim()}`).then((response) => {
+                        this.newGroup.groupMembersResults = response.data;
+                    });
+                    this.newGroup.searchingMembers = false;
+                }, 500);
+            }
+        },
+
+        openCreateGroupChatModal() {
+            $('#groupChatCreateModal').modal('show');
+        },
+
         updateConversation(conversation) {
             axios.put(`/dashboard/conversations/${conversation.id}`, conversation);
         },
@@ -751,6 +855,24 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
+    .member-result:hover{
+        background-color: $light;
+    }
+    .members-search-container{
+        max-height: 200px;
+    }
+    .form-icon {
+        position: relative;
+        svg{
+            position: absolute;
+            top: 50%;
+            left: 8px;
+            transform: translateY(-50%);
+        }
+        .form-control {
+            padding-left: 35px !important;
+        }
+    }
     .conversation-dropdown{
         top: 8px;
         right: 5px;
@@ -803,6 +925,9 @@ export default {
     .user-profile-image-sm{
         width: 25px !important;
         height: 25px !important;
+        span {
+            font-size: 9px;
+        }
     }
 	.conversation-messages{
 		width: 0;

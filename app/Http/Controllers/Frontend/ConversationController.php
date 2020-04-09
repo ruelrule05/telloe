@@ -17,6 +17,17 @@ class ConversationController extends Controller
     	return response()->json($conversations);
     }
 
+    public function store(Request $request)
+    {
+        $conversation = Conversation::create([
+            'widget_id' => Auth::user()->widget->id,
+            'user_id' => $request->user_id,
+            'name' => $request->name,
+            'members' => $request->members,
+        ]);
+        return response()->json($conversation);
+    }
+
     public function show($id, Request $request)
     {
     	$conversation = Conversation::with('messages', 'notes')->findOrfail($id);

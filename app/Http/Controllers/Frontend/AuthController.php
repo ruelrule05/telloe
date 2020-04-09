@@ -12,6 +12,7 @@ use App\Models\Widget;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
+use Image;
 
 class AuthController extends Controller
 {
@@ -52,16 +53,15 @@ class AuthController extends Controller
     			'email' => 'required|email|unique:users,email',
     			'password' => 'required',
     		]);
+            $widget = Widget::create([]);
     		$user = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
+                'widget_id' => $widget->id
             ]);
     		Auth::login($user);
-            Widget::firstOrCreate([
-                'user_id' => $user->id
-            ]);
             
     		return response()->json($user);
     	endif;
@@ -162,5 +162,70 @@ class AuthController extends Controller
 
         Auth::user()->update($request->all());
         return $this->get($request);
+    }
+
+    public function loginFacebook(Request $request)
+    {
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'id' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user || $user->facebook_id == $request->id) :
+            if(!$user) :
+                $time = time();
+                $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
+                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
+                $widget = Widget::create([]);
+                $user = User::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'facebook_id' => $request->id,
+                    'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
+                    'widget_id' => $widget->id
+                ]);
+            endif;
+            Auth::login($user);
+            $response = [
+                'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
+            ]; 
+            return response()->json($response);
+        endif;
+        return abort(403, "There's no user associated with this Facebook account.");
+    }
+
+    public function loginGoogle(Request $request)
+    {
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'image_url' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user || $user->facebook_id == $request->id) :
+            if(!$user) :
+                $time = time();
+                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
+                $widget = Widget::create([]);
+                $user = User::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'facebook_id' => $request->id,
+                    'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
+                    'widget_id' => $widget->id
+                ]);
+            endif;
+            Auth::login($user);
+            $response = [
+                'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
+            ]; 
+            return response()->json($response);
+        endif;
+        return abort(403, "There's no user associated with this Facebook account.");
     }
 }
