@@ -108,7 +108,7 @@ else if (argv.indexOf('--widget') > -1) {
             proxy: 'https://snapturebox.app',
             host: 'snapturebox.app',
             open: false,
-            port: 8000,
+            port: 8001,
             watch: true,
             notify: false,
             https: {

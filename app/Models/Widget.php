@@ -7,17 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     //
-    protected $fillable = ['name', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms', 'default_chatbot'];
+    protected $fillable = ['user_id', 'name', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms', 'default_chatbot'];
     protected $casts = [
         'fb_page' => 'array',
         'colors' => 'array',
         'notify_messenger' => 'boolean',
         'notify_sms' => 'boolean',
+        'members' => 'array',
     ];
     protected $hidden = [
         'created_at',
         'updated_at'
     ];
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function widgetRules()
     {
@@ -26,7 +33,7 @@ class Widget extends Model
 
     public function members()
     {
-        return $this->hasMany(Member::class)->orderBy('created_at', 'DESC');
+        return $this->hasMany(WidgetMember::class)->orderBy('created_at', 'DESC');
     }
 
     public function inquiries()

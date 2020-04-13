@@ -20,7 +20,7 @@ class NoteController extends Controller
             'notes' => 'required',
         ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
-        $this->authorize('postNote', $conversation);
+        $this->authorize('addNote', $conversation);
 
         $note = Note::create([
             'conversation_id' => $conversation->id,

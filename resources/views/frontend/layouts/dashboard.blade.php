@@ -62,6 +62,12 @@
 							<router-link to="/dashboard/chatbots" exact><virtual-reality-icon height="26" width="26"></virtual-reality-icon></router-link>
 						</div>
 					</div>
+
+					<div class="py-2">
+						<div class="d-inline-block" v-tooltip.right="'Users'">
+							<router-link to="/dashboard/users" exact><users-icon height="26" width="26"></users-icon></router-link>
+						</div>
+					</div>
 				</div>
 
 

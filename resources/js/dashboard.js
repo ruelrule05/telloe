@@ -35,6 +35,10 @@ window.routes = window.routes.concat([
                 path: 'chatbots/:id',
                 component: () => import(/* webpackChunkName: "chatbots-show" */ './components/dashboard/chatbots/show.vue'),
             },
+            {
+                path: 'users',
+                component: () => import(/* webpackChunkName: "users" */ './components/dashboard/users.vue'),
+            },
         ],
     },
 ]);
@@ -44,11 +48,12 @@ import GridIcon from './icons/grid';
 import ChatIcon from './icons/chat';
 import NotebookIcon from './icons/notebook';
 import CogIcon from './icons/cog';
+import UsersIcon from './icons/users';
 import VirtualRealityIcon from './icons/virtual-reality';
 const dashboard = {
     directives: {Tooltip},
     
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon},
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon},
 
     data: {
         heading: '',

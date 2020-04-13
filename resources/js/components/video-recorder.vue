@@ -178,6 +178,7 @@ export default {
         currentTime: 0,
         limit: 30000, // 30 seconds
         cameraFull: false,
+        streams: null,
     }),
 
     computed: {

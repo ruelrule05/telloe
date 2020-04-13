@@ -9,10 +9,9 @@ use Auth;
 class Conversation extends Model
 {
     //
-    protected $fillable = ['widget_id', 'user_id', 'metadata', 'source', 'status', 'members', 'name'];
-    public $appends = ['user', 'last_message'];
+    protected $fillable = ['widget_id', 'user_id', 'metadata', 'source', 'status', 'name'];
+    public $appends = ['user', 'last_message', 'timestamp'];
     protected $casts = [
-        'members' => 'array',
         'metadata' => 'array',
     ];
 
@@ -24,6 +23,11 @@ class Conversation extends Model
     public function messages()
     {
     	return $this->hasMany(Message::class);
+    }
+
+    public function members()
+    {
+        return $this->hasMany(ConversationMember::class)->orderBy('created_at', 'DESC');
     }
 
 
@@ -58,6 +62,7 @@ class Conversation extends Model
         if($this->user_id) :
             $user = User::findOrFail($this->user_id);
         else:
+            // check if has members
             $user = [
                 'id' => $this->metadata['guest_cookie'] ?? '',
                 'full_name' =>  $this->metadata['name'] ?? '',
@@ -66,5 +71,10 @@ class Conversation extends Model
         endif;
 
         return $user;
+    }
+
+    public function getTimestampAttribute()
+    {
+        return $this->created_at->getPreciseTimestamp(3);
     }
 }

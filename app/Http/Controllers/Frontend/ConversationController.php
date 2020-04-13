@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Conversation;
+use App\Models\User;
 use App\Models\Message;
+use App\Models\ConversationMember;
 use Auth;
 use File;
 
@@ -13,7 +15,7 @@ class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-    	$conversations = Conversation::where('widget_id', Auth::user()->widget->id)->get();
+    	$conversations = Conversation::with('members.user')->where('widget_id', Auth::user()->widget->id)->get();
     	return response()->json($conversations);
     }
 
@@ -22,15 +24,40 @@ class ConversationController extends Controller
         $conversation = Conversation::create([
             'widget_id' => Auth::user()->widget->id,
             'user_id' => $request->user_id,
-            'name' => $request->name,
             'members' => $request->members,
+            'status' => 'active',
         ]);
-        return response()->json($conversation);
+        if(count($request->members) > 1) :
+            $added_members = [];
+            foreach($request->members as $member_id) :
+                if(!in_array($member_id, $added_members)) :
+                    $added_member[] = $member_id;
+                    if($member_id != Auth::user()->id) :
+                        $member = User::find($member_id);
+                        if($member) :
+                            ConversationMember::create([
+                                'conversation_id' => $conversation->id,
+                                'user_id' => $member->id
+                            ]);
+                        endif;
+                    endif;
+                endif;
+            endforeach;
+            $conversation->update(['name' => 'New group chat']);
+        else :
+            $member = User::find($request->members[0]);
+            if($member) :
+                $conversation->update([
+                    'user_id' => $member->id
+                ]);
+            endif;
+        endif;
+        return response()->json($conversation->load('members.user'));
     }
 
     public function show($id, Request $request)
     {
-    	$conversation = Conversation::with('messages', 'notes')->findOrfail($id);
+    	$conversation = Conversation::with('messages', 'notes', 'members.user')->findOrfail($id);
     	$this->authorize('show', $conversation);
 
     	if ($request->is_read) :
@@ -53,7 +80,8 @@ class ConversationController extends Controller
         $this->authorize('update', $conversation);
 
         $conversation->update([
-            'status' => $request->status
+            'status' => $request->status,
+            'name' => $request->name,
         ]);
 
         return response()->json($conversation);

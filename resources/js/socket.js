@@ -29,4 +29,7 @@ io.on('connection', function(socket) {
     socket.on('message_sent', function(data) {
         socket.broadcast.emit('new_message', data);
     });
+    socket.on('live_call_init', function(data) {
+        socket.broadcast.emit('live_calling', data);
+    });
 });

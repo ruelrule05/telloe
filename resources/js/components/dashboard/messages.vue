@@ -12,7 +12,7 @@
                 <div class="ml-auto dropleft">
                     <button class="btn p-0 pr-2" data-toggle="dropdown"><plus-icon></plus-icon></button>
                     <div class="dropdown-menu py-1">
-                        <span class="dropdown-item cursor-pointer d-flex align-items-center" @click="openCreateGroupChatModal()"><users-icon height="18" width="18" class="mr-2"></users-icon>Create group chat</span>
+                        <span class="dropdown-item cursor-pointer d-flex align-items-center" @click="openNewChatModal()"><edit-square-icon height="18" width="18" class="mr-2"></edit-square-icon>New chat</span>
                     </div>
                 </div>
 			</div>
@@ -31,20 +31,21 @@
 					  		<span v-if="!conversation.user.profile_image">{{ conversation.user.initials }}</span>
 					  	</div>
 					  	<div class="media-body pl-2">
-					    	<div class="d-flex">
-                                 <div class="mb-2">
-                                    <div class="h6 mb-0">{{ conversation.user.full_name || conversation.name }}</div>
-                                    <div v-if="conversation.source">
-                                        <sign-in-icon height="14" width="14"></sign-in-icon> <small class="text-primary">{{ conversation.source }}</small>
-                                    </div>
-                                </div>           
+                            <div class="h6 mb-0">{{ conversation.user.full_name || conversation.name }}</div>
+                            <div v-if="conversation.source" class="mb-2">
+                                <sign-in-icon height="14" width="14"></sign-in-icon> <small class="text-primary">{{ conversation.source }}</small>
                             </div>
 					    	<div class="d-flex">
                                 <small v-html="conversation.last_message.message" class="mb-0 text-gray str-limit" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></small>    
                                  <small class="ml-auto text-gray-400 text-nowrap">{{ conversation.last_message.created_diff }}</small>                 
                             </div>
-                            <div class="text-right mt-2">
-                                <div class="user-profile-image user-profile-image-sm ml-auto" :style="{backgroundImage: 'url('+$root.auth.profile_image+')'}"></div>
+                            <div class="mt-2 d-flex justify-content-end">
+                                <div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+$root.auth.profile_image+')'}">
+                                    <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
+                                </div>
+                                <div v-for="member in conversation.members" class="user-profile-image user-profile-image-sm ml-1" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
+                                    <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
+                                </div>
                             </div>
 					  	</div>
 					</div>
@@ -58,7 +59,7 @@
 		<div class="conversation-messages border-left text-nowrap flex-grow-1 bg-white overflow-hidden position-relative">
 			<div v-if="selectedConversation" class="d-flex flex-column h-100">
 				<div class="p-3 bg-white border-bottom position-relative">
-					<strong class="font-heading">{{ selectedConversation.user.full_name }}</strong>
+					<strong class="font-heading">{{ selectedConversation.user.full_name || selectedConversation.name }}</strong>
 				</div>
 				<div class="p-3 overflow-y-auto flex-grow-1" ref="message-group-container" id="message-group-container">
 	                <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
@@ -120,12 +121,13 @@
 			            <input type="file" hidden ref="fileMedia" @change="addFile" />
 			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
 			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><camera-icon width="20" height="20"></camera-icon></button>
+                        <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('live')"><video-icon width="24" height="24"></video-icon></button>
 						<button type="submit" class="btn btn-dark badge-pill px-3 btn-sm ml-3">Send</button>
 					</vue-form-validate>
 				</div>
 			</div>
 		</div>
-
+    
 
 
 		<!-- Conversations details -->
@@ -135,18 +137,7 @@
                     <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
                         <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
                     </div>
-                    <h4 class="font-heading">{{ selectedConversation.user.full_name }}</h4>
-
-                    <!-- <div class="px-5">
-                        <select class="form-control form-control-sm cursor-pointer" v-model="detailsTab">
-                            <option value="overview">Overview</option>
-                            <option value="files">Files</option>
-                            <option value="notes">Notes</option>
-                            <option value="history">History</option>
-                            <option value="chat_data">Chat Data</option>
-                        </select>
-                    </div> -->
-
+                    <h4 class="font-heading conversation-title" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="selectedConversation.members.length >= 1">{{ selectedConversation.user.full_name || selectedConversation.name }}</h4>
                     <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'overview'}" @click="detailsTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'"><small class="font-weight-bold d-block">Files</small></button>
@@ -159,18 +150,55 @@
                 <div class="mt-3 overflow-auto flex-grow-1 h-100 text-left">
                     <!-- Overview -->
                     <div v-if="detailsTab == 'overview'">
-                        <h6 class="font-weight-bolder mb-3">Details</h6>
-                        <div class="form-group">
-                            <strong class="text-gray">Email:</strong>
-                            <div class="font-weight-bold">{{ selectedConversation.user.email }}</div>
+                        <div v-if="selectedConversation.members.length == 0">
+                            <h6 class="font-weight-bolder mb-3">Details</h6>
+                            <div class="form-group">
+                                <strong class="text-gray">Email:</strong>
+                                <div class="font-weight-bold">{{ selectedConversation.user.email }}</div>
+                            </div>
+                            <div class="form-group">
+                                <strong class="text-gray">Phone:</strong>
+                                <div class="font-weight-bold">{{ selectedConversation.user.phone }}</div>
+                            </div>
+                            <div class="form-group">
+                                <strong class="text-gray">Tags:</strong>
+                                <div class="font-weight-bold"></div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <strong class="text-gray">Phone:</strong>
-                            <div class="font-weight-bold">{{ selectedConversation.user.phone }}</div>
-                        </div>
-                        <div class="form-group">
-                            <strong class="text-gray">Tags:</strong>
-                            <div class="font-weight-bold"></div>
+                        <div v-else>
+                            <div class="mb-2 p-2 rounded bg-white">
+                                <div class="form-group form-icon mb-0">
+                                    <search-icon height="20" width="20" fill="#999"></search-icon>
+                                    <input type="text" v-model="memberSearch" placeholder="Add members" @input="searchMembers($event, false)" class="form-control shadow-none form-control-sm">
+                                </div>
+                                <div class="position-relative mt-1 overflow-auto members-search-container">
+                                    <div v-if="searchingMembers" class="text-center">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                    </div>
+                                    <div v-if="groupMembersResults.length > 0">
+                                        <div class="media cursor-pointer border-top p-1 member-result" v-for="member in groupMembersResults" v-if="member.id != $root.auth.id && !selectedConversation.members.find((x) => x.user_id == member.id)" @click="addMember(member)">
+                                            <div class="user-profile-image user-profile-image-sm align-self-center" :style="{backgroundImage: 'url('+member.profile_image+')'}">
+                                                <span v-if="!member.profile_image">{{ member.initials }}</span>
+                                            </div>
+                                            <div class="media-body pl-2">
+                                                <div class="font-weight-bold mb-n1">{{ member.full_name }}</div>
+                                                <small class="ml-auto text-gray text-nowrap">{{ member.email }}</small>           
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="media border-top py-2 px-2 member-item position-relative" v-for="member in selectedConversation.members">
+                                <trash-icon fill="red" class="position-absolute cursor-pointer delete-member opacity-0" height="18" width="18" @click.native="deleteMember(member)"></trash-icon>
+                                <div class="user-profile-image user-profile-image-sm align-self-center" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
+                                    <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
+                                </div>
+                                <div class="media-body pl-2">
+                                    <div class="font-weight-bold mb-n1">{{ member.user.full_name }}</div>
+                                    <small class="ml-auto text-gray text-nowrap">{{ member.user.email }}</small>           
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -260,40 +288,39 @@
                 </div>
 			</div>
 		</div>
+
+
         
 
-        <!-- Create group chat modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="groupChatCreateModal">
+        <!-- New chat modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="newChatCreateModal">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content overflow-hidden">
                     <div class="modal-header pb-0">
-                        <h5 class="modal-title">Create group chat</h5>
+                        <h5 class="modal-title">New chat</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                         <vue-form-validate @submit="createGroup">
-                                <div class="form-group mb-1">
-                                    <input type="text" placeholder="Group name" v-model="newGroup.name" data-required class="form-control">
-                                </div>
+                         <vue-form-validate @submit="createChat">
                                 <div class="form-group form-icon mb-0">
                                     <search-icon height="20" width="20" fill="#999"></search-icon>
-                                    <input type="text" placeholder="Add members" @input="searchMembers" class="form-control">
+                                    <input type="text" placeholder="Add members" v-model="newChat.memberSearch" @input="searchMembers" class="form-control">
                                 </div>
-                                <small class="text-danger" v-if="newGroup.createGroupError">{{ newGroup.createGroupError }}</small>
+                                <small class="text-danger" v-if="newChat.createChatError">{{ newChat.createChatError }}</small>
                                 <div class="mt-2">
-                                    <div v-for="member, index in newGroup.selectedGroupMembers" class="font-weight-bold d-inline-block badge badge-pill badge-primary py-2 px-3 mr-1 mb-2">
+                                    <div v-for="member, index in newChat.selectedChatMembers" class="font-weight-bold d-inline-block badge badge-pill badge-primary py-2 px-3 mr-1 mb-2">
                                     {{ member.full_name }}&nbsp;
-                                        <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer" @click.native="newGroup.selectedGroupMembers.splice(index, 1)"></close-icon>
+                                        <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer" @click.native="newChat.selectedChatMembers.splice(index, 1)"></close-icon>
                                     </div>
                                 </div>
                                 <div class="position-relative mt-1 overflow-auto members-search-container">
-                                    <div v-if="newGroup.searchingMembers" class="text-center">
+                                    <div v-if="newChat.searchingMembers" class="text-center">
                                         <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
                                     </div>
-                                    <div v-if="newGroup.groupMembersResults.length > 0">
-                                        <div class="media cursor-pointer border-top py-2 px-2 member-result" v-for="member in newGroup.groupMembersResults" v-if="!newGroup.selectedGroupMembers.find((x) => x.id == member.id)" @click="newGroup.selectedGroupMembers.push(member)">
+                                    <div v-if="newChat.groupMembersResults.length > 0">
+                                        <div class="media cursor-pointer border-top py-2 px-2 member-result" v-for="member in newChat.groupMembersResults" v-if="member.id != $root.auth.id && !newChat.selectedChatMembers.find((x) => x.id == member.id)" @click="newChat.selectedChatMembers.push(member)">
                                             <div class="user-profile-image user-profile-image-sm align-self-center" :style="{backgroundImage: 'url('+member.profile_image+')'}">
                                                 <span v-if="!member.profile_image">{{ member.initials }}</span>
                                             </div>
@@ -305,9 +332,24 @@
                                     </div>
                                 </div>
                                 <div class="text-right mt-3">
-                                    <vue-button :loading="newGroup.createGroupLoading" button_class="btn btn-primary" type="submit"">Create</vue-button>
+                                    <vue-button :loading="newChat.createChatLoading" button_class="btn btn-primary" type="submit"">Create</vue-button>
                                 </div>
                          </vue-form-validate>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Live Recorder modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="liveRecorderModal">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content overflow-hidden rounded">
+                    <div class="modal-body p-0">
+                        <div v-if="selectedConversation && recorder == 'live'" class="h-100">
+                            <live-recorder @close="closeRecorder('live')" :conversation="selectedConversation"></live-recorder>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -353,7 +395,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <div v-if="selectedConversation && recorder" class="h-100">
+                        <div v-if="selectedConversation && recorder == 'audio'" class="h-100">
                             <audio-recorder @submit="sendAudio" @close="closeRecorder('audio')"></audio-recorder>
                         </div>
                     </div>
@@ -367,7 +409,7 @@
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content overflow-hidden rounded">
                     <div class="modal-body p-0">
-                        <div v-if="selectedConversation && recorder" class="h-100">
+                        <div v-if="selectedConversation && recorder == 'video'" class="h-100">
                             <video-recorder @submit="sendVideo" @close="closeRecorder('video')" :conversation="selectedConversation"></video-recorder>
                         </div>
                     </div>
@@ -383,8 +425,6 @@ import dayjs from 'dayjs';
 import filesize from 'filesize';
 import VueFormValidate from '../../components/vue-form-validate';
 import MessageType from '../../components/message-type';
-import AudioRecorder from '../../components/audio-recorder';
-import VideoRecorder from '../../components/video-recorder';
 import CommentIcon from '../../icons/comment';
 import DocumentIcon from '../../icons/document';
 import VolumeMidIcon from '../../icons/volume-mid';
@@ -405,11 +445,17 @@ import PlusIcon from '../../icons/plus';
 import UsersIcon from '../../icons/users';
 import SearchIcon from '../../icons/search';
 import CloseIcon from '../../icons/close';
+import EditSquareIcon from '../../icons/edit-square';
+import VideoIcon from '../../icons/video';
 import Emojipicker from '../../components/emojipicker';
 import Waveplayer from '../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
 export default {
-	components: {VueFormValidate, MessageType, AudioRecorder, VideoRecorder, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, Waveplayer},
+	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, VideoIcon, Waveplayer,
+        'video-recorder': () => import(/* webpackChunkName: "video-recorder" */ '../../components/video-recorder'),
+        'audio-recorder': () => import(/* webpackChunkName: "audio-recorder" */ '../../components/audio-recorder'),
+        'live-recorder': () => import(/* webpackChunkName: "live-recorder" */ '../../components/live-recorder'),
+    },
 	directives: {Tooltip, VueScrollTo},
 
     data: () => ({
@@ -425,14 +471,19 @@ export default {
         notification_sound: null,
         addingNote: false,
         newNote: '',
-        newGroup: {
-            name: '',
+        newChat: {
+            memberSearch: '',
             searchingMembers: false,
             groupMembersResults: [],
-            selectedGroupMembers: [],
-            createGroupError: '',
-            createGroupLoading: false
-        }
+            selectedChatMembers: [],
+            createChatError: '',
+            createChatLoading: false
+        },
+        memberSearch: '',
+        searchingMembers: false,
+        groupMembersResults: [],
+        selectedChatMembers: [],
+        socket: null,
     }),
 
     computed: {
@@ -470,8 +521,8 @@ export default {
 
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        /*this.socket = io('https://snapturebox.app:8443');
-        this.socket.on('new_message', (data) => {
+        this.socket = io('https://snapturebox.app:8443');
+        /*this.socket.on('new_message', (data) => {
             if(data.conversation.widget_id == this.$root.auth.widget.id) {
                 if(this.selectedConversation && this.selectedConversation.id == data.conversation_id) {
                     this.selectedConversation.messages.push(data);
@@ -497,39 +548,103 @@ export default {
     },
 
     mounted() {
-        this.openCreateGroupChatModal();
     },
 
     methods: {
-        createGroup() {
-            if(this.newGroup.selectedGroupMembers.length > 0) {
-                this.newGroup.createGroupLoading = true;
-                let selectedGroupMembers = [];
-                this.newGroup.selectedGroupMembers.forEach((m) => {
-                    selectedGroupMembers.push(m.id);
-                });
-                axios.post('/dashboard/conversations', {name: this.newGroup.name, members: selectedGroupMembers}).then((response) => {
-                    console.log(response.data);
-                });
-            } else {
-                this.newGroup.createGroupError = 'Please add at leat one (1) member';
+        disableNewline(e) {
+            if(e.keyCode == 13) e.preventDefault();
+        },
+
+        updateConversationName(e) {
+            if(this.selectedConversation) {
+                let newName = e.target.textContent.trim();
+                if(newName != this.selectedConversation.name) {
+                    this.selectedConversation.name = newName;
+                    let conversation = this.conversations.find((x) => x.id == this.selectedConversation.id);
+                    if(conversation) conversation.name = newName;
+                    this.updateConversation(this.selectedConversation);
+                }
             }
         },
 
-        searchMembers(e) {
-            if(!this.newGroup.searchingMembers) {
-                this.newGroup.searchingMembers = true;
+        addMember(member) {
+            if(this.selectedConversation) {
+                member.conversation_id = this.selectedConversation.id;
+                this.memberSearch = '';
+                this.selectedChatMembers = [];
+                this.groupMembersResults = [];
+                this.searchingMembers = false;
+                axios.post(`/dashboard/conversation_members`, member).then((response) => {
+                    this.selectedConversation.members.unshift(response.data);
+                    let index = this.conversations.findIndex((x) => x.id == this.selectedConversation.id);
+                    if(index > -1) {
+                        this.conversations[index].members.unshift(response.data);
+                    }
+                });
+            }
+        },
+
+        deleteMember(member) {
+            if(this.selectedConversation) {
+                let index = this.selectedConversation.members.findIndex((x) => x.id == member.id);
+                if(index > -1) this.selectedConversation.members.splice(index, 1);
+                let conversation = this.conversations.find((x) => x.id == this.selectedConversation.id);
+                if(this.selectedConversation.members.length == 1) this.selectedConversation.members = [];
+                
+                if(conversation) {
+                    let memberIndex = conversation.members.findIndex((x) => x.id == member.id);
+                    if(memberIndex > -1) conversation.members.splice(memberIndex, 1);
+                    if(conversation.members.length == 1) conversation.members = [];
+                }
+
+                axios.delete(`/dashboard/conversation_members/${member.id}`).then((response) => {
+                    if(response.data.user) {
+                        this.selectedConversation.user = response.data.user;
+                        if(conversation) conversation.user = response.data.user;
+                    }
+                });
+            }
+        },
+
+        createChat() {
+            if(this.newChat.selectedChatMembers.length > 0) {
+                this.newChat.createChatLoading = true;
+                let selectedChatMembers = [];
+                this.newChat.selectedChatMembers.forEach((m) => {
+                    selectedChatMembers.push(m.id);
+                });
+                axios.post('/dashboard/conversations', {members: selectedChatMembers}).then((response) => {
+                    $('#newChatCreateModal').modal('hide');
+                    this.newChat.searchingMembers = false;
+                    this.newChat.groupMembersResults = [];
+                    this.newChat.selectedChatMembers = [];
+                    this.newChat.createChatError = '';
+                    this.newChat.createChatLoading = false;
+                    this.conversations.push(response.data);
+                    this.orderConversations();
+                    this.setConversation(response.data);
+                });
+            } else {
+                this.newChat.createChatError = 'Please add at leat one (1) member';
+            }
+        },
+
+        searchMembers(e, newChat = true) {
+            let chatTarget = newChat ? this.newChat : this;
+            if(!chatTarget['searchingMembers']) {
+                chatTarget['searchingMembers'] = true;
                 setTimeout(() => {
                     axios.get(`/dashboard/users?search=${e.target.value.trim()}`).then((response) => {
-                        this.newGroup.groupMembersResults = response.data;
+                        chatTarget['groupMembersResults'] = response.data;
                     });
-                    this.newGroup.searchingMembers = false;
+                    chatTarget['searchingMembers'] = false;
                 }, 500);
             }
         },
 
-        openCreateGroupChatModal() {
-            $('#groupChatCreateModal').modal('show');
+        openNewChatModal() {
+            this.newChat.memberSearch = '';
+            $('#newChatCreateModal').modal('show');
         },
 
         updateConversation(conversation) {
@@ -826,8 +941,8 @@ export default {
         orderConversations() {
             if (this.conversations.length > 0) {
                 this.conversations = this.conversations.sort((a, b) => {
-                    const a_timestamp = a.last_message.timestamp;
-                    const b_timestamp = b.last_message.timestamp;
+                    const a_timestamp = a.last_message.timestamp || a.timestamp;
+                    const b_timestamp = b.last_message.timestamp || b.timestamp;
                     return (a_timestamp > b_timestamp) ? -1 : 1;
                 });
             }
@@ -855,6 +970,23 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
+    .conversation-title[contenteditable]{
+        border: solid 1px transparent;
+        &:focus{
+            border-color: $gray-300;
+            outline: 0;
+        }
+    }
+    .delete-member{
+        top: 5px;
+        right: 5px;
+        transition: $transition-base;
+    }
+    .member-item:hover{
+        .delete-member{
+            opacity: 1;
+        }
+    }
     .member-result:hover{
         background-color: $light;
     }
@@ -926,7 +1058,7 @@ export default {
         width: 25px !important;
         height: 25px !important;
         span {
-            font-size: 9px;
+            font-size: 9px !important;
         }
     }
 	.conversation-messages{

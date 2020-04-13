@@ -42,10 +42,10 @@
 
                             <!-- Left content -->
                             <div class="snapturebox-d-flex snapturebox-flex-column snapturebox-mh-100 snapturebox-h-100 snapturebox-overflow-auto snapturebox-position-relative">
-                                <!-- Inquiries -->
-                               <inquiry-form v-if="leftContent == 'inquiry-form'"></inquiry-form>
-                               <video-recorder v-else-if="leftContent == 'video-recorder'" @submit="sendVideo"></video-recorder>
-                               <audio-recorder v-else-if="leftContent == 'audio-recorder'" @submit="sendAudio"></audio-recorder>
+                                <inquiry-form v-if="leftContent == 'inquiry-form'"></inquiry-form>
+                                <video-recorder v-else-if="leftContent == 'video-recorder'" @submit="sendVideo"></video-recorder>
+                                <audio-recorder v-else-if="leftContent == 'audio-recorder'" @submit="sendAudio"></audio-recorder>
+                                <live-video ref="liveVideo" v-else-if="leftContent == 'live-video' && videoCalling" :videoCallData="videoCallData" :videoCallDesc="videoCallDesc"></live-video>
 
                                 <!-- DateTimePicker -->
                                 <div class="snapturebox-overflow-auto snapturebox-h-100 snapturebox-position-relative snapturebox-p-4" v-else-if="leftContent == 'book'">
@@ -99,6 +99,7 @@ export default {
         'audio-recorder': () => import(/* webpackChunkName: "audio-recorder" */ './components/audio-recorder'),
         'inquiry-form': () => import(/* webpackChunkName: "inquiry-form" */ './components/inquiry-form'),
         'date-time-picker': () => import(/* webpackChunkName: "datetimepicker" */ './components/datetimepicker'),
+        'live-video': () => import(/* webpackChunkName: "live-video" */ './components/live-video'),
     },
     directives: {Tooltip},
     data: () => ({
@@ -130,6 +131,9 @@ export default {
         chatbot_pending_messages: [],
         guest_replied: false,
         accountMenu: false,
+        videoCalling: false,
+        videoCallData: null,
+        videoCallDesc: null,
     }),
     computed: {
         customerImagesCount() {
@@ -178,6 +182,18 @@ export default {
                 this.$refs['messages'].scrollDown();
             }
         });
+        this.socket.on('live_calling', (data) => {
+            if(data.conversation.id == this.$root.conversation.id) {
+                if(data.desc && data.desc.type == 'offer' && data.is_calling) {
+                    this.videoCallDesc = data.desc;
+                    this.videoCallData = data;
+                    this.videoCalling = true;
+                    this.openPanel('live-video');
+                } else if(data.candidate) {
+                    //this.$refs['liveVideo'].addCandidate(data.candidate);
+                }
+            }
+        });
         //this.$root.conversation.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
 
         //if(this.$root.widget.default_chatbot) this.callChatbot();
@@ -190,6 +206,7 @@ export default {
     },
 
     methods: {
+
         sendVideo(video) {
             this.sendMessage(video);
         },

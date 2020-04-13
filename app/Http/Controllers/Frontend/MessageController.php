@@ -21,7 +21,7 @@ class MessageController extends Controller
             'timestamp' => 'required',
         ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
-        $this->authorize('postMessage', $conversation);
+        $this->authorize('addMessage', $conversation);
 
         $time = time();
         $sourceFile = null;

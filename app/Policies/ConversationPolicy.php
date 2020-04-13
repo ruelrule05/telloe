@@ -31,12 +31,17 @@ class ConversationPolicy
         return $user->widget->id == $conversation->widget_id;
     }
 
-    public function postMessage(User $user, Conversation $conversation)
+    public function addMessage(User $user, Conversation $conversation)
     {
         return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id;
     }
 
-    public function postNote(User $user, Conversation $conversation)
+    public function addNote(User $user, Conversation $conversation)
+    {
+        return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id;
+    }
+
+    public function addMember(User $user, Conversation $conversation)
     {
         return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id;
     }
