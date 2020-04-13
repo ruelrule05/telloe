@@ -43,8 +43,8 @@ export default {
 	created() {
 
         this.$parent.socket.on('live_calling', (data) => {
-            if(data.desc && data.desc.type == 'answer') {
-				this.createAnswer(data);
+            if(data.conversation.id == this.$parent.selectedConversation.id && data.desc && data.desc.type == 'answer') {
+				this.isAnswered(data);
             }
         });
 
@@ -65,7 +65,7 @@ export default {
 	computed: {},
 
 	methods: {
-		createAnswer(data) {
+		isAnswered(data) {
             this.pc.setRemoteDescription(data.desc);
 		},
 

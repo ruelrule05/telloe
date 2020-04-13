@@ -183,15 +183,11 @@ export default {
             }
         });
         this.socket.on('live_calling', (data) => {
-            if(data.conversation.id == this.$root.conversation.id) {
-                if(data.desc && data.desc.type == 'offer' && data.is_calling) {
-                    this.videoCallDesc = data.desc;
-                    this.videoCallData = data;
-                    this.videoCalling = true;
-                    this.openPanel('live-video');
-                } else if(data.candidate) {
-                    //this.$refs['liveVideo'].addCandidate(data.candidate);
-                }
+            if(data.conversation.id == this.$root.conversation.id && data.desc && data.desc.type == 'offer' && data.is_calling) {
+                this.videoCallDesc = data.desc;
+                this.videoCallData = data;
+                this.videoCalling = true;
+                this.openPanel('live-video');
             }
         });
         //this.$root.conversation.messages = this.$root.auth ? this.$root.auth.convo.messages : [];
