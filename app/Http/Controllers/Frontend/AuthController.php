@@ -200,6 +200,7 @@ class AuthController extends Controller
     public function loginGoogle(Request $request)
     {
         $this->validate($request, [
+            'id' => 'required',
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
@@ -215,7 +216,7 @@ class AuthController extends Controller
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'facebook_id' => $request->id,
+                    'google' => $request->id,
                     'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
                     'widget_id' => $widget->id
                 ]);

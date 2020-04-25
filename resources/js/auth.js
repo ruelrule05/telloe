@@ -129,6 +129,7 @@ const auth = {
                     .then((googleUser) => {
                         let profile = googleUser.getBasicProfile();
                         let user = {
+                            id: profile.getID(),
                             first_name: profile.getGivenName(),
                             last_name: profile.getFamilyName(),
                             email: profile.getEmail(),

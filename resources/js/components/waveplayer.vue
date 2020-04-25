@@ -1,5 +1,5 @@
 <template>
-	<div class="d-flex align-items-center justify-content-between w-100">
+	<div class="d-flex align-items-center justify-content-between waveplayer-container">
 		<button class="audio-control shadow-sm position-relative p-0 mr-2" @click="togglePlayer">
 			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="#999"></play-icon>
 			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="#999"></pause-icon>
@@ -85,8 +85,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-	.waveplayer{
+	.waveplayer-container{
 		width: 220px;
+		max-width: 100%;
 	}
 	.audio-control{
 		width: 25px;

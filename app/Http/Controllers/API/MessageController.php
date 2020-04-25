@@ -39,72 +39,55 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
+            'conversation_id' => 'required|exists:conversations,id',
             'type' => 'required',
+            'timestamp' => 'required',
         ]);
-        if($request->type == 'action') :
-            $chatbox = Chatbox::where('id', $request->target)->first();
-            if($chatbox) :
-                return response()->json($chatbox);
-            endif;
-        else :
-            $conversation = null;
+        $conversation = Conversation::findOrFail($request->conversation_id);
+        $this->authorize('addMessage', $conversation);
 
-            if(auth()->check()) :
-                $conversation = Conversation::firstOrCreate([
-                    'widget_id' => $request->widget->id,
-                    'user_id' => auth()->user()->id,
-                    'source' => 'Widget',
-                ]);
-            else :
-                $metadata = json_decode($request->metadata);
-                $metadata->name = $request->ip();
-                $request->merge([
-                    'metadata' => $metadata
-                ]);
-                $conversation = Conversation::where('metadata->guest_cookie', $request->metadata->guest_cookie)->firstOrCreate([
-                    'widget_id' => $request->widget->id,
-                    'source' => 'Widget',
-                ]);
-                $conversation->update([
-                    'metadata' => $request->metadata
-                ]);
-            endif;
-
-            if($conversation) :
-                $time = time();
-
-                $sourceFile = null;
-                if ($request->hasFile('source')) :
-                    $filename = $time . '-source';
-                    $srcDestination = 'storage/message-media/' . $filename;
-                    $request->file('source')->storeAs('public/message-media/', $filename);
-                    $sourceFile = '/' . $srcDestination;
-                endif;
-
-                $previewFile = null;
-                if ($request->preview) :
-                    $source = $request->preview;
-                    $filename = $time . '-preview';
-                    $previewDestination = 'storage/message-media/' . $filename;
-                    $preview = base64_decode(substr($source, strpos($source, ',') + 1));
-                    File::put($previewDestination, $preview);
-                    $previewFile = '/' . $previewDestination;
-                endif;
-
-                $message = Message::create([
-                    'conversation_id' => $conversation->id,
-                    'user_id' => auth()->user()->id ?? null,
-                    'message' => $request->message,
-                    'type' => $request->type,
-                    'source' => $sourceFile,
-                    'preview' => $previewFile,
-                    'timestamp' => $request->timestamp,
-                    'metadata' => $request->metadata,
-                ]);
-                $message->load('conversation');
-                return response()->json($message);
-            endif;
+        $time = time();
+        $sourceFile = null;
+        if ($request->hasFile('source')) :
+            $filename = $time . '-source';
+            $srcDestination = 'storage/message-media/' . $filename;
+            $request->file('source')->storeAs('public/message-media/', $filename);
+            $sourceFile = '/' . $srcDestination;
         endif;
+
+        $previewFile = null;
+        if ($request->preview) :
+            $source = $request->preview;
+            $filename = $time . '-preview';
+            $previewDestination = 'storage/message-media/' . $filename;
+            $preview = base64_decode(substr($source, strpos($source, ',') + 1));
+            File::put($previewDestination, $preview);
+            $previewFile = '/' . $previewDestination;
+        endif;
+
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => auth()->user()->id,
+            'type' => $request->type,
+            'message' => $request->message,
+            'timestamp' => $request->timestamp,
+            'source' => $sourceFile,
+            'preview' => $previewFile,
+            'metadata' => json_decode($request->metadata),
+        ]);
+        $response = [
+            'id' => $message->id,
+            'conversation' => [
+                'id' => $conversation->id,
+                'user_id' => $conversation->user_id,
+                'members' => $conversation->members()->pluck('user_id')->toArray(),
+                'widget' => [
+                    'user_id' => $conversation->widget->user_id
+                ],
+            ],
+        ];
+
+        return response()->json($response);
     }
 
     public function update($id, Request $request)
@@ -199,5 +182,15 @@ class MessageController extends Controller
             // Start listening
             $botman->listen();
         endif;
+    }
+
+
+    
+
+    public function show($id, Request $request)
+    {
+        $message = Message::findOrFail($id);
+        $this->authorize('show', $message);
+        return response()->json($message);
     }
 }

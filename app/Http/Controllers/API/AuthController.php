@@ -7,6 +7,7 @@ use Auth;
 use App\Models\User;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use Image;
 
 class AuthController extends Controller
 {
@@ -48,11 +49,8 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = auth()->user();
-        $conversation = Conversation::with('messages')->firstOrCreate([
-            'widget_id' => $request->widget->id,
-            'user_id' => $user->id
-        ]);
-        return response()->json($user ? ['user' => $user, 'conversation' => $conversation] : false);
+        $conversations = Conversation::with('messages', 'widget.user', 'members')->where('user_id', $user->id)->get();
+        return response()->json($user ? ['user' => $user, 'conversations' => $conversations] : false);
     }
 
     public function logout()
@@ -69,10 +67,67 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'user' => auth()->user() ? auth()->user()->load('inquiries', 'offers.member.user') : false,
+            'user' => auth()->user(),
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+
+    public function loginFacebook(Request $request)
+    {
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'id' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user || $user->facebook_id == $request->id) :
+            if(!$user) :
+                $time = time();
+                $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
+                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
+                $user = User::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'facebook_id' => $request->id,
+                    'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
+                ]);
+            endif;
+            $token = auth()->login($user);
+            return $this->respondWithToken($token);
+        endif;
+        return abort(403, "There's no user associated with this Facebook account.");
+    }
+
+    public function loginGoogle(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'image_url' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user || $user->facebook_id == $request->id) :
+            if(!$user) :
+                $time = time();
+                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
+                $user = User::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'google_id' => $request->id,
+                    'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
+                ]);
+            endif;
+            $token = auth()->login($user);
+            return $this->respondWithToken($token);
+        endif;
+        return abort(403, "There's no user associated with this Google account.");
     }
 }

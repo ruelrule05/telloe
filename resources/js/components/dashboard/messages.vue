@@ -138,7 +138,7 @@
                         <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
                     </div>
                     <h4 class="font-heading conversation-title" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="selectedConversation.members.length >= 1">{{ selectedConversation.user.full_name || selectedConversation.name }}</h4>
-                    <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
+                    <div class="btn-group btn-group-sm w-100" role="group">
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'overview'}" @click="detailsTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'files'}" @click="detailsTab = 'files'"><small class="font-weight-bold d-block">Files</small></button>
                         <button type="button" class="btn btn-white border py-2" :class="{'active': detailsTab == 'notes'}" @click="detailsTab = 'notes'"><small class="font-weight-bold d-block">Notes</small></button>
@@ -203,7 +203,7 @@
                     </div>
 
                     <!-- Files -->
-                    <div v-if="detailsTab == 'files'">
+                    <div v-else-if="detailsTab == 'files'">
                         <select class="form-control form-control-sm mb-2" v-model="fileType">
                             <option value="all">All Files</option>
                             <option value="image">Photos</option>
@@ -484,6 +484,10 @@ export default {
         groupMembersResults: [],
         selectedChatMembers: [],
         socket: null,
+        videoCallDesc: null,
+        videoCallData: null,
+        videoCallData: true,
+
     }),
 
     computed: {
@@ -521,8 +525,9 @@ export default {
 
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        this.socket = io('https://snapturebox.app:8443');
-        /*this.socket.on('new_message', (data) => {
+        //this.socket = io('https://snapturebox.app:8443');
+        this.socket = io('https://snapturebox.com:8443');
+        this.socket.on('new_message', (data) => {
             if(data.conversation.widget_id == this.$root.auth.widget.id) {
                 if(this.selectedConversation && this.selectedConversation.id == data.conversation_id) {
                     this.selectedConversation.messages.push(data);
@@ -543,7 +548,8 @@ export default {
                 this.setConversation(data.conversation);
                 this.orderConversations();
             }
-        });*/
+        });
+
     	this.getData();
     },
 
@@ -551,6 +557,13 @@ export default {
     },
 
     methods: {
+        incomingCall(data) {
+            this.videoCallDesc = data.desc;
+            this.videoCallData = data;
+            this.videoCalling = true;
+            $('#liveRecorderModal').modal('show');
+        },
+
         disableNewline(e) {
             if(e.keyCode == 13) e.preventDefault();
         },
@@ -705,7 +718,7 @@ export default {
         },
         openRecorder(type) {
             this.recorder = type;
-            $(`#${type}RecorderModal`).modal('show');
+            $(`#${type}RecorderModal`).modal({backdrop: 'static', keyboard: false}).modal('show');
         },
 
         fileIcon(extension) {

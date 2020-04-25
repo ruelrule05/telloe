@@ -37,6 +37,8 @@ Route::group([
 		// Authentication
 		Route::group(['prefix' => 'auth'], function() {
 			Route::post('login', 'AuthController@login');
+			Route::post('login/facebook', 'AuthController@loginFacebook');
+			Route::post('login/google', 'AuthController@loginGoogle');
 			Route::post('signup', 'AuthController@signup');
 			Route::post('refresh', 'AuthController@refresh');
 			Route::get('me', 'AuthController@me')->middleware('auth:api');

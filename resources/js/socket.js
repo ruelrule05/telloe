@@ -25,11 +25,35 @@ server.listen(8443, function() {
 const io = require('socket.io')(server, {
     pingTimeout: 60000,
 });
+
 io.on('connection', function(socket) {
+    let socketData = null;
     socket.on('message_sent', function(data) {
         socket.broadcast.emit('new_message', data);
     });
-    socket.on('live_call_init', function(data) {
-        socket.broadcast.emit('live_calling', data);
+    socket.on('live_call_offer', function(data) {
+        socketData = data;
+        socket.broadcast.emit('live_call_offer', data);
     });
+    socket.on('live_call_answer', function(data) {
+        socketData = data;
+        socket.broadcast.emit('live_call_answer', data);
+    });
+    socket.on('live_call_reject', function(data) {
+        socket.broadcast.emit('live_call_reject', data);
+    });
+    socket.on('live_call_end', function(data) {
+        socket.broadcast.emit('live_call_end', data);
+    });
+
+
+
+    socket.on('disconnect', (reason) => {
+        if (reason === 'io server disconnect') socket.connect(); // try to reconnect
+        else if(reason === 'transport close' && socketData) { // page refreshed or closed
+            socket.broadcast.emit('live_call_end', socketData);
+            socketData = null;
+        }
+    });
+    
 });

@@ -182,7 +182,7 @@ export default {
                 this.$refs['messages'].scrollDown();
             }
         });
-        this.socket.on('live_calling', (data) => {
+        this.socket.on('live_call_offer', (data) => {
             if(data.conversation.id == this.$root.conversation.id && data.desc && data.desc.type == 'offer' && data.is_calling) {
                 this.videoCallDesc = data.desc;
                 this.videoCallData = data;
@@ -199,6 +199,13 @@ export default {
         '$root.auth': function(){
             this.accountMenu = false;
         }
+    },
+
+    mounted() {
+        /*this.videoCallDesc = {};
+        this.videoCallData = {};
+        this.videoCalling = true;
+        this.openPanel('live-video');*/
     },
 
     methods: {

@@ -52,8 +52,19 @@ class MessageController extends Controller
             'preview' => $previewFile,
             'metadata' => json_decode($request->metadata),
         ]);
+        $response = [
+            'id' => $message->id,
+            'conversation' => [
+                'id' => $conversation->id,
+                'user_id' => $conversation->user_id,
+                'members' => $conversation->members()->pluck('user_id')->toArray(),
+                'widget' => [
+                    'user_id' => $conversation->widget->user_id
+                ],
+            ],
+        ];
 
-        return response()->json($message);
+        return response()->json($response);
     }
 
 
@@ -65,6 +76,13 @@ class MessageController extends Controller
         $message->update([
             'is_history' => $request->is_history
         ]);
+        return response()->json($message);
+    }
+
+    public function show($id, Request $request)
+    {
+        $message = Message::findOrFail($id);
+        $this->authorize('show', $message);
         return response()->json($message);
     }
 }
