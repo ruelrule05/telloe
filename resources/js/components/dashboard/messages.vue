@@ -525,28 +525,36 @@ export default {
 
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        //this.socket = io('https://snapturebox.app:8443');
-        this.socket = io('https://snapturebox.com:8443');
+        this.socket = io(`https://${window.location.hostname}:8443`);
+        //this.socket = io('https://snapturebox.com:8443');
         this.socket.on('new_message', (data) => {
-            if(data.conversation.widget_id == this.$root.auth.widget.id) {
-                if(this.selectedConversation && this.selectedConversation.id == data.conversation_id) {
-                    this.selectedConversation.messages.push(data);
+            if(data.conversation.widget.id == this.$root.auth.widget.id) {
+                if(this.selectedConversation && this.selectedConversation.id == data.conversation.id) {
                     let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
                     if(conversationData) {
-                        this.$set(conversationData, 'last_message', data);
+                        this.getMessageByID(data).then((message) => {
+                            if(message) {
+                                this.selectedConversation.messages.push(message);
+                                this.$set(conversationData, 'last_message', message);
+                                this.notification_sound.play();
+                                this.scrollDown();
+                            }
+                        });
                     }
-                    this.notification_sound.play();
-                    this.scrollDown();
                 } else {
-                    let conversationData = this.conversations.find((x) => x.id == data.conversation_id);
-                    if(conversationData) {
-                        this.$set(conversationData, 'last_message', data);
-                    } else {
-                        this.conversations.push(data.conversation);
-                    }
+                    this.getMessageByID(data).then((message) => {
+                        if(message) {
+                            let conversationData = this.conversations.find((x) => x.id == message.conversation_id);
+                            if(conversationData) {
+                                this.$set(conversationData, 'last_message', message);
+                            } else {
+                                this.conversations.push(message.conversation);
+                            }
+                            this.setConversation(message.conversation);
+                            this.orderConversations();
+                        }
+                    });
                 }
-                this.setConversation(data.conversation);
-                this.orderConversations();
             }
         });
 
@@ -557,6 +565,11 @@ export default {
     },
 
     methods: {
+        async getMessageByID(data) {
+            let message = await axios.get(`/dashboard/messages/${data.id}`).catch((e) => {});
+            if(message) return message.data;
+        },
+
         incomingCall(data) {
             this.videoCallDesc = data.desc;
             this.videoCallData = data;

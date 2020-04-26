@@ -82,6 +82,7 @@ class MessageController extends Controller
                 'user_id' => $conversation->user_id,
                 'members' => $conversation->members()->pluck('user_id')->toArray(),
                 'widget' => [
+                    'id' => $conversation->widget->id,
                     'user_id' => $conversation->widget->user_id
                 ],
             ],

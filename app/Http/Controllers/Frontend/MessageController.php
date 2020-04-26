@@ -59,6 +59,7 @@ class MessageController extends Controller
                 'user_id' => $conversation->user_id,
                 'members' => $conversation->members()->pluck('user_id')->toArray(),
                 'widget' => [
+                    'id' => $conversation->widget->id,
                     'user_id' => $conversation->widget->user_id
                 ],
             ],
@@ -81,7 +82,7 @@ class MessageController extends Controller
 
     public function show($id, Request $request)
     {
-        $message = Message::findOrFail($id);
+        $message = Message::with('conversation')->findOrFail($id);
         $this->authorize('show', $message);
         return response()->json($message);
     }
