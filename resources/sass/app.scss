@@ -2,8 +2,7 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 @import 'node_modules/v-color/dist/index';
-@import 'public/fonts/google/nunito-sans';
-@import 'public/fonts/google/open-sans';
+@import 'public/fonts/avenir-next';
 
 $primary: #6e82ea;
 $secondary: #637382;
@@ -19,21 +18,22 @@ $border-radius-lg: 0.4rem;
     -webkit-font-smoothing: antialiased;
     font-smoothing: antialiased;
 }
-body ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 8px;
-    height: 8px;
-}
-body ::-webkit-scrollbar-thumb {
-    cursor: pointer;
-    border-radius: 30px;
-    background: white;
-    transition: color 0.2s ease;
-    border: solid 1px #ccc;
-}
-body ::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 15px;
+* {
+    &::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 6px;
+        height: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+        cursor: pointer;
+        border-radius: 30px;
+        background: rgba(black, 0.4);
+        transition: background 2s ease !important;
+        border: 0;
+    }
+    &::-webkit-scrollbar-track {
+        display: none;
+    }
 }
 
 .position-absolute-center {
@@ -126,7 +126,7 @@ $viewport_heights: (
     background: white;
 }
 .font-heading{
-    font-family: 'Nunito Sans', sans-serif;
+    font-family: 'Avenir Next', sans-serif;
 }
 .btn {
     &.disabled,
@@ -722,4 +722,7 @@ hr.hr-text::before {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+.flex-1{
+    flex: 1 !important;
 }

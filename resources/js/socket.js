@@ -45,6 +45,10 @@ io.on('connection', function(socket) {
     socket.on('live_call_end', function(data) {
         socket.broadcast.emit('live_call_end', data);
     });
+    socket.on('live_call_candidate', function(data) {
+        socket.broadcast.emit('live_call_candidate', data);
+    });
+
 
 
 

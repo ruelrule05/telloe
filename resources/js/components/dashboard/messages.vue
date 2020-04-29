@@ -31,7 +31,7 @@
 					  		<span v-if="!conversation.user.profile_image">{{ conversation.user.initials }}</span>
 					  	</div>
 					  	<div class="media-body pl-2">
-                            <div class="h6 mb-0">{{ conversation.user.full_name || conversation.name }}</div>
+                            <div class="h6 mb-0 font-heading">{{ conversation.user.full_name || conversation.name }}</div>
                             <div v-if="conversation.source" class="mb-2">
                                 <sign-in-icon height="14" width="14"></sign-in-icon> <small class="text-primary">{{ conversation.source }}</small>
                             </div>
@@ -56,75 +56,69 @@
 
 
 		<!-- Messages list -->
-		<div class="conversation-messages border-left text-nowrap flex-grow-1 bg-white overflow-hidden position-relative">
+		<div class="conversation-messages border-left border-right text-nowrap flex-grow-1 bg-white overflow-hidden position-relative">
 			<div v-if="selectedConversation" class="d-flex flex-column h-100">
-				<div class="p-3 bg-white border-bottom position-relative">
-					<strong class="font-heading">{{ selectedConversation.user.full_name || selectedConversation.name }}</strong>
+				<div class="p-3 bg-white border-bottom position-relative d-flex align-items-center">
+					<div>
+                        <h5 class="font-heading mb-0">{{ selectedConversation.user.full_name || selectedConversation.name }}</h5>
+                        <div class="d-flex align-items-center"><span class="chat-status bg-success mr-1">&nbsp;</span> <small class="text-gray">Online (Live chat available)</small></div>
+                    </div>
+                <div class="ml-auto">
+                   <button class="btn btn-white btn-circle-actions border" @click="openRecorder('live')"><video-icon></video-icon></button>
+                </div>
 				</div>
 				<div class="p-3 overflow-y-auto flex-grow-1" ref="message-group-container" id="message-group-container">
 	                <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
-	                    <!-- outgoing message -->
-	                	<div class="media outgoing-message" v-if="grouped_message.sender.id == $root.auth.id || grouped_message.sender.id == 'chatbot'">
-	                		<div class="media-body pr-2 text-right">
-                                <div class="font-weight-bold line-height-1">{{ grouped_message.sender.is_chatbot ? 'Genie' : 'You' }}</div>
-	                            <div class="mt-2">
-	                            	<div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
-			                            <div class="message-content text-wrap position-relative">
-                                            <div class="message-actions p-1 position-absolute bg-white d-flex rounded shadow-sm" :class="{show: message.is_history}">
-                                                <div v-tooltip.top="'Mark as history'" class="cursor-pointer" @click="markHistory(message)">
-                                                    <bookmark-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''"></bookmark-icon>
-                                                </div>
+                        <small class="line-height-1 message-sender d-block text-gray" v-if="!grouped_message.outgoing">{{ grouped_message.sender.full_name }}</small>
+	                	<div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': grouped_message.outgoing}">
+                            <div class="user-profile-image" :style="{backgroundImage: 'url('+grouped_message.sender.profile_image+')'}">
+                                <span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
+                            </div>
+	                		<div class="px-1 flex-1">
+                            	<div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
+		                            <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find((x) => x == message.type)}">
+                                        <div class="message-actions p-1 position-absolute bg-white d-flex rounded shadow-sm" :class="{show: message.is_history}">
+                                            <div v-tooltip.top="'Mark as history'" class="cursor-pointer" @click="markHistory(message)">
+                                                <bookmark-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''"></bookmark-icon>
                                             </div>
-			                            	<message-type :message="message"></message-type>
-			                            </div>
-		                            	<small class="text-gray d-block">{{ message.created_at }}</small>
-		                            </div>
-	                            </div>
-	                        </div>
-					  		<div class="user-profile-image" :style="{backgroundImage: 'url('+grouped_message.sender.profile_image+')'}">
-								<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
-					  		</div>
-	                	</div>
-						
-						<!-- incoming message -->
-	                	<div class="media" v-else>
-					  		<div class="user-profile-image" :style="{backgroundImage: 'url('+grouped_message.sender.profile_image+')'}">
-								<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
-					  		</div>
-	                		<div class="media-body pl-2">
-                                <div class="font-weight-bold line-height-1">{{ grouped_message.sender.full_name }}</div>
-                                <div class="mt-2">
-		                            <div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
-			                            <div class="message-content text-wrap position-relative">
-                                            <div class="message-actions p-1 position-absolute bg-white d-flex rounded shadow-sm" :class="{show: message.is_history}">
-                                                <div v-tooltip.top="'Mark as history'" class="cursor-pointer" @click="markHistory(message)">
-                                                    <bookmark-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''"></bookmark-icon>
-                                                </div>
-                                            </div>
-                                            <message-type :message="message"></message-type>
                                         </div>
-		                            	<small class="text-gray d-block">{{ message.created_at }}</small>
+		                            	<message-type :message="message" :outgoing="grouped_message.outgoing"></message-type>
 		                            </div>
 	                            </div>
 	                        </div>
 	                	</div>
+                        <small class="text-gray d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at }}</small>
 	                </div>
                 </div>
 
-				<div class="px-3 pb-3">
-					<vue-form-validate class="d-flex align-items-center border shadow-sm py-3 px-2 rounded message-form" @submit="sendText()">
-						<input type="text" class="form-control form-control-sm border-0 shadow-none" v-model="textMessage" data-required placeholder="Write your message..">
-			            <button type="button" class="line-height-sm ml-2 btn px-0 emojipicker">
-                            <emojipicker @select="sendEmoji"></emojipicker>
-			            </button>
-			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
-			            <input type="file" hidden ref="fileMedia" @change="addFile" />
-			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
-			            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><camera-icon width="20" height="20"></camera-icon></button>
-                        <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('live')"><video-icon width="24" height="24"></video-icon></button>
-						<button type="submit" class="btn btn-dark badge-pill px-3 btn-sm ml-3">Send</button>
-					</vue-form-validate>
-				</div>
+				
+
+            <div class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex" :class="{'d-flex': !inputFocused}">
+                <vue-form-validate @submit="sendText" class="w-x100 flex-grow-1">
+                    <input type="text" @focus="inputFocused = true" @blur="inputFocused = false" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" placeholder="Write a message.." data-required />
+                </vue-form-validate>
+
+                <div class="actions text-nowrap overflow-hidden" :class="{'expand': moreActions}">
+                    <button type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
+                       <emojipicker @select="sendEmoji"></emojipicker>
+                    </button>
+                    <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><camera-icon width="20" height="20"></camera-icon></button>
+                    <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
+
+
+                    <button class="btn px-0 mx-2 btn-more" @click="moreActions = moreActions ? false : true">
+                        <plus-circle-icon width="20" height="20" class="no-scale" :class="{'rotate': moreActions}"></plus-circle-icon>
+                    </button>
+                    <template v-if="moreActions">
+                        <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
+                        <input type="file" hidden ref="fileMedia" @change="addFile" />
+                        <button class="btn px-0 mx-2" @click="openRecorder('screen')">
+                            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
 			</div>
 		</div>
     
@@ -289,7 +283,6 @@
 			</div>
 		</div>
 
-
         
 
         <!-- New chat modal -->
@@ -356,52 +349,10 @@
         </div>
 
 
-        <!-- Audio view modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="audioViewModal">
-            <div class="modal-dialog modal-dialog-centered" :class="{'modal-lg': selectedFile && selectedFile.type == 'video'}" role="document">
-                <div class="modal-content overflow-hidden">
-                    <button type="button" class="close position-absolute" data-dismiss="modal" aria-label="Close" @click="selectedFile = null">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                    <div class="modal-body">
-                        <div v-if="selectedFile" class="pt-5 w-100">
-                            <waveplayer v-if="selectedFile.type == 'audio'" :source="selectedFile.source" :duration="selectedFile.metadata.duration"></waveplayer>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- File view modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="fileViewModal">
-            <div class="modal-dialog modal-dialog-centered" :class="{'modal-lg': selectedFile && selectedFile.type == 'video'}" role="document">
-                <div class="modal-content overflow-hidden">
-                    <button type="button" class="close position-absolute" data-dismiss="modal" aria-label="Close" @click="selectedFile = null">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                    <div class="modal-body p-0">
-                        <div v-if="selectedFile" class="h-100">
-                            <img v-if="selectedFile.type =='image'" :src="selectedFile.source" class="w-100">
-                            <video controls v-else-if="selectedFile.type =='video'" :src="selectedFile.source" class="w-100 d-block bg-black"></video>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Audio Recorder modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="audioRecorderModal">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div v-if="selectedConversation && recorder == 'audio'" class="h-100">
-                            <audio-recorder @submit="sendAudio" @close="closeRecorder('audio')"></audio-recorder>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <file-view-modal v-if="selectedFile && ['image', 'video'].find((x) => x == selectedFile.type)" :file="selectedFile" @close="selectedFile = null"></file-view-modal>
+        <audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
+        <screen-recorder-modal v-if="recorder == 'screen'" @submit="sendVideo" @close="recorder = ''"></screen-recorder-modal>
+        
 
 
         <!-- Video Recorder modal -->
@@ -416,6 +367,8 @@
                 </div>
             </div>
         </div>
+
+        <video-call v-if="videoCall" :data="videoCall" @close="videoCall = null"></video-call>
 	</div>
 </template>
 
@@ -447,14 +400,19 @@ import SearchIcon from '../../icons/search';
 import CloseIcon from '../../icons/close';
 import EditSquareIcon from '../../icons/edit-square';
 import VideoIcon from '../../icons/video';
+import DuplicateAltIcon from '../../icons/duplicate-alt';
+import PlusCircleIcon from '../../icons/plus-circle';
 import Emojipicker from '../../components/emojipicker';
 import Waveplayer from '../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
 export default {
-	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, VideoIcon, Waveplayer,
+	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, VideoIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon,
         'video-recorder': () => import(/* webpackChunkName: "video-recorder" */ '../../components/video-recorder'),
-        'audio-recorder': () => import(/* webpackChunkName: "audio-recorder" */ '../../components/audio-recorder'),
         'live-recorder': () => import(/* webpackChunkName: "live-recorder" */ '../../components/live-recorder'),
+        'file-view-modal': () => import(/* webpackChunkName: "file-view-modal" */ '../../modals/file-view'),
+        'audio-recorder-modal': () => import(/* webpackChunkName: "audio-recorder-modal" */ '../../modals/audio-recorder'),
+        'screen-recorder-modal': () => import(/* webpackChunkName: "screen-recorder-modal" */ '../../modals/screen-recorder'),
+        'video-call': () => import(/* webpackChunkName: "video-call" */ '../../modals/video-call'),
     },
 	directives: {Tooltip, VueScrollTo},
 
@@ -487,7 +445,12 @@ export default {
         videoCallDesc: null,
         videoCallData: null,
         videoCallData: true,
-
+        moreActions: false,
+        inputFocused: false,
+        emojipicker: false,
+        videoCall: false,
+        videoCallAction: '',
+        videoCall: null
     }),
 
     computed: {
@@ -515,6 +478,11 @@ export default {
                             groupMessage();
                         }
                     }
+
+                    if(message_group.sender.id == this.$root.auth.id || message_group.sender.id == 'chatbot') {
+                        message_group.outgoing = true;
+                    }
+                    message_group.created_at = message_group.messages[message_group.messages.length - 1].created_at;
                     grouped_messages.push(message_group);
                 }
             }
@@ -525,7 +493,7 @@ export default {
 
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        this.socket = io('https://snapturebox.com:8443');
+        this.socket = io('https://snapturebox.app:8443');
         this.socket.on('new_message', (data) => {
             if(data.conversation.widget.id == this.$root.auth.widget.id) {
                 if(this.selectedConversation && this.selectedConversation.id == data.conversation.id) {
@@ -557,6 +525,15 @@ export default {
             }
         });
 
+        this.socket.on('live_call_offer', (data) => {
+            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
+            if(conversation) {
+                data.action = 'incoming';
+                data.conversation = conversation;
+                this.videoCall = data;
+            }
+        });
+
     	this.getData();
     },
 
@@ -567,13 +544,6 @@ export default {
         async getMessageByID(data) {
             let message = await axios.get(`/dashboard/messages/${data.id}`).catch((e) => {});
             if(message) return message.data;
-        },
-
-        incomingCall(data) {
-            this.videoCallDesc = data.desc;
-            this.videoCallData = data;
-            this.videoCalling = true;
-            $('#liveRecorderModal').modal('show');
         },
 
         disableNewline(e) {
@@ -708,13 +678,7 @@ export default {
 
         openFile(file) {
             this.selectedFile = file;
-            if(file.type == 'image' || file.type == 'video') {
-                $('#fileViewModal').modal('show');
-            } else if(file.type == 'audio'){
-                $('#audioViewModal').modal('show');
-            } else {
-                this.downloadMedia(file);
-            }
+            if(file.type == 'file') this.downloadMedia(file);
         },
 
         markHistory(message) {
@@ -725,12 +689,10 @@ export default {
         },
 
         closeRecorder(type) {
-            $(`#${type}RecorderModal`).modal('hide');
             this.recorder = '';
         },
         openRecorder(type) {
             this.recorder = type;
-            $(`#${type}RecorderModal`).modal({backdrop: 'static', keyboard: false}).modal('show');
         },
 
         fileIcon(extension) {
@@ -995,6 +957,44 @@ export default {
 </script>
 <style scoped lang="scss">
 	@import '../../../sass/variables';
+    .actions{
+        width: 128px;
+        transition: width 0.15s;
+        margin-right: 8px;
+        &.expand{
+            width: 195px;
+        }
+        .btn-more{
+            background: white;
+            position: absolute;
+            bottom: 10px;
+            right: 7px;
+            svg{
+                stroke: $primary;
+                stroke-width: 1;
+                &.rotate{
+                    transform: rotate(45deg);
+                }
+            }
+        }
+    }
+    .message-sender {
+        margin-bottom: 6px;
+    }
+    .message-input{
+        border-radius: 10px;
+        font-size: 14px;
+    }
+    .btn-circle-actions{
+        border-radius: 50%;
+        padding: 6px;
+        line-height: 1;
+    }
+    #message-group-container{
+        background-image: url('/images/pattern-bg.png');
+        background-size: 300px;
+        background-attachment: fixed;
+    }
     .conversation-title[contenteditable]{
         border: solid 1px transparent;
         &:focus{
@@ -1150,19 +1150,20 @@ export default {
         }
 	}
 	.message-group {
+        .user-profile-image{
+            width: 28px;
+            height: 28px;
+            margin-bottom: 4px;
+        }
 	    margin-bottom: 1.5rem;
-	    .media .media-body .message-item:not(:last-child):not(:only-child) {
-	    	small {
-	    		display: none !important;
-	    	}
-	    }
 	    .message-content {
-	        padding: 10px 14px;
+	        padding: 6px 10px;
 	        margin-bottom: 2px;
 	        font-size: 14px;
 	        display: inline-block;
 	        text-align: left;
             transition: $transition-base;
+            border-radius: 2px;
 	    }
 
 
@@ -1194,20 +1195,21 @@ export default {
         .outgoing-message {
         	padding-left: 45px;
             .message-content {
-	            background-color: #DAE3EC;
-                border-top-left-radius: $border-radius;
-                border-bottom-left-radius: $border-radius;
+	            background-color: $primary;
+                color: white;
+                border-top-left-radius: 15px;
+                border-bottom-left-radius: 15px;
             }
             .message-item:only-child,
             .message-item:first-child {
                 .message-content {
-                    border-top-right-radius: $border-radius;
+                    border-top-right-radius: 15px;
                 }
             }
             .message-item:only-child,
             .message-item:last-child:not(:only-child) {
                 .message-content {
-                    border-bottom-right-radius: $border-radius;
+                    border-bottom-right-radius: 15px;
                 }
             }
             .message-actions{
@@ -1216,28 +1218,31 @@ export default {
         }
 
 	    /* Incoming message */
-	    .media:not(.outgoing-message) {
+	    .message-body:not(.outgoing-message) {
         	padding-right: 45px;
 	        .message-content {
-                background-color: #f3f4f9;
-	            border-top-right-radius: $border-radius;
-	            border-bottom-right-radius: $border-radius;
+                background-color: white;
+	            border-top-right-radius: 15px;
+	            border-bottom-right-radius: 15px;
 	        }
 	        .message-item:only-child,
 	        .message-item:first-child {
 	            .message-content {
-	                border-top-left-radius: $border-radius;
+	                border-top-left-radius: 15px;
 	            }
 	        }
 	        .message-item:only-child,
 	        .message-item:last-child:not(:only-child) {
 	            .message-content {
-	                border-bottom-left-radius: $border-radius;
+	                border-bottom-left-radius: 15px;
 	            }
 	        }
             .message-actions{
                 right: -25px;
             }
 	    }
+        small {
+            padding: 0 33px;
+        }
 	}
 </style>

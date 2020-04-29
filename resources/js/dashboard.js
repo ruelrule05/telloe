@@ -16,6 +16,10 @@ window.routes = window.routes.concat([
                 component: () => import(/* webpackChunkName: "messages" */ './components/dashboard/messages.vue'),
             },
             {
+                path: 'bookings',
+                component: () => import(/* webpackChunkName: "bookings" */ './components/dashboard/bookings.vue'),
+            },
+            {
                 path: 'settings',
                 component: () => import(/* webpackChunkName: "settings" */ './components/dashboard/settings.vue'),
             },

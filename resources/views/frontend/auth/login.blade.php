@@ -27,7 +27,7 @@ $navbar = $footer = $app_padded = $navbar_login = false;
 			    </a>
 			</div>
 			<vue-form-validate @submit="login">
-				<h1 class="h3 mb-1">Log In</h1>
+				<h1 class="h3 mb-1 font-heading">Log In</h1>
 				<div class="mb-3 text-muted">Continue to your account</div>
 				<div class="form-group">
 					<input type="email" v-model="loginForm.email" class="form-control form-control-lg" data-required placeholder="Email">

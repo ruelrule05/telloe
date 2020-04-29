@@ -1,13 +1,12 @@
 <template>
 	<div>
 		<!-- Emoji -->
-        <p class="mb-0 h2" v-if="message.type == 'emoji'">{{ message.message }}</p>
+        <div class="mb-0 display-3 line-height-1" v-if="message.type == 'emoji'">{{ message.message }}</div>
 
         <!-- Image -->
         <p class="mb-0" v-else-if="message.type == 'image'">
             <img class="w-100 rounded cursor-pointer" :src="message.preview" @click="$parent.openFile(message)" />
         </p>
-
 
         <!-- Video -->
         <p class="mb-0" v-else-if="message.type == 'video'">
@@ -24,11 +23,11 @@
             <img v-if="$parent.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" />
             <span class=" cursor-pointer" @click="click ? $parent.downloadMedia(message) : null">
                 <span class="d-block text-center">
-                    <component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)"></component>
+                    <component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)" :fill="outgoing ? 'white' : ''"></component>
                 </span>
                 <div class="d-flex align-items-center">
-                    <arrow-circle-down-icon height="15" width="15"></arrow-circle-down-icon>&nbsp;
-                    <small class="text-ellipsis text-gray">{{ message.metadata.filename }}</small>
+                    <arrow-circle-down-icon height="15" width="15" :fill="outgoing ? 'white' : ''"></arrow-circle-down-icon>&nbsp;
+                    <small class="text-ellipsis" :class="[outgoing ? 'text-white' : 'text-gray']">{{ message.metadata.filename }}</small>
                 </div>
             </span>
         </p>
@@ -62,6 +61,10 @@ export default {
 		message: {
 			type: Object
 		},
+        outgoing: {
+            type: Boolean,
+            default: false,
+        },
         click: {
             type: Boolean,
             default: true,
