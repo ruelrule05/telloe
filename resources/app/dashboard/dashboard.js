@@ -110,7 +110,7 @@ new Vue({
             axios
                 .post('/logout')
                 .then((response) => {
-                    window.location.href = '/login';
+                    window.location.href = '/';
                 })
                 .catch(() => {
                     this.loading = false;
