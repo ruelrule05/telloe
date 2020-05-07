@@ -27,7 +27,8 @@
 			</div>
 
 			<div class="col-md-2">
-				<h5 class="font-heading">Privacy Policy</h5>
+				<h5 class="font-heading">Legal</h5>
+				<a href="" class="d-block text-muted">Privacy Policy</a>
 				<a href="" class="d-block text-muted">Terms & Conditions</a>
 			</div>
 		</div>
