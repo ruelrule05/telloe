@@ -14,22 +14,18 @@ if (production) {
 if (argv.indexOf('--css') > -1) { 
     console.log('Running css...');
     mix
-        .sass('resources/sass/bootstrap.scss', 'public/css')
-        .sass('resources/sass/app.scss', 'public/css')
+        .sass('resources/app/auth/auth.scss', 'public/css')
+        .sass('resources/app/dashboard/dashboard.scss', 'public/css')
+        .sass('resources/sass/page.scss', 'public/css')
         .version()
         .mergeManifest();
 }
 
-else if (argv.indexOf('--js') > -1) { 
-    console.log('Running js...');
+else if (argv.indexOf('--page') > -1) { 
+    console.log('Running page...');
     mix
-        .js('resources/js/app.js', 'public/js')
-        .js('resources/js/auth.js', 'public/js')
-        .js('resources/js/dashboard.js', 'public/js')
+        .js('resources/js/page.js', 'public/js')
         .webpackConfig({
-            /*node: {
-              fs: 'empty'
-            },*/
             output: {
                 chunkFilename: `js/chunks/[name]${timestamp}.js`
             },
@@ -40,51 +36,79 @@ else if (argv.indexOf('--js') > -1) {
                         vendors: false
                     }
                 }
-            },/*
-            resolve: {
-                alias: {
-                }
             },
-            externals: {
-                moment: 'moment'
-            }*/
         })
         .version()
         .mergeManifest()
         .browserSync({
-            proxy: 'https://snapturebox.app',
-            host: 'snapturebox.app',
+            proxy: 'https://telloe.app',
+            host: 'telloe.app',
             open: false,
             port: 8000,
             watch: true,
             notify: false,
             https: {
-                key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-                cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+                key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
             }
         });
 }
 
-
-
-else if (argv.indexOf('--slek') > -1) { 
-    console.log('Running slek assets...');
+else if (argv.indexOf('--dashboard') > -1) { 
+    console.log('Running dashboard...');
     mix
-        .sass('resources/sass/slek.scss', 'public/css')
-        .js('resources/js/slek.js', 'public/js')
+        .js('resources/app/dashboard/dashboard.js', 'public/js')
+        .webpackConfig({
+            output: {
+                chunkFilename: `js/chunks/[name]${timestamp}.js`
+            },
+            optimization: {
+                splitChunks: {
+                    chunks: 'all',
+                    cacheGroups: {
+                        vendors: false
+                    }
+                }
+            },
+        })
+        .version()
+        .mergeManifest()
         .browserSync({
-            proxy: 'https://snapturebox.app',
-            host: 'snapturebox.app',
+            proxy: 'https://telloe.app',
+            host: 'telloe.app',
             open: false,
             port: 8000,
             watch: true,
             notify: false,
             https: {
-                key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-                cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+                key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
             }
         });
 }
+
+else if (argv.indexOf('--auth') > -1) { 
+    console.log('Running auth...');
+    mix
+        .js('resources/app/auth/auth.js', 'public/js')
+        .webpackConfig({
+            output: {
+                chunkFilename: `js/chunks/[name]${timestamp}.js`
+            },
+            optimization: {
+                splitChunks: {
+                    chunks: 'all',
+                    cacheGroups: {
+                        vendors: false
+                    }
+                }
+            },
+        })
+        .version()
+        .mergeManifest();
+}
+
+
 
 else if (argv.indexOf('--widget') > -1) { 
     console.log('Running widget js...');
@@ -105,15 +129,15 @@ else if (argv.indexOf('--widget') > -1) {
         })
         .mergeManifest()
         .browserSync({
-            proxy: 'https://snapturebox.app',
-            host: 'snapturebox.app',
+            proxy: 'https://telloe.app',
+            host: 'telloe.app',
             open: false,
             port: 8001,
             watch: true,
             notify: false,
             https: {
-                key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-                cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+                key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
             }
         });
 }
@@ -127,15 +151,15 @@ else if (argv.indexOf('--admin') > -1) {
         .mergeManifest();
     
     mix.browserSync({
-        proxy: 'https://admin.snapturebox.app',
-        host: 'admin.snapturebox.app',
+        proxy: 'https://admin.telloe.app',
+        host: 'admin.telloe.app',
         open: false,
         port: 8000,
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
         }
     });
 }

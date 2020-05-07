@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     //
-    protected $fillable = ['user_id', 'name', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms', 'default_chatbot'];
+    protected $fillable = ['user_id', 'name', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms', 'default_chatbot', 'business_hours'];
     protected $casts = [
         'fb_page' => 'array',
         'colors' => 'array',
         'notify_messenger' => 'boolean',
         'notify_sms' => 'boolean',
         'members' => 'array',
+        'business_hours' => 'array',
     ];
     protected $hidden = [
         'created_at',

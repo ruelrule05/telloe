@@ -1,2 +1,2 @@
-<script src="{{ mix('js/app.js') }}" async defer></script>
+<script src="{{ mix('js/page.js') }}" async defer></script>
 

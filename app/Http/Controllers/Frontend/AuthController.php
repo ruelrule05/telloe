@@ -39,7 +39,7 @@ class AuthController extends Controller
             endif;
         endif;
 
-    	return view('frontend.auth.login');
+    	return view('frontend.layouts.auth');
     }
 
 
@@ -66,7 +66,7 @@ class AuthController extends Controller
     		return response()->json($user);
     	endif;
 
-    	return view('frontend.auth.signup');
+        return view('frontend.layouts.auth');
     }
 
 
@@ -103,7 +103,7 @@ class AuthController extends Controller
             endif;
         endif;
 
-        return view('frontend.auth.recover');
+        return view('frontend.layouts.auth');
     }
 
     public function reset(Request $request) {
@@ -128,7 +128,7 @@ class AuthController extends Controller
             endif;
         endif;
 
-        return view('frontend.auth.reset');
+        return view('frontend.layouts.auth');
     }
 
 

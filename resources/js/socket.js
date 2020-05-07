@@ -3,15 +3,15 @@ const app = require('express')();
 if (process.argv.indexOf('--production') > -1) {
     const fs = require('fs');
     const sslOptions = {
-        key: fs.readFileSync('/etc/letsencrypt/live/snapturebox.com/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/snapturebox.com/cert.pem'),
+        key: fs.readFileSync('/etc/letsencrypt/live/telloe.com/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/telloe.com/cert.pem'),
     };
     var server = require('https').Server(sslOptions, app);
 } else if (process.argv.indexOf('--dev') > -1) {
     const fs = require('fs');
     const sslOptions = {
-        key: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.key'),
-        cert: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/snapturebox.app.crt'),
+        key: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/telloe.app.key'),
+        cert: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'),
     };
     var server = require('https').Server(sslOptions, app);
 } else {

@@ -2,7 +2,7 @@
 $navbar = $footer = $app_padded = $navbar_login = false; 
 @endphp
 
-@extends('frontend.layouts.page')
+@extends('frontend.layouts.auth')
 
 @section('title', 'Forgot Password')
 

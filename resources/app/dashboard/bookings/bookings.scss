@@ -1,0 +1,17 @@
+@import '~@fullcalendar/core/main.css';
+@import '~@fullcalendar/daygrid/main.css';
+h2 {
+	font-family: 'Avenir Next';
+}
+.calendar-buttons {
+	top: 0;
+	right: 0;
+	.btn:nth-child(2) svg {
+		margin-left: -1px;
+		margin-right: 1px;
+	}
+	.btn:last-child svg {
+		margin-left: 1px;
+		margin-right: -1px;
+	}
+}

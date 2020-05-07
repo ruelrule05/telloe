@@ -193,15 +193,19 @@ class WidgetController extends Controller
 
     public function update(Request $request)
     {
-        $this->validate($request, [
+        /*$this->validate($request, [
             'heading' => 'nullable',
-            'domain' => 'required',
-            'slug' => 'required',
-            'fb_page' => 'required',
+            'domain' => 'nullable',
+            'slug' => 'nullable',
+            'fb_page' => 'nullable',
             'colors' => 'nullable',
-            'notify_messenger' => 'required',
-            'notify_sms' => 'required',
-        ]);
+            'notify_messenger' => 'nullable',
+            'notify_sms' => 'nullable',
+            'business_hours' => 'nullable',
+        ]);*/
+        if($request->business_hours) :
+            $request->merge(['business_hours' => replace_null_with_empty_string($request->business_hours)]);
+        endif;
         $slugExists = Widget::where('slug', $request->slug)->where('id', '<>', Auth::user()->widget->id)->first();
         if($slugExists) return abort(403, 'Slug already exists.');
 

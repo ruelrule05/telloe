@@ -23,6 +23,8 @@ class MessageController extends Controller
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addMessage', $conversation);
 
+        $metadata = json_decode($request->metadata, true);
+
         $time = time();
         $sourceFile = null;
         if ($request->hasFile('source')) :
@@ -30,6 +32,15 @@ class MessageController extends Controller
             $srcDestination = 'storage/message-media/' . $filename;
             $request->file('source')->storeAs('public/message-media/', $filename);
             $sourceFile = '/' . $srcDestination;
+
+            $originalName = $request->source->getClientOriginalName();
+            $extension = $request->source->getClientOriginalExtension();
+            if(!$extension) :
+                $extension = '.' . mime2ext($request->source->getClientMimeType());
+                $originalName .= $extension;
+            endif;
+            $metadata['filename'] = $originalName;
+            $metadata['size'] =  formatBytes($request->source->getSize(), 0);
         endif;
 
         $previewFile = null;
@@ -50,10 +61,10 @@ class MessageController extends Controller
             'timestamp' => $request->timestamp,
             'source' => $sourceFile,
             'preview' => $previewFile,
-            'metadata' => json_decode($request->metadata),
+            'metadata' => $metadata,
         ]);
         $response = [
-            'id' => $message->id,
+            'message' => $message,
             'conversation' => [
                 'id' => $conversation->id,
                 'user_id' => $conversation->user_id,

@@ -16,7 +16,7 @@ class PageController extends Controller
     		return redirect('/dashboard');
     	endif;
 
-    	return redirect('/login');
+    	return view('frontend.pages.homepage');
     }
 
 }

@@ -6,10 +6,12 @@ $border-radius-lg: 0.4rem;
 $container-max-widths: (
     xl: 1180px,
 );
-$primary: #4d65e5;
+$primary: #5A5ADF;
+$orange: #FBBC1B;
 $facebook: #4267b2;
 $google: #DC3E29;
-$secondary: #637382;
+$secondary: #F2F4F9;
+
 @import 'node_modules/bootstrap/scss/variables';
 $border-color: $gray-200;
 $dropdown-color: $black;
@@ -20,10 +22,11 @@ $nav-pills-link-active-color: $primary;
 $modal-scale-transform: 0;
 $theme-colors: (
     'primary': $primary,
+    'orange': $orange,
     'requires_payment': $warning,
     'white': $white,
     'gray': #999,
-    'secondary': rgba($gray-200, 70%),
+    'secondary': $secondary,
     'black': $black,
     'facebook': $facebook,
     'google': $google,
@@ -103,6 +106,7 @@ $brand-danger: #bf5329;
 // Typography
 $font-size-base: 0.9rem;
 $line-height-base: 1.5;
+$line-height-sm: 1.4;
 $text-color: #636b6f;
 
 // Navbar
@@ -115,8 +119,6 @@ $navbar-toggler-padding-y: 0;
 $navbar-toggler-padding-x: 0;
 $enable-validation-icons: false;
 $enable-responsive-font-size: true;
-
-$transition-collapse: opacity 1s, left 1s;
 
 // Buttons
 $btn-default-color: $text-color;
@@ -149,3 +151,16 @@ $table-hover-bg: rgba($secondary, 3%);
 $box-shadow-sm: 0 0.1rem 0.5rem rgba($black, 0.075);
 $navbar-dark-toggler-icon-bg: none;
 $navbar-light-toggler-icon-bg: none;
+
+$viewport_heights: (
+    '10vh': 10vh,
+    '20vh': 20vh,
+    '30vh': 30vh,
+    '40vh': 40vh,
+    '50vh': 50vh,
+    '60vh': 60vh,
+    '70vh': 70vh,
+    '80vh': 80vh,
+    '90vh': 90vh,
+    '100vh': 100vh,
+);
