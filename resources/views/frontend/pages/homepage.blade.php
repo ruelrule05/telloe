@@ -11,8 +11,8 @@
 				<h1 class="font-heading display-5 font-weight-bold">Conversations. Done!</h1>
 				<h2 class="text-muted h4 my-5">Introducing {{ config('app.name') }}, the intelligent way to manage your clients' conversations, in one place!</h2>
 
-				<button class="btn btn-primary btn-lg badge-pill px-3">Start Free Trial</button>
-				<button class="btn btn-outline-primary btn-lg badge-pill px-3">View Demo</button>
+				<button class="btn btn-primary btn-lg badge-pill px-4">Start Free Trial</button>
+				<button class="btn btn-outline-primary btn-lg badge-pill px-4">View Demo</button>
 			</div>
 
 			<div class="col-md-6 px-5">
