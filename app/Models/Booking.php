@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     //
-    protected $fillable = ['widget_id', 'user_id', 'date', 'time', 'metadata'];
+    protected $fillable = ['widget_id', 'user_id', 'date', 'start', 'end', 'metadata'];
     protected $casts = [
         'metadata' => 'array',
     ];

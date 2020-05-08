@@ -23,7 +23,7 @@
 				</div>
 
 				<div class="mt-3 font-size-14">
-					<button class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button>
+					<!-- <button class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button> -->
 					<div>
 						<button to="/recover" class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'signup'">Don't have an account?</button>
 					</div>

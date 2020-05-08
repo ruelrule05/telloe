@@ -12,7 +12,7 @@
 							<chevron-right width="28" height="28" transform="scale(1.5)"></chevron-right>
 						</button>
 					</div>
-					<FullCalendar ref="fullCalendar" themeSystem="bootstrap" :header="header" :buttonText="buttonText" :events="events" defaultView="dayGridMonth" :plugins="calendarPlugins" height="parent"></FullCalendar>
+					<FullCalendar ref="fullCalendar" themeSystem="bootstrap" :header="header" :buttonText="buttonText" :events="events" eventColor="#FBBC1B" :displayEventTime="false" @eventRender="eventRender" defaultView="dayGridMonth" :plugins="calendarPlugins" height="parent"></FullCalendar>
 				</div>
 			</div>
 		</div>
@@ -22,6 +22,8 @@
   				<business-hours :switchWidth="70" type="select" :days="business_hours" color="#4d65e5" @update="updateBusinessHour"></business-hours>
 			</div>
 		</div>
+
+		
 	</div>
 </template>
 

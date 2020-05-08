@@ -3,6 +3,7 @@ window.Vue = require('vue');
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/modal';
+import 'bootstrap/js/dist/tooltip';
 
 Vue.use(VueRouter);
 Vue.component('vue-button', require('../../components/vue-button.vue').default);

@@ -1,5 +1,6 @@
 @import '~@fullcalendar/core/main.css';
 @import '~@fullcalendar/daygrid/main.css';
+@import '../../../sass/variables';
 h2 {
 	font-family: 'Avenir Next';
 }
@@ -14,4 +15,24 @@ h2 {
 		margin-left: 1px;
 		margin-right: -1px;
 	}
+}
+.tooltip-inner {
+  background-color: $primary;
+}
+.bs-tooltip-top .arrow::before, .bs-tooltip-auto[x-placement^="top"] .arrow::before {
+  border-top-color: $primary !important;
+}
+
+.bs-tooltip-right .arrow::before, .bs-tooltip-auto[x-placement^="right"] .arrow::before {
+  border-right-color: $primary !important;
+}
+
+
+.bs-tooltip-bottom .arrow::before, .bs-tooltip-auto[x-placement^="bottom"] .arrow::before {
+  border-bottom-color: $primary !important;
+}
+
+
+.bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before {
+  border-left-color: $primary !important;
 }

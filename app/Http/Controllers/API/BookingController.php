@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Offer;
+use App\Models\Conversation;
 use App\Models\Booking;
 use DB;
 use Carbon\Carbon;
@@ -20,10 +21,11 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
+            'conversation_id' => 'required|exists:conversations,id',
             'date' => 'required|date',
             'time' => 'required',
         ]);
-        $request->widget_id = $request->widget->id;
+        $widget = Conversation::findOrFail($request->conversation_id)->widget;
 
         $metadata = null;
         if ($request->wp_post) :
@@ -34,18 +36,19 @@ class BookingController extends Controller
 
         // check if date is not less than today
         $now = Carbon::now();
-        $parsedDate = Carbon::parse($request->date . ' ' . $request->time);
+        $parsedDate = Carbon::parse($request->date . ' ' . $request->time['open']);
         if ($parsedDate < $now) return abort(403, 'Selected date is not anymore available.');
 
         // check if timeslot is available
-        $isBooked = Booking::where('date', $request->date)->where('time', $request->time)->first();
+        $isBooked = Booking::where('date', $request->date)->where('start', $request->time['open'])->first();
         if ($isBooked) return abort(403, 'Selected timeslot is not anymore available.');
 
         $booking = Booking::create([
-            'widget_id' => $request->widget->id,
+            'widget_id' => $widget->id,
             'user_id' => auth()->user()->id,
             'date' => $request->date,
-            'time' => $request->time,
+            'start' => $request->time['open'],
+            'end' => $request->time['close'],
             'metadata' => $metadata
         ]);
 

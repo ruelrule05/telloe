@@ -4,17 +4,12 @@ import bootstrapPlugin from '@fullcalendar/bootstrap';
 import BusinessHours from '../../../components/vue-business-hours/BusinessHours';
 import ChevronLeft from '../../../icons/chevron-left';
 import ChevronRight from '../../../icons/chevron-right';
+import convertTime from 'convert-time';
 export default {
 	components: {FullCalendar, BusinessHours, ChevronLeft, ChevronRight},
 
 	data: () => ({
-		events: [
-			{
-				title: 'Sunny Out of Office',
-				start: '2020-04-29',
-				end: '2020-04-29',
-			},
-		],
+		events: [],
 		calendarPlugins: [dayGridPlugin, bootstrapPlugin],
 		business_hours: null,
 		buttonText: {
@@ -30,12 +25,15 @@ export default {
 			left: 'title',
 			right: '',
 		},
+		dayjs: null,
+		selectedBooking: null,
 	}),
 
 	computed: {},
 
 	created() {
 		this.$root.heading = 'Bookings';
+		this.dayjs = require('dayjs');
 		let days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 		let business_hours = [];
 		days.forEach((day) => {
@@ -50,7 +48,15 @@ export default {
 			};
 		});
 		this.business_hours = Object.assign({}, business_hours, this.$root.auth.widget.business_hours || {});
-		console.log(this.business_hours);
+		this.$root.auth.widget.bookings.forEach((booking) => {
+			let event = {
+				id: booking.id,
+				title: booking.user.full_name,
+				start: `${booking.date} ${convertTime(booking.start)}`,
+				end: `${booking.date} ${convertTime(booking.end)}`,
+			};
+			this.events.push(event);
+		});
 	},
 
 	mounted() {
@@ -58,6 +64,24 @@ export default {
 	},
 
 	methods: {
+		eventRender(info) {
+			let title = `<strong class="d-block font-heading">${info.event.title}</strong>`;
+			title += `<small class="d-block">Start: ${this.dayjs(info.event.start).format('h:mmA')}<br />`;
+			title += `End: ${this.dayjs(info.event.end).format('h:mmA')}</small>`;
+			$(info.el).tooltip({
+				title: title, 
+				container: 'body',
+				html: true,
+			});
+		},
+
+		eventClick(info) {
+			let booking = this.$root.auth.widget.bookings.find((x) => x.id ==  info.event.id);
+			if(booking) {
+				this.selectedBooking = booking;
+			}
+		},
+
 		updateBusinessHour(business_hours) {
 			this.$root.auth.widget.business_hours = business_hours;
 			
