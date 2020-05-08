@@ -192,6 +192,7 @@ export default {
 	mounted() {
 		$(this.$refs['videoCallModal']).modal({backdrop: 'static', keyboard: false}).modal('show');
 		this.initCamera();
+        notification_sound.play();
 	},
 
 
