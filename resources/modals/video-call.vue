@@ -162,6 +162,7 @@ export default {
             if(data.conversation_id == this.data.conversation.id) {
                 this.pc.setRemoteDescription(data.desc);
                 this.status = 'ongoing';
+        		this.notification_sound.pause();
             }
         });
 
@@ -370,6 +371,7 @@ export default {
 		},
 
 		endCall(emit = true) {
+        	this.notification_sound.pause();
 			this.status = 'ended';
 			if(emit) this.$parent.socket.emit('live_call_end', {conversation_id: this.data.conversation.id});
 			if(this.callRecorder) {
