@@ -470,7 +470,7 @@ export default {
                     }
                 ]
             };
-	      	this.pc = new RTCPeerConnection(null);
+	      	this.pc = new RTCPeerConnection(configuration);
 		    this.pc.ontrack = (event) => {
 		      	this.remoteStream = event.streams[0];
 	            this.remoteMediaStream.addTrack(event.track);
