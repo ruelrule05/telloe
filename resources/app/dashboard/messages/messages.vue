@@ -55,7 +55,10 @@
 
 
 		<!-- Messages list -->
-		<div class="conversation-messages border-left border-right text-nowrap flex-grow-1 bg-white overflow-hidden position-relative">
+		<div class="conversation-messages border-left border-right text-nowrap flex-grow-1 bg-white overflow-hidden position-relative" @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="dropFile">
+            <div v-if="dragOver" class="filedrop position-absolute w-100 h-100 bg-light">
+                <span class="h3 position-absolute-center text-gray">Drop Files Here</span>
+            </div>
 			<div v-if="selectedConversation" class="d-flex flex-column h-100">
 				<div class="p-3 bg-white border-bottom position-relative d-flex align-items-center">
 					<div class="d-flex align-items-center">
@@ -103,14 +106,14 @@
 
 				
 
-            <div class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex" :class="{'d-flex': !inputFocused}">
+            <div class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex">
                 <vue-form-validate @submit="sendText" class="w-x100 flex-grow-1">
-                    <input type="text" @focus="inputFocused = true" @blur="inputFocused = false" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" placeholder="Write a message.." data-required />
+                    <input type="text" @paste="inputPaste" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" placeholder="Write a message.." data-required />
                 </vue-form-validate>
 
                 <div class="actions text-nowrap overflow-hidden" :class="{'expand': moreActions}">
                     <button type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
-                       <emojipicker @select="sendEmoji"></emojipicker>
+                       <emojipicker @select="selectEmoji"></emojipicker>
                     </button>
                     <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><camera-icon width="20" height="20"></camera-icon></button>
                     <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
@@ -351,20 +354,8 @@
         <file-view-modal v-if="selectedFile && ['image', 'video'].find((x) => x == selectedFile.type)" :file="selectedFile" @close="selectedFile = null"></file-view-modal>
         <audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
         <screen-recorder-modal v-if="recorder == 'screen'" @submit="sendVideo" @close="recorder = ''"></screen-recorder-modal>
-        
 
-        <!-- Video Recorder modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="videoRecorderModal">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content overflow-hidden rounded">
-                    <div class="modal-body p-0">
-                        <div v-if="selectedConversation && recorder == 'video'" class="h-100">
-                            <video-recorder @submit="sendVideo" @close="closeRecorder('video')" :conversation="selectedConversation"></video-recorder>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+       <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="selectedConversation"></video-recorder-modal>
 
         <video-call-modal v-if="videoCall" :data="videoCall" @close="videoCall = null" @submit="sendVideo"></video-call-modal>
 	</div>

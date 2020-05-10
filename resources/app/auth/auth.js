@@ -92,9 +92,11 @@ export default {
                                     window.location.href = response.data.redirect_url;
                                 }).catch((e) => {
                                     this.pageloading = false;
+                                    this.error = e.response.data.message;
                                 });
                             } else {
                                 this.pageloading = false;
+                                this.error = 'Facebook API went wrong.';
                             }
                         });
                     },
@@ -110,7 +112,7 @@ export default {
                     .then((googleUser) => {
                         let profile = googleUser.getBasicProfile();
                         let user = {
-                            id: profile.getID(),
+                            id: profile.getId(),
                             first_name: profile.getGivenName(),
                             last_name: profile.getFamilyName(),
                             email: profile.getEmail(),
@@ -120,10 +122,12 @@ export default {
                            window.location.href = response.data.redirect_url;
                         }).catch((e) => {
                             this.pageloading = false;
+                            this.error = e.response.data.message;
                         });
                     })
                     .catch(() => {
                         this.pageloading = false;
+                        this.error = 'Google API went wrong.';
                     });
             }
         },

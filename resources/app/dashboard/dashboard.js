@@ -20,10 +20,6 @@ const router = new VueRouter({
             },
             children: [
                 {
-                    path: '',
-                    component: () => import(/* webpackChunkName: "dashboard/reports" */ './reports/index.vue'),
-                },
-                {
                     path: 'messages',
                     component: () => import(/* webpackChunkName: "dashboard/messages" */ './messages/messages.vue'),
                 },

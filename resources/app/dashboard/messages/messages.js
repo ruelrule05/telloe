@@ -30,10 +30,10 @@ import CastIcon from '../../../icons/cast';
 import Emojipicker from '../../../components/emojipicker';
 import Waveplayer from '../../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
+const emojiRegex = require('emoji-regex');
 export default {
 	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, VideoIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,
-        'video-recorder': () => import(/* webpackChunkName: "video-recorder" */ '../../../components/video-recorder'),
-        'live-recorder': () => import(/* webpackChunkName: "live-recorder" */ '../../../components/live-recorder'),
+        'video-recorder-modal': () => import(/* webpackChunkName: "video-recorder" */ '../../../modals/video-recorder'),
         'file-view-modal': () => import(/* webpackChunkName: "file-view-modal" */ '../../../modals/file-view'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "audio-recorder-modal" */ '../../../modals/audio-recorder'),
         'screen-recorder-modal': () => import(/* webpackChunkName: "screen-recorder-modal" */ '../../../modals/screen-recorder'),
@@ -71,10 +71,10 @@ export default {
         videoCallData: null,
         videoCallData: true,
         moreActions: false,
-        inputFocused: false,
         emojipicker: false,
         videoCall: null,
         videoCall: null,
+        dragOver: false,
     }),
 
     computed: {
@@ -166,6 +166,22 @@ export default {
     },
 
     methods: {
+        dropFile(e) {
+            this.dragOver = false;
+            this.addFile({target: {files: e.dataTransfer.files, value: e.dataTransfer.files[0].name}});
+        },
+
+        inputPaste(e) {
+            if(e.clipboardData.files.length > 0) {
+                e.preventDefault();
+                let filename = e.clipboardData.getData('Text');
+                let file = e.clipboardData.files[0];
+                let blob = file.slice(0, file.size, file.type);
+                let newFile = new File([blob], filename, {type: file.type});
+                this.addFile({target: {files: [newFile], value: newFile.name}});
+            }
+        },
+
         initCall() {
             this.videoCall = {
                 action: 'outgoing',
@@ -390,6 +406,13 @@ export default {
                 this.scrollDown();
                 this.orderConversations();
 
+                if(message.type == 'text' && message.message.trim().length == 2) {
+                    let regex = emojiRegex();
+                    if(regex.exec(message.message)) {
+                        message.type = 'emoji';
+                    }
+                }
+
                 messageCopy = Object.assign({}, message);
                 let bodyFormData = new FormData();
                 if(messageCopy.metadata) messageCopy.metadata = JSON.stringify(messageCopy.metadata);
@@ -400,8 +423,9 @@ export default {
                 axios.post(`/dashboard/messages`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
                     let index = this.selectedConversation.messages.findIndex((x) => x.id == messageCopy.id);
                     if(index > -1) {
-                        this.$set(this.selectedConversation.messages, index, response.data.message);
-                        this.socket.emit('message_sent', {id: response.data.message.id, conversation: response.data.conversation});
+                        this.selectedConversation.messages[index].id = response.data.message.id;
+                        this.selectedConversation.messages[index].source = response.data.message.source;
+                        this.socket.emit('message_sent', {id: response.data.message.id, conversation_id: response.data.conversation.id});
                     }
                 });
             }
@@ -465,9 +489,9 @@ export default {
             });
         },
 
-        async addFile() {
-            let fileInput = this.$refs['fileMedia'];
-            if (this.selectedConversation && fileInput.value) {
+        async addFile(e) {
+            let fileInput = e.target;
+            if (this.selectedConversation && fileInput.files.length > 0) {
                 const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
@@ -503,7 +527,7 @@ export default {
                         this.sendMessage(message);
                     };
                 } else {
-                    let fileBase64 = await this.fileToBase64(this.$refs['fileMedia'].files[0]);
+                    let fileBase64 = await this.fileToBase64(fileInput.files[0]);
                     let messageData = {
                         filename: fileInput.value.split(/(\\|\/)/g).pop(),
                         extension: fileExtension,
@@ -520,8 +544,9 @@ export default {
             return imageExtensions.indexOf(extension) > -1;
         },
 
-        sendEmoji(emoji) {
-            const timestamp = dayjs().valueOf();
+        selectEmoji(emoji) {
+            this.textMessage += emoji;
+            /*const timestamp = dayjs().valueOf();
             let message = {
                 user: this.$root.auth,
                 message: emoji,
@@ -531,7 +556,7 @@ export default {
                 is_read: 1,
                 created_diff: 'Just now',
             };
-            this.sendMessage(message);
+            this.sendMessage(message);*/
         },
 
     	sendText() {

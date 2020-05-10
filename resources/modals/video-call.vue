@@ -484,9 +484,9 @@ export default {
 		        	});
 	        	}
 	        };
-	        this.pc.onicecandidateerror = (candidate) => {
-	        	console.log(candidate);
-	        };
+	        /*this.pc.onicecandidateerror = (error) => {
+	        	console.log(error);
+	        };*/
 	    },
 
 		secondsToDuration(seconds, limit = 11, end = 8) {

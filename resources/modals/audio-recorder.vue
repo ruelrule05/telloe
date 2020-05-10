@@ -285,7 +285,7 @@ export default {
 	}
 }
 .audio-recorder {
-	height: 450px;
+	height: 500px;
 }
 .player-control{
 	z-index: 10;

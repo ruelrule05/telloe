@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import VueObserveVisibility from 'vue-observe-visibility';
 export default {
     props: {
         src: {

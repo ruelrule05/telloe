@@ -227,6 +227,6 @@ class AuthController extends Controller
             ]; 
             return response()->json($response);
         endif;
-        return abort(403, "There's no user associated with this Facebook account.");
+        return abort(403, "There's no user associated with this Google account.");
     }
 }

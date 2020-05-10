@@ -6,15 +6,8 @@
 @import '../../sass/variables';
 @import '../../sass/bootstrap';
 
-*,
-*:before,
-*:after {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    font-smoothing: antialiased;
-}
 * {
-    &::-webkit-scrollbar {
+/*    &::-webkit-scrollbar {
         -webkit-appearance: none;
         width: 6px;
         height: 8px;
@@ -28,7 +21,7 @@
     }
     &::-webkit-scrollbar-track {
         display: none;
-    }
+    }*/
 }
 .modal {
     .modal-dialog {

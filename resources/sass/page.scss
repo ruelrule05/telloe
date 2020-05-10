@@ -27,13 +27,13 @@
 [v-cloak]{
     opacity: 0;
 }
-*,
+/**,
 *:before,
 *:after {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     font-smoothing: antialiased;
-}
+}*/
 * {
     /*&::-webkit-scrollbar {
         -webkit-appearance: none;

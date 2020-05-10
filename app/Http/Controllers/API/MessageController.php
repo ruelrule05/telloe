@@ -77,6 +77,7 @@ class MessageController extends Controller
         ]);
         $response = [
             'id' => $message->id,
+            'source' => $message->source,
             'conversation' => [
                 'id' => $conversation->id,
                 'user_id' => $conversation->user_id,
