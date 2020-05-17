@@ -158,7 +158,7 @@ export default {
 	created() {
         this.notification_sound = new Audio(`/notifications/call.mp3`);
         
-        this.$parent.socket.on('live_call_answer', (data) => {
+        this.$root.socket.on('live_call_answer', (data) => {
             if(data.conversation_id == this.data.conversation.id) {
                 this.pc.setRemoteDescription(data.desc);
                 this.status = 'ongoing';
@@ -166,21 +166,21 @@ export default {
             }
         });
 
-        this.$parent.socket.on('live_call_reject', (data) => {
+        this.$root.socket.on('live_call_reject', (data) => {
             if(data.conversation_id == this.data.conversation.id) {
                 this.endCall(false);
 				this.notification_sound.pause();
             }
         });
 
-        this.$parent.socket.on('live_call_end', (data) => {
+        this.$root.socket.on('live_call_end', (data) => {
             if(data.conversation_id == this.data.conversation.id) {
                 this.endCall(false);
             }
         });
 
 
-        this.$parent.socket.on('live_call_candidate', (data) => {
+        this.$root.socket.on('live_call_candidate', (data) => {
             if(data.conversation_id == this.data.conversation.id && this.pc) {
             	try{this.pc.addIceCandidate(data.candidate);} catch(e) {}
             }
@@ -225,27 +225,6 @@ export default {
                 this.$emit('close');
             }, 150);
 		},
-
-        rejectCall() {
-            this.notification_sound.pause();
-            this.$parent.socket.emit('live_call_reject', {
-                conversation_id: this.data.conversation.id,
-            });
-            this.close();
-        },
-
-        answerCall() {
-            this.notification_sound.pause();
-            this.status = 'ongoing';
-            this.pc.createAnswer().then((desc) => {
-                this.pc.setLocalDescription(desc);
-                this.$parent.socket.emit("live_call_answer", { 
-			        desc, 
-			        conversation_id: this.data.conversation.id,
-			        callee: this.$root.auth.id
-			    });
-            }, (e) => { console.log(e); });
-        },
 
 		async stopShareScreen() {
 			this.streams.getVideoTracks().forEach(function(track) {
@@ -364,16 +343,34 @@ export default {
             return {x: xStart, y: yStart, height: renderableHeight, width: renderableWidth};
 		},
 
-		callAnswered(data) {
-			this.isAnswered = true;
-            this.pc.setRemoteDescription(data.desc);
-			this.$parent.socket.emit('live_call_answer', {conversation: this.data.conversation});
-		},
+
+
+		initCamera() {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
+                this.streams = streams;
+        		this.createPeerConnection();
+                this.addLocalStream();
+        		if(this.data.action == 'incoming') this.pc.setRemoteDescription(this.data.desc);
+        		else if(this.data.action == 'outgoing') this.startCall();
+
+                this.$refs['cameraPreview'].muted = true;
+                this.$refs['cameraPreview'].volume = 0;
+                this.$refs['cameraPreview'].srcObject = new MediaStream(this.streams.getVideoTracks());
+                this.$refs['cameraPreview'].pause();
+                this.$refs['cameraPreview'].play();
+                this.$refs['cameraPreview'].onplaying = () => {
+                    this.cameraReady = true;
+                };
+            }).catch(function(error) {
+                alert('Unable to capture your camera.');
+                console.error(error);
+            });
+        },
 
 		endCall(emit = true) {
         	this.notification_sound.pause();
 			this.status = 'ended';
-			if(emit) this.$parent.socket.emit('live_call_end', {conversation_id: this.data.conversation.id});
+			if(emit) this.$root.socket.emit('live_call_end', {conversation_id: this.data.conversation.id});
 			if(this.callRecorder) {
 				this.callRecorder.stop();
 				this.isRecording = false;
@@ -422,7 +419,7 @@ export default {
         startCall() {
             this.pc.createOffer(this.offerOptions).then((desc) => {
                 this.pc.setLocalDescription(desc);
-                this.$parent.socket.emit('live_call_offer', {
+                this.$root.socket.emit('live_call_offer', {
                     desc,
                     conversation_id: this.data.conversation.id,
                     caller: this.$root.auth.id
@@ -430,26 +427,25 @@ export default {
             }, (e) => { console.log(e); });
         },
 
-		initCamera() {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
-                this.streams = streams;
-        		this.createPeerConnection();
-                this.addLocalStream();
-        		if(this.data.action == 'incoming') this.pc.setRemoteDescription(this.data.desc);
-        		else if(this.data.action == 'outgoing') this.startCall();
-
-                this.$refs['cameraPreview'].muted = true;
-                this.$refs['cameraPreview'].volume = 0;
-                this.$refs['cameraPreview'].srcObject = new MediaStream(this.streams.getVideoTracks());
-                this.$refs['cameraPreview'].pause();
-                this.$refs['cameraPreview'].play();
-                this.$refs['cameraPreview'].onplaying = () => {
-                    this.cameraReady = true;
-                };
-            }).catch(function(error) {
-                alert('Unable to capture your camera.');
-                console.error(error);
+        rejectCall() {
+            this.notification_sound.pause();
+            this.$root.socket.emit('live_call_reject', {
+                conversation_id: this.data.conversation.id,
             });
+            this.close();
+        },
+
+        answerCall() {
+            this.notification_sound.pause();
+            this.status = 'ongoing';
+            this.pc.createAnswer().then((desc) => {
+                this.pc.setLocalDescription(desc);
+                this.$root.socket.emit("live_call_answer", { 
+			        desc, 
+			        conversation_id: this.data.conversation.id,
+			        callee: this.$root.auth.id
+			    });
+            }, (e) => { console.log(e); });
         },
 
         addLocalStream() {
@@ -472,13 +468,14 @@ export default {
             };
 	      	this.pc = new RTCPeerConnection(configuration);
 		    this.pc.ontrack = (event) => {
+                console.log(event);
 		      	this.remoteStream = event.streams[0];
 	            this.remoteMediaStream.addTrack(event.track);
 	            if(this.$refs['remotePreview']) this.$refs['remotePreview'].srcObject = this.remoteMediaStream;
 	        }
 	        this.pc.onicecandidate = (event) => {
 	        	if(event.candidate) {
-	        		this.$parent.socket.emit('live_call_candidate', {
+	        		this.$root.socket.emit('live_call_candidate', {
 		        		conversation_id: this.data.conversation.id,
 		        		candidate: event.candidate
 		        	});
@@ -488,6 +485,8 @@ export default {
 	        	console.log(error);
 	        };*/
 	    },
+
+
 
 		secondsToDuration(seconds, limit = 11, end = 8) {
 			let date = new Date(0);

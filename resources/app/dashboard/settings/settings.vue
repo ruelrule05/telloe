@@ -16,11 +16,14 @@
 export default {
 	data: () => ({
 		tabs: [
-			'Domain',
+			'Account',
+			'Billing',
+			'Booking Hours',
+			/*'Domain',
 			'Integration',
 			'Rules',
 			'Colors',
-			'Notifications',
+			'Notifications',*/
 		],
 		selectedTab: '',
 		tabComponent: null
@@ -31,7 +34,7 @@ export default {
 	watch: {
 		selectedTab: function(value) {
 			let chunkName = `settings-${value.toLowerCase()}`;
-			this.tabComponent = () => import (/* webpackChunkName: "[request]" */ `./settings/${value.toLowerCase()}`);
+			this.tabComponent = () => import (/* webpackChunkName: "[request]" */ `./${value.toLowerCase()}`);
 		}
 	},
 

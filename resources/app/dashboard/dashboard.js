@@ -27,27 +27,35 @@ const router = new VueRouter({
                     path: 'bookings',
                     component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/bookings.vue'),
                 },
+                {
+                    path: 'settings',
+                    component: () => import(/* webpackChunkName: "dashboard/settings" */ './settings/settings.vue'),
+                },
                 
             ],
         },
     ]
 });
+import io from 'socket.io-client';
 import BellIcon from '../../icons/bell';
 import GridIcon from '../../icons/grid';
 import ChatIcon from '../../icons/chat';
 import NotebookIcon from '../../icons/notebook';
 import CogIcon from '../../icons/cog';
 import UsersIcon from '../../icons/users';
+import CalendarDayIcon from '../../icons/calendar-day';
 import VirtualRealityIcon from '../../icons/virtual-reality';
 new Vue({
     router,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon},
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, CalendarDayIcon},
     data: {
         auth: null,
         pageloading: false,
         heading: '',
         contentloading: true,
+        socket: null,
+        online_users: [],
     },
 
     watch: {
@@ -58,9 +66,25 @@ new Vue({
     },
 
     created() {
+        this.socket = io('https://telloe.app:8443');
+        this.socket.on('online_users', (data) => {
+            this.online_users = data;
+            /*let online_users = JSON.parse(window.localStorage.getItem('telloe_online_users'));
+            online_users = online_users || [];
+            let index = online_users.findIndex((x) => x == data);
+            if(index == -1) {
+                online_users.push(data);
+                online_users = online_users.filter(function(e){return e});
+                window.localStorage.setItem('telloe_online_users', JSON.stringify(online_users));
+            }*/
+        });
+
+
         axios.get('/auth').then((response) => {
             this.auth = response.data;
+            this.socket.emit('user_online', this.auth.id);
         });
+
         (function(d) {
             var js,
                 id = 'facebook-jssdk',

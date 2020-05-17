@@ -13,12 +13,16 @@ use Illuminate\Support\Str;
 use Auth;
 use Mail;
 use Image;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
     public function get(Request $request)
     {
         $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'widget.bookings.user', 'subscription') : false;
+        $user->update([
+            'last_online' => Carbon::now()
+        ]);
         return response()->json($user);
     }
 

@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
 import VueFormValidate from '../../../components/vue-form-validate';
@@ -23,21 +22,25 @@ import UsersIcon from '../../../icons/users';
 import SearchIcon from '../../../icons/search';
 import CloseIcon from '../../../icons/close';
 import EditSquareIcon from '../../../icons/edit-square';
-import VideoIcon from '../../../icons/video';
+import PhoneIcon from '../../../icons/phone';
 import DuplicateAltIcon from '../../../icons/duplicate-alt';
 import PlusCircleIcon from '../../../icons/plus-circle';
 import CastIcon from '../../../icons/cast';
+import CalendarDayIcon from '../../../icons/calendar-day';
+import UserIcon from '../../../icons/user';
 import Emojipicker from '../../../components/emojipicker';
 import Waveplayer from '../../../components/waveplayer';
+import Modal from '../../../components/modal/modal.vue';
 import VueScrollTo from 'vue-scrollto';
 const emojiRegex = require('emoji-regex');
 export default {
-	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, VideoIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,
-        'video-recorder-modal': () => import(/* webpackChunkName: "video-recorder" */ '../../../modals/video-recorder'),
-        'file-view-modal': () => import(/* webpackChunkName: "file-view-modal" */ '../../../modals/file-view'),
-        'audio-recorder-modal': () => import(/* webpackChunkName: "audio-recorder-modal" */ '../../../modals/audio-recorder'),
-        'screen-recorder-modal': () => import(/* webpackChunkName: "screen-recorder-modal" */ '../../../modals/screen-recorder'),
-        'video-call-modal': () => import(/* webpackChunkName: "video-call-modal" */ '../../../modals/video-call'),
+	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, PhoneIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,CalendarDayIcon, UserIcon, Modal,
+        'video-recorder-modal': () => import(/* webpackChunkName: "modals/video-recorder" */ '../../../modals/video-recorder'),
+        'file-view-modal': () => import(/* webpackChunkName: "modals/file-view" */ '../../../modals/file-view'),
+        'audio-recorder-modal': () => import(/* webpackChunkName: "modals/audio-recorder" */ '../../../modals/audio-recorder'),
+        'screen-recorder-modal': () => import(/* webpackChunkName: "modals/screen-recorder" */ '../../../modals/screen-recorder'),
+        'video-call-modal': () => import(/* webpackChunkName: "modals/video-call" */ '../../../modals/video-call'),
+        'bookings': () => import(/* webpackChunkName: "components/bookings" */ '../../../components/bookings/bookings.vue'),
     },
 	directives: {VueScrollTo},
 
@@ -47,7 +50,8 @@ export default {
     	selectedConversation: null,
     	convoLoading: false,
     	textMessage: '',
-        detailsTab: '',
+        detailsTab: 'bookings',
+        profileTab: 'overview',
         fileType: 'all',
         recorder: '',
         selectedFile: null,
@@ -66,7 +70,6 @@ export default {
         searchingMembers: false,
         groupMembersResults: [],
         selectedChatMembers: [],
-        socket: null,
         videoCallDesc: null,
         videoCallData: null,
         videoCallData: true,
@@ -75,9 +78,21 @@ export default {
         videoCall: null,
         videoCall: null,
         dragOver: false,
+        newTag: '',
+        selectedBooking: null,
     }),
 
     computed: {
+        isOnline() {
+            let is_online = this.$root.online_users.find((x) => x == this.selectedConversation.user.id);
+            if(!is_online) {
+                axios.get(`/dashboard/conversations/${this.selectedConversation.id}`).then((response) => {
+                    this.selectedConversation.user.last_online = response.data.user.last_online;
+                });
+            }
+            return is_online;
+        },
+
         historyMessages() {
 
         },
@@ -118,8 +133,7 @@ export default {
 
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
-        this.socket = io('https://telloe.com:8443');
-        this.socket.on('new_message', (data) => {
+        this.$root.socket.on('new_message', (data) => {
             if(data.conversation.widget.id == this.$root.auth.widget.id) {
                 if(this.selectedConversation && this.selectedConversation.id == data.conversation.id) {
                     let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
@@ -150,7 +164,7 @@ export default {
             }
         });
 
-        this.socket.on('live_call_offer', (data) => {
+        this.$root.socket.on('live_call_offer', (data) => {
             let conversation = this.conversations.find((x) => x.id == data.conversation_id);
             if(conversation) {
                 data.action = 'incoming';
@@ -163,9 +177,25 @@ export default {
     },
 
     mounted() {
+        /*this.openModal();
+        this.selectedBooking = {};*/
     },
 
     methods: {
+        openModal() {
+            this.$refs['modal'].show();
+        },
+
+        addTag() {
+            let newTag = this.newTag.trim();
+            if(newTag) {
+                if(!this.selectedConversation.tags) this.selectedConversation.tags = [];
+                this.selectedConversation.tags.push(newTag);
+                this.updateConversation(this.selectedConversation);
+            }
+            this.newTag = '';
+        },
+
         dropFile(e) {
             this.dragOver = false;
             this.addFile({target: {files: e.dataTransfer.files, value: e.dataTransfer.files[0].name}});
@@ -174,7 +204,13 @@ export default {
         inputPaste(e) {
             if(e.clipboardData.files.length > 0) {
                 e.preventDefault();
-                let filename = e.clipboardData.getData('Text');
+                let parts = e.clipboardData.getData('Text').split('.');
+                let filename = '';
+                if(parts.length > 1) {
+                    delete parts[parts.length - 1]
+                }
+                filename = parts.join('');
+                filename += '.png';
                 let file = e.clipboardData.files[0];
                 let blob = file.slice(0, file.size, file.type);
                 let newFile = new File([blob], filename, {type: file.type});
@@ -425,7 +461,7 @@ export default {
                     if(index > -1) {
                         this.selectedConversation.messages[index].id = response.data.message.id;
                         this.selectedConversation.messages[index].source = response.data.message.source;
-                        this.socket.emit('message_sent', {id: response.data.message.id, conversation_id: response.data.conversation.id});
+                        this.$root.socket.emit('message_sent', {id: response.data.message.id, conversation_id: response.data.conversation.id});
                     }
                 });
             }
@@ -579,8 +615,23 @@ export default {
     			this.conversations = response.data;
                 this.orderConversations();
     			this.$root.contentloading = false;
-                let firstConversation = this.conversations.find((x) => x.status == 'active');
-    			if(firstConversation) this.setConversation(firstConversation);
+
+                let booking_id = this.$route.query.booking_id;
+                if(booking_id) {
+                    for(let c of this.conversations){
+                        if(c.members.length == 0) {
+                            let booking = c.widget.bookings.find((x) => x.id == booking_id);
+                            if(booking) {
+                                this.setConversation(c);
+                                this.detailsTab = 'bookings';
+                                break;
+                            }
+                        }
+                    };
+                } else {
+                    let firstConversation = this.conversations.find((x) => x.status == 'active');
+                    if(firstConversation) this.setConversation(firstConversation);
+                }
     		});
     	},
 

@@ -67,17 +67,26 @@
                         </div>
                         <div class="ml-2">
                             <h5 class="font-heading mb-0">{{ selectedConversation.user.full_name || selectedConversation.name }}</h5>
-                            <div class="d-flex align-items-center"><span class="chat-status bg-success mr-1">&nbsp;</span> <small class="text-gray">Online</small></div>
+                            <div class="d-flex align-items-center" v-if="selectedConversation.user.id">
+                                <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
+                                <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${selectedConversation.user.last_online}` }}</small>
+                            </div>
+                            <div class="d-flex" v-else>
+                                <small class="text-gray">{{ selectedConversation.members.length }} members</small>
+                            </div>
                         </div>
                     </div>
                     <div class="ml-auto">
-                        <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'profile'}" @click="detailsTab = 'profile'">Profile</button>
-                        <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
+                        <!-- <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'profile'}" @click="detailsTab = 'profile'">Profile</button> -->
+                        <!-- <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
                         <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'notes'}" @click="detailsTab = 'notes'">Notes</button>
-                        <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button>
+                        <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button> -->
+                        <!-- <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button> -->
 
-                        <button class="btn btn-white btn-circle-actions border ml-2" @click="openRecorder('screen')"><cast-icon transform="scale(0.75)"></cast-icon></button>
-                        <button class="btn btn-white btn-circle-actions border" @click="initCall"><video-icon></video-icon></button>
+                        <button class="btn btn-white btn-circle-actions border" @click="initCall"><phone-icon></phone-icon></button>
+                        <button class="btn btn-white btn-circle-actions" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
+                        <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
+                        <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'profile'" :class="{'active': detailsTab == 'profile'}"><user-icon></user-icon></button>
                     </div>
 				</div>
 				<div class="p-3 overflow-y-auto flex-grow-1 bg-white" ref="message-group-container" id="message-group-container">
@@ -139,17 +148,24 @@
 		<!-- Conversations details -->
 		<div v-if="selectedConversation" class="conversation-details text-center p-3 h-100 position-relative" :class="{'open': detailsTab}">
 			<button class="btn p-0 position-absolute btn-close" @click="detailsTab = ''"><close-icon height="34" width="36"></close-icon></button>
-            <div class="d-flex flex-column h-100 overflow-hidden">
-				<div>
-                    <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
-                        <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
+            <div class="text-left h-100">
+                <!-- Profile -->
+                <div v-if="detailsTab == 'profile'" class="h-100 overflow-hidden d-flex flex-column ">
+                    <div class="text-center">
+                        <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
+                            <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
+                        </div>
+                        <h4 class="font-heading conversation-title" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="selectedConversation.members.length >= 1">{{ selectedConversation.user.full_name || selectedConversation.name }}</h4>
                     </div>
-                    <h4 class="font-heading conversation-title" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="selectedConversation.members.length >= 1">{{ selectedConversation.user.full_name || selectedConversation.name }}</h4>
-                </div>
+                    <div class="btn-group btn-group-sm w-100" role="group">
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': profileTab == 'overview'}" @click="profileTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': profileTab == 'files'}" @click="profileTab = 'files'"><small class="font-weight-bold d-block">Files</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': profileTab == 'notes'}" @click="profileTab = 'notes'"><small class="font-weight-bold d-block">Notes</small></button>
+                        <button type="button" class="btn btn-white border py-2" :class="{'active': profileTab == 'history'}" @click="profileTab = 'history'"><small class="font-weight-bold d-block">History</small></button>
+                    </div> 
 
-                <div class="mt-3 flex-grow-1 text-left h-100 overflow-hidden">
                     <!-- Overview -->
-                    <div v-if="detailsTab == 'profile'">
+                    <div v-if="profileTab == 'overview'" class="mt-2">
                         <div v-if="selectedConversation.members.length == 0">
                             <div class="form-group">
                                 <strong class="text-gray">Email:</strong>
@@ -161,11 +177,24 @@
                             </div>
                             <div class="form-group">
                                 <strong class="text-gray">Tags:</strong>
-                                <div class="font-weight-bold"></div>
+                                <div class="mt-2" v-if="(selectedConversation.tags || {}).length > 0">
+                                    <div v-for="(tag, index) in selectedConversation.tags" class="font-weight-bold d-inline-block badge badge-pill badge-primary py-1 px-2 mr-1 mb-2 line-height-sm">
+                                    {{ tag }}&nbsp;
+                                        <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer" @click.native="selectedConversation.tags.splice(index, 1); updateConversation(selectedConversation)"></close-icon>
+                                    </div>
+                                </div>
+                                <form class="input-group border rounded overflow-hidden mt-1" @submit.prevent="addTag">
+                                    <input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add Tag" v-model="newTag">
+                                    <div class="input-group-append">
+                                    <button type="submit" class="btn btn-secondary shadow-none btn-sm border-0 line-height-1" :disabled="!newTag.trim()">
+                                        <plus-icon width="20" height="20"></plus-icon>
+                                    </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         <div v-else>
-                            <div class="mb-2 p-2 rounded bg-white">
+                            <div class="my-2">
                                 <div class="form-group form-icon mb-0">
                                     <search-icon height="20" width="20" fill="#999"></search-icon>
                                     <input type="text" v-model="memberSearch" placeholder="Add members" @input="searchMembers($event, false)" class="form-control shadow-none form-control-sm">
@@ -202,7 +231,7 @@
                     </div>
 
                     <!-- Files -->
-                    <div v-else-if="detailsTab == 'files'" class="d-flex flex-column overflow-hidden h-100">
+                    <div v-else-if="profileTab == 'files'" class="mt-2 d-flex flex-column overflow-hidden h-100">
                         <div class="flex-fill">
                             <select class="form-control form-control-sm shadow-none" v-model="fileType">
                                 <option value="all">All Files</option>
@@ -243,7 +272,7 @@
                     </div>
 
                     <!-- History -->
-                    <div v-else-if="detailsTab == 'history'" class="message-group overflow-y-only h-100">
+                    <div v-else-if="profileTab == 'history'" class="message-group mt-2 overflow-y-only h-100">
                         <div v-for="history in selectedConversation.messages" v-if="history.is_history">
                             <div class="media outgoing-message my-3" v-if="history.user.id == $root.auth.id || history.user.id == 'chatbot'">
                                 <div class="media-body pr-2 text-right overflow-hidden">
@@ -277,13 +306,13 @@
                     </div>
 
                     <!-- Notes -->
-                    <div v-else-if="detailsTab == 'notes'" class="text-left">
+                    <div v-else-if="profileTab == 'notes'" class="text-left mt-2">
                         <button class="btn btn-sm btn-outline-primary mb-2" @click="addingNote = true">+ Add Note</button>
                         <vue-form-validate v-if="addingNote" @submit="addNote" class="mb-3">
                             <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none" placeholder="Add note.."></textarea>
                             <div class="d-flex align-items-center mt-1">
                                 <div class="ml-auto">
-                                    <button class="btn btn-sm btn-link text-body pl-0" @click="addingNote = false">Cancel</button>
+                                    <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="addingNote = false">Cancel</button>
                                     <button type="submit" class="btn btn-sm btn-primary ml-auto">Add</button>
                                 </div>
                             </div>
@@ -295,7 +324,13 @@
                         </div>
                     </div>
                 </div>
-			</div>
+
+                <!-- Bookings -->
+                <div v-else-if="detailsTab == 'bookings'" class="text-left h-100">
+                    <h4 class="font-heading">Bookings</h4>
+                    <bookings :user="selectedConversation.user"></bookings>
+                </div>
+            </div>
 		</div>
 
         
@@ -347,9 +382,6 @@
                 </div>
             </div>
         </div>
-
-
-
 
         <file-view-modal v-if="selectedFile && ['image', 'video'].find((x) => x == selectedFile.type)" :file="selectedFile" @close="selectedFile = null"></file-view-modal>
         <audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>

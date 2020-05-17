@@ -8,6 +8,6 @@
 
 <script>
 export default {
-	name: 'video-icon',
+	name: 'video',
 };
 </script>

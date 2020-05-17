@@ -26,6 +26,8 @@ const io = require('socket.io')(server, {
     pingTimeout: 60000,
 });
 
+
+let online_users = {};
 io.on('connection', function(socket) {
     let socketData = null;
     socket.on('message_sent', function(data) {
@@ -49,6 +51,16 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('live_call_candidate', data);
     });
 
+    socket.on('user_online', function(user_id) {
+        user_ids = Object.values(online_users);
+        if(!user_ids[user_id]) {
+            online_users[socket.id] = user_id;
+            user_ids.push(user_id);
+        }
+
+        io.emit('online_users', user_ids);
+    });
+
 
 
 
@@ -58,6 +70,10 @@ io.on('connection', function(socket) {
             socket.broadcast.emit('live_call_end', socketData);
             socketData = null;
         }
+
+        delete online_users[socket.id];
+        user_ids = Object.values(online_users);
+        io.emit('online_users', user_ids);
     });
     
 });

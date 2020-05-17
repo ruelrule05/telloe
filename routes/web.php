@@ -47,6 +47,7 @@ Route::group(
                 Route::resource('conversations', 'ConversationController');
                 Route::resource('messages', 'MessageController');
                 Route::resource('notes', 'NoteController');
+                Route::resource('bookings', 'BookingController');
                 Route::resource('conversation_members', 'ConversationMemberController');
                 Route::post('inquiries/{id}/message', 'InquiryController@postMessage');
                 Route::get('widget', 'WidgetController@show');

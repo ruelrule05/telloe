@@ -32,10 +32,10 @@
 							<h1 class="h6 mb-5 font-heading">@{{ $root.auth.full_name }}</h1>
 
 							<div class="list-group font-heading">
-								<router-link to="/dashboard" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
+								<!-- <router-link to="/dashboard" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
 									<grid-icon></grid-icon>
 									<strong class="ml-3">Dashboard</strong>
-								</router-link>
+								</router-link> -->
 
 								<router-link to="/dashboard/messages" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
 									<chat-icon></chat-icon>
@@ -43,7 +43,7 @@
 								</router-link>
 
 								<router-link to="/dashboard/bookings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
-									<notebook-icon></notebook-icon>
+									<calendar-day-icon></calendar-day-icon>
 									<strong class="ml-3">Bookings</strong>
 								</router-link>
 
@@ -52,7 +52,7 @@
 									<strong class="ml-3">Settings</strong>
 								</router-link>
 								
-								<router-link to="/dashboard/chatbots" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
+								<!-- <router-link to="/dashboard/chatbots" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
 									<virtual-reality-icon></virtual-reality-icon>
 									<strong class="ml-3">Chatbot</strong>
 								</router-link>
@@ -60,7 +60,7 @@
 								<router-link to="/dashboard/users" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
 									<users-icon></users-icon>
 									<strong class="ml-3">Users</strong>
-								</router-link>
+								</router-link> -->
 							</div>
 						</div>
 

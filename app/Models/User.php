@@ -6,6 +6,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -17,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id'
+        'first_name', 'last_name', 'email', 'password', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id', 'last_online'
     ];
 
     /**
@@ -79,6 +80,12 @@ class User extends Authenticatable implements JWTSubject
     public function getInitialsAttribute()
     {
         return strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1));
+    }
+
+
+    public function getLastOnlineAttribute($value)
+    {
+        return $value ? Carbon::parse($value)->diffForHumans() : '';
     }
 
 

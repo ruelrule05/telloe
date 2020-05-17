@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Image;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -49,6 +50,11 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = auth()->user();
+        if($user) :
+            $user->update([
+                'last_online' => Carbon::now()
+            ]);
+        endif;
         $conversations = Conversation::with('messages', 'widget.user', 'widget.bookings', 'members')->where('user_id', $user->id)->get();
         return response()->json($user ? ['user' => $user, 'conversations' => $conversations] : false);
     }

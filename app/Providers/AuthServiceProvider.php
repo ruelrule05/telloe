@@ -22,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Conversation' => 'App\Policies\ConversationPolicy',
         'App\Models\Note' => 'App\Policies\NotePolicy',
         'App\Models\ConversationMember' => 'App\Policies\ConversationMemberPolicy',
+        'App\Models\Booking' => 'App\Policies\BookingPolicy',
     ];
 
     /**
