@@ -55,7 +55,7 @@ class AuthController extends Controller
                 'last_online' => Carbon::now()
             ]);
         endif;
-        $conversations = Conversation::with('messages', 'widget.user', 'widget.bookings', 'members')->where('user_id', $user->id)->get();
+        $conversations = Conversation::with('messages', 'widget.user', 'members')->where('user_id', $user->id)->get();
         return response()->json($user ? ['user' => $user, 'conversations' => $conversations] : false);
     }
 
