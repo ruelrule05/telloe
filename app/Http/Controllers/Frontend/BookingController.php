@@ -14,9 +14,17 @@ class BookingController extends Controller
 	public function index(Request $request)
     {
     	$this->validate($request, [
-    		'user_id' => 'required|exists:users,id'
+    		'user_id' => 'nullable|exists:users,id'
     	]);
-        $bookings = Booking::where('user_id', $request->user_id)->where('widget_id', Auth::user()->widget->id)->orderBy('created_at', 'DESC')->get();
+        if($request->user_id) :
+            $bookings = Booking::where('user_id', $request->user_id)->whereHas('service', function($service) {
+                $service->where('user_id', Auth::user()->id);
+            })->orderBy('created_at', 'DESC')->get();
+        else :
+            $bookings = Booking::with('user')->whereHas('service', function($service) {
+                $service->where('user_id', Auth::user()->id);
+            })->orderBy('created_at', 'DESC')->get();
+        endif;
         return response()->json($bookings);
     }
 

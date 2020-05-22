@@ -15,7 +15,7 @@ class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-    	$conversations = Conversation::with('members.user', 'widget.bookings')->where('widget_id', Auth::user()->widget->id)->get();
+    	$conversations = Conversation::with('members.user')->where('widget_id', Auth::user()->widget->id)->get();
     	return response()->json($conversations);
     }
 
@@ -57,7 +57,7 @@ class ConversationController extends Controller
 
     public function show($id, Request $request)
     {
-    	$conversation = Conversation::with('messages', 'notes', 'members.user', 'widget.bookings')->findOrfail($id);
+    	$conversation = Conversation::with('messages', 'notes', 'members.user')->findOrfail($id);
     	$this->authorize('show', $conversation);
 
     	if ($request->is_read) :

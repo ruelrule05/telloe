@@ -30,11 +30,10 @@ import CalendarDayIcon from '../../../icons/calendar-day';
 import UserIcon from '../../../icons/user';
 import Emojipicker from '../../../components/emojipicker';
 import Waveplayer from '../../../components/waveplayer';
-import Modal from '../../../components/modal/modal.vue';
 import VueScrollTo from 'vue-scrollto';
 const emojiRegex = require('emoji-regex');
 export default {
-	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, PhoneIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,CalendarDayIcon, UserIcon, Modal,
+	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, PhoneIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,CalendarDayIcon, UserIcon, 
         'video-recorder-modal': () => import(/* webpackChunkName: "modals/video-recorder" */ '../../../modals/video-recorder'),
         'file-view-modal': () => import(/* webpackChunkName: "modals/file-view" */ '../../../modals/file-view'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "modals/audio-recorder" */ '../../../modals/audio-recorder'),
@@ -80,6 +79,8 @@ export default {
         dragOver: false,
         newTag: '',
         selectedBooking: null,
+        services: [],
+        selectedServices: [],
     }),
 
     computed: {
@@ -612,27 +613,30 @@ export default {
 
     	getData() {
     		axios.get('/dashboard/conversations').then((response) => {
-    			this.conversations = response.data;
+                this.conversations = response.data;
                 this.orderConversations();
-    			this.$root.contentloading = false;
+                this.$root.contentloading = false;
 
-                let booking_id = this.$route.query.booking_id;
-                if(booking_id) {
+                let user_id = this.$route.query.user_id;
+                if(user_id) {
                     for(let c of this.conversations){
-                        if(c.members.length == 0) {
-                            let booking = c.widget.bookings.find((x) => x.id == booking_id);
-                            if(booking) {
-                                this.setConversation(c);
-                                this.detailsTab = 'bookings';
-                                break;
-                            }
-                        }
+                       if(c.user_id == user_id) {
+                            this.setConversation(c);
+                            break;
+                       }
                     };
                 } else {
                     let firstConversation = this.conversations.find((x) => x.status == 'active');
                     if(firstConversation) this.setConversation(firstConversation);
                 }
-    		});
+
+                let selectedTab = this.$route.query.tab;
+                if(selectedTab) this.detailsTab = selectedTab;
+            });
+
+            axios.get('/dashboard/services').then((response) => {
+                this.services = response.data;
+            });
     	},
 
         orderConversations() {

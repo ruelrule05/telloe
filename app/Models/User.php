@@ -88,6 +88,11 @@ class User extends Authenticatable implements JWTSubject
         return $value ? Carbon::parse($value)->diffForHumans() : '';
     }
 
+    public function customers()
+    {
+        return $this->hasMany(UserCustomer::class);
+    }
+
 
 
 

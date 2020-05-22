@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/modal';
 import 'bootstrap/js/dist/tooltip';
+import 'bootstrap/js/dist/collapse';
 
 Vue.use(VueRouter);
 Vue.component('vue-button', require('../../components/vue-button.vue').default);
@@ -24,8 +25,19 @@ const router = new VueRouter({
                     component: () => import(/* webpackChunkName: "dashboard/messages" */ './messages/messages.vue'),
                 },
                 {
-                    path: 'bookings',
-                    component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/bookings.vue'),
+                    path: 'bookings/calendar',
+                    name: 'calendar',
+                    component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/calendar/calendar.vue'),
+                },
+                {
+                    path: 'bookings/services',
+                    name: 'services',
+                    component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/services/services.vue'),
+                },
+                {
+                    path: 'bookings/customers',
+                    name: 'customers',
+                    component: () => import(/* webpackChunkName: "dashboard/customers" */ './bookings/customers/customers.vue'),
                 },
                 {
                     path: 'settings',
@@ -42,13 +54,14 @@ import GridIcon from '../../icons/grid';
 import ChatIcon from '../../icons/chat';
 import NotebookIcon from '../../icons/notebook';
 import CogIcon from '../../icons/cog';
+import ChevronDownIcon from '../../icons/chevron-down';
 import UsersIcon from '../../icons/users';
 import CalendarDayIcon from '../../icons/calendar-day';
 import VirtualRealityIcon from '../../icons/virtual-reality';
 new Vue({
     router,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, CalendarDayIcon},
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, CalendarDayIcon, ChevronDownIcon},
     data: {
         auth: null,
         pageloading: false,
@@ -66,7 +79,8 @@ new Vue({
     },
 
     created() {
-        this.socket = io('https://telloe.app:8443');
+        //this.socket = io('https://telloe.app:8443');
+        this.socket = io('https://telloe.com:8443');
         this.socket.on('online_users', (data) => {
             this.online_users = data;
             /*let online_users = JSON.parse(window.localStorage.getItem('telloe_online_users'));

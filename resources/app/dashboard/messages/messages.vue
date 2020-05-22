@@ -192,6 +192,13 @@
                                     </div>
                                 </form>
                             </div>
+
+                            <div class="form-group">
+                                <strong class="text-gray">Blacklisted services:</strong>
+                                <select class="form-control form-control-sm shadow-none cursor-pointer">
+                                    <option value="" v-for="service in services">{{ service.name }}</option>
+                                </select>
+                            </div>
                         </div>
                         <div v-else>
                             <div class="my-2">

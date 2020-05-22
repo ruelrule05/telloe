@@ -24,7 +24,7 @@ class Authenticate
                 return response('401', 401);
             }
 
-            return redirect('/login?redirect=/' . $request->path());
+            return redirect('/');
         }
 
         return $next($request);

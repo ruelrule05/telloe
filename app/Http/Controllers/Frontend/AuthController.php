@@ -19,7 +19,7 @@ class AuthController extends Controller
 {
     public function get(Request $request)
     {
-        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'widget.bookings.user', 'subscription') : false;
+        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription') : false;
         $user->update([
             'last_online' => Carbon::now()
         ]);
@@ -27,50 +27,45 @@ class AuthController extends Controller
     }
 
     public function login(Request $request) {
-        if ($request->isMethod('post')) :
-            $user = User::where('email', $request->email)->first();
-            if (!$user):
-                return abort(403, 'Email does not exists in our records');
-            else :
-                if (Auth::attempt(['email' => $request->email, 'password' => $request->password])):
-                    $response = [
-                        'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
-                    ]; 
-                    return response()->json($response);
-                else:
-                    return abort(403, 'Invalid password');
-                endif;
+        $user = User::where('email', $request->email)->first();
+        if (!$user):
+            return abort(403, 'Email does not exists in our records');
+        else :
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])):
+                $response = [
+                    'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
+                ];
+
+                // check invite token
+                return response()->json($response);
+            else:
+                return abort(403, 'Invalid password');
             endif;
         endif;
-
-    	return view('frontend.layouts.auth');
     }
 
 
     public function signup(Request $request) {
-    	if ($request->isMethod('post')) :
-            $exists = User::where('email', $request->email)->first();
-            if ($exists) return abort(403, 'Email is already registered to another account.');
-    		$this->validate($request, [
-    			'first_name' => 'required',
-    			'last_name' => 'required',
-    			'email' => 'required|email|unique:users,email',
-    			'password' => 'required',
-    		]);
-            $widget = Widget::create([]);
-    		$user = User::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'widget_id' => $widget->id
-            ]);
-    		Auth::login($user);
-            
-    		return response()->json($user);
-    	endif;
-
-        return view('frontend.layouts.auth');
+        $exists = User::where('email', $request->email)->first();
+        if ($exists) return abort(403, 'Email is already registered to another account.');
+		$this->validate($request, [
+			'first_name' => 'required',
+			'last_name' => 'required',
+			'email' => 'required|email|unique:users,email',
+			'password' => 'required',
+		]);
+        $widget = Widget::create([]);
+		$user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'widget_id' => $widget->id
+        ]);
+		Auth::login($user);
+        
+        // check invite token
+		return response()->json($user);
     }
 
 

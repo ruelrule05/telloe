@@ -1,12 +1,8 @@
 import Login from './login.vue';
 import Signup from './signup.vue';
-import VueButton from '../../components/vue-button.vue';
 import CloseIcon from '../../icons/close.vue';
-
-Vue.component('vue-button', require('../../components/vue-button.vue').default);
-Vue.component('vue-form-validate', require('../../components/vue-form-validate.vue').default);
 export default {
-    components: {Login, Signup, VueButton, CloseIcon},
+    components: {Login, Signup, CloseIcon},
 
     data: () => ({
         pageloading: false,

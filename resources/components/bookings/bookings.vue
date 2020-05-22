@@ -11,19 +11,33 @@
 
 			<div v-else class="bg-white rounded p-2 shadow-sm">
 				<h6 class="font-heading">Add Booking</h6>
+				<select class="form-control shadow-none mb-2 cursor-pointer" :class="{'text-gray': !selectedService}" v-model="selectedService">
+					<option value="" selected disabled>Select service</option>
+					<option :value="service" v-for="service in services">{{ service.name }}</option>
+				</select>
 				<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
 					<div class="text-gray bg-gray-300 p-2">Date</div>
 					<div class="flex-grow-1">
-						<v-date-picker :min-date="new Date()" :popover="{visibility: 'click' }" v-model="date" class="d-block h-100">
+						<v-date-picker is-required :disabled-dates="formattedHolidays" :min-date="new Date()" :popover="{visibility: 'click' }" v-model="date" class="d-block h-100">
 							<button class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{'text-gray': !date}">{{ date ? formatDate(date) : 'Set date' }}</button>
 						</v-date-picker>
 					</div>
 				</div>
-				<timerangepicker @update="timeUpdate"></timerangepicker>
+				<!-- <timerangepicker @update="timeUpdate"></timerangepicker> -->
+				<div class="dropdown">
+					<button class="btn btn-white border btn-block dropdown-toggle" data-toggle="dropdown" :class="{'text-gray': !timeslot}" :disabled="!date || !selectedService">Select timeslot</button>
+					<div class="dropdown-menu w-100 p-0 bg-light">
+						<div class="d-flex flex-wrap pb-1 pr-1">
+							<div v-for="timeslot in timeslots" class="pt-1 pl-1 w-25">
+								<div class="btn btn-white border btn-sm btn-block small">{{ timeslot.label }}</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
 				<div class="d-flex mt-2">
 					<button type="button" class="btn btn-sm btn-link text-body" @click="addBooking = false; date = null;">Cancel</button>
-					<button type="button" class="btn btn-sm btn-primary ml-auto" :disabled="!date || !start || !end" @click="store">Add</button>
+					<button type="button" class="btn btn-sm btn-primary ml-auto" :disabled="!date || !timeslot || !selectedService" @click="store">Add</button>
 				</div>
 			</div>
 			
@@ -35,7 +49,7 @@
 		        		<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
 							<div class="text-gray bg-gray-300 p-2">Date</div>
 							<div class="flex-grow-1">
-								<v-date-picker @input="(date) => booking.new_date = date" :min-date="new Date()" :popover="{visibility: 'click' }" :value="booking.date" class="d-block h-100">
+								<v-date-picker is-required @input="(date) => booking.new_date = date" :min-date="new Date()" :popover="{visibility: 'click' }" :value="booking.date" class="d-block h-100">
 									<button class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{'text-gray': !booking.new_date}">{{ booking.new_date ? formatDate(booking.new_date) : 'Set date' }}</button>
 								</v-date-picker>
 							</div>

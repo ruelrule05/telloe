@@ -5,6 +5,12 @@
  *
  */
 
+Route::get('email', function() {
+    $email = new App\Mail\SendInvitation(App\Models\UserCustomer::first());
+
+    return $email;
+});
+
 
 Route::group(
     [
@@ -12,9 +18,6 @@ Route::group(
         'namespace' => 'Frontend'
     ],
     function () {
-        Route::get('/slek', function() {
-            return view('frontend.slek');
-        });
         Route::get('/', 'PageController@homepage');
 		Route::get('login', 'AuthController@login')->middleware('guest');
 		Route::get('signup', 'AuthController@signup')->middleware('guest');
@@ -48,6 +51,8 @@ Route::group(
                 Route::resource('messages', 'MessageController');
                 Route::resource('notes', 'NoteController');
                 Route::resource('bookings', 'BookingController');
+                Route::resource('services', 'ServiceController');
+                Route::resource('user_customers', 'UserCustomerController');
                 Route::resource('conversation_members', 'ConversationMemberController');
                 Route::post('inquiries/{id}/message', 'InquiryController@postMessage');
                 Route::get('widget', 'WidgetController@show');

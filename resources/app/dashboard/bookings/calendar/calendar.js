@@ -1,13 +1,12 @@
-import BusinessHours from '../../../components/vue-business-hours/BusinessHours';
-import ChevronLeft from '../../../icons/chevron-left';
-import ChevronRight from '../../../icons/chevron-right';
+import BusinessHours from '../../../../components/vue-business-hours/BusinessHours';
+import ChevronLeft from '../../../../icons/chevron-left';
+import ChevronRight from '../../../../icons/chevron-right';
 import convertTime from 'convert-time';
 import VCalendar from 'v-calendar';
 window.Vue.use(VCalendar);
 export default {
 	components: {
 		BusinessHours, ChevronLeft, ChevronRight,
-        'services': () => import(/* webpackChunkName: "components/services" */ '../../../components/services/services.vue'),
 	},
 
 	data: () => ({

@@ -17,6 +17,15 @@ export default{
 		time_end: null,
     }),
 
+    watch: {
+        start: function(value) {
+            if(value) this.time_start = this.hours.find((x) => x.time == this.start);
+        },
+        end: function(value) {
+            if(value) this.time_end = this.hours.find((x) => x.time == this.end);
+        },
+    },
+
     computed: {
     	hours() {
     		let now = dayjs();
@@ -57,21 +66,12 @@ export default{
         },
     },
 
-    watch: {
-        time_start: function(value) {
-            this.$emit('update', {start: this.time_start, end: this.time_end})
-        },
-        time_end: function(value) {
-            this.$emit('update', {start: this.time_start, end: this.time_end})
-        },
-    },
-
     mounted() {
         $(this.$refs['start']).on('show.bs.dropdown', () => {
             setTimeout(() => {
                 if(this.time_start) {
                     this.$refs['dropdown-start'].querySelector(`#start-${this.time_start.time.replace(':', '')}`).scrollIntoView({
-                        block: 'center'
+                        block: 'nearest',
                     });
                 }
             }, 50);
@@ -80,7 +80,7 @@ export default{
             setTimeout(() => {
                 if(this.time_end) {
                     this.$refs['dropdown-end'].querySelector(`#end-${this.time_end.time.replace(':', '')}`).scrollIntoView({
-                        block: 'center'
+                        block: 'nearest'
                     });
                 }
             }, 50);
@@ -97,5 +97,9 @@ export default{
         formatDate(date) {
             return dayjs(date).format('MMMM D, YYYY');
         },
+
+        update() {
+            this.$emit('update', {start: this.time_start, end: this.time_end})
+        }
     }
 }

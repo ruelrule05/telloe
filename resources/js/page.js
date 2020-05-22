@@ -3,6 +3,7 @@ require('./bootstrap');
 import 'bootstrap/js/dist/collapse';
 import RangeSlider from 'vue-range-slider'
 import 'vue-range-slider/dist/vue-range-slider.css'
+import Auth from '../app/auth/auth.vue';
 
 window.Vue = require('vue');
 
@@ -11,16 +12,26 @@ new Vue({
     el: '#app',
     components: {
         RangeSlider,
-        'auth': () => import(/* webpackChunkName: "auth" */ '../app/auth/auth.vue'),
+        Auth
     },
 
     data: {
         auth: false,
         action: 'login',
     	seats: 15,
+        invite_token: null,
     },
 
     created() {
+        const queryString = window.location.search;
+        if(queryString) {
+            const urlParams = new URLSearchParams(queryString);
+            const invite_token = urlParams.get('invite_token');
+            if(invite_token) {
+                this.invite_token = invite_token;
+                this.auth = true;
+            }
+        }
     },
 
     methods: {

@@ -1,10 +1,8 @@
 import dayjs from 'dayjs';
-import Timerangepicker from '../timerangepicker/timerangepicker.vue';
 import VCalendar from 'v-calendar';
 window.Vue.use(VCalendar);
 
 export default{
-	components: {Timerangepicker},
 	
 	props: {
 		user: {
@@ -20,11 +18,52 @@ export default{
 	data: () => ({
 		ready: false,
 		bookings: [],
-		addBooking: false,
+		addBooking: true, //false
 		date: null,
-		start: null,
-		end: null,
+        timeslot: '',
+        services: [],
+        selectedService: '',
     }),
+
+    computed: {
+        timeslots() {
+            let timeslots = [];
+            if(this.selectedService && this.date) {
+                const dateFormat = dayjs(this.date).format('YYYY-MM-DD')
+                const dayName = dayjs(this.date).format('dddd');
+                let available_time = this.selectedService.days[dayName];
+
+                let start_time = dayjs(`${dateFormat} ${available_time.start}`);
+                let end_time = dayjs(`${dateFormat} ${available_time.end}`);
+                let breaktimes = this.selectedService.days[dayName].breaktimes;
+                let holidays = this.selectedService.holidays;
+
+                while(start_time < end_time) {
+                    timeslots.push({
+                        time: start_time.format('HH:mm'),
+                        label: start_time.format('hh:mmA'),
+                    });
+                    start_time = start_time.add(this.selectedService.duration + 30, 'minute');
+                }
+
+            }
+
+            return timeslots;
+        },
+
+        formattedHolidays() {
+            let formattedHolidays = [];
+            if(this.selectedService) {
+                this.selectedService.holidays.forEach((holiday) => {
+                    let parts = holiday.split('-');
+                    const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    formattedHolidays.push(holidayDate);
+                });
+            }
+            return formattedHolidays;
+        }
+    },
+
 
     methods: {
     	update(booking) {
@@ -50,7 +89,8 @@ export default{
     				date: formatDate,
     				start: this.start,
     				end: this.end,
-    				user_id: this.user.id
+                    user_id: this.user.id,
+    				service_id: this.service_id,
     			};
     			this.addBooking = false;
     			axios.post('/dashboard/bookings', data).then((response) => {
@@ -64,23 +104,22 @@ export default{
             axios.delete(`/dashboard/bookings/${booking.id}`);
         },
 
-    	timeUpdate(time) {
-    		this.start = (time.start || {}).time;
-    		this.end = (time.end || {}).time;
-    	},
+    	async getData() {
+            let response = await axios.get(`/dashboard/bookings?user_id=${this.user.id}`);
+			response.data.map((booking) => {
+				let parts = booking.date.split('-');
+				booking.date = new Date(parts[0], parts[1] - 1, parts[2]);
+				booking.new_date = booking.date;
+				booking.new_start = booking.start;
+				booking.new_end = booking.end;
+			});
+			this.bookings = response.data;
 
-    	getData() {
-    		axios.get(`/dashboard/bookings?user_id=${this.user.id}`).then((response) => {
-    			response.data.map((booking) => {
-    				let parts =booking.date.split('-');
-    				booking.date = new Date(parts[0], parts[1] - 1, parts[2]);
-    				booking.new_date = booking.date;
-    				booking.new_start = booking.start;
-    				booking.new_end = booking.end;
-    			});
-    			this.bookings = response.data;
-    			this.ready = true;
-    		});
+            response = await axios.get('/dashboard/services');
+            this.services = response.data;
+            this.selectedService = this.services[0];
+
+            this.ready = true;
     	},
 
     	formatTime(time) {

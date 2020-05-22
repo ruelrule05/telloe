@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Booking;
+use App\Models\Service;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class BookingPolicy
+class ServicePolicy
 {
     use HandlesAuthorization;
 
@@ -20,15 +20,15 @@ class BookingPolicy
         //
     }
 
-    public function update(User $user, Booking $booking)
+    public function update(User $user, Service $service)
     {
-        return $user->id == $booking->service->user_id;
+        return $user->id == $service->user_id;
     }
 
 
-    public function delete(User $user, Booking $booking)
+    public function delete(User $user, Service $service)
     {
-        return $user->id == $booking->service->user_id;
+        return $user->id == $service->user_id;
     }
 
 }

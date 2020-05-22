@@ -45,9 +45,14 @@ export default {
 			last_name: '',
 			email: '',
 			password: '',
+			invite_token: null,
 		},
 		loading: false,
 	}),
+	
+	created() {
+		this.signupForm.invite_token = this.$root.invite_token;
+	},
 
 	methods: {
 		signup() {

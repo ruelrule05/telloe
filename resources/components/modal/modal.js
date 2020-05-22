@@ -6,15 +6,18 @@ export default {
         closeButton: {
             type: Boolean,
             default: true,
+        },
+
+        loading: {
+            type: Boolean,
+            default: false,
+        },
+
+        size: {
+            type: String,
+            default: '',
         }
     },
-
-    data: () => ({
-        modal: {
-            size: '',
-            loading: true,
-        }
-    }),
 
     methods: {
     	show() {
