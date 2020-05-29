@@ -7,11 +7,12 @@ import ChevronDownIcon from '../../../../icons/chevron-down';
 import PlusIcon from '../../../../icons/plus';
 import CogIcon from '../../../../icons/cog';
 import TrashIcon from '../../../../icons/trash';
+import ClockIcon from '../../../../icons/clock';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 window.Vue.use(VCalendar);
 export default {
-	components: {Modal, VueFormValidate, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ToggleSwitch, Timerangepicker},
+	components: {Modal, VueFormValidate, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker},
 	data: () => ({
 		ready: false,
 		services: [],
@@ -54,7 +55,8 @@ export default {
 
 	methods: {
 		removeHoliday(index) {
-
+			this.$delete(this.selectedService.holidays, index);
+			this.update(this.selectedService);
 		},
 
 		addHoliday() {
@@ -94,7 +96,6 @@ export default {
 		getData() {
 			axios.get('/dashboard/services').then((response) => {
 				this.services = response.data;
-				this.selectedService = this.services[0];
 			});
 		},
 

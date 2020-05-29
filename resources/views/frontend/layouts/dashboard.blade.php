@@ -15,68 +15,87 @@
 					</div>
 
 					<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch w-100">
-						<div class="sidebar border-right py-3 align-self-stretch text-center bg-white" id="sidebar">
-							<div class="mb-3">
-								<div class="d-inline-block">
-									<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
+						<div class="sidebar border-right align-self-stretch text-center bg-white d-flex flex-column" id="sidebar">
+							<div class="py-3">
+								<div class="mb-3">
+									<div class="d-inline-block">
+										<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
+									</div>
 								</div>
-							</div>
-							<div class="dropdown">
-								<div class="user-profile d-inline-block mb-2 cursor-pointer" :style="[$root.auth.profile_image ? {backgroundImage: 'url(' + $root.auth.profile_image + ')'} : '']" data-toggle="dropdown"></div>
-								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-							    	<router-link to="/dashboard/account" class="dropdown-item">Account</router-link>
-							    	<router-link to="/dashboard/billing" class="dropdown-item">Billing</router-link>
-							    	<a class="dropdown-item" href="#" @click.prevent="$root.logout">Logout</a>
-								</div>
-							</div>
-							<h1 class="h6 mb-5 font-heading">@{{ $root.auth.full_name }}</h1>
+								<div class="user-profile d-inline-block mb-2" :style="[$root.auth.profile_image ? {backgroundImage: 'url(' + $root.auth.profile_image + ')'} : '']"></div>
+								<h1 class="h6 mb-5 font-heading text-ellipsis px-3">@{{ $root.auth.full_name }}</h1>
 
-							<div class="list-group font-heading">
-								<!-- <router-link to="/dashboard" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
-									<grid-icon></grid-icon>
-									<strong class="ml-3">Dashboard</strong>
-								</router-link> -->
+								<div class="list-group font-heading">
+									<router-link to="/dashboard/messages" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-messages">
+										<chat-icon></chat-icon>
+										<strong class="ml-3">Messages</strong>
+									</router-link>
+									<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
-								<router-link to="/dashboard/messages" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-messages">
-									<chat-icon></chat-icon>
-									<strong class="ml-3">Messages</strong>
-								</router-link>
-								<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
+									<template v-if="auth.role.role == 'client'">
+										<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-bookings">
+											<div class="d-flex align-items-center px-4">
+												<calendar-day-icon></calendar-day-icon>
+												<strong class="ml-3">Bookings</strong>
+												<chevron-down-icon class="ml-2"></chevron-down-icon>
+											</div>
+										</button>
+										<div class="collapse bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
+											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+												<strong class="text-body pl-3">Calendar</strong>
+											</router-link>
+											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+												<strong class="text-body pl-3">Services</strong>
+											</router-link>
+											<router-link to="/dashboard/bookings/customers" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+												<strong class="text-body pl-3">Customers</strong>
+											</router-link>
+										</div>
+									</template>
 
-								<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-bookings">
-									<div class="d-flex align-items-center px-4">
+									<router-link v-else-if="auth.role.role == 'customer'" to="/dashboard/bookings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-bookings">
 										<calendar-day-icon></calendar-day-icon>
 										<strong class="ml-3">Bookings</strong>
-										<chevron-down-icon class="ml-2"></chevron-down-icon>
+									</router-link>
+									<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
+
+									<!-- <router-link to="/dashboard/settings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-settings">
+										<cog-icon></cog-icon>
+										<strong class="ml-3">Settings</strong>
+									</router-link>
+									<div class="d-none" id="item-settings" data-parent="#sidebar"></div> -->
+								</div>
+							</div>
+							<div class="mt-auto dropup position-relatixve border-top">
+								<div class="cursor-pointer list-group-item list-group-item-action outline-0 border-0 dropdown-toggle d-flex align-items-center justify-content-center" data-toggle="dropdown" data-offset="0,4">
+									<div class="user-profile user-profile-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
+										<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
 									</div>
-								</button>
-								<div class="collapse bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
-									<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-										<strong class="text-body pl-3">Calendar</strong>
-									</router-link>
-									<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-										<strong class="text-body pl-3">Services</strong>
-									</router-link>
-									<router-link to="/dashboard/bookings/customers" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-										<strong class="text-body pl-3">Customers</strong>
-									</router-link>
+									<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
+										<h6 class="font-heading mb-0 text-ellipsis">@{{ auth.full_name }}</h6>
+										<span class="text-gray d-block text-ellipsis">@@{{ auth.username }}</span>
+									</div>
 								</div>
 
-								<router-link to="/dashboard/settings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-settings">
-									<cog-icon></cog-icon>
-									<strong class="ml-3">Settings</strong>
-								</router-link>
-								<div class="d-none" id="item-settings" data-parent="#sidebar"></div>
-								
-								<!-- <router-link to="/dashboard/chatbots" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
-									<virtual-reality-icon></virtual-reality-icon>
-									<strong class="ml-3">Chatbot</strong>
-								</router-link>
-								
-								<router-link to="/dashboard/users" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact>
-									<users-icon></users-icon>
-									<strong class="ml-3">Users</strong>
-								</router-link> -->
+								<div class="dropdown-menu w-100 shadow-sm overflow-hidden">
+							    	<a target="_blank" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+							    		<shortcut-icon height="17" width="17" class="mr-2" fill="#888"></shortcut-icon>
+							    		&nbsp;View Profile
+							    	</a>
+							    	<router-link to="/dashboard/account" class="dropdown-item d-flex align-items-center">
+							    		<user-circle-icon height="18" width="18" class="mr-2" fill="#888"></user-circle-icon>
+							    		&nbsp;Account
+							    	</router-link>
+							    	<router-link to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
+							    		<shopping-bag-icon height="18" width="18" class="mr-2" fill="#888"></shopping-bag-icon>
+							    		&nbsp;Billing
+							    	</router-link>
+  									<div class="dropdown-divider"></div>
+							    	<form action="/logout" method="POST">
+							    		@csrf
+							    		<button type="submit" class="dropdown-item outline-0">Log Out</button>
+							    	</form>
+								</div>
 							</div>
 						</div>
 

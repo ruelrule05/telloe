@@ -31,6 +31,9 @@ export default{
         }
     },
     watch: {
+        value: function(value) {
+          this.toggle(value);
+        },
         position() {
           this.state = this.position >= 50
         }

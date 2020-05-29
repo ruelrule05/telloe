@@ -191,6 +191,9 @@
         opacity: 0.5;
     }
 }
+.sidebar{
+    width: 180px;
+}
 .inquiry-media {
     svg {
         opacity: 0;
@@ -357,6 +360,10 @@
     background-position: center;
     background-repeat: no-repeat;
     background-color: $gray-400 !important;
+    &.user-profile-sm{
+        width: 35px;
+        height: 35px;
+    }
 }
 .chat-status {
     line-height: 0;

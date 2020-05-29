@@ -31,6 +31,12 @@ class ServiceController extends Controller
     	return response()->json($service);
     }
 
+    public function show(Request $request, Service $service) {
+        if($request->date) :
+        endif;
+        return response()->json($service);
+    }
+
     public function update($id, Request $request)
     {
         $this->validate($request, [

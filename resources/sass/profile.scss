@@ -1,0 +1,133 @@
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
+@import 'node_modules/v-color/dist/index';
+@import 'public/fonts/avenir-next';
+@import '../sass/variables';
+@import 'node_modules/bootstrap/scss/grid';
+@import 'node_modules/bootstrap/scss/buttons';
+@import 'node_modules/bootstrap/scss/button-group';
+@import 'node_modules/bootstrap/scss/close';
+@import 'node_modules/bootstrap/scss/dropdown';
+@import 'node_modules/bootstrap/scss/badge';
+@import 'node_modules/bootstrap/scss/type';
+@import 'node_modules/bootstrap/scss/navbar';
+@import 'node_modules/bootstrap/scss/nav';
+@import 'node_modules/bootstrap/scss/forms';
+@import 'node_modules/bootstrap/scss/modal';
+@import 'node_modules/bootstrap/scss/transitions';
+@import 'node_modules/bootstrap/scss/spinners';
+@import 'node_modules/bootstrap/scss/card';
+@import 'node_modules/bootstrap/scss/media';
+@import 'node_modules/bootstrap/scss/tables';
+@import 'node_modules/bootstrap/scss/reboot';
+@import 'node_modules/bootstrap/scss/list-group';
+@import 'node_modules/bootstrap/scss/utilities';
+
+[v-cloak] {
+    opacity: 0;
+}
+body{
+    background-color: rgba($primary, 0.05);
+}
+.font-heading{
+    font-family: 'Avenir Next', sans-serif;
+}
+.profile-image{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-size: cover;
+    background-size: no-repeat;
+    background-position: center;
+    position: relative;
+    span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $gray-500;
+        font-size: 24px;
+    }
+}
+.cursor-pointer{
+    cursor: pointer !important;
+}
+.service{
+    transition: $transition-base;
+    &:hover{
+        margin-top: -5px;
+    }
+}
+
+.v-calendar{
+    .vc-title{
+        font-family: "Avenir Next";
+        font-size: 18px;
+    }
+    .vc-day-content{
+        line-height: 1;
+    }
+}
+.badge-day{
+    width: 25px;
+    height: 25px;
+}
+.position-absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#book-progress{
+    .book-step{
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: #ddd;
+        svg{
+            fill: #aaa;
+        }
+        &.step-current{
+            background-color: $primary;
+            svg {
+                fill: #fff !important;
+            }
+        }
+        &.step-complete{
+            svg {
+                fill: black;
+            }
+        }
+    }
+    &:before{
+        position: absolute;
+        content: '';
+        width: 90%;
+        height: 1px;
+        background-color: #eee;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+    }
+}
+#steps-container{
+    height: 270px;
+}
+.w-20{
+    width: 20% !important;
+}
+.btn-timeslot{
+    font-size: 14px;
+}
+.booking-loader{
+    z-index: 10;
+}
+.checkmark-container{
+    width: 80px;
+    height: 80px;
+}
+.opacity-0{
+    opacity: 0 !important;
+}

@@ -22,7 +22,7 @@ class ConversationPolicy
 
     public function show(User $user, Conversation $conversation)
     {
-        return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id;
+        return $user->widget->id == $conversation->widget_id || $user->id == $conversation->user_id || $conversation->members()->where('user_id', $user->id)->first();
     }
 
 
@@ -33,7 +33,7 @@ class ConversationPolicy
 
     public function addMessage(User $user, Conversation $conversation)
     {
-        return ($user->widget->id ?? null) == $conversation->widget_id || $user->id == $conversation->user_id;
+        return ($user->widget->id ?? null) == $conversation->widget_id || $user->id == $conversation->user_id || $conversation->members()->where('user_id', $user->id)->first();
     }
 
     public function addNote(User $user, Conversation $conversation)

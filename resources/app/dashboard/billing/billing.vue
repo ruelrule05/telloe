@@ -1,6 +1,6 @@
 <template>
 	<div class="overflow-auto h-100">
-		<div class="row py-3 px-2 m-0">
+		<div class="row py-4 px-3 m-0">
 			<div class="col-md-4 px-2" v-for="plan in plans">
 				<div class="card shadow-sm mb-3">
 					<div class="card-body">
@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import VueCardFormat from './../vue-credit-card-validation/src/index';
-import VueFormValidate from './../components/vue-form-validate.vue';
+import VueCardFormat from '../../../components/vue-credit-card-validation/src/index';
+import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Stripe from 'stripe-client';
 export default {
 	components: {VueFormValidate},

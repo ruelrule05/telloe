@@ -16,16 +16,21 @@ window.axios.interceptors.request.use(
 );
 window.axios.interceptors.response.use(
     function(response) {
+        if(response.config.toasted && window.app) {
+            window.app.$toasted.show(response.data.message)
+        }
         return response;
     },
     function(error) {
+        if(error.response.config.toasted && window.app) {
+            window.app.$toasted.show(error.response.data.message, {
+                className: 'bg-danger rounded shadow-none'
+            });
+        }
         /*if (error.response && error.response.status == 401) {
             window.location.href = '/login';
         }*/
         
-        /*Vue.toasted.error(error.response.data.message, {
-            className: 'bg-red rounded-0 justify-content-center'
-        });*/
         return Promise.reject(error);
     }
 );

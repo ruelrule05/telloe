@@ -16,15 +16,22 @@ class BookingController extends Controller
     	$this->validate($request, [
     		'user_id' => 'nullable|exists:users,id'
     	]);
-        if($request->user_id) :
-            $bookings = Booking::where('user_id', $request->user_id)->whereHas('service', function($service) {
-                $service->where('user_id', Auth::user()->id);
-            })->orderBy('created_at', 'DESC')->get();
-        else :
-            $bookings = Booking::with('user')->whereHas('service', function($service) {
-                $service->where('user_id', Auth::user()->id);
-            })->orderBy('created_at', 'DESC')->get();
+
+        $role = Auth::user()->role->role;
+        if($role == 'client') :
+            if($request->user_id) :
+                $bookings = Booking::where('user_id', $request->user_id)->whereHas('service', function($service) {
+                    $service->where('user_id', Auth::user()->id);
+                })->orderBy('created_at', 'DESC')->get();
+            else :
+                $bookings = Booking::with('user')->whereHas('service', function($service) {
+                    $service->where('user_id', Auth::user()->id);
+                })->orderBy('created_at', 'DESC')->get();
+            endif;
+        elseif($role == 'customer') :
+            $bookings = Booking::with('service')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
         endif;
+        
         return response()->json($bookings);
     }
 

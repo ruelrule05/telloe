@@ -24,9 +24,13 @@
 							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm']" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
 								<div class="d-flex">
 									<h5 class="font-heading mb-1">{{ service.name }}</h5>
-									<span class="ml-auto text-gray">{{ service.duration }} minutes</span>
+									<span class="ml-auto text-gray">{{ service.is_available ? 'Available' : 'Not Available' }}</span>
 								</div>
 								<p class="text-gray font-weight-light mb-0 multiline-ellipsis">{{ service.description }}</p>
+								<div class="d-flex align-items-center mt-3">
+									<clock-icon width="17" height="17" fill="#888"></clock-icon>
+									<span class="ml-1 font-weight-light">{{ service.duration }} minutes</span>
+								</div>
 								<div class="d-flex mt-2">
 									<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-primary bg-gray-400' : 'text-gray-400 bg-gray-200']">
 										<span class="position-absolute-center font-weight-light line-height-1">{{ day.charAt(0) }}</span>
@@ -40,18 +44,23 @@
 				<div class="col-md-4 h-100 overflow-hidden">
 					<div class="bg-white rounded shadow-sm p-3 h-100 position-relative overflow-auto">
 						<div v-if="selectedService">
-							<div class="dropdown">
-								<button class="btn close p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
-								<div class="dropdown-menu shadow-sm">
-									<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="newService = JSON.parse(JSON.stringify(selectedService));$refs['modal'].show()">
-										<pencil-icon width="16" height="16" class="mr-2"></pencil-icon>Edit
-									</span>
-									<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="$refs['deleteModal'].show()">
-										<trash-icon width="16" height="16" class="mr-2"></trash-icon>Delete
-									</span>
+							<div class="d-flex align-items-center mb-1">
+								<h5 class="font-heading mb-0">{{ selectedService.name }}</h5>
+								<div class="ml-auto d-flex align-items-center">
+									<toggle-switch @input="update(selectedService)" v-model="selectedService.is_available"></toggle-switch>
+									<div class="dropdown ml-2">
+										<button class="btn p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
+										<div class="dropdown-menu shadow-sm">
+											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="newService = JSON.parse(JSON.stringify(selectedService));$refs['modal'].show()">
+												<pencil-icon width="16" height="16" class="mr-2"></pencil-icon>Edit
+											</span>
+											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="$refs['deleteModal'].show()">
+												<trash-icon width="16" height="16" class="mr-2"></trash-icon>Delete
+											</span>
+										</div>
+									</div>
 								</div>
 							</div>
-							<h5 class="font-heading mb-1">{{ selectedService.name }}</h5>
 							<p class="mb-0">{{ selectedService.description }}</p>
 
 							<hr />

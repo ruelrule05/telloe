@@ -49,7 +49,7 @@ export default {
     	selectedConversation: null,
     	convoLoading: false,
     	textMessage: '',
-        detailsTab: 'bookings',
+        detailsTab: '',
         profileTab: 'overview',
         fileType: 'all',
         recorder: '',

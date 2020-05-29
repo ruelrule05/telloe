@@ -12,7 +12,7 @@ new Vue({
     el: '#app',
     components: {
         RangeSlider,
-        Auth
+        Auth,
     },
 
     data: {

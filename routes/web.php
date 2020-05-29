@@ -19,10 +19,17 @@ Route::group(
     ],
     function () {
         Route::get('/', 'PageController@homepage');
+
+        Route::get('/@{username}', 'UserController@profile');
+        Route::get('/ajax/@{username}', 'UserController@profile')->middleware('ajax');
+        Route::get('/ajax/@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots')->middleware('ajax');
+        Route::post('/ajax/@{username}/{service_id}/book', 'UserController@book')->middleware('ajax');
+        
 		Route::get('login', 'AuthController@login')->middleware('guest');
 		Route::get('signup', 'AuthController@signup')->middleware('guest');
         Route::get('recover', 'AuthController@recover')->middleware('guest');
         Route::get('reset', 'AuthController@reset')->middleware('guest');
+        Route::post('logout', 'AuthController@logout')->middleware('auth');
 
         Route::resource('inquiries', 'InquiryController')->middleware('auth');
 		Route::resource('widgets', 'WidgetController')->middleware('auth');
@@ -32,11 +39,12 @@ Route::group(
             'middleware' => 'ajax'
         ], function() {
             Route::get('auth', 'AuthController@get');
+            Route::put('auth', 'AuthController@update');
+            Route::put('auth/password', 'AuthController@updatePassword');
             Route::post('login', 'AuthController@login')->middleware('guest');
             Route::post('login/facebook', 'AuthController@loginFacebook')->middleware('guest');
             Route::post('login/google', 'AuthController@loginGoogle')->middleware('guest');
             Route::post('signup', 'AuthController@signup')->middleware('guest');
-            Route::post('logout', 'AuthController@logout')->middleware('auth');
             Route::post('recover', 'AuthController@recover')->middleware('guest');
             Route::post('reset', 'AuthController@reset')->middleware('guest');
             Route::post('fb_notify', 'InquiryController@messengerNotify');
@@ -57,7 +65,6 @@ Route::group(
                 Route::post('inquiries/{id}/message', 'InquiryController@postMessage');
                 Route::get('widget', 'WidgetController@show');
                 Route::put('widget', 'WidgetController@update');
-                Route::put('auth', 'AuthController@update');
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
                 Route::any('integration', 'WidgetController@updateIntegration');

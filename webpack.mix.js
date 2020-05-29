@@ -17,8 +17,43 @@ if (argv.indexOf('--css') > -1) {
         .sass('resources/app/auth/auth.scss', 'public/css')
         .sass('resources/app/dashboard/dashboard.scss', 'public/css')
         .sass('resources/sass/page.scss', 'public/css')
+        .sass('resources/sass/profile.scss', 'public/css')
         .version()
         .mergeManifest();
+}
+
+
+else if (argv.indexOf('--profile') > -1) { 
+    console.log('Running profile...');
+    mix
+        .js('resources/js/profile.js', 'public/js')
+        .webpackConfig({
+            output: {
+                chunkFilename: `js/chunks/[name]${timestamp}.js`
+            },
+            optimization: {
+                splitChunks: {
+                    chunks: 'all',
+                    cacheGroups: {
+                        vendors: false
+                    }
+                }
+            },
+        })
+        .version()
+        .mergeManifest()
+        .browserSync({
+            proxy: 'https://telloe.app',
+            host: 'telloe.app',
+            open: false,
+            port: 8000,
+            watch: true,
+            notify: false,
+            https: {
+                key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+                cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
+            }
+        });
 }
 
 else if (argv.indexOf('--page') > -1) { 

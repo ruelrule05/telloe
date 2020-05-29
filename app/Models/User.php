@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id', 'last_online'
+        'first_name', 'last_name', 'email', 'password', 'username', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id', 'last_online'
     ];
 
     /**
@@ -31,7 +31,10 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     
-    protected $appends = ['full_name', 'initials'];
+    protected $appends = ['full_name', 'initials', 'last_online_format'];
+    protected $casts = [
+        'last_online' => 'datetime'
+    ];
 
 
 
@@ -83,15 +86,21 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function getLastOnlineAttribute($value)
+    public function getLastOnlineFormatAttribute()
     {
-        return $value ? Carbon::parse($value)->diffForHumans() : '';
+        return $this->attributes['last_online'] ? Carbon::parse($this->attributes['last_online'])->diffForHumans() : '';
     }
 
     public function customers()
     {
         return $this->hasMany(UserCustomer::class);
     }
+
+    public function services()
+    {
+        return $this->hasMany(Service::class);
+    }
+
 
 
 

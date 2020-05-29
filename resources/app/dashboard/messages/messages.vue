@@ -2,10 +2,10 @@
 	<div class="d-flex h-100">
 		<!-- Conversations list -->
 		<div class="conversation-list d-flex flex-column position-relative">
-            <div class="bg-white px-3 pt-3 d-flex align-items-center position-relative">
+            <!-- <div class="bg-white px-3 pt-3 d-flex align-items-center position-relative">
                 <h5 class="font-heading m-0">Messages</h5>
                 <button class="ml-auto btn p-0"><search-icon></search-icon></button>
-            </div>
+            </div> -->
 			<div class="bg-white shadow-sm d-flex align-items-center">
 				<div class="p-3 btn-tab" :class="{'btn-tab-active': conversationTab == 'active'}">
 					<button class="btn px-2 py-1 rounded-0 font-heading font-weight-bold" @click="conversationTab = 'active'">Chats</button>
@@ -69,7 +69,7 @@
                             <h5 class="font-heading mb-0">{{ selectedConversation.user.full_name || selectedConversation.name }}</h5>
                             <div class="d-flex align-items-center" v-if="selectedConversation.user.id">
                                 <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
-                                <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${selectedConversation.user.last_online}` }}</small>
+                                <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${selectedConversation.user.last_online_format}` }}</small>
                             </div>
                             <div class="d-flex" v-else>
                                 <small class="text-gray">{{ selectedConversation.members.length }} members</small>

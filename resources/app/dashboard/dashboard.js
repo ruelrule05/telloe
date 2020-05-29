@@ -5,8 +5,14 @@ import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/modal';
 import 'bootstrap/js/dist/tooltip';
 import 'bootstrap/js/dist/collapse';
+import Toasted from 'vue-toasted';
 
 Vue.use(VueRouter);
+Vue.use(Toasted, {
+    position: 'bottom-center',
+    duration: 3000,
+    className: 'bg-primary rounded shadow-none'
+});
 Vue.component('vue-button', require('../../components/vue-button.vue').default);
 const router = new VueRouter({
     linkActiveClass: 'active',
@@ -25,23 +31,46 @@ const router = new VueRouter({
                     component: () => import(/* webpackChunkName: "dashboard/messages" */ './messages/messages.vue'),
                 },
                 {
-                    path: 'bookings/calendar',
-                    name: 'calendar',
-                    component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/calendar/calendar.vue'),
-                },
-                {
-                    path: 'bookings/services',
-                    name: 'services',
-                    component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/services/services.vue'),
-                },
-                {
-                    path: 'bookings/customers',
-                    name: 'customers',
-                    component: () => import(/* webpackChunkName: "dashboard/customers" */ './bookings/customers/customers.vue'),
+                    path: 'bookings',
+                    component: {
+                        render(c) {
+                            return c('router-view');
+                        },
+                    },
+                    children: [
+                        {
+                            path: '',
+                            name: 'bookings',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/bookings.vue'),
+                        },
+                        {
+                            path: 'calendar',
+                            name: 'calendar',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/calendar" */ './bookings/calendar/calendar.vue'),
+                        },
+                        {
+                            path: 'services',
+                            name: 'services',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/services" */ './bookings/services/services.vue'),
+                        },
+                        {
+                            path: 'customers',
+                            name: 'customers',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/customers" */ './bookings/customers/customers.vue'),
+                        },
+                    ]
                 },
                 {
                     path: 'settings',
                     component: () => import(/* webpackChunkName: "dashboard/settings" */ './settings/settings.vue'),
+                },
+                {
+                    path: 'account',
+                    component: () => import(/* webpackChunkName: "dashboard/account" */ './account/account.vue'),
+                },
+                {
+                    path: 'billing',
+                    component: () => import(/* webpackChunkName: "dashboard/billing" */ './billing/billing.vue'),
                 },
                 
             ],
@@ -56,12 +85,15 @@ import NotebookIcon from '../../icons/notebook';
 import CogIcon from '../../icons/cog';
 import ChevronDownIcon from '../../icons/chevron-down';
 import UsersIcon from '../../icons/users';
+import UserCircleIcon from '../../icons/user-circle';
+import ShortcutIcon from '../../icons/shortcut';
+import ShoppingBagIcon from '../../icons/shopping-bag';
 import CalendarDayIcon from '../../icons/calendar-day';
 import VirtualRealityIcon from '../../icons/virtual-reality';
-new Vue({
+window.app = new Vue({
     router,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, CalendarDayIcon, ChevronDownIcon},
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon},
     data: {
         auth: null,
         pageloading: false,
@@ -139,17 +171,6 @@ new Vue({
                     resolve();
                 });
             });
-        },
-
-        logout() {
-            axios
-                .post('/logout')
-                .then((response) => {
-                    window.location.href = '/';
-                })
-                .catch(() => {
-                    this.loading = false;
-                });
         },
     }
 });

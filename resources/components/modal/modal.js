@@ -19,6 +19,13 @@ export default {
         }
     },
 
+
+    mounted() {
+        $(this.$refs['modal']).on('hidden.bs.modal', () => {
+            this.$emit('hidden');
+        });
+    },
+
     methods: {
     	show() {
     		$(this.$refs['modal']).modal({keyboard: false, backdrop: 'static'}).modal('show');
