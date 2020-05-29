@@ -135,7 +135,8 @@ export default {
     created() {
         this.notification_sound = new Audio('/notifications/new_message.mp3');
         this.$root.socket.on('new_message', (data) => {
-            if(data.conversation.widget.id == this.$root.auth.widget.id) {
+            let conversation = this.conversations.find((x) => x.id == data.conversation.id);
+            if(conversation) {
                 if(this.selectedConversation && this.selectedConversation.id == data.conversation.id) {
                     let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
                     if(conversationData) {

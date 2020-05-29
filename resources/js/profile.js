@@ -206,14 +206,14 @@ new Vue({
                 this.services = response.data;
 
                 // testing
-                let now = new Date();
+                /*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;
                 this.setService(this.services[0]);
                 setTimeout(() => {
                     this.selectedTimeslot = {label: '12:30PM'};
                     this.step = 3;
-                });
+                });*/
 
                 this.ready = true;
             });
