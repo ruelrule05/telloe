@@ -138,7 +138,8 @@ export default {
         offerOptions: {
             offerToReceiveAudio: 1,
             offerToReceiveVideo: 1
-        }
+        },
+        isCalling: false,
 	}),
 	
     computed: {
@@ -345,7 +346,6 @@ export default {
 		},
 
 
-
 		initCamera() {
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
                 this.streams = streams;
@@ -419,12 +419,17 @@ export default {
 
         startCall() {
             this.pc.createOffer(this.offerOptions).then((desc) => {
-                this.pc.setLocalDescription(desc);
-                this.$root.socket.emit('live_call_offer', {
-                    desc,
-                    conversation_id: this.data.conversation.id,
-                    caller: this.$root.auth.id
-                });
+            	if(!this.isCalling) {
+            		this.isCalling = true;
+            		this.startCall();
+            	} else {
+	                this.pc.setLocalDescription(desc);
+	                this.$root.socket.emit('live_call_offer', {
+	                    desc,
+	                    conversation_id: this.data.conversation.id,
+	                    caller: this.$root.auth.id
+	                });
+                }
             }, (e) => { console.log(e); });
         },
 

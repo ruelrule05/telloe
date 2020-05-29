@@ -8,7 +8,6 @@ import VolumeMidIcon from '../../../icons/volume-mid';
 import FilePdfIcon from '../../../icons/file-pdf';
 import FileArchiveIcon from '../../../icons/file-archive';
 import PlayIcon from '../../../icons/play';
-import CameraIcon from '../../../icons/camera';
 import MicrophoneIcon from '../../../icons/microphone';
 import AddNoteIcon from '../../../icons/add-note';
 import MoreHIcon from '../../../icons/more-h';
@@ -22,18 +21,19 @@ import UsersIcon from '../../../icons/users';
 import SearchIcon from '../../../icons/search';
 import CloseIcon from '../../../icons/close';
 import EditSquareIcon from '../../../icons/edit-square';
-import PhoneIcon from '../../../icons/phone';
 import DuplicateAltIcon from '../../../icons/duplicate-alt';
 import PlusCircleIcon from '../../../icons/plus-circle';
 import CastIcon from '../../../icons/cast';
 import CalendarDayIcon from '../../../icons/calendar-day';
 import UserIcon from '../../../icons/user';
+import VideoIcon from '../../../icons/video';
+import VideoCameraIcon from '../../../icons/video-camera';
 import Emojipicker from '../../../components/emojipicker';
 import Waveplayer from '../../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
 const emojiRegex = require('emoji-regex');
 export default {
-	components: {VueFormValidate, MessageType, CommentIcon, CameraIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, PhoneIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,CalendarDayIcon, UserIcon, 
+	components: {VueFormValidate, MessageType, CommentIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,CalendarDayIcon, UserIcon, VideoIcon, VideoCameraIcon,
         'video-recorder-modal': () => import(/* webpackChunkName: "modals/video-recorder" */ '../../../modals/video-recorder'),
         'file-view-modal': () => import(/* webpackChunkName: "modals/file-view" */ '../../../modals/file-view'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "modals/audio-recorder" */ '../../../modals/audio-recorder'),

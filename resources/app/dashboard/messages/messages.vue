@@ -77,13 +77,7 @@
                         </div>
                     </div>
                     <div class="ml-auto">
-                        <!-- <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'profile'}" @click="detailsTab = 'profile'">Profile</button> -->
-                        <!-- <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'files'}" @click="detailsTab = 'files'">Files</button>
-                        <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'notes'}" @click="detailsTab = 'notes'">Notes</button>
-                        <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'history'}" @click="detailsTab = 'history'">History</button> -->
-                        <!-- <button class="btn btn-sm font-weight-bold" :class="{'btn-orange': detailsTab == 'bookings'}" @click="detailsTab = 'bookings'">Bookings</button> -->
-
-                        <button class="btn btn-white btn-circle-actions border" @click="initCall"><phone-icon></phone-icon></button>
+                        <button class="btn btn-white btn-circle-actions border" @click="initCall"><video-icon transform="scale(1.1)"></video-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'profile'" :class="{'active': detailsTab == 'profile'}"><user-icon></user-icon></button>
@@ -124,7 +118,7 @@
                     <button type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
                        <emojipicker @select="selectEmoji"></emojipicker>
                     </button>
-                    <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><camera-icon width="20" height="20"></camera-icon></button>
+                    <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="20" height="20" transform="scale(1.2)"></video-camera-icon></button>
                     <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
                     <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
                     <input type="file" hidden ref="fileMedia" @change="addFile" />
