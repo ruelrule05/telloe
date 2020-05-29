@@ -17,9 +17,9 @@ class ConversationController extends Controller
     {
         $role = Auth::user()->role->role;
         if($role == 'client') :
-            $conversations = Conversation::with('members.user')->where('widget_id', Auth::user()->widget->id)->get();
+            $conversations = Conversation::with('members.user', 'widget.user')->where('widget_id', Auth::user()->widget->id)->get();
         elseif($role == 'customer'):
-            $conversations = Conversation::with('members.user')->where(function($query) {
+            $conversations = Conversation::with('members.user', 'widget.user')->where(function($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->orWhereHas('members', function($members) {
                         $members->where('user_id', Auth::user()->id);
