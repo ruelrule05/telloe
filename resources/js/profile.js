@@ -44,7 +44,7 @@ new Vue({
         selectedTimeslot: null,
         detailsConfirmed: false,
         error: null,
-        reviewForm: 'register',
+        reviewForm: 'details',
 
         authError: '',
         loginForm: {
