@@ -48,7 +48,7 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('live_call_end', data);
     });
     socket.on('live_call_candidate', function(data) {
-        io.emit('live_call_candidate', data);
+        socket.broadcast.emit('live_call_candidate', data);
     });
 
     socket.on('user_online', function(user_id) {
