@@ -150,7 +150,6 @@ export default {
         caller() {
         	let users = Object.assign([], this.data.conversation.members);
         	users.push(this.data.conversation.user);
-        	users.push(this.data.conversation.widget.user);
         	users.push(this.$root.auth);
             let caller = users.find((x) => x.id == this.data.caller);
             return caller;
