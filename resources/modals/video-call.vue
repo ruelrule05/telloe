@@ -187,7 +187,7 @@ export default {
 
         this.$root.socket.on('live_call_candidate', (data) => {
             if(data.conversation_id == this.data.conversation.id && this.pc) {
-            	console.log('live_call_candidate');
+            	console.log('received: live_call_candidate');
             	this.pc.addIceCandidate(data.candidate);
             }
         });
@@ -485,6 +485,7 @@ export default {
 	        }
 	        this.pc.onicecandidate = (event) => {
 	        	if(event.candidate) {
+	        		console.log('emit: live_call_candidate');
 	        		this.$root.socket.emit('live_call_candidate', {
 		        		conversation_id: this.data.conversation.id,
 		        		candidate: event.candidate
