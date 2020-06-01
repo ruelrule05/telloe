@@ -156,8 +156,6 @@ export default {
         	users.push(this.$root.auth);
             let caller = users.find((x) => x.id == this.data.caller);
 
-            console.log(users);
-            console.log(this.data.caller);
             return caller;
         }, 
     },
