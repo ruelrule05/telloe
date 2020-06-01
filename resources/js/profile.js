@@ -9,7 +9,6 @@ window.Vue.use(VCalendar);
 import VueFormValidate from '../components/vue-form-validate';
 import VueButton from '../components/vue-button';
 import Modal from '../components/modal/modal.vue';
-import Profile from '../app/profile/profile.vue';
 import ClockIcon from '../icons/clock';
 import CalendarDayIcon from '../icons/calendar-day';
 import InfoCircleIcon from '../icons/info-circle';
@@ -19,7 +18,6 @@ new Vue({
     components: {
         VueFormValidate,
         Modal,
-        Profile,
         ClockIcon,
         CalendarDayIcon,
         InfoCircleIcon,
