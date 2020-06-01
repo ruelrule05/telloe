@@ -140,6 +140,7 @@ export default {
             offerToReceiveVideo: 1
         },
         isCalling: false,
+        pendingCandidates: []
 	}),
 	
     computed: {
@@ -161,7 +162,6 @@ export default {
     },
 
 	created() {
-        this.createPeerConnection();
         this.notification_sound = new Audio(`/notifications/call.mp3`);
         
         this.$root.socket.on('live_call_answer', (data) => {
@@ -188,7 +188,11 @@ export default {
 
         this.$root.socket.on('live_call_candidate', (data) => {
             if(data.conversation_id == this.data.conversation.id) {
-            	this.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+            	if(this.pc) {
+            		this.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+            	} else {
+            		this.pendingCandidates.push(data.candidate);
+            	}
             }
         });
         
@@ -353,6 +357,7 @@ export default {
 		initCamera() {
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
                 this.streams = streams;
+        		this.createPeerConnection();
                 this.addLocalStream();
         		if(this.data.action == 'incoming') this.pc.setRemoteDescription(this.data.desc);
         		else if(this.data.action == 'outgoing') this.startCall();
@@ -496,6 +501,12 @@ export default {
 	        this.pc.onicecandidateerror = (error) => {
 	        	console.log(error);
 	        };
+
+	        if(this.pendingCandidates.length > 0) {
+	        	this.pendingCandidates.forEach((candidate) => {
+            		this.pc.addIceCandidate(new RTCIceCandidate(candidate));
+	        	});
+	        }
 	    },
 
 
