@@ -467,9 +467,9 @@ export default {
 	    createPeerConnection() {
             let configuration = {
                 iceServers: [
-                    { url: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun.l.google.com:19302' },
                     {
-                        url: 'turn:numb.viagenie.ca',
+                        urls: 'turn:numb.viagenie.ca',
                         credential: 'moonfang',
                         username: 'cleidoscope@gmail.com'
                     }
