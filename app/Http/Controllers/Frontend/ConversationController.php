@@ -17,9 +17,9 @@ class ConversationController extends Controller
     {
         $role = Auth::user()->role->role;
         if($role == 'client') :
-            $conversations = Conversation::with('members.user', 'widget.user')->where('widget_id', Auth::user()->widget->id)->get();
+            $conversations = Conversation::has('members.user')->with('members.user')->where('user_id', Auth::user()->id)->get();
         elseif($role == 'customer'):
-            $conversations = Conversation::with('members.user', 'widget.user')->where(function($query) {
+            $conversations = Conversation::has('members.user')->with('members.user')->where(function($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->orWhereHas('members', function($members) {
                         $members->where('user_id', Auth::user()->id);
@@ -31,43 +31,37 @@ class ConversationController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'members' => 'required|array'
+        ]);
         $conversation = Conversation::create([
-            'widget_id' => Auth::user()->widget->id,
-            'user_id' => $request->user_id,
-            'members' => $request->members,
+            'user_id' => Auth::user()->id,
             'status' => 'active',
         ]);
-        if(count($request->members) > 1) :
-            $added_members = [];
-            foreach($request->members as $member_id) :
-                if(!in_array($member_id, $added_members)) :
-                    $added_member[] = $member_id;
-                    if($member_id != Auth::user()->id) :
-                        $member = User::find($member_id);
-                        if($member) :
-                            ConversationMember::create([
-                                'conversation_id' => $conversation->id,
-                                'user_id' => $member->id
-                            ]);
-                        endif;
+
+        $members = [];
+        foreach($request->members as $member_id) :
+            if(!in_array($member_id, $members)) :
+                if($member_id != Auth::user()->id) :
+                    $member = User::find($member_id);
+                    if($member) :
+                        $members[] = $member->id;
+                        ConversationMember::create([
+                            'conversation_id' => $conversation->id,
+                            'user_id' => $member->id
+                        ]);
                     endif;
                 endif;
-            endforeach;
-            $conversation->update(['name' => 'New group chat']);
-        else :
-            $member = User::find($request->members[0]);
-            if($member) :
-                $conversation->update([
-                    'user_id' => $member->id
-                ]);
             endif;
-        endif;
+        endforeach;
+        if(count($members) > 1) $conversation->update(['name' => 'New group chat']);
+       
         return response()->json($conversation->load('members.user'));
     }
 
     public function show($id, Request $request)
     {
-    	$conversation = Conversation::with('messages', 'notes', 'members.user')->findOrfail($id);
+    	$conversation = Conversation::has('members.user')->with('messages', 'notes', 'members.user')->findOrfail($id);
     	$this->authorize('show', $conversation);
 
     	if ($request->is_read) :

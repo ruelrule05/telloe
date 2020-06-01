@@ -85,10 +85,10 @@ export default {
 
     computed: {
         isOnline() {
-            let is_online = this.$root.online_users.find((x) => x == this.selectedConversation.user.id);
+            let is_online = this.$root.online_users.find((x) => x == this.selectedConversation.member.id);
             if(!is_online) {
                 axios.get(`/dashboard/conversations/${this.selectedConversation.id}`).then((response) => {
-                    this.selectedConversation.user.last_online = response.data.user.last_online;
+                    this.selectedConversation.member.last_online = response.data.member.last_online;
                 });
             }
             return is_online;
@@ -281,7 +281,7 @@ export default {
 
                 axios.delete(`/dashboard/conversation_members/${member.id}`).then((response) => {
                     if(response.data.user) {
-                        this.selectedConversation.user = response.data.user;
+                        this.selectedConversation.member.user = response.data.user;
                         if(conversation) conversation.user = response.data.user;
                     }
                 });

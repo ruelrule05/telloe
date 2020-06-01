@@ -11,6 +11,17 @@ use Carbon\Carbon;
 class BookingController extends Controller
 {
 
+    public function serviceTimeslots($service_id, Request $request)
+    {
+        $this->validate($request, [
+            'date' => 'required|date'
+        ]);
+        $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
+        $timeslots = $service->timeslots($request->date);
+        
+        return response()->json($timeslots);
+    }
+
 	public function index(Request $request)
     {
     	$this->validate($request, [
@@ -29,7 +40,7 @@ class BookingController extends Controller
                 })->orderBy('created_at', 'DESC')->get();
             endif;
         elseif($role == 'customer') :
-            $bookings = Booking::with('service')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+            $bookings = Booking::with('service.user')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
         endif;
         
         return response()->json($bookings);
@@ -39,16 +50,35 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
+            'service_id' => 'required|exists:services,id',
             'user_id' => 'required|exists:users,id',
             'date' => 'required|date',
             'start' => 'required',
-            'end' => 'required',
         ]);
-        if($request->start > $request->end || $request->start == $request->end) return abort(403, 'Invalid start and/or end time.');
         if(Carbon::parse(Carbon::now()->format('Y-m-d'))->gt(Carbon::parse($request->date))) return abort(403, 'Invalid date.');
 
+        $service = Service::findOrfail($request->service_id);
+        $timeslots = $service->timeslots($request->date);
+
+        $timeslotAvailable = false;
+        foreach($timeslots as $timeslot) :
+            if($timeslot['time'] == $request->start) :
+                $timeslotAvailable = true;
+                break;
+            endif;
+        endforeach;
+
+        if(!$timeslotAvailable) return abort(403, 'The selected date or time is not anymore available.');
+
         $data = $request->all();
-        $data['widget_id'] = Auth::user()->widget->id;
+
+        $parts = explode(':', $request->start);
+        $endTime = Carbon::now();
+        $endTime->set('hour', $parts[0]);
+        $endTime->set('minute', $parts[1]);
+        $endTime->add('minute', $service->duration);
+        $data['end'] = $endTime->format('H:i');
+        
         $booking = Booking::create($data);
         return response()->json($booking);
     }
@@ -59,15 +89,38 @@ class BookingController extends Controller
         $this->validate($request, [
             'date' => 'required|date',
             'start' => 'required',
-            'end' => 'required',
         ]);
         $booking = Booking::findOrfail($id);
         $this->authorize('update', $booking);
 
-        if($request->start > $request->end || $request->start == $request->end) return abort(403, 'Invalid start and/or end time.');
         if(Carbon::parse(Carbon::now()->format('Y-m-d'))->gt(Carbon::parse($request->date))) return abort(403, 'Invalid date.');
 
-        $booking->update($request->all());
+        $timeslots = $booking->service->timeslots($request->date);
+
+        $timeslotAvailable = false;
+        if($request->date == $booking->date && $request->start == $booking->start) :
+            $timeslotAvailable = true;
+        else :
+            foreach($timeslots as $timeslot) :
+                if($timeslot['time'] == $request->start) :
+                    $timeslotAvailable = true;
+                    break;
+                endif;
+            endforeach;
+        endif;
+
+        if(!$timeslotAvailable) return abort(403, 'The selected date or time is not anymore available.');
+
+        $data = $request->all();
+
+        $parts = explode(':', $request->start);
+        $endTime = Carbon::now();
+        $endTime->set('hour', $parts[0]);
+        $endTime->set('minute', $parts[1]);
+        $endTime->add('minute', $booking->service->duration);
+        $data['end'] = $endTime->format('H:i');
+
+        $booking->update($data);
         return response()->json($booking);
     }
 

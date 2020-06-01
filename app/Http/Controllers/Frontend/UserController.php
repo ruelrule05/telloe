@@ -16,7 +16,9 @@ class UserController extends Controller
 
     public function profile($username, Request $request)
     {
-    	$user = User::where('username', $username)->firstOrfail();
+    	$user = User::where('username', $username)->whereHas('role', function($role) {
+            $role->where('role', 'client');
+        })->firstOrfail();
 
         if($request->ajax()) :
             $user->load(['services' => function($service) {
@@ -34,7 +36,9 @@ class UserController extends Controller
         $this->validate($request, [
             'date' => 'required|date'
         ]);
-        $user = User::where('username', $username)->firstOrfail();
+        $user = User::where('username', $username)->whereHas('role', function($role) {
+            $role->where('role', 'client');
+        })->firstOrfail();
         $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
         $timeslots = $service->timeslots($request->date);
         
@@ -58,7 +62,9 @@ class UserController extends Controller
             'time' => 'required',
         ]);
 
-        $user = User::where('username', $username)->firstOrfail();
+        $user = User::where('username', $username)->whereHas('role', function($role) {
+            $role->where('role', 'client');
+        })->firstOrfail();
         $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
         $timeslots = $service->timeslots($request->date);
 

@@ -9,6 +9,8 @@ const argv = JSON.parse(process.env.npm_config_argv).original;
 if (production) {
     console.log('Running in production...');
     timestamp = `-${dayjs().valueOf()}`;
+} else {
+    browserSync();
 }
 
 if (argv.indexOf('--css') > -1) { 
@@ -107,19 +109,7 @@ else if (argv.indexOf('--dashboard') > -1) {
             },
         })
         .version()
-        .mergeManifest()
-        .browserSync({
-            proxy: 'https://telloe.app',
-            host: 'telloe.app',
-            open: false,
-            port: 8000,
-            watch: true,
-            notify: false,
-            https: {
-                key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
-                cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
-            }
-        });
+        .mergeManifest();   
 }
 
 else if (argv.indexOf('--auth') > -1) { 
@@ -200,3 +190,18 @@ else if (argv.indexOf('--admin') > -1) {
 }
 
 
+
+function browserSync(){
+    mix.browserSync({
+        proxy: 'https://telloe.app',
+        host: 'telloe.app',
+        open: false,
+        port: 8000,
+        watch: true,
+        notify: false,
+        https: {
+            key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
+        }
+    });
+}

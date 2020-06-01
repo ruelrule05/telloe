@@ -464,15 +464,15 @@ export default {
 	    createPeerConnection() {
             let configuration = {
                 iceServers: [
-                    { urls: "stun:stun.1.google.com:19302" },
+                    { url: 'stun:stun.l.google.com:19302' },
                     {
-                        urls: 'turn:numb.viagenie.ca',
+                        url: 'turn:numb.viagenie.ca',
                         credential: 'moonfang',
                         username: 'cleidoscope@gmail.com'
                     }
                 ]
             };
-	      	this.pc = new RTCPeerConnection(null);
+	      	this.pc = new RTCPeerConnection(configuration);
 		    this.pc.ontrack = (event) => {
                 console.log(event);
 		      	this.remoteStream = event.streams[0];
@@ -487,9 +487,12 @@ export default {
 		        	});
 	        	}
 	        };
-	        /*this.pc.onicecandidateerror = (error) => {
+	        this.pc.oniceconnectionstatechange = () => {
+	        	console.log(this.pc.iceConnectionState);
+	        };
+	        this.pc.onicecandidateerror = (error) => {
 	        	console.log(error);
-	        };*/
+	        };
 	    },
 
 

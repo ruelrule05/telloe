@@ -17,13 +17,13 @@
 					<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch w-100">
 						<div class="sidebar border-right align-self-stretch text-center bg-white d-flex flex-column" id="sidebar">
 							<div class="py-3">
-								<div class="mb-3">
+								<!-- <div class="mb-3">
 									<div class="d-inline-block">
 										<router-link to="/dashboard/notifications" exact><bell-icon height="26" width="26"></bell-icon></router-link>
 									</div>
-								</div>
+								</div> -->
 								<div class="user-profile d-inline-block mb-2" :style="[$root.auth.profile_image ? {backgroundImage: 'url(' + $root.auth.profile_image + ')'} : '']"></div>
-								<h1 class="h6 mb-5 font-heading text-ellipsis px-3">@{{ $root.auth.full_name }}</h1>
+								<h1 class="h6 mb-4 font-heading text-ellipsis px-3">@{{ $root.auth.full_name }}</h1>
 
 								<div class="list-group font-heading">
 									<router-link to="/dashboard/messages" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-messages">
@@ -78,7 +78,7 @@
 								</div>
 
 								<div class="dropdown-menu w-100 shadow-sm overflow-hidden">
-							    	<a target="_blank" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+							    	<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
 							    		<shortcut-icon height="17" width="17" class="mr-2" fill="#888"></shortcut-icon>
 							    		&nbsp;View Profile
 							    	</a>

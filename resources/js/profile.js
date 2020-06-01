@@ -3,7 +3,6 @@ require('./bootstrap');
 window.Vue = require('vue');
 import 'bootstrap/js/dist/modal';
 import VCalendar from 'v-calendar';
-import convertTime from 'convert-time';
 import dayjs from 'dayjs';
 window.Vue.use(VCalendar);
 
@@ -166,7 +165,6 @@ new Vue({
                 axios
                     .post(`${window.location.pathname}/${this.selectedService.id}/book`, data)
                     .then((response) => {
-                        console.log(response.data);
                         this.step = 5;
                     })
                     .catch((e) => {

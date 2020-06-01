@@ -8,12 +8,15 @@
 					<div class="card-body">
 						<h5 class="font-heading h3">Profile</h5>
 						<vue-form-validate @submit="save">
-							<div class="form-group">
-								<label class="form-label">Username</label>
-								<input type="text" class="form-control" data-required placeholder="Username" v-model="user.username" @keydown="nospace">
-								<small class="text-gray font-weight-light d-block line-height-sm mt-1">This is your unique username for your profile page URL. Spaces and special characters are not allowed</small>
-							</div>
-							<hr />
+							<template v-if="$root.auth.role.role == 'client'">
+								<div class="form-group">
+									<label class="form-label">Username</label>
+									<input type="text" class="form-control" data-required placeholder="Username" v-model="user.username" @keydown="nospace">
+									<small class="text-gray font-weight-light d-block line-height-sm mt-1">This is your unique username for your profile page URL. Spaces and special characters are not allowed</small>
+								</div>
+								<hr />
+							</template>
+
 							<div class="form-group">
 								<label class="form-label">First Name</label>
 								<input type="text" class="form-control" data-required placeholder="First Name" v-model="user.first_name">

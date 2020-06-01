@@ -28,11 +28,11 @@
                         </div>
                     </div>
 					<div class="media" @click="setConversation(conversation)">
-					  	<div class="user-profile-image" :style="{backgroundImage: 'url('+conversation.user.profile_image+')'}">
-					  		<span v-if="!conversation.user.profile_image">{{ conversation.user.initials }}</span>
+					  	<div class="user-profile-image" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
+					  		<span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
 					  	</div>
 					  	<div class="media-body pl-3">
-                            <div class="h6 mb-0 font-heading">{{ conversation.user.full_name || conversation.name }}</div>
+                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
                             <div v-if="conversation.source" class="mb-2">
                                 <sign-in-icon height="14" width="14"></sign-in-icon> <small class="text-primary">{{ conversation.source }}</small>
                             </div>
@@ -40,10 +40,9 @@
                                 <small v-html="conversation.last_message.message" class="mb-0 text-gray str-limit line-height-sm" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></small>                  
                             </div>
                             <div class="mt-2 d-flex">
-                                <div v-for="member in conversation.members" class="user-profile-image user-profile-image-sm ml-1" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
+                                <div v-if="conversation.members.length > 1" v-for="member in conversation.members" class="user-profile-image user-profile-image-sm ml-1" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
                                     <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
                                 </div>
-
                                  <small class="ml-auto text-gray-500 text-nowrap align-self-end">{{ conversation.last_message.created_diff }}</small>   
                             </div>
 					  	</div>
@@ -62,14 +61,14 @@
 			<div v-if="selectedConversation" class="d-flex flex-column h-100">
 				<div class="p-3 bg-white border-bottom position-relative d-flex align-items-center">
 					<div class="d-flex align-items-center">
-                        <div class="user-profile-image" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
-                                <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
+                        <div class="user-profile-image" :style="{backgroundImage: 'url('+selectedConversation.member.profile_image+')'}">
+                                <span v-if="!selectedConversation.member.profile_image">{{ selectedConversation.member.initials }}</span>
                         </div>
                         <div class="ml-2">
-                            <h5 class="font-heading mb-0">{{ selectedConversation.user.full_name || selectedConversation.name }}</h5>
-                            <div class="d-flex align-items-center" v-if="selectedConversation.user.id">
+                            <h5 class="font-heading mb-0">{{ selectedConversation.member.full_name || selectedConversation.name }}</h5>
+                            <div class="d-flex align-items-center" v-if="selectedConversation.member.id">
                                 <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
-                                <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${selectedConversation.user.last_online_format}` }}</small>
+                                <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${selectedConversation.member.last_online_format}` }}</small>
                             </div>
                             <div class="d-flex" v-else>
                                 <small class="text-gray">{{ selectedConversation.members.length }} members</small>
@@ -79,7 +78,7 @@
                     <div class="ml-auto">
                         <button class="btn btn-white btn-circle-actions border" @click="initCall"><video-icon transform="scale(1.1)"></video-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
-                        <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
+                        <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'profile'" :class="{'active': detailsTab == 'profile'}"><user-icon></user-icon></button>
                     </div>
 				</div>
@@ -118,7 +117,7 @@
                     <button type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
                        <emojipicker @select="selectEmoji"></emojipicker>
                     </button>
-                    <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="20" height="20" transform="scale(1.2)"></video-camera-icon></button>
+                    <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="24" height="24" class="mt-1"></video-camera-icon></button>
                     <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
                     <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
                     <input type="file" hidden ref="fileMedia" @change="addFile" />
@@ -146,10 +145,10 @@
                 <!-- Profile -->
                 <div v-if="detailsTab == 'profile'" class="h-100 overflow-hidden d-flex flex-column ">
                     <div class="text-center">
-                        <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.user.profile_image+')'}">
-                            <span v-if="!selectedConversation.user.profile_image">{{ selectedConversation.user.initials }}</span>
+                        <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedConversation.member.profile_image+')'}">
+                            <span v-if="!selectedConversation.member.profile_image">{{ selectedConversation.member.initials }}</span>
                         </div>
-                        <h4 class="font-heading conversation-title" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="selectedConversation.members.length >= 1">{{ selectedConversation.user.full_name || selectedConversation.name }}</h4>
+                        <h4 class="font-heading conversation-title" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="selectedConversation.members.length >= 1">{{ selectedConversation.member.full_name || selectedConversation.name }}</h4>
                     </div>
                     <div class="btn-group btn-group-sm w-100" role="group">
                         <button type="button" class="btn btn-white border py-2" :class="{'active': profileTab == 'overview'}" @click="profileTab = 'overview'"><small class="font-weight-bold d-block">Overview</small></button>
@@ -163,11 +162,11 @@
                         <div v-if="selectedConversation.members.length == 0">
                             <div class="form-group">
                                 <strong class="text-gray">Email:</strong>
-                                <div class="font-weight-bold">{{ selectedConversation.user.email }}</div>
+                                <div class="font-weight-bold">{{ selectedConversation.member.email }}</div>
                             </div>
                             <div class="form-group">
                                 <strong class="text-gray">Phone:</strong>
-                                <div class="font-weight-bold">{{ selectedConversation.user.phone }}</div>
+                                <div class="font-weight-bold">{{ selectedConversation.member.phone }}</div>
                             </div>
                             <div class="form-group">
                                 <strong class="text-gray">Tags:</strong>
@@ -327,9 +326,9 @@
                 </div>
 
                 <!-- Bookings -->
-                <div v-else-if="detailsTab == 'bookings'" class="text-left h-100">
+                <div v-else-if="detailsTab == 'bookings' && $root.auth.role.role == 'client'" class="text-left h-100">
                     <h4 class="font-heading">Bookings</h4>
-                    <bookings :user="selectedConversation.user"></bookings>
+                    <bookings :user="selectedConversation.member"></bookings>
                 </div>
             </div>
 		</div>

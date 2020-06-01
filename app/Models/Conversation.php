@@ -9,16 +9,21 @@ use Auth;
 class Conversation extends Model
 {
     //
-    protected $fillable = ['widget_id', 'user_id', 'metadata', 'source', 'status', 'name', 'tags'];
-    public $appends = ['user', 'last_message', 'timestamp'];
+    protected $fillable = ['user_id', 'metadata', 'source', 'status', 'name', 'tags'];
+    public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
     ];
 
-    public function widget()
+    public function user()
     {
-    	return $this->belongsTo(Widget::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function members()
+    {
+        return $this->hasMany(ConversationMember::class)->orderBy('created_at', 'DESC');
     }
 
     public function messages()
@@ -26,10 +31,22 @@ class Conversation extends Model
     	return $this->hasMany(Message::class);
     }
 
-    public function members()
+    public function getMemberAttribute()
     {
-        return $this->hasMany(ConversationMember::class)->orderBy('created_at', 'DESC');
+        $member = null;
+        switch(Auth::user()->role->role) :
+            case 'client':
+                $member = $this->members()->first()->user;
+                break;
+
+            case 'customer':
+                $member = $this->user;
+                break;
+        endswitch;
+
+        return $member;
     }
+
 
 
     public function notes()
@@ -58,21 +75,6 @@ class Conversation extends Model
     }
 
     
-    public function getUserAttribute()
-    {
-        if($this->user_id) :
-            $user = User::findOrFail($this->user_id);
-        else:
-            // check if has members
-            $user = [
-                'id' => $this->metadata['guest_cookie'] ?? '',
-                'full_name' =>  $this->metadata['name'] ?? '',
-                'initials' => 'G',
-            ];
-        endif;
-
-        return $user;
-    }
 
     public function getTimestampAttribute()
     {

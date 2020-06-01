@@ -59,8 +59,12 @@
                                         </div>
 
                                         <div id="cameraPreviewWrapper" class="position-absolute" :class="{'cameraPreviewWrapper-full': cameraFull}">
-                                            <collapse-icon v-if="cameraFull" fill="white" width="20" class="cursor-pointer" @click.native="cameraFull = false"></collapse-icon>
-                                            <expand-alt-icon v-else fill="white" width="20" class="cursor-pointer" @click.native="cameraFull = true"></expand-alt-icon>
+
+                                            <template v-if="files.length > 0">
+                                                <collapse-icon v-if="cameraFull" fill="white" width="20" class="cursor-pointer" @click.native="cameraFull = false"></collapse-icon>
+                                                <expand-alt-icon v-else fill="white" width="20" class="cursor-pointer" @click.native="cameraFull = true"></expand-alt-icon>
+                                            </template>
+
                                             <div class="position-relative overflow-hidden bg-black" :class="{'w-100 h-100': cameraFull, 'rounded-circle' : !cameraFull}">
                                                 <video ref="cameraPreview" class="h-100 position-absolute-center" :class="{'w-100': cameraFull}"></video>
                                             </div>
@@ -201,7 +205,11 @@ export default {
     },
 
     created() {
-        if(this.files.length > 0) this.selectedFile = this.files[0];
+        if(this.files.length > 0) {
+            this.selectedFile = this.files[0];
+        } else {
+            this.cameraFull = true;
+        }
     },
 
     mounted() {
@@ -539,9 +547,12 @@ export default {
                 this.$refs['videoOutput'].onloadeddata = function() {
                     setTimeout(() => {
                         let canvas = document.createElement("canvas");
+                        let context = canvas.getContext('2d');
                         canvas.width = this.videoWidth / 2;
                         canvas.height = this.videoHeight / 2;
-                        canvas.getContext('2d').drawImage(this, 0, 0, canvas.width, canvas.height);
+                        context.fillStyle = "black";
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+                        context.drawImage(this, 0, 0, canvas.width, canvas.height);
                         canvas.toBlob((blob) => {
                             let reader = new FileReader();
                             reader.onload = () => {
