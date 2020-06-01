@@ -186,8 +186,8 @@ export default {
 
 
         this.$root.socket.on('live_call_candidate', (data) => {
+            console.log('received: live_call_candidate');
             if(data.conversation_id == this.data.conversation.id && this.pc) {
-            	console.log('received: live_call_candidate');
             	this.pc.addIceCandidate(data.candidate);
             }
         });
