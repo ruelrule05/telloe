@@ -140,7 +140,6 @@ export default {
             offerToReceiveVideo: 1
         },
         isCalling: false,
-        pendingCandidates: []
 	}),
 	
     computed: {
@@ -169,13 +168,6 @@ export default {
                 this.pc.setRemoteDescription(data.desc);
                 this.status = 'ongoing';
         		this.notification_sound.pause();
-
-		        if(this.pendingCandidates.length > 0) {
-		        	this.pendingCandidates.forEach((candidate) => {
-	            		this.pc.addIceCandidate(new RTCIceCandidate(candidate));
-		        	});
-		        	this.pendingCandidates = [];
-		        }
             }
         });
 
@@ -194,12 +186,8 @@ export default {
 
 
         this.$root.socket.on('live_call_candidate', (data) => {
-            if(data.conversation_id == this.data.conversation.id) {
-            	if(this.pc) {
-            		this.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-            	} else {
-            		this.pendingCandidates.push(data.candidate);
-            	}
+            if(data.conversation_id == this.data.conversation.id && this.pc) {
+            	this.pc.addIceCandidate(new RTCIceCandidate(data.candidate));
             }
         });
         
