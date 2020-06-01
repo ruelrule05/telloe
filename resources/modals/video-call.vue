@@ -169,6 +169,13 @@ export default {
                 this.pc.setRemoteDescription(data.desc);
                 this.status = 'ongoing';
         		this.notification_sound.pause();
+
+		        if(this.pendingCandidates.length > 0) {
+		        	this.pendingCandidates.forEach((candidate) => {
+	            		this.pc.addIceCandidate(new RTCIceCandidate(candidate));
+		        	});
+		        	this.pendingCandidates = [];
+		        }
             }
         });
 
@@ -501,12 +508,6 @@ export default {
 	        this.pc.onicecandidateerror = (error) => {
 	        	console.log(error);
 	        };
-
-	        if(this.pendingCandidates.length > 0) {
-	        	this.pendingCandidates.forEach((candidate) => {
-            		this.pc.addIceCandidate(new RTCIceCandidate(candidate));
-	        	});
-	        }
 	    },
 
 
