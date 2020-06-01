@@ -61,7 +61,7 @@ class ConversationController extends Controller
 
     public function show($id, Request $request)
     {
-    	$conversation = Conversation::has('members.user')->with('messages', 'notes', 'members.user')->findOrfail($id);
+    	$conversation = Conversation::has('members.user')->with('user', 'messages', 'notes', 'members.user')->findOrfail($id);
     	$this->authorize('show', $conversation);
 
     	if ($request->is_read) :

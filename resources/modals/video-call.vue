@@ -152,8 +152,12 @@ export default {
         	this.data.conversation.members.forEach((member) => {
         		users.push(member.user);
         	});
+        	users.push(this.data.conversation.user);
         	users.push(this.$root.auth);
             let caller = users.find((x) => x.id == this.data.caller);
+
+            console.log(users);
+            console.log(this.data.caller);
             return caller;
         }, 
     },
