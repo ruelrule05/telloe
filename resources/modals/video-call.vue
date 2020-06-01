@@ -161,6 +161,7 @@ export default {
     },
 
 	created() {
+        this.createPeerConnection();
         this.notification_sound = new Audio(`/notifications/call.mp3`);
         
         this.$root.socket.on('live_call_answer', (data) => {
@@ -352,7 +353,6 @@ export default {
 		initCamera() {
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
                 this.streams = streams;
-        		this.createPeerConnection();
                 this.addLocalStream();
         		if(this.data.action == 'incoming') this.pc.setRemoteDescription(this.data.desc);
         		else if(this.data.action == 'outgoing') this.startCall();
