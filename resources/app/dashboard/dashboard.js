@@ -41,7 +41,7 @@ const router = new VueRouter({
                         {
                             path: '',
                             name: 'bookings',
-                            component: () => import(/* webpackChunkName: "dashboard/bookings" */ './bookings/bookings.vue'),
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/index" */ './bookings/bookings.vue'),
                         },
                         {
                             path: 'calendar',

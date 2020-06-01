@@ -8,7 +8,7 @@ const argv = JSON.parse(process.env.npm_config_argv).original;
 
 if (production) {
     console.log('Running in production...');
-    timestamp = `-${dayjs().valueOf()}`;
+    //timestamp = `-${dayjs().valueOf()}`;
 } else {
     browserSync();
 }
