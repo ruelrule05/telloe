@@ -38,7 +38,6 @@ export default {
         'file-view-modal': () => import(/* webpackChunkName: "modals/file-view" */ '../../../modals/file-view'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "modals/audio-recorder" */ '../../../modals/audio-recorder'),
         'screen-recorder-modal': () => import(/* webpackChunkName: "modals/screen-recorder" */ '../../../modals/screen-recorder'),
-        'video-call-modal': () => import(/* webpackChunkName: "modals/video-call" */ '../../../modals/video-call'),
         'bookings': () => import(/* webpackChunkName: "components/bookings" */ '../../../components/bookings/bookings.vue'),
     },
 	directives: {VueScrollTo},
@@ -46,7 +45,6 @@ export default {
     data: () => ({
     	conversationTab: 'active',
     	conversations: [],
-    	selectedConversation: null,
     	convoLoading: false,
     	textMessage: '',
         detailsTab: '',
@@ -85,10 +83,10 @@ export default {
 
     computed: {
         isOnline() {
-            let is_online = this.$root.online_users.find((x) => x == this.selectedConversation.member.id);
+            let is_online = this.$root.online_users.find((x) => x == this.$root.selectedConversation.member.id);
             if(!is_online) {
-                axios.get(`/dashboard/conversations/${this.selectedConversation.id}`).then((response) => {
-                    this.selectedConversation.member.last_online = response.data.member.last_online;
+                axios.get(`/dashboard/conversations/${this.$root.selectedConversation.id}`).then((response) => {
+                    this.$root.selectedConversation.member.last_online = response.data.member.last_online;
                 });
             }
             return is_online;
@@ -100,9 +98,9 @@ export default {
 
         grouped_messages() {
             const grouped_messages = [];
-            if (this.selectedConversation.messages) {
+            if (this.$root.selectedConversation.messages) {
                 // sort messages by timestamp
-                const messages = (this.selectedConversation.messages || []).sort((a, b) => {
+                const messages = (this.$root.selectedConversation.messages || []).sort((a, b) => {
                     return (parseInt(a.timestamp) > parseInt(b.timestamp)) ? 1 : -1;
                 });
 
@@ -137,12 +135,12 @@ export default {
         this.$root.socket.on('new_message', (data) => {
             let conversation = this.conversations.find((x) => x.id == data.conversation_id);
             if(conversation) {
-                if(this.selectedConversation && this.selectedConversation.id == data.conversation_id) {
-                    let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
+                if(this.$root.selectedConversation && this.$root.selectedConversation.id == data.conversation_id) {
+                    let conversationData = this.conversations.find((x) => x.id == this.$root.selectedConversation.id);
                     if(conversationData) {
                         this.getMessageByID(data).then((message) => {
                             if(message) {
-                                this.selectedConversation.messages.push(message);
+                                this.$root.selectedConversation.messages.push(message);
                                 this.$set(conversationData, 'last_message', message);
                                 this.notification_sound.play();
                                 this.scrollDown();
@@ -191,9 +189,9 @@ export default {
         addTag() {
             let newTag = this.newTag.trim();
             if(newTag) {
-                if(!this.selectedConversation.tags) this.selectedConversation.tags = [];
-                this.selectedConversation.tags.push(newTag);
-                this.updateConversation(this.selectedConversation);
+                if(!this.$root.selectedConversation.tags) this.$root.selectedConversation.tags = [];
+                this.$root.selectedConversation.tags.push(newTag);
+                this.updateConversation(this.$root.selectedConversation);
             }
             this.newTag = '';
         },
@@ -224,8 +222,9 @@ export default {
             this.videoCall = {
                 action: 'outgoing',
                 caller: this.$root.auth.id,
-                conversation: this.selectedConversation,
+                conversation: this.$root.selectedConversation,
             };
+            this.$refs['videoCall'].init();
         },
 
         async getMessageByID(data) {
@@ -238,27 +237,27 @@ export default {
         },
 
         updateConversationName(e) {
-            if(this.selectedConversation) {
+            if(this.$root.selectedConversation) {
                 let newName = e.target.textContent.trim();
-                if(newName != this.selectedConversation.name) {
-                    this.selectedConversation.name = newName;
-                    let conversation = this.conversations.find((x) => x.id == this.selectedConversation.id);
+                if(newName != this.$root.selectedConversation.name) {
+                    this.$root.selectedConversation.name = newName;
+                    let conversation = this.conversations.find((x) => x.id == this.$root.selectedConversation.id);
                     if(conversation) conversation.name = newName;
-                    this.updateConversation(this.selectedConversation);
+                    this.updateConversation(this.$root.selectedConversation);
                 }
             }
         },
 
         addMember(member) {
-            if(this.selectedConversation) {
-                member.conversation_id = this.selectedConversation.id;
+            if(this.$root.selectedConversation) {
+                member.conversation_id = this.$root.selectedConversation.id;
                 this.memberSearch = '';
                 this.selectedChatMembers = [];
                 this.groupMembersResults = [];
                 this.searchingMembers = false;
                 axios.post(`/dashboard/conversation_members`, member).then((response) => {
-                    this.selectedConversation.members.unshift(response.data);
-                    let index = this.conversations.findIndex((x) => x.id == this.selectedConversation.id);
+                    this.$root.selectedConversation.members.unshift(response.data);
+                    let index = this.conversations.findIndex((x) => x.id == this.$root.selectedConversation.id);
                     if(index > -1) {
                         this.conversations[index].members.unshift(response.data);
                     }
@@ -267,11 +266,11 @@ export default {
         },
 
         deleteMember(member) {
-            if(this.selectedConversation) {
-                let index = this.selectedConversation.members.findIndex((x) => x.id == member.id);
-                if(index > -1) this.selectedConversation.members.splice(index, 1);
-                let conversation = this.conversations.find((x) => x.id == this.selectedConversation.id);
-                if(this.selectedConversation.members.length == 1) this.selectedConversation.members = [];
+            if(this.$root.selectedConversation) {
+                let index = this.$root.selectedConversation.members.findIndex((x) => x.id == member.id);
+                if(index > -1) this.$root.selectedConversation.members.splice(index, 1);
+                let conversation = this.conversations.find((x) => x.id == this.$root.selectedConversation.id);
+                if(this.$root.selectedConversation.members.length == 1) this.$root.selectedConversation.members = [];
                 
                 if(conversation) {
                     let memberIndex = conversation.members.findIndex((x) => x.id == member.id);
@@ -281,7 +280,7 @@ export default {
 
                 axios.delete(`/dashboard/conversation_members/${member.id}`).then((response) => {
                     if(response.data.user) {
-                        this.selectedConversation.member.user = response.data.user;
+                        this.$root.selectedConversation.member.user = response.data.user;
                         if(conversation) conversation.user = response.data.user;
                     }
                 });
@@ -334,23 +333,23 @@ export default {
         },
 
         deleteNote(note) {
-            if(this.selectedConversation) {
-                let index = this.selectedConversation.notes.findIndex((x) => x.id == note.id);
-                if(index > -1) this.selectedConversation.notes.splice(index, 1);
+            if(this.$root.selectedConversation) {
+                let index = this.$root.selectedConversation.notes.findIndex((x) => x.id == note.id);
+                if(index > -1) this.$root.selectedConversation.notes.splice(index, 1);
                 axios.delete(`/dashboard/notes/${note.id}`);
             }
         },
 
         addNote() {
-            if(this.selectedConversation) {
+            if(this.$root.selectedConversation) {
                 let note = {
-                    conversation_id: this.selectedConversation.id,
+                    conversation_id: this.$root.selectedConversation.id,
                     notes: this.newNote,
                 };
                 axios.post('/dashboard/notes', note).then((response) => {
                     this.newNote = '';
                     this.addingNote = false;
-                    this.selectedConversation.notes.push(response.data);
+                    this.$root.selectedConversation.notes.push(response.data);
                 });
             }
         },
@@ -433,9 +432,9 @@ export default {
         },
 
         sendMessage(message) {
-            if(this.selectedConversation) {
-                this.selectedConversation.messages.push(message);
-                let conversationData = this.conversations.find((x) => x.id == this.selectedConversation.id);
+            if(this.$root.selectedConversation) {
+                this.$root.selectedConversation.messages.push(message);
+                let conversationData = this.conversations.find((x) => x.id == this.$root.selectedConversation.id);
                 let messageCopy = Object.assign({}, message);
                 if(conversationData) {
                     messageCopy.message = `You: ${messageCopy.message}`;
@@ -457,12 +456,12 @@ export default {
                 Object.keys(messageCopy).map((k) => {
                     bodyFormData.set(k, messageCopy[k]);
                 });
-                bodyFormData.set('conversation_id', this.selectedConversation.id)
+                bodyFormData.set('conversation_id', this.$root.selectedConversation.id)
                 axios.post(`/dashboard/messages`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
-                    let index = this.selectedConversation.messages.findIndex((x) => x.id == messageCopy.id);
+                    let index = this.$root.selectedConversation.messages.findIndex((x) => x.id == messageCopy.id);
                     if(index > -1) {
-                        this.selectedConversation.messages[index].id = response.data.message.id;
-                        this.selectedConversation.messages[index].source = response.data.message.source;
+                        this.$root.selectedConversation.messages[index].id = response.data.message.id;
+                        this.$root.selectedConversation.messages[index].source = response.data.message.source;
                         this.$root.socket.emit('message_sent', {id: response.data.message.id, conversation_id: response.data.conversation.id});
                     }
                 });
@@ -470,7 +469,7 @@ export default {
         },
 
         sendVideo(video) {
-            if(this.selectedConversation) {
+            if(this.$root.selectedConversation) {
                 const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
@@ -489,7 +488,7 @@ export default {
         },
 
         sendAudio(audio) {
-            if(this.selectedConversation) {
+            if(this.$root.selectedConversation) {
                 const timestamp = dayjs().valueOf();
             	let message = {
                     user: this.$root.auth,
@@ -529,7 +528,7 @@ export default {
 
         async addFile(e) {
             let fileInput = e.target;
-            if (this.selectedConversation && fileInput.files.length > 0) {
+            if (this.$root.selectedConversation && fileInput.files.length > 0) {
                 const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
@@ -654,7 +653,7 @@ export default {
         	this.$set(conversation.last_message, 'is_read', true);
             axios.get(`/dashboard/conversations/${conversation.id}?is_read=true`).then((response) => {
                 this.convoLoading = false;
-                this.selectedConversation = response.data;
+                this.$root.selectedConversation = response.data;
                 this.scrollDown();
             });
         },

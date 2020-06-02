@@ -112,7 +112,10 @@
 					</div>
 				</div>
 			</div>
+
+			<video-call-modal :data="videoCallData" @close="resetVideoCall" @submit="sendVideo" ref="videoCall"></video-call-modal>
 		</div>
+
 
 		<script src="/js/leader-line.min.js"></script>
 		<script src="/js/plain-draggable.min.js"></script>

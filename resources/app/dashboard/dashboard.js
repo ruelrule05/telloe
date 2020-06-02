@@ -93,7 +93,9 @@ import VirtualRealityIcon from '../../icons/virtual-reality';
 window.app = new Vue({
     router,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon},
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon,
+        'video-call-modal': () => import(/* webpackChunkName: "modals/video-call" */ '../../modals/video-call/video-call.vue'),
+    },
     data: {
         auth: null,
         pageloading: false,
@@ -101,6 +103,18 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
+        conversations: [],
+        selectedConversation: null,
+
+        notification_sound: null,
+        pc: null,
+        videoCallData: null,
+        videoCallStatus: '',
+        offerOptions: {
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: 1
+        },
+        remoteStream: null,
     },
 
     watch: {
@@ -111,20 +125,53 @@ window.app = new Vue({
     },
 
     created() {
+        this.createPeerConnection();
+        this.remoteStream = new MediaStream();
+        this.notification_sound = new Audio(`/notifications/call.mp3`);
+        this.getData();
         //this.socket = io('https://telloe.app:8443');
         this.socket = io('https://telloe.com:8443');
         this.socket.on('online_users', (data) => {
             this.online_users = data;
-            /*let online_users = JSON.parse(window.localStorage.getItem('telloe_online_users'));
-            online_users = online_users || [];
-            let index = online_users.findIndex((x) => x == data);
-            if(index == -1) {
-                online_users.push(data);
-                online_users = online_users.filter(function(e){return e});
-                window.localStorage.setItem('telloe_online_users', JSON.stringify(online_users));
-            }*/
         });
 
+        /* Video call listeners  */
+        this.socket.on('live_call_offer', (data) => {
+            let conversation = this.$root.conversations.find((x) => x.id == data.conversation_id);
+            if(conversation) {
+                let users = this.conversationUsers(conversation);
+                let caller = users.find((x) => x.id == data.caller);
+                if(caller) {
+                    if(!this.pc) this.createPeerConnection();
+                    this.pc.setRemoteDescription(data.desc);
+                    if(this.videoCallStatus != 'ongoing') {
+                        this.videoCallData = {
+                            action: 'incoming',
+                            caller: caller,
+                            callee: this.$root.auth,
+                            conversation: conversation,
+                        }
+                        this.$refs['videoCall'].init();
+                    } else {
+                        this.createAnswer();
+                    }
+                }
+            }
+        });
+        this.socket.on('live_call_candidate', (data) => {
+            if(this.conversations.find((x) => x.id == data.conversation_id) && this.pc) {
+                console.log('received: live_call_candidate');
+                this.pc.addIceCandidate(data.candidate);
+            }
+        });
+        this.socket.on('live_call_answer', (data) => {
+            if(this.conversations.find((x) => x.id == data.conversation_id)) {
+                this.pc.setRemoteDescription(data.desc);
+                this.videoCallStatus = 'ongoing';
+                this.notification_sound.pause();
+            }
+        });
+        /* End Video call listeners  */
 
         axios.get('/auth').then((response) => {
             this.auth = response.data;
@@ -151,6 +198,138 @@ window.app = new Vue({
     },
 
     methods: {
+        resetVideoCall() {
+            if(this.pc) this.pc.close();
+            this.pc = this.videoCallData = this.remoteStream = this.videoCallStatus = this.remoteStream = null;
+            this.remoteStream = new MediaStream();
+            this.notification_sound.currentTime = 0;
+        },
+
+        startCall() {
+            this.createPeerConnection();
+            this.$refs['videoCall'].init();
+            let users = this.conversationUsers(this.selectedConversation);
+            let callee = users.find((x) => x.id != this.auth.id);
+            this.videoCallData = {
+                action: 'outgoing',
+                caller: this.auth,
+                callee: callee,
+                conversation: this.selectedConversation,
+            };
+            this.createOffer();
+        },
+
+        answerCall() {
+            this.notification_sound.pause();
+            this.videoCallStatus = 'ongoing';
+            this.createAnswer();
+        },
+
+        createOffer() {
+            this.pc.createOffer(this.offerOptions).then((desc) => {
+                this.pc.setLocalDescription(desc);
+                this.socket.emit('live_call_offer', {
+                    desc,
+                    conversation_id: this.selectedConversation.id,
+                    caller: this.auth.id
+                });
+            }, (e) => { console.log(e); });
+        },
+
+        createAnswer() {
+            this.pc.createAnswer().then((desc) => {
+                this.pc.setLocalDescription(desc);
+                this.socket.emit('live_call_answer', { 
+                    desc, 
+                    conversation_id: this.selectedConversation.id,
+                });
+            }, (e) => { console.log(e); });
+        },
+
+        createPeerConnection() {
+            let configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    {
+                        urls: 'turn:numb.viagenie.ca',
+                        credential: 'moonfang',
+                        username: 'cleidoscope@gmail.com'
+                    }
+                ]
+            };
+            this.pc = new RTCPeerConnection(configuration);
+            this.pc.ontrack = (event) => {
+                this.remoteStream.addTrack(event.track);
+                this.$refs['videoCall'].updateRemoteStream();
+            }
+            this.pc.onicecandidate = (event) => {
+                if(event.candidate) {
+                    console.log('emit: live_call_candidate');
+                    this.socket.emit('live_call_candidate', {
+                        conversation_id: this.$root.selectedConversation.id,
+                        candidate: event.candidate
+                    });
+                }
+            };
+            this.pc.oniceconnectionstatechange = () => {
+                //console.log(this.pc.iceConnectionState);
+            };
+            this.pc.onnegotiationneeded = (e) => {
+                this.createOffer();
+            };
+            this.pc.onicecandidateerror = (error) => {
+                console.log(error);
+            };
+        },
+
+        conversationUsers(conversation) {
+            let users = [];
+            if(conversation) {
+                conversation.members.forEach((member) => {
+                    users.push(member.user);
+                })
+                users.push(conversation.user);
+            }
+
+            return users;
+        },
+
+        sendVideo(video) {
+            if(this.selectedConversation) {
+                const timestamp = dayjs().valueOf();
+                let message = {
+                    user: this.$root.auth,
+                    source: video.source,
+                    preview: video.preview,
+                    timestamp: dayjs().valueOf(),
+                    type: 'video',
+                    created_at: dayjs(timestamp).format('hh:mm A'),
+                    is_read: 1,
+                    created_diff: 'Just now',
+                    metadata: {duration: video.duration}
+                };
+                this.sendMessage(message);
+                this.closeRecorder('video');
+            }
+        },
+
+        getData() {
+            axios.get('/dashboard/conversations').then((response) => {
+                this.conversations = response.data;
+                this.orderConversations();
+            });
+        },
+
+        orderConversations() {
+            if (this.conversations.length > 0) {
+                this.conversations = this.conversations.sort((a, b) => {
+                    const a_timestamp = a.last_message.timestamp || a.timestamp;
+                    const b_timestamp = b.last_message.timestamp || b.timestamp;
+                    return (a_timestamp > b_timestamp) ? -1 : 1;
+                });
+            }
+        },
+
         FBInit() {
             let params = {
                 appId: '1187408638266444',

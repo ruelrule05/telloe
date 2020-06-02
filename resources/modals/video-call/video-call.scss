@@ -1,0 +1,83 @@
+.recorded-actions{
+	&:before{
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+		background: rgba(0,0,0,0.5);
+	}
+	> div{
+		bottom: 0;
+		z-index: 2;
+	}
+}
+.ongoing-body{
+	z-index: 8;
+}
+.camera-loader{
+	z-index: 9;
+}
+.caller{
+	z-index: 10;
+}
+.user-profile {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    span {
+        font-size: 30px;
+        font-weight: lighter;
+    }
+}
+.btn-share-screen{
+	right: 15px;
+	bottom: 15px;
+	z-index: 5;
+}
+.btn-record{
+	line-height: 1;
+	font-size: 12px;
+	top: 10px;
+	left: 10px;
+	z-index: 10;
+	i{
+		width: 15px;
+		height: 15px;
+		border-radius: 50%;
+		background: red;
+		display: inline-block;
+	}
+}
+.close {
+	right: 0;
+}
+.preview-wrapper.preview-thumb{
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 10;
+    video {
+        height: 100%;
+        width: auto;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+    }
+}
+.live-recorder{
+	height: 450px;
+}
+video, canvas {
+	pointer-events: none;
+}
