@@ -32,7 +32,9 @@ Route::group(
         Route::post('logout', 'AuthController@logout')->middleware('auth');
 
         Route::resource('inquiries', 'InquiryController')->middleware('auth');
-		Route::resource('widgets', 'WidgetController')->middleware('auth');
+        Route::resource('widgets', 'WidgetController')->middleware('auth');
+
+		Route::get('conversations/{conversation_id}/call/{action}', 'ConversationController@call')->middleware('auth');
 
         Route::group([
             'prefix' => 'ajax',

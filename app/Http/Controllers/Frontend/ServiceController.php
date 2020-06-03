@@ -12,7 +12,7 @@ class ServiceController extends Controller
     //
 
     public function index() {
-    	$services = Service::where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+    	$services = Service::with('user')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
     	return response()->json($services);
     }
 

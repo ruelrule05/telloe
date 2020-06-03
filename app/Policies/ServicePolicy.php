@@ -25,8 +25,12 @@ class ServicePolicy
         return $user->id == $service->user_id;
     }
 
-
     public function delete(User $user, Service $service)
+    {
+        return $user->id == $service->user_id;
+    }
+
+    public function addBooking(User $user, Service $service)
     {
         return $user->id == $service->user_id;
     }

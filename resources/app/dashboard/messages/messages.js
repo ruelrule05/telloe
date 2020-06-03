@@ -620,7 +620,7 @@ export default {
                 let user_id = this.$route.query.user_id;
                 if(user_id) {
                     for(let c of this.conversations){
-                       if(c.user_id == user_id) {
+                       if(c.members.find((x) => x.user_id == user_id)) {
                             this.setConversation(c);
                             break;
                        }

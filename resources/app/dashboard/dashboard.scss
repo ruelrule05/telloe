@@ -6,6 +6,9 @@
 @import '../../sass/variables';
 @import '../../sass/bootstrap';
 
+#app{
+    height: 100vh;
+}
 * {
 /*    &::-webkit-scrollbar {
         -webkit-appearance: none;
@@ -776,4 +779,10 @@ hr.hr-text::before {
 .overflow-x-only{
     overflow-x: auto;
     overflow-y: hidden !important;
+}
+.ongoing-call{
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    z-index: 100;
 }

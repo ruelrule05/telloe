@@ -90,11 +90,11 @@ import ShortcutIcon from '../../icons/shortcut';
 import ShoppingBagIcon from '../../icons/shopping-bag';
 import CalendarDayIcon from '../../icons/calendar-day';
 import VirtualRealityIcon from '../../icons/virtual-reality';
+import IncomingCallModal from '../../modals/incoming-call/incoming-call.vue';
 window.app = new Vue({
     router,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon,
-        'video-call-modal': () => import(/* webpackChunkName: "modals/video-call" */ '../../modals/video-call/video-call.vue'),
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon, IncomingCallModal
     },
     data: {
         auth: null,
@@ -107,14 +107,10 @@ window.app = new Vue({
         selectedConversation: null,
 
         notification_sound: null,
-        pc: null,
-        videoCallData: null,
-        videoCallStatus: '',
-        offerOptions: {
-            offerToReceiveAudio: 1,
-            offerToReceiveVideo: 1
-        },
-        remoteStream: null,
+        callWindow: null,
+        caller: null,
+        callConversationId: null,
+        callUser: null,
     },
 
     watch: {
@@ -125,53 +121,37 @@ window.app = new Vue({
     },
 
     created() {
-        this.createPeerConnection();
-        this.remoteStream = new MediaStream();
         this.notification_sound = new Audio(`/notifications/call.mp3`);
         this.getData();
-        //this.socket = io('https://telloe.app:8443');
-        this.socket = io('https://telloe.com:8443');
+        this.socket = io(WS_URL);
         this.socket.on('online_users', (data) => {
             this.online_users = data;
         });
 
-        /* Video call listeners  */
-        this.socket.on('live_call_offer', (data) => {
-            let conversation = this.$root.conversations.find((x) => x.id == data.conversation_id);
+        this.socket.on('live_call_incoming', (data) => {
+            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
             if(conversation) {
-                let users = this.conversationUsers(conversation);
-                let caller = users.find((x) => x.id == data.caller);
-                if(caller) {
-                    if(!this.pc) this.createPeerConnection();
-                    this.pc.setRemoteDescription(data.desc);
-                    if(this.videoCallStatus != 'ongoing') {
-                        this.videoCallData = {
-                            action: 'incoming',
-                            caller: caller,
-                            callee: this.$root.auth,
-                            conversation: conversation,
-                        }
-                        this.$refs['videoCall'].init();
-                    } else {
-                        this.createAnswer();
-                    }
+                let conversationUsers = this.conversationUsers(conversation);
+                let caller = conversationUsers.find((x) => x.id == data.caller_id);
+                if(caller && caller.id != this.auth.id) {
+                    this.caller = caller;
+                    this.callConversationId = conversation.id;
+                    this.$refs['incomingCall'].show();
                 }
             }
         });
-        this.socket.on('live_call_candidate', (data) => {
-            if(this.conversations.find((x) => x.id == data.conversation_id) && this.pc) {
-                console.log('received: live_call_candidate');
-                this.pc.addIceCandidate(data.candidate);
+        this.socket.on('live_call_reject', (data) => {
+            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
+            if(conversation) {
+                this.$refs['incomingCall'].hide();
             }
         });
-        this.socket.on('live_call_answer', (data) => {
-            if(this.conversations.find((x) => x.id == data.conversation_id)) {
-                this.pc.setRemoteDescription(data.desc);
-                this.videoCallStatus = 'ongoing';
-                this.notification_sound.pause();
+        this.socket.on('live_call_end', (data) => {
+            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
+            if(conversation) {
+                this.$refs['incomingCall'].hide();
             }
         });
-        /* End Video call listeners  */
 
         axios.get('/auth').then((response) => {
             this.auth = response.data;
@@ -198,97 +178,55 @@ window.app = new Vue({
     },
 
     methods: {
-        resetVideoCall() {
-            if(this.pc) this.pc.close();
-            this.pc = this.videoCallData = this.remoteStream = this.videoCallStatus = this.remoteStream = null;
-            this.remoteStream = new MediaStream();
-            this.notification_sound.currentTime = 0;
-        },
-
-        startCall() {
-            this.createPeerConnection();
-            this.$refs['videoCall'].init();
-            let users = this.conversationUsers(this.selectedConversation);
-            let callee = users.find((x) => x.id != this.auth.id);
-            this.videoCallData = {
-                action: 'outgoing',
-                caller: this.auth,
-                callee: callee,
-                conversation: this.selectedConversation,
-            };
-            this.createOffer();
-        },
-
-        answerCall() {
-            this.notification_sound.pause();
-            this.videoCallStatus = 'ongoing';
-            this.createAnswer();
-        },
-
-        createOffer() {
-            this.pc.createOffer(this.offerOptions).then((desc) => {
-                this.pc.setLocalDescription(desc);
-                this.socket.emit('live_call_offer', {
-                    desc,
-                    conversation_id: this.selectedConversation.id,
-                    caller: this.auth.id
-                });
-            }, (e) => { console.log(e); });
-        },
-
-        createAnswer() {
-            this.pc.createAnswer().then((desc) => {
-                this.pc.setLocalDescription(desc);
-                this.socket.emit('live_call_answer', { 
-                    desc, 
-                    conversation_id: this.selectedConversation.id,
-                });
-            }, (e) => { console.log(e); });
-        },
-
-        createPeerConnection() {
-            let configuration = {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    {
-                        urls: 'turn:numb.viagenie.ca',
-                        credential: 'moonfang',
-                        username: 'cleidoscope@gmail.com'
-                    }
-                ]
-            };
-            this.pc = new RTCPeerConnection(configuration);
-            this.pc.ontrack = (event) => {
-                this.remoteStream.addTrack(event.track);
-                this.$refs['videoCall'].updateRemoteStream();
+        focusCallWindow() {
+            if(this.callWindow) {
+                this.callWindow.focus();
             }
-            this.pc.onicecandidate = (event) => {
-                if(event.candidate) {
-                    console.log('emit: live_call_candidate');
-                    this.socket.emit('live_call_candidate', {
-                        conversation_id: this.$root.selectedConversation.id,
-                        candidate: event.candidate
-                    });
+        },
+
+        rejectCall() {
+            this.notification_sound.pause();
+            this.socket.emit('live_call_reject', {
+                conversation_id: this.callConversationId,
+            });
+            this.$refs['incomingCall'].hide();
+            this.callWindow = this.caller = this.callConversationId = null;
+        },
+
+        initCall(conversation_id, action) {
+            if(!this.callWindow) {
+                let conversation = this.conversations.find((x) => x.id == conversation_id);
+                if(action == 'incoming') {
+                    this.$refs['incomingCall'].hide();
+                    this.callUser = this.caller;
                 }
-            };
-            this.pc.oniceconnectionstatechange = () => {
-                //console.log(this.pc.iceConnectionState);
-            };
-            this.pc.onnegotiationneeded = (e) => {
-                this.createOffer();
-            };
-            this.pc.onicecandidateerror = (error) => {
-                console.log(error);
-            };
+                else if(action == 'outgoing') this.callUser = conversation.member;
+
+                let url = `${window.location.origin}/conversations/${conversation_id}/call/${action}`;
+                const width = 800;
+                const height = 475;
+                const left = (screen.width/2) - (width/2);
+                const top = (screen.height/2) - (height/2);
+                this.callWindow = window.open(
+                    url, 
+                    'telloe_call_window',
+                    `width=${width}, height=${height}, top=${top}, left=${left}`);
+
+                this.callWindow.onload = () => {
+                    this.callWindow.onunload = (e) => {
+                        this.callWindow = this.caller = this.callUser = this.callConversationId = null;
+                    };
+                };
+            }
         },
 
         conversationUsers(conversation) {
             let users = [];
             if(conversation) {
+                users.push(conversation.user);
                 conversation.members.forEach((member) => {
                     users.push(member.user);
                 })
-                users.push(conversation.user);
             }
 
             return users;

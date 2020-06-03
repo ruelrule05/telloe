@@ -1,8 +1,8 @@
 import BusinessHours from '../../../../components/vue-business-hours/BusinessHours';
 import ChevronLeft from '../../../../icons/chevron-left';
 import ChevronRight from '../../../../icons/chevron-right';
-import convertTime from 'convert-time';
 import VCalendar from 'v-calendar';
+import dayjs from 'dayjs';
 window.Vue.use(VCalendar);
 export default {
 	components: {
@@ -91,6 +91,12 @@ export default {
 	},
 
 	methods: {
+		formatTime(time) {
+    		let parts = time.split(':');
+    		let formatTime = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
+    		return formatTime;
+		},
+
 		dayclick(date){
 			this.selectedDate = date;
 		},

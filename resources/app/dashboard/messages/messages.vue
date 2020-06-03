@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <div class="ml-auto">
-                        <button class="btn btn-white btn-circle-actions border" @click="$root.startCall()"><video-icon transform="scale(1.1)"></video-icon></button>
+                        <button class="btn btn-white btn-circle-actions border" :disabled="$root.callWindow" @click="$root.initCall($root.selectedConversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
                         <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
                         <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'profile'" :class="{'active': detailsTab == 'profile'}"><user-icon></user-icon></button>
@@ -159,7 +159,7 @@
 
                     <!-- Overview -->
                     <div v-if="profileTab == 'overview'" class="mt-2">
-                        <div v-if="$root.selectedConversation.members.length == 0">
+                        <div v-if="$root.selectedConversation.member">
                             <div class="form-group">
                                 <strong class="text-gray">Email:</strong>
                                 <div class="font-weight-bold">{{ $root.selectedConversation.member.email }}</div>
@@ -193,7 +193,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div v-else>
+                        <div v-else-if="$root.selectedConversation.members.length > 1">
                             <div class="my-2">
                                 <div class="form-group form-icon mb-0">
                                     <search-icon height="20" width="20" fill="#999"></search-icon>

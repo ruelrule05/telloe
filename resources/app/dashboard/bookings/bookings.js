@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import convertTime from 'convert-time';
 import VCalendar from 'v-calendar';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
@@ -149,8 +148,10 @@ export default {
                 axios.get(`/@${this.selectedBooking.service.user.username}/${this.selectedBooking.service.id}/timeslots?date=${dateFormat}`).then((response) => {
                 	let timeslots = response.data;
                 	if(this.selectedBooking.date == dateFormat) {
+                        let parts = this.selectedBooking.start.split(':');
+                        let label = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
                 		let timeslot = {
-                			label: convertTime(this.selectedBooking.start, 'hh:mmA'),
+                			label: label,
                 			time: this.selectedBooking.start,
                 		};
                 		if(timeslot.label.length == 6) timeslot.label = `0${timeslot.label}`;
@@ -179,7 +180,7 @@ export default {
         formatTime(time) {
         	let parts = time.split(':');
         	let date = dayjs().set('hour', parts[0]).set('minute', parts[1]);
-        	return date.format('h:mmA');
+        	return date.format('hh:mmA');
         },
 
         destroy(booking) {

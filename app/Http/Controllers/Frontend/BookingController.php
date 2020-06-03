@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Service;
 use App\Models\Booking;
 use Auth;
 use Carbon\Carbon;
@@ -31,11 +32,11 @@ class BookingController extends Controller
         $role = Auth::user()->role->role;
         if($role == 'client') :
             if($request->user_id) :
-                $bookings = Booking::where('user_id', $request->user_id)->whereHas('service', function($service) {
+                $bookings = Booking::with('service')->where('user_id', $request->user_id)->whereHas('service', function($service) {
                     $service->where('user_id', Auth::user()->id);
                 })->orderBy('created_at', 'DESC')->get();
             else :
-                $bookings = Booking::with('user')->whereHas('service', function($service) {
+                $bookings = Booking::with('user', 'service')->whereHas('service', function($service) {
                     $service->where('user_id', Auth::user()->id);
                 })->orderBy('created_at', 'DESC')->get();
             endif;
@@ -56,8 +57,10 @@ class BookingController extends Controller
             'start' => 'required',
         ]);
         if(Carbon::parse(Carbon::now()->format('Y-m-d'))->gt(Carbon::parse($request->date))) return abort(403, 'Invalid date.');
+        if($request->user_id == Auth::user()->id) return abort(403, 'Action is not allowed.');
 
         $service = Service::findOrfail($request->service_id);
+        $this->authorize('addBooking', $service);
         $timeslots = $service->timeslots($request->date);
 
         $timeslotAvailable = false;
@@ -80,16 +83,21 @@ class BookingController extends Controller
         $data['end'] = $endTime->format('H:i');
         
         $booking = Booking::create($data);
-        return response()->json($booking);
+        return response()->json($booking->load('service'));
     }
 
 
     public function update($id, Request $request)
     {
         $this->validate($request, [
+            'service_id' => 'required|exists:services,id',
             'date' => 'required|date',
             'start' => 'required',
         ]);
+
+        $service = Service::findOrfail($request->service_id);
+        $this->authorize('addBooking', $service);
+
         $booking = Booking::findOrfail($id);
         $this->authorize('update', $booking);
 
@@ -121,7 +129,7 @@ class BookingController extends Controller
         $data['end'] = $endTime->format('H:i');
 
         $booking->update($data);
-        return response()->json($booking);
+        return response()->json($booking->load('service'));
     }
 
     public function destroy($id)

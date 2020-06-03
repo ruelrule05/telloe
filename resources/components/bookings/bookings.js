@@ -19,88 +19,132 @@ export default{
 	data: () => ({
 		ready: false,
 		bookings: [],
-		addBooking: true, //false
-		date: null,
-        timeslot: '',
+        selectedBooking: null,
+		addBooking: false, //false
+		selectedDate: null,
+        selectedTimeslot: '',
         services: [],
         selectedService: '',
+        timeslots: [],
+        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     }),
 
     computed: {
-        timeslots() {
-            let timeslots = [];
-            if(this.selectedService && this.date) {
-                const dateFormat = dayjs(this.date).format('YYYY-MM-DD')
-                const dayName = dayjs(this.date).format('dddd');
-                let available_time = this.selectedService.days[dayName];
-
-                let start_time = dayjs(`${dateFormat} ${available_time.start}`);
-                let end_time = dayjs(`${dateFormat} ${available_time.end}`);
-                let breaktimes = this.selectedService.days[dayName].breaktimes;
-                let holidays = this.selectedService.holidays;
-
-                while(start_time < end_time) {
-                    timeslots.push({
-                        time: start_time.format('HH:mm'),
-                        label: start_time.format('hh:mmA'),
-                    });
-                    start_time = start_time.add(this.selectedService.duration + 30, 'minute');
-                }
-
-            }
-
-            return timeslots;
-        },
-
         formattedHolidays() {
             let formattedHolidays = [];
-            if(this.selectedService) {
-                this.selectedService.holidays.forEach((holiday) => {
-                    let parts = holiday.split('-');
-                    const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                    formattedHolidays.push(holidayDate);
-                });
+            if (this.selectedService) {
+                let service = this.services.find((x) => x.id == this.selectedService);
+                if(service) {
+                    service.holidays.forEach((holiday) => {
+                        let parts = holiday.split('-');
+                        const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                        formattedHolidays.push(holidayDate);
+                    });
+
+                    let disabledDays = [];
+                    this.days.forEach((day, index) => {
+                        index++;
+                        if (!service.days[day].isOpen) disabledDays.push(index);
+                    });
+                    if (disabledDays.length > 0) {
+                        formattedHolidays.push({
+                            weekdays: disabledDays,
+                        });
+                    }
+                }
             }
             return formattedHolidays;
         }
     },
 
+    watch: {
+        addBooking: function(value) {
+            if(value) {
+                this.selectedTimeslot = null;
+            }
+        },
+    },
+
 
     methods: {
+        edit(booking) {
+            if(booking) {
+                this.selectedBooking = booking;
+                this.selectedService = booking.service.id;
+                this.getTimeslots(booking.service_id, booking.date);
+            }
+        },
+
+        getTimeslots(service_id = '', date = '') {
+            if (service_id && date) {
+                let service = this.services.find((x) => x.id == service_id);
+                if(service) {
+                    this.timeslots = [];
+                    this.selectedTimeslot = null;
+                    let dateFormat = dayjs(date).format('YYYY-MM-DD');
+                    axios.get(`/@${service.user.username}/${service_id}/timeslots?date=${dateFormat}`).then((response) => {
+                        let timeslots = response.data;
+                        if(this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
+                            let parts = this.selectedBooking.start.split(':');
+                            let label = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
+                            let timeslot = {
+                                label: label,
+                                time: this.selectedBooking.start,
+                            };
+                            if(timeslot.label.length == 6) timeslot.label = `0${timeslot.label}`;
+                            this.selectedTimeslot = timeslot;
+                            timeslots.push(timeslot);
+                        }
+                        timeslots = timeslots.sort((a, b) => {
+                            return a.time > b.time ? 1 : -1;
+                        });
+                        this.timeslots = timeslots;
+                    });
+                }
+            }
+        },
+
     	update(booking) {
     		let formatDate = dayjs(booking.new_date).format('YYYY-MM-DD');
     		let data = {
     			date: formatDate,
-    			start: booking.new_start,
-    			end: booking.new_end,
+                start: this.selectedTimeslot.time,
+    			service_id: this.selectedService,
     		};
 			axios.put(`/dashboard/bookings/${booking.id}`, data).then((response) => {
-				booking.date = booking.new_date;
-				booking.start = booking.new_start;
-				booking.end = booking.new_end;
-				booking.edit = false;
-				this.$set(booking, booking);
+                let newBooking = response.data;
+                let parts = newBooking.date.split('-');
+                newBooking.date = new Date(parts[0], parts[1] - 1, parts[2]);
+                newBooking.new_date = newBooking.date;
+                this.$set(this.bookings, this.bookings.findIndex((x) => x.id == booking.id), newBooking);
+                this.selectedBooking = null;
+                this.selectedService = '';
+                this.timeslots = [];
 			});
     	},
 
     	store() {
-    		if(this.date && this.start && this.end) {
-    			let formatDate = dayjs(this.date).format('YYYY-MM-DD');
+    		if(this.selectedService && this.selectedDate && this.selectedTimeslot) {
+    			let formatDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
     			let data = {
     				date: formatDate,
-    				start: this.start,
-    				end: this.end,
+    				start: this.selectedTimeslot.time,
                     user_id: this.user.id,
-    				service_id: this.service_id,
+    				service_id: this.selectedService,
     			};
     			this.addBooking = false;
+
     			axios.post('/dashboard/bookings', data).then((response) => {
-    				this.bookings.unshift(response.data);
+                    let newBooking = response.data;
+                    let parts = newBooking.date.split('-');
+                    newBooking.new_date = newBooking.date;
+                    newBooking.date = new Date(parts[0], parts[1] - 1, parts[2]);
+    				this.bookings.unshift(newBooking);
     			});
     		}
     	},
 
-        deleteBooking(booking){
+        destroy(booking){
             this.$delete(this.bookings, this.bookings.findIndex((x) => x.id == booking.id));
             axios.delete(`/dashboard/bookings/${booking.id}`);
         },
@@ -111,21 +155,18 @@ export default{
 				let parts = booking.date.split('-');
 				booking.date = new Date(parts[0], parts[1] - 1, parts[2]);
 				booking.new_date = booking.date;
-				booking.new_start = booking.start;
-				booking.new_end = booking.end;
 			});
 			this.bookings = response.data;
 
             response = await axios.get('/dashboard/services');
             this.services = response.data;
-            this.selectedService = this.services[0];
 
             this.ready = true;
     	},
 
     	formatTime(time) {
     		let parts = time.split(':');
-    		let formatTime = dayjs().hour(parts[0]).minute(parts[1]).format('h:mmA');
+    		let formatTime = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
     		return formatTime;
     	},
 

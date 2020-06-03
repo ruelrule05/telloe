@@ -5,8 +5,14 @@
 		<link rel="stylesheet" href="{{ mix('css/dashboard.css') }}">
 	</head>
 	<body>
-		<div id="app" class="dashboard h-100" v-cloak>
-			<div class="dashboard" v-if="$root.auth">
+		<div id="app" class="d-flex flex-column overflow-hidden" v-cloak>
+			<div class="text-center" v-if="callWindow && callUser">
+				<div class="bg-primary text-white px-4 py-2">
+					Ongoing call with <strong>@{{ callUser.full_name }}</strong>
+					<u class="ml-2 cursor-pointer" @click="focusCallWindow()">Open window</u>
+				</div>
+			</div>
+			<div class="flex-grow-1 overflow-hidden" v-if="$root.auth">
 				<div class="row m-0 h-100">
 					<div v-if="$root.pageloading" class="pageloader position-fixed">
 						<div class="position-absolute-center">
@@ -14,7 +20,7 @@
 						</div>
 					</div>
 
-					<div class="d-flex h-100vh maxh-100vh overflow-hidden align-items-stretch w-100">
+					<div class="d-flex h-100 overflow-hidden align-items-stretch w-100">
 						<div class="sidebar border-right align-self-stretch text-center bg-white d-flex flex-column" id="sidebar">
 							<div class="py-3">
 								<!-- <div class="mb-3">
@@ -113,12 +119,16 @@
 				</div>
 			</div>
 
-			<video-call-modal :data="videoCallData" @close="resetVideoCall" @submit="sendVideo" ref="videoCall"></video-call-modal>
+			<incoming-call-modal :caller="caller" ref="incomingCall"></incoming-call-modal>
+
 		</div>
 
 
 		<script src="/js/leader-line.min.js"></script>
 		<script src="/js/plain-draggable.min.js"></script>
+		<script>
+			const WS_URL = '{{ env('WS_URL') }}';
+		</script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>
 	</body>
 </html>

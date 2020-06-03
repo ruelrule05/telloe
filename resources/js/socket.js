@@ -33,6 +33,12 @@ io.on('connection', function(socket) {
     socket.on('message_sent', function(data) {
         socket.broadcast.emit('new_message', data);
     });
+    socket.on('live_call_incoming', function(data) {
+        socket.broadcast.emit('live_call_incoming', data);
+    });
+    socket.on('live_callee_ready', function(data) {
+        socket.broadcast.emit('live_callee_ready', data);
+    });
     socket.on('live_call_offer', function(data) {
         socketData = data;
         socket.broadcast.emit('live_call_offer', data);

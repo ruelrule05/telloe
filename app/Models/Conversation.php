@@ -34,15 +34,17 @@ class Conversation extends Model
     public function getMemberAttribute()
     {
         $member = null;
-        switch(Auth::user()->role->role) :
-            case 'client':
-                $member = $this->members()->first()->user;
-                break;
+        if($this->members->count() == 1) :
+            switch(Auth::user()->role->role) :
+                case 'client':
+                    $member = $this->members()->first()->user;
+                    break;
 
-            case 'customer':
-                $member = $this->user;
-                break;
-        endswitch;
+                case 'customer':
+                    $member = $this->user;
+                    break;
+            endswitch;
+        endif;
 
         return $member;
     }

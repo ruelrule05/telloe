@@ -40,7 +40,7 @@
 								</div>
 								<div class="pl-2 line-height-sm">
 									<strong class="font-heading d-block">{{ booking.user.full_name }}</strong>
-									<small class="d-block text-gray font-weight-light">{{ booking.start }} - {{ booking.end }}</small>
+									<small class="d-block text-gray font-weight-light">{{ formatTime(booking.start) }} - {{ formatTime(booking.end) }}</small>
 								</div>
 
 								<div class="ml-auto">

@@ -9,8 +9,6 @@ const argv = JSON.parse(process.env.npm_config_argv).original;
 if (production) {
     console.log('Running in production...');
     //timestamp = `-${dayjs().valueOf()}`;
-} else {
-    browserSync();
 }
 
 if (argv.indexOf('--css') > -1) { 
@@ -20,6 +18,7 @@ if (argv.indexOf('--css') > -1) {
         .sass('resources/app/dashboard/dashboard.scss', 'public/css')
         .sass('resources/sass/page.scss', 'public/css')
         .sass('resources/sass/profile.scss', 'public/css')
+        .sass('resources/sass/call.scss', 'public/css')
         .version()
         .mergeManifest();
 }
@@ -60,6 +59,7 @@ else if (argv.indexOf('--profile') > -1) {
 
 else if (argv.indexOf('--page') > -1) { 
     console.log('Running page...');
+    browserSync();
     mix
         .js('resources/js/page.js', 'public/js')
         .webpackConfig({
@@ -76,23 +76,12 @@ else if (argv.indexOf('--page') > -1) {
             },
         })
         .version()
-        .mergeManifest()
-        .browserSync({
-            proxy: 'https://telloe.app',
-            host: 'telloe.app',
-            open: false,
-            port: 8000,
-            watch: true,
-            notify: false,
-            https: {
-                key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
-                cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
-            }
-        });
+        .mergeManifest();
 }
 
 else if (argv.indexOf('--dashboard') > -1) { 
     console.log('Running dashboard...');
+    browserSync();
     mix
         .js('resources/app/dashboard/dashboard.js', 'public/js')
         .webpackConfig({
@@ -114,6 +103,7 @@ else if (argv.indexOf('--dashboard') > -1) {
 
 else if (argv.indexOf('--auth') > -1) { 
     console.log('Running auth...');
+    browserSync();
     mix
         .js('resources/app/auth/auth.js', 'public/js')
         .webpackConfig({
@@ -133,6 +123,28 @@ else if (argv.indexOf('--auth') > -1) {
         .mergeManifest();
 }
 
+
+else if (argv.indexOf('--call') > -1) { 
+    console.log('Running call...');
+    browserSync();
+    mix
+        .js('resources/js/call.js', 'public/js')
+        .webpackConfig({
+            output: {
+                chunkFilename: `js/chunks/[name]${timestamp}.js`
+            },
+            optimization: {
+                splitChunks: {
+                    chunks: 'all',
+                    cacheGroups: {
+                        vendors: false
+                    }
+                }
+            },
+        })
+        .version()
+        .mergeManifest();
+}
 
 
 else if (argv.indexOf('--widget') > -1) { 

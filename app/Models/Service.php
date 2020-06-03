@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Auth;
 
 class Service extends Model
 {
@@ -54,7 +55,12 @@ class Service extends Model
                         'time' => $timeStart->format('H:i'),
                     ];
                     $endTime = $timeStart->copy()->add(30, 'minute')->format('H:i');
-                    $bookings = Booking::where('date', $dateString)
+                    $bookings = Booking::whereHas('service', function($service) {
+                            $service->whereHas('user', function($user) {
+                                $user->where('id', Auth::user()->id);
+                            });
+                        })
+                        ->where('date', $dateString)
                         ->where('start', '<=', $timeslot['time'])
                         ->where('end', '>=', $timeslot['time'])
                         ->get();

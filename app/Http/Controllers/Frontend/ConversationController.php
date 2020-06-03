@@ -17,9 +17,9 @@ class ConversationController extends Controller
     {
         $role = Auth::user()->role->role;
         if($role == 'client') :
-            $conversations = Conversation::has('members.user')->with('members.user')->where('user_id', Auth::user()->id)->get();
+            $conversations = Conversation::has('members.user')->with('user', 'members.user')->where('user_id', Auth::user()->id)->get();
         elseif($role == 'customer'):
-            $conversations = Conversation::has('members.user')->with('members.user')->where(function($query) {
+            $conversations = Conversation::has('members.user')->with('user', 'members.user')->where(function($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->orWhereHas('members', function($members) {
                         $members->where('user_id', Auth::user()->id);
@@ -90,5 +90,22 @@ class ConversationController extends Controller
         ]);
 
         return response()->json($conversation);
+    }
+
+    public function call($id, $action)
+    {
+        $actions = ['incoming', 'outgoing'];
+        if(array_search($action, $actions) === FALSE) return abort(404);
+
+        $conversation = Conversation::findOrFail($id);
+        $this->authorize('call', $conversation);
+        $caller = Auth::user();
+        $callee = $conversation->member;
+
+        if($action == 'incoming') :
+            list($caller, $callee) = [$callee, $caller];
+        endif;
+
+        return view('frontend.call', compact('action', 'caller', 'callee', 'conversation'));
     }
 }

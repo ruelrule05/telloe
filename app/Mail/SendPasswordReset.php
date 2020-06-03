@@ -19,7 +19,7 @@ class SendPasswordReset extends Mailer
 
     public function build()
     {
-        return $this->from('noreply@snapturebox.com', config('app.name'))
+        return $this->from('noreply@telloe.com', config('app.name'))
             ->subject('Password Reset')
             ->view('emails.send-password-reset');
     }
