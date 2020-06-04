@@ -7,7 +7,7 @@
 
 Route::get('email', function() {
     $email = new App\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
-    \Mail::to('clydewinux@gmail.com')->queue($email);
+    //\Mail::to('clydewinux@gmail.com')->queue($email);
     return $email;
 });
 
