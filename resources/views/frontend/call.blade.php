@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="{{ mix('css/call.css') }}">
 </head>
 <body>
-	<div id="app">
-    	<div class="live-recorder overflow-hidden position-relative w-100 h-100">
+	<div id="app" >
+    	<div class="live-recorder overflow-hidden position-relative w-100 h-100" v-cloak>
     		<div v-if="!status" class="caller position-fixed text-center bg-white w-100 h-100">
         		<!-- Outgoing -->
         		<div v-if="action == 'outgoing'">
@@ -37,13 +37,13 @@
 
 			<!-- Ongoing -->
     		<div class="bg-black w-100 h-100 position-relative ongoing-body">
-				<button v-if="status == 'ongoing'" @click="recordCall" class="btn-record btn p-0 position-absolute text-white d-flex align-items-center" :disabled="isRecording">
-					<i></i>&nbsp;@{{ isRecording ? 'Recording...' : 'Record this call' }}</span>
+				<button v-if="status == 'ongoing'" @click="recordCall" class="btn-record btn p-0 position-absolute text-white d-flex align-items-center">
+					<i :class="{'bg-gray': !isRecording}"></i>&nbsp;@{{ isRecording ? 'Stop recording' : 'Record this call' }}</span>
 				</button>
 
 				<!-- Local camera -->
 				<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing'}">
-					<video ref="cameraPreview" :class="{'w-100 h-100 position-absolute-center': !status}"></video>
+					<video ref="cameraPreview" :class="{'w-100 h-100 position-absolute-center': !status}" muted></video>
 				</div>
 				
 				<!-- Remote camera -->
@@ -63,21 +63,32 @@
 			        <button v-else class="btn line-height-1 p-0" @click="stopShareScreen">
 			            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
 			        </button>
+			        <button v-if="!isFullScreen" class="btn line-height-1 p-0 ml-1" @click="fullScreen(true)">
+			            <expand-icon fill="white" width="20" height="20"></expand-icon>
+			        </button>
+			        <button v-else class="btn line-height-1 p-0 ml-1" @click="fullScreen(false)">
+			            <collapse-icon fill="white" width="20" height="20"></collapse-icon>
+			        </button>
 		        </div>
 	        </div>
 
 			
-			<!-- Recorded video options -->
-	        <div v-if="!status && recordedData" class="caller recorded-actions position-absolute-center w-100 h-100 bg-white">
-	        	<video ref="recordedPreview" class="w-100 h-100 position-absolute bg-black"></video>
-        		<div class="p-3 position-absolute w-100 text-center">
-        			<button class="btn btn-white d-inline-flex align-items-center" @click="downloadRecorded">
-        				<download-icon transform="scale(0.75)"></download-icon> Download
-        			</button>
-        			<button class="btn btn-white d-inline-flex align-items-center" @click="sendRecorded">
-        				Send <arrow-right-icon></arrow-right-icon>
-        			</button>
-        		</div>
+			<!-- Recorded videos -->
+	        <div xv-if="!status && recordedData.length > 0" class="position-fixed w-100 h-100 bg-light" style="z-index: 1000; top:0; left: 0">
+	        	<div class="d-flex px-2 py-3 flex-wrap">
+		        	<div class="w-50 px-2 mb-3 recorded position-relative" v-for="recorded in recordedData">
+	        			<div class="rounded recorded-preview" :style="{backgroundImage: 'url('+recorded.preview+')'}"></div>
+	        			<div>@{{ recorded.duration }}</div>
+	        			<div class="position-absolute-center">
+	        				<button class="btn btn-white d-inline-flex align-items-center" @click="downloadRecorded(recorded)">
+		        				<download-icon transform="scale(0.75)"></download-icon> Download
+		        			</button>
+		        			<button class="btn btn-white d-inline-flex align-items-center" @click="sendRecorded(recorded)">
+		        				Send <arrow-right-icon></arrow-right-icon>
+		        			</button>
+	        			</div>
+		        	</div>
+	        	</div>
 	        </div>
 		</div>
 	</div>

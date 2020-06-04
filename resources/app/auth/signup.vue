@@ -34,11 +34,13 @@
 </template>
 
 <script>
+import VueFormValidate from '../../components/vue-form-validate.vue';
+import VueButton from '../../components/vue-button.vue';
 import FacebookIcon from '../../icons/facebook';
 import GoogleIcon from '../../icons/google';
 import ArrowLeftIcon from '../../icons/arrow-left';
 export default {
-	components: {FacebookIcon, GoogleIcon, ArrowLeftIcon},
+	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon, ArrowLeftIcon},
 	data: () => ({
 		signupForm: {
 			first_name: '',

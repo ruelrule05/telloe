@@ -62,7 +62,7 @@
 				<div class="p-3 bg-white border-bottom position-relative d-flex align-items-center">
 					<div class="d-flex align-items-center">
                         <div class="user-profile-image" :style="{backgroundImage: 'url('+$root.selectedConversation.member.profile_image+')'}">
-                                <span v-if="!$root.selectedConversation.member.profile_image">{{ $root.selectedConversation.member.initials }}</span>
+                            <span v-if="!$root.selectedConversation.member.profile_image">{{ $root.selectedConversation.member.initials }}</span>
                         </div>
                         <div class="ml-2">
                             <h5 class="font-heading mb-0">{{ $root.selectedConversation.member.full_name || $root.selectedConversation.name }}</h5>
@@ -76,10 +76,10 @@
                         </div>
                     </div>
                     <div class="ml-auto">
-                        <button class="btn btn-white btn-circle-actions border" :disabled="$root.callWindow" @click="$root.initCall($root.selectedConversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
-                        <button class="btn btn-white btn-circle-actions" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
-                        <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
-                        <button class="btn btn-white btn-circle-actions" @click="detailsTab = 'profile'" :class="{'active': detailsTab == 'profile'}"><user-icon></user-icon></button>
+                        <button class="btn btn-white btn-circle-actions border" v-tooltip.bottom="'Video call'" :disabled="$root.callWindow" @click="$root.initCall($root.selectedConversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
+                        <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Record screen'" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
+                        <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Manage bookings'"" @click="detailsTab = 'bookings'" :class="{'active': detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
+                        <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Profile'" @click="detailsTab = 'profile'" :class="{'active': detailsTab == 'profile'}"><user-icon></user-icon></button>
                     </div>
 				</div>
 				<div class="p-3 overflow-y-auto flex-grow-1 bg-white" ref="message-group-container" id="message-group-container">

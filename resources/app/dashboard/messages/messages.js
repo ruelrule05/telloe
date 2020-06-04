@@ -31,6 +31,7 @@ import VideoCameraIcon from '../../../icons/video-camera';
 import Emojipicker from '../../../components/emojipicker';
 import Waveplayer from '../../../components/waveplayer';
 import VueScrollTo from 'vue-scrollto';
+import Tooltip from '../../../js/directives/tooltip';
 const emojiRegex = require('emoji-regex');
 export default {
 	components: {VueFormValidate, MessageType, CommentIcon, MicrophoneIcon, AddNoteIcon, Emojipicker, VolumeMidIcon, DocumentIcon, FilePdfIcon, FileArchiveIcon, PlayIcon, MoreHIcon, BookmarkIcon, TrashIcon, ArchiveIcon, SignInIcon, DownloadIcon, PlusIcon, UsersIcon, SearchIcon, CloseIcon, EditSquareIcon, Waveplayer, PlusCircleIcon, DuplicateAltIcon, CastIcon,CalendarDayIcon, UserIcon, VideoIcon, VideoCameraIcon,
@@ -40,7 +41,7 @@ export default {
         'screen-recorder-modal': () => import(/* webpackChunkName: "modals/screen-recorder" */ '../../../modals/screen-recorder'),
         'bookings': () => import(/* webpackChunkName: "components/bookings" */ '../../../components/bookings/bookings.vue'),
     },
-	directives: {VueScrollTo},
+	directives: {VueScrollTo, Tooltip},
 
     data: () => ({
     	conversationTab: 'active',

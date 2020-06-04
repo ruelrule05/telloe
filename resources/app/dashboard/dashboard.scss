@@ -377,7 +377,7 @@
 }
 
 // Tooltips
-.tooltip-wrapper {
+[data-tooltip-wrapper] {
     .tooltip {
         position: absolute;
         width: auto;

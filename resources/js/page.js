@@ -27,6 +27,8 @@ new Vue({
         if(queryString) {
             const urlParams = new URLSearchParams(queryString);
             const invite_token = urlParams.get('invite_token');
+            const authTab = urlParams.get('auth');
+            if(authTab) this.action = authTab;
             if(invite_token) {
                 this.invite_token = invite_token;
                 this.auth = true;

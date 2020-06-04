@@ -1,6 +1,6 @@
 export default {
 	bind(el, binding, vnode) {
-		el.classList.add('tooltip-wrapper');
+		el.setAttribute('data-tooltip-wrapper', '');
 
 		let tooltip = document.createElement('div');
 		tooltip.classList.add('tooltip');

@@ -55,7 +55,7 @@
             <!--[if mso]><table width="584" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td align="center"><![endif]-->
             <div class="o_col-6s o_sans o_text o_text-secondary o_center" style="font-family: {{ $fontFamily }};margin-top: 0px;margin-bottom: 0px;font-size: 15px;line-height: 24px;max-width: 584px;">
               <div style="background: #ffffff; padding: 25px; box-sizing: border-box;border: solid 1px #e5e5e5; box-shadow: 0 0 10px  #ddd">
-                <a class="o_text-primary" target="_blank" href="{{ config('app.url') }}" style="text-decoration: none;outline: none;color: #126de5;">{{ config('app.name') }}</a>
+                <a class="o_text-primary" target="_blank" href="{{ config('app.url') }}" style="text-decoration: none;outline: none;color: #126de5;"><img src="{{ config('app.url') }}/logo.png" height="30"></a>
                   <div style="margin-top: 40px">&nbsp;</div>
                   @yield('content')
               </div>

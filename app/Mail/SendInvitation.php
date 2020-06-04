@@ -11,10 +11,10 @@ class SendInvitation extends Mailer
     public $actionText = 'Accept Invitation';
     public $actionUrl;
 
-    public function __construct(UserCustomer $userCustomer)
+    public function __construct(UserCustomer $userCustomer, $authTab)
     {
         $this->userCustomer = $userCustomer;
-        $this->actionUrl = url("/?invite_token=$userCustomer->invite_token");
+        $this->actionUrl = url("/?invite_token=$userCustomer->invite_token&auth=$authTab");
     }
 
     /**
@@ -24,6 +24,8 @@ class SendInvitation extends Mailer
      */
     public function build()
     {
-        return $this->view('emails.send-invitation');
+        return $this->from(config('app.noreply_email'), config('app.name'))
+            ->subject('Customer Invitation')
+            ->view('emails.send-invitation');
     }
 }

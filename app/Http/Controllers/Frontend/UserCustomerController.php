@@ -28,7 +28,12 @@ class UserCustomerController extends Controller
 
         if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as customer");
 
-        $customer = User::firstOrCreate(['email' => $request->email]);
+        $authTab = 'login';
+        $customer = User::where('email', $request->email)->first();
+        if(!$customer) :
+            $customer = User::create(['email' => $request->email]);
+            $authTab = 'signup';
+        endif;
 
         if(UserCustomer::where('customer_id', $customer->id)->first()) return abort(403, "This email is already added");
 
@@ -47,7 +52,7 @@ class UserCustomerController extends Controller
         ]);
         $user_customer->load('customer');
 
-        Mail::to($user_customer->customer->email)->queue(new SendInvitation($user_customer));
+        Mail::to($user_customer->customer->email)->queue(new SendInvitation($user_customer, $authTab));
         return response()->json($user_customer);
 
     }

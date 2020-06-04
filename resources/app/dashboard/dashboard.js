@@ -134,6 +134,7 @@ window.app = new Vue({
                 let conversationUsers = this.conversationUsers(conversation);
                 let caller = conversationUsers.find((x) => x.id == data.caller_id);
                 if(caller && caller.id != this.auth.id) {
+                    this.notification_sound.play();
                     this.caller = caller;
                     this.callConversationId = conversation.id;
                     this.$refs['incomingCall'].show();
@@ -143,12 +144,16 @@ window.app = new Vue({
         this.socket.on('live_call_reject', (data) => {
             let conversation = this.conversations.find((x) => x.id == data.conversation_id);
             if(conversation) {
+                this.notification_sound.pause();
+                this.notification_sound.currentTime = 0;
                 this.$refs['incomingCall'].hide();
             }
         });
         this.socket.on('live_call_end', (data) => {
             let conversation = this.conversations.find((x) => x.id == data.conversation_id);
             if(conversation) {
+                this.notification_sound.pause();
+                this.notification_sound.currentTime = 0;
                 this.$refs['incomingCall'].hide();
             }
         });
@@ -186,6 +191,7 @@ window.app = new Vue({
 
         rejectCall() {
             this.notification_sound.pause();
+            this.notification_sound.currentTime = 0;
             this.socket.emit('live_call_reject', {
                 conversation_id: this.callConversationId,
             });
@@ -199,6 +205,8 @@ window.app = new Vue({
                 if(action == 'incoming') {
                     this.$refs['incomingCall'].hide();
                     this.callUser = this.caller;
+                    this.notification_sound.pause();
+                    this.notification_sound.currentTime = 0;
                 }
                 else if(action == 'outgoing') this.callUser = conversation.member;
 
