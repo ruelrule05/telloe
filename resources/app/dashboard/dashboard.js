@@ -225,6 +225,9 @@ window.app = new Vue({
                         this.callWindow = this.caller = this.callUser = this.callConversationId = null;
                     };
                 };
+                this.callWindow.onended = () => {
+                    this.callUser = null;
+                };
             }
         },
 

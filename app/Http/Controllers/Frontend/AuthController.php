@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserCustomer;
 use App\Models\PasswordReset;
 use App\Models\Inquiry;
 use App\Models\Booking;
@@ -66,6 +67,14 @@ class AuthController extends Controller
 		Auth::login($user);
         
         // check invite token
+        if($request->invite_token) :
+            $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
+            if($userCustomer) :
+                $userCustomer->update([
+                    'is_pending' => false
+                ]);
+            endif;
+        endif;
 		return response()->json($user);
     }
 

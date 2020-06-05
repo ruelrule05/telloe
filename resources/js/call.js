@@ -1,6 +1,4 @@
-try {
-    window.$ = window.jQuery = require('jquery');
-} catch (e) {}
+require('./bootstrap');
 window.Vue = require('vue');
 
 import io from 'socket.io-client';
@@ -22,6 +20,7 @@ new Vue ({
     components: {VideoIcon, CloseIcon, DuplicateAltIcon, DownloadIcon, ArrowRightIcon, ExpandIcon, CollapseIcon},
 
     data: () => ({
+        auth: AUTH,
         action: ACTION,
         caller: CALLER,
         callee: CALLEE,
@@ -29,8 +28,8 @@ new Vue ({
         notification_sound: null,
         pc: null,
         status: '',
-        streams: null,
-        cameraReady: false,
+        localCameraReady: false,
+        remoteCameraReady: false,
         isCalling: false,
         isAnswered: false,
         videoAnswer: null,
@@ -45,6 +44,7 @@ new Vue ({
         localStream: null,
         remoteStream: null,
         format: format,
+        endedEvent: null
     }),
 
     created() {
@@ -84,29 +84,26 @@ new Vue ({
         });
         this.socket.on('live_call_reject', (data) => {
             if(this.conversation.id == data.conversation_id) {
-                this.endCall(false);
-                this.notification_sound.pause();
+                this.close();
             }
         });
         this.socket.on('live_call_end', (data) => {
             if(this.conversation.id == data.conversation_id) {
-                this.endCall(false);
+                this.close();
             }
         });
 
-        /*window.onbeforeunload = (e) => {
+        window.onbeforeunload = (e) => {
             e = e || window.event;
-            this.socket.emit('live_call_end', {conversation_id: this.conversation.id});
-            if(this.recordedData) {
+            if(this.blobs.length > 0) {
                 let message = 'Any data will be lost. Are you sure to close this window?';
                 // For IE and Firefox prior to version 4
-                if (e) {
-                    e.returnValue = message;
-                }
+                if (e) e.returnValue = message;
                 // For Safari
                 return message;
             }
-        };*/
+        };
+        this.endedEvent = new Event('ended');
     },
 
     mounted() {
@@ -121,6 +118,13 @@ new Vue ({
                 this.answerCall();
                 break;
         }
+
+        this.$refs['remotePreview'].onplaying = () => {
+            this.remoteCameraReady = true;
+        };
+        this.$refs['cameraPreview'].onplaying = () => {
+            this.localCameraReady = true;
+        };
     },
 
     methods: {
@@ -138,7 +142,11 @@ new Vue ({
         },
 
         close() {
-            window.close();
+            if(this.blobs.length > 0) {
+                this.endCall(false);
+            } else{
+                window.close();
+            }
         },
 
         startCall() {
@@ -216,23 +224,40 @@ new Vue ({
 
         initCamera() {
             navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((streams) => {
-                this.streams = streams;
+                this.localStream = streams;
                 if(this.action == 'incoming') this.addLocalStream();
                 this.$refs['cameraPreview'].volume = 0;
-                this.$refs['cameraPreview'].srcObject = new MediaStream(this.streams.getVideoTracks());
+                this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
                 this.$refs['cameraPreview'].pause();
                 this.$refs['cameraPreview'].play();
-                this.$refs['cameraPreview'].onplaying = () => {
-                    this.cameraReady = true;
-                };
             }).catch(function(error) {
                 alert('Unable to capture your camera.');
                 console.error(error);
             });
         },
-        
+
         sendRecorded(recorded) {
-            if(recorded) this.$emit('submit', recorded);
+            if(!recorded.sent) {
+                this.$set(recorded, 'sent', true);
+                const timestamp = dayjs().valueOf();
+                let message = {
+                    user: this.auth,
+                    type: 'video',
+                    source: recorded.source,
+                    preview: recorded.preview,
+                    timestamp: timestamp,
+                    metadata: JSON.stringify({duration: recorded.duration}),
+                    conversation_id: this.conversation.id
+                };
+
+                let bodyFormData = new FormData();
+                Object.keys(message).map((k) => {
+                    bodyFormData.set(k, message[k]);
+                });
+                axios.post(`/dashboard/messages`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }}).then((response) => {
+                    this.socket.emit('message_sent', {id: response.data.message.id, conversation_id: response.data.conversation.id});
+                });
+            }
         },
 
         downloadRecorded(recorded) {
@@ -245,15 +270,14 @@ new Vue ({
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
-                //this.close();
             }
         },
 
         recordCall() {
             if(!this.isRecording) {
                 this.isRecording = true;
-                let streams = [this.remoteStream, this.streams];
-                if(this.streams) streams.push(this.streams);
+                let streams = [this.remoteStream, this.localStream];
+                if(this.localStream) streams.push(this.localStream);
                 const mixer = new MultiStreamsMixer(streams);
                 mixer.frameInterval = 1;
                 mixer.startDrawingFrames();
@@ -265,7 +289,7 @@ new Vue ({
                 canvas.width = $('.live-recorder').width();
                 canvas.height = $('.live-recorder').height();
                 let canvasContext = canvas.getContext('2d');
-                this.streams.onRender = (context, x, y, width, height, idx) => {
+                this.localStream.onRender = (context, x, y, width, height, idx) => {
                     canvasContext.save();
                     canvasContext.beginPath();
                     canvasContext.arc(60, canvas.height - 60, 50, 0, 6.28, false); //draw the circle
@@ -282,7 +306,7 @@ new Vue ({
                 };
 
                 let finalStream = new MediaStream();
-                let audioStream = new MediaStream(this.streams.getAudioTracks());
+                let audioStream = new MediaStream(this.localStream.getAudioTracks());
                 audioStream.getTracks('audio').forEach((track) => {
                     finalStream.addTrack(track);
                 });
@@ -299,18 +323,15 @@ new Vue ({
             } else {
                 this.isRecording = false;
                 this.callRecorder.stop();
+                this.callRecorder = null;
 
                 const timestamp = dayjs().valueOf();
-                let blob = new Blob(this.blobs, {
+                let blob = new File(this.blobs, timestamp, {
                     type: this.blobs[0].type,
-                    name: timestamp,
                 });
                 let data = {
-                    //user: this.auth,
                     source: blob,
-                    //type: 'video',
                     timestamp: timestamp,
-                    //created_at: dayjs(timestamp).format('hh:mm A'),
                 };
                 let video = document.createElement('video');
                 video.src = URL.createObjectURL(blob);
@@ -332,27 +353,25 @@ new Vue ({
                                     data.preview = reader.result;
                                     data.duration = format(video.duration * 1000, { leading: true });
                                     this.recordedData.push(data);
-
-                                    console.log(this.recordedData);
+                                    this.blobs = [];
                                 };
                             });
                         }, 150);
                     };
                 });
-                this.blobs = [];
             }
         },
 
         async stopShareScreen() {
-            this.streams.getVideoTracks().forEach(function(track) {
+            this.localStream.getVideoTracks().forEach(function(track) {
                 track.stop();
             });
-            this.streams = await navigator.mediaDevices.getUserMedia({video: true}).catch((e) => {  });
-            if(this.streams) {
-                let cameraTrack = this.streams.getVideoTracks()[0];
+            this.localStream = await navigator.mediaDevices.getUserMedia({video: true}).catch((e) => {  });
+            if(this.localStream) {
+                let cameraTrack = this.localStream.getVideoTracks()[0];
                 this.videoSender.replaceTrack(cameraTrack);
                 this.$refs['cameraPreview'].srcObject = null;
-                this.$refs['cameraPreview'].srcObject = new MediaStream(this.streams.getVideoTracks());
+                this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
                 this.$refs['cameraPreview'].play();
                 this.isScreenSharing = false;
             }
@@ -361,17 +380,17 @@ new Vue ({
         async shareScreen() {
             let screenStreams = await navigator.mediaDevices.getDisplayMedia({video: true}).catch((e) => {  });
             if(screenStreams) {
-                this.streams.getVideoTracks().forEach(function(track) {
+                this.localStream.getVideoTracks().forEach(function(track) {
                     track.stop();
                 });
-                this.streams = screenStreams;
-                let screenTrack = this.streams.getVideoTracks()[0];
+                this.localStream = screenStreams;
+                let screenTrack = this.localStream.getVideoTracks()[0];
                 this.videoSender.replaceTrack(screenTrack);
                 this.$refs['cameraPreview'].srcObject = null;
-                this.$refs['cameraPreview'].srcObject = new MediaStream(this.streams.getVideoTracks());
+                this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
                 this.$refs['cameraPreview'].play();
                 this.isScreenSharing = true;
-                this.streams.getTracks()[0].addEventListener('ended', () => {
+                this.localStream.getTracks()[0].addEventListener('ended', () => {
                     this.stopShareScreen();
                 });
             }
@@ -412,45 +431,17 @@ new Vue ({
 
         endCall(emit = true) {
             this.notification_sound.pause();
-            setTimeout(() => {
-                this.status = '';
-            }, 150);
+            if(this.status == 'ongoing') this.status = 'ended';
             if(emit) this.socket.emit('live_call_end', {conversation_id: this.conversation.id});
 
             if(this.isRecording) this.recordCall();
-            if(this.recordedData.length == 0) {
-                this.close();
-                /*this.$nextTick(() => {
-                    this.$refs['recordedPreview'].src = URL.createObjectURL(blob);
-                    this.$refs['recordedPreview'].play().then(() => {
-                        this.$refs['recordedPreview'].currentTime = 10e99;
-                        this.$refs['recordedPreview'].onseeked = () => {
-                            setTimeout(() => {
-                                let duration = this.$refs['recordedPreview'].duration;
-                                this.recordedData.duration = this.secondsToDuration(duration, 14, 5);
-                                let canvas = document.createElement("canvas");
-                                canvas.width = this.$refs['recordedPreview'].videoWidth / 2;
-                                canvas.height = this.$refs['recordedPreview'].videoHeight / 2;
-                                let context = canvas.getContext('2d');
-                                context.fillStyle = "#000000";
-                                context.fillRect(0, 0, canvas.width, canvas.height);
-                                context.drawImage(this.$refs['recordedPreview'], 0, 0, canvas.width, canvas.height);
-                                canvas.toBlob((blob) => {
-                                    let reader = new FileReader();
-                                    reader.onload = () => {
-                                        this.$set(this.recordedData, 'preview', reader.result);
-                                    };
-                                    reader.readAsDataURL(blob);
-                                });
-                           });
-                        };
-                    });
-                });*/
-            }
+            else this.close();
+
+            window.dispatchEvent(this.endedEvent);
+            this.stopStreams();
         },
 
         rejectCall() {
-            this.notification_sound.pause();
             this.socket.emit('live_call_reject', {
                 conversation_id: this.conversation.id,
             });
@@ -458,10 +449,18 @@ new Vue ({
         },
 
         addLocalStream() {
-            this.streams.getTracks().forEach((track) => {
-                let sender = this.pc.addTrack(track, this.streams);
+            this.localStream.getTracks().forEach((track) => {
+                let sender = this.pc.addTrack(track, this.localStream);
                 if(track.kind == 'video') this.videoSender = sender;
             });
+        },
+
+        stopStreams() {
+            if (this.localStream) {
+                this.localStream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+            }
         },
 
         secondsToDuration(seconds, limit = 11, end = 8) {
@@ -473,8 +472,8 @@ new Vue ({
     },
 
     /*beforeDestroy() {
-        if (this.streams) {
-            this.streams.getTracks().forEach(function(track) {
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(function(track) {
                 track.stop();
             });
         }

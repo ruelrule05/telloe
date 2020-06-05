@@ -19,7 +19,7 @@
 			            </div>
 			            <h3 class="font-heading">@{{ callee.full_name }}</h3>
 			            <h6 class="font-weight-light mb-5">Calling..</h6>
-			            <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="close()">
+			            <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="endCall()">
 			                <close-icon></close-icon>
 			            </button>
             		</div>
@@ -28,7 +28,7 @@
 
 
     		<!-- Camera loader -->
-	        <div v-if="!cameraReady" class="position-absolute-center w-100 h-100 text-center bg-black camera-loader">
+	        <div v-if="!localCameraReady || !remoteCameraReady" class="position-absolute-center w-100 h-100 text-center bg-black camera-loader">
 	            <div class="position-absolute-center">
 	            	<div class="spinner-border text-primary" role="status"></div>
 	           		<div class="text-white mt-3">Loading camera..</div>
@@ -74,17 +74,20 @@
 
 			
 			<!-- Recorded videos -->
-	        <div xv-if="!status && recordedData.length > 0" class="position-fixed w-100 h-100 bg-light" style="z-index: 1000; top:0; left: 0">
+	        <div v-if="status == 'ended' && recordedData.length > 0" class="recorded-data position-fixed w-100 h-100 bg-light">
+	        	<div class="text-right mb-2 pr-1">
+	        		<button class="btn close position-static float-none p-0 m-0" @click="close"><close-icon width="30" height="30"></close-icon></button>
+	        	</div>
 	        	<div class="d-flex px-2 py-3 flex-wrap">
 		        	<div class="w-50 px-2 mb-3 recorded position-relative" v-for="recorded in recordedData">
 	        			<div class="rounded recorded-preview" :style="{backgroundImage: 'url('+recorded.preview+')'}"></div>
 	        			<div>@{{ recorded.duration }}</div>
-	        			<div class="position-absolute-center">
-	        				<button class="btn btn-white d-inline-flex align-items-center" @click="downloadRecorded(recorded)">
+	        			<div class="position-absolute-center w-100 text-center">
+	        				<button class="btn btn-sm btn-white d-inline-flex align-items-center" @click="downloadRecorded(recorded)">
 		        				<download-icon transform="scale(0.75)"></download-icon> Download
 		        			</button>
-		        			<button class="btn btn-white d-inline-flex align-items-center" @click="sendRecorded(recorded)">
-		        				Send <arrow-right-icon></arrow-right-icon>
+		        			<button class="btn btn-sm btn-white d-inline-flex align-items-center" :disabled="recorded.sent" @click="sendRecorded(recorded)">
+		        				@{{ recorded.sent ? 'Sent' : 'Send' }} <arrow-right-icon></arrow-right-icon>
 		        			</button>
 	        			</div>
 		        	</div>
@@ -94,6 +97,7 @@
 	</div>
 
 	<script>
+		const AUTH = JSON.parse('{!! json_encode(Auth::user()) !!}');
 		const WS_URL = '{{ env('WS_URL') }}';
 		const ACTION = '{{ $action }}';
 		const CALLER = JSON.parse('{!! json_encode($caller) !!}');

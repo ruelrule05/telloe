@@ -96,9 +96,6 @@
         display: inline-block;
     }
 }
-.close {
-    right: 0;
-}
 .preview-wrapper.preview-thumb{
     position: absolute;
     bottom: 10px;
@@ -135,4 +132,9 @@ video, canvas {
         bottom: 0;
 
     }
+}
+.recorded-data{
+    z-index: 100; 
+    top:0; 
+    left: 0;
 }
