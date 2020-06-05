@@ -22,14 +22,14 @@
 				<div v-for="customer in customers" class="border-bottom py-2 px-3">
 					<div class="d-flex align-items-center flex-nowrap">
 						<div class="d-flex align-items-center w-35">
-	                        <div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+customer.customer.profile_image+')'}">
-	                                <span v-if="!customer.customer.profile_image">{{ customer.customer.initials }}</span>
+	                        <div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+(customer.customer || customer).profile_image+')'}">
+	                                <span v-if="!(customer.customer || customer).profile_image">{{ (customer.customer || customer).initials }}</span>
 	                        </div>
 	                        <div class="ml-2 overflow-hidden flex-1">
-	                            <h6 class="font-heading mb-0 line-height-1 text-ellipsis">{{ customer.customer.full_name }}</h6>
+	                            <h6 class="font-heading mb-0 line-height-1 text-ellipsis">{{ (customer.customer || customer).full_name }}</h6>
 	                        </div>
 	                    </div>
-	                    <div class="flex-grow-1 w-35">{{ customer.customer.email }}</div>
+	                    <div class="flex-grow-1 w-35">{{ (customer.customer || customer).email }}</div>
 	                    <div class="flex-grow-1 w-15" :class="{'text-gray font-weight-light':customer.is_pending}">{{ customer.is_pending ? 'Pending' : 'Accepted' }}</div>
 	                    <div class="flex-grow-1 w-15 text-right">
 	                    	<div class="dropdown">
@@ -54,6 +54,14 @@
 					<label class="form-label">Email</label>
 					<input type="email" class="form-control" v-model="selectedCustomer.email" data-required>
 				</div>
+				<div class="form-group">
+					<label class="form-label">First Name (Optional)</label>
+					<input type="text" class="form-control" v-model="selectedCustomer.first_name">
+				</div>
+				<div class="form-group">
+					<label class="form-label">Last Name (Optional)</label>
+					<input type="text" class="form-control" v-model="selectedCustomer.last_name">
+				</div>
 				<div class="d-flex justify-content-end">
 					<button class="btn btn-link text-body mr-2" type="button" data-dismiss="modal">Cancel</button>
 					<button class="btn btn-primary" type="submit">Add</button>
@@ -65,7 +73,7 @@
 			<template v-if="selectedCustomer.id">
 				<h5 class="font-heading text-center">Delete Customer</h5>
 				<p class="text-center mt-3">
-					Are you sure to delete customer <strong>{{ selectedCustomer.customer.full_name.trim() || selectedCustomer.customer.email }}</strong>? <br />
+					Are you sure to delete customer <strong>{{ ((selectedCustomer.customer || selectedCustomer).full_name.trim()) || (selectedCustomer.customer || selectedCustomer).email }}</strong>? <br />
 					<span class="text-danger">This action cannot be undone</span>
 				</p>
 				<div class="d-flex">

@@ -30,13 +30,9 @@ class UserCustomerController extends Controller
 
         $authTab = 'login';
         $customer = User::where('email', $request->email)->first();
-        if(!$customer) :
-            $customer = User::create(['email' => $request->email]);
-            $authTab = 'signup';
-        endif;
+        if(!$customer) $authTab = 'signup';
 
-        if(UserCustomer::where('customer_id', $customer->id)->first()) return abort(403, "This email is already added");
-
+        if($customer && UserCustomer::where('customer_id', $customer->id)->first()) return abort(403, "This email is already added");
 
         $invite_token = '';
         while(true) :
@@ -46,13 +42,16 @@ class UserCustomerController extends Controller
         endwhile;
         $user_customer = UserCustomer::create([
             'user_id' => Auth::user()->id,
-            'customer_id' => $customer->id,
+            'email' => $request->email,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'customer_id' => $customer->id ?? null,
             'is_pending' => true,
             'invite_token' => $invite_token,
         ]);
         $user_customer->load('customer');
 
-        Mail::to($user_customer->customer->email)->queue(new SendInvitation($user_customer, $authTab));
+        Mail::to($user_customer->email)->queue(new SendInvitation($user_customer, $authTab));
         return response()->json($user_customer);
 
     }

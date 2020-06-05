@@ -29,9 +29,10 @@ export default {
 		store() {
 			if(this.selectedCustomer.email) {
 				this.$refs['addModal'].hide();
-				axios.post('/dashboard/user_customers', {email: this.selectedCustomer.email}).then((response) => {
+				axios.post('/dashboard/user_customers', this.selectedCustomer).then((response) => {
 					this.customers.unshift(response.data);
 				});
+				this.selectedCustomer = {};
 			}
 		},
 

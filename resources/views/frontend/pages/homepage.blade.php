@@ -422,3 +422,9 @@
 	</div>
 </div>
 @stop
+
+@section('scripts')
+<script>
+	const USER_CUSTOMER = {!! $userCustomer ? "JSON.parse('".json_encode($userCustomer)."');" : 'null' !!};
+</script>
+@stop

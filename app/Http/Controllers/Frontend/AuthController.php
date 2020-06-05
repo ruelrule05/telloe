@@ -39,6 +39,15 @@ class AuthController extends Controller
                 ];
 
                 // check invite token
+                if($request->invite_token) :
+                    $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+                    if($userCustomer) :
+                        $userCustomer->update([
+                            'customer_id' => $user->id,
+                            'is_pending' => false
+                        ]);
+                    endif;
+                endif;
                 return response()->json($response);
             else:
                 return abort(403, 'Invalid password');
@@ -57,25 +66,40 @@ class AuthController extends Controller
 			'password' => 'required',
 		]);
         $widget = Widget::create([]);
+
+        $i = '';
+        $username = strtolower($request->first_name).strtolower($request->last_name);
+        while(true):
+            if(!User::where('username', $username)->first()) break;
+            $i = $i == '' ? 1 : $i++;
+            $username = $username.$i;
+        endwhile;
 		$user = User::create([
+            'username' => $username,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'widget_id' => $widget->id
+            'widget_id' => $widget->id,
+            'last_online' => NULL
         ]);
 		Auth::login($user);
         
         // check invite token
         if($request->invite_token) :
-            $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
+            $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
             if($userCustomer) :
                 $userCustomer->update([
+                    'customer_id' => $user->id,
                     'is_pending' => false
                 ]);
             endif;
         endif;
-		return response()->json($user);
+
+        $response = [
+            'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
+        ];
+		return response()->json($response);
     }
 
 
