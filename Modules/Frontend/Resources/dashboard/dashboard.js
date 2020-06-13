@@ -31,7 +31,37 @@ const router = new VueRouter({
                 {
                     name: 'conversations',
                     path: 'conversations/:id?',
-                    component: () => import(/* webpackChunkName: "conversations" */ './components/conversations/conversations.vue'),
+                    component: () => import(/* webpackChunkName: "dashboard/conversations" */ './components/conversations/conversations.vue'),
+                },
+                {
+                    path: 'bookings',
+                    component: {
+                        render(c) {
+                            return c('router-view');
+                        },
+                    },
+                    children: [
+                        {
+                            path: 'calendar',
+                            name: 'calendar',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/calendar" */ './components/bookings/calendar/calendar.vue'),
+                        },
+                        {
+                            path: 'services',
+                            name: 'services',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/services" */ './components/bookings/services/services.vue'),
+                        },
+                        {
+                            path: 'customers',
+                            name: 'customers',
+                            component: () => import(/* webpackChunkName: "dashboard/bookings/customers" */ './components/bookings/customers/customers.vue'),
+                        },
+                    ]
+                },
+                {
+                    name: 'account',
+                    path: 'account',
+                    component: () => import(/* webpackChunkName: "dashboard/account" */ './components/account/account.vue'),
                 },
                 
             ],

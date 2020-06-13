@@ -9,7 +9,7 @@
 					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
 				</div>
                 <div class="ml-auto dropleft pr-3">
-                    <button class="btn btn-secondary btn-sm badge-pill line-height-1 p-1 btn-new-chat" data-toggle="modal" data-target="#newConversationModal"><plus-icon width="20" height="20"></plus-icon></button>
+                    <button class="btn btn-secondary btn-sm badge-pill btn-new-chat d-flex align-items-center" data-toggle="modal" data-target="#newConversationModal"><plus-icon width="10" height="10" transform="scale(2)" class="mr-1"></plus-icon>&nbsp;New Chat</button>
                 </div>
 			</div>
 

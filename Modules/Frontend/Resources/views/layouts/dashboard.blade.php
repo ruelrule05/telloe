@@ -48,13 +48,13 @@
 										</button>
 										<div class="collapse bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
 											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<strong class="text-body pl-3">Calendar</strong>
+												<span class="text-body pl-3">Calendar</span>
 											</router-link>
 											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<strong class="text-body pl-3">Services</strong>
+												<span class="text-body pl-3">Services</span>
 											</router-link>
 											<router-link to="/dashboard/bookings/customers" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<strong class="text-body pl-3">Customers</strong>
+												<span class="text-body pl-3">Customers</span>
 											</router-link>
 										</div>
 									</template>
@@ -92,10 +92,10 @@
 							    		<user-circle-icon height="18" width="18" class="mr-2" fill="#888"></user-circle-icon>
 							    		&nbsp;Account
 							    	</router-link>
-							    	<router-link to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
+							    	<!-- <router-link to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
 							    		<shopping-bag-icon height="18" width="18" class="mr-2" fill="#888"></shopping-bag-icon>
 							    		&nbsp;Billing
-							    	</router-link>
+							    	</router-link> -->
   									<div class="dropdown-divider"></div>
 							    	<form action="/logout" method="POST">
 							    		@csrf

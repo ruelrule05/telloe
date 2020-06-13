@@ -39,6 +39,7 @@ Route::group(
             Route::apiResource('notes', 'NoteController');
             Route::apiResource('bookings', 'BookingController');
             Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
+            Route::apiResource('user_customers', 'UserCustomerController');
 
             Route::get('users/search', 'UserController@search')->middleware('auth');
             Route::get('tags/search', 'DashboardController@searchTags')->middleware('auth');
@@ -54,7 +55,6 @@ Route::group(
                 'prefix' => 'dashboard',
                 'middleware' => 'auth'
             ], function() {
-                Route::resource('user_customers', 'UserCustomerController');
                 Route::resource('conversation_members', 'ConversationMemberController');
                 Route::get('widget', 'WidgetController@show');
                 Route::put('widget', 'WidgetController@update');

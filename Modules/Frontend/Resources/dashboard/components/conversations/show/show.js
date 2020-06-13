@@ -71,6 +71,9 @@ export default {
             if(this.$refs['messageInput']) this.$refs['messageInput'].focus();
             this.scrollDown();
 		},
+        'conversation.ready': function(value) {
+            if(value) this.scrollDown();
+        },
         '$route.params.id': function(value) {
             if(value) this.showConversation(value);
         }

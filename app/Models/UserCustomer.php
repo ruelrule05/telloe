@@ -17,7 +17,13 @@ class UserCustomer extends Model
 
     public function customer() 
     {
-    	return $this->belongsTo(User::class, 'customer_id');
+    	return $this->belongsTo(User::class, 'customer_id')->withDefault(function($customer, $userCustomer) {
+            $customer->first_name = $userCustomer->attributes['first_name'];
+            $customer->last_name = $userCustomer->attributes['last_name'];
+            $customer->email = $userCustomer->attributes['email'];
+            $customer->initials = strtoupper(substr($userCustomer->attributes['first_name'], 0, 1) . substr($userCustomer->attributes['last_name'], 0, 1));
+            $customer->last_online = null;
+        });
     }
 
     public function getFullNameAttribute()

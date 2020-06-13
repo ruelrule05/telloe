@@ -6,6 +6,7 @@ import services from './modules/services';
 import notes from './modules/notes';
 import bookings from './modules/bookings';
 import user_blacklisted_services from './modules/user_blacklisted_services';
+import user_customers from './modules/user_customers';
 
 
 Vue.use(Vuex);
@@ -18,5 +19,6 @@ export default new Vuex.Store({
 		notes,
 		bookings,
 		user_blacklisted_services,
+		user_customers,
 	},
 });

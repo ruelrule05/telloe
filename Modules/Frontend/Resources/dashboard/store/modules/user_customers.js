@@ -1,4 +1,4 @@
-const name = 'services';
+const name = 'user_customers';
 
 const state = () => ({
     ready: false,
@@ -15,11 +15,6 @@ const mutations = {
     store(state, data) {
         state.index.unshift(data);
     },
-
-    update(state, data) {
-        let service = state.index.find((x) => x.id == data.id);
-        if(service) Object.assign(service, data);
-    },
     
     delete(state, data) {
         state.index.splice(state.index.findIndex((x) => x.id == data.id), 1);
@@ -27,8 +22,9 @@ const mutations = {
 };
 
 const actions = {
-    index({ commit }) {
-        axios.get(`/${name}`).then((response) => {
+    index({ commit, rootState }, user_id) {
+        const user_query = user_id ? `?user_id=${user_id}` : '';
+        axios.get(`/${name}${user_query}`).then((response) => {
             commit('index', response.data);
         });
     },
@@ -36,12 +32,6 @@ const actions = {
     store({ commit }, data) {
         axios.post(`/${name}`, data).then((response) => {
             commit('store', response.data);
-        });
-    },
-
-    update({ commit }, data) {
-        axios.put(`/${name}/${data.id}`, data).then((response) => {
-            commit('update', response.data);
         });
     },
 
