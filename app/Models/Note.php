@@ -8,16 +8,29 @@ use Carbon\Carbon;
 class Note extends Model
 {
     //
-    protected $fillable = ['conversation_id', 'notes'];
-
+    protected $fillable = ['conversation_id', 'notes', 'tags'];
+    protected $appends = ['created_at_format'];
+    protected $casts = [
+        'tags' => 'array',
+    ];
     public function conversation()
     {
     	return $this->belongsTo(Conversation::class);
     }
 
 
-    public function getCreatedAtAttribute($value)
+    public function getCreatedAtFormatAttribute()
     {
-    	return Carbon::parse($value)->format('h:iA \\o\\n D');
+        return Carbon::parse($this->attributes['created_at'])->format('h:iA \\o\\n D');
+    }
+    
+    
+    protected function castAttribute($key, $value)
+    {
+        if ($this->getCastType($key) == 'array' && is_null($value)) {
+            return [];
+        }
+
+        return parent::castAttribute($key, $value);
     }
 }

@@ -14,8 +14,8 @@ if (production) {
 if (argv.indexOf('--css') > -1) { 
     console.log('Running css...');
     mix
+        .sass('resources/dashboard/dashboard.scss', 'public/css')
         .sass('resources/app/auth/auth.scss', 'public/css')
-        .sass('resources/app/dashboard/dashboard.scss', 'public/css')
         .sass('resources/sass/page.scss', 'public/css')
         .sass('resources/sass/profile.scss', 'public/css')
         .sass('resources/sass/call.scss', 'public/css')
@@ -83,7 +83,7 @@ else if (argv.indexOf('--dashboard') > -1) {
     console.log('Running dashboard...');
     browserSync();
     mix
-        .js('resources/app/dashboard/dashboard.js', 'public/js')
+        .js('resources/dashboard/dashboard.js', 'public/js')
         .webpackConfig({
             output: {
                 chunkFilename: `js/chunks/[name]${timestamp}.js`

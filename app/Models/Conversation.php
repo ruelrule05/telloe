@@ -9,11 +9,12 @@ use Auth;
 class Conversation extends Model
 {
     //
-    protected $fillable = ['user_id', 'metadata', 'source', 'status', 'name', 'tags'];
+    protected $fillable = ['user_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
     public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
+        'custom_fields' => 'array',
     ];
 
     public function user()
@@ -31,6 +32,12 @@ class Conversation extends Model
     	return $this->hasMany(Message::class);
     }
 
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class)->orderBy('created_at', 'DESC');
+    }
+
     public function getMemberAttribute()
     {
         $member = null;
@@ -44,6 +51,11 @@ class Conversation extends Model
                     $member = $this->user;
                     break;
             endswitch;
+        else :
+            $member = [
+                'profile_image' => '',
+                'initials' => 'G'
+            ];
         endif;
 
         return $member;
@@ -51,23 +63,18 @@ class Conversation extends Model
 
 
 
-    public function notes()
-    {
-        return $this->hasMany(Note::class);
-    }
-
-
     public function getLastMessageAttribute()
     {
         $last_message = Message::where('conversation_id', $this->attributes['id'])->latest('created_at')->first();
-        if ($last_message){
-            $last_message = $last_message->toArray();
-            if (Auth::check() && $last_message['user_id'] == Auth::user()->id)
-            {
+        if ($last_message) :
+            $last_message = $last_message->load('user')->toArray();
+            if (Auth::check() && $last_message['user_id'] == Auth::user()->id) :
                 $last_message['message'] = 'You: ' . $last_message['message'];
                 $last_message['is_read'] = 1;
-            }
-        }
+            elseif ($this->members()->count() > 1) :
+                $last_message['message'] = $last_message['user']['first_name'] . ': ' . $last_message['message'];
+            endif;
+        endif;
 
         return $last_message ?? [ 
             'timestamp' => 0,
@@ -81,5 +88,15 @@ class Conversation extends Model
     public function getTimestampAttribute()
     {
         return $this->created_at->getPreciseTimestamp(3);
+    }
+
+    
+    protected function castAttribute($key, $value)
+    {
+        if ($this->getCastType($key) == 'array' && is_null($value)) {
+            return [];
+        }
+
+        return parent::castAttribute($key, $value);
     }
 }

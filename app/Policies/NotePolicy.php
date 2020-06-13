@@ -20,8 +20,13 @@ class NotePolicy
         //
     }
 
+    public function update(User $user, Note $note)
+    {
+        return $note->conversation->user_id == $user->id;
+    }
+
     public function delete(User $user, Note $note)
     {
-        return $note->conversation->widget->user_id == $user->id;
+        return $note->conversation->user_id == $user->id;
     }
 }

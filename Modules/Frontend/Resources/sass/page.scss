@@ -1,0 +1,116 @@
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
+@import 'node_modules/v-color/dist/index';
+@import '../../public/fonts/avenir-next';
+@import '../sass/variables';
+@import 'node_modules/bootstrap/scss/grid';
+@import 'node_modules/bootstrap/scss/buttons';
+@import 'node_modules/bootstrap/scss/button-group';
+@import 'node_modules/bootstrap/scss/close';
+@import 'node_modules/bootstrap/scss/dropdown';
+@import 'node_modules/bootstrap/scss/badge';
+@import 'node_modules/bootstrap/scss/type';
+@import 'node_modules/bootstrap/scss/navbar';
+@import 'node_modules/bootstrap/scss/nav';
+@import 'node_modules/bootstrap/scss/forms';
+@import 'node_modules/bootstrap/scss/modal';
+@import 'node_modules/bootstrap/scss/transitions';
+@import 'node_modules/bootstrap/scss/spinners';
+@import 'node_modules/bootstrap/scss/card';
+@import 'node_modules/bootstrap/scss/media';
+@import 'node_modules/bootstrap/scss/tables';
+@import 'node_modules/bootstrap/scss/reboot';
+@import 'node_modules/bootstrap/scss/list-group';
+@import 'node_modules/bootstrap/scss/utilities';
+
+[v-cloak]{
+    opacity: 0;
+}
+/**,
+*:before,
+*:after {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+}*/
+* {
+    /*&::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 6px;
+        height: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+        cursor: pointer;
+        border-radius: 30px;
+        background: rgba(black, 0.4);
+        transition: background 2s ease !important;
+        border: 0;
+    }
+    &::-webkit-scrollbar-track {
+        display: none;
+    }*/
+}
+.font-heading{
+    font-family: 'Avenir Next', sans-serif;
+}
+.home-content{
+    padding: 20vh 15vh;
+}
+
+.hero{
+    h2{
+        line-height: 1.5;
+    }
+}
+.home-content-2{
+    img {
+        top: 50%;
+        transform: translateY(-50%);
+        right: -40px;
+    }
+}
+.home-content-3{
+    img {
+        top: 50%;
+        transform: translateY(-50%);
+        right: -60px;
+        width: 45%;
+    }
+}
+.home-content-6{
+    img {
+        top: 50%;
+        transform: translateY(-50%);
+        right: -70px;
+    }
+}
+.range-slider{
+    .range-slider-rail, .range-slider-fill {
+        height: 10px !important;
+        border-radius: 15px !important;
+    }
+    .range-slider-fill{
+        background-color: #8E98B3 !important
+    }
+    .range-slider-knob{
+        background-color: #2D2C68 !important;
+        border: solid 2px white;
+    }
+}
+.cursor-pointer{
+    cursor: pointer !important;
+}
+.btn {
+    .spinner {
+        position: absolute;
+        z-index: 1;
+        top: 49%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 26px;
+    }
+}
+.opacity-0{
+    opacity: 0 !important;
+}

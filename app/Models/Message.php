@@ -8,12 +8,14 @@ use Carbon\Carbon;
 class Message extends Model
 {
     //
-    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history'];
-    protected $appends = ['user', 'created_diff'];
+    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
+    protected $appends = ['created_at_format', 'created_diff'];
+   
     protected $casts = [
         'metadata' => 'array',
         'is_read' => 'boolean',
         'is_history' => 'boolean',
+        'tags' => 'array',
     ];
 
     public function conversation()
@@ -21,14 +23,20 @@ class Message extends Model
     	return $this->belongsTo(Conversation::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
     /*public function user()
     {
         return $this->belongsTo(User::class) ?? ['dwa'];
     }*/
 
-    public function getCreatedAtAttribute($value)
+    public function getCreatedAtFormatAttribute()
     {
-    	return Carbon::parse($value)->format('h:iA \\o\\n D');
+    	return Carbon::parse($this->attributes['created_at'])->format('h:iA \\o\\n D');
     }
 
 
@@ -48,7 +56,7 @@ class Message extends Model
         return $value ? config('app.url') . $value : false;
     }
 
-    public function getUserAttribute()
+    /*public function getUserAttribute()
     {
         if($this->attributes['user_id']) :
             $user = User::findOrFail($this->attributes['user_id']);
@@ -65,5 +73,15 @@ class Message extends Model
         endif;
 
         return $user;
+    }*/
+
+    
+    protected function castAttribute($key, $value)
+    {
+        if ($this->getCastType($key) == 'array' && is_null($value)) {
+            return [];
+        }
+
+        return parent::castAttribute($key, $value);
     }
 }

@@ -35,4 +35,9 @@ class ServicePolicy
         return $user->id == $service->user_id;
     }
 
+    public function blacklist(User $user, Service $service)
+    {
+        return $user->id == $service->user_id;
+    }
+
 }

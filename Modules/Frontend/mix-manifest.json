@@ -1,0 +1,8 @@
+{
+    "/public/js/dashboard.js": "/public/js/dashboard.js",
+    "/js/chunks/conversations.js": "/js/chunks/conversations.js",
+    "/js/chunks/modals/audio-recorder.js": "/js/chunks/modals/audio-recorder.js",
+    "/js/chunks/modals/file-view.js": "/js/chunks/modals/file-view.js",
+    "/js/chunks/modals/screen-recorder.js": "/js/chunks/modals/screen-recorder.js",
+    "/js/chunks/modals/video-recorder.js": "/js/chunks/modals/video-recorder.js"
+}

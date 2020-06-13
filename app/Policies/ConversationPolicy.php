@@ -41,6 +41,11 @@ class ConversationPolicy
         return $user->id == $conversation->user_id || $user->id == $conversation->user_id;
     }
 
+    public function getNotes(User $user, Conversation $conversation)
+    {
+        return $user->id == $conversation->user_id || $user->id == $conversation->user_id;
+    }
+
     public function addMember(User $user, Conversation $conversation)
     {
         return $user->id == $conversation->user_id || $user->id == $conversation->user_id;
