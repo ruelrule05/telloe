@@ -1,6 +1,6 @@
 <template>
 	<div class="bg-white">
-		<div class="conversation-list d-flex flex-column position-relative">
+		<div class="conversation-list d-flex flex-column h-100 position-relative">
 			<div class="d-flex align-items-center">
 				<div class="py-3 px-2">
 					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
@@ -13,38 +13,43 @@
                 </div>
 			</div>
 
-			<div class="overflow-auto px-3 pb-3">
-				<div v-for="conversation in orderedConversations" v-if="conversation.status == conversationTab" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
-			  		<div class="position-absolute conversation-dropdown dropleft opacity-0 pr-2">
-                        <button class="btn btn-sm btn-light p-1 badge-pill line-height-0" type="button" data-toggle="dropdown" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
-                        <div class="dropdown-menu py-1">
-                            <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
-                            <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2"" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+			<div class="overflow-auto px-3 pb-3 position-relative h-100" v-if="ready">
+                <div v-if="conversations.length == 0" class="position-absolute-center w-100 text-center font-weight-light text-gray">
+                    You don't have any conversations yet.
+                </div>
+                <template v-else>
+    				<div v-for="conversation in orderedConversations" v-if="conversation.status == conversationTab" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
+    			  		<div class="position-absolute conversation-dropdown dropleft opacity-0 pr-2">
+                            <button class="btn btn-sm btn-light p-1 badge-pill line-height-0" type="button" data-toggle="dropdown" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
+                            <div class="dropdown-menu py-1">
+                                <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
+                                <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2"" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                            </div>
                         </div>
-                    </div>
-	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
-						<div class="media align-items-center conversation-members">
-						  	<div class="user-profile-image position-relative" :class="{'rounded bg-transparent': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
-						  		<span v-if="conversation.members.length == 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
-                                <div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
-                                    <div class="w-50 position-relative conversation-members-container" v-for="(member, index) in conversation.members" v-if="index < 4">
-                                        <div class="line-height-0 user-profile-image user-profile-image-xs overflow-hidden" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
-                                            <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
-                                            <span v-if="index == 3 && conversation.members.length > 4" class="line-height-0 conversation-members-more w-100 h-100">
-                                                <span class="position-absolute-center">+{{ conversation.members.length - 4 }}</span>
-                                            </span>
+    	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
+    						<div class="media align-items-center conversation-members">
+    						  	<div class="user-profile-image position-relative" :class="{'rounded bg-transparent': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
+    						  		<span v-if="conversation.members.length == 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
+                                    <div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
+                                        <div class="w-50 position-relative conversation-members-container" v-for="(member, index) in conversation.members" v-if="index < 4">
+                                            <div class="line-height-0 user-profile-image user-profile-image-xs overflow-hidden" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
+                                                <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
+                                                <span v-if="index == 3 && conversation.members.length > 4" class="line-height-0 conversation-members-more w-100 h-100">
+                                                    <span class="position-absolute-center">+{{ conversation.members.length - 4 }}</span>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-						  	</div> 
-						  	<div class="media-body pl-3">
-	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
-	                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="mb-0 text-gray str-limit line-height-sm font-weight-light conversation-message-preview" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></div>           
-						  	</div>
-	                        <small class="text-gray font-weight-light text-nowrap conversation-time">{{ conversation.last_message.created_diff }}</small>   
-						</div>
-					</div>
-				</div>
+    						  	</div> 
+    						  	<div class="media-body pl-3">
+    	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
+    	                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="mb-0 text-gray str-limit line-height-sm font-weight-light conversation-message-preview" :class="[conversation.last_message.is_read ? 'text-gray' : 'text-black font-weight-bold']"></div>           
+    						  	</div>
+    	                        <small class="text-gray font-weight-light text-nowrap conversation-time">{{ conversation.last_message.created_diff }}</small>   
+    						</div>
+    					</div>
+    				</div>
+                </template>
 			</div>
 		</div>
 
