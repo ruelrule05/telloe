@@ -12,3 +12,18 @@
 .w-15{
 	width: 15% !important;
 }
+
+.custom-field {
+    .edit-custom-field{
+        opacity: 0;
+        transition: $transition-base;
+        &[aria-expanded="true"]{
+            opacity: 1;
+        }
+    }
+    &:hover{
+        .edit-custom-field{
+            opacity: 1;
+        }
+    }
+}

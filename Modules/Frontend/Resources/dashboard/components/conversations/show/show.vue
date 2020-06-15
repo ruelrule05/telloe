@@ -115,7 +115,7 @@
 
 
             <!-- Info -->
-            <div class="conversation-details text-center p-3 h-100 position-relative bg-light" :class="{'open': $root.detailsTab}">
+            <div class="conversation-details text-center p-3 h-100 position-relative bg-white" :class="{'open': $root.detailsTab}">
                 <info :conversation="conversation"></info>
             </div>
 

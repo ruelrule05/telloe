@@ -26,25 +26,31 @@
                         <div class="form-group">
                             <div class="d-flex align-items-center dropdown">
                                 <label class="text-gray mb-0" ref="customFieldsLabel">Custom Fields</label>
-                                <button class="ml-auto btn btn-sm btn-light p-1 line-height-0 badge-pill" data-toggle="dropdown" data-offset="-292,0"><plus-icon height="20" width="20" fill="#5A5ADF"></plus-icon></button>
-                                <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
-                                    <vue-form-validate @submit="addCustomField()">
-                                        <div class=" bg-white rounded p-2 border">
-                                            <h6 class="font-heading">Add Custom Field</h6>
-                                            <div class="form-group mb-2">
-                                                <label class="form-label">Name</label>
-                                                <input type="text" class="form-control form-control-sm shadow-none border" v-model="customFieldForm.name" placeholder="Field name" data-required>
+                                <button class="ml-auto btn btn-sm btn-secondary d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" fill="#5A5ADF" class="mr-1"></plus-icon> Add Custom Field</button>
+                                <div>
+                                    <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
+                                        <vue-form-validate @submit="addCustomField()">
+                                            <div class="bg-white rounded p-2 dropdown-menu-shadow">
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label">Name</label>
+                                                    <select v-if="!customFieldForm.is_custom" class="form-control form-control-sm cursor-pointer shadow-none" :class="{'text-gray': !customFieldForm.name}" v-model="customFieldForm.name" data-required>
+                                                        <option value="" disabled selected>Select custom field</option>
+                                                        <option :value="custom_field" v-for="custom_field in $root.auth.custom_fields">{{ custom_field }}</option>
+                                                        <option value="custom">- New custom field -</option>
+                                                    </select>
+                                                    <input v-else type="text" class="form-control form-control-sm shadow-none" v-model="customFieldForm.name" placeholder="Field name" data-required>
+                                                </div>
+                                                <div class="form-group mb-0">
+                                                    <label class="form-label">Value</label>
+                                                    <input type="text" class="form-control form-control-sm shadow-none" v-model="customFieldForm.value" placeholder="Field value" data-required>
+                                                </div>
+                                                <div class="d-flex justify-content-end align-items-center mt-2">
+                                                    <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="resetCustomFieldForm()">Cancel</button>
+                                                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                                                </div>
                                             </div>
-                                            <div class="form-group mb-0">
-                                                <label class="form-label">Value</label>
-                                                <input type="text" class="form-control form-control-sm shadow-none border" v-model="customFieldForm.value" placeholder="Field value" data-required>
-                                            </div>
-                                            <div class="d-flex justify-content-end align-items-center mt-2">
-                                                <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="resetCustomFieldForm()">Cancel</button>
-                                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
-                                            </div>
-                                        </div>
-                                    </vue-form-validate>
+                                        </vue-form-validate>
+                                    </div>
                                 </div>
                             </div>
                             <div v-for="(custom_field, index) in conversation.custom_fields" class="d-flex align-items-center my-2 custom-field position-relative">
@@ -56,15 +62,15 @@
                                     <button type="button" class="btn btn-light btn-sm p-1 badge-pill line-height-0 mr-1 edit-custom-field" data-toggle="dropdown" data-offset="-252,0" @click="editCustomField(custom_field)"><pencil-icon width="16" height="16"></pencil-icon></button>
                                     <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2 pt-1" @click.stop>
                                         <vue-form-validate @submit="updateCustomField(custom_field)">
-                                            <div class=" bg-white rounded p-2 border">
+                                            <div class="bg-white rounded p-2 dropdown-menu-shadow">
                                                 <h6 class="font-heading">Edit Custom Field</h6>
                                                 <div class="form-group mb-2">
                                                     <label class="form-label">Name</label>
-                                                    <input type="text" class="form-control form-control-sm shadow-none border" v-model="custom_field.new_name" placeholder="Field name" data-required>
+                                                    <input type="text" class="form-control form-control-sm shadow-none" v-model="custom_field.new_name" placeholder="Field name" data-required>
                                                 </div>
                                                 <div class="form-group mb-0">
                                                     <label class="form-label">Value</label>
-                                                    <input type="text" class="form-control form-control-sm shadow-none border" v-model="custom_field.new_value" placeholder="Field value" data-required>
+                                                    <input type="text" class="form-control form-control-sm shadow-none" v-model="custom_field.new_value" placeholder="Field value" data-required>
                                                 </div>
                                                 <div class="d-flex align-items-center mt-2">
                                                     <button type="button" class="btn btn-white line-height-0 btn-sm btn-link text-body p-1 badge-pill" @click="$refs['customFieldsLabel'].click(); conversation.custom_fields.splice(index, 1); updateConversation(conversation)">
@@ -185,8 +191,8 @@
                     </div>
 
                     <!-- History -->
-                    <div v-else-if="$root.profileTab == 'history'" class="mt-3 overflow-y-only h-100 bg-white rounded shadow-sm">
-                        <div class="p-3 overflow-y-auto flex-grow-1 h-100">
+                    <div v-else-if="$root.profileTab == 'history'" class="mt-3 overflow-y-only h-100 bg-white">
+                        <div class="overflow-y-auto flex-grow-1 h-100">
                             <div v-for="grouped_message in $parent.grouped_messages" v-if="grouped_message.messages.find((x) => x.is_history)" class="w-100 message-group">
                                 <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.sender.full_name }}</small>
                                 <div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': grouped_message.outgoing}">
@@ -220,14 +226,23 @@
 
                     <!-- Notes -->
                     <div v-else-if="$root.profileTab == 'notes'" class="text-left mt-3">
-                        <button class="btn btn-sm btn-outline-primary mb-2" @click="addingNote = true">+ Add Note</button>
-                        <vue-form-validate v-if="addingNote" @submit="addNote" class="mb-3">
-                            <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none" placeholder="Add note.."></textarea>
-                            <div class="d-flex justify-content-end align-items-center mt-1">
-                                <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="addingNote = false; newNote = ''">Cancel</button>
-                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                        <div class="d-flex align-items-center dropdown">
+                            <label class="text-gray mb-0" ref="customFieldsLabel">Notes</label>
+                            <button class="ml-auto btn btn-sm btn-secondary d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" fill="#5A5ADF" transform="scale(1.6)" class="mr-1"></plus-icon>Add Note</button>
+                            <div>
+                                <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
+                                    <vue-form-validate @submit="addNote()">
+                                        <div class="bg-white rounded p-2 border">
+                                        <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none border" placeholder="Add note.."></textarea>
+                                            <div class="d-flex justify-content-end align-items-center mt-2">
+                                                <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="newNote = ''; $refs['customFieldsLabel'].click()">Cancel</button>
+                                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                                            </div>
+                                        </div>
+                                    </vue-form-validate>
+                                </div>
                             </div>
-                        </vue-form-validate>
+                        </div>
                         <div v-for="note in conversation.notes" class="mb-2 py-2 position-relative note border-bottom">
                             <div class="note-actions position-absolute d-flex align-items-center dropleft w-25 justify-content-end">
                                 <div class="action-content position-relative mr-1 line-height-1">
@@ -269,44 +284,46 @@
 
                     <!-- Tags -->
                     <div v-else-if="$root.profileTab == 'tags'" class="text-left mt-3 overflow-hidden h-100">
-                        <form-search :search-url="`/tags/search?conversation_id=${conversation.id}`" placeholder="Search tags..." class="h-100 overflow-hidden d-flex flex-column" input-class="form-control-sm" ref="searchTagsForm">
-                            <template v-slot="{ searching, results, trimmedQuery }">
-                                <div class="overflow-y-only mt-2">
-                                    <div v-if="searching" class="text-center py-4">
-                                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                                    </div>
-                                    <div v-else-if="results.length == 0 && trimmedQuery.length > 0" class="text-center text-gray py-2 font-weight-light">
-                                        No results found.
-                                    </div>
-                                    <div v-else v-for="result in results" class="mb-2">
-                                        <div class="small text-gray text-uppercase font-weight-light">{{ result.type }} </div>
-                                        <div class="rounded bg-white border py-2 px-3">
-                                            <div v-if="result.type == 'message'" class="message-group mb-0">
-                                                <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': result.data.outgoing}">{{ result.data.user.full_name }}</small>
-                                                <div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': result.data.outgoing}">
-                                                    <div>
-                                                        <div class="user-profile-image" :style="{backgroundImage: 'url('+result.data.user.profile_image+')'}">
-                                                            <span v-if="!result.data.user.profile_image">{{ result.data.user.initials }}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="px-1 flex-1">
-                                                        <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find((x) => x == result.data.type)}">
-                                                            <message-type :click="false" :message="result.data" :outgoing="result.data.outgoing"></message-type>
-                                                        </div>
+                        <div class="h-100 overflow-hidden d-flex flex-column">
+                            <div>
+                                <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search tags..." v-model="tagSearch">
+                            </div>
+                            <div v-if="tagsData.tags.length > 0" class="my-2">
+                                <span class="text-gray">Available tags:</span> <span v-for="tag in tagsData.tags" class="badge badge-secondary mr-1 line-height-sm">{{ tag }}</span>
+                            </div>
+
+                            <div class="overflow-y-only mt-2">
+                                <div v-if="tagsData.length == 0" class="text-center text-gray py-2 font-weight-light">
+                                    No results found.
+                                </div>
+                                <div v-else v-for="data in tagsData.data" class="mb-2">
+                                    <div class="small text-gray text-uppercase font-weight-light">{{ data.type }} </div>
+                                    <div class="rounded bg-white border py-2 px-3">
+                                        <div v-if="data.type == 'message'" class="message-group mb-0">
+                                            <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': data.data.outgoing}">{{ data.data.user.full_name }}</small>
+                                            <div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': data.data.outgoing}">
+                                                <div>
+                                                    <div class="user-profile-image" :style="{backgroundImage: 'url('+data.data.user.profile_image+')'}">
+                                                        <span v-if="!data.data.user.profile_image">{{ data.data.user.initials }}</span>
                                                     </div>
                                                 </div>
-                                                <small class="text-gray d-block" :class="{'text-right': result.data.outgoing}">{{ result.data.created_at_format }}</small>
+                                                <div class="px-1 flex-1">
+                                                    <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find((x) => x == data.data.type)}">
+                                                        <message-type :click="false" :message="data.data" :outgoing="data.data.outgoing"></message-type>
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <small class="text-gray d-block" :class="{'text-right': data.data.outgoing}">{{ data.data.created_at_format }}</small>
+                                        </div>
 
-                                            <div v-else-if="result.type == 'note'">
-                                                <p class="mb-0">{{ result.data.notes }}</p>
-                                                <small class="text-gray d-block">{{ result.data.created_at_format }}</small>
-                                            </div>
+                                        <div v-else-if="data.type == 'note'">
+                                            <p class="mb-0">{{ data.data.notes }}</p>
+                                            <small class="text-gray d-block">{{ data.data.created_at_format }}</small>
                                         </div>
                                     </div>
                                 </div>
-                            </template>
-                        </form-search>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

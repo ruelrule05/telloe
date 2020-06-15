@@ -48,14 +48,14 @@ export default {
 	data: () => ({
 		newTag: '',
         fileType: 'all',
-        addingNote: false,
-        addingCustomField: false,
         newNote: '',
         customFieldForm: {
             name: '',
             value: '',
             is_visible: false,
-        }
+            is_custom: false,
+        },
+        tagSearch: '',
 	}),
 
 	computed: {
@@ -67,18 +67,66 @@ export default {
         blacklisted_services() {
             return this.user_blacklisted_services[this.conversation.member.id] || [];
         },
+
+        tagsData() {
+            let tagsData = {
+                data: [],
+                tags: []
+            };
+            let allTags = [];
+
+            (this.conversation.messages || []).forEach((message) => {
+                if(message.tags.length > 0) {
+                    allTags.push({
+                        type: 'message',
+                        data: message
+                    });
+                    message.tags.forEach((tag) => {
+                        if(tagsData.tags.indexOf(tag) == -1) tagsData.tags.push(tag);
+                    });
+                }
+            });
+            (this.conversation.notes || []).forEach((note) => {
+                if(note.tags.length > 0) {
+                    allTags.push({
+                        type: 'note',
+                        data: note
+                    });
+                    note.tags.forEach((tag) => {
+                        if(tagsData.tags.indexOf(tag) == -1) tagsData.tags.push(tag);
+                    });
+                }
+            });
+
+            let tagQuery = this.tagSearch.trim().toLowerCase();
+            if(tagQuery.length > 0) {
+                allTags.forEach((tag) => {
+                    if(JSON.stringify(tag.data.tags).toLowerCase().includes(tagQuery)) tagsData.data.push(tag);
+                })
+            } else {
+                tagsData.data = allTags;
+            }
+
+            return tagsData;
+        }
 	},
 
     watch: {
         '$root.profileTab': function(value) {
             if(value == 'notes' && this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
+            this.tagSearch = '';
         },
         'conversation.id': function() {
             if(this.conversation.members.length == 1) {
                 this.getUserBlacklistedServices(this.conversation.member.id);
             }
             if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
-            if(this.$refs['searchTagsForm']) this.$refs['searchTagsForm'].query = '';
+        },
+        'customFieldForm.name': function(value) {
+            if(value == 'custom' ) {
+                this.customFieldForm.name = '';
+                this.customFieldForm.is_custom = true;
+            }
         }
     },
 
@@ -88,6 +136,7 @@ export default {
             this.getUserBlacklistedServices(this.conversation.member.id);
         }
         if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
+        this.showUserCustomFields();
 	},
 
 	methods: {
@@ -100,6 +149,8 @@ export default {
             updateNote: 'notes/update',
 			deleteNote: 'notes/delete',
             updateConversation: 'conversations/update',
+            showUserCustomFields: 'user_custom_fields/show',
+            storeUserCustomFields: 'user_custom_fields/store',
 		}),
 
         updateCustomField(custom_field) {
@@ -123,9 +174,9 @@ export default {
         },
 
         resetCustomFieldForm() {
-            this.addingCustomField = false;
             this.customFieldForm.name = '';
             this.customFieldForm.value = '';
+            this.customFieldForm.is_custom = false;
             this.$refs['customFieldsLabel'].click();
         },
 
@@ -152,8 +203,8 @@ export default {
                 notes: this.newNote,
             };
             this.storeNote(note);
-            this.addingNote = false;
             this.newNote = '';
+            this.$refs['customFieldsLabel'].click();
         },
 
         openFile(file) {

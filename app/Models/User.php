@@ -96,6 +96,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserCustomer::class);
     }
 
+    public function customFields()
+    {
+        return $this->hasOne(UserCustomField::class);
+    }
+
     public function services()
     {
         return $this->hasMany(Service::class);

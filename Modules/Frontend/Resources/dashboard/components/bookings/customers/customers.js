@@ -1,12 +1,27 @@
 import {mapState, mapActions} from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
+
 import MoreHIcon from '../../../../icons/more-h';
+import PlusIcon from '../../../../icons/plus';
+import TrashIcon from '../../../../icons/trash';
+import PencilIcon from '../../../../icons/pencil';
 export default {
-	components: {Modal, VueFormValidate, MoreHIcon},
+	components: {
+		Modal, 
+		VueFormValidate, 
+
+		MoreHIcon, 
+		PlusIcon,
+		TrashIcon,
+		PencilIcon,
+	},
 
 	data: () => ({
 		selectedCustomer: {},
+		activeTab: 'custom_fields',
+		newCustomField: '',
+		editCustomField: '',
 	}),
 
 	computed: {
@@ -18,6 +33,7 @@ export default {
 
 	created() {
 		this.getUserCustomers();
+		this.showUserCustomFields();
 	},
 
 	mounted() {
@@ -29,7 +45,27 @@ export default {
             getUserCustomers: 'user_customers/index',
             storeUserCustomer: 'user_customers/store',
             deleteUserCustomer: 'user_customers/delete',
+            showUserCustomFields: 'user_custom_fields/show',
+            storeUserCustomFields: 'user_custom_fields/store',
         }),
+        
+        updateCustomField(index) {
+        	this.$root.auth.custom_fields[index] = this.editCustomField;
+            this.storeUserCustomFields();
+            this.$refs['customFieldsLabel'].click();
+        },
+
+        addCustomField() {
+        	if(!this.$root.auth.custom_fields) Vue.set(this.$root.auth, 'custom_fields', []);
+            this.$root.auth.custom_fields.unshift(this.newCustomField);
+            this.storeUserCustomFields();
+            this.resetCustomField(); 
+        },
+
+        resetCustomField() {
+            this.newCustomField = '';
+            this.$refs['customFieldsLabel'].click();
+        },
 
 		store() {
 			if(this.selectedCustomer.email) {

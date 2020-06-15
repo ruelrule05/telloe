@@ -1,8 +1,11 @@
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/mixins';
 
-$border-radius: 6px;
+$border-radius: .5rem;
 $border-radius-lg: 0.4rem;
+$btn-border-radius: 0.5rem;
+$btn-border-radius-sm: 0.4rem;
+$btn-padding-y-sm: .25rem;
 $container-max-widths: (
     xl: 1180px,
 );
@@ -11,6 +14,7 @@ $orange: #FBBC1B;
 $facebook: #4267b2;
 $google: #DC3E29;
 $secondary: #F2F4F9;
+$dropdown-border-radius: $border-radius;
 
 @import 'node_modules/bootstrap/scss/variables';
 $border-color: $gray-200;
@@ -126,6 +130,7 @@ $btn-default-color: $text-color;
 // Inputs
 $input-color: #000;
 $input-focus-color: #000;
+$input-focus-border-color: $gray-600;
 $input-border: lighten($text-color, 40%);
 $input-border-focus: lighten($brand-primary, 25%);
 $input-color-placeholder: lighten($text-color, 30%);

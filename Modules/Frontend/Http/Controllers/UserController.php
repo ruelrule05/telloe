@@ -13,6 +13,19 @@ use Auth;
 class UserController extends Controller
 {
     //
+    public function index(Request $request)
+    {
+        $users = [];
+        $query = $request->get('query');
+        $users = User::where('id', '<>', Auth::user()->id);
+        if($query):
+            $users = $users->where('email', 'LIKE', '%' . $query. '%');
+        endif;
+        $users = $users->orderByRaw('CONCAT(first_name, last_name)')->get();
+
+        return response()->json($users);
+    }
+
 
     public function profile($username, Request $request)
     {
@@ -43,17 +56,6 @@ class UserController extends Controller
         $timeslots = $service->timeslots($request->date);
         
         return response()->json($timeslots);
-    }
-
-    public function search(Request $request)
-    {
-        $users = [];
-        $query = $request->get('query');
-        if($query):
-            $users = User::where('email', 'LIKE', '%' . $query. '%')->get();
-        endif;
-
-        return response()->json($users);
     }
 
     public function book($username, $service_id, Request $request)

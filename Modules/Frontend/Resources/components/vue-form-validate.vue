@@ -10,7 +10,7 @@ export default {
     }),
 
     mounted() {
-        this.inputs = $(this.$refs['form']).find('input, textarea');
+        this.inputs = $(this.$refs['form']).find('input, textarea, select');
     },
 
     methods: {

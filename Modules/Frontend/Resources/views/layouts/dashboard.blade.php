@@ -46,7 +46,7 @@
 												<chevron-down-icon class="ml-2"></chevron-down-icon>
 											</div>
 										</button>
-										<div class="collapse bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
+										<div class="collapse show bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
 											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
 												<span class="text-body pl-3">Calendar</span>
 											</router-link>

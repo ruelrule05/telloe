@@ -40,9 +40,10 @@ Route::group(
             Route::apiResource('bookings', 'BookingController');
             Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
             Route::apiResource('user_customers', 'UserCustomerController');
+            Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
+            Route::apiResource('users', 'UserController')->only('index');
 
-            Route::get('users/search', 'UserController@search')->middleware('auth');
-            Route::get('tags/search', 'DashboardController@searchTags')->middleware('auth');
+            Route::get('tags/search', 'DashboardController@searchTags');
         });
 
             // Profile page

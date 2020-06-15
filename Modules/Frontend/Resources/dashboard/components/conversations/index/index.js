@@ -28,12 +28,15 @@ export default {
         newConversation: {
             members: [],
         },
+        userSearch: '',
 	}),
 
 	computed: {
 		...mapState({
       		conversations: state => state.conversations.index,
-      		ready: state => state.conversations.ready,
+            ready: state => state.conversations.ready,
+            users: state => state.users.index,
+      		usersReady: state => state.users.ready,
 		}),
 
 		orderedConversations() {
@@ -44,6 +47,20 @@ export default {
                 return (a_timestamp > b_timestamp) ? -1 : 1;
             });
 		},
+
+        filteredUsers() {
+            let filteredUsers = [];
+            let trimmedQuery = this.userSearch.trim().toLowerCase();
+            if(trimmedQuery.length > 0) {
+                this.users.forEach((user) => {
+                    if(user.full_name.toLowerCase().includes(trimmedQuery)) filteredUsers.push(user);
+                });
+            } else {
+                filteredUsers = this.users;
+            }
+
+            return filteredUsers;
+        }
 	},
 
 	watch: {
@@ -57,12 +74,13 @@ export default {
 		this.$root.contentloading = !this.ready;
 		if(this.ready && !this.$route.params.id && this.conversations.length > 0) this.setConversation(this.orderedConversations[0]);
 		this.getConversations();
+        this.getUsers();
 	},
 
     mounted() {
         $('#newConversationModal').on('hidden.bs.modal', () => {
             this.newConversation.members = [];
-            this.$refs['addNewConversationMembersForm'].query = '';
+            this.userSearch = '';
         });
     },
 
@@ -70,7 +88,8 @@ export default {
     	...mapActions({
       		getConversations: 'conversations/index',
       		storeConversation: 'conversations/store',
-      		updateConversation: 'conversations/update',
+            updateConversation: 'conversations/update',
+      		getUsers: 'users/index',
     	}),
 
         addNewConversationMember(member) {

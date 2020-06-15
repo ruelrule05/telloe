@@ -9,7 +9,7 @@
 					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
 				</div>
                 <div class="ml-auto dropleft pr-3">
-                    <button class="btn btn-secondary btn-sm badge-pill btn-new-chat d-flex align-items-center" data-toggle="modal" data-target="#newConversationModal"><plus-icon width="10" height="10" transform="scale(2)" class="mr-1"></plus-icon>&nbsp;New Chat</button>
+                    <button class="btn btn-sm btn-secondary d-flex align-items-center" data-toggle="modal" data-target="#newConversationModal"><plus-icon height="13" width="13" fill="#5A5ADF" transform="scale(1.6)" class="mr-1"></plus-icon>New Chat</button>
                 </div>
 			</div>
 
@@ -66,42 +66,41 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                    	 <form-search :search-url="`/users/search`" placeholder="Search users..." class="h-100 overflow-hidden d-flex flex-column" ref="addNewConversationMembersForm">
-                            <template v-slot="{ searching, results, trimmedQuery }">
-                            	<div v-if="newConversation.members.length > 0" class="mt-1">
-	                                <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.profile_image+')'}">
-                                        <span v-if="!member.profile_image">{{ member.initials }}</span>
-                                        <button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
-                                            <close-icon height="16" width="16" class="cursor-pointer"></close-icon>
-                                        </button>
-	                                </div>
-	                            </div>
+                    	<div class="h-100 overflow-hidden d-flex flex-column" :default="users" ref="addNewConversationMembersForm">
+                           <input type="text" placeholder="Search users..." class="form-control shadow-none border" v-model="userSearch">
+                        	<div v-if="newConversation.members.length > 0" class="mt-1">
+                                <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.profile_image+')'}">
+                                    <span v-if="!member.profile_image">{{ member.initials }}</span>
+                                    <button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
+                                        <close-icon height="16" width="16" class="cursor-pointer"></close-icon>
+                                    </button>
+                                </div>
+                            </div>
 
-                                <div class="overflow-y-only mt-2 members-search-container position-relative">
-                                    <div v-if="searching" class="text-center position-absolute-center w-100">
-                                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                                    </div>
-                                    <div v-else-if="results.length == 0 && trimmedQuery.length > 0" class="text-center text-gray position-absolute-center w-100 font-weight-light">
-                                        No results found.
-                                    </div>
-                                    <div v-else-if="results.length > 0">
-                                    	<div v-for="result in results" v-if="result.id != $root.auth.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id)}">
-	                                        <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.profile_image+')'}">
-	                                            <span v-if="!result.profile_image">{{ result.initials }}</span>
-	                                        </div>
-	                                        <div class="media-body pl-2">
-	                                            <div class="font-weight-bold font-heading mb-0 h6">{{ result.full_name }}</div>
-	                                            <div class="small font-weight-light text-gray text-nowrap">@{{ result.username }}</div>      
-	                                        </div>
-	                                    </div>
+                            <div class="overflow-y-only mt-2 members-search-container position-relative">
+                                <div v-if="!usersReady" class="text-center position-absolute-center w-100">
+                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                </div>
+                                <div v-else-if="filteredUsers.length == 0" class="text-center text-gray position-absolute-center w-100 font-weight-light">
+                                    No results found.
+                                </div>
+                                <div v-else-if="filteredUsers.length > 0">
+                                	<div v-for="result in filteredUsers" v-if="result.id != $root.auth.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id)}">
+                                        <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.profile_image+')'}">
+                                            <span v-if="!result.profile_image">{{ result.initials }}</span>
+                                        </div>
+                                        <div class="media-body pl-2">
+                                            <div class="font-weight-bold font-heading mb-0 h6">{{ result.full_name }}</div>
+                                            <div class="small font-weight-light text-gray text-nowrap">@{{ result.username }}</div>      
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
-	                            <div class="text-right mt-3">
-	                                <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
-	                            </div>
-                            </template>
-                        </form-search>
+                            <div class="text-right mt-3">
+                                <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
+                            </div>
+                        </div>
 
                        <!--  <vue-form-validate @submit="conversationCreate">
                             <div class="form-group form-icon mb-0">

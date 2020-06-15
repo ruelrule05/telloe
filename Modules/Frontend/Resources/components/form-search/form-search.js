@@ -17,6 +17,10 @@ export default {
 		placeholder: {
 			type: String,
 			default: ''
+		},
+		default: {
+			type: Array,
+			default: () => []
 		}
 	},
 
@@ -51,6 +55,12 @@ export default {
         		this.searching = false;
         		this.results = [];
         	}
+		},
+		default: function(value) {
+			if(this.results.length == 0) this.results = value;
+		},
+		results: function(value) {
+			if(value.length == 0 && this.default.length > 0) this.results = this.default; 
 		}
 	},
 
