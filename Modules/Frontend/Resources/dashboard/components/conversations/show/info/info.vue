@@ -9,7 +9,7 @@
                     <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
                         <span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
                     </div>
-                    <h4 class="font-heading conversation-title mb-0 rounded" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="conversation.members.length > 1">{{ conversation.member.full_name || conversation.name }}</h4>
+                    <h4 class="font-heading conversation-title mb-n1 rounded" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="conversation.members.length > 1">{{ conversation.member.full_name || conversation.name }}</h4>
                     <div class="text-muted mb-3">{{ conversation.member.email }}</div>
                 </div>
                 <div class="btn-group btn-group-sm w-100" role="group">
