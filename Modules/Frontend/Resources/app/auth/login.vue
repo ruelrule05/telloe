@@ -1,6 +1,6 @@
 <template>
 	<div class="h-100 w-100">
-		<div class="row h-100 justify-content-center align-items-center mx-0" v-cloak>
+		<div class="row h-100 w-100 justify-content-center align-items-center mx-0" v-cloak>
 			<div class="col-md-10">
 				<vue-form-validate @submit="login">
 					<h1 class="h2 mb-1 font-heading">Log In</h1>

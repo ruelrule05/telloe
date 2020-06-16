@@ -9,11 +9,13 @@ $btn-padding-y-sm: .25rem;
 $container-max-widths: (
     xl: 1180px,
 );
+$grid-gutter-width: 40px;
 $primary: #5A5ADF;
 $orange: #FBBC1B;
 $facebook: #4267b2;
 $google: #DC3E29;
 $secondary: #F2F4F9;
+$text-muted: #818ca1;
 $dropdown-border-radius: $border-radius;
 
 @import 'node_modules/bootstrap/scss/variables';
@@ -115,14 +117,13 @@ $text-color: #636b6f;
 
 // Navbar
 $navbar-default-bg: #fff;
-$navbar-padding-y: 0.5rem;
 $navbar-brand-padding-y: 0;
 $navbar-light-color: #212b35;
 $navbar-brand-font-size: inherit;
-$navbar-toggler-padding-y: 0;
-$navbar-toggler-padding-x: 0;
 $enable-validation-icons: false;
 $enable-responsive-font-size: true;
+
+$navbar-nav-link-padding-x: 1.25rem;
 
 // Buttons
 $btn-default-color: $text-color;
@@ -154,8 +155,6 @@ $list-group-color: $black;
 
 $table-hover-bg: rgba($secondary, 3%);
 $box-shadow-sm: 0 0.1rem 0.5rem rgba($black, 0.075);
-$navbar-dark-toggler-icon-bg: none;
-$navbar-light-toggler-icon-bg: none;
 
 $viewport_heights: (
     '10vh': 10vh,

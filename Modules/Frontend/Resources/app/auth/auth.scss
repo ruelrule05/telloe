@@ -8,8 +8,14 @@
     visibility: hidden;
     opacity: 0;
     .auth-body{
+        width: 50%;
         transition: $transition-base;
         right: -100%;
+    }
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        .auth-body{
+            width: 100%;
+        }
     }
     &.open{
         visibility: visible;
@@ -17,9 +23,5 @@
         .auth-body{
             right: 0;
         }
-    }
-    .auth-error{
-        left: 0;
-        bottom: 0;
     }
 }

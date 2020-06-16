@@ -1,15 +1,16 @@
+@import '../../public/fonts/avenir-next';
+@import '../sass/variables';
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 @import 'node_modules/v-color/dist/index';
-@import '../../public/fonts/avenir-next';
-@import '../sass/variables';
 @import 'node_modules/bootstrap/scss/grid';
 @import 'node_modules/bootstrap/scss/buttons';
 @import 'node_modules/bootstrap/scss/button-group';
 @import 'node_modules/bootstrap/scss/close';
 @import 'node_modules/bootstrap/scss/dropdown';
 @import 'node_modules/bootstrap/scss/badge';
+@import 'node_modules/bootstrap/scss/utilities';
 @import 'node_modules/bootstrap/scss/type';
 @import 'node_modules/bootstrap/scss/navbar';
 @import 'node_modules/bootstrap/scss/nav';
@@ -22,67 +23,127 @@
 @import 'node_modules/bootstrap/scss/tables';
 @import 'node_modules/bootstrap/scss/reboot';
 @import 'node_modules/bootstrap/scss/list-group';
-@import 'node_modules/bootstrap/scss/utilities';
 
+
+@each $breakpoint, $value in $grid-breakpoints {
+    @media screen and (max-width: #{$value}) {
+        .btn-#{$breakpoint}-block {
+            display: block;
+            width: 100%;
+        }
+    }
+}
 [v-cloak]{
     opacity: 0;
 }
-/**,
-*:before,
-*:after {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    font-smoothing: antialiased;
-}*/
-* {
-    /*&::-webkit-scrollbar {
-        -webkit-appearance: none;
-        width: 6px;
-        height: 8px;
+.navbar-collapse{
+    &.show,
+    &.collapsing{
+        margin-top: 20px;
+        background-color: $gray-200;
     }
-    &::-webkit-scrollbar-thumb {
-        cursor: pointer;
-        border-radius: 30px;
-        background: rgba(black, 0.4);
-        transition: background 2s ease !important;
-        border: 0;
-    }
-    &::-webkit-scrollbar-track {
-        display: none;
-    }*/
 }
 .font-heading{
     font-family: 'Avenir Next', sans-serif;
 }
 .home-content{
-    padding: 20vh 15vh;
+    padding: 15vh 0;
+    overflow: hidden;
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        padding: $grid-gutter-width 0;
+        overflow: visible;
+    }
+
+    &.home-content-2{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -100px;
+            width: 150%;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            img {
+                width: 80%;
+                position: static;
+                right: auto;
+                margin-top: -80px;
+                margin-bottom: 10px;
+                transform: none;
+                top: auto;
+            }
+            .col-md-4{
+                text-align: center;
+            }
+        }
+    }
+    &.home-content-3{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -150px;
+            width: 100%;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            img {
+                top: -70px;
+                right: -120px;
+                transform: none;
+                width: 95%;
+            }
+        }
+    }
+    &.home-content-5{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -70px;
+            width: 130%;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            .col-md-5{
+                text-align: center;
+            }
+            img {
+                width: 90%;
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
+                margin-top: -50px;
+            }
+        }
+    }
+    &.home-content-6{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -150px;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            .col-md-4{
+                text-align: center;
+            }
+            img {
+                width: 100%;
+                margin-top: -100px;
+                margin-right: -140px;
+                margin-bottom: -40px;
+                position: static;
+                transform: none;
+            }
+        }
+    }
 }
 
 .hero{
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        padding: 10vh 0 !important;
+    }
     h2{
         line-height: 1.5;
-    }
-}
-.home-content-2{
-    img {
-        top: 50%;
-        transform: translateY(-50%);
-        right: -40px;
-    }
-}
-.home-content-3{
-    img {
-        top: 50%;
-        transform: translateY(-50%);
-        right: -60px;
-        width: 45%;
-    }
-}
-.home-content-6{
-    img {
-        top: 50%;
-        transform: translateY(-50%);
-        right: -70px;
     }
 }
 .range-slider{
@@ -113,4 +174,10 @@
 }
 .opacity-0{
     opacity: 0 !important;
+}
+.flex-1{
+    flex: 1 !important;
+}
+.h-100vh{
+    height: 100vh;
 }

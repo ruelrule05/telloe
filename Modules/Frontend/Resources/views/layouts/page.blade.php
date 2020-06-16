@@ -8,7 +8,7 @@
 	@yield('styles')
 </head>
 <body>
-	<div id="app">
+	<div id="app" class="overflow-hidden">
 		@if ($navbar ?? true)
 			@include('frontend::partials.navbar')
 		@endif
