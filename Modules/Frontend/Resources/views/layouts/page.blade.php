@@ -16,7 +16,7 @@
 
 		@yield('content')
 
-		<auth v-if="auth"></auth>
+		<auth v-if="auth" ref="authForm"></auth>
 	</div>
 
 	@include('frontend::partials.footer')

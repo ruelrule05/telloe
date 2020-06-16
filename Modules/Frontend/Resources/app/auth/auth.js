@@ -37,12 +37,6 @@ export default {
         }, 150);
     },
 
-    watch: {
-        action: function(value) {
-            this.error = '';
-        }
-    },
-
     methods: {
         close() {
             this.open = false;

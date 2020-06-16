@@ -9,7 +9,7 @@
 					<login v-if="$root.action == 'login'"></login>
 					<signup v-else-if="$root.action == 'signup'"></signup>
 				</div>
-				<div class="text-center text-danger auth-error w-100 p-3">{{ error }}</div>
+				<div class="text-center text-danger auth-error w-100 p-3">&nbsp;{{ error }}&nbsp;</div>
 			</div>
 		</div>
 	</div>

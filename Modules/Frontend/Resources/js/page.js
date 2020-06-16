@@ -22,6 +22,12 @@ new Vue({
         invite_token: null,
     },
 
+    watch: {
+        action: function(value) {
+            if(this.$refs['authForm']) this.$refs['authForm'].error = '';
+        }
+    },
+
     created() {
         const queryString = window.location.search;
         if(queryString) {
