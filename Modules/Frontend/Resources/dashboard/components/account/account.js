@@ -29,7 +29,6 @@ export default {
 		},
 
 		password() {
-
 			axios.put('/auth/password', this.securityForm, {toasted: true});
 		},
 

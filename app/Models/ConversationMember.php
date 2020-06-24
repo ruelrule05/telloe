@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class ConversationMember extends Model
+class ConversationMember extends BaseModel
 {
     //
     protected $fillable = ['conversation_id', 'user_id'];

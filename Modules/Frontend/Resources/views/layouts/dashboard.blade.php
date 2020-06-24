@@ -8,7 +8,7 @@
 		<div id="app" class="d-flex flex-column overflow-hidden" v-cloak>
 			<div class="text-center" v-if="callWindow && callUser">
 				<div class="bg-primary text-white px-4 py-2">
-					Ongoing call with <strong>@{{ callUser.full_name }}</strong>
+					Ongoing call with <span>@{{ callUser.full_name }}</span>
 					<u class="ml-2 cursor-pointer" @click="focusCallWindow()">Open window</u>
 				</div>
 			</div>
@@ -34,40 +34,40 @@
 								<div class="list-group font-heading">
 									<router-link :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
 										<chat-icon></chat-icon>
-										<strong class="ml-3">Messages</strong>
+										<span class="ml-3">Messages</span>
 									</router-link>
 									<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
 									<template v-if="auth.role.role == 'client'">
-										<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-bookings">
+										<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 											<div class="d-flex align-items-center px-4">
 												<calendar-day-icon></calendar-day-icon>
-												<strong class="ml-3">Bookings</strong>
+												<span class="ml-3">Bookings</span>
 												<chevron-down-icon class="ml-2"></chevron-down-icon>
 											</div>
 										</button>
 										<div class="collapse show bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
 											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<span class="text-body pl-3">Calendar</span>
+												<span class="pl-3">Calendar</span>
 											</router-link>
 											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<span class="text-body pl-3">Services</span>
+												<span class="pl-3">Services</span>
 											</router-link>
 											<router-link to="/dashboard/bookings/customers" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<span class="text-body pl-3">Customers</span>
+												<span class="pl-3">Customers</span>
 											</router-link>
 										</div>
 									</template>
 
 									<router-link v-else-if="auth.role.role == 'customer'" to="/dashboard/bookings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-bookings">
 										<calendar-day-icon></calendar-day-icon>
-										<strong class="ml-3">Bookings</strong>
+										<span class="ml-3">Bookings</span>
 									</router-link>
 									<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
 
 									<!-- <router-link to="/dashboard/settings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-settings">
 										<cog-icon></cog-icon>
-										<strong class="ml-3">Settings</strong>
+										<span class="ml-3">Settings</span>
 									</router-link>
 									<div class="d-none" id="item-settings" data-parent="#sidebar"></div> -->
 								</div>
@@ -78,13 +78,13 @@
 										<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
 									</div>
 									<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
-										<h6 class="font-heading mb-0 text-ellipsis">@{{ auth.full_name }}</h6>
+										<h6 class="font-heading mb-0 text-ellipsis text-body ">@{{ auth.full_name }}</h6>
 										<span class="text-gray d-block text-ellipsis">@@{{ auth.username }}</span>
 									</div>
 								</div>
 
-								<div class="dropdown-menu w-100 shadow-sm overflow-hidden">
-							    	<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+								<div class="dropdown-menu w-100 overflow-hidden">
+							    	<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center ">
 							    		<shortcut-icon height="17" width="17" class="mr-2" fill="#888"></shortcut-icon>
 							    		&nbsp;View Profile
 							    	</a>
@@ -120,12 +120,12 @@
 			</div>
 
 			<incoming-call-modal :caller="caller" ref="incomingCall"></incoming-call-modal>
-
+			<screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
 		</div>
 
 
-		<!-- <script src="/js/leader-line.min.js"></script>
-		<script src="/js/plain-draggable.min.js"></script> -->
+		<!-- <script src="/js/leader-line.min.js"></script> -->
+		<script src="/js/plain-draggable.min.js"></script>
 		<script>
 			const WS_URL = '{{ env('WS_URL') }}';
 		</script>

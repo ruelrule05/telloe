@@ -247,3 +247,53 @@ function isValidTimezone($tzid) {
     }
     return TRUE;
 }
+
+function timeslots($service, $dateString) {
+        $timeslots = [];
+
+        $holidays = json_decode($service->holidays, true);
+
+        if(!array_search($dateString, $holidays)) :
+            $date = Carbon::parse($dateString);
+            $days = json_decode($service->days, true);
+
+            
+            $day = $days[$date->format('l')];
+            if($day['isOpen']) :
+                $timeStart = $date->copy();
+                $timeEnd = $date->copy();
+
+                $partsStart = explode(':', $day['start']);
+                $timeStart->hour = $partsStart[0];
+                $timeStart->minute = $partsStart[1];
+
+                $partsEnd = explode(':', $day['end']);
+                $timeEnd->hour = $partsEnd[0];
+                $timeEnd->minute = $partsEnd[1];
+
+                while($timeStart->lessThan($timeEnd)) :
+                    $timeslot = [
+                        'label' => $timeStart->format('h:iA'),
+                        'time' => $timeStart->format('H:i'),
+                    ];
+                    $endTime = $timeStart->copy()->add(30, 'minute')->format('H:i');
+                    $bookings = Booking::whereHas('service', function($service) {
+                            $service->whereHas('user', function($user) {
+                                $user->where('id', Auth::user()->id);
+                            });
+                        })
+                        ->where('date', $dateString)
+                        ->where('start', '<=', $timeslot['time'])
+                        ->where('end', '>=', $timeslot['time'])
+                        ->get();
+
+                    if($bookings->count() == 0) $timeslots[] = $timeslot;
+
+                    $timeStart->add($this->attributes['duration'] + 30, 'minute');
+                endwhile;
+
+            endif;
+        endif;
+
+        return $timeslots;
+    }

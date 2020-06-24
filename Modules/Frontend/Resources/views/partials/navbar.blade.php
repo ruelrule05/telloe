@@ -16,7 +16,7 @@
             <a class="nav-link" href="#">Features</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Pricing</a>
+            <a class="nav-link" href="#pricing">Pricing</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#" @click.prevent="auth = true; action = 'login'">Login</a>

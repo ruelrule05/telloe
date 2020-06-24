@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'username', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id', 'last_online', 'timezone'
+        'first_name', 'last_name', 'email', 'password', 'username', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id', 'last_online', 'timezone', 'google_calendar_id', 'outlook_calendars', 'google_calendar_events'
     ];
 
     /**
@@ -27,13 +27,17 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'created_at', 'updated_at', 'facebook_id', 'google_id', 'stripe_customer_id', 'phone'
+        'password', 'remember_token', 'created_at', 'updated_at', 'facebook_id', 'google_id', 'stripe_customer_id', 'phone', 'google_calendar_token', 'google_calendar_id', 'outlook_token', 'outlook_calendars', 'google_calendar_events'
     ];
 
     
     protected $appends = ['full_name', 'initials', 'last_online_format'];
     protected $casts = [
-        'last_online' => 'datetime'
+        'last_online' => 'datetime',
+        'google_calendar_token' => 'array',
+        'google_calendar_events' => 'array',
+        'outlook_token' => 'array',
+        'outlook_calendars' => 'array'
     ];
 
 
@@ -106,6 +110,26 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Service::class);
     }
 
+    public function getTimezoneAttribute($value)
+    {
+        return strlen($value) ? $value : config('app.timezone');
+    }
+
+    
+    protected function castAttribute($key, $value)
+    {
+        if(is_null($value)) :
+            switch($this->getCastType($key)) :
+                case 'array':
+                    return [];
+
+                /*case 'object':
+                    return new \stdClass();*/
+            endswitch;
+        endif;
+
+        return parent::castAttribute($key, $value);
+    }
 
 
 

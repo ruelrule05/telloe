@@ -1,6 +1,7 @@
 import {mapGetters, mapActions} from 'vuex';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
+const mime = require('mime');
 
 import VueFormValidate from '../../../../components/vue-form-validate';
 import Emojipicker from '../../../../components/emojipicker';
@@ -58,6 +59,7 @@ export default {
         emojipicker: false,
         selectedFile: null,
         recorder: '',
+        hasScreenRecording: false,
 	}),
 
 	watch: {
@@ -75,7 +77,18 @@ export default {
             if(value) this.scrollDown();
         },
         '$route.params.id': function(value) {
-            if(value) this.showConversation(value);
+            if(value) {
+                this.showConversation(value);
+                this.checkScreenRecorder();
+            }
+        },
+        '$root.screenRecorder.status': function(value) {
+            if(value == 'paused') this.checkScreenRecorder();
+            else this.hasScreenRecording = false;
+        },
+        '$root.screenRecorder.conversation_id': function(value) {
+            if(value == this.conversation.id) this.checkScreenRecorder();
+            else this.hasScreenRecording = false;
         }
 	},
 
@@ -151,6 +164,10 @@ export default {
         });
 	},
 
+    mounted() {
+        this.checkScreenRecorder();
+    },
+
 	methods: {
     	...mapActions({
             showConversation: 'conversations/show',
@@ -158,6 +175,52 @@ export default {
             storeMessage: 'messages/store',
       		updateMessage: 'messages/update',
     	}),
+
+        async downloadScreenRecording() {
+            if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+               let video = await this.$root.$refs['screenRecorder'].submit();
+                let filename = `${video.timestamp}.${mime.getExtension(video.source.type)}`; 
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(video.source);
+                link.download = filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+        },
+
+        async sendScreenRecording() {
+            if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+               let video = await this.$root.$refs['screenRecorder'].submit();
+               this.sendVideo(video);
+           }
+        },
+
+        checkScreenRecorder() {
+            if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+                this.hasScreenRecording = true;
+                this.$nextTick(() => {
+                    if(this.$refs['screenRecorderData']) {
+                        let blob = new Blob(this.$root.screenRecorder.data);
+                        this.$refs['screenRecorderData'].src = null;
+                        this.$refs['screenRecorderData'].src = URL.createObjectURL(blob);
+                        this.$refs['screenRecorderData'].load();
+                    }
+                });
+            } else {
+                this.hasScreenRecording = false;
+            }
+        },
+
+        initScreenRecorder() {
+            if(!this.$root.screenRecorder.conversation_id) {
+                this.$root.screenRecorder.conversation_id = this.conversation.id;
+                this.$nextTick(() => {
+                    this.$root.$refs.screenRecorder.initDevices();
+                });
+            }
+        },
 
         async getMessageByID(data) {
             let message = await axios.get(`/messages/${data.id}`).catch((e) => {});

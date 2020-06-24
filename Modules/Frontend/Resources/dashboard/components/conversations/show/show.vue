@@ -23,13 +23,25 @@
                         </div>
                         <div class="ml-auto">
                             <button class="btn btn-white btn-circle-actions border" v-tooltip.bottom="'Video call'" :disabled="$root.callWindow" @click="$root.initCall(conversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
-                            <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Record screen'" @click="openRecorder('screen')"><cast-icon></cast-icon></button>
+                            <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Record screen'" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id"><cast-icon></cast-icon></button>
                             <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Manage bookings'"" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
                             <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Profile'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><user-icon></user-icon></button>
                         </div>
         			</div>
 
         			<div class="overflow-hidden flex-grow-1 bg-white position-relative">
+                        
+                        <div v-if="hasScreenRecording" class="position-absolute-center w-100 h-100 bg-white screen-recorder-data">
+                            <div class="position-absolute-center w-75 text-center">
+                                <h6 class="font-heading h5">Screen recording</h6>
+                                <video src="" class="w-100 h-100 bg-black rounded d-block outline-0" controls ref="screenRecorderData"></video>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-light border" @click="downloadScreenRecording">Download</button>
+                                    <button type="button" class="btn  btn-light border" @click="sendScreenRecording">Send</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <div v-if="!ready || !conversation.ready" class="bg-white messages-loader position-absolute-center w-100 h-100">
                             <div class="position-absolute-center">
                                 <div class="spinner-border spinner-border-sm text-primary"></div>

@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Chatbot extends Model
+class Chatbot extends BaseModel
 {
     //
     protected $fillable = ['bot_id', 'user_id', 'title', 'description', 'is_start'];

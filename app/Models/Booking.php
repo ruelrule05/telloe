@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Booking extends Model
+class Booking extends BaseModel
 {
     //
     protected $fillable = ['service_id', 'user_id', 'date', 'start', 'end', 'metadata'];

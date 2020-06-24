@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class UserCustomField extends Model
+class UserCustomField extends BaseModel
 {
     //
     protected $fillable = ['user_id', 'fields'];

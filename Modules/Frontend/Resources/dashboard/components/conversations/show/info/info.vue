@@ -1,5 +1,5 @@
 <template>
-	<div v-if="conversation" class="h-100 overflow-y-only">
+	<div v-if="conversation" class="h-100">
 		<button class="btn p-0 position-absolute btn-close" @click="$root.detailsTab = ''"><close-icon height="34" width="36"></close-icon></button>
         <div class="text-left h-100">
 
@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <div class="d-flex align-items-center dropdown">
                                 <label class="text-gray mb-0" ref="customFieldsLabel">Custom Fields</label>
-                                <button class="ml-auto btn btn-sm btn-secondary d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" fill="#5A5ADF" class="mr-1"></plus-icon> Add Custom Field</button>
+                                <button class="ml-auto btn btn-sm btn-secondary d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" fill="#5A5ADF" class="mr-1"></plus-icon> Add field</button>
                                 <div>
                                     <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
                                         <vue-form-validate @submit="addCustomField()">
@@ -34,7 +34,7 @@
                                                 <div class="form-group mb-2">
                                                     <label class="form-label">Name</label>
                                                     <select v-if="!customFieldForm.is_custom" class="form-control form-control-sm cursor-pointer shadow-none" :class="{'text-gray': !customFieldForm.name}" v-model="customFieldForm.name" data-required>
-                                                        <option value="" disabled selected>Select custom field</option>
+                                                        <option value="" disabled selected>Select global fields</option>
                                                         <option :value="custom_field" v-for="custom_field in $root.auth.custom_fields">{{ custom_field }}</option>
                                                         <option value="custom">- New custom field -</option>
                                                     </select>
@@ -334,7 +334,6 @@
 
             <!-- Bookings -->
             <div v-else-if="$root.detailsTab == 'bookings' && $root.auth.role.role == 'client'" class="text-left h-100">
-                <h4 class="font-heading">Bookings</h4>
                 <bookings :user="conversation.member"></bookings>
             </div>
         </div>

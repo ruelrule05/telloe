@@ -8,6 +8,10 @@ use App\Models\Service;
 use App\Models\Booking;
 use Auth;
 use Carbon\Carbon;
+use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
+use Modules\Frontend\Http\GoogleCalendarClient;
+use Modules\Frontend\Http\OutlookClient;
 
 class BookingController extends Controller
 {
@@ -23,11 +27,11 @@ class BookingController extends Controller
         return response()->json($timeslots);
     }
 
-	public function index(Request $request)
+    public function index(Request $request)
     {
-    	$this->validate($request, [
-    		'user_id' => 'nullable|exists:users,id'
-    	]);
+        $this->validate($request, [
+            'user_id' => 'nullable|exists:users,id'
+        ]);
 
         $role = Auth::user()->role->role;
         if($role == 'client') :
@@ -130,6 +134,7 @@ class BookingController extends Controller
         return response()->json($booking->load('service'));
     }
 
+
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
@@ -138,4 +143,179 @@ class BookingController extends Controller
         return response()->json(['success' => true]);
     }
 
+
+    public function googleClient()
+    {
+        $GoogleCalendarClient = new GoogleCalendarClient();
+        return response()->json($GoogleCalendarClient->client);
+    }
+
+    public function googleCalendarEvents()
+    {
+        $events = [];
+        $calendarId = Auth::user()->google_calendar_id;
+        if($calendarId) :
+            $GoogleCalendarClient = new GoogleCalendarClient();
+            $client = $GoogleCalendarClient->client;
+            $service = new Google_Service_Calendar($client);
+            $eventsList = $service->events->listEvents($calendarId);
+            while(true) :
+                foreach ($eventsList->getItems() as $event) :
+                    $evId = $event->getId();
+                    if (strpos($evId, 'booking') === false) :
+                        $events[] = $event;
+                    endif;
+                endforeach;
+                $pageToken = $eventsList->getNextPageToken();
+                if ($pageToken) :
+                    $optParams = array('pageToken' => $pageToken);
+                    $eventsList = $service->events->listEvents($calendarId, $optParams);
+                else :
+                    break;
+                endif;
+            endwhile;
+        endif;
+
+        Auth::user()->update([
+            'google_calendar_events' => $events
+        ]);
+
+        return response()->json($events);
+    }
+
+    public function googleCalendarList(Request $request)
+    {
+        $GoogleCalendarClient = new GoogleCalendarClient();
+        $calendars = [];
+        if(!isset($GoogleCalendarClient->client->authUrl)) :
+            $client = $GoogleCalendarClient->client;
+            $service = new Google_Service_Calendar($client);
+
+            $calendarList = $service->calendarList->listCalendarList([
+                'showHidden' => true,
+                'showDeleted' => true,
+            ]);
+            while(true) :
+                foreach ($calendarList->getItems() as $calendarListEntry) :
+                    $calendars[] = $calendarListEntry;
+                endforeach;
+                $pageToken = $calendarList->getNextPageToken();
+                if ($pageToken) :
+                    $optParams = array('pageToken' => $pageToken);
+                    $calendarList = $service->calendarList->listCalendarList($optParams);
+                else :
+                    break;
+                endif;
+            endwhile;
+
+            usort($calendars, function($a, $b) {
+                return strcmp($a->summary, $b->summary);
+            });
+        endif;
+        return response()->json($calendars);
+    }
+
+
+    public function googleCalendarCallback(Request $request)
+    {
+        $GoogleCalendarClient = new GoogleCalendarClient();
+        $GoogleCalendarClient->setAccessToken($request->code);
+        echo "
+            <script>
+                window.code = '{$request->code}';
+                window.close();
+            </script>"
+        ;
+
+        return;
+    }
+
+    public function updateGoogleCalendarEvents()
+    {
+        $events = [];
+        $calendarId = Auth::user()->google_calendar_id;
+        $timestamp = time();
+        if($calendarId) :
+            $GoogleCalendarClient = new GoogleCalendarClient();
+            $client = $GoogleCalendarClient->client;
+            $service = new Google_Service_Calendar($client);
+
+            // delete existing events with ID contains "booking"
+            $calendarEvents = $service->events->listEvents($calendarId);
+            while(true) :
+                foreach ($calendarEvents->getItems() as $event) :
+                    $evId = $event->getId();
+                    if (strpos($evId, 'booking') !== false) :
+                        $service->events->delete($calendarId, $evId);
+                    endif;
+                endforeach;
+                $pageToken = $calendarEvents->getNextPageToken();
+                if ($pageToken) :
+                    $optParams = array('pageToken' => $pageToken);
+                    $calendarEvents = $service->events->listEvents('primary', $optParams);
+                else :
+                    break;
+                endif;
+            endwhile;
+
+            $bookings = Booking::whereHas('service', function($service) {
+                $service->where('user_id', Auth::user()->id);
+            })->get();
+
+
+            foreach($bookings as $booking) :
+                $eventId = "{$timestamp}booking{$booking->id}";
+                $event = new Google_Service_Calendar_Event([
+                    'id' => $eventId,
+                    'summary' => $booking->service->name,
+                    'description' => $booking->service->description,
+                    'start' => [
+                        'dateTime' => Carbon::parse("$booking->date $booking->start")->toRfc3339String(),
+                        'timeZone' => $booking->service->user->timezone,
+                    ],
+                    'end' => [
+                        'dateTime' => Carbon::parse("$booking->date $booking->end")->toRfc3339String(),
+                        'timeZone' => $booking->service->user->timezone,
+                    ],
+                    'attendees' => [
+                        array('email' => $booking->user->email),
+                        array('email' => $booking->service->user->email),
+                    ],
+                ]);
+                $event = $service->events->insert($calendarId, $event);
+                $events[] = $event;
+            endforeach;
+            
+            return response()->json($events);
+        endif;
+    }
+
+    public function msOutlookCallback(Request $request)
+    {
+        $OutlookClient = new \Modules\Frontend\Http\OutlookClient();
+        $user = $OutlookClient->callback($request);
+
+        echo "
+            <script>
+                window.close();
+            </script>"
+        ;
+
+        return;
+    }
+
+    public function outlookCalendarList(Request $request)
+    {
+        $authTokens = Auth::user()->outlook_token;
+        $OutlookClient = new \Modules\Frontend\Http\OutlookClient();
+        $graph = new \Microsoft\Graph\Graph();
+        $graph->setAccessToken($authTokens['accessToken']);
+
+        $getCalendarsUrl = '/me/calendars';
+        $calendars = $graph->createRequest('GET', $getCalendarsUrl)
+          ->setReturnType(\Microsoft\Graph\Model\Calendar::class)
+          ->execute();
+
+          return response()->json($calendars);
+    }
 }

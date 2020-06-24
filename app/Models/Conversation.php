@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Auth;
 
-class Conversation extends Model
+class Conversation extends BaseModel
 {
     //
     protected $fillable = ['user_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
@@ -88,15 +87,5 @@ class Conversation extends Model
     public function getTimestampAttribute()
     {
         return $this->created_at->getPreciseTimestamp(3);
-    }
-
-    
-    protected function castAttribute($key, $value)
-    {
-        if ($this->getCastType($key) == 'array' && is_null($value)) {
-            return [];
-        }
-
-        return parent::castAttribute($key, $value);
     }
 }

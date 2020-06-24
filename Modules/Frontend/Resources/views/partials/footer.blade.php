@@ -7,17 +7,13 @@
 
 			<div class="col-md-2 mt-md-0 mt-5">
 				<h5 class="font-heading">Product</h5>
-				<a href="" class="d-block text-muted font-weight-light">Pricing</a>
+				<a href="#pricing" class="d-block text-muted font-weight-light">Pricing</a>
 				<a href="" class="d-block text-muted pt-1 font-weight-light">Try it for free</a>
-				<a href="" class="d-block text-muted pt-1 font-weight-light">Alternatives</a>
 			</div>
 
 			<div class="col-md-2 mt-md-0 mt-4">
 				<h5 class="font-heading">Company</h5>
-				<a href="" class="d-block text-muted font-weight-light">Our Story</a>
-				<a href="" class="d-block text-muted pt-1 font-weight-light">Blog</a>
-				<a href="" class="d-block text-muted pt-1 font-weight-light">Become and affiliate</a>
-				<a href="" class="d-block text-muted pt-1 font-weight-light">Customers</a>
+				<a href="" class="d-block text-muted pt-1 font-weight-light">Become an affiliate</a>
 			</div>
 
 			<div class="col-md-2 mt-md-0 mt-4">

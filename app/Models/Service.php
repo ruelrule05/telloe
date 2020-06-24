@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Auth;
 
-class Service extends Model
+class Service extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available'];
+    protected $fillable = ['user_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'timegap', 'ignored_calendar_events_google'];
     protected $casts = [
         'days' => 'array',
         'holidays' => 'array',
-        'is_available' => 'boolean'
+        'is_available' => 'boolean',
+        'ignored_calendar_events_google' => 'array'
     ];
 
     public function user()
@@ -28,8 +28,7 @@ class Service extends Model
 
     public function timeslots($dateString) {
         $timeslots = [];
-
-        $holidays = json_decode($this->attributes['holidays'], true);
+        $holidays = $this->holidays;
 
         if(!array_search($dateString, $holidays)) :
             $date = Carbon::parse($dateString);
@@ -54,7 +53,7 @@ class Service extends Model
                         'label' => $timeStart->format('h:iA'),
                         'time' => $timeStart->format('H:i'),
                     ];
-                    $endTime = $timeStart->copy()->add(30, 'minute')->format('H:i');
+                    $endTime = $timeStart->copy()->add($this->attributes['timegap'], 'minute')->format('H:i');
                     $bookings = Booking::whereHas('service', function($service) {
                             $service->whereHas('user', function($user) {
                                 $user->where('id', Auth::user()->id);
@@ -67,7 +66,7 @@ class Service extends Model
 
                     if($bookings->count() == 0) $timeslots[] = $timeslot;
 
-                    $timeStart->add($this->attributes['duration'] + 30, 'minute');
+                    $timeStart->add($this->attributes['duration'] + $this->attributes['timegap'], 'minute');
                 endwhile;
 
             endif;

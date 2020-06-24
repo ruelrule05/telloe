@@ -1,6 +1,6 @@
 <template>
 	<div class="row h-100 p-4">
-		<div class="col-md-12 h-100">
+		<div v-if="ready" class="col-md-12 h-100">
 			<div v-if="services.length == 0" class="py-5 text-center bg-white rounded shadow-sm p-2">
 				<h6 class="text-gray font-weight-lighter mb-3">You don't have any services added yet</h6>
 				<button class="btn btn-primary" @click="selectedService = null; newService = {}; $refs['modal'].show()">Add Service</button>
@@ -65,8 +65,10 @@
 
 							<hr />
 
-							<h6 class="font-heading d-inline-block mb-3">Duration: </h6> {{ selectedService.duration }} minutes
-
+							<h6 class="font-heading d-inline-block mb-1">Duration: </h6> {{ selectedService.duration }} minutes
+							<div>
+								<h6 class="font-heading d-inline-block mb-3">Timegap: </h6> {{ selectedService.timegap }} minutes
+							</div>
 
 							<div class="d-flex mb-2">
 								<button class="btn btn-tab px-0 position-relative" :class="{'active': serviceDetailsTab == 'availability'}" @click="serviceDetailsTab = 'availability'">Availability</button>
@@ -152,6 +154,10 @@
 				<div class="form-group">
 					<label class="form-label">Duration (in minutes)</label>
 					<input type="number" class="form-control" v-model="newService.duration" data-required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Timegap (in minutes)</label>
+					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.timegap" placeholder="Defaults to 15 mins">
 				</div>
 				<div class="d-flex">
 					<button class="btn btn-link text-body" type="button" data-dismiss="modal">Cancel</button>

@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class Message extends Model
+class Message extends BaseModel
 {
     //
     protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
@@ -74,14 +73,4 @@ class Message extends Model
 
         return $user;
     }*/
-
-    
-    protected function castAttribute($key, $value)
-    {
-        if ($this->getCastType($key) == 'array' && is_null($value)) {
-            return [];
-        }
-
-        return parent::castAttribute($key, $value);
-    }
 }

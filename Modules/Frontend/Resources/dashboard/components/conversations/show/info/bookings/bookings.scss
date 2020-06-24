@@ -1,8 +1,27 @@
+@import '../../../../../../sass/variables';
 .booking:hover{
     .opacity-0{
         opacity: 1;
     }
 }
-.booking-edit{
-	display: none;
+.timeslot-dropdown-menu{
+	max-height: 300px;
+	overflow-y: scroll;
+}
+.btn-timeslot{
+	small {
+		transition: $transition-base;
+		color: $gray-500;
+	}
+	&.text-white{
+		small {
+			color: white;
+		}
+		.rounded{
+			background: $primary;
+		}
+	}
+	.rounded{
+		background: white;
+	}
 }

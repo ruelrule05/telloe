@@ -15,11 +15,12 @@ import DownloadIcon from '../icons/download';
 import ArrowRightIcon from '../icons/arrow-right';
 import ExpandIcon from '../icons/expand';
 import CollapseIcon from '../icons/collapse';
+import InterviewIcon from '../icons/interview';
 
 var randomString = require('random-string');
 new Vue ({
     el: '#app',
-    components: {VideoIcon, CloseIcon, DuplicateAltIcon, DownloadIcon, ArrowRightIcon, ExpandIcon, CollapseIcon},
+    components: {VideoIcon, CloseIcon, DuplicateAltIcon, DownloadIcon, ArrowRightIcon, ExpandIcon, CollapseIcon, InterviewIcon},
 
     data: () => ({
         auth: AUTH,
@@ -54,17 +55,21 @@ new Vue ({
             conversation_id: this.conversation.id,
             user_id: this.auth.id,
         });
-        this.socket.on('live_call_connections', (response) => {
+        this.socket.on('live_call_connections', (response) => { // triggered on live_call_connections
             if(this.socket.id == response.socket_id && response.data[this.conversation.id]) {
-                let users = response.data[this.conversation.id];
-                if(users.length == 1) this.outgoing = true;
-                else {
-                    this.outgoing = false;
-                    users.forEach((user_id) => {
-                        if(user_id != this.auth.id) {
-                            this.createConnectionRequest(user_id);
-                        }
-                    });
+                if(response.is_limit) {
+                    this.status = 'limit';
+                } else {
+                    let users = response.data[this.conversation.id];
+                    if(users.length == 1) this.initCall();
+                    else if(users.length > 1) {
+                        this.outgoing = false;
+                        users.forEach((user_id) => {
+                            if(user_id != this.auth.id) {
+                                this.createConnectionRequest(user_id);
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -152,9 +157,9 @@ new Vue ({
         this.$refs['cameraPreview'].onplaying = () => {
             this.localCameraReady = true;
         };
-        if(!this.status && this.connections.length == 0) {
+     /*   if(!this.status && this.connections.length == 0) {
             this.initCall();
-        }
+        }*/
     },
 
     methods: {
@@ -180,6 +185,7 @@ new Vue ({
         },
 
         initCall() {
+            this.outgoing = true;
             this.notification_sound.play();
             this.socket.emit('live_call_incoming', { 
                 conversation_id: this.conversation.id,
@@ -284,6 +290,7 @@ new Vue ({
                 } else {
                     let videoContainer = document.createElement('div');
                     videoContainer.classList.add('flex-grow-1');
+                    videoContainer.classList.add('video-container');
                     videoContainer.id = `remote-${connection.id}`;
                     let videoEl = document.createElement('video');
                     videoEl.autoplay = true;
@@ -332,10 +339,12 @@ new Vue ({
                     this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
                 }
 
-                let videoTrack = streams.getVideoTracks()[0];
-                let audioTrack = streams.getAudioTracks()[0];
-                connection.videoSender = connection.addTrack(videoTrack, streams);
-                connection.audioSender = connection.addTrack(audioTrack, streams);
+                if(connection) {
+                    let videoTrack = streams.getVideoTracks()[0];
+                    let audioTrack = streams.getAudioTracks()[0];
+                    connection.videoSender = connection.addTrack(videoTrack, streams);
+                    connection.audioSender = connection.addTrack(audioTrack, streams);
+                }
             }
         },
 

@@ -4,11 +4,39 @@
  *
  *
  */
-
 Route::get('email', function() {
-    $email = new App\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
+    /*$email = new App\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
     \Mail::to('clydewinux@gmail.com')->queue($email);
-    return $email;
+    return $email;*/
+    $date = \Carbon\Carbon::parse('2020-06-03 23:59')->toRfc3339String();
+    echo $date;
+});
+
+
+Route::get('/msoutlook', function() {
+    $authTokens = Auth::user()->outlook_token;
+    $OutlookClient = new \Modules\Frontend\Http\OutlookClient();
+    if(!$OutlookClient->authUrl) :
+        $graph = new \Microsoft\Graph\Graph();
+        $graph->setAccessToken($authTokens['accessToken']);
+        $queryParams = array(
+          '$select' => 'subject,start,end,webLink',
+          '$orderby' => 'createdDateTime DESC'
+        );
+        $getEventsUrl = '/me/events?'.http_build_query($queryParams);
+        $events = $graph->createRequest('GET', $getEventsUrl)
+          ->setReturnType(\Microsoft\Graph\Model\Event::class)
+          ->execute();
+
+        $getCalendarsUrl = '/me/calendars';
+        $calendars = $graph->createRequest('GET', $getCalendarsUrl)
+          ->setReturnType(\Microsoft\Graph\Model\Calendar::class)
+          ->execute();
+        echo '<pre>';
+        print_r($events);
+    else :
+        echo '<a href="'.$OutlookClient->authUrl.'">Log In</a>';
+    endif;
 });
 
 
@@ -21,7 +49,9 @@ Route::group(
         Route::get('/', 'PageController@homepage');
         Route::get('/@{username}', 'UserController@profile');
 		Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
-
+        Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
+        Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');
+        
         // AJAX
         Route::group([
             'prefix' => 'ajax',
@@ -44,6 +74,16 @@ Route::group(
             Route::apiResource('users', 'UserController')->only('index');
 
             Route::get('tags/search', 'DashboardController@searchTags');
+
+            // Google calendar
+            Route::get('google_client', 'BookingController@googleClient');
+            Route::get('google_calendar_list', 'BookingController@googleCalendarList');
+            Route::get('google_calendar_events', 'BookingController@googleCalendarEvents');
+            Route::post('update_google_calendar_events', 'BookingController@updateGoogleCalendarEvents');
+
+
+            // Outlook calendar
+            Route::get('outlook_calendar_list', 'BookingController@outlookCalendarList');
         });
 
             // Profile page

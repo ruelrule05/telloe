@@ -20,10 +20,10 @@
                 <template v-else>
     				<div v-for="conversation in orderedConversations" v-if="conversation.status == conversationTab" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
     			  		<div class="position-absolute conversation-dropdown dropleft opacity-0 pr-2">
-                            <button class="btn btn-sm btn-light p-1 badge-pill line-height-0" type="button" data-toggle="dropdown" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
+                            <button class="btn btn-sm btn-white p-1 border line-height-0 badge-pill" type="button" data-toggle="dropdown" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
                             <div class="dropdown-menu py-1">
-                                <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
-                                <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2"" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                                <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
+                                <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
                             </div>
                         </div>
     	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">

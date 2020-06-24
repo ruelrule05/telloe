@@ -3,6 +3,14 @@ const name = 'bookings';
 const state = () => ({
     ready: false,
     index: [],
+
+    googleClient: {},
+    googleCalendarsReady: false,
+    googleCalendars: [],
+
+    outlookClient: {},
+    outlookCalendarsReady: false,
+    outlookCalendars: [],
 });
 
 const mutations = {
@@ -23,6 +31,16 @@ const mutations = {
 
     delete(state, data) {
         state.index.splice(state.index.findIndex((x) => x.id == data.id), 1);
+    },
+
+    googleCalendars(state, data) {
+        state.googleCalendarsReady = true;
+        state.googleCalendars = data;
+    },
+
+    outlookCalendars(state, data) {
+        state.outlookCalendarsReady = true;
+        state.outlookCalendars = data;
     },
 };
 
@@ -49,6 +67,18 @@ const actions = {
     delete({ commit }, data) {
         axios.delete(`/${name}/${data.id}`, data);
         commit('delete', data);
+    },
+    
+    googleCalendars({ commit }, data) {
+        axios.get(`/google_calendar_list`).then((response) => {
+            commit('googleCalendars', response.data);
+        });
+    },
+
+    outlookCalendars({ commit }, data) {
+        axios.get(`/outlook_calendar_list`).then((response) => {
+            commit('outlookCalendars', response.data);
+        });
     },
 };
 

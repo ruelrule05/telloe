@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AreasOfInterest extends Model
+class AreasOfInterest extends BaseModel
 {
     //
     protected $fillable = ['area', 'sample_images'];

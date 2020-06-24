@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class WidgetType extends Model
+class WidgetType extends BaseModel
 {
     //
     protected $fillable = ['widget_id', 'page', 'state'];

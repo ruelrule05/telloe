@@ -51,12 +51,17 @@ io.on('connection', function(socket) {
 
     socket.on('live_call_ready', function(data) {
         userData = data;
+        let is_limit = false;
         if(!call_users[data.conversation_id]) call_users[data.conversation_id] = [];
         let existsIndex = call_users[data.conversation_id].findIndex((x) => x == data.user_id);
-        if(existsIndex < 0) {
-            call_users[data.conversation_id].push(data.user_id);
+        if(existsIndex == -1) {
+            if(call_users[data.conversation_id].length < 8) {
+                call_users[data.conversation_id].push(data.user_id);
+            } else {
+                is_limit = true;
+            }
         }
-        socket.emit('live_call_connections', {socket_id: socket.id, data: call_users});
+        socket.emit('live_call_connections', {socket_id: socket.id, data: call_users, is_limit: is_limit});
     });
 
     socket.on('live_call_connection_request', function(data) {

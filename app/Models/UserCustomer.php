@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
-class UserCustomer extends Model
+class UserCustomer extends BaseModel
 {
     //
     protected $fillable = ['user_id', 'customer_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token'];
-    protected $appends = ['full_name', 'initials'];
+    protected $appends = ['full_name', 'initials', 'created_at_format'];
 
     public function user() 
     {
@@ -36,6 +36,11 @@ class UserCustomer extends Model
     public function getInitialsAttribute()
     {
         return strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1));
+    }
+
+    public function getCreatedAtFormatAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->format('M d, Y');
     }
 
 }

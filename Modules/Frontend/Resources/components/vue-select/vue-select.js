@@ -1,45 +1,4 @@
-<template>
-    <div class="vue-select">
-        <div class="dropdown-container overflow-visible" :class="drop" ref="dropdown" :disabled="disabled">
-            <button class="btn font-family-base font-smoothing-auto text-black dropdown-toggle border btn-block text-left shadow-none d-inline-flex align-items-center" :class="toggle_button_class" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" :data-display="display" @click.prevent ref="dropdown-toggle">
-                <template v-if="searchable">
-                    <input type="text" @focus="inputFocused" spellcheck="false" v-model="search" class="outline-0 input-searchable w-100 bg-transparent line-height-1 font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :required="required" />
-                </template>
-                <template v-else>
-                    <div class="select-placeholder text-ellipsis">
-                        <span v-if="selected_value.value" class="font-weight-normal">{{ selected_value.text }}</span>
-                        <span v-else>{{ select_placeholder }}</span>
-                    </div>
-                </template>
-                &nbsp;
-                <chevron-down-icon class="ml-auto"></chevron-down-icon>
-            </button>
-            <div class="bg-white dropdown-menu fade border-0 rounded" :class="dropdown_class" ref="dropdown-menu">
-                <div class="scrollable-menu" ref="scrollable-menu">
-                <span class="dropdown-item disabled pl-3 font-weight-light" v-if="filtered_options.length == 0">
-                    <span v-if="show_no_results" class="text-gray">No results found</span>
-                </span>
-                <a href="#" v-else class="dropdown-item cursor-pointer" :id="'item-' + option.value" :class="{active: selected_value.text && option.value == selected_value.value}" @click.prevent="updateValue(option)" v-for="option in filtered_options">
-                    <div class="text-ellipsis">
-                        <span>{{ option.text }}</span>
-                    </div>
-                </a>
-                </div>
-            </div>
-        </div>
-        <div class="multiple-values">
-            <transition-group name="fade" tag="div" v-if="selected_value.length > 0" class="mt-1">
-                <span class="btn btn-xs btn-light bg-light text-dark badge-pill border py-1 pl-3 pr-1 mt-1 mr-1 d-inline-flex align-items-center" v-for="(selected, index) in selected_value" :key="selected.value" @click.stop>
-                    {{ selected.text }}
-                    <i class="eva eva-close-outline cursor-pointer font-size-15 line-height-0" @click="selected_value.splice(index, 1)"></i>
-                </span>
-            </transition-group>
-        </div>
-    </div>
-</template>
-
-<script>
-import ChevronDownIcon from '../icons/chevron-down';
+import ChevronDownIcon from '../../icons/chevron-down';
 export default {
     components: {ChevronDownIcon},
     props: {
@@ -103,6 +62,7 @@ export default {
         selected_value: {},
         search: '',
         show_no_results: true,
+        show: false
     }),
 
     watch: {
@@ -200,4 +160,3 @@ export default {
         },
     },
 };
-</script>

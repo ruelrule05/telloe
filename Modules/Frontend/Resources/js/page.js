@@ -18,7 +18,7 @@ new Vue({
     data: {
         auth: false,
         action: 'login',
-    	seats: 15,
+    	seats: 10,
         invite_token: null,
     },
 

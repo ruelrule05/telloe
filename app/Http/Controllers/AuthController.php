@@ -21,7 +21,7 @@ class AuthController extends Controller
 {
     public function get(Request $request)
     {
-        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription', 'role') : false;
+        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription', 'role')->makeVisible(['google_calendars', 'google_calendar_id', 'outlook_calendars', 'google_calendar_events']) : false;
         $user->update([
             'last_online' => Carbon::now()
         ]);

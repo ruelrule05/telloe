@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Widget extends Model
+class Widget extends BaseModel
 {
     //
     protected $fillable = ['user_id', 'name', 'heading', 'domain', 'slug', 'fb_page', 'widget_type_id', 'colors', 'notify_messenger', 'notify_sms', 'default_chatbot', 'business_hours'];

@@ -34,6 +34,7 @@ const router = new VueRouter({
                     component: () => import(/* webpackChunkName: "dashboard/conversations" */ './components/conversations/conversations.vue'),
                 },
                 {
+                    name: 'bookings',
                     path: 'bookings',
                     component: {
                         render(c) {
@@ -69,6 +70,8 @@ const router = new VueRouter({
     ]
 });
 import io from 'socket.io-client';
+import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
+
 import BellIcon from '../icons/bell';
 import GridIcon from '../icons/grid';
 import ChatIcon from '../icons/chat';
@@ -88,7 +91,7 @@ window.app = new Vue({
     router: router,
     store: store,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon, IncomingCallModal
+    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon, IncomingCallModal, ScreenRecorder
     },
     data: {
         auth: null,
@@ -97,7 +100,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: '',
+        detailsTab: 'bookings',
         profileTab: 'overview', //overview
 
         call_sound: null,
@@ -107,6 +110,11 @@ window.app = new Vue({
         caller: null,
         callConversationId: null,
         callUser: null,
+        screenRecorder: {
+            conversation_id: null,
+            data: null,
+            status: ''
+        }
     },
 
     computed: {
@@ -186,6 +194,7 @@ window.app = new Vue({
             js.src = '//connect.facebook.net/en_US/all.js';
             ref.parentNode.insertBefore(js, ref);
         })(document);
+
     },
 
     mounted() {
@@ -221,8 +230,8 @@ window.app = new Vue({
                 else if(action == 'outgoing') this.callUser = conversation.member;
 
                 let url = `${window.location.origin}/conversations/${conversation_id}/call`;
-                const width = 800;
-                const height = 475;
+                const width = 800; // 4:3
+                const height = 600;
                 const left = (screen.width/2) - (width/2);
                 const top = (screen.height/2) - (height/2);
                 this.callWindow = window.open(

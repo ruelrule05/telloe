@@ -25,6 +25,12 @@
             		</div>
         		</div>
         	</div>
+        	<div v-else-if="status == 'limit'" class="caller position-fixed text-center bg-white w-100 h-100">
+        			<div class="position-absolute-center">
+        				<interview-icon width="70" height="70"></interview-icon>
+        				<div class="text-muted font-weight-light mt-2">This room is full. Please try again later.</div>
+        			</div>
+        	</div>
 
 
     		<!-- Camera loader -->
@@ -36,14 +42,16 @@
 	        </div>
 
 			<!-- Ongoing -->
-    		<div class="bg-black w-100 h-100 position-relative ongoing-body">
-				<button v-if="status == 'ongoing'" @click="recordCall" class="btn-record btn p-0 position-absolute text-white d-flex align-items-center">
+    		<div class="bg-white w-100 h-100 position-relative ongoing-body">
+				<button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center">
 					<i :class="{'bg-gray': !isRecording}"></i>&nbsp;@{{ isRecording ? 'Stop recording' : 'Record this call' }}</span>
 				</button>
 
 				<!-- Local camera -->
 				<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing'}">
-					<video ref="cameraPreview" :class="{'w-100 h-100 position-absolute-center': !status}" autoplay playsinline muted></video>
+					<div class="video-container h-100 w-100">
+						<video ref="cameraPreview" :class="{'w-100 h-100 position-absolute-center': !status}" autoplay playsinline muted></video>
+					</div>
 				</div>
 				
 				<!-- Remote cameras -->
@@ -63,18 +71,18 @@
 		            </button>
 		        </div>
 
-		        <div v-if="status == 'ongoing'" class="btn-share-screen position-absolute">
-			        <button v-if="!isScreenSharing" class="btn line-height-1 p-0" @click="shareScreen">
-			            <duplicate-alt-icon fill="white" width="20" height="20"></duplicate-alt-icon>
+		        <div vx-if="status == 'ongoing'" class="btn-share-screen position-absolute">
+			        <button v-if="!isScreenSharing" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
+			            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
 			        </button>
-			        <button v-else class="btn line-height-1 p-0" @click="stopShareScreen">
+			        <button v-else class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
 			            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
 			        </button>
-			        <button v-if="!isFullScreen" class="btn line-height-1 p-0 ml-1" @click="fullScreen(true)">
-			            <expand-icon fill="white" width="20" height="20"></expand-icon>
+			        <button v-if="!isFullScreen" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
+			            <expand-icon width="20" height="20"></expand-icon>
 			        </button>
-			        <button v-else class="btn line-height-1 p-0 ml-1" @click="fullScreen(false)">
-			            <collapse-icon fill="white" width="20" height="20"></collapse-icon>
+			        <button v-else class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
+			            <collapse-icon width="20" height="20"></collapse-icon>
 			        </button>
 		        </div>
 	        </div>
@@ -104,9 +112,9 @@
 	</div>
 
 	<script>
-		const AUTH = JSON.parse('{!! json_encode(Auth::user()) !!}');
+		const AUTH = {!! json_encode(Auth::user()) !!};
 		const WS_URL = '{{ env('WS_URL') }}';
-		const CONVERSATION = JSON.parse('{!! json_encode($conversation) !!}');
+		const CONVERSATION = {!! json_encode($conversation) !!};
 	</script>
 	<script src="{{ mix('js/call.js') }}"></script>
 </body>

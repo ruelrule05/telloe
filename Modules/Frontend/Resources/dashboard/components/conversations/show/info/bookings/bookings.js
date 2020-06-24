@@ -4,38 +4,45 @@ import dayjs from 'dayjs';
 import VCalendar from 'v-calendar';
 import convertTime from 'convert-time';
 Vue.use(VCalendar);
+import PlusIcon from '../../../../../../icons/plus';
+import TrashIcon from '../../../../../../icons/trash';
+import PencilIcon from '../../../../../../icons/pencil';
+export default {
+    components: {
+        PlusIcon,
+        TrashIcon,
+        PencilIcon,
+    },
 
-export default{
-	
-	props: {
-		user: {
-			type: Object,
-			required: true
-		}
-	},
+    props: {
+        user: {
+            type: Object,
+            required: true,
+        },
+    },
 
-
-	data: () => ({
+    data: () => ({
         selectedBooking: null,
-		addBooking: false, //false
-		selectedDate: null,
+        selectedDate: null,
         selectedTimeslot: '',
         selectedService: '',
         timeslots: [],
         days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        timeslotDropdown: false,
+        customTime: false,
     }),
 
     computed: {
-		...mapState({
+        ...mapState({
             services: (state) => state.services.index,
             bookings: (state) => state.bookings.index,
             bookingsReady: (state) => state.bookings.ready,
-		}),
+        }),
 
         userBookings() {
             let bookings = [];
             this.bookings.forEach((booking) => {
-                if(booking.user_id == this.user.id) {
+                if (booking.user_id == this.user.id) {
                     let parts = booking.date.split('-');
                     booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
                     bookings.push(booking);
@@ -44,12 +51,12 @@ export default{
 
             return bookings;
         },
-		
+
         formattedHolidays() {
             let formattedHolidays = [];
             if (this.selectedService) {
                 let service = this.services.find((x) => x.id == this.selectedService);
-                if(service) {
+                if (service) {
                     service.holidays.forEach((holiday) => {
                         let parts = holiday.split('-');
                         const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
@@ -69,24 +76,24 @@ export default{
                 }
             }
             return formattedHolidays;
-        }
+        },
     },
 
     watch: {
         'user.id': function() {
             this.getBookings();
         },
-        addBooking: function(value) {
-            if(value) {
-                this.selectedTimeslot = this.selectedDate = this.selectedBooking = null;
-                this.selectedService = '';
-            }
-        },
     },
 
-	created() {
-		this.getBookings();
-	},
+    created() {
+        this.getBookings();
+    },
+
+    mounted() {
+        $(this.$refs['newBookingDropdown']).on('hidden.bs.dropdown', () => {
+            this.resetBookingForm();
+        });
+    },
 
     methods: {
         ...mapActions({
@@ -96,9 +103,53 @@ export default{
             deleteBooking: 'bookings/delete',
         }),
 
+        getTimeZoneOffset(date, timeZone) {
+            // Abuse the Intl API to get a local ISO 8601 string for a given time zone.
+            const options = {timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+            const parts = dateTimeFormat.formatToParts(date);
+            const map = new Map(parts.map((x) => [x.type, x.value]));
+            const year = map.get('year');
+            const month = map.get('month');
+            const day = map.get('day');
+            let hour = map.get('hour');
+            const minute = map.get('minute');
+            const second = map.get('second');
+            const ms = date
+                .getMilliseconds()
+                .toString()
+                .padStart(3, '0');
+            if(hour == '24') hour = '00';
+            const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
+
+            // Lie to the Date object constructor that it's a UTC time.
+            const lie = new Date(iso + 'Z');
+
+            // Return the difference in timestamps, as minutes
+            // Positive values are West of GMT, opposite of ISO 8601
+            // this matches the output of `Date.getTimeZoneOffset`
+            return -(lie - date) / 60 / 1000;
+        },
+
+        timezoneTime(timeZone, target_timeZone, time) {
+            let localTZ = this.getTimeZoneOffset(new Date(), timeZone);
+            let targetTZ = this.getTimeZoneOffset(new Date(), target_timeZone);
+            let parts = time.split(':');
+            let timezoneTime = dayjs().hour(parts[0]).minute(parts[1]).add(localTZ - targetTZ, 'minute');
+            return timezoneTime.format('hh:mmA');
+        },
+
+        resetBookingForm() {
+            this.selectedDate = null;
+            this.selectedService = '';
+            this.selectedTimeslot = '';
+            this.timeslotDropdown = false;
+            this.customTime = false;
+            this.$refs['addBookingTitle'].click();
+        },
+
         edit(booking) {
-            if(booking) {
-                this.addBooking = false;
+            if (booking && booking.id != (this.selectedBooking || {}).id) {
                 this.selectedBooking = booking;
                 this.selectedService = booking.service.id;
                 this.getTimeslots(booking.service_id, booking.date);
@@ -108,20 +159,23 @@ export default{
         getTimeslots(service_id = '', date = '') {
             if (service_id && date) {
                 let service = this.services.find((x) => x.id == service_id);
-                if(service) {
+                if (service) {
                     this.timeslots = [];
                     this.selectedTimeslot = null;
                     let dateFormat = dayjs(date).format('YYYY-MM-DD');
                     axios.get(`/@${service.user.username}/${service_id}/timeslots?date=${dateFormat}`).then((response) => {
                         let timeslots = response.data;
-                        if(this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
+                        if (this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
                             let parts = this.selectedBooking.start.split(':');
-                            let label = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
+                            let label = dayjs()
+                                .hour(parts[0])
+                                .minute(parts[1])
+                                .format('hh:mmA');
                             let timeslot = {
                                 label: label,
                                 time: this.selectedBooking.start,
                             };
-                            if(timeslot.label.length == 6) timeslot.label = `0${timeslot.label}`;
+                            if (timeslot.label.length == 6) timeslot.label = `0${timeslot.label}`;
                             this.selectedTimeslot = timeslot;
                             timeslots.push(timeslot);
                         }
@@ -134,9 +188,9 @@ export default{
             }
         },
 
-    	update(booking) {
-            if(this.selectedService && this.selectedTimeslot) {
-        		let formatDate = dayjs(booking.new_date).format('YYYY-MM-DD');
+        update(booking) {
+            if (this.selectedService && this.selectedTimeslot) {
+                let formatDate = dayjs(booking.new_date).format('YYYY-MM-DD');
                 let parts = booking.date.split('-');
 
                 booking.service_id = this.selectedService;
@@ -149,10 +203,10 @@ export default{
                 this.selectedService = '';
                 this.timeslots = [];
             }
-    	},
+        },
 
-    	store() {
-    		if(this.selectedService && this.selectedDate && this.selectedTimeslot) {
+        store() {
+            if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
                 let formatDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
                 let data = {
                     date: formatDate,
@@ -161,25 +215,25 @@ export default{
                     service_id: this.selectedService,
                 };
                 this.storeBooking(data);
-                this.addBooking = false;
-                this.selectedService = null;
-                this.selectedDate = null;
-                this.selectedService = this.selectedTimeslot = '';
-    		}
-    	},
+                this.resetBookingForm();
+            }
+        },
 
-    	formatTime(time) {
-    		let parts = time.split(':');
-    		let formatTime = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
-    		return formatTime;
-    	},
+        formatTime(time) {
+            let parts = time.split(':');
+            let formatTime = dayjs()
+                .hour(parts[0])
+                .minute(parts[1])
+                .format('hh:mmA');
+            return formatTime;
+        },
 
         formatDate(date) {
             return dayjs(date).format('MMMM D, YYYY');
         },
 
-        toDate(string){
-        	return dayjs(string);
-        }
-    }
-}
+        toDate(string) {
+            return dayjs(string);
+        },
+    },
+};

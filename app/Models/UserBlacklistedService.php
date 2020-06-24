@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class UserBlacklistedService extends Model
+class UserBlacklistedService extends BaseModel
 {
     //
     protected $fillable = ['user_id', 'service_id', 'is_blacklisted'];

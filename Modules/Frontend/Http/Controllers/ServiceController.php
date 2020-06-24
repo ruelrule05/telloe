@@ -22,11 +22,12 @@ class ServiceController extends Controller
     		'name' => 'required',
     		'description' => 'required',
     		'duration' => 'required|integer',
-    		'days' => 'required',
+            'days' => 'required',
     	]);
     	$data = $request->all();
     	$data['user_id'] = Auth::user()->id;
     	$service = Service::create($data);
+        $service = $service->fresh();
 
     	return response()->json($service);
     }

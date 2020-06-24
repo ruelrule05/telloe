@@ -26,6 +26,7 @@ export default {
 
 	computed: {
 		...mapState({
+            ready: (state) => state.services.ready,
             services: (state) => state.services.index,
 		}),
 
@@ -42,8 +43,15 @@ export default {
 		}
 	},
 
+	watch: {
+		ready: function(value) {
+			if(value) this.$root.contentloading = false;
+		}
+	},
+
 	created() {
 		this.getServices();
+		if(this.ready) this.$root.contentloading = false;
 		/*this.services.push({
 			id: 1, 
 			name: 'Test service', 
@@ -53,9 +61,6 @@ export default {
 		this.selectedService = this.services[0];*/
 	},
 
-	mounted() {
-		this.$root.contentloading = false;
-	},
 
 	methods: {
         ...mapActions({
@@ -109,6 +114,7 @@ export default {
 				this.selectedService.name = this.newService.name;
 				this.selectedService.description = this.newService.description;
 				this.selectedService.duration = this.newService.duration;
+				this.selectedService.timegap = this.newService.timegap;
 				this.updateService(this.selectedService);
 				this.$refs['modal'].hide();
 			} else {
