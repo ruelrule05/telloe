@@ -297,16 +297,16 @@
 				<div class="bg-white rounded p-md-5 p-4">
 					<h5 class="font-heading mb-3">How many seats do you need?</h5>
 					<h5 class="h4 mb-5">Start with <span class="text-primary font-heading" v-cloak>@{{ seats }}</span> seats and add more as needed</h5>
-					<range-slider class="w-100 p-0" step="1" v-model="seats" v-cloak></range-slider>
+					<range-slider class="w-100 p-0" step="1" v-model="seats" min="10" :tooltip="true" v-cloak></range-slider>
 					<div class="d-flex justify-content-between">
-						<span>0</span>
-						<span>50</span>
+						<span>10</span>
+						<span class="seats-50">50</span>
 						<span>100</span>
 					</div>
 
 					<div class="d-md-flex mt-4 text-left">
 						<div class="flex-1 pr-md-5 mb-4 mb-md-0">
-							<h5 class="font-heading text-primary h4 d-inline-block" v-cloak>$@{{ (2.995*seats).toFixed(2) }}</h5> USD per month
+							<h5 class="font-heading text-primary h4 d-inline-block" v-cloak>$@{{ (3.495*seats).toFixed(2) }}</h5> USD per month
 							<button class="btn btn-primary btn-lg btn-block mt-4">Try it free now</button>
 						</div>
 						<div class="flex-1">
