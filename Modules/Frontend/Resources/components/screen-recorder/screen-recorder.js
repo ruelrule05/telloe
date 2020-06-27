@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import PlainDraggable from '../../js/plugins/plain-draggable.min';
 import Tooltip from '../../js/directives/tooltip';
 import CameraIcon from '../../icons/camera.vue';
 import CloseIcon from '../../icons/close.vue';

@@ -125,7 +125,6 @@
 
 
 		<!-- <script src="/js/leader-line.min.js"></script> -->
-		<script src="/js/plain-draggable.min.js"></script>
 		<script>
 			const WS_URL = '{{ env('WS_URL') }}';
 		</script>
