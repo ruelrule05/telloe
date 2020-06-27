@@ -8,7 +8,7 @@
                 <div class="modal-body p-0">
                     <div v-if="file" class="h-100">
                         <img v-if="file.type =='image'" :src="file.source" class="w-100">
-                        <video controls v-else-if="file.type =='video'" :src="file.source" class="w-100 d-block bg-black outline-0 shadow-none"></video>
+                        <video controls v-else-if="file.type =='video'" :poster="file.preview" :src="file.source" class="w-100 d-block bg-black outline-0 shadow-none"></video>
                     </div>
                 </div>
             </div>
