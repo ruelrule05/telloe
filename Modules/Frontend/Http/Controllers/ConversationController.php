@@ -15,19 +15,12 @@ class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-        $role = Auth::user()->role->role;
-        if($role == 'client') :
-            $conversations = Conversation::where(function($query) {
-                $query->has('members.user')->orHas('customer');
-            })->with('user', 'customer', 'members.user')->where('user_id', Auth::user()->id)->get();
-        elseif($role == 'customer'):
-            $conversations = Conversation::has('members.user')->with('user', 'members.user')->where(function($query) {
-                $query->where('user_id', Auth::user()->id)
-                    ->orWhereHas('members', function($members) {
-                        $members->where('user_id', Auth::user()->id);
-                    });
-            })->get();
-        endif;
+        $conversations = Conversation::has('members.user')->with('user', 'members.user')->where(function($query) {
+            $query->where('user_id', Auth::user()->id)
+                ->orWhereHas('members', function($members) {
+                    $members->where('user_id', Auth::user()->id);
+                });
+        })->get();
     	return response()->json($conversations);
     }
 

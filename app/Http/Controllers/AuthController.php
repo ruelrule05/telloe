@@ -112,6 +112,8 @@ class AuthController extends Controller
         if($request->invite_token) :
             $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
             if($userCustomer) :
+                $user->role_id = 3;
+                $user->save();
                 $userCustomer->update([
                     'customer_id' => $user->id,
                     'is_pending' => false
