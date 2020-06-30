@@ -14,7 +14,8 @@
                             </div>
                             <div class="ml-2">
                                 <h5 class="font-heading mb-0">{{ conversation.member.full_name || conversation.name }}</h5>
-                                <div class="d-flex align-items-center" v-if="conversation.member.id">
+                                <small v-if="conversation.member.is_pending" class="d-block text-warning font-weight-light">Pending account</small>
+                                <div class="d-flex align-items-center" v-else-if="conversation.member.id">
                                     <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
                                     <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
                                 </div>
@@ -22,9 +23,11 @@
                             </div>
                         </div>
                         <div class="ml-auto">
-                            <button class="btn btn-white btn-circle-actions border" v-tooltip.bottom="'Video call'" :disabled="$root.callWindow" @click="$root.initCall(conversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
-                            <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Record screen'" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id"><cast-icon></cast-icon></button>
-                            <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Manage bookings'"" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
+                            <template v-if="!conversation.member.is_pending">
+                                <button class="btn btn-white btn-circle-actions border" v-tooltip.bottom="'Video call'" :disabled="$root.callWindow" @click="$root.initCall(conversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
+                                <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Record screen'" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id"><cast-icon></cast-icon></button>
+                                <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Manage bookings'"" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
+                            </template>
                             <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Profile'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><user-icon></user-icon></button>
                         </div>
         			</div>
@@ -106,7 +109,7 @@
                         </div>
                     </div>
 
-                    <div class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex">
+                    <div v-if="!conversation.member.is_pending" class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex">
                         <vue-form-validate @submit="sendText" class="w-x100 flex-grow-1">
                             <input type="text" @paste="inputPaste" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" placeholder="Write a message.." data-required />
                         </vue-form-validate>

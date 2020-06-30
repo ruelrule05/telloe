@@ -1,4 +1,4 @@
-@extends('emails.layout')
+@extends('frontend::emails.layout')
 
 @section('content')
 

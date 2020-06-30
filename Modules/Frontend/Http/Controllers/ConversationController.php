@@ -17,7 +17,9 @@ class ConversationController extends Controller
     {
         $role = Auth::user()->role->role;
         if($role == 'client') :
-            $conversations = Conversation::has('members.user')->with('user', 'members.user')->where('user_id', Auth::user()->id)->get();
+            $conversations = Conversation::where(function($query) {
+                $query->has('members.user')->orHas('customer');
+            })->with('user', 'customer', 'members.user')->where('user_id', Auth::user()->id)->get();
         elseif($role == 'customer'):
             $conversations = Conversation::has('members.user')->with('user', 'members.user')->where(function($query) {
                 $query->where('user_id', Auth::user()->id)
@@ -31,7 +33,9 @@ class ConversationController extends Controller
 
     public function show($id, Request $request)
     {
-        $conversation = Conversation::has('members.user')->with('user', 'messages.user', 'members.user')->findOrfail($id);
+        $conversation = Conversation::where(function($query){
+            $query->has('members.user')->orHas('customer');
+        })->with('user', 'messages.user', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 
         //if ($request->is_read) :

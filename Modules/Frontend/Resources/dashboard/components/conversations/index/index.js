@@ -1,4 +1,4 @@
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex';
 
 import VueFormValidate from '../../../../components/vue-form-validate';
 import FormSearch from '../../../../components/form-search/form-search.vue';
@@ -75,6 +75,12 @@ export default {
 		if(this.ready && !this.$route.params.id && this.conversations.length > 0) this.setConversation(this.orderedConversations[0]);
 		this.getConversations();
         this.getUsers();
+        this.$root.socket.on('new_conversation', (data) => {
+            if(data.member_ids.find((x) => x == this.$root.auth.id)) {
+                let conversation = this.conversations.find((x) => x.id == data.conversation_id);
+                if(!conversation) this.getConversation(data.conversation_id);
+            }
+        });
 	},
 
     mounted() {
@@ -89,8 +95,15 @@ export default {
       		getConversations: 'conversations/index',
       		storeConversation: 'conversations/store',
             updateConversation: 'conversations/update',
+            showConversation: 'conversations/show',
       		getUsers: 'users/index',
     	}),
+
+        async getConversation(conversation_id) {
+            await this.showConversation(conversation_id);
+            let conversation = this.conversations.find((x) => x.id == conversation_id);
+            if(conversation) this.setConversation(conversation); 
+        },
 
         addNewConversationMember(member) {
             if(!this.newConversation.members.find((x) => x.id == member.id)) this.newConversation.members.push(member)
@@ -104,6 +117,7 @@ export default {
                 });
                 this.storeConversation({members: member_ids}).then((conversation) => {
                     if(conversation.id != this.$route.params.id) this.setConversation(conversation);
+                    this.$root.socket.emit('new_conversation', { member_ids: member_ids, conversation_id: conversation.id });
                 });
                 $('#newConversationModal').modal('hide');
             }

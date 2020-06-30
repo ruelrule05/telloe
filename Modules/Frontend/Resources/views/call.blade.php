@@ -49,7 +49,7 @@
 
 				<!-- Local camera -->
 				<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing'}">
-					<div class="video-container h-100 w-100">
+					<div class="video-container h-100 w-100" :class="{'mirror': isScreenSharing}">
 						<video ref="cameraPreview" :class="{'w-100 h-100 position-absolute-center': !status}" autoplay playsinline muted></video>
 					</div>
 				</div>

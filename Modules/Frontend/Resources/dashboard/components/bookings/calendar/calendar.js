@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {mapState, mapActions} from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
-import BusinessHours from '../../../../components/vue-business-hours/BusinessHours';
+import VueButton from '../../../../components/vue-button';
 import ChevronLeft from '../../../../icons/chevron-left';
 import ChevronRight from '../../../../icons/chevron-right';
 import PencilIcon from '../../../../icons/pencil';
@@ -9,10 +9,11 @@ import ShortcutIcon from '../../../../icons/shortcut';
 import InfoCircleIcon from '../../../../icons/info-circle';
 import EyeSlashIcon from '../../../../icons/eye-slash';
 import VCalendar from 'v-calendar';
+import utcPlugin from 'dayjs/plugin/utc'
 window.Vue.use(VCalendar);
 export default {
 	components: {
-		Modal, BusinessHours, ChevronLeft, ChevronRight, PencilIcon, ShortcutIcon, InfoCircleIcon, EyeSlashIcon,
+		Modal, VueButton, ChevronLeft, ChevronRight, PencilIcon, ShortcutIcon, InfoCircleIcon, EyeSlashIcon,
 	},
 
 	data: () => ({
@@ -45,16 +46,19 @@ export default {
 	    outlookAuthCode: '',
 	    newGoogleCalendarId: '',
 	    googleAuthUrl: '',
+	    outlookAuthUrl: '',
+	    confirmCalendarLoading: false,
+	    newOutlookCalendarId: '',
+	    calendarToRemove: '',
+	    removeCalendarLoading: false,
 	}),
 
 	computed: {
 		...mapState({
             bookings: (state) => state.bookings.index,
             conversations: (state) => state.conversations.index,
-            googleCalendars: (state) => state.bookings.googleCalendars,
             googleCalendarsReady: (state) => state.bookings.googleCalendarsReady,
             outlookClient: (state) => state.bookings.outlookClient,
-            outlookCalendars: (state) => state.bookings.outlookCalendars,
            	outlookCalendarsReady: (state) => state.bookings.outlookCalendarsReady,
             outlookCalendarEvents: (state) => state.bookings.outlookCalendarEvents,
 		}),
@@ -78,13 +82,13 @@ export default {
 					}
 				});
 
-				/*this.outlookCalendarEvents.forEach((event) => {
+				this.$root.auth.outlook_calendar_events.forEach((event) => {
 					let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 					if(eventDate == formatDate) {
 						event.type = 'outlook-event';
 						items.push(event);
 					}
-				});*/
+				});
 			}
 			return items;
 		},
@@ -114,16 +118,16 @@ export default {
 				});
 			});
 
-			/*this.outlookCalendarEvents.forEach((event) => {
+			this.$root.auth.outlook_calendar_events.forEach((event) => {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
 						color: 'red',
 					},
-					customData: 'event',
+					customData: 'outlook-event',
 					dates: eventDate
 				});
-			});*/
+			});
 
 			return attributes;
 		},
@@ -134,6 +138,7 @@ export default {
 		this.getConversations();
 		this.$root.heading = 'Bookings';
 		this.dayjs = require('dayjs');
+		this.dayjs.extend(utcPlugin);
 		let days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 		let business_hours = [];
 		days.forEach((day) => {
@@ -153,6 +158,10 @@ export default {
 		this.selectedDate = now;
 		this.getGoogleClient();
 		this.getGoogleCalendarEvents();
+		this.getOutlookClient();
+		this.getOutlookEvents();
+		this.getGoogleCalendars();
+		this.getOutlookCalendars();
 	},
 
 	mounted() {
@@ -174,10 +183,55 @@ export default {
             getOutlookCalendars: 'bookings/outlookCalendars',
         }),
 
-        getGoogleCalendarEvents() {
-	        axios.get(`/google_calendar_events`).then((response) => {
-	        	this.$root.auth.google_calendar_events = response.data;
-	        });
+        parseTimezone(data) {
+        	let date = new Date(data.dateTime + 'Z');
+        	return this.dayjs(date).format('hh:mmA');
+        },
+
+        async removeCalendar() {
+        	if(this.calendarToRemove) {
+        		this.removeCalendarLoading = true;
+        		await axios.post('/remove_calendar', { calendar: this.calendarToRemove.toLowerCase() });
+        		await this.$refs['removeCalendar'].hide();
+        		this.removeCalendarLoading = false;
+        		switch(this.calendarToRemove.toLowerCase()) {
+        			case 'google':
+        				this.$root.auth.google_calendar_events = [];
+        				this.getGoogleClient();
+        				break;
+        			case 'outlook':
+        				this.$root.auth.outlook_calendar_events = [];
+        				this.getOutlookClient();
+        				break;
+        		}
+        		this.calendarToRemove = '';
+        	}
+        },
+
+        removeCalendarConfirm(calendar) {
+        	this.calendarToRemove = calendar.charAt(0).toUpperCase() + calendar.slice(1);
+        	this.$refs['removeCalendar'].show();
+        },
+
+        async toggleIgnoreEvent(event) {
+        	let eventId = `${event.type}-${event.id}`;
+        	let index = this.$root.auth.ignored_calendar_events.findIndex((x) => x == eventId);
+        	if(index == -1) {
+        		this.$root.auth.ignored_calendar_events.push(eventId);
+        	} else {
+        		this.$root.auth.ignored_calendar_events.splice(index, 1);
+        	}
+			await axios.put('/auth', this.$root.auth);
+        },
+
+        async getOutlookEvents() {
+	        let response = await axios.get(`/outlook_calendar_events`);
+	        this.$root.auth.outlook_calendar_events = response.data;
+        },
+
+        async getGoogleCalendarEvents() {
+	        let response = await axios.get(`/google_calendar_events`);
+	        this.$root.auth.google_calendar_events = response.data;
         },
 
         getGoogleClient() {
@@ -186,17 +240,21 @@ export default {
         	});
         },
 
-        setGoogleCalendar() {
-			this.$refs['changeGoogleCalendar'].hide();
+        async setGoogleCalendar() {
+        	this.confirmCalendarLoading = true;
 			$(this.$refs['googleCalendarDropdown']).find('select').val(this.newGoogleCalendarId);
 			this.$root.auth.google_calendar_id = this.newGoogleCalendarId;
-			this.newGoogleCalendarId = '';
-			axios.put('/auth', this.$root.auth).then(() => {
-				axios.post('/update_google_calendar_events');
-				this.getGoogleCalendarEvents();
-			});
+			await axios.post('/update_google_calendar_events', {google_calendar_id: this.newGoogleCalendarId});
+			await this.getGoogleCalendarEvents();
+        	this.confirmCalendarLoading = false;
+			this.$refs['changeGoogleCalendar'].hide();
         },
 
+        getOutlookClient() {
+        	axios.get('/outlook_client').then((response) => {
+        		this.outlookAuthUrl = response.data.authUrl;
+        	});
+        },
 
 		toggleOutlookCalendar(e, calendar) {
 			let checked = e.currentTarget.checked;
@@ -213,37 +271,55 @@ export default {
 		},
 
 		outlookCalendarDropdownToggle(e) {
-			if(this.outlookClient.authUrl) {
+			if(this.outlookAuthUrl) {
 				e.stopPropagation();
 				this.goToOutlookAuthUrl();
 			}
 		},
 
         goToOutlookAuthUrl() {
-        	if(this.outlookClient.authUrl) {
+        	if(this.outlookAuthUrl) {
                 const width = 450;
                 const height = 650;
                 const left = (screen.width/2) - (width/2);
                 const top = (screen.height/2) - (height/2);
         		this.outlookCalendarCalendarAuthWindow = window.open(
-        			this.outlookClient.authUrl,
+        			this.outlookAuthUrl,
         			'outlook_calendar_auth_window',
         			`width=${width}, height=${height}, top=${top}, left=${left}`
         		);
         		let callbackInterval = setInterval(() => {
         			if(this.outlookCalendarCalendarAuthWindow.closed) {
         				clearInterval(callbackInterval);
-						this.outlookClient.authUrl = '';
-						$(this.$refs['outlookCalendarDropdown']).find('button').click();
+						this.outlookAuthUrl = '';
+						$(this.$refs['outlookCalendarDropdown'].querySelector('.dropdown-toggle')).click();
         			}
         		}, 500);
         	}
         },
 
-		countGoogleEvents(attributes) {
+		changeOutlookCalendar(e) {
+			if(this.$root.auth.outlook_calendar_id != e.target.value) {
+				this.newOutlookCalendarId = e.target.value;
+				this.$refs['changeOutlookCalendar'].show();
+				this.$refs['calendar'].click();
+			}
+		},
+
+        async setOutlookCalendar() {
+        	this.confirmCalendarLoading = true;
+			$(this.$refs['outlookCalendarDropdown']).find('select').val(this.newOutlookCalendarId);
+			this.$root.auth.outlook_calendar_id = this.newOutlookCalendarId;
+			await axios.post('/update_outlook_calendar_events', {outlook_calendar_id: this.newOutlookCalendarId});
+			await this.getOutlookEvents();
+        	this.confirmCalendarLoading = false;
+			this.$refs['changeOutlookCalendar'].hide();
+        },
+
+		countEvents(attributes) {
 			let count;
 			attributes.forEach((attr) => {
-				if(attr.customData == 'google-event') {
+				if(attr.customData != 'booking') {
 					if(!count) count = 0;
 					count++;
 				}
@@ -294,7 +370,7 @@ export default {
 						if(this.googleCalendarCalendarAuthWindow.code) {
 							this.googleAuthCode = this.googleCalendarCalendarAuthWindow.code;
 							this.googleAuthUrl = '';
-							$(this.$refs['googleCalendarDropdown']).find('button').click();
+							$(this.$refs['googleCalendarDropdown'].querySelector('.dropdown-toggle')).click();
 						}
         			}
         		}, 500);

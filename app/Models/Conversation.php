@@ -8,7 +8,7 @@ use Auth;
 class Conversation extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
+    protected $fillable = ['user_id', 'user_customer_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
     public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
@@ -19,6 +19,11 @@ class Conversation extends BaseModel
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(UserCustomer::class, 'user_customer_id');
     }
 
     public function members()
@@ -50,6 +55,8 @@ class Conversation extends BaseModel
                     $member = $this->user;
                     break;
             endswitch;
+        elseif($this->attributes['user_customer_id']):
+            $member = UserCustomer::find($this->attributes['user_customer_id']);
         else :
             $member = [
                 'profile_image' => '',
@@ -67,12 +74,15 @@ class Conversation extends BaseModel
         $last_message = Message::where('conversation_id', $this->attributes['id'])->latest('created_at')->first();
         if ($last_message) :
             $last_message = $last_message->load('user')->toArray();
+
+            if($last_message['type'] != 'text') $last_message['message'] = $last_message['type'];
             if (Auth::check() && $last_message['user_id'] == Auth::user()->id) :
                 $last_message['message'] = 'You: ' . $last_message['message'];
                 $last_message['is_read'] = 1;
             elseif ($this->members()->count() > 1) :
                 $last_message['message'] = $last_message['user']['first_name'] . ': ' . $last_message['message'];
             endif;
+
         endif;
 
         return $last_message ?? [ 

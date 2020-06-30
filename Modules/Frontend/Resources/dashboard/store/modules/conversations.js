@@ -15,15 +15,20 @@ const mutations = {
         state.ready = true;
     },
 
-    show(state, data) {
-        let conversation = state.index.find((x) => x.id == data.id);
-        if(conversation) {
-            Vue.set(conversation, 'messages', data.messages);
-            Vue.set(conversation, 'ready', true);
-        } else {
-            state.index.push(data);
-            Vue.set(data, 'ready', true);
-        }
+    async show(state, data) {
+        return new Promise((resolve, reject) => {
+            let conversation = state.index.find((x) => x.id == data.id);
+            if(conversation) {
+                Vue.set(conversation, 'messages', data.messages);
+                Vue.set(conversation, 'ready', true);
+                Vue.set(conversation.last_message, 'is_read', true);
+            } else {
+                Vue.set(data, 'ready', true);
+                Vue.set(data.last_message, 'is_read', true);
+                state.index.push(data);
+            }
+            resolve();
+        });
     },
 };
 
@@ -34,12 +39,11 @@ const actions = {
         });
     },
 
-    show({ commit, state }, id) {
+    async show({ commit, state }, id) {
         let conversation = state.index.find((x) => x.id == id);
         if(conversation) Vue.set(conversation, 'ready', false);
-        axios.get(`/${name}/${id}`).then((response) => {
-            commit('show', response.data);
-        });
+        let response = await axios.get(`/${name}/${id}`);
+        await commit('show', response.data);
     },
 
     async store({ commit }, data) {

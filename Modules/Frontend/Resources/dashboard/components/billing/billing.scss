@@ -1,0 +1,23 @@
+@import '../../../sass/variables';
+.plan{
+    box-shadow: $box-shadow-sm;
+    transition: $transition-base;
+    svg{
+        opacity: 0;
+        fill: $primary;
+        stroke: $primary;
+    }
+    &.active{
+        box-shadow: 0 0 0 0.1rem $primary;
+        svg{
+            opacity: 1;
+        }
+    }
+    &:hover:not(.active),
+    &.selected:not(.active){
+        box-shadow: 0 0 0 0.1rem rgba($primary, 0.6);
+    }
+}
+.plan-price{
+    background: rgba($primary, 0.035)
+}

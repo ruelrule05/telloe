@@ -60,9 +60,35 @@ const router = new VueRouter({
                     ]
                 },
                 {
+                    name: 'payments',
+                    path: 'payments',
+                    component: {
+                        render(c) {
+                            return c('router-view');
+                        },
+                    },
+                    children: [
+                        {
+                            path: 'subscribers',
+                            name: 'subscribers',
+                            component: () => import(/* webpackChunkName: "dashboard/payments/subscribers" */ './components/payments/subscribers/subscribers.vue'),
+                        },
+                        {
+                            path: 'Invoices',
+                            name: 'invoices',
+                            component: () => import(/* webpackChunkName: "dashboard/payments/invoices" */ './components/payments/invoices/invoices.vue'),
+                        },
+                    ]
+                },
+                {
                     name: 'account',
                     path: 'account',
                     component: () => import(/* webpackChunkName: "dashboard/account" */ './components/account/account.vue'),
+                },
+                {
+                    name: 'billing',
+                    path: 'billing',
+                    component: () => import(/* webpackChunkName: "dashboard/billing" */ './components/billing/billing.vue'),
                 },
                 
             ],
@@ -84,6 +110,7 @@ import ShortcutIcon from '../icons/shortcut';
 import ShoppingBagIcon from '../icons/shopping-bag';
 import CalendarDayIcon from '../icons/calendar-day';
 import VirtualRealityIcon from '../icons/virtual-reality';
+import WalletIcon from '../icons/wallet';
 import IncomingCallModal from '../modals/incoming-call/incoming-call.vue';
 
 import store from './store';
@@ -91,7 +118,23 @@ window.app = new Vue({
     router: router,
     store: store,
     el: '#app',
-    components: {BellIcon, GridIcon, ChatIcon, NotebookIcon, CogIcon, VirtualRealityIcon, UsersIcon, UserCircleIcon, ShortcutIcon, CalendarDayIcon, ChevronDownIcon, ShoppingBagIcon, IncomingCallModal, ScreenRecorder
+    components: {
+        BellIcon, 
+        GridIcon, 
+        ChatIcon, 
+        NotebookIcon, 
+        CogIcon, 
+        VirtualRealityIcon, 
+        UsersIcon, 
+        UserCircleIcon, 
+        ShortcutIcon, 
+        CalendarDayIcon, 
+        ChevronDownIcon, 
+        ShoppingBagIcon, 
+        WalletIcon,
+
+        IncomingCallModal, 
+        ScreenRecorder
     },
     data: {
         auth: null,

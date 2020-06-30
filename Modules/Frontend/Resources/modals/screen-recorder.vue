@@ -55,9 +55,9 @@
 
 <script>
 import dayjs from 'dayjs';
-import CameraIcon from '../icons/camera.vue';
-import CloseIcon from '../icons/close.vue';
-import PauseAltIcon from '../icons/pause-alt';
+import CameraIcon from '../assets/icons/camera.vue';
+import CloseIcon from '../assets/icons/close.vue';
+import PauseAltIcon from '../assets/icons/pause-alt';
 export default {
 	components: {CameraIcon, CloseIcon, PauseAltIcon},
 

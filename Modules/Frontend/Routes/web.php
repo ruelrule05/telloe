@@ -5,39 +5,22 @@
  *
  */
 Route::get('email', function() {
-    /*$email = new App\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
-    \Mail::to('clydewinux@gmail.com')->queue($email);
-    return $email;*/
-    $date = \Carbon\Carbon::parse('2020-06-03 23:59')->toRfc3339String();
-    echo $date;
+    echo Auth::user()->google_calendar_id;
+    $email = new Modules\Frontend\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
+    //\Mail::to('clydewinux@gmail.com')->queue($email);
+    //return $email;
 });
 
+Route::get('events', function() {
+    echo '<pre>';
+    $service = App\Models\Service::find(23);
+    $timeslots = $service->timeslots('2020-06-30');
 
-Route::get('/msoutlook', function() {
-    $authTokens = Auth::user()->outlook_token;
-    $OutlookClient = new \Modules\Frontend\Http\OutlookClient();
-    if(!$OutlookClient->authUrl) :
-        $graph = new \Microsoft\Graph\Graph();
-        $graph->setAccessToken($authTokens['accessToken']);
-        $queryParams = array(
-          '$select' => 'subject,start,end,webLink',
-          '$orderby' => 'createdDateTime DESC'
-        );
-        $getEventsUrl = '/me/events?'.http_build_query($queryParams);
-        $events = $graph->createRequest('GET', $getEventsUrl)
-          ->setReturnType(\Microsoft\Graph\Model\Event::class)
-          ->execute();
-
-        $getCalendarsUrl = '/me/calendars';
-        $calendars = $graph->createRequest('GET', $getCalendarsUrl)
-          ->setReturnType(\Microsoft\Graph\Model\Calendar::class)
-          ->execute();
-        echo '<pre>';
-        print_r($events);
-    else :
-        echo '<a href="'.$OutlookClient->authUrl.'">Log In</a>';
-    endif;
+    print_r($timeslots);
 });
+
+//Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@outlookCalendarEvents');
+//Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@updateOutlookCalendarEvents');
 
 
 Route::group(
@@ -72,6 +55,7 @@ Route::group(
             Route::apiResource('user_customers', 'UserCustomerController');
             Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
             Route::apiResource('users', 'UserController')->only('index');
+            Route::apiResource('plans', 'PlanController')->only('index');
 
             Route::get('tags/search', 'DashboardController@searchTags');
 
@@ -81,9 +65,14 @@ Route::group(
             Route::get('google_calendar_events', 'BookingController@googleCalendarEvents');
             Route::post('update_google_calendar_events', 'BookingController@updateGoogleCalendarEvents');
 
-
             // Outlook calendar
+            Route::get('outlook_client', 'BookingController@outlookClient');
             Route::get('outlook_calendar_list', 'BookingController@outlookCalendarList');
+            Route::get('outlook_calendar_events', 'BookingController@outlookCalendarEvents');
+            Route::post('update_outlook_calendar_events', 'BookingController@updateOutlookCalendarEvents');
+
+
+            Route::post('remove_calendar', 'BookingController@removeCalendar');
         });
 
             // Profile page
@@ -102,7 +91,6 @@ Route::group(
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
                 Route::any('integration', 'WidgetController@updateIntegration');
-                Route::get('plans', 'WidgetController@plans');
                 Route::get('stripe_publishable_key', 'WidgetController@stripePublishableKey');
                 Route::resource('subscriptions', 'SubscriptionController', [
                     'only' => ['store', 'destroy']
@@ -130,51 +118,6 @@ Route::group(
 
 
 
-
-
-
-
-
-/*
- * Admin Routes
- *
- *
- */
-Route::group(
-    [
-        'domain' => config('app.admin_url'),
-        'namespace' => 'Admin'
-    ],
-    function () {
-        Route::group(
-            [
-                'middleware' => 'admin'
-            ],
-            function () {
-                Route::group(
-                    [
-                        'prefix' => 'ajax',
-                        'middleware' => 'ajax'
-                    ],
-                    function() {
-                        Route::resource('areas-of-interests', 'AreasOfInterestController');
-                        Route::resource('employers', 'EmployerController');
-                        Route::resource('assistants', 'AssistantController');
-                        Route::resource('applicants', 'ApplicantController');
-                        Route::put('assistants/{id}/verify', 'AssistantController@verify');
-                    }
-                );
-                
-                Route::get('{any}', function () {
-                    return view('admin.layout');
-                })->where('any', '.*');
-            }
-        );
-
-        // Authentication
-        Route::post('/admin/auth/login', 'AuthController@store');
-    }
-);
 
 
 

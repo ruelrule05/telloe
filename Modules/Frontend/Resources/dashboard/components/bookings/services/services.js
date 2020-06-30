@@ -45,13 +45,13 @@ export default {
 
 	watch: {
 		ready: function(value) {
-			if(value) this.$root.contentloading = false;
+            this.$root.contentloading = !value;
 		}
 	},
 
 	created() {
 		this.getServices();
-		if(this.ready) this.$root.contentloading = false;
+		this.$root.contentloading = !this.ready;
 		/*this.services.push({
 			id: 1, 
 			name: 'Test service', 

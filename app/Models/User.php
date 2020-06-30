@@ -18,7 +18,19 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'username', 'profile_image', 'stripe_customer_id', 'psid', 'phone', 'facebook_id', 'google_id', 'last_online', 'timezone', 'google_calendar_id', 'outlook_calendars', 'google_calendar_events'
+        'first_name', 
+        'last_name', 
+        'email', 'password', 
+        'username', 
+        'profile_image', 
+        'stripe_customer_id', 
+        'psid', 
+        'phone', 
+        'facebook_id', 
+        'google_id', 
+        'last_online', 
+        'timezone', 
+        'ignored_calendar_events'
     ];
 
     /**
@@ -27,7 +39,21 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'created_at', 'updated_at', 'facebook_id', 'google_id', 'stripe_customer_id', 'phone', 'google_calendar_token', 'google_calendar_id', 'outlook_token', 'outlook_calendars', 'google_calendar_events'
+        'password', 
+        'remember_token', 
+        'created_at', 
+        'updated_at', 
+        'facebook_id', 
+        'google_id', 
+        'stripe_customer_id', 
+        'phone', 
+        'google_calendars',
+        'google_calendar_id', 
+        'google_calendar_events', 
+        'outlook_calendars', 
+        'outlook_calendar_id', 
+        'outlook_calendar_events', 
+        'ignored_calendar_events'
     ];
 
     
@@ -35,9 +61,12 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'last_online' => 'datetime',
         'google_calendar_token' => 'array',
+        'google_calendars' => 'array',
         'google_calendar_events' => 'array',
         'outlook_token' => 'array',
-        'outlook_calendars' => 'array'
+        'outlook_calendars' => 'array',
+        'outlook_calendar_events' => 'array',
+        'ignored_calendar_events' => 'array',
     ];
 
 

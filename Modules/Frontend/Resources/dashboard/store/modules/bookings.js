@@ -6,11 +6,9 @@ const state = () => ({
 
     googleClient: {},
     googleCalendarsReady: false,
-    googleCalendars: [],
 
     outlookClient: {},
     outlookCalendarsReady: false,
-    outlookCalendars: [],
 });
 
 const mutations = {
@@ -35,12 +33,12 @@ const mutations = {
 
     googleCalendars(state, data) {
         state.googleCalendarsReady = true;
-        state.googleCalendars = data;
+        window.app.auth.google_calendars = data;
     },
 
     outlookCalendars(state, data) {
         state.outlookCalendarsReady = true;
-        state.outlookCalendars = data;
+        window.app.auth.outlook_calendars = data;
     },
 };
 

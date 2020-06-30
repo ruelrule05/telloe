@@ -146,6 +146,6 @@ video, canvas {
         height: 100%;
     }
 }
-.video-container {
+.video-container.mirror {
     transform: rotateY(180deg);
 }

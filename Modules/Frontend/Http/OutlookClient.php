@@ -8,6 +8,7 @@ use Auth;
 
 class OutlookClient {
 	public $client;
+	public $accessToken;
 
 	public function __construct()
 	{
@@ -21,8 +22,8 @@ class OutlookClient {
 	      	'scopes'                  => env('OAUTH_SCOPES')
 	    ]);
 
-	    $accessToken = $this->getAccessToken();
-	    if(!$accessToken) :
+	    $this->accessToken = $this->getAccessToken();
+	    if(!$this->accessToken) :
 	    	$this->client->authUrl = $this->getSignInUrl();
 	    endif;
 	}

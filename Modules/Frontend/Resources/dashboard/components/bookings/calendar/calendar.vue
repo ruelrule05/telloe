@@ -23,7 +23,7 @@
 									</div>
 									<div v-if="attributes" class="d-flex align-items-center vc-badge-container">
 										<div class="vc-badge vc-bookings">{{ countBookings(attributes) }}</div>
-										<div class="vc-badge vc-events">{{ countGoogleEvents(attributes) }}</div>
+										<div class="vc-badge vc-events">{{ countEvents(attributes) }}</div>
 									</div>
 								</div>
 							</div>
@@ -37,25 +37,20 @@
 							<img src="/images/brands/google-calendar.svg" height="20" class="mr-2">
 							Google Calendar
 						</button>
-						<div class="dropdown-menu" @click.stop>
+						<div class="dropdown-menu" :class="{'d-none': googleAuthUrl}" @click.stop>
 							<div v-if="!googleCalendarsReady" class="text-center py-3">
 								<div class="spinner-border spinner-border-sm text-primary"></div>
 								<div class="small text-muted font-weight-light mt-2">Getting calendars...</div>
 							</div>
 							<div v-else class="px-3">
-								<div class="form-group mb-2">
+								<div class="form-group mb-0">
 									<label class="form-label">Choose a calendar</label>
 									<select :value="$root.auth.google_calendar_id" class="form-control form-control-sm cursor-pointer w-auto" :class="{'text-gray': !($root.auth.google_calendar_id || '').trim().length}" @change.prevent="changeGoogleCalendar($event)">
 										<option value="" selected disabled>- Select calendar -</option>
-										<option :value="calendar.id" v-for="calendar in googleCalendars">{{ calendar.summary }}</option>
+										<option :value="calendar.id" v-for="calendar in $root.auth.google_calendars">{{ calendar.summary }}</option>
 									</select>
+									<button type="button" class="btn btn-sm btn-link p-0 texxt-muted" @click="removeCalendarConfirm('google')">Remove calendar</button>
 								</div>
-								<!-- <div v-for="calendar in googleCalendars" class="d-flex align-items-center line-height-0 py-2 px-3">
-  									<input type="checkbox" :checked="$root.auth.google_calendars.find((x) => x == calendar.id)" @change="toggleGoogleCalendar($event, calendar)" :id="`calendar-${calendar.etag}`">
-									<label :for="`calendar-${calendar.etag}`" class="cursor-pointer mb-0 ml-2">
-										<div class="flex-1">{{ calendar.summary }}</div>
-									</label>
-								</div> -->
 							</div>
 						</div>
 					</div>
@@ -65,17 +60,19 @@
 							<img src="/images/brands/outlook.svg" height="20" class="mr-2">
 							Outlook
 						</button>
-						<div class="dropdown-menu" @click.stop>
+						<div class="dropdown-menu" :class="{'d-none': outlookAuthUrl}" @click.stop>
 							<div v-if="!outlookCalendarsReady" class="text-center py-3">
 								<div class="spinner-border spinner-border-sm text-primary"></div>
 								<div class="small text-muted font-weight-light mt-2">Getting calendars...</div>
 							</div>
-							<div v-else>
-								<div v-for="calendar in outlookCalendars" class="d-flex align-items-center line-height-0 py-2 px-3">
-  									<input type="checkbox" :checked="$root.auth.outlook_calendars.find((x) => x == calendar.id)" @change="toggleOutlookCalendar($event, calendar)" :id="`calendar-${calendar.id}`">
-									<label :for="`calendar-${calendar.id}`" class="cursor-pointer mb-0 ml-2">
-										<div class="flex-1">{{ calendar.name }}</div>
-									</label>
+							<div v-else class="px-3">
+								<div class="form-group mb-0">
+									<label class="form-label">Choose a calendar</label>
+									<select :value="$root.auth.outlook_calendar_id" class="form-control form-control-sm cursor-pointer w-auto" :class="{'text-gray': !($root.auth.outlook_calendar_id || '').trim().length}" @change.prevent="changeOutlookCalendar($event)">
+										<option value="" selected disabled>- Select calendar -</option>
+										<option :value="calendar.id" v-for="calendar in $root.auth.outlook_calendars">{{ calendar.name }}</option>
+									</select>
+									<button type="button" class="btn btn-sm btn-link p-0 texxt-muted" @click="removeCalendarConfirm('outlook')">Remove calendar</button>
 								</div>
 							</div>
 						</div>
@@ -119,11 +116,40 @@
 											{{ (item.start.dateTime && item.end.dateTime) ? `${dayjs(item.start.dateTime).format('hh:mmA')} - ${dayjs(item.end.dateTime).format('hh:mmA')}` : 'Whole day event' }}
 										</div>
 									</div>
-									<div class="ml-auto">
-										<button type="button" v-if="item.start.date && item.end.date" class="btn btn-sm border btn-white opacity-0 line-height-0 p-1 badge-pill">
-											<eye-slash-icon width="18" height="18"></eye-slash-icon>
-										</button>
-										<a target="_blank" :href="item.htmlLink" class="btn btn-sm border btn-white opacity-0 line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
+									<div class="ml-auto position-relative">
+										<div class="position-absolute-center pb-2">
+											<eye-slash-icon v-if="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`)" width="18" height="18" fill="red"></eye-slash-icon>
+										</div>
+										<div class="bg-white position-relative opacity-0">
+											<button type="button" v-if="item.start.date && item.end.date" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill" @click="toggleIgnoreEvent(item)">
+												<eye-slash-icon width="18" height="18" :fill="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`) ? 'red' : ''"></eye-slash-icon>
+											</button>
+											<a target="_blank" :href="item.htmlLink" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
+										</div>
+									</div>
+								</div>
+							</template>
+
+							<!-- Outlook event -->
+							<template v-else-if="item.type == 'outlook-event'">
+								<div class="d-flex">
+									<img src="/images/brands/outlook.svg" alt="" height="20" class="mt-1">
+									<div class="ml-3">
+										{{ item.subject }}
+										<div class="text-muted font-weight-light small">
+											{{ (item.isAllDay) ? 'Whole day event' : `${parseTimezone(item.start)} - ${parseTimezone(item.end)}` }}
+										</div>
+									</div>
+									<div class="ml-auto position-relative">
+										<div class="position-absolute-center pb-2">
+											<eye-slash-icon v-if="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`)" width="18" height="18" fill="red"></eye-slash-icon>
+										</div>
+										<div class="bg-white position-relative opacity-0">
+											<button type="button" v-if="item.isAllDay" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill" @click="toggleIgnoreEvent(item)">
+												<eye-slash-icon width="18" height="18" :fill="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`) ? 'red' : ''"></eye-slash-icon>
+											</button>
+											<a target="_blank" :href="item.webLink" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
+										</div>
 									</div>
 								</div>
 							</template>
@@ -133,22 +159,54 @@
 						There are no bookings or events for this date
 					</div>
 				</div>
-				<!-- <business-hours :switchWidth="70" type="select" :days="business_hours" color="#4d65e5" @update="updateBusinessHour"></business-hours> -->
 			</div>
 		</div>
+
+
+		<modal ref="removeCalendar" :close-button="false">
+			<div class="text-center">
+				<info-circle-icon fill="red" width="50" height="50" class="d-inline-block"></info-circle-icon>
+				<p class="mb-0 mt-2">
+					Are you sure to remove <strong>{{ calendarToRemove }} Calendar</strong>? 
+					<br />
+					This action will delete all booking events from this calendar.
+				</p>
+				
+				<div class="d-flex align-items-center mt-5">
+					<button class="btn btn-link text-body mr-2" type="button" data-dismiss="modal" :disabled="removeCalendarLoading">Cancel</button>
+					<vue-button button_class="btn btn-primary ml-auto" type="button" :loading="removeCalendarLoading" @click.native="removeCalendar()">Continue</vue-button>
+				</div>
+			</div>
+		</modal>
 
 		<modal ref="changeGoogleCalendar" :close-button="false">
 			<div class="text-center" v-if="newGoogleCalendarId">
 				<info-circle-icon fill="#ffc107" width="50" height="50" class="d-inline-block"></info-circle-icon>
 				<p class="mb-0 mt-2">
-					Are you sure to use Google Calendar <strong>{{ googleCalendars.find((x) => x.id == newGoogleCalendarId).summary }}</strong>? 
+					Are you sure to use Google Calendar <strong>{{ $root.auth.google_calendars.find((x) => x.id == newGoogleCalendarId).summary }}</strong>? 
 					<br />
 					This action will populate your existing bookings to the selected calendar as events.
 				</p>
 				
 				<div class="d-flex align-items-center mt-5">
-					<button class="btn btn-link text-body mr-2" type="button" data-dismiss="modal">Cancel</button>
-					<button class="btn btn-primary ml-auto" type="button" @click="setGoogleCalendar">Continue</button>
+					<button class="btn btn-link text-body mr-2" type="button" data-dismiss="modal" :disabled="confirmCalendarLoading">Cancel</button>
+					<vue-button button_class="btn btn-primary ml-auto" type="button" :loading="confirmCalendarLoading" @click.native="setGoogleCalendar">Continue</vue-button>
+				</div>
+			</div>
+		</modal>
+
+		<modal ref="changeOutlookCalendar" :close-button="false">
+			<div class="text-center" v-if="newOutlookCalendarId">
+				<info-circle-icon fill="#ffc107" width="50" height="50" class="d-inline-block"></info-circle-icon>
+				<p class="mb-0 mt-2">
+					Are you sure to use Outlook Calendar <strong>{{ $root.auth.outlook_calendars.find((x) => x.id == newOutlookCalendarId).name }}</strong>? 
+					<br />
+					This action will populate your existing bookings to the selected calendar as events.
+				</p>
+				
+				<div class="d-flex align-items-center mt-5">
+					<button class="btn btn-link text-body mr-2" type="button" data-dismiss="modal" :disabled="confirmCalendarLoading">Cancel</button>
+					<vue-button button_class="btn btn-primary ml-auto" type="button" :loading="confirmCalendarLoading" @click.native="setOutlookCalendar">Continue</vue-button>
 				</div>
 			</div>
 		</modal>

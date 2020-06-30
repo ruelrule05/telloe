@@ -31,6 +31,10 @@ const io = require('socket.io')(server, {
 let online_users = {};
 let call_users = {};
 io.on('connection', function(socket) {
+    socket.on('new_conversation', function(data) {
+        socket.broadcast.emit('new_conversation', data);
+    });
+
     socket.on('message_sent', function(data) {
         socket.broadcast.emit('new_message', data);
     });

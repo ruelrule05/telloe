@@ -28,7 +28,6 @@ export default {
 		newCustomer: {
 			custom_fields: {},
 			blacklisted_services: []
-		
 		},
 		activeTab: 'custom_fields',
 		newCustomField: '',
@@ -44,15 +43,18 @@ export default {
 		}),
 	},
 
+    watch: {
+        ready: function(value) {
+            this.$root.contentloading = !value;
+        }
+    },
+
 	created() {
+        this.$root.contentloading = !this.ready;
 		this.getUserCustomers();
 		this.showUserCustomFields();
 		this.getServices();
 		this.getConversations();
-	},
-
-	mounted() {
-		this.$root.contentloading = false;
 	},
 
 	methods: {
@@ -66,9 +68,22 @@ export default {
       		getConversations: 'conversations/index',
         }),
 
+        resetNewCustomer() {
+            this.newCustomer = {
+                custom_fields: {},
+                blacklisted_services: []
+            };
+        },
+
+        hasConversation(customer) {
+        	return this.conversations.find((c) => {
+        		return c.members.find((m) => m.user_id == customer.customer_id && m.user_id != this.$root.auth.id) || c.user_customer_id == customer.id;
+        	});
+        },
+
         goToConversation(customer) {
         	let conversation = this.conversations.find((c) => {
-        		return c.members.find((m) => m.user_id == customer.customer_id);
+        		return c.members.find((m) => m.user_id == customer.customer_id && m.user_id != this.$root.auth.id) || c.user_customer_id == customer.id;
         	});
         	if(conversation) this.$router.push(`/dashboard/conversations/${conversation.id}?tab=profile`);
         },
@@ -105,10 +120,9 @@ export default {
 
 		store() {
 			if(this.newCustomer.email) {
-				console.log(this.newCustomer);
-				/*this.$refs['addModal'].hide();
-				this.storeUserCustomer(this.selectedCustomer);
-				this.$refs['addModal'].hide();*/
+				this.$refs['addModal'].hide();
+				this.storeUserCustomer(this.newCustomer);
+				this.$refs['addModal'].hide();
 			}
 		},
 	}

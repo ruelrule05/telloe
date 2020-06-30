@@ -144,7 +144,7 @@ export default {
 	},
 
 	created() {
-		if(this.$route.params.id) this.showConversation(this.$route.params.id);
+        this.checkConversation();
         this.$root.socket.on('new_message', (data) => {
             let conversation = this.$root.conversations.find((x) => x.id == data.conversation_id);
             if(conversation) {
@@ -175,6 +175,14 @@ export default {
             storeMessage: 'messages/store',
       		updateMessage: 'messages/update',
     	}),
+
+        async checkConversation() {
+            if(this.$route.params.id) {
+                await this.showConversation(this.$route.params.id).catch((e) => {
+                    this.$router.push('/dashboard/conversations');
+                });
+            }
+        },
 
         async downloadScreenRecording() {
             if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
@@ -259,6 +267,7 @@ export default {
                     source: audio.source,
                     timestamp: dayjs().valueOf(),
                     type: 'audio',
+                    message: 'audio',
                     created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
@@ -278,6 +287,7 @@ export default {
                     preview: video.preview,
                     timestamp: dayjs().valueOf(),
                     type: 'video',
+                    message: 'video',
                     created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
@@ -365,6 +375,7 @@ export default {
                     user: this.$root.auth,
                     timestamp: dayjs().valueOf(),
                     type: 'file',
+                    message: 'file',
                     source: fileInput.files[0],
                     timestamp: dayjs().valueOf(),
                     created_at: dayjs(timestamp).format('hh:mm A'),
@@ -375,6 +386,7 @@ export default {
                 let fileExtension = fileInput.value.split('.').pop();
                 if (this.isImage(fileExtension)) {
                     message.type = 'image';
+                    message.message = 'image';
                     var img = new Image();
                     img.src = URL.createObjectURL(fileInput.files[0]);
                     img.onload = () => {
