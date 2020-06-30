@@ -293,7 +293,6 @@ new Vue ({
                     videoContainer.classList.add('video-container');
                     videoContainer.id = `remote-${connection.id}`;
                     let videoEl = document.createElement('video');
-                    videoEl.muted = true;
                     videoEl.autoplay = true;
                     videoEl.playsinline = true;
                     videoEl.controls = false;
