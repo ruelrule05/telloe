@@ -10,6 +10,8 @@ use App\Models\PasswordReset;
 use App\Models\Inquiry;
 use App\Models\Booking;
 use App\Models\Widget;
+use App\Models\Conversation;
+use App\Models\ConversationMember;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
@@ -114,6 +116,13 @@ class AuthController extends Controller
                     'customer_id' => $user->id,
                     'is_pending' => false
                 ]);
+                $conversation = Conversation::where('user_customer_id', $userCustomer->id)->first();
+                if($conversation) :
+                    ConversationMember::create([
+                        'conversation_id' => $conversation->id,
+                        'user_id' => $user->id
+                    ]);
+                endif;
             endif;
         endif;
 
