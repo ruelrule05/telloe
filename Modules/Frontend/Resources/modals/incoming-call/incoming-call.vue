@@ -8,7 +8,7 @@
                     		<div class="caller position-absolute-center text-center bg-white w-100 h-100">
                     			<div class="position-absolute-center">
 	                    			<div class="user-profile bg-light d-inline-block mb-2 shadow-sm position-relative" :style="{backgroundImage: 'url(' + caller.profile_image + ')'}">
-						                <span class="position-absolute-center text-gray" v-if="!caller.profile_image">{{ data.caller.initials }}</span>
+						                <span class="position-absolute-center text-gray" v-if="!caller.profile_image">{{ caller.initials }}</span>
 						            </div>
 						            <h3 class="font-heading">{{ caller.full_name }}</h3>
 						            <h6 class="font-weight-light mb-5">is calling..</h6>
