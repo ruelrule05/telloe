@@ -5,10 +5,9 @@
  *
  */
 Route::get('email', function() {
-    echo Auth::user()->google_calendar_id;
     $email = new Modules\Frontend\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
-    //\Mail::to('clydewinux@gmail.com')->queue($email);
-    //return $email;
+    \Mail::to('clydewinux@gmail.com')->queue($email);
+    return $email;
 });
 
 Route::get('events', function() {
