@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Str;
 use Mail;
-use App\Mail\SendInvitation;
+use Modules\Frontend\Mail\SendInvitation;
 
 class UserCustomerController extends Controller
 {
