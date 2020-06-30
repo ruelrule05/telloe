@@ -382,6 +382,7 @@
     }
 }
 .user-profile {
+    position: relative;
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -392,6 +393,15 @@
     &.user-profile-sm{
         width: 35px;
         height: 35px;
+    }
+    span{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: $gray-500;
+        font-size: 16px;
+        line-height: 0;
     }
 }
 .chat-status {
