@@ -42,7 +42,7 @@ class UserCustomerController extends Controller
             $exists = UserCustomer::where('invite_token', $invite_token)->first();
             if(!$exists) break;
         endwhile;
-        if(UserCustomer::where('email', $request->email)->first()) return abort(403, 'This customer already exists.');
+        if(UserCustomer::where('user_id', Auth::user()->id)->where('email', $request->email)->first()) return abort(403, 'This customer already exists.');
         $user_customer = UserCustomer::create([
             'user_id' => Auth::user()->id,
             'email' => $request->email,
