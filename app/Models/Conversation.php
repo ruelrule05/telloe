@@ -55,7 +55,7 @@ class Conversation extends BaseModel
                     $member = $this->user;
                     break;
             endswitch;
-        elseif($this->attributes['user_customer_id']):
+        elseif(isset($this->attributes['user_customer_id'])):
             $member = UserCustomer::find($this->attributes['user_customer_id']);
         else :
             $member = [
