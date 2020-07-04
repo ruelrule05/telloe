@@ -1,14 +1,42 @@
 @import '../../sass/variables';
-.dropdown-container{
+.dropdown{
+	.dropdown-item{
+		&.active{
+			font-weight: 600;
+		}
+	}
+	.select_hidden_value{
+		position: absolute;
+		z-index: -1;
+	}
 	.dropdown-caret{
 		fill: $gray-500;
 		transition: $transition-base;
 	}
-	.dropdown-toggle {
-		&:focus{
+	.dropdown-toggle:hover {
+		.dropdown-caret{
+			fill: $primary;
+		}
+	}
+	&.show {
+		.dropdown-toggle {
+		&:focus-within{
 			.dropdown-caret{
 				fill: $primary;
 			}
+			box-shadow: $input-focus-box-shadow;
+			border-color: $primary !important;
 		}
+		}
+	}
+	.placeholder-body:not(:focus){
+		&::placeholder{
+			color: $body-color;
+		}
+	}
+}
+.input-searchable{
+	&:not(:focus){
+		cursor: pointer;
 	}
 }

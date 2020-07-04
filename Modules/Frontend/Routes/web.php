@@ -11,11 +11,12 @@ Route::get('email', function() {
 });
 
 Route::get('events', function() {
-    echo '<pre>';
+    /*echo '<pre>';
     $service = App\Models\Service::find(23);
     $timeslots = $service->timeslots('2020-06-30');
 
-    print_r($timeslots);
+    print_r($timeslots);*/
+    $date = \Carbon\Carbon::now();
 });
 
 //Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@outlookCalendarEvents');
@@ -55,6 +56,10 @@ Route::group(
             Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
             Route::apiResource('users', 'UserController')->only('index');
             Route::apiResource('plans', 'PlanController')->only('index');
+
+            Route::post('user_customers/{id}/create_invoice', 'UserCustomerController@createInvoice');
+            Route::post('user_customers/{id}/finalize_invoice', 'UserCustomerController@finalizeInvoice');
+            Route::post('user_customers/{id}/create_subscription', 'UserCustomerController@createSubscription');
 
             Route::get('tags/search', 'DashboardController@searchTags');
 

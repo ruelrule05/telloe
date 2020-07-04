@@ -1,7 +1,6 @@
 require('../js/bootstrap');
 window.Vue = require('vue');
 
-import Vuex from 'vuex';
 import { mapState, mapGetters } from 'vuex'
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/dropdown';
@@ -10,7 +9,6 @@ import 'bootstrap/js/dist/tooltip';
 import 'bootstrap/js/dist/collapse';
 import Toasted from 'vue-toasted';
 
-Vue.use(Vuex);
 Vue.use(VueRouter);
 Vue.use(Toasted, {
     position: 'bottom-center',
@@ -31,7 +29,7 @@ const router = new VueRouter({
                 {
                     name: 'conversations',
                     path: 'conversations/:id?',
-                    component: () => import(/* webpackChunkName: "dashboard/conversations" */ './components/conversations/conversations.vue'),
+                    component: () => import('./components/conversations/conversations.vue'),
                 },
                 {
                     name: 'bookings',
@@ -45,17 +43,17 @@ const router = new VueRouter({
                         {
                             path: 'calendar',
                             name: 'calendar',
-                            component: () => import(/* webpackChunkName: "dashboard/bookings/calendar" */ './components/bookings/calendar/calendar.vue'),
+                            component: () => import('./components/bookings/calendar/calendar.vue'),
                         },
                         {
                             path: 'services',
                             name: 'services',
-                            component: () => import(/* webpackChunkName: "dashboard/bookings/services" */ './components/bookings/services/services.vue'),
+                            component: () => import('./components/bookings/services/services.vue'),
                         },
                         {
                             path: 'customers',
                             name: 'customers',
-                            component: () => import(/* webpackChunkName: "dashboard/bookings/customers" */ './components/bookings/customers/customers.vue'),
+                            component: () => import('./components/bookings/customers/customers.vue'),
                         },
                     ]
                 },
@@ -69,26 +67,26 @@ const router = new VueRouter({
                     },
                     children: [
                         {
-                            path: 'subscribers',
-                            name: 'subscribers',
-                            component: () => import(/* webpackChunkName: "dashboard/payments/subscribers" */ './components/payments/subscribers/subscribers.vue'),
+                            path: 'subscriptions',
+                            name: 'subscriptions',
+                            component: () => import('./components/payments/subscriptions/subscriptions.vue'),
                         },
                         {
                             path: 'Invoices',
                             name: 'invoices',
-                            component: () => import(/* webpackChunkName: "dashboard/payments/invoices" */ './components/payments/invoices/invoices.vue'),
+                            component: () => import('./components/payments/invoices/invoices.vue'),
                         },
                     ]
                 },
                 {
                     name: 'account',
                     path: 'account',
-                    component: () => import(/* webpackChunkName: "dashboard/account" */ './components/account/account.vue'),
+                    component: () => import('./components/account/account.vue'),
                 },
                 {
                     name: 'billing',
                     path: 'billing',
-                    component: () => import(/* webpackChunkName: "dashboard/billing" */ './components/billing/billing.vue'),
+                    component: () => import('./components/billing/billing.vue'),
                 },
                 
             ],
@@ -105,12 +103,11 @@ import NotebookIcon from '../icons/notebook';
 import CogIcon from '../icons/cog';
 import ChevronDownIcon from '../icons/chevron-down';
 import UsersIcon from '../icons/users';
-import UserCircleIcon from '../icons/user-circle';
 import ShortcutIcon from '../icons/shortcut';
-import ShoppingBagIcon from '../icons/shopping-bag';
-import CalendarDayIcon from '../icons/calendar-day';
+import PlannerIcon from '../icons/planner';
 import VirtualRealityIcon from '../icons/virtual-reality';
-import WalletIcon from '../icons/wallet';
+import BillIcon from '../icons/bill';
+import ExclamationCircleIcon from '../icons/exclamation-circle';
 import IncomingCallModal from '../modals/incoming-call/incoming-call.vue';
 
 import store from './store';
@@ -126,12 +123,11 @@ window.app = new Vue({
         CogIcon, 
         VirtualRealityIcon, 
         UsersIcon, 
-        UserCircleIcon, 
         ShortcutIcon, 
-        CalendarDayIcon, 
+        PlannerIcon, 
         ChevronDownIcon, 
-        ShoppingBagIcon, 
-        WalletIcon,
+        BillIcon,
+        ExclamationCircleIcon,
 
         IncomingCallModal, 
         ScreenRecorder
@@ -172,6 +168,12 @@ window.app = new Vue({
         conversation() {
             return this.getConversation(this.$route.params.id);
         },
+
+        payoutComplete() {
+            return !this.auth.stripe_account.individual || 
+                (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 0)
+                ? false : true;
+        }
     },
 
     watch: {
@@ -264,32 +266,35 @@ window.app = new Vue({
         initCall(conversation_id, action) {
             if(!this.callWindow) {
                 let conversation = this.conversations.find((x) => x.id == conversation_id);
-                if(action == 'incoming') {
-                    this.$refs['incomingCall'].hide();
-                    this.callUser = this.caller;
-                    this.call_sound.pause();
-                    this.call_sound.currentTime = 0;
-                }
-                else if(action == 'outgoing') this.callUser = conversation.member;
+                if(conversation) {
+                    if(action == 'incoming') {
+                        this.$refs['incomingCall'].hide();
+                        this.callUser = this.caller;
+                        this.call_sound.pause();
+                        this.call_sound.currentTime = 0;
+                    }
+                    else if(action == 'outgoing') this.callUser = conversation.member;
 
-                let url = `${window.location.origin}/conversations/${conversation_id}/call`;
-                const width = 800; // 4:3
-                const height = 600;
-                const left = (screen.width/2) - (width/2);
-                const top = (screen.height/2) - (height/2);
-                this.callWindow = window.open(
-                    url, 
-                    'telloe_call_window',
-                    `width=${width}, height=${height}, top=${top}, left=${left}`);
+                    let url = `${window.location.origin}/conversations/${conversation_id}/call`;
+                    const width = 800; // 4:3
+                    const height = 600;
+                    const left = (screen.width/2) - (width/2);
+                    const top = (screen.height/2) - (height/2);
+                    this.callConversationId = conversation.id;
+                    this.callWindow = window.open(
+                        url, 
+                        'telloe_call_window',
+                        `width=${width}, height=${height}, top=${top}, left=${left}`);
 
-                this.callWindow.onload = () => {
-                    this.callWindow.onunload = (e) => {
-                        this.callWindow = this.caller = this.callUser = this.callConversationId = null;
+                    this.callWindow.onload = () => {
+                        this.callWindow.onunload = (e) => {
+                            this.callWindow = this.caller = this.callUser = this.callConversationId = null;
+                        };
                     };
-                };
-                this.callWindow.onended = () => {
-                    this.callUser = null;
-                };
+                    this.callWindow.onended = () => {
+                        this.callUser = null;
+                    };
+                }
             }
         },
 

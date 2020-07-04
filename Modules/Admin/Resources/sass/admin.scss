@@ -25,6 +25,32 @@
 html, body {
 	height: 100%;
 }
+
+.dropdown-menu {
+    box-shadow: $box-shadow-sm;
+    border: solid 1px $gray-200;
+    .dropdown-item {
+        &:active,
+        &.active{
+            svg{
+                fill: white !important;
+            }
+        }
+    }
+}
+.table-fixed-header {
+	th {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		background-color: $light;
+	}
+}
+.cursor-pointer {
+	cursor: pointer !important;
+}
+
+
 .dashboard {
 	height: 100vh;
 	max-height: 100vh;

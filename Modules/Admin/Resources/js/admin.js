@@ -7,6 +7,7 @@ import 'bootstrap/js/dist/tab';
 import Toasted from 'vue-toasted';
 import VueRouter from 'vue-router';
 
+
 Vue.use(Toasted, {
     position: 'bottom-center',
     singleton: true,
@@ -28,57 +29,22 @@ Vue.component('vue-select', require('../assets/components/vue-select/vue-select.
 Vue.component('vue-button', require('../assets/components/vue-button.vue').default);
 Vue.component('vue-form-validate', require('../assets/components/vue-form-validate.vue').default);
 
-const routes = [
-    {
-        path: '',
-        component: () =>
-            import(/* webpackChunkName: "admin/dashboard" */ '../components/dashboard.vue')
-    },
-    {
-        path: '/areas-of-interests',
-        component: () =>
-            import(/* webpackChunkName: "admin/areas-of-interests" */ '../components/areas-of-interests.vue')
-    },
-];
-const router = new VueRouter({
-    linkActiveClass: 'active',
-    mode: 'history',
-    routes: routes
-});
 
+
+
+import router from './router';
+import store from './store';
 window.app = new Vue({
     router,
+    store: store,
     el: '#app',
     mixins: window.mixins || [],
     data: {
-        frontend: frontend,
         auth: null,
         contentloading: true,
         sidebar_toggle: false,
         navbar_toggle: false,
         error: false,
-        nav_links: [
-            {
-                to: '/areas-of-interests',
-                icon: 'fal fa-briefcase fa-fw',
-                text: 'Areas of Interests'
-            },
-            {
-                to: '/widgets',
-                icon: 'fal fa-briefcase fa-fw',
-                text: 'Widgets'
-            },
-            {
-                to: '/bookings',
-                icon: 'fal fa-user-tie fa-fw',
-                text: 'Bookings'
-            },
-            {
-                to: '/inquiries',
-                icon: 'fal fa-user-headset fa-fw',
-                text: 'Inquiries'
-            },
-        ],
         title: '',
         notification_sound: null,
         header_title: '',

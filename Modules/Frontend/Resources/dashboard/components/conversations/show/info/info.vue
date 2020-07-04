@@ -25,15 +25,15 @@
                     <div v-if="$root.profileTab == 'overview'" class="mt-3">
                         <div class="form-group">
                             <div class="d-flex align-items-center dropdown">
-                                <label class="text-gray mb-0" ref="customFieldsLabel">Custom Fields</label>
-                                <button class="ml-auto btn btn-sm btn-secondary d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" fill="#5A5ADF" class="mr-1"></plus-icon> Add field</button>
+                                <label class="text-muted mb-0" ref="customFieldsLabel">Custom Fields</label>
+                                <button class="ml-auto btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add field</button>
                                 <div>
                                     <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
                                         <vue-form-validate @submit="addCustomField()">
                                             <div class="bg-white rounded p-2 dropdown-menu-shadow">
                                                 <div class="form-group mb-2">
                                                     <label class="form-label">Name</label>
-                                                    <select v-if="!customFieldForm.is_custom" class="form-control form-control-sm cursor-pointer shadow-none" :class="{'text-gray': !customFieldForm.name}" v-model="customFieldForm.name" data-required>
+                                                    <select v-if="!customFieldForm.is_custom" class="form-control form-control-sm cursor-pointer shadow-none" :class="{'text-muted': !customFieldForm.name}" v-model="customFieldForm.name" data-required>
                                                         <option value="" disabled selected>Select global fields</option>
                                                         <option :value="custom_field" v-for="custom_field in $root.auth.custom_fields">{{ custom_field }}</option>
                                                         <option value="custom">- New custom field -</option>
@@ -55,7 +55,7 @@
                             </div>
                             <div v-for="(custom_field, index) in conversation.custom_fields" class="d-flex align-items-center my-2 custom-field position-relative">
                                 <div class="overflow-hidden">
-                                    <small class="d-block mb-n1 font-weight-light text-gray text-ellipsis">{{ custom_field.name }}</small>
+                                    <small class="d-block mb-n1 text-muted text-ellipsis">{{ custom_field.name }}</small>
                                     <div class="text-ellipsis">{{ custom_field.value }}</div>
                                 </div>
                                 <div class="ml-auto position-static d-flex align-items-center pl-1 dropdown">
@@ -95,11 +95,11 @@
                         <!-- Available services -->
                         <div v-if="conversation.members.length == 1">
                             <div class="form-group">
-                                <label class="text-gray">Available Services</label>
+                                <label class="text-muted">Available Services</label>
                                 <div v-for="service in services" class="d-flex align-items-center mb-2">
                                     <div>
                                         <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                                        <small class="text-gray d-block font-weight-light">{{ service.duration }} minutes</small>
+                                        <small class="text-muted d-block">{{ service.duration }} minutes</small>
                                     </div>
                                     <div class="ml-auto">
                                         <toggle-switch :value="!(blacklisted_services.find((x) => x.service_id == service.id) || {}).is_blacklisted" @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
@@ -126,7 +126,7 @@
                                             </div>
                                             <div class="media-body pl-2">
                                                 <div class="font-weight-bold mb-n1">{{ member.full_name }}</div>
-                                                <small class="ml-auto text-gray text-nowrap">{{ member.email }}</small>           
+                                                <small class="ml-auto text-muted text-nowrap">{{ member.email }}</small>           
                                             </div>
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@
                                 </div>
                                 <div class="media-body pl-2">
                                     <div class="font-weight-bold mb-n1">{{ member.user.full_name }}</div>
-                                    <small class="ml-auto text-gray text-nowrap">{{ member.user.email }}</small>           
+                                    <small class="ml-auto text-muted text-nowrap">{{ member.user.email }}</small>           
                                 </div>
                             </div>
                         </div>
@@ -219,7 +219,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <small class="text-gray d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at_format }}</small>
+                                <small class="text-muted d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at_format }}</small>
                             </div>
                         </div>
                     </div>
@@ -227,8 +227,8 @@
                     <!-- Notes -->
                     <div v-else-if="$root.profileTab == 'notes'" class="text-left mt-3">
                         <div class="d-flex align-items-center dropdown">
-                            <label class="text-gray mb-0" ref="customFieldsLabel">Notes</label>
-                            <button class="ml-auto btn btn-sm btn-secondary d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" fill="#5A5ADF" transform="scale(1.6)" class="mr-1"></plus-icon>Add Note</button>
+                            <label class="text-muted mb-0" ref="customFieldsLabel">Notes</label>
+                            <button class="ml-auto btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Note</button>
                             <div>
                                 <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
                                     <vue-form-validate @submit="addNote()">
@@ -247,21 +247,21 @@
                             <div class="note-actions position-absolute d-flex align-items-center dropleft w-25 justify-content-end">
                                 <div class="action-content position-relative mr-1 line-height-1">
                                     <div data-toggle="dropdown" data-offset="-140,0" class="action-button d-flex align-items-center">
-                                        <span v-if="note.tags.length > 0" class="action-label font-weight-light">{{ note.tags.length }}</span>
+                                        <span v-if="note.tags.length > 0" class="action-label">{{ note.tags.length }}</span>
                                         <bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
                                     </div>
                                     <div class="dropdown-menu p-1 bg-light" @click.stop>
                                         <vue-form-validate class="input-group border rounded overflow-hidden" @submit="updateNoteTags(note)">
                                             <input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add tag" data-required v-model="note.newTag">
                                             <div class="input-group-append">
-                                                <button type="submit" class="btn btn-secondary p-1 shadow-none btn-sm border-0 line-height-1">
+                                                <button type="submit" class="btn btn-white border p-1 shadow-none btn-sm border-0 line-height-1">
                                                     <plus-icon width="20" height="20" class="no-action"></plus-icon>
                                                 </button>
                                             </div>
                                         </vue-form-validate>
 
                                         <div class="text-left tags-container" v-if="note.tags.length > 0">
-                                            <div v-for="(tag, index) in note.tags" class="d-inline-block badge badge-primary py-1 px-2 mr-1 mt-1 font-weight-light">
+                                            <div v-for="(tag, index) in note.tags" class="d-inline-block badge badge-primary py-1 px-2 mr-1 mt-1">
                                             {{ tag }}&nbsp;
                                                 <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer no-action" @click.native="note.tags.splice(index, 1); updateNoteTags(note)"></close-icon>
                                             </div>
@@ -274,11 +274,11 @@
                                         <trash-icon fill="red" class="cursor-pointer delete-note" height="18" width="18" @click.native="deleteNote(note)"></trash-icon>
                                     </div>
                                 </div>
-                                <div class="position-absolute text-gray text-right small note-metalabel font-weight-light">{{ note.tags.join(', ') }}</div>
+                                <div class="position-absolute text-muted text-right small note-metalabel">{{ note.tags.join(', ') }}</div>
                             </div>
 
                             <p class="mb-0">{{ note.notes }}</p>
-                            <small class="text-gray d-block">{{ note.created_at_format }}</small>
+                            <small class="text-muted d-block">{{ note.created_at_format }}</small>
                         </div>
                     </div>
 
@@ -289,15 +289,15 @@
                                 <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search tags..." v-model="tagSearch">
                             </div>
                             <div v-if="tagsData.tags.length > 0" class="my-2">
-                                <span class="text-gray">Available tags:</span> <span v-for="tag in tagsData.tags" class="badge badge-secondary mr-1 line-height-sm">{{ tag }}</span>
+                                <span class="text-muted">Available tags:</span> <span v-for="tag in tagsData.tags" class="badge badge-secondary mr-1 line-height-sm">{{ tag }}</span>
                             </div>
 
                             <div class="overflow-y-only mt-2">
-                                <div v-if="tagsData.length == 0" class="text-center text-gray py-2 font-weight-light">
+                                <div v-if="tagsData.length == 0" class="text-center text-muted py-2">
                                     No results found.
                                 </div>
                                 <div v-else v-for="data in tagsData.data" class="mb-2">
-                                    <div class="small text-gray text-uppercase font-weight-light">{{ data.type }} </div>
+                                    <div class="small text-muted text-uppercase">{{ data.type }} </div>
                                     <div class="rounded bg-white border py-2 px-3">
                                         <div v-if="data.type == 'message'" class="message-group mb-0">
                                             <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': data.data.outgoing}">{{ data.data.user.full_name }}</small>
@@ -313,12 +313,12 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <small class="text-gray d-block" :class="{'text-right': data.data.outgoing}">{{ data.data.created_at_format }}</small>
+                                            <small class="text-muted d-block" :class="{'text-right': data.data.outgoing}">{{ data.data.created_at_format }}</small>
                                         </div>
 
                                         <div v-else-if="data.type == 'note'">
                                             <p class="mb-0">{{ data.data.notes }}</p>
-                                            <small class="text-gray d-block">{{ data.data.created_at_format }}</small>
+                                            <small class="text-muted d-block">{{ data.data.created_at_format }}</small>
                                         </div>
                                     </div>
                                 </div>

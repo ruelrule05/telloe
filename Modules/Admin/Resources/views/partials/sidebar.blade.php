@@ -6,7 +6,7 @@
         <img src="{{ asset('logo.svg') }}" alt=""><span class="font-size-13 text-gray align-self-center">ADMIN</span>
     </div>
 
-    <div class="sidebar-content bg-white d-flex flex-column font-weight-500 shadow-sm h-100-md overflow-auto">
+    <div class="sidebar-content bg-white d-flex flex-column font-weight-500 shadow-sm h-100 overflow-auto">
       <div class="py-3 flex-grow-1" v-cloak>
         <div class="px-2">
           @if (Auth::user()->is_assistant)
@@ -20,8 +20,11 @@
           </div>
           @endif
           <div class="list-group">
-              <router-link :to="link.to" @click.native="sidebar_toggle = false;" :class="{'active': link.to == this.window.location.pathname}" :key="link.to" class="list-group-item list-group-item-action border-0 rounded transition font-circular" v-for="link in nav_links" exact>
-                  <i :class="link.icon"></i>&nbsp;&nbsp;@{{ link.text }}
+              <router-link to="/users" class="list-group-item list-group-item-action border-0 rounded transition font-circular" exact>
+                  Users
+              </router-link>
+              <router-link to="/plans" class="list-group-item list-group-item-action border-0 rounded transition font-circular" exact>
+                  Plans
               </router-link>
           </div>
         </div>

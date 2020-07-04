@@ -6,17 +6,13 @@
 export default {
     data: () => ({
         valid: true,
-        inputs: [],
     }),
-
-    mounted() {
-        this.inputs = $(this.$refs['form']).find('input, textarea, select');
-    },
 
     methods: {
         submit(e) {
             this.valid = true;
-            for (const input of this.inputs) {
+            let inputs = $(this.$refs['form']).find('input, textarea, select');
+            for (const input of inputs) {
                 if (((input.type != 'password' && input.value.trim().length == 0) || (input.type == 'password' && input.value.length == 0)) && (input.getAttribute('required') || input.hasAttribute('data-required'))) {
                     input.value = '';
                     input.focus();

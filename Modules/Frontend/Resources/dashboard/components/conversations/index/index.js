@@ -9,6 +9,7 @@ import PlusIcon from '../../../../icons/plus';
 import DownloadIcon from '../../../../icons/download';
 import SearchIcon from '../../../../icons/search';
 import CloseIcon from '../../../../icons/close';
+import VideoIcon from '../../../../icons/video';
 
 export default {
 	components: {
@@ -21,6 +22,7 @@ export default {
 		DownloadIcon,
 		SearchIcon,
         CloseIcon,
+        VideoIcon,
 	},
 
 	data: () => ({

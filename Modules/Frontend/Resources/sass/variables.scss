@@ -1,5 +1,6 @@
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/mixins';
+@import 'node_modules/bootstrap/scss/variables';
 
 $border-radius: .5rem;
 $border-radius-sm: 0.4rem;
@@ -8,44 +9,36 @@ $container-max-widths: (
     xl: 1180px,
 );
 $grid-gutter-width: 40px;
-$primary: #5A5ADF;
+
+// Colors
+$primary: #5D21D2;
+$secondary: #818ca1;
 $orange: #FBBC1B;
 $facebook: #4267b2;
 $google: #DC3E29;
-$secondary: #F2F4F9;
-$text-muted: #818ca1;
+$dark: #5c6570;
 
-@import 'node_modules/bootstrap/scss/variables';
-$border-color: $gray-200;
+$border-color: rgba($secondary, 0.3);
 $body-color: $black;
 $nav-pills-link-active-bg: rgba($primary, 0.15);
 $nav-pills-link-active-color: $primary;
 $modal-scale-transform: 0;
-$theme-colors: (
-    'primary': $primary,
-    'orange': $orange,
-    'requires_payment': $warning,
-    'white': $white,
-    'gray': #999,
-    'secondary': $secondary,
-    'black': $black,
-    'facebook': $facebook,
-    'google': $google,
-    'light': $light,
-    'dark': $dark,
-    'danger': $danger,
-    'success': $success,
-    'warning': $warning,
-    'gray-200': $gray-200,
-    'gray-300': $gray-300,
-    'gray-400': $gray-400,
-    'gray-500': $gray-500,
+$theme-colors: map-merge(
+    $theme-colors,
+    (
+        'primary': $primary,
+        'secondary': $secondary,
+        'orange': $orange,
+        'white': $white,
+        'gray': #999,
+        'facebook': $facebook,
+        'google': $google,
+        'gray-200': $gray-200,
+        'gray-300': $gray-300,
+        'gray-400': $gray-400,
+        'gray-500': $gray-500,
+    )
 );
-@each $color, $value in $theme-colors {
-    .bg-#{$color}-light {
-        background-color: rgba($value, 12.5%);
-    }
-}
 $modal-header-border-width: 0;
 $modal-footer-border-width: 0;
 $card-border-width: 0;
@@ -56,7 +49,6 @@ $input-font-size-lg: 1rem;
 $font-weight-bold: 600;
 $dropdown-padding-y: 0.45rem;
 $dropdown-item-padding-x: 1rem;
-$input-placeholder-color: $gray-500;
 $close-font-size: 2rem;
 $close-font-weight: 200;
 $modal-content-border-width: 0;
@@ -94,6 +86,7 @@ $text-color: #636b6f;
 $small-font-size: 90%;
 
 // Buttons 
+$btn-line-height: 1.4;
 $btn-default-color: $text-color;
 $btn-padding-x-lg: 1.2rem;
 $btn-font-size-lg: 1.05rem;
@@ -111,6 +104,7 @@ $input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color
 $input-btn-font-size: $font-size-base;
 $input-btn-focus-color: $primary;
 $input-btn-focus-width: 0.05rem;
+$btn-font-weight: 500;
 
 // Brands
 $brand-primary: #3f51b5;
@@ -120,7 +114,8 @@ $brand-warning: #cbb956;
 $brand-danger: #bf5329;
 
 // Dropdown
-$dropdown-link-active-bg: $primary;
+$dropdown-link-active-bg: darken($dropdown-link-hover-bg, 1%);
+$dropdown-link-active-color: $dropdown-color;
 $dropdown-border-radius: $border-radius;
 $dropdown-color: $black;
 $dropdown-link-color: $black;
@@ -150,11 +145,11 @@ $input-color-placeholder: lighten($text-color, 30%);
 $input-border-radius: $border-radius;
 $input-border-radius-lg: $border-radius-lg;
 $input-border-radius-sm: $border-radius-sm;
-$input-border-color: $gray-400;
+$input-border-color: $border-color;
 $input-focus-border-color: $primary;
-$input-bg: $gray-100;
 $input-focus-width: 0;
 $input-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$input-placeholder-color: $text-muted;
 
 
 $spinner-width: 2rem;
@@ -162,20 +157,23 @@ $spinner-height: 2rem;
 $spinner-border-width: 0.1em;
 $spinner-border-width-sm: 0.035rem;
 
-$list-group-color: darken($primary, 30%);
+// List groups
 $list-group-bg: transparent;
-$list-group-hover-bg: rgba($primary, 3%);
-$list-group-action-active-bg: rgba($primary, 6%);
-$list-group-active-bg: rgba($primary, 6%);
-$list-group-action-hover-color: rgba($black, 80%);
-$list-group-active-color: $black;
+$list-group-hover-bg: $white;
+$list-group-action-active-bg: $white;
+$list-group-active-bg: $white;
+$list-group-action-hover-color: $black;
+$list-group-active-color: $primary;
 $list-group-action-active-color: $black;
-$list-group-item-padding-y: 0.5rem;
+$list-group-item-padding-y: 0.35rem;
 $list-group-item-padding-x: 0.8rem;
-$list-group-color: $black;
+$list-group-color: rgba($black, 80%);
 
 $table-hover-bg: rgba($secondary, 3%);
-$box-shadow-sm: 0 0.1rem 0.5rem $gray-300;
+$box-shadow-xs: 0 0.075rem 0.25rem rgba($dark, 0.15);
+$box-shadow-sm: 0 0.1rem 0.5rem rgba($dark, 0.2);
+$box-shadow: 0 .5rem 1rem rgba($dark, .15);
+$box-shadow-lg: 0 1rem 3rem rgba($dark, .175);
 
 $viewport_heights: (
     '10vh': 10vh,

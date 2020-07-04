@@ -30,7 +30,7 @@
                 </span>
                 <div class="d-flex align-items-center">
                     <arrow-circle-down-icon height="15" width="15" :fill="outgoing ? 'white' : ''"></arrow-circle-down-icon>&nbsp;
-                    <small class="text-ellipsis" :class="[outgoing ? 'text-white' : 'text-gray']">{{ message.metadata.filename }}</small>
+                    <small class="text-ellipsis" :class="[outgoing ? 'text-white' : 'text-muted']">{{ message.metadata.filename }}</small>
                 </div>
             </span>
         </div>

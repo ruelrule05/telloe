@@ -28,11 +28,7 @@ Route::group(
                         'middleware' => 'ajax'
                     ],
                     function() {
-                        Route::resource('areas-of-interests', 'AreasOfInterestController');
-                        Route::resource('employers', 'EmployerController');
-                        Route::resource('assistants', 'AssistantController');
-                        Route::resource('applicants', 'ApplicantController');
-                        Route::put('assistants/{id}/verify', 'AssistantController@verify');
+                        Route::apiResource('users', 'UserController');
                     }
                 );
                 

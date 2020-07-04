@@ -3,29 +3,36 @@
 		<div class="conversation-list d-flex flex-column h-100 position-relative">
 			<div class="d-flex align-items-center">
 				<div class="py-3 px-2">
-					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
+					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
 				</div>
 				<div class="py-3 btn-tab">
-					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
+					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
 				</div>
                 <div class="ml-auto dropleft pr-3">
-                    <button class="btn btn-sm btn-secondary d-flex align-items-center" data-toggle="modal" data-target="#newConversationModal"><plus-icon height="13" width="13" fill="#5A5ADF" transform="scale(1.6)" class="mr-1"></plus-icon>New Chat</button>
+                    <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="modal" data-target="#newConversationModal"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>New Chat</button>
                 </div>
 			</div>
 
 			<div class="overflow-auto px-3 pb-3 position-relative h-100" v-if="ready">
-                <div v-if="conversations.length == 0" class="position-absolute-center w-100 text-center font-weight-light text-gray">
+                <div v-if="conversations.length == 0" class="position-absolute-center w-100 text-center text-muted">
                     You don't have any conversations yet.
                 </div>
                 <template v-else>
     				<div v-for="conversation in orderedConversations" v-if="conversation.status == conversationTab" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
-    			  		<div class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
+                        
+                        <div v-if="$root.callWindow && $root.callConversationId == conversation.id" class="conversation-oncall position-absolute pr-3">
+                            <video-icon width="24" height="24"></video-icon>
+                        </div>
+                        <small v-else class="text-muted text-nowrap conversation-time position-absolute pr-2">{{ conversation.last_message.created_diff }}</small>   
+                        
+                        <div class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
                             <button class="btn btn-sm btn-white p-1 border line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
                             <div class="dropdown-menu py-1">
                                 <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
                                 <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
                             </div>
                         </div>
+
     	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
     						<div class="media align-items-center conversation-members">
     						  	<div class="user-profile-image position-relative" :class="{'rounded bg-transparent': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
@@ -43,9 +50,8 @@
     						  	</div> 
     						  	<div class="media-body pl-3">
     	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
-    	                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="mb-0 str-limit font-weight-light conversation-message-preview" :class="[conversation.last_message.is_read ? 'text-muted' : 'text-black font-weight-bold']"></div>           
+    	                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="mb-0 str-limit conversation-message-preview" :class="[conversation.last_message.is_read ? 'text-muted' : 'text-black font-weight-bold']"></div>           
     						  	</div>
-    	                        <small class="text-gray font-weight-light text-nowrap conversation-time">{{ conversation.last_message.created_diff }}</small>   
     						</div>
     					</div>
     				</div>
@@ -81,7 +87,7 @@
                                 <div v-if="!usersReady" class="text-center position-absolute-center w-100">
                                     <div class="spinner-border spinner-border-sm text-primary"></div>
                                 </div>
-                                <div v-else-if="filteredUsers.length == 0" class="text-center text-gray position-absolute-center w-100 font-weight-light">
+                                <div v-else-if="filteredUsers.length == 0" class="text-center text-muted position-absolute-center w-100">
                                     No results found.
                                 </div>
                                 <div v-else-if="filteredUsers.length > 0">
@@ -91,7 +97,7 @@
                                         </div>
                                         <div class="media-body pl-2">
                                             <div class="font-weight-bold font-heading mb-0 h6">{{ result.full_name }}</div>
-                                            <div class="small font-weight-light text-gray text-nowrap">@{{ result.username }}</div>      
+                                            <div class="small text-muted text-nowrap">@{{ result.username }}</div>      
                                         </div>
                                     </div>
                                 </div>
@@ -125,7 +131,7 @@
                                         </div>
                                         <div class="media-body pl-2">
                                             <div class="font-weight-bold mb-n1">{{ member.full_name }}</div>
-                                            <small class="ml-auto text-gray text-nowrap">{{ member.email }}</small>           
+                                            <small class="ml-auto text-muted text-nowrap">{{ member.email }}</small>           
                                         </div>
                                     </div>
                                 </div>

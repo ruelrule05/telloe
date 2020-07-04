@@ -3,7 +3,7 @@
         <div class="d-flex h-100">
         	<div class="conversation-messages flex-grow-1 border-right text-nowrap overflow-hidden position-relative" @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="dropFile">
                 <div v-if="dragOver" class="filedrop position-absolute w-100 h-100 bg-light">
-                    <span class="h3 position-absolute-center text-gray">Drop Files Here</span>
+                    <span class="h3 position-absolute-center text-muted">Drop Files Here</span>
                 </div>
                 
         		<div class="d-flex flex-column h-100">
@@ -14,21 +14,24 @@
                             </div>
                             <div class="ml-2">
                                 <h5 class="font-heading mb-0">{{ conversation.member.full_name || conversation.name }}</h5>
-                                <small v-if="conversation.member.is_pending" class="d-block text-warning font-weight-light">Pending account</small>
+                                <small v-if="conversation.member.is_pending" class="d-block text-warning">Pending account</small>
                                 <div class="d-flex align-items-center" v-else-if="conversation.member.id">
                                     <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
-                                    <small class="text-gray">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
+                                    <small class="text-muted">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
                                 </div>
-                                <small v-else class="d-block text-gray">{{ conversation.members.length }} members</small>
+                                <small v-else class="d-block text-muted">{{ conversation.members.length }} members</small>
                             </div>
                         </div>
-                        <div class="ml-auto">
+                        <div class="ml-auto btn-circle-actions">
                             <template v-if="!conversation.member.is_pending">
-                                <button class="btn btn-white btn-circle-actions border" v-tooltip.bottom="'Video call'" :disabled="$root.callWindow" @click="$root.initCall(conversation.id, 'outgoing')"><video-icon transform="scale(1.1)"></video-icon></button>
-                                <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Record screen'" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id"><cast-icon></cast-icon></button>
-                                <button v-if="$root.auth.role.role == 'client'" class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Manage bookings'"" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}"><calendar-day-icon></calendar-day-icon></button>
+                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.initCall(conversation.id, 'outgoing')" :class="{'active disabled': $root.callWindow ? true : false}"><video-icon width="32" height="32"></video-icon></button>
+                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Record screen'" @click="initScreenRecorder()" :class="{'active disabled': $root.screenRecorder.conversation_id}">
+                                        <screen-record-icon width="24" height="24"></screen-record-icon>
+                                        <record-icon width="12" height="12" class="position-absolute-center fill-primary"></record-icon>
+                                </button>
+                                <button v-if="$root.auth.role.role == 'client'" class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Manage bookings'"" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}"><planner-icon width="24" height="24"></planner-icon></button>
                             </template>
-                            <button class="btn btn-white btn-circle-actions" v-tooltip.bottom="'Profile'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><user-icon></user-icon></button>
+                            <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Profile'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
                         </div>
         			</div>
 
@@ -65,7 +68,7 @@
                                                 <div class="message-actions position-absolute px-2 d-flex align-items-center dropup">
                                                     <div class="action-content position-relative mr-1 line-height-1">
                                                         <div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
-                                                            <span v-if="message.tags.length > 0" class="action-label font-weight-light">{{ message.tags.length }}</span>
+                                                            <span v-if="message.tags.length > 0" class="action-label">{{ message.tags.length }}</span>
                                                             <bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
                                                         </div>
                                                         <div class="dropdown-menu dropdown-menu-x-center p-1 bg-light" @click.stop>
@@ -79,7 +82,7 @@
                                                             </vue-form-validate>
 
                                                             <div class="text-left tags-container" v-if="message.tags.length > 0">
-                                                                <div v-for="(tag, index) in message.tags" class="d-inline-block badge badge-primary py-1 px-2 mr-1 mt-1 font-weight-light">
+                                                                <div v-for="(tag, index) in message.tags" class="d-inline-block badge badge-primary py-1 px-2 mr-1 mt-1">
                                                                 {{ tag }}&nbsp;
                                                                     <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer no-action" @click.native="message.tags.splice(index, 1); updateMessageTags(message)"></close-icon>
                                                                 </div>
@@ -92,7 +95,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="message-metalabel text-nowrap text-gray small font-weight-light position-absolute">
+                                                    <div class="message-metalabel text-nowrap text-muted small position-absolute">
                                                         <div v-if="message.is_history">
                                                             <history-icon height="16" width="16" class="no-action"></history-icon>
                                                         </div>
@@ -104,7 +107,7 @@
                                         </div>
                                     </div>
                             	</div>
-                                <small class="text-gray d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at_format }}</small>
+                                <small class="text-muted d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at_format }}</small>
                             </div>
                         </div>
                     </div>

@@ -88,7 +88,7 @@ class Conversation extends BaseModel
         return $last_message ?? [ 
             'timestamp' => 0,
             'is_read' => 1, 
-            'message' => '<span class="font-weight-light">No messages yet</span>' 
+            'message' => 'No messages yet' 
         ];
     }
 

@@ -40,4 +40,14 @@ class ServicePolicy
         return $user->id == $service->user_id;
     }
 
+    public function create_invoice(User $user, Service $service)
+    {
+        return $user->id == $service->user_id;
+    }
+    
+    public function create_subscription(User $user, Service $service)
+    {
+        return $user->id == $service->user_id;
+    }
+
 }

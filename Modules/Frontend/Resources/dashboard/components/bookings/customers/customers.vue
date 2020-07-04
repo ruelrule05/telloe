@@ -10,13 +10,13 @@
 
 					<div class="rounded mt-3 overflow-auto h-100 flex-grow-1 d-flex flex-column">
 						<div v-if="user_customers.length == 0" class="text-gray text-center p-4">
-							<div class="h6 font-weight-light mb-3">You don't have any customers yet.</div>
+							<div class="h6 mb-3">You don't have any customers yet.</div>
 							<button class="btn btn-primary" @click="$refs['addModal'].show()">Add Customer</button>
 						</div>
 
 						<template v-else>
 							<div class="px-4">
-								<div class="d-flex py-2 px-3 text-muted font-weight-light">
+								<div class="d-flex py-2 px-3 text-muted">
 									<div class="flex-grow-1 ml-n3 mr-3 w-35">Name</div>
 									<div class="flex-grow-1 w-35">Status</div>
 									<div class="flex-grow-1 w-15">Date Added</div>
@@ -33,7 +33,7 @@
 					                        </div>
 					                        <div class="ml-2 overflow-hidden flex-1">
 					                            <h6 class="font-heading mb-0 text-ellipsis">{{ customer.customer.full_name }}</h6>
-					                            <small class="d-block text-muted font-weight-light">{{ customer.customer.email }}</small>
+					                            <small class="d-block text-muted">{{ customer.customer.email }}</small>
 					                        </div>
 					                    </div>
 					                    <div class="flex-grow-1 w-35">
@@ -135,7 +135,7 @@
                     <div v-for="service in services" class="d-inline-flex mt-2 border rounded shadow-sm py-2 px-3 mr-2">
                         <div>
                             <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                            <small class="text-gray d-block font-weight-light">{{ service.duration }} minutes</small>
+                            <small class="text-gray d-block">{{ service.duration }} minutes</small>
                         </div>
                         <div class="ml-3">
                             <toggle-switch :value="newCustomer.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>

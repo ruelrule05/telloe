@@ -6,15 +6,6 @@
     border-radius: 10px;
     font-size: 14px;
 }
-.btn-circle-actions {
-    border-radius: 50%;
-    padding: 6px;
-    line-height: 1;
-    &:focus:not(.active):not(:active){
-        background: white !important;
-        border-color: white !important;
-    }
-}
 .message-form svg {
     transition: $transition-base;
 }
@@ -23,6 +14,24 @@
 }
 .conversation-messages {
     width: 0;
+}
+.btn-circle-actions{
+    .btn {
+        svg {
+            transition: $transition-base;
+        }
+        &:not(.active){
+            svg {
+                filter: grayscale(100%);
+                opacity: 0.8;
+            }
+        }
+        &:hover:not(.active) {
+            svg {
+                opacity: 1;
+            }
+        }
+    }
 }
 .user-profile-image {
     width: 40px;

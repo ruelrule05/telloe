@@ -32,9 +32,6 @@
 			</div>
 		</div>
 		@endauth
-		<script>
-			const frontend = '{{ config('app.url') }}';
-		</script>
 		<script src="{{ mix('js/admin.js') }}"></script>
 	</body>
 </html>

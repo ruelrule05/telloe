@@ -15,6 +15,7 @@ Route::group([
     Route::post('recover', 'AuthController@recover')->middleware('guest');
     Route::post('reset', 'AuthController@reset')->middleware('guest');
     Route::post('fb_notify', 'InquiryController@messengerNotify');
+    Route::put('auth/update_stripe_account', 'AuthController@updateStripeAccount');
 });
 
 Route::post('logout', 'AuthController@logout')->middleware('auth');

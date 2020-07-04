@@ -18,10 +18,12 @@ use Mail;
 use Image;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use App\Http\StripeAPI;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function get(Request $request)
+    public function get(Request $request, $last_online = true)
     {
         $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription', 'role')->makeVisible([
             'google_calendars',
@@ -30,15 +32,25 @@ class AuthController extends Controller
             'google_calendar_events', 
             'outlook_calendars', 
             'outlook_calendar_id', 
-            'outlook_calendar_events', 
-            'ignored_calendar_events']) : false;
-        $user->update([
-            'last_online' => Carbon::now()
-        ]);
+            'outlook_calendar_events',
+            'stripe_account',
+            'ignored_calendar_events',
+            'id_documents'
+        ]) : false;
+
+        if($user && $last_online) :
+            $user->update([
+                'last_online' => Carbon::now()
+            ]);
+        endif;
+        
         return response()->json($user);
     }
 
     public function login(Request $request) {
+        $this->validate($request, [
+            'email' => 'required|email'
+        ]);
         $user = User::where('email', $request->email)->first();
         if (!$user):
             return abort(403, 'Email does not exists in our records');
@@ -64,6 +76,8 @@ class AuthController extends Controller
                         'timezone' => $request->timezone
                     ]);
                 endif;
+
+                $this->createStripeCustomer($user);
 
                 return response()->json($response);
             else:
@@ -107,6 +121,7 @@ class AuthController extends Controller
             'timezone' => $timezone,
         ]);
 		Auth::login($user);
+        $this->createStripeCustomer($user);
         
         // check invite token
         if($request->invite_token) :
@@ -213,8 +228,9 @@ class AuthController extends Controller
 
         $data = $request->all();
         $data['username'] = str_replace(' ', '', $request->username);
-        Auth::user()->update($data);
-        return $this->get($request);
+        $user = Auth::user();
+        $user->update($data);
+        return $this->get($request, false);
     }
 
     public function updatePassword(Request $request)
@@ -303,5 +319,99 @@ class AuthController extends Controller
             return response()->json($response);
         endif;
         return abort(403, "There's no user associated with this Google account.");
+    }
+
+    public function createStripeCustomer(User $user)
+    {
+        $stripe_api = new StripeAPI();
+
+        if (!$user->stripe_customer_id) :
+            $customer = $stripe_api->customer('create', [ 'email' => $user->email ]);
+            $user->update([
+                'stripe_customer_id' => $customer->id
+            ]);
+        endif;
+    }
+
+    public function updateStripeAccount(Request $request)
+    {   
+        $validator = Validator::make($request->all(), [
+            'country' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'postal' => 'required',
+            'website' => 'required|url',
+            'phone' => 'required',
+            'dob' => 'required|date',
+            'account_number' => 'required',
+            'account_holder_name' => 'required',
+            'routing_number' => 'required',
+        ]);
+        $user = Auth::user();
+
+        if ($validator->fails()) return abort(422, $validator->errors());
+        if (!$user->stripe_customer_id) return abort(403, "No customer ID set for this account.");
+
+        $stripe_api = new StripeAPI();
+        $country = country('AU');
+        $dob = Carbon::parse($request->dob);
+
+        $account_data = [
+            'requested_capabilities' => ['card_payments', 'transfers'],
+            'email' => $user->email,
+            'business_type' => 'individual',
+            'individual' => [
+                'email' => $user->email,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'phone' => $request->phone,
+                'address' => [
+                    'city' => $request->city,
+                    'line1' => $request->address,
+                    'postal_code' => $request->postal,
+                    'state' => $request->state,
+                ],
+                'dob' => [
+                    'day' => $dob->day,
+                    'month' => $dob->month,
+                    'year' => $dob->year,
+                ],
+            ],
+            'business_profile' => [
+                'mcc' => env('STRIPE_DEFAULT_MCC'),
+                'url' => $request->website,
+            ],
+            'tos_acceptance' => [
+                'date' => Carbon::now()->timestamp,
+                'ip' => '127.0.0.1',
+                'user_agent' => 'Chrome',
+            ]
+        ];
+
+        if($user->stripe_account) :
+            if(!isset($user->stripe_account['external_accounts']) || count($user->stripe_account['external_accounts']['data']) == 0) :
+                $account_data['external_account'] = [
+                    'object' => 'bank_account',
+                    'country' => $request->country,
+                    'currency' => $country->getCurrency()['iso_4217_code'] ?? '',
+                    'account_number' => $request->account_number,
+                    'account_holder_name' => $request->account_holder_name,
+                    'routing_number' => $request->routing_number,
+                ];
+            endif;
+            $account_data['id'] = $user->stripe_account['id'];
+            $account = $stripe_api->account('update', $account_data);
+        else :
+            $account_data['country'] = $request->country;
+            $account_data['type'] = 'custom';
+            $account = $stripe_api->account('create', $account_data);
+        endif;
+
+        $user->update([
+            'stripe_account' => $account
+        ]);
+
+        return response()->json(['message' => 'Payout details successfuly saved.', 'stripe_account' => $user->stripe_account]);
     }
 }

@@ -7,10 +7,12 @@ use Carbon\Carbon;
 class UserCustomer extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'customer_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services'];
+    protected $fillable = ['user_id', 'customer_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions'];
     protected $appends = ['full_name', 'initials', 'created_at_format'];
     protected $casts = [
-        'blacklisted_services' => 'array'
+        'blacklisted_services' => 'array',
+        'invoices' => 'array',
+        'subscriptions' => 'array'
     ];
 
     public function user() 

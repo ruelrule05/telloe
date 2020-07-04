@@ -35,25 +35,25 @@
 										<div class="cursor-pointer dropdown-toggle d-flex align-items-center justify-content-center">
 											<div class="user-profile user-profile-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
 												<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
+												<exclamation-circle-icon v-if="!payoutComplete" class="fill-warning bg-white rounded-circle" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 											</div>
 											<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
 												<h6 class="font-heading mb-0 text-ellipsis text-body ">@{{ auth.full_name }}</h6>
-												<small class="text-muted d-block text-ellipsis">@@{{ auth.username }}</small>
+												<small class="text-secondary d-block text-ellipsis">@@{{ auth.username }}</small>
 											</div>
 										</div>
 									</div>
 									<div class="dropdown-menu w-100 overflow-hidden">
-								    	<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center ">
-								    		<shortcut-icon height="17" width="17" class="mr-2"></shortcut-icon>
-								    		&nbsp;View Profile
+								    	<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+								    		View Profile
+								    		<shortcut-icon height="17" width="17" class="ml-auto"></shortcut-icon>
 								    	</a>
 								    	<router-link to="/dashboard/account" class="dropdown-item d-flex align-items-center">
-								    		<user-circle-icon height="18" width="18" class="mr-2"></user-circle-icon>
-								    		&nbsp;Account
+								    		Account
+								    		<exclamation-circle-icon v-if="!payoutComplete" class="fill-warning ml-auto" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 								    	</router-link>
-								    	<router-link to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
-								    		<shopping-bag-icon height="18" width="18" class="mr-2"></shopping-bag-icon>
-								    		&nbsp;Billing
+								    	<router-link to="/dashboard/billing" class="dropdown-item">
+								    		Billing
 								    	</router-link>
 	  									<div class="dropdown-divider"></div>
 								    	<form action="/logout" method="POST">
@@ -63,9 +63,9 @@
 									</div>
 								</div>
 
-								<div class="list-group font-heading">
+								<div class="list-group font-heading sidebar-menu">
 									<router-link :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
-										<chat-icon></chat-icon>
+										<chat-icon height="22" width="22"></chat-icon>
 										<span class="ml-3">Messages</span>
 									</router-link>
 									<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
@@ -73,12 +73,12 @@
 									<template v-if="auth.role.role == 'client'">
 										<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 											<div class="d-flex align-items-center px-4">
-												<calendar-day-icon></calendar-day-icon>
+												<planner-icon height="22" width="22"></planner-icon>
 												<span class="ml-3">Bookings</span>
-												<chevron-down-icon class="ml-2"></chevron-down-icon>
+												<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 											</div>
 										</button>
-										<div class="collapse show bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
+										<div class="collapse show" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
 											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
 												<span class="pl-3">Calendar</span>
 											</router-link>
@@ -92,14 +92,14 @@
 
 										<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 											<div class="d-flex align-items-center px-4">
-												<wallet-icon></wallet-icon>
+												<bill-icon height="22" width="22"></bill-icon>
 												<span class="ml-3">Payments</span>
-												<chevron-down-icon class="ml-2"></chevron-down-icon>
+												<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 											</div>
 										</button>
-										<div class="collapse show bg-light" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
-											<router-link to="/dashboard/payments/subscribers" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<span class="pl-3">Subscribers</span>
+										<div class="collapse show" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
+											<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+												<span class="pl-3">Subscriptions</span>
 											</router-link>
 											<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
 												<span class="pl-3">Invoices</span>

@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="modal-dialog modal-dialog-centered" role="document" :class="[{'opacity-0': loading}, size]">
-            <div class="modal-content overflow-hidden">
+            <div class="modal-content">
                 <button v-if="closeButton" type="button" class="close position-absolute" aria-label="Close" data-dismiss="modal">
                     <close-icon width="30" height="30"></close-icon>
                 </button>

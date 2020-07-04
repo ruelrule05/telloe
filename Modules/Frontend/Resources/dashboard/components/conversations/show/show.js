@@ -9,8 +9,8 @@ import MessageType from './message-type';
 
 import VideoIcon from '../../../../icons/video';
 import CastIcon from '../../../../icons/cast';
-import CalendarDayIcon from '../../../../icons/calendar-day';
-import UserIcon from '../../../../icons/user';
+import PlannerIcon from '../../../../icons/planner';
+import InfoCircleIcon from '../../../../icons/info-circle';
 import VideoCameraIcon from '../../../../icons/video-camera';
 import MicrophoneIcon from '../../../../icons/microphone';
 import AddNoteIcon from '../../../../icons/add-note';
@@ -18,6 +18,8 @@ import BookmarkIcon from '../../../../icons/bookmark';
 import PlusIcon from '../../../../icons/plus';
 import HistoryIcon from '../../../../icons/history';
 import CloseIcon from '../../../../icons/close';
+import ScreenRecordIcon from '../../../../icons/screen-record';
+import RecordIcon from '../../../../icons/record';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -30,8 +32,8 @@ export default {
 
 		VideoIcon,
 		CastIcon,
-		CalendarDayIcon,
-		UserIcon,
+		PlannerIcon,
+		InfoCircleIcon,
 		VideoCameraIcon,
 		MicrophoneIcon,
 		AddNoteIcon,
@@ -39,12 +41,14 @@ export default {
 		PlusIcon,
 		HistoryIcon,
 		CloseIcon,
+        ScreenRecordIcon,
+        RecordIcon,
 
-        'info': () => import(/* webpackChunkName: "dashboard/components/show/info" */ './info/info.vue'),
-        'file-view-modal': () => import(/* webpackChunkName: "modals/file-view" */ '../../../../modals/file-view'),
-        'video-recorder-modal': () => import(/* webpackChunkName: "modals/video-recorder" */ '../../../../modals/video-recorder'),
-        'audio-recorder-modal': () => import(/* webpackChunkName: "modals/audio-recorder" */ '../../../../modals/audio-recorder'),
-        'screen-recorder-modal': () => import(/* webpackChunkName: "modals/screen-recorder" */ '../../../../modals/screen-recorder'),
+        'info': () => import('./info/info.vue'),
+        'file-view-modal': () => import('../../../../modals/file-view'),
+        'video-recorder-modal': () => import('../../../../modals/video-recorder'),
+        'audio-recorder-modal': () => import('../../../../modals/audio-recorder'),
+        'screen-recorder-modal': () => import('../../../../modals/screen-recorder'),
 	},
 
 	directives: {

@@ -24,13 +24,15 @@ class User extends Authenticatable implements JWTSubject
         'username', 
         'profile_image', 
         'stripe_customer_id', 
+        'stripe_account',
         'psid', 
         'phone', 
         'facebook_id', 
         'google_id', 
         'last_online', 
         'timezone', 
-        'ignored_calendar_events'
+        'ignored_calendar_events',
+        'id_documents'
     ];
 
     /**
@@ -41,11 +43,13 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password', 
         'remember_token', 
-        'created_at', 
+        'created_at',
+        'created_at_format',
         'updated_at', 
         'facebook_id', 
         'google_id', 
-        'stripe_customer_id', 
+        'stripe_account',
+        'stripe_customer_id',
         'phone', 
         'google_calendars',
         'google_calendar_id', 
@@ -53,12 +57,14 @@ class User extends Authenticatable implements JWTSubject
         'outlook_calendars', 
         'outlook_calendar_id', 
         'outlook_calendar_events', 
-        'ignored_calendar_events'
+        'ignored_calendar_events',
+        'id_documents'
     ];
 
     
-    protected $appends = ['full_name', 'initials', 'last_online_format'];
+    protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];
     protected $casts = [
+        'stripe_account' => 'array',
         'last_online' => 'datetime',
         'google_calendar_token' => 'array',
         'google_calendars' => 'array',
@@ -67,6 +73,7 @@ class User extends Authenticatable implements JWTSubject
         'outlook_calendars' => 'array',
         'outlook_calendar_events' => 'array',
         'ignored_calendar_events' => 'array',
+        'id_documents' => 'array'
     ];
 
 
@@ -158,6 +165,12 @@ class User extends Authenticatable implements JWTSubject
         endif;
 
         return parent::castAttribute($key, $value);
+    }
+
+
+    public function getCreatedAtFormatAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->format('M d, Y');
     }
 
 

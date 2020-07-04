@@ -2,7 +2,7 @@
 	<div class="row h-100 p-4">
 		<div v-if="ready" class="col-md-12 h-100">
 			<div v-if="services.length == 0" class="py-5 text-center bg-white rounded shadow-sm p-2">
-				<h6 class="text-gray font-weight-lighter mb-3">You don't have any services added yet</h6>
+				<h6 class="text-grayer mb-3">You don't have any services added yet</h6>
 				<button class="btn btn-primary" @click="selectedService = null; newService = {}; $refs['modal'].show()">Add Service</button>
 			</div>
 
@@ -26,14 +26,14 @@
 									<h5 class="font-heading mb-1">{{ service.name }}</h5>
 									<span class="ml-auto text-gray">{{ service.is_available ? 'Available' : 'Not Available' }}</span>
 								</div>
-								<p class="text-gray font-weight-light mb-0 multiline-ellipsis">{{ service.description }}</p>
+								<p class="text-muted mb-0 multiline-ellipsis">{{ service.description }}</p>
 								<div class="d-flex align-items-center mt-3">
 									<clock-icon width="17" height="17" fill="#888"></clock-icon>
-									<span class="ml-1 font-weight-light">{{ service.duration }} minutes</span>
+									<span class="ml-1">{{ service.duration }} minutes</span>
 								</div>
 								<div class="d-flex mt-2">
 									<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-primary bg-gray-400' : 'text-gray-400 bg-gray-200']">
-										<span class="position-absolute-center font-weight-light line-height-1">{{ day.charAt(0) }}</span>
+										<span class="position-absolute-center line-height-1">{{ day.charAt(0) }}</span>
 									</div>
 								</div>
 							</div>
@@ -112,7 +112,7 @@
 										<div class="text-gray bg-gray-300 p-2">Date</div>
 										<div class="flex-grow-1">
 											<v-date-picker is-required :disabled-dates="formattedHolidays" :min-date="new Date()" :popover="{visibility: 'click' }" v-model="newHoliday.date" class="d-block h-100">
-												<button class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{'text-gray': !newHoliday.date}">{{ newHoliday.date ? formatDate(newHoliday.date) : 'Set date' }}</button>
+												<button type="button" class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{'text-gray': !newHoliday.date}">{{ newHoliday.date ? formatDate(newHoliday.date) : 'Set date' }}</button>
 											</v-date-picker>
 										</div>
 									</div>
@@ -132,7 +132,7 @@
 							</div>
 						</div>
 
-						<div v-else class="position-absolute-center text-gray text-center font-weight-light w-100">
+						<div v-else class="position-absolute-center text-gray text-center w-100">
 							Please select a service
 						</div>
 					</div>
