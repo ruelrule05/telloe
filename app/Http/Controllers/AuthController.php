@@ -389,17 +389,19 @@ class AuthController extends Controller
             ]
         ];
 
+        
+        if(!isset($user->stripe_account['external_accounts']) || count($user->stripe_account['external_accounts']['data']) == 0) :
+            $account_data['external_account'] = [
+                'object' => 'bank_account',
+                'country' => $request->country,
+                'currency' => $country->getCurrency()['iso_4217_code'] ?? '',
+                'account_number' => $request->account_number,
+                'account_holder_name' => $request->account_holder_name,
+                'routing_number' => $request->routing_number,
+            ];
+        endif;
+
         if($user->stripe_account) :
-            if(!isset($user->stripe_account['external_accounts']) || count($user->stripe_account['external_accounts']['data']) == 0) :
-                $account_data['external_account'] = [
-                    'object' => 'bank_account',
-                    'country' => $request->country,
-                    'currency' => $country->getCurrency()['iso_4217_code'] ?? '',
-                    'account_number' => $request->account_number,
-                    'account_holder_name' => $request->account_holder_name,
-                    'routing_number' => $request->routing_number,
-                ];
-            endif;
             $account_data['id'] = $user->stripe_account['id'];
             $account = $stripe_api->account('update', $account_data);
         else :
