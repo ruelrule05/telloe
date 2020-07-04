@@ -99,7 +99,7 @@
 		</div>
 
 
-		<div v-else class="text-muted text-center p-4 position-absolute-center">
+		<div v-else class="text-muted text-center p-4 position-absolute-center w-100">
 			<div class="h6 font-weight-normal mb-3">Please complete your payout information before creating an invoice.</div>
 			<router-link to="/dashboard/account" type="button" @click="$refs['createSubscriptionModal'].show()" class="btn border btn-white">
 				Go to account
