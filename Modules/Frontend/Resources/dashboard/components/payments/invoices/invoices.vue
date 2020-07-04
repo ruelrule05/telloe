@@ -91,7 +91,7 @@
 						<input type="number" step="0.01" class="form-control" data-required v-model="newInvoiceForm.amount" placeholder="Amount">
 					</div>
 					<div class="mt-4 d-flex align-items-center justify-content-end">
-						<button type="button" class="btn btn-white mr-1" data-dismiss="modal" :disabled="newInvoiceForm.loading">Cancel</button>
+						<button type="button" class="btn btn-white mr-1 border" data-dismiss="modal" :disabled="newInvoiceForm.loading">Cancel</button>
 						<vue-button type="submit" :loading="newInvoiceForm.loading" button_class="btn btn-primary">Create</vue-button>
 					</div>
 				</vue-form-validate>

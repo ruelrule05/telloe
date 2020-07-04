@@ -144,9 +144,9 @@ class UserCustomerController extends Controller
             'customer' => $userCustomer->customer->stripe_customer_id,
             'collection_method' => 'send_invoice',
             'description' => implode(', ', $servicesNames),
+            'application_fee_amount' => $amount * 0.025 * 100
             'transfer_data' => [
                 'destination' => Auth::user()->stripe_account['id'],
-                'amount' => $amount - ($amount * 0.025), // 2.5%
             ],
             'due_date' => $due_date->timestamp,
         ];
