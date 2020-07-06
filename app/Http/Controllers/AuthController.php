@@ -294,7 +294,7 @@ class AuthController extends Controller
             'image_url' => 'required'
         ]);
         $user = User::where('email', $request->email)->first();
-        if(!$user || $user->facebook_id == $request->id) :
+        if(!$user || $user->google_id == $request->id) :
             if(!$user) :
                 $time = time();
                 Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
