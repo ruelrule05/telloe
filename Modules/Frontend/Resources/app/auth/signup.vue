@@ -20,11 +20,11 @@
 
 				<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none mt-2">Sign Up</vue-button>
 
-				<button class="btn btn-link btn-sm text-body px-0" @click="$root.action = 'login'"><arrow-left-icon size="1x"></arrow-left-icon> Log In</button>
+				<button type="button" class="btn btn-link btn-sm text-body px-0" @click="$root.action = 'login'"><arrow-left-icon size="1x"></arrow-left-icon> Log In</button>
 
 				<div class="d-flex mx-n1 mt-4">
-					<button class="btn btn-light border flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.FacebookLogin" data-action="login"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
-					<button class="btn btn-light border flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.Googlesignin"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
+					<button type="button" class="btn btn-light border flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.FacebookLogin" data-action="login"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
+					<button type="button" class="btn btn-light border flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.Googlesignin"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
 				</div>
 			</vue-form-validate>
 		</div>

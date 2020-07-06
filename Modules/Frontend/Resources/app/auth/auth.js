@@ -24,7 +24,7 @@ export default {
     }),
 
     created() {
-        if (typeof gapi != 'undefined'){
+        if (typeof gapi != 'undefined') {
             gapi.load('auth2', () => {
                 this.GoogleAuth = gapi.auth2.init({client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com'});
             });
@@ -49,7 +49,7 @@ export default {
             this.loading = true;
             axios
                 .post('/recover', this.recoverForm)
-                .then((response) => {
+                .then(response => {
                     this.loading = false;
                     this.recoverForm.success = true;
                 })
@@ -63,7 +63,7 @@ export default {
             this.resetForm.token = this.$route.query.token;
             axios
                 .post('/reset', this.resetForm)
-                .then((response) => {
+                .then(response => {
                     this.loading = false;
                     window.location.href = '/login';
                 })
@@ -75,15 +75,20 @@ export default {
         FacebookLogin() {
             if (typeof FB != 'undefined') {
                 this.pageloading = true;
-                FB.login((e) => {
-                        FB.api('/me', {fields: 'first_name, last_name, email'}, (response) => {
+                FB.login(
+                    e => {
+                        FB.api('/me', {fields: 'first_name, last_name, email'}, response => {
                             if (response && !response.error) {
-                                axios.post('/login/facebook', response).then((response) => {
-                                    window.location.href = response.data.redirect_url;
-                                }).catch((e) => {
-                                    this.pageloading = false;
-                                    this.error = e.response.data.message;
-                                });
+                                response.action = this.$root.action;
+                                axios
+                                    .post('/login/facebook', response)
+                                    .then(response => {
+                                        window.location.href = response.data.redirect_url;
+                                    })
+                                    .catch(e => {
+                                        this.pageloading = false;
+                                        this.error = e.response.data.message;
+                                    });
                             } else {
                                 this.pageloading = false;
                                 this.error = 'Facebook API went wrong.';
@@ -99,7 +104,7 @@ export default {
             if (this.GoogleAuth) {
                 this.pageloading = true;
                 this.GoogleAuth.signIn()
-                    .then((googleUser) => {
+                    .then(googleUser => {
                         let profile = googleUser.getBasicProfile();
                         let user = {
                             id: profile.getId(),
@@ -107,13 +112,17 @@ export default {
                             last_name: profile.getFamilyName(),
                             email: profile.getEmail(),
                             image_url: profile.getImageUrl(),
+                            action: this.$root.action
                         };
-                        axios.post('/login/google', user).then((response) => {
-                           window.location.href = response.data.redirect_url;
-                        }).catch((e) => {
-                            this.pageloading = false;
-                            this.error = e.response.data.message;
-                        });
+                        axios
+                            .post('/login/google', user)
+                            .then(response => {
+                                window.location.href = response.data.redirect_url;
+                            })
+                            .catch(e => {
+                                this.pageloading = false;
+                                this.error = e.response.data.message;
+                            });
                     })
                     .catch(() => {
                         this.pageloading = false;
@@ -123,4 +132,3 @@ export default {
         },
     },
 };
-

@@ -281,7 +281,10 @@ class AuthController extends Controller
             ]; 
             return response()->json($response);
         endif;
-        return abort(403, "There's no user associated with this Facebook account.");
+
+        $message = "There's no user associated with this Facebook account.";
+        if($request->action == 'signup' && $user) $message = "Email is already registered to another account.";
+        return abort(403, $message);
     }
 
     public function loginGoogle(Request $request)
@@ -316,7 +319,10 @@ class AuthController extends Controller
             ]; 
             return response()->json($response);
         endif;
-        return abort(403, "There's no user associated with this Google account.");
+
+        $message = "There's no user associated with this Google account.";
+        if($request->action == 'signup' && $user) $message = "Email is already registered to another account.";
+        return abort(403, $message);
     }
 
     public function createStripeCustomer(User $user)
