@@ -33,6 +33,7 @@ $theme-colors: map-merge(
         'gray': #999,
         'facebook': $facebook,
         'google': $google,
+        'gray-100': $gray-100,
         'gray-200': $gray-200,
         'gray-300': $gray-300,
         'gray-400': $gray-400,
@@ -92,8 +93,9 @@ $btn-padding-x-lg: 1.2rem;
 $btn-font-size-lg: 1.05rem;
 $btn-box-shadow: 5px;
 $btn-focus-box-shadow: 0;
-$btn-border-radius: 0.48rem;
 $btn-border-radius-sm: 0.4rem;
+$btn-border-radius: 0.48rem;
+$btn-border-radius-lg: 0.6rem;
 $btn-padding-y: .33rem;
 $btn-padding-x: 0.75rem;
 $btn-padding-y-sm: .25rem;

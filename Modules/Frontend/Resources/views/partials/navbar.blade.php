@@ -24,7 +24,7 @@
           <li class="nav-item">
             <div class="nav-link pr-0">
               <div class="px-3 px-md-0">
-                <a class="btn btn-orange btn-sm-block text-white m-0" href="#" @click.prevent="auth = true; action = 'signup'">Sign Up</a>
+                <a class="btn btn-primary btn-sm-block text-white m-0" href="#" @click.prevent="auth = true; action = 'signup'">Sign Up</a>
               </div>
             </div>
           </li>

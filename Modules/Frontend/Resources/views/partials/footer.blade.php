@@ -1,4 +1,4 @@
-<footer class="border py-5">
+<footer class="py-5">
 	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-md-3">
@@ -24,8 +24,8 @@
 
 			<div class="col-md-2 mt-md-0 mt-4">
 				<h5 class="font-heading">Legal</h5>
-				<a href="" class="d-block text-muted font-weight-light">Privacy Policy</a>
-				<a href="" class="d-block text-muted pt-1 font-weight-light">Terms & Conditions</a>
+				<a href="{{ url('/privacy-policy') }}" class="d-block text-muted font-weight-light">Privacy Policy</a>
+				<a href="{{ url('/terms-of-service') }}" class="d-block text-muted pt-1 font-weight-light">Terms & Conditions</a>
 			</div>
 		</div>
 	</div>

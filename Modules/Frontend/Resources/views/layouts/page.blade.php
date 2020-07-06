@@ -23,6 +23,10 @@
 
 	@include('frontend::partials.social_scripts')
 	@include('frontend::partials.scripts')
+	
+	<script>
+		const USER_CUSTOMER = {!! $userCustomer ? "JSON.parse('".json_encode($userCustomer)."');" : 'null' !!};
+	</script>
 	@yield('scripts')
 </body>
 </html>

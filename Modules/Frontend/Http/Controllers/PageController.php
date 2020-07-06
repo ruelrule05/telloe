@@ -17,10 +17,26 @@ class PageController extends Controller
     		return redirect('/dashboard/conversations');
     	endif;
 
-    	$userCustomer = null;
-    	if($request->invite_token) :
-    		$userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
-    	endif;
-    	return view('frontend::pages.homepage', compact('userCustomer'));
+    	return view('frontend::pages.homepage', ['userCustomer' => $this->getUserCustomer($request)]);
+    }
+
+    public function privacyPolicy(Request $request)
+    {
+        return view('frontend::pages.privacy-policy', ['userCustomer' => $this->getUserCustomer($request)]);
+    }
+
+    public function termsOfService(Request $request)
+    {
+        return view('frontend::pages.terms-of-service', ['userCustomer' => $this->getUserCustomer($request)]);
+    }
+
+    public function getUserCustomer(Request $request)
+    {
+        $userCustomer = null;
+        if($request->invite_token) :
+            $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
+        endif;
+
+        return $userCustomer;
     }
 }

@@ -13,7 +13,7 @@
 			<div class="col-md-6 pr-md-0">
 				<h1 class="font-heading font-weight-bold mb-0 display-4">You Coach...</h1>
 				<h2 class="font-heading mb-4">Let {{ config('app.name') }} do the rest!</h2>
-				<p class="text-muted h5 font-weight-light line-height-sm mb-5">Fed up with clients missing their appointments, confused with managing multiple calendars, having issues tracking and accepting client payments, and keeping all your clients' communications and details together?</p>
+				<p class="text-muted h5 font-weight-light mb-5">Fed up with clients missing their appointments, confused with managing multiple calendars, having issues tracking and accepting client payments, and keeping all your clients' communications and details together?</p>
 				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0">Start Free Trial</button>
 				<button class="btn btn-outline-primary btn-lg px-4 btn-sm-block">View Demo</button>
 			</div>
@@ -21,7 +21,7 @@
 	</div>
 </div>
 
-<div class="bg-secondary home-content home-content-2 position-relative">
+<div class="bg-gray-100 home-content home-content-2 position-relative">
 	<div class="container">
 		<div class="row flex-row-reverse">
 			<div class="col-md-4">
@@ -81,7 +81,7 @@
 	</div>
 </div>
 
-<div class="home-content home-content-4 bg-secondary">
+<div class="home-content home-content-4 bg-gray-100">
 	<div class="container">
 		<div class="row align-items-center">
 			<div class="col-md-6 mb-md-0 mb-3 mt-n3 mt-md-0">
@@ -127,17 +127,17 @@
 					<h3 class="font-heading mt-3 h1 mb-0">Your clients can...</h3>
 				</div>
 				<div class="text-right mb-4">
-					<div class="d-inline-block bg-secondary p-4 rounded text-left w-75 border">
+					<div class="d-inline-block bg-gray-100 p-4 rounded text-left w-75 border">
 						<h5 class="mb-1">Review & Replay Messages</h5>
 						<p class="mb-0 text-muted font-weight-light">Keep your clients engaged by sending video and voice messages that can be viewed and replayed by your clients when it's convenient for them.</p>
 					</div>
 				</div>
-				<div class="d-inline-block bg-secondary p-4 rounded text-left w-75 mb-4 border">
+				<div class="d-inline-block bg-gray-100 p-4 rounded text-left w-75 mb-4 border">
 					<h5 class="mb-1">Receive Reminders</h5>
 					<p class="mb-0 text-muted font-weight-light">Let's face it, you are busy and so are your clients. By having reminders sent to your clients before the scheduled meetings, you will waste less of your time and theirs.</p>
 				</div>
 				<div class="text-right">
-					<div class="d-inline-block bg-secondary p-4 rounded text-left w-75 border">
+					<div class="d-inline-block bg-gray-100 p-4 rounded text-left w-75 border">
 						<h5 class="	mb-1">Send Video & Files</h5>
 						<p class="mb-0 text-muted font-weight-light">Create instructional videos of screen recordings demonstrating exercises along with supporting files such as word documents and spreadsheets.</p>
 					</div>
@@ -147,7 +147,7 @@
 	</div>
 </div>
 
-<div class="home-content home-content-6 position-relative bg-secondary">
+<div class="home-content home-content-6 position-relative bg-gray-100">
 	<div class="container">
 		<div class="row flex-row-reverse align-items-center">
 			<div class="col-md-4 mt-n4 mt-md-0">
@@ -231,7 +231,7 @@
 	</div>
 </div>
 
-<div class="home-content home-content-8 bg-secondary">
+<div class="home-content home-content-8 bg-gray-100">
 	<div class="container">
 		<div class="row flex-row-reverse align-items-center">
 			<div class="col-md-6 mb-4 mb-md-0 mt-n2 mt-md-0">
@@ -266,7 +266,7 @@
 	</div>
 </div>
 
-<div class="home-content home-content-10 bg-secondary">
+<div class="home-content home-content-10 bg-gray-100">
 	<div class="container text-center">
 		<div class="row justify-content-center">
 			<div class="col-md-6">
@@ -289,7 +289,7 @@
 	</div>
 </div>
 
-<div class="home-content bg-secondary home-content-12">
+<div class="home-content bg-gray-100 home-content-12">
 	<div class="container text-center py-md-5" id="pricing">
 		<div class="row justify-content-center">
 			<div class="col-md-8">
@@ -425,7 +425,7 @@
 	</div>
 </div>
 
-<div class="home-content home-content-14 bg-secondary">
+<div class="home-content home-content-14 bg-gray-100">
 	<div class="container text-center">
 		<div class="row justify-content-center">
 			<div class="col-md-8">
@@ -435,10 +435,4 @@
 		</div>
 	</div>
 </div>
-@stop
-
-@section('scripts')
-<script>
-	const USER_CUSTOMER = {!! $userCustomer ? "JSON.parse('".json_encode($userCustomer)."');" : 'null' !!};
-</script>
 @stop

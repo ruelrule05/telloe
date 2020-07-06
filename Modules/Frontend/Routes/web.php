@@ -30,6 +30,8 @@ Route::group(
     ],
     function () {
         Route::get('/', 'PageController@homepage');
+        Route::get('/privacy-policy', 'PageController@privacyPolicy');
+        Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
 		Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
