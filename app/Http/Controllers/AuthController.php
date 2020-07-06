@@ -98,13 +98,7 @@ class AuthController extends Controller
 		]);
         $widget = Widget::create([]);
 
-        $i = '';
-        $username = strtolower($request->first_name).strtolower($request->last_name);
-        while(true):
-            if(!User::where('username', $username)->first()) break;
-            $i = $i == '' ? 1 : $i++;
-            $username = $username.$i;
-        endwhile;
+        $username = $this->generateUsername($request);
 
         $timezone = $request->timezone;
         if(!isValidTimezone($timezone)) :
@@ -270,7 +264,9 @@ class AuthController extends Controller
                 $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
                 Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
                 $widget = Widget::create([]);
+                $username = $this->generateUsername($request);
                 $user = User::create([
+                    'username' => $username,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -303,7 +299,9 @@ class AuthController extends Controller
                 $time = time();
                 Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
                 $widget = Widget::create([]);
+                $username = $this->generateUsername($request);
                 $user = User::create([
+                    'username' => $username,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -415,5 +413,18 @@ class AuthController extends Controller
         ]);
 
         return response()->json(['message' => 'Payout details successfuly saved.', 'stripe_account' => $user->stripe_account]);
+    }
+
+    public function generateUsername(Request $request)
+    {
+        $i = '';
+        $username = strtolower($request->first_name).strtolower($request->last_name);
+        while(true):
+            if(!User::where('username', $username)->first()) break;
+            $i = $i == '' ? 1 : $i++;
+            $username = $username.$i;
+        endwhile;
+
+        return $username;
     }
 }
