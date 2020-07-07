@@ -1,6 +1,6 @@
 <template>
 	<div class="overflow-hidden py-4 h-100 flex-grow-1 d-flex flex-column">
-		<div v-if="$root.payoutComplete">
+		<div v-if="!$root.payoutComplete">
 			<div v-if="subscriptions.length == 0" class="text-muted text-center p-4 position-absolute-center">
 				<div class="h6 font-weight-normal mb-3">You don't have any subscriptions yet.</div>
 				<button type="button" @click="$refs['createSubscriptionModal'].show()" class="btn border btn-white d-inline-flex align-items-center">
@@ -33,7 +33,7 @@
 								<tr v-for="subscription in subscriptions">
 									<td class="align-middle text-muted">{{ subscription.id }}</td>
 									<td class="align-middle">{{ (subscription.plan.amount / 100).toFixed(2) }} <span class="text-uppercase text-muted">{{ subscription.plan.currency }}</span><span class="text-muted">/{{subscription.plan.interval}}</span></td>
-									<td class="align-middle">{{ subscription.user_customer.customer.full_name }}</td>
+									<td class="align-middle">{{ subscription.contact.contact_user.full_name }}</td>
 									<td class="align-middle">
 										<span class="badge bg-primary-light text-primary text-capitalize position-relative">
 											<span :class="{'opacity-0': subscription.statusLoading}">{{ subscription.status }}</span>

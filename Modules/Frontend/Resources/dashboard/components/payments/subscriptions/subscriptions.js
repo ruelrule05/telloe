@@ -40,11 +40,11 @@ export default {
 
 		stripeCustomers() {
 			let customers = [];
-			this.contacts.forEach((customer) => {
-				if(customer.customer.stripe_customer_id) {
+			this.contacts.forEach((contact) => {
+				if(contact.contact_user.stripe_customer_id) {
 					customers.push({
-						text: customer.customer.full_name,
-						value: customer.id
+						text: contact.contact_user.full_name,
+						value: contact.id
 					});
 				}
 			});
@@ -64,9 +64,9 @@ export default {
 
 		subscriptions() {
 			let subscriptions = [];
-			this.contacts.forEach((customer) => {
-				customer.subscriptions.forEach((subscription) => {
-					subscription.user_customer = customer;
+			this.contacts.forEach((contact) => {
+				contact.subscriptions.forEach((subscription) => {
+					subscription.contact = contact;
 					this.$set(subscription, 'statusLoading', false);
 					subscriptions.push(subscription);
 				})

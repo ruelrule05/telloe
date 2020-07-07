@@ -40,9 +40,9 @@ export default {
 		stripeContacts() {
 			let contacts = [];
 			this.contacts.forEach((contact) => {
-				if(contact.contact.stripe_contact_id) {
+				if(contact.contact_user.stripe_contact_id) {
 					contacts.push({
-						text: contact.contact.full_name,
+						text: contact.contact_user.full_name,
 						value: contact.id
 					});
 				}
@@ -65,7 +65,7 @@ export default {
 			let invoices = [];
 			this.contacts.forEach((contact) => {
 				contact.invoices.forEach((invoice) => {
-					invoice.user_contact = contact;
+					invoice.contact = contact;
 					this.$set(invoice, 'statusLoading', false);
 					invoices.push(invoice);
 				})
