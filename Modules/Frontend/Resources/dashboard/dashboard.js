@@ -173,6 +173,7 @@ window.app = new Vue({
         },
 
         payoutComplete() {
+            return true;
             return !this.auth.stripe_account.individual || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
         },
 

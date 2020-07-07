@@ -1,6 +1,6 @@
 <template>
 	<div class="overflow-hidden py-4 h-100 flex-grow-1 d-flex flex-column">
-		<div v-if="!$root.payoutComplete">
+		<div v-if="$root.payoutComplete">
 			<div v-if="subscriptions.length == 0" class="text-muted text-center p-4 position-absolute-center">
 				<div class="h6 font-weight-normal mb-3">You don't have any subscriptions yet.</div>
 				<button type="button" @click="$refs['createSubscriptionModal'].show()" class="btn border btn-white d-inline-flex align-items-center">
