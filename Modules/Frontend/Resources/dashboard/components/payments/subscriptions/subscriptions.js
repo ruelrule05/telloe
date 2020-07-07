@@ -33,14 +33,14 @@ export default {
 
 	computed: {
 		...mapState({
-            ready: (state) => state.user_customers.ready,
-            user_customers: (state) => state.user_customers.index,
+            ready: (state) => state.contacts.ready,
+            contacts: (state) => state.contacts.index,
             services: (state) => state.services.index,
 		}),
 
 		stripeCustomers() {
 			let customers = [];
-			this.user_customers.forEach((customer) => {
+			this.contacts.forEach((customer) => {
 				if(customer.customer.stripe_customer_id) {
 					customers.push({
 						text: customer.customer.full_name,
@@ -64,7 +64,7 @@ export default {
 
 		subscriptions() {
 			let subscriptions = [];
-			this.user_customers.forEach((customer) => {
+			this.contacts.forEach((customer) => {
 				customer.subscriptions.forEach((subscription) => {
 					subscription.user_customer = customer;
 					this.$set(subscription, 'statusLoading', false);
@@ -95,8 +95,8 @@ export default {
 
 	methods: {
         ...mapActions({
-            getUserCustomers: 'user_customers/index',
-            createUserCustomerSubscription: 'user_customers/create_subscription',
+            getUserCustomers: 'contacts/index',
+            createUserCustomerSubscription: 'contacts/create_subscription',
             getServices: 'services/index',
         }),
 
