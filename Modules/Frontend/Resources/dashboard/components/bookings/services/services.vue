@@ -67,7 +67,7 @@
 
 							<h6 class="font-heading d-inline-block mb-1">Duration: </h6> {{ selectedService.duration }} minutes
 							<div>
-								<h6 class="font-heading d-inline-block mb-3">Timegap: </h6> {{ selectedService.timegap }} minutes
+								<h6 class="font-heading d-inline-block mb-3">Interval: </h6> {{ selectedService.interval }} minutes
 							</div>
 
 							<div class="d-flex mb-2">
@@ -88,18 +88,18 @@
 													<span class="mr-2">Available</span>
 													<toggle-switch @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
 												</div>
-												<label class="mb-1 text-gray">Available time</label>
+												<label class="mb-1 text-gray">Available Time</label>
 												<timerangepicker @update="updateAvailableHours($event, day)" :start="selectedService.days[day].start" :end="selectedService.days[day].end"></timerangepicker>
 
-												<label class="mb-1 mt-3 text-gray d-block">Break times</label>
+												<label class="mb-1 mt-3 text-gray d-block">Break Times</label>
 												<div class="d-flex align-items-center" v-for="(breaktime, index) in selectedService.days[day].breaktimes" :key="index">
-													<timerangepicker @update="updateNewBreaktime($event, day)" :start="breaktime.start" :end="breaktime.end" class="mt-1 flex-grow-1">
+													<timerangepicker @update="updateBreaktime($event, index, day)" :start="breaktime.start" :end="breaktime.end" class="mt-1 flex-grow-1">
 													</timerangepicker>
 													<trash-icon class="ml-auto cursor-pointer" width="20" height="20" fill="red" @click.native="removeBreaktime(index, day)"></trash-icon>
 												</div>
 
 												<timerangepicker v-if="newBreaktime" :start="newBreaktime.start" :end="newBreaktime.end" @update="updateNewBreaktime($event, day)" class="mt-1"></timerangepicker>
-												<button class="btn btn-link pl-0" :disabled="newBreaktime && (!newBreaktime.start || !newBreaktime.end)" @click="newBreaktime = {}"><u>+ Add breaktime</u></button>
+												<button class="btn btn-link pl-0" :disabled="(newBreaktime && (!newBreaktime.start || !newBreaktime.end)) || (selectedService.days[day].start == '08:00' && selectedService.days[day].end == '17:00')" @click="newBreaktime = {}"><u>+ Add breaktime</u></button>
 											</div>
 										</div>
 									</div>
@@ -156,8 +156,8 @@
 					<input type="number" class="form-control" v-model="newService.duration" data-required>
 				</div>
 				<div class="form-group">
-					<label class="form-label">Timegap (in minutes)</label>
-					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.timegap" placeholder="Defaults to 15 mins">
+					<label class="form-label">Interval (in minutes)</label>
+					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.interval" placeholder="Defaults to 15 mins">
 				</div>
 				<div class="d-flex">
 					<button class="btn btn-link text-body" type="button" data-dismiss="modal">Cancel</button>

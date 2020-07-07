@@ -27,7 +27,7 @@ class ConversationController extends Controller
     public function show($id, Request $request)
     {
         $conversation = Conversation::where(function($query){
-            $query->has('members.user')->orHas('customer');
+            $query->has('members.user')->orHas('contact');
         })->with('user', 'messages.user', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 

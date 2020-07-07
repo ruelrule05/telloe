@@ -25,89 +25,89 @@ import Tooltip from '../../../../js/directives/tooltip';
 
 const emojiRegex = require('emoji-regex');
 export default {
-	components: {
-		VueFormValidate,
-		Emojipicker,
-		MessageType,
+    components: {
+        VueFormValidate,
+        Emojipicker,
+        MessageType,
 
-		VideoIcon,
-		CastIcon,
-		PlannerIcon,
-		InfoCircleIcon,
-		VideoCameraIcon,
-		MicrophoneIcon,
-		AddNoteIcon,
-		BookmarkIcon,
-		PlusIcon,
-		HistoryIcon,
-		CloseIcon,
+        VideoIcon,
+        CastIcon,
+        PlannerIcon,
+        InfoCircleIcon,
+        VideoCameraIcon,
+        MicrophoneIcon,
+        AddNoteIcon,
+        BookmarkIcon,
+        PlusIcon,
+        HistoryIcon,
+        CloseIcon,
         ScreenRecordIcon,
         RecordIcon,
 
-        'info': () => import('./info/info.vue'),
-        'file-view-modal': () => import('../../../../modals/file-view'),
-        'video-recorder-modal': () => import('../../../../modals/video-recorder'),
-        'audio-recorder-modal': () => import('../../../../modals/audio-recorder'),
-        'screen-recorder-modal': () => import('../../../../modals/screen-recorder'),
-	},
+        info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
+        'file-view-modal': () => import(/* webpackChunkName: "modals-fileview" */ '../../../../modals/file-view'),
+        'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
+        'audio-recorder-modal': () => import(/* webpackChunkName: "modals-audiorecorder" */ '../../../../modals/audio-recorder'),
+        'screen-recorder-modal': () => import(/* webpackChunkName: "modals-screenrecorder" */ '../../../../modals/screen-recorder'),
+    },
 
-	directives: {
-		Tooltip
-	},
+    directives: {
+        Tooltip,
+    },
 
-	data: () => ({
+    data: () => ({
         ready: false,
         dragOver: false,
-    	textMessage: '',
+        textMessage: '',
         moreActions: false,
         emojipicker: false,
         selectedFile: null,
         recorder: '',
         hasScreenRecording: false,
-	}),
+    }),
 
-	watch: {
+    watch: {
         ready: function(value) {
             setTimeout(() => {
                 this.scrollDown();
             }, 50);
         },
-		'conversation.id': function(value) {
+        'conversation.id': function(value) {
             this.ready = false;
-            if(this.$refs['messageInput']) this.$refs['messageInput'].focus();
+            if (this.$refs['messageInput']) this.$refs['messageInput'].focus();
             this.scrollDown();
-		},
+        },
         'conversation.ready': function(value) {
-            if(value) this.scrollDown();
+            if (value) this.scrollDown();
         },
         '$route.params.id': function(value) {
-            if(value) {
+            if (value) {
                 this.showConversation(value);
                 this.checkScreenRecorder();
             }
         },
         '$root.screenRecorder.status': function(value) {
-            if(value == 'paused') this.checkScreenRecorder();
+            if (value == 'paused') this.checkScreenRecorder();
             else this.hasScreenRecording = false;
         },
         '$root.screenRecorder.conversation_id': function(value) {
-            if(value == this.conversation.id) this.checkScreenRecorder();
+            if (value == this.conversation.id) this.checkScreenRecorder();
             else this.hasScreenRecording = false;
-        }
-	},
+        },
+    },
 
-	computed: {
-		...mapGetters({
-			getConversation: 'conversations/show'
-		}),
+    computed: {
+        ...mapGetters({
+            getConversation: 'conversations/show',
+        }),
 
-		conversation() {
-			return this.getConversation(this.$route.params.id);
-		},
-		
+        conversation() {
+            return this.getConversation(this.$route.params.id);
+        },
+
         isOnline() {
-            let is_online = this.$root.online_users.find((x) => x == this.conversation.member.id);
-            if(!is_online) {
+            let is_online = this.$root.online_users.find(x => x == this.conversation.member.id);
+            if (!is_online) {
                 /*axios.get(`/conversations/${this.conversation.id}`).then((response) => {
                     this.$set(this.conversation.member, 'last_online_format', response.data.member.last_online_format);
                 });*/
@@ -115,84 +115,93 @@ export default {
             return is_online;
         },
 
-		grouped_messages() {
-			const grouped_messages = [];
-			// sort messages by timestamp
-			const messages = (this.conversation.messages || []).sort((a, b) => {
-				return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
-			});
+        grouped_messages() {
+            const grouped_messages = [];
+            // sort messages by timestamp
+            const messages = (this.conversation.messages || []).sort((a, b) => {
+                return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
+            });
 
-			for (var i = 0; i <= messages.length - 1; i++) {
-				let message_group = {sender: Object.assign({}, messages[i].user) || (messages[i].metadata.is_chatbot ? {id: 'chatbot'} : ''), messages: [messages[i]]};
-				groupMessage();
+            for (var i = 0; i <= messages.length - 1; i++) {
+                let message_group = {sender: Object.assign({}, messages[i].user) || (messages[i].metadata.is_chatbot ? {id: 'chatbot'} : ''), messages: [messages[i]]};
+                groupMessage();
 
-				function groupMessage() {
-					const next_message = messages[i + 1];
-					if (next_message && next_message.user.id == message_group.sender.id) {
-						message_group.messages.push(messages[i + 1]);
-						i++;
-						groupMessage();
-					}
-				}
+                function groupMessage() {
+                    const next_message = messages[i + 1];
+                    if (next_message && next_message.user.id == message_group.sender.id) {
+                        message_group.messages.push(messages[i + 1]);
+                        i++;
+                        groupMessage();
+                    }
+                }
 
-				if (message_group.sender.id == this.$root.auth.id || message_group.sender.id == 'chatbot') {
-					message_group.sender.full_name = 'You';
-					message_group.outgoing = true;
-				}
-				message_group.created_at_format = message_group.messages[message_group.messages.length - 1].created_at_format;
-				grouped_messages.push(message_group);
-			}
+                if (message_group.sender.id == this.$root.auth.id || message_group.sender.id == 'chatbot') {
+                    message_group.sender.full_name = 'You';
+                    message_group.outgoing = true;
+                }
+                message_group.created_at_format = message_group.messages[message_group.messages.length - 1].created_at_format;
+                grouped_messages.push(message_group);
+            }
 
-			return grouped_messages;
-		},
-	},
+            return grouped_messages;
+        },
+    },
 
-	created() {
+    created() {
         this.checkConversation();
-        this.$root.socket.on('new_message', (data) => {
-            let conversation = this.$root.conversations.find((x) => x.id == data.conversation_id);
-            if(conversation) {
-                this.getMessageByID(data).then((message) => {
-                    if(message && message.conversation_id == conversation.id) {
+        this.$root.socket.on('new_message', data => {
+            let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
+            if (conversation) {
+                this.$root.getMessageByID(data).then(message => {
+                    if (message && message.conversation_id == conversation.id) {
                         conversation.last_message = message;
                         this.$root.message_sound.play();
-                        if(conversation.id == this.conversation.id) {
-                            conversation.messages.push(message);
-                            this.scrollDown();
-                        } else {
-                            this.$router.push(`/dashboard/conversations/${conversation.id}`);
+                        if(this.conversation) {
+                            if (conversation.id == this.conversation.id) {
+                                conversation.messages.push(message);
+                                this.scrollDown();
+                            } else {
+                                this.$router.push(`/dashboard/conversations/${conversation.id}`);
+                            }
                         }
                     }
                 });
             }
         });
-	},
+    },
 
     mounted() {
         this.checkScreenRecorder();
     },
 
-	methods: {
-    	...mapActions({
+    methods: {
+        ...mapActions({
             showConversation: 'conversations/show',
-      		updateConversation: 'conversations/update',
+            updateConversation: 'conversations/update',
             storeMessage: 'messages/store',
-      		updateMessage: 'messages/update',
-    	}),
+            updateMessage: 'messages/update',
+        }),
+
+        messageInput(e) {
+            if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                e.preventDefault();
+                this.$refs['messageForm'].submit();
+            }
+        },
 
         async checkConversation() {
-            if(this.$route.params.id) {
-                await this.showConversation(this.$route.params.id).catch((e) => {
+            if (this.$route.params.id) {
+                await this.showConversation(this.$route.params.id).catch(e => {
                     this.$router.push('/dashboard/conversations');
                 });
             }
         },
 
         async downloadScreenRecording() {
-            if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
-               let video = await this.$root.$refs['screenRecorder'].submit();
-                let filename = `${video.timestamp}.${mime.getExtension(video.source.type)}`; 
-                let link = document.createElement("a");
+            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+                let video = await this.$root.$refs['screenRecorder'].submit();
+                let filename = `${video.timestamp}.${mime.getExtension(video.source.type)}`;
+                let link = document.createElement('a');
                 link.href = URL.createObjectURL(video.source);
                 link.download = filename;
                 link.target = '_blank';
@@ -203,17 +212,17 @@ export default {
         },
 
         async sendScreenRecording() {
-            if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
-               let video = await this.$root.$refs['screenRecorder'].submit();
-               this.sendVideo(video);
-           }
+            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+                let video = await this.$root.$refs['screenRecorder'].submit();
+                this.sendVideo(video);
+            }
         },
 
         checkScreenRecorder() {
-            if(this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
                 this.hasScreenRecording = true;
                 this.$nextTick(() => {
-                    if(this.$refs['screenRecorderData']) {
+                    if (this.$refs['screenRecorderData']) {
                         let blob = new Blob(this.$root.screenRecorder.data);
                         this.$refs['screenRecorderData'].src = null;
                         this.$refs['screenRecorderData'].src = URL.createObjectURL(blob);
@@ -226,19 +235,13 @@ export default {
         },
 
         initScreenRecorder() {
-            if(!this.$root.screenRecorder.conversation_id) {
+            if (!this.$root.screenRecorder.conversation_id) {
                 this.$root.screenRecorder.conversation_id = this.conversation.id;
                 this.$nextTick(() => {
                     this.$root.$refs.screenRecorder.initDevices();
                 });
             }
         },
-
-        async getMessageByID(data) {
-            let message = await axios.get(`/messages/${data.id}`).catch((e) => {});
-            if(message) return message.data;
-        },
-
 
         markHistory(message) {
             message.is_history = !message.is_history;
@@ -247,16 +250,15 @@ export default {
 
         updateMessageTags(message) {
             const newTag = (message.newTag || '').trim();
-            if(newTag && !message.tags.find((x) => x == newTag)) message.tags.push(newTag);
+            if (newTag && !message.tags.find(x => x == newTag)) message.tags.push(newTag);
             message.newTag = '';
             this.updateMessage(message);
         },
 
-
         updateConversationName(e) {
-            if(this.conversation) {
+            if (this.conversation) {
                 let newName = e.target.textContent.trim();
-                if(newName != this.conversation.name) {
+                if (newName != this.conversation.name) {
                     this.conversation.name = newName;
                     this.updateConversation(this.conversation);
                 }
@@ -264,7 +266,7 @@ export default {
         },
 
         sendAudio(audio) {
-            if(this.conversation) {
+            if (this.conversation) {
                 const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
@@ -275,7 +277,7 @@ export default {
                     created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
-                    metadata: {duration: audio.duration}
+                    metadata: {duration: audio.duration},
                 };
                 this.sendMessage(message);
                 this.recorder = '';
@@ -283,7 +285,7 @@ export default {
         },
 
         sendVideo(video) {
-            if(this.conversation) {
+            if (this.conversation) {
                 const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
@@ -295,7 +297,7 @@ export default {
                     created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
-                    metadata: {duration: video.duration}
+                    metadata: {duration: video.duration},
                 };
                 this.sendMessage(message);
                 this.recorder = '';
@@ -308,7 +310,7 @@ export default {
 
         openFile(file) {
             this.selectedFile = file;
-            if(file.type == 'file') this.downloadMedia(file);
+            if (file.type == 'file') this.downloadMedia(file);
         },
 
         dropFile(e) {
@@ -318,7 +320,7 @@ export default {
 
         downloadMedia(message) {
             if (message.source) {
-                let link = document.createElement("a");
+                let link = document.createElement('a');
                 link.href = message.source;
                 link.download = message.metadata.filename;
                 link.target = '_blank';
@@ -343,7 +345,7 @@ export default {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result);
-                reader.onerror = (error) => reject(error);
+                reader.onerror = error => reject(error);
             });
         },
 
@@ -353,21 +355,21 @@ export default {
         },
 
         sendMessage(message) {
-            if(this.conversation) {
+            if (this.conversation) {
                 message.prefix = 'You: ';
                 message.tags = [];
                 message.conversation_id = this.conversation.id;
 
-                if(message.type == 'text' && message.message.trim().length == 2) {
+                if (message.type == 'text' && message.message.trim().length == 2) {
                     let regex = emojiRegex();
-                    if(regex.exec(message.message)) {
+                    if (regex.exec(message.message)) {
                         message.type = 'emoji';
                     }
                 }
-            	this.storeMessage(message).then((message) => {
+                this.storeMessage(message).then(message => {
                     this.scrollDown();
-            		this.$root.socket.emit('message_sent', {id: message.id, conversation_id: this.conversation.id});
-            	});
+                    this.$root.socket.emit('message_sent', {id: message.id, conversation_id: this.conversation.id});
+                });
             }
         },
 
@@ -429,12 +431,12 @@ export default {
         },
 
         inputPaste(e) {
-            if(e.clipboardData.files.length > 0) {
+            if (e.clipboardData.files.length > 0) {
                 e.preventDefault();
                 let parts = e.clipboardData.getData('Text').split('.');
                 let filename = '';
-                if(parts.length > 1) {
-                    delete parts[parts.length - 1]
+                if (parts.length > 1) {
+                    delete parts[parts.length - 1];
                 }
                 filename = parts.join('');
                 filename += '.png';
@@ -445,7 +447,7 @@ export default {
             }
         },
 
-    	sendText() {
+        sendText() {
             const timestamp = dayjs().valueOf();
             let message = {
                 user: this.$root.auth,
@@ -458,6 +460,6 @@ export default {
             };
             this.sendMessage(message);
             this.textMessage = '';
-    	},
-	},
+        },
+    },
 };

@@ -24,7 +24,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\ConversationMember' => 'App\Policies\ConversationMemberPolicy',
         'App\Models\Booking' => 'App\Policies\BookingPolicy',
         'App\Models\Service' => 'App\Policies\ServicePolicy',
-        'App\Models\UserCustomer' => 'App\Policies\UserCustomerPolicy',
+        'App\Models\Contact' => 'App\Policies\ContactPolicy',
     ];
 
     /**

@@ -5,6 +5,7 @@
 .message-input {
     border-radius: 10px;
     font-size: 14px;
+    resize: none !important;
 }
 .message-form svg {
     transition: $transition-base;

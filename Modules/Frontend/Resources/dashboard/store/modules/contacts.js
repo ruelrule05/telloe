@@ -1,4 +1,4 @@
-const name = 'user_customers';
+const name = 'contacts';
 
 const state = () => ({
     ready: false,
@@ -24,24 +24,24 @@ const mutations = {
     },
 
     create_invoice(state, data) {
-        let customer = state.index.find(x => x.id == data.customer_id);
-        if (customer) {
-            customer.invoices.push(data);
+        let contact = state.index.find(x => x.id == data.contact_id);
+        if (contact) {
+            contact.invoices.push(data);
         }
     },
 
     finalize_invoice(state, data) {
-        let customer = state.index.find(x => x.id == data.customer_id);
-        if (customer) {
-            let invoice = customer.invoices.find(x => x.id == data.id);
+        let contact = state.index.find(x => x.id == data.contact_id);
+        if (contact) {
+            let invoice = contact.invoices.find(x => x.id == data.id);
             if(invoice) Object.assign(invoice, data);
         }
     },
 
     create_subscription(state, data) {
-        let customer = state.index.find(x => x.id == data.customer_id);
-        if (customer) {
-            customer.subscriptions.push(data);
+        let contact = state.index.find(x => x.id == data.contact_id);
+        if (contact) {
+            contact.subscriptions.push(data);
         }
     },
 };
@@ -71,7 +71,7 @@ const actions = {
     },
 
     async finalize_invoice({commit}, data) {
-        let response = await axios.post(`/${name}/${data.user_customer.id}/finalize_invoice`, {invoice_id: data.id});
+        let response = await axios.post(`/${name}/${data.contact.id}/finalize_invoice`, {invoice_id: data.id});
         commit('finalize_invoice', response.data);
     },
 

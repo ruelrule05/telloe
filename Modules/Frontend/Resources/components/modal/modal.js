@@ -1,11 +1,24 @@
 import CloseIcon from '../../icons/close';
+import VueFormValidate from '../../components/vue-form-validate.vue';
 export default {
-	components: {CloseIcon},
+	components: {
+        CloseIcon,
+        VueFormValidate,
+    },
 
     props: {
         closeButton: {
             type: Boolean,
             default: true,
+        },
+
+        form: {
+            type: Boolean,
+            default: false,
+        },
+
+        title: {
+            type: String
         },
 
         loading: {
@@ -16,6 +29,16 @@ export default {
         size: {
             type: String,
             default: '',
+        }
+    },
+
+    computed: {
+        contentComponent() {
+            return this.form ? 'vue-form-validate' : 'div';
+        },
+
+        hasFooterSlot () {
+          return !!this.$slots['footer']
         }
     },
 
@@ -36,6 +59,10 @@ export default {
     },
 
     methods: {
+        submit() {
+            this.$emit('submit');
+        },
+
     	async show() {
     		return new Promise((resolve, reject) => {
                 $(this.$refs['modal']).modal({keyboard: false, backdrop: 'static'}).modal('show');

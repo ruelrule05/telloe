@@ -32,22 +32,22 @@ export default {
 
 	computed: {
 		...mapState({
-            ready: (state) => state.user_customers.ready,
-            user_customers: (state) => state.user_customers.index,
+            ready: (state) => state.contacts.ready,
+            contacts: (state) => state.contacts.index,
             services: (state) => state.services.index,
 		}),
 
-		stripeCustomers() {
-			let customers = [];
-			this.user_customers.forEach((customer) => {
-				if(customer.customer.stripe_customer_id) {
-					customers.push({
-						text: customer.customer.full_name,
-						value: customer.id
+		stripeContacts() {
+			let contacts = [];
+			this.contacts.forEach((contact) => {
+				if(contact.contact.stripe_contact_id) {
+					contacts.push({
+						text: contact.contact.full_name,
+						value: contact.id
 					});
 				}
 			});
-			return customers;
+			return contacts;
 		},
 
 		servicesList() {
@@ -63,9 +63,9 @@ export default {
 
 		invoices() {
 			let invoices = [];
-			this.user_customers.forEach((customer) => {
-				customer.invoices.forEach((invoice) => {
-					invoice.user_customer = customer;
+			this.contacts.forEach((contact) => {
+				contact.invoices.forEach((invoice) => {
+					invoice.user_contact = contact;
 					this.$set(invoice, 'statusLoading', false);
 					invoices.push(invoice);
 				})
@@ -85,7 +85,7 @@ export default {
 	
 	created() {
         this.$root.contentloading = !this.ready;
-		this.getUserCustomers();
+		this.getUserContacts();
 		this.getServices();
 	},
 
@@ -94,15 +94,15 @@ export default {
 
 	methods: {
         ...mapActions({
-            getUserCustomers: 'user_customers/index',
-            createUserCustomerInvoice: 'user_customers/create_invoice',
-            finalizeCustomerInvoice: 'user_customers/finalize_invoice',
+            getUserContacts: 'contacts/index',
+            createUserContactInvoice: 'contacts/create_invoice',
+            finalizeContactInvoice: 'contacts/finalize_invoice',
             getServices: 'services/index',
         }),
 
         async finalizeInvoice(invoice) {
         	invoice.statusLoading = true;
-        	await this.finalizeCustomerInvoice(invoice);
+        	await this.finalizeContactInvoice(invoice);
         	invoice.statusLoading = false;
         },
 
@@ -115,8 +115,8 @@ export default {
 
         async createInvoice() {
         	this.newInvoiceForm.loading = true;
-        	this.newInvoiceForm.id = this.newInvoiceForm.customer_id;
-        	await this.createUserCustomerInvoice(this.newInvoiceForm);
+        	this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
+        	await this.createUserContactInvoice(this.newInvoiceForm);
         	this.$refs['createInvoiceModal'].hide();
         },
 

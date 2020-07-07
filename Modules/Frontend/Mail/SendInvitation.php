@@ -3,18 +3,21 @@
 namespace Modules\Frontend\Mail;
 
 use Modules\Frontend\Mail\Mailer;
-use App\Models\UserCustomer;
+use App\Models\Contact;
 
 class SendInvitation extends Mailer
 {
     public $userCustomer;
     public $actionText = 'Accept Invitation';
     public $actionUrl;
+    public $emailMessage;
 
-    public function __construct(UserCustomer $userCustomer, $authTab)
+    public function __construct(Contact $contact, $authTab, $message = null)
     {
-        $this->userCustomer = $userCustomer;
-        $this->actionUrl = url("/?invite_token=$userCustomer->invite_token&auth=$authTab");
+        $appName = config('app.name');
+        $this->contact = $contact;
+        $this->actionUrl = url("/?invite_token=$contact->invite_token&auth=$authTab");
+        $this->emailMessage = strlen($message) > 0 ? $message : "<strong>{$contact->user->full_name}</strong> has invited you in {$appName}.";
     }
 
     /**

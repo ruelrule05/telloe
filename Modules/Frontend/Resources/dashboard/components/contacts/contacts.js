@@ -1,14 +1,14 @@
 import {mapState, mapActions} from 'vuex';
-import Modal from '../../../../components/modal/modal.vue';
-import VueFormValidate from '../../../../components/vue-form-validate.vue';
-import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
+import Modal from '../../../components/modal/modal.vue';
+import VueFormValidate from '../../../components/vue-form-validate.vue';
+import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 
-import MoreHIcon from '../../../../icons/more-h';
-import PlusIcon from '../../../../icons/plus';
-import TrashIcon from '../../../../icons/trash';
-import PencilIcon from '../../../../icons/pencil';
-import ClockIcon from '../../../../icons/clock';
-import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
+import MoreHIcon from '../../../icons/more-h';
+import PlusIcon from '../../../icons/plus';
+import TrashIcon from '../../../icons/trash';
+import PencilIcon from '../../../icons/pencil';
+import ClockIcon from '../../../icons/clock';
+import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
 export default {
 	components: {
 		Modal, 
@@ -24,8 +24,8 @@ export default {
 	},
 
 	data: () => ({
-		selectedCustomer: null,
-		newCustomer: {
+		selectedContact: null,
+		newContact: {
 			custom_fields: {},
 			blacklisted_services: []
 		},
@@ -37,10 +37,14 @@ export default {
 	computed: {
 		...mapState({
       		conversations: state => state.conversations.index,
-            user_customers: (state) => state.user_customers.index,
-            ready: (state) => state.user_customers.ready,
+            contacts: (state) => state.contacts.index,
+            ready: (state) => state.contacts.ready,
             services: (state) => state.services.index,
 		}),
+
+        defaultEmailMessage() {
+            return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;
+        },
 	},
 
     watch: {
@@ -51,7 +55,7 @@ export default {
 
 	created() {
         this.$root.contentloading = !this.ready;
-		this.getUserCustomers();
+		this.getContacts();
 		this.showUserCustomFields();
 		this.getServices();
 		this.getConversations();
@@ -59,44 +63,44 @@ export default {
 
 	methods: {
         ...mapActions({
-            getUserCustomers: 'user_customers/index',
-            storeUserCustomer: 'user_customers/store',
-            deleteUserCustomer: 'user_customers/delete',
+            getContacts: 'contacts/index',
+            storeContact: 'contacts/store',
+            deleteContact: 'contacts/delete',
             showUserCustomFields: 'user_custom_fields/show',
             storeUserCustomFields: 'user_custom_fields/store',
             getServices: 'services/index',
       		getConversations: 'conversations/index',
         }),
 
-        resetNewCustomer() {
-            this.newCustomer = {
+        resetNewContact() {
+            this.newContact = {
                 custom_fields: {},
                 blacklisted_services: []
             };
         },
 
-        hasConversation(customer) {
+        hasConversation(contact) {
         	return this.conversations.find((c) => {
-        		return c.members.find((m) => m.user_id == customer.customer_id && m.user_id != this.$root.auth.id) || c.user_customer_id == customer.id;
+        		return c.members.find((m) => m.user_id == contact.contact_id && m.user_id != this.$root.auth.id) || c.user_contact_id == contact.id;
         	});
         },
 
-        goToConversation(customer) {
+        goToConversation(contact) {
         	let conversation = this.conversations.find((c) => {
-        		return c.members.find((m) => m.user_id == customer.customer_id && m.user_id != this.$root.auth.id) || c.user_customer_id == customer.id;
+        		return c.members.find((m) => m.user_id == contact.contact_id && m.user_id != this.$root.auth.id) || c.user_contact_id == contact.id;
         	});
         	if(conversation) this.$router.push(`/dashboard/conversations/${conversation.id}?tab=profile`);
         },
 
         toggleServiceBlacklist(state, service) {
-        	if(!this.newCustomer.blacklisted_services) this.newCustomer.blacklisted_services = [];
+        	if(!this.newContact.blacklisted_services) this.newContact.blacklisted_services = [];
         	if(state) {
-        		let index = this.newCustomer.blacklisted_services.findIndex((x) => x == service.id);
+        		let index = this.newContact.blacklisted_services.findIndex((x) => x == service.id);
         		if(index > -1) {
-        			this.newCustomer.blacklisted_services.splice(index, 1);
+        			this.newContact.blacklisted_services.splice(index, 1);
         		}
         	} else {
-        		if(!this.newCustomer.blacklisted_services.find((x) => x == service.id)) this.newCustomer.blacklisted_services.push(service.id);
+        		if(!this.newContact.blacklisted_services.find((x) => x == service.id)) this.newContact.blacklisted_services.push(service.id);
         	}
         },
         
@@ -119,9 +123,9 @@ export default {
         },
 
 		store() {
-			if(this.newCustomer.email) {
+			if(this.newContact.email) {
 				this.$refs['addModal'].hide();
-				this.storeUserCustomer(this.newCustomer);
+				this.storeContact(this.newContact);
 				this.$refs['addModal'].hide();
 			}
 		},

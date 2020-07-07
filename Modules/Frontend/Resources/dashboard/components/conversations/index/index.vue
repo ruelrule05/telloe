@@ -9,7 +9,7 @@
 					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
 				</div>
                 <div class="ml-auto dropleft pr-3">
-                    <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="modal" data-target="#newConversationModal"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>New Chat</button>
+                    <button class="btn btn-sm btn-white border d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon>New Chat</button>
                 </div>
 			</div>
 
@@ -23,9 +23,8 @@
                         <div v-if="$root.callWindow && $root.callConversationId == conversation.id" class="conversation-oncall position-absolute pr-3">
                             <video-icon width="24" height="24"></video-icon>
                         </div>
-                        <small v-else class="text-muted text-nowrap conversation-time position-absolute pr-2">{{ conversation.last_message.created_diff }}</small>   
                         
-                        <div class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
+                        <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
                             <button class="btn btn-sm btn-white p-1 border line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
                             <div class="dropdown-menu py-1">
                                 <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
@@ -48,9 +47,12 @@
                                         </div>
                                     </div>
     						  	</div> 
-    						  	<div class="media-body pl-3">
+    						  	<div class="media-body pl-3 overflow-hidden">
     	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
-    	                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="mb-0 str-limit conversation-message-preview" :class="[conversation.last_message.is_read ? 'text-muted' : 'text-black font-weight-bold']"></div>           
+                                    <div class="d-flex align-items-center text-nowrap conversation-message-preview">
+                                        <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[conversation.last_message.is_read ? 'text-muted' : 'text-black font-weight-bold']"></div>    
+                                        <span class="ml-auto text-gray ">{{ conversation.last_message.created_diff }}</span>   
+                                    </div>    
     						  	</div>
     						</div>
     					</div>
@@ -62,88 +64,48 @@
 
 
         <!-- New conversation modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="newConversationModal">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content overflow-hidden">
-                    <div class="modal-header pb-0">
-                        <h5 class="modal-title font-heading">New Conversation</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
+        <modal :close-button="false" ref="newConversationModal" @hidden="resetNewConversationForm">
+            <h5 class="font-heading mb-3">New Conversation</h5>
+            <div class="h-100 overflow-hidden d-flex flex-column" :default="contacts" ref="addNewConversationMembersForm">
+               <input type="text" placeholder="Search active contacts..." class="form-control shadow-none border" v-model="userSearch">
+                <div v-if="newConversation.members.length > 0" class="mt-1">
+                    <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.profile_image+')'}">
+                        <span v-if="!member.profile_image">{{ member.initials }}</span>
+                        <button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
+                            <close-icon height="16" width="16" class="cursor-pointer"></close-icon>
                         </button>
                     </div>
-                    <div class="modal-body">
-                    	<div class="h-100 overflow-hidden d-flex flex-column" :default="users" ref="addNewConversationMembersForm">
-                           <input type="text" placeholder="Search users..." class="form-control shadow-none border" v-model="userSearch">
-                        	<div v-if="newConversation.members.length > 0" class="mt-1">
-                                <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.profile_image+')'}">
-                                    <span v-if="!member.profile_image">{{ member.initials }}</span>
-                                    <button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
-                                        <close-icon height="16" width="16" class="cursor-pointer"></close-icon>
-                                    </button>
-                                </div>
-                            </div>
+                </div>
 
-                            <div class="overflow-y-only mt-2 members-search-container position-relative">
-                                <div v-if="!usersReady" class="text-center position-absolute-center w-100">
-                                    <div class="spinner-border spinner-border-sm text-primary"></div>
-                                </div>
-                                <div v-else-if="filteredUsers.length == 0" class="text-center text-muted position-absolute-center w-100">
-                                    No results found.
-                                </div>
-                                <div v-else-if="filteredUsers.length > 0">
-                                	<div v-for="result in filteredUsers" v-if="result.id != $root.auth.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id)}">
-                                        <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.profile_image+')'}">
-                                            <span v-if="!result.profile_image">{{ result.initials }}</span>
-                                        </div>
-                                        <div class="media-body pl-2">
-                                            <div class="font-weight-bold font-heading mb-0 h6">{{ result.full_name }}</div>
-                                            <div class="small text-muted text-nowrap">@{{ result.username }}</div>      
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="overflow-y-only mt-2 members-search-container position-relative">
+                    <div v-if="!contactsReady" class="text-center position-absolute-center w-100">
+                        <div class="spinner-border spinner-border-sm text-primary"></div>
+                    </div>
+                    <div v-else-if="filteredUsers.length == 0" class="text-center text-muted position-absolute-center w-100">
+                        No results found.
+                    </div>
+                    <div v-else-if="filteredUsers.length > 0">
+                        <div v-for="result in filteredUsers" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id)}">
+                            <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.profile_image+')'}">
+                                <span v-if="!result.profile_image">{{ result.initials }}</span>
                             </div>
-
-                            <div class="text-right mt-3">
-                                <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
+                            <div class="media-body pl-2">
+                                <div class="font-weight-bold font-heading mb-0 h6">{{ result.full_name }}</div>
+                                <div class="small text-muted text-nowrap">@{{ result.username }}</div>      
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                       <!--  <vue-form-validate @submit="conversationCreate">
-                            <div class="form-group form-icon mb-0">
-                                <search-icon height="20" width="20" fill="#999"></search-icon>
-                                <input type="text" placeholder="Add members" v-model="newConversation.memberSearch" @input="searchMembers" class="form-control">
-                            </div>
-                            <small class="text-danger" v-if="newConversation.createChatError">{{ newConversation.createChatError }}</small>
-                            <div class="mt-2">
-                                <div v-for="member, index in newConversation.selectedChatMembers" class="font-weight-bold d-inline-block badge badge-pill badge-primary py-2 px-3 mr-1 mb-2">
-                                {{ member.full_name }}&nbsp;
-                                    <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer" @click.native="newConversation.selectedChatMembers.splice(index, 1)"></close-icon>
-                                </div>
-                            </div>
-                            <div class="position-relative mt-1 overflow-auto members-search-container">
-                                <div v-if="newConversation.searchingMembers" class="text-center">
-                                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                </div>
-                                <div v-if="newConversation.groupMembersResults.length > 0">
-                                    <div class="media cursor-pointer border-top py-2 px-2 member-result" v-for="member in newConversation.groupMembersResults" v-if="member.id != $root.auth.id && !newConversation.selectedChatMembers.find((x) => x.id == member.id)" @click="newConversation.selectedChatMembers.push(member)">
-                                        <div class="user-profile-image user-profile-image-sm align-self-center" :style="{backgroundImage: 'url('+member.profile_image+')'}">
-                                            <span v-if="!member.profile_image">{{ member.initials }}</span>
-                                        </div>
-                                        <div class="media-body pl-2">
-                                            <div class="font-weight-bold mb-n1">{{ member.full_name }}</div>
-                                            <small class="ml-auto text-muted text-nowrap">{{ member.email }}</small>           
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-right mt-3">
-                                <vue-button :loading="newConversation.createChatLoading" button_class="btn btn-primary" type="submit"">Create</vue-button>
-                            </div>
-                        </vue-form-validate> -->
+                <div class="d-flex align-items-center">
+                    <div class="ml-auto">
+                        <button class="btn btn-white border" type="button" @click="$refs['newConversationModal'].hide()">Cancel</button>
+                        <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </modal>
+
 	</div>
 </template>
 

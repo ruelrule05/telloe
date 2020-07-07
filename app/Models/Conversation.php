@@ -8,7 +8,7 @@ use Auth;
 class Conversation extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'user_customer_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
+    protected $fillable = ['user_id', 'contact_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
     public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
@@ -21,9 +21,9 @@ class Conversation extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    public function customer()
+    public function contact()
     {
-        return $this->belongsTo(UserCustomer::class, 'user_customer_id');
+        return $this->belongsTo(Contact::class, 'contact_id');
     }
 
     public function members()
@@ -46,15 +46,10 @@ class Conversation extends BaseModel
     {
         $member = null;
         if($this->members->count() == 1) :
-            switch(Auth::user()->role->role) :
-                case 'client':
-                    $member = $this->members()->first()->user;
-                    break;
-
-                case 'customer':
-                    $member = $this->user;
-                    break;
-            endswitch;
+            $member = $this->user;
+            if(Auth::user()->id == $member->id) :
+                $member = $this->members()->first()->user;
+            endif;
         elseif(isset($this->attributes['user_customer_id'])):
             $member = UserCustomer::find($this->attributes['user_customer_id']);
         else :

@@ -99,6 +99,11 @@ export default{
         },
 
         update() {
+            if(!this.time_start) {
+                $(this.$refs['dropdown-start']).dropdown('show');
+            } else if(!this.time_end) {
+                $(this.$refs['dropdown-end']).dropdown('show');
+            }
             this.$emit('update', {start: this.time_start, end: this.time_end})
         }
     }

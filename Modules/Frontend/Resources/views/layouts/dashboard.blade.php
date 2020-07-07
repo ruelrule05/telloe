@@ -67,6 +67,7 @@
 									<router-link :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
 										<chat-icon height="22" width="22"></chat-icon>
 										<span class="ml-3">Messages</span>
+										<small class="badge badge-danger text-white ml-auto message-count">@{{ newMessagesCount }}</small>
 									</router-link>
 									<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
@@ -85,10 +86,13 @@
 											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
 												<span class="pl-3">Services</span>
 											</router-link>
-											<router-link to="/dashboard/bookings/customers" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-												<span class="pl-3">Customers</span>
-											</router-link>
 										</div>
+
+										
+										<router-link to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
+											<contact-icon height="22" width="22"></contact-icon>
+											<span class="pl-3">Contacts</span>
+										</router-link>
 
 										<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 											<div class="d-flex align-items-center px-4">
@@ -105,6 +109,7 @@
 												<span class="pl-3">Invoices</span>
 											</router-link>
 										</div>
+
 									</template>
 
 									<router-link v-else-if="auth.role.role == 'customer'" to="/dashboard/bookings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-bookings">
@@ -112,6 +117,8 @@
 										<span class="ml-3">Bookings</span>
 									</router-link>
 									<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
+
+
 
 									<!-- <router-link to="/dashboard/settings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-settings">
 										<cog-icon></cog-icon>
@@ -174,6 +181,7 @@
 
 		<!-- <script src="/js/leader-line.min.js"></script> -->
 		<script>
+			const APP_NAME = '{{ config('app.name') }}';
 			const WS_URL = '{{ env('WS_URL') }}';
 		</script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>

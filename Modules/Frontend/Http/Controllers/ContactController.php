@@ -4,7 +4,7 @@ namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\UserCustomer;
+use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
 use App\Models\Service;
@@ -16,62 +16,80 @@ use Modules\Frontend\Mail\SendInvitation;
 use App\Http\StripeAPI;
 use Carbon\Carbon;
 
-class UserCustomerController extends Controller
+class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user_customers = UserCustomer::with('customer')
+        $contacts = Contact::with('contactUser')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC')
             ->get();
-        $user_customers = $user_customers->each(function($user_customer) {
-            $user_customer->customer->makeVisible('stripe_customer_id');
+        $contacts = $contacts->each(function($contact) {
+            $contact->contactUser->makeVisible('stripe_customer_id');
         });
-        return response()->json($user_customers);
+
+        $contacts = [];
+        $query = $request->get('query');
+        $contacts = Contact::with('contactUser')
+            ->where('user_id', Auth::user()->id)
+            ->orderBy('created_at', 'DESC');
+        if($query):
+            $contacts = $contacts->whereHas('contactUser', function($contactUser) use ($query) {
+                $contactuser->where('LIKE', '%' . $query. '%');
+            });
+        endif;
+        $contacts = $contacts->get();
+        $contacts = $contacts->each(function($contact) {
+            $contact->contactUser->makeVisible('stripe_customer_id');
+        });
+
+
+        return response()->json($contacts);
     }
 
 
     public function store(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'message' => 'nullable|string|max:100',
         ]);
 
-        if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as customer");
+        if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as contact");
 
         $authTab = 'login';
-        $customer = User::where('email', $request->email)->first();
-        if(!$customer) $authTab = 'signup';
+        $contactUser = User::where('email', $request->email)->first();
+        if(!$contactUser) $authTab = 'signup';
 
-        if($customer && UserCustomer::where('user_id', Auth::user()->id)->where('customer_id', $customer->id)->first()) return abort(403, "This email is already added");
+        if($contactUser && Contact::where('user_id', Auth::user()->id)->where('contact_user_id', $contactUser->id)->first()) return abort(403, "This email is already added");
 
         $invite_token = '';
         while(true) :
             $invite_token = Str::random(30);
-            $exists = UserCustomer::where('invite_token', $invite_token)->first();
+            $exists = Contact::where('invite_token', $invite_token)->first();
             if(!$exists) break;
         endwhile;
-        if(UserCustomer::where('user_id', Auth::user()->id)->where('email', $request->email)->first()) return abort(403, 'This customer already exists.');
-        $user_customer = UserCustomer::create([
+        if(Contact::where('user_id', Auth::user()->id)->where('email', $request->email)->first()) return abort(403, 'This contact already exists.');
+        $contact = Contact::create([
             'user_id' => Auth::user()->id,
             'email' => $request->email,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'customer_id' => $customer->id ?? null,
+            'contact_user_id' => $contactUser->id ?? null,
             'is_pending' => true,
             'invite_token' => $invite_token,
             'blacklisted_services' => $request->blacklisted_services
         ]);
-        $user_customer->load('customer');
+        $contact->load('contactUser');
 
         $custom_fields = [];
         foreach($request->custom_fields as $custom_field => $value) :
             if($value) $custom_fields[] = [ 'name' => $custom_field, 'value' => $value ];
         endforeach;
 
-        if($customer) :
-            $conversation = Conversation::whereHas('members', function($member) use ($customer){
-                $member->where('user_id', $customer->id);
+        if($contact) :
+            $conversation = Conversation::whereHas('members', function($member) use ($contactUser){
+                $member->where('user_id', $contactUser->id);
             })->has('members', '=', 1)->first();
             if(!$conversation) :
                 $conversation = Conversation::create([
@@ -80,32 +98,32 @@ class UserCustomerController extends Controller
                 ]);
                 ConversationMember::firstOrCreate([
                     'conversation_id' => $conversation->id,
-                    'user_id' => $customer->id
+                    'user_id' => $contactUser->id
                 ]);
             endif;
         else :
             $conversation = Conversation::create([
                 'user_id' => Auth::user()->id,
-                'user_customer_id' => $user_customer->id,
+                'contact_id' => $contact->id,
                 'custom_fields' => $custom_fields,
             ]);
         endif;
 
-        Mail::to($user_customer->email)->queue(new SendInvitation($user_customer, $authTab));
-        return response()->json($user_customer);
+        Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->message));
+        return response()->json($contact);
 
     }
 
 
-    public function update(Request $request, UserCustomer $userCustomer)
+    public function update(Request $request, Contact $contact)
     {
     }
 
 
-    public function destroy(UserCustomer $userCustomer)
+    public function destroy(Contact $contact)
     {
-        $this->authorize('delete', $userCustomer);
-        return response()->json(['deleted' => $userCustomer->delete()]);
+        $this->authorize('delete', $contact);
+        return response()->json(['deleted' => $contact->delete()]);
     }
 
     public function createInvoice($id, Request $request)
@@ -119,8 +137,8 @@ class UserCustomerController extends Controller
         $external_account =  Auth::user()->stripe_account['external_accounts']['data'][0] ?? false;
         if(!$external_account) return abort(403, 'Please complete your payout information.');
 
-        $userCustomer = UserCustomer::findOrFail($id);
-        $this->authorize('create_invoice', $userCustomer);
+        $contact = Contact::findOrFail($id);
+        $this->authorize('create_invoice', $contact);
 
         $stripe_api = new StripeAPI();
 
@@ -133,7 +151,7 @@ class UserCustomerController extends Controller
 
         $amount = $request->amount * 100;
         $invoiceItem = $stripe_api->invoiceItem('create', [
-            'customer' => $userCustomer->customer->stripe_customer_id,
+            'customer' => $contact->contactUser->stripe_customer_id,
             'amount' => $amount,
             'currency' => Auth::user()->stripe_account['external_accounts']['data'][0]['currency'],
         ]); 
@@ -141,7 +159,7 @@ class UserCustomerController extends Controller
         $due_date = Carbon::now()->add(7, 'days');
         $data = [
             'auto_advance' => false,
-            'customer' => $userCustomer->customer->stripe_customer_id,
+            'customer' => $contact->contactUser->stripe_customer_id,
             'collection_method' => 'send_invoice',
             'description' => implode(', ', $servicesNames),
             'application_fee_amount' => $amount * 0.025 * 100,
@@ -152,12 +170,12 @@ class UserCustomerController extends Controller
         ];
         $invoice = $stripe_api->invoice('create', $data);
 
-        $invoices = $userCustomer->invoices;
+        $invoices = $contact->invoices;
         $invoices[] = $invoice;
-        $userCustomer->update([
+        $contact->update([
             'invoices' => $invoices
         ]);
-        $invoice->customer_id = $userCustomer->id;
+        $invoice->contactUser_id = $contact->id;
 
         return response()->json($invoice);  
     }
@@ -167,25 +185,25 @@ class UserCustomerController extends Controller
         $this->validate($request, [
             'invoice_id' => 'required',
         ]);
-        $userCustomer = UserCustomer::findOrFail($id)->makeVisible('invoices');
-        $this->authorize('finalize_invoice', $userCustomer);
+        $contact = Contact::findOrFail($id)->makeVisible('invoices');
+        $this->authorize('finalize_invoice', $contact);
 
         $stripe_api = new StripeAPI();
         $invoice = $stripe_api->invoice('retrieve', $request->invoice_id);
         $invoice->sendInvoice();
 
-        $invoices = $userCustomer->invoices;
+        $invoices = $contact->invoices;
         foreach($invoices as &$in) :
             if($in['id'] == $invoice->id) :
                 $in = $invoice;
                 break;
             endif;
         endforeach;
-        $userCustomer->update([
+        $contact->update([
             'invoices' => $invoices
         ]);
 
-        $invoice->customer_id = $userCustomer->id;
+        $invoice->contactUser_id = $contact->id;
         return response()->json($invoice);  
     }
 
@@ -200,8 +218,8 @@ class UserCustomerController extends Controller
         $external_account =  Auth::user()->stripe_account['external_accounts']['data'][0] ?? false;
         if(!$external_account) return abort(403, 'Please complete your payout information.');
 
-        $userCustomer = UserCustomer::findOrFail($id);
-        $this->authorize('create_subscription', $userCustomer);
+        $contact = Contact::findOrFail($id);
+        $this->authorize('create_subscription', $contact);
 
         $services = [];
         $servicesNames = [];
@@ -223,7 +241,7 @@ class UserCustomerController extends Controller
         // Create product
         $data = [
             'name' => implode(', ', $servicesNames),
-            'description' => "Subscription for {$userCustomer->customer->full_name}",
+            'description' => "Subscription for {$contact->contactUser->full_name}",
             'active' => true,
         ];
         $product = $stripe_api->product('create', $data);
@@ -245,20 +263,20 @@ class UserCustomerController extends Controller
             'price' => $price->id,
         ]];
         $data = [
-            'customer' => $userCustomer->customer->stripe_customer_id,
+            'customer' => $contact->contactUser->stripe_customer_id,
             'items' => $subscriptionItem,
             'trial_period_days' => 1,
         ];
         $subscription = $stripe_api->subscription('create', $data);
 
 
-        $subscriptions = $userCustomer->subscriptions;
+        $subscriptions = $contact->subscriptions;
         $subscriptions[] = $subscription;
-        $userCustomer->update([
+        $contact->update([
             'subscriptions' => $subscriptions
         ]);
 
-        $subscription->customer_id = $userCustomer->id;
+        $subscription->contactUser_id = $contact->id;
         return response()->json($subscription);
     }
     

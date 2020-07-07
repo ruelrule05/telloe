@@ -3,8 +3,8 @@
 @section('content')
 
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
-    <strong>{{ $userCustomer->user->full_name }}</strong> has invited you in Telloe.
-     <a href="{{ $actionUrl }}"
+    {!! $emailMessage !!}
+    <a href="{{ $actionUrl }}"
         style="{{ $style['button'] }}{{ $style['display-block'] }} margin-top: 20px; margin-bottom: 30px"
         class="button"
         target="_blank">

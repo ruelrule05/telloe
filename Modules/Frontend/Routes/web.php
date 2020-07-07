@@ -5,7 +5,7 @@
  *
  */
 Route::get('email', function() {
-    $email = new Modules\Frontend\Mail\SendInvitation(App\Models\UserCustomer::first(), 'login');
+    $email = new Modules\Frontend\Mail\SendInvitation(App\Models\Contact::find(43), 'login');
     \Mail::to('clydewinux@gmail.com')->queue($email);
     return $email;
 });
@@ -54,14 +54,14 @@ Route::group(
             Route::apiResource('notes', 'NoteController');
             Route::apiResource('bookings', 'BookingController');
             Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
-            Route::apiResource('user_customers', 'UserCustomerController');
+            Route::apiResource('contacts', 'ContactController');
             Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
             Route::apiResource('users', 'UserController')->only('index');
             Route::apiResource('plans', 'PlanController')->only('index');
 
-            Route::post('user_customers/{id}/create_invoice', 'UserCustomerController@createInvoice');
-            Route::post('user_customers/{id}/finalize_invoice', 'UserCustomerController@finalizeInvoice');
-            Route::post('user_customers/{id}/create_subscription', 'UserCustomerController@createSubscription');
+            Route::post('contacts/{id}/create_invoice', 'UserCustomerController@createInvoice');
+            Route::post('contacts/{id}/finalize_invoice', 'UserCustomerController@finalizeInvoice');
+            Route::post('contacts/{id}/create_subscription', 'UserCustomerController@createSubscription');
 
             Route::get('tags/search', 'DashboardController@searchTags');
 

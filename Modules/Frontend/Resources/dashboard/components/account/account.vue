@@ -12,11 +12,23 @@
 			<!-- Profile -->
 			<div v-if="tab == 'Profile'" class="row">
 				<div class="col-md-6">
-
 					<div class="card shadow-sm mb-3">
 						<div class="card-body">
 							<h5 class="font-heading h3">Profile</h5>
 							<vue-form-validate @submit="save">
+
+								<div class="d-flex align-items-center my-3">
+									<div>
+										<div class="user-profile-image user-profile-image-lg" :style="{backgroundImage: 'url('+user.profile_image+')'}"></div>
+									</div>
+									<div class="pl-2">
+										<label class="d-block">Upload new profile picture</label>
+										<button type="button" class="btn btn-sm btn-white border" @click="$refs['profileImageInput'].click()">Choose file</button>
+										<label class="d-block">Only JPEG and PNG files are accepted with maximum size of 200KB</label>
+										<input ref="profileImageInput" type="file" accept="image/x-png,image/jpeg" @change="updateImage" hidden>
+									</div>
+								</div>
+
 								<template v-if="$root.auth.role.role == 'client'">
 									<div class="form-group">
 										<label class="form-label">Username</label>
@@ -192,3 +204,4 @@
 </template>
 
 <script src="./account.js"></script>
+<style src="./account.scss" lang="scss"></style>

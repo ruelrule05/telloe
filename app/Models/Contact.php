@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Carbon\Carbon;
 
-class UserCustomer extends BaseModel
+class Contact extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'customer_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions'];
     protected $appends = ['full_name', 'initials', 'created_at_format'];
     protected $casts = [
         'blacklisted_services' => 'array',
@@ -20,9 +20,9 @@ class UserCustomer extends BaseModel
     	return $this->belongsTo(User::class);
     }
 
-    public function customer() 
+    public function contactUser() 
     {
-    	return $this->belongsTo(User::class, 'customer_id')->withDefault(function($customer, $userCustomer) {
+    	return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function($customer, $userCustomer) {
             $customer->first_name = $userCustomer->attributes['first_name'];
             $customer->last_name = $userCustomer->attributes['last_name'];
             $customer->email = $userCustomer->attributes['email'];

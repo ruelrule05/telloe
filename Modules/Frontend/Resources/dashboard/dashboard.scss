@@ -10,7 +10,9 @@
     box-shadow: $box-shadow-sm !important;
 }
 
-
+.resize-none {
+    resize: none !important;
+}
 .user-profile-image {
     width: 45px;
     height: 45px;
@@ -593,4 +595,9 @@ hr.hr-text::before {
         z-index: 2;
         background-color: $light;
     }
+}
+.message-count{
+    font-size: 10px;
+    padding: 1px 3px;
+    line-height: 1.3;
 }

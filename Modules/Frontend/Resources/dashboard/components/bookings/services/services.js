@@ -50,7 +50,9 @@ export default {
 	},
 
 	created() {
-		this.getServices();
+		this.getServices().then(() => {
+			if(this.services.length > 0) this.selectedService = this.services[0];
+		});
 		this.$root.contentloading = !this.ready;
 		/*this.services.push({
 			id: 1, 
@@ -90,6 +92,12 @@ export default {
 			this.updateService(this.selectedService);
 		},
 
+		updateBreaktime(time, index, day) {
+			this.selectedService.days[day].breaktimes[index].start = time.start.time;
+			this.selectedService.days[day].breaktimes[index].end = time.end.time;
+			this.updateService(this.selectedService);
+		},
+
 		updateNewBreaktime(time, day) {
 			this.$set(this.newBreaktime, 'start', (time.start || {}).time);
 			this.$set(this.newBreaktime, 'end', (time.end || {}).time);
@@ -114,7 +122,7 @@ export default {
 				this.selectedService.name = this.newService.name;
 				this.selectedService.description = this.newService.description;
 				this.selectedService.duration = this.newService.duration;
-				this.selectedService.timegap = this.newService.timegap;
+				this.selectedService.interval = this.newService.interval;
 				this.updateService(this.selectedService);
 				this.$refs['modal'].hide();
 			} else {

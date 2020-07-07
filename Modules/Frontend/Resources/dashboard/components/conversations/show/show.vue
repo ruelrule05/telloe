@@ -15,7 +15,7 @@
                             <div class="ml-2">
                                 <h5 class="font-heading mb-0">{{ conversation.member.full_name || conversation.name }}</h5>
                                 <small v-if="conversation.member.is_pending" class="d-block text-warning">Pending account</small>
-                                <div class="d-flex align-items-center" v-else-if="conversation.member.id">
+                                <div class="d-flex align-items-center" v-else-if="conversation.member.id && conversation.member.last_online">
                                     <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
                                     <small class="text-muted">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
                                 </div>
@@ -113,8 +113,8 @@
                     </div>
 
                     <div v-if="!conversation.member.is_pending" class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex">
-                        <vue-form-validate @submit="sendText" class="w-x100 flex-grow-1">
-                            <input type="text" @paste="inputPaste" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" placeholder="Write a message.." data-required />
+                        <vue-form-validate @submit="sendText" class="flex-grow-1" ref="messageForm">
+                            <textarea type="text" @paste="inputPaste" @keypress="messageInput" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" rows="1" placeholder="Write a message.." data-required></textarea>
                         </vue-form-validate>
 
                         <div class="px-1 text-nowrap overflow-hidden" :class="{'expand': moreActions}">

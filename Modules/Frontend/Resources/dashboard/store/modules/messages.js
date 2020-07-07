@@ -18,7 +18,7 @@ const actions = {
             Object.keys(data).map((k) => {
                 bodyFormData.append(k, data[k]);
             });
-            let response = await axios.post(`/${name}`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data' }});
+            let response = await axios.post(`/${name}`, bodyFormData, {headers: {'Content-Type': 'multipart/form-data'}});
             Vue.set(data, 'id', response.data.id);
             Vue.set(data, 'source', response.data.source);
             Vue.set(data, 'updated_at', response.data.updated_at);

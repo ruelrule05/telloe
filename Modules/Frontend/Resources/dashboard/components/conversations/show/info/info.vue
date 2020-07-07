@@ -25,8 +25,8 @@
                     <div v-if="$root.profileTab == 'overview'" class="mt-3">
                         <div class="form-group">
                             <div class="d-flex align-items-center dropdown">
-                                <label class="text-muted mb-0" ref="customFieldsLabel">Custom Fields</label>
-                                <button class="ml-auto btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add field</button>
+                                <label class="text-muted mb-0" ref="customFieldsLabel">Bespoke Fields</label>
+                                <button class="ml-auto btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon> Add Field</button>
                                 <div>
                                     <div class="dropdown-menu w-100 border-0 p-0 bg-transparent pl-2" @click.stop>
                                         <vue-form-validate @submit="addCustomField()">

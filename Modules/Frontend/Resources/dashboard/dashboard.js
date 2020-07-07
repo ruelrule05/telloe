@@ -1,7 +1,7 @@
 require('../js/bootstrap');
 window.Vue = require('vue');
 
-import { mapState, mapGetters } from 'vuex'
+import {mapState, mapGetters, mapActions} from 'vuex';
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/modal';
@@ -13,7 +13,7 @@ Vue.use(VueRouter);
 Vue.use(Toasted, {
     position: 'bottom-center',
     duration: 3000,
-    className: 'bg-primary rounded shadow-none'
+    className: 'bg-primary rounded shadow-none',
 });
 //Vue.component('vue-button', require('../components/vue-button.vue').default);
 const router = new VueRouter({
@@ -23,13 +23,15 @@ const router = new VueRouter({
         {
             path: '/dashboard',
             component: {
-                render(c) { return c('router-view') },
+                render(c) {
+                    return c('router-view');
+                },
             },
             children: [
                 {
                     name: 'conversations',
                     path: 'conversations/:id?',
-                    component: () => import('./components/conversations/conversations.vue'),
+                    component: () => import(/* webpackChunkName: "dashboard-conversations" */ './components/conversations/conversations.vue'),
                 },
                 {
                     name: 'bookings',
@@ -43,19 +45,19 @@ const router = new VueRouter({
                         {
                             path: 'calendar',
                             name: 'calendar',
-                            component: () => import('./components/bookings/calendar/calendar.vue'),
+                            component: () => import(/* webpackChunkName: "dashboard-bookings-calendar" */ './components/bookings/calendar/calendar.vue'),
                         },
                         {
                             path: 'services',
                             name: 'services',
-                            component: () => import('./components/bookings/services/services.vue'),
+                            component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/services.vue'),
                         },
-                        {
-                            path: 'customers',
-                            name: 'customers',
-                            component: () => import('./components/bookings/customers/customers.vue'),
-                        },
-                    ]
+                    ],
+                },
+                {
+                    path: 'contacts',
+                    name: 'contacts',
+                    component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/contacts.vue'),
                 },
                 {
                     name: 'payments',
@@ -69,29 +71,28 @@ const router = new VueRouter({
                         {
                             path: 'subscriptions',
                             name: 'subscriptions',
-                            component: () => import('./components/payments/subscriptions/subscriptions.vue'),
+                            component: () => import(/* webpackChunkName: "dashboard-payments-subscriptions" */ './components/payments/subscriptions/subscriptions.vue'),
                         },
                         {
                             path: 'Invoices',
                             name: 'invoices',
-                            component: () => import('./components/payments/invoices/invoices.vue'),
+                            component: () => import(/* webpackChunkName: "dashboard-payments-invoices" */ './components/payments/invoices/invoices.vue'),
                         },
-                    ]
+                    ],
                 },
                 {
                     name: 'account',
                     path: 'account',
-                    component: () => import('./components/account/account.vue'),
+                    component: () => import(/* webpackChunkName: "dashboard-account" */ './components/account/account.vue'),
                 },
                 {
                     name: 'billing',
                     path: 'billing',
-                    component: () => import('./components/billing/billing.vue'),
+                    component: () => import(/* webpackChunkName: "dashboard-billing" */ './components/billing/billing.vue'),
                 },
-                
             ],
         },
-    ]
+    ],
 });
 import io from 'socket.io-client';
 import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
@@ -107,6 +108,7 @@ import ShortcutIcon from '../icons/shortcut';
 import PlannerIcon from '../icons/planner';
 import VirtualRealityIcon from '../icons/virtual-reality';
 import BillIcon from '../icons/bill';
+import ContactIcon from '../icons/contact';
 import ExclamationCircleIcon from '../icons/exclamation-circle';
 import IncomingCallModal from '../modals/incoming-call/incoming-call.vue';
 
@@ -116,21 +118,22 @@ window.app = new Vue({
     store: store,
     el: '#app',
     components: {
-        BellIcon, 
-        GridIcon, 
-        ChatIcon, 
-        NotebookIcon, 
-        CogIcon, 
-        VirtualRealityIcon, 
-        UsersIcon, 
-        ShortcutIcon, 
-        PlannerIcon, 
-        ChevronDownIcon, 
+        BellIcon,
+        GridIcon,
+        ChatIcon,
+        NotebookIcon,
+        CogIcon,
+        VirtualRealityIcon,
+        UsersIcon,
+        ShortcutIcon,
+        PlannerIcon,
+        ChevronDownIcon,
         BillIcon,
+        ContactIcon,
         ExclamationCircleIcon,
 
-        IncomingCallModal, 
-        ScreenRecorder
+        IncomingCallModal,
+        ScreenRecorder,
     },
     data: {
         auth: null,
@@ -152,8 +155,8 @@ window.app = new Vue({
         screenRecorder: {
             conversation_id: null,
             data: null,
-            status: ''
-        }
+            status: '',
+        },
     },
 
     computed: {
@@ -162,7 +165,7 @@ window.app = new Vue({
         }),
 
         ...mapGetters({
-            getConversation: 'conversations/show'
+            getConversation: 'conversations/show',
         }),
 
         conversation() {
@@ -170,10 +173,19 @@ window.app = new Vue({
         },
 
         payoutComplete() {
-            return !this.auth.stripe_account.individual || 
-                (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2)
-                ? false : true;
-        }
+            return !this.auth.stripe_account.individual || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
+        },
+
+        newMessagesCount() {
+            let count;
+            this.conversations.forEach(conversation => {
+                if (!conversation.last_message.is_read) {
+                    if(!count) count = 0;
+                    count++;
+                }
+            });
+            return count;
+        },
     },
 
     watch: {
@@ -184,19 +196,33 @@ window.app = new Vue({
     },
 
     created() {
+        this.getConversations();
         this.call_sound = new Audio(`/notifications/call.mp3`);
         this.message_sound = new Audio('/notifications/new_message.mp3');
         this.socket = io(WS_URL);
-        this.socket.on('online_users', (data) => {
+
+        this.socket.on('new_message', data => {
+            let conversation = this.conversations.find(x => x.id == data.conversation_id);
+            if (conversation) {
+                this.getMessageByID(data).then(message => {
+                    if (message && message.conversation_id == conversation.id) {
+                        conversation.last_message = message;
+                        this.message_sound.play();
+                    }
+                });
+            }
+        });
+
+        this.socket.on('online_users', data => {
             this.online_users = data;
         });
 
-        this.socket.on('live_call_incoming', (data) => {
-            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
-            if(conversation && !this.callWindow) {
+        this.socket.on('live_call_incoming', data => {
+            let conversation = this.conversations.find(x => x.id == data.conversation_id);
+            if (conversation && !this.callWindow) {
                 let conversationUsers = this.conversationUsers(conversation);
-                let caller = conversationUsers.find((x) => x.id == data.user_id);
-                if(caller && caller.id != this.auth.id) {
+                let caller = conversationUsers.find(x => x.id == data.user_id);
+                if (caller && caller.id != this.auth.id) {
                     this.call_sound.play();
                     this.caller = caller;
                     this.callConversationId = conversation.id;
@@ -204,24 +230,24 @@ window.app = new Vue({
                 }
             }
         });
-        this.socket.on('live_call_reject', (data) => {
-            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
-            if(conversation) {
+        this.socket.on('live_call_reject', data => {
+            let conversation = this.conversations.find(x => x.id == data.conversation_id);
+            if (conversation) {
                 this.call_sound.pause();
                 this.call_sound.currentTime = 0;
                 this.$refs['incomingCall'].hide();
             }
         });
-        this.socket.on('live_call_end', (data) => {
-            let conversation = this.conversations.find((x) => x.id == data.conversation_id);
-            if(conversation) {
+        this.socket.on('live_call_end', data => {
+            let conversation = this.conversations.find(x => x.id == data.conversation_id);
+            if (conversation) {
                 this.call_sound.pause();
                 this.call_sound.currentTime = 0;
                 this.$refs['incomingCall'].hide();
             }
         });
 
-        axios.get('/auth').then((response) => {
+        axios.get('/auth').then(response => {
             this.auth = response.data;
             this.socket.emit('user_online', this.auth.id);
         });
@@ -239,7 +265,6 @@ window.app = new Vue({
             js.src = '//connect.facebook.net/en_US/all.js';
             ref.parentNode.insertBefore(js, ref);
         })(document);
-
     },
 
     mounted() {
@@ -247,8 +272,17 @@ window.app = new Vue({
     },
 
     methods: {
+        ...mapActions({
+            getConversations: 'conversations/index',
+        }),
+
+        async getMessageByID(data) {
+            let message = await axios.get(`/messages/${data.id}`).catch((e) => {});
+            if(message) return message.data;
+        },
+
         focusCallWindow() {
-            if(this.callWindow) {
+            if (this.callWindow) {
                 this.callWindow.focus();
             }
         },
@@ -264,30 +298,26 @@ window.app = new Vue({
         },
 
         initCall(conversation_id, action) {
-            if(!this.callWindow) {
-                let conversation = this.conversations.find((x) => x.id == conversation_id);
-                if(conversation) {
-                    if(action == 'incoming') {
+            if (!this.callWindow) {
+                let conversation = this.conversations.find(x => x.id == conversation_id);
+                if (conversation) {
+                    if (action == 'incoming') {
                         this.$refs['incomingCall'].hide();
                         this.callUser = this.caller;
                         this.call_sound.pause();
                         this.call_sound.currentTime = 0;
-                    }
-                    else if(action == 'outgoing') this.callUser = conversation.member;
+                    } else if (action == 'outgoing') this.callUser = conversation.member;
 
                     let url = `${window.location.origin}/conversations/${conversation_id}/call`;
                     const width = 800; // 4:3
                     const height = 600;
-                    const left = (screen.width/2) - (width/2);
-                    const top = (screen.height/2) - (height/2);
+                    const left = screen.width / 2 - width / 2;
+                    const top = screen.height / 2 - height / 2;
                     this.callConversationId = conversation.id;
-                    this.callWindow = window.open(
-                        url, 
-                        'telloe_call_window',
-                        `width=${width}, height=${height}, top=${top}, left=${left}`);
+                    this.callWindow = window.open(url, 'telloe_call_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
 
                     this.callWindow.onload = () => {
-                        this.callWindow.onunload = (e) => {
+                        this.callWindow.onunload = e => {
                             this.callWindow = this.caller = this.callUser = this.callConversationId = null;
                         };
                     };
@@ -300,21 +330,21 @@ window.app = new Vue({
 
         conversationUsers(conversation) {
             let users = [];
-            if(conversation) {
+            if (conversation) {
                 users.push(conversation.user);
-                conversation.members.forEach((member) => {
+                conversation.members.forEach(member => {
                     users.push(member.user);
-                })
+                });
             }
 
             return users;
         },
 
         sendVideo(video) {
-            if(this.conversation) {
+            if (this.conversation) {
                 const timestamp = dayjs().valueOf();
                 let message = {
-                    user: this.$root.auth,
+                    user: this.auth,
                     source: video.source,
                     preview: video.preview,
                     timestamp: dayjs().valueOf(),
@@ -322,13 +352,12 @@ window.app = new Vue({
                     created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
-                    metadata: {duration: video.duration}
+                    metadata: {duration: video.duration},
                 };
                 this.sendMessage(message);
                 this.closeRecorder('video');
             }
         },
-
 
         FBInit() {
             let params = {
@@ -351,5 +380,5 @@ window.app = new Vue({
                 });
             });
         },
-    }
+    },
 });

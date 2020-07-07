@@ -37,6 +37,7 @@
         "convert-time": "^0.3.0",
         "country-list": "^2.2.0",
         "css-loader": "^3.5.3",
+        "data-uri-to-blob": "0.0.4",
         "datauri": "^2.0.0",
         "dayjs": "^1.8.27",
         "dayjs-ext": "^2.2.0",

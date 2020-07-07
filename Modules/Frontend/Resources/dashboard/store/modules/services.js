@@ -17,42 +17,43 @@ const mutations = {
     },
 
     update(state, data) {
-        let service = state.index.find((x) => x.id == data.id);
-        if(service) Object.assign(service, data);
+        let service = state.index.find(x => x.id == data.id);
+        if (service) Object.assign(service, data);
     },
-    
+
     delete(state, data) {
-        state.index.splice(state.index.findIndex((x) => x.id == data.id), 1);
+        state.index.splice(
+            state.index.findIndex(x => x.id == data.id),
+            1,
+        );
     },
 };
 
 const actions = {
-    index({ commit }) {
-        axios.get(`/${name}`).then((response) => {
-            commit('index', response.data);
-        });
+    async index({commit}) {
+        let response = await axios.get(`/${name}`);
+        commit('index', response.data);
     },
 
-    store({ commit }, data) {
-        axios.post(`/${name}`, data).then((response) => {
+    store({commit}, data) {
+        axios.post(`/${name}`, data).then(response => {
             commit('store', response.data);
         });
     },
 
-    update({ commit }, data) {
-        axios.put(`/${name}/${data.id}`, data).then((response) => {
+    update({commit}, data) {
+        axios.put(`/${name}/${data.id}`, data).then(response => {
             commit('update', response.data);
         });
     },
 
-    delete({ commit }, data) {
+    delete({commit}, data) {
         axios.delete(`/${name}/${data.id}`, data);
         commit('delete', data);
     },
 };
 
-const getters = {
-};
+const getters = {};
 
 export default {
     namespaced: true,

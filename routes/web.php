@@ -6,6 +6,7 @@ Route::group([
     'middleware' => 'ajax'
 ], function() {
     Route::get('auth', 'AuthController@get');
+    Route::post('auth', 'AuthController@update');
     Route::put('auth', 'AuthController@update');
     Route::put('auth/password', 'AuthController@updatePassword');
     Route::post('login', 'AuthController@login')->middleware('guest');

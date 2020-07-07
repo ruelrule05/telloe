@@ -37,7 +37,7 @@
 
         <!-- Text -->
         <div class="mb-0" v-else>
-            <p class="mb-0 text-left">{{ message.message }}</p>
+            <p class="mb-0 text-left message-text">{{ message.message }}</p>
             <div v-if="message.preview">
             	{{ message.preview }}
                 <div v-if="typeof message.preview == 'boolean'" class="text-center">
@@ -130,6 +130,9 @@ export default {
 </script>
 
 <style scoped>
+.message-text{
+    white-space: pre-wrap;
+}
 p {
     line-height: 1.3;
 }

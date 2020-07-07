@@ -23,7 +23,7 @@
 								<tr>
 									<th>Invoice #</th>
 									<th>Amount</th>
-									<th>Customer</th>
+									<th>Contact</th>
 									<th>Status</th>
 									<th>Date Created</th>
 									<th></th>
@@ -33,7 +33,7 @@
 								<tr v-for="invoice in invoices">
 									<td class="align-middle text-muted">{{ invoice.number }}</td>
 									<td class="align-middle">{{ (invoice.amount_due / 100).toFixed(2) }} <span class="text-uppercase text-muted">{{ invoice.currency }}</span></td>
-									<td class="align-middle">{{ invoice.user_customer.customer.full_name }}</td>
+									<td class="align-middle">{{ invoice.contact.contact_user.full_name }}</td>
 									<td class="align-middle">
 										<span class="badge bg-primary-light text-primary text-capitalize position-relative">
 											<span :class="{'opacity-0': invoice.statusLoading}">{{ invoice.status }}</span>
@@ -79,8 +79,8 @@
 				<h5 class="font-heading mb-3">Create Invoice</h5>
 				<vue-form-validate @submit="createInvoice()">
 					<div class="form-group">
-						<label class="form-label">Customer</label>
-						<vue-select v-model="newInvoiceForm.customer_id" :options="stripeCustomers" searchable required placeholder="Find customer"></vue-select>
+						<label class="form-label">Contact</label>
+						<vue-select v-model="newInvoiceForm.contact_id" :options="stripeContacts" searchable required placeholder="Find contact"></vue-select>
 					</div>
 					<div class="form-group">
 						<label class="form-label">Services</label>

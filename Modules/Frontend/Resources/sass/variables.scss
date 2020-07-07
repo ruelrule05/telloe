@@ -22,7 +22,6 @@ $border-color: rgba($secondary, 0.3);
 $body-color: $black;
 $nav-pills-link-active-bg: rgba($primary, 0.15);
 $nav-pills-link-active-color: $primary;
-$modal-scale-transform: 0;
 $theme-colors: map-merge(
     $theme-colors,
     (
@@ -40,8 +39,7 @@ $theme-colors: map-merge(
         'gray-500': $gray-500,
     )
 );
-$modal-header-border-width: 0;
-$modal-footer-border-width: 0;
+
 $card-border-width: 0;
 $link-color: #1e70bf;
 $nav-link-padding-y: 0.85rem;
@@ -52,7 +50,6 @@ $dropdown-padding-y: 0.45rem;
 $dropdown-item-padding-x: 1rem;
 $close-font-size: 2rem;
 $close-font-weight: 200;
-$modal-content-border-width: 0;
 $dropdown-font-size: 0.95rem;
 $navbar-nav-link-padding-x: 0.75rem;
 $dropdown-divider-margin-y: 0.45rem;
@@ -76,18 +73,26 @@ $headings-font-weight: 600;
 $alert-padding-y: 0.35rem;
 $transition-base: all 0.1s ease-in-out;
 $transition-fade: opacity 0.1s linear;
+
+// Modals
+$modal-header-border-width: 0;
+$modal-footer-border-width: 0;
 $modal-transition: transform 0.15s ease-out;
 $modal-fade-transform: scale(0.95);
+$modal-content-border-width: 0;
+$modal-scale-transform: 0;
+$modal-footer-margin-between: .5rem;
 
 // Typography
 $font-size-base: 0.9rem;
-$line-height-base: 1.4;
+$line-height-base: 1.45;
 $line-height-sm: 1.2;
 $text-color: #636b6f;
 $small-font-size: 90%;
 
 // Buttons 
-$btn-line-height: 1.4;
+$btn-line-height: $line-height-base;
+$btn-line-height-sm: $line-height-base;
 $btn-default-color: $text-color;
 $btn-padding-x-lg: 1.2rem;
 $btn-font-size-lg: 1.05rem;

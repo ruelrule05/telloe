@@ -24,13 +24,12 @@ else {
             .js(__dirname + '/Resources/dashboard/dashboard.js', 'js')
             .webpackConfig({
                 output: {
-                    chunkFilename: `js/chunks/[chunkhash].js`
+                    chunkFilename: `js/chunks/[name].js`
                 },
                 optimization: {
                     splitChunks: {
                         chunks: 'all',
                         cacheGroups: {
-                            default: false,
                             vendors: false
                         }
                     }

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import ExclamationCircleIcon from '../../../icons/exclamation-circle';
 import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
 const {getNameList} = require('country-list');
+const toBlob = require('data-uri-to-blob');
 export default {
 	components: {
 		VueFormValidate,
@@ -18,7 +19,7 @@ export default {
 	data: () => ({
 		user: null,
 		tabs: ['Profile', 'Security', 'Payout'],
-		tab: 'Payout',
+		tab: 'Profile',
 		securityForm: {
 			current_password: '',
 			password: '',
@@ -77,10 +78,13 @@ export default {
 	},
 
 	methods: {
-		save() {
-			axios.put('/auth', this.user, {toasted: true}).then(response => {
-				this.$root.auth = response.data;
-			});
+		async save() {
+            let bodyFormData = new FormData();
+            Object.keys(this.user).map((k) => {
+                bodyFormData.append(k, this.user[k]);
+            });
+			let response = await axios.post('/auth', bodyFormData, {toasted: true, headers: {'Content-Type': 'multipart/form-data'}});
+			this.$root.auth = response.data;
 		},
 
 		password() {
@@ -107,5 +111,63 @@ export default {
 			if (!date) return '';
 			return dayjs(date).format('MMMM D, YYYY');
 		},
+
+        updateImage(e) {
+            var input = $(e.currentTarget);
+            var file = input[0].files[0];
+            if (file) {
+                if (file.type.match('image/jpeg') || file.type.match('image/png')) {
+                    var photosize = file.size / 1000;
+                    if (photosize > 200) {
+                        alert('Error: Image file too big. Please choose image file not bigger than 200KB.');
+                    } else {
+                        this.user.profile_image = file;
+
+                        var img = document.createElement('img');
+                        var reader = new FileReader();
+                        reader.readAsDataURL(file);
+
+                        reader.onload = (oFREvent) => {
+                            var canvas = document.createElement('canvas');
+                            img.src = oFREvent.target.result;
+                            img.addEventListener('load', () => {
+                                var ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+
+                                var MAX_WIDTH = 350;
+                                var MAX_HEIGHT = 350;
+                                var width = img.width;
+                                var height = img.height;
+
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+                                canvas.width = width;
+                                canvas.height = height;
+                                var ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                var dataurl = canvas.toDataURL(file.type);
+                                let imageFile = toBlob(dataurl);
+                                this.user.profile_image = dataurl;
+                                this.user.profile_image_file = imageFile;
+                            });
+                        };
+                    }
+                } else {
+                    alert('Error: Invalid image file!');
+                    input.val('');
+                    this.user.profile_image = this.$root.auth.profile_image;
+                }
+            }
+        },
 	},
 };

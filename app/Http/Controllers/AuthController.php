@@ -12,6 +12,8 @@ use App\Models\Booking;
 use App\Models\Widget;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
+use App\Models\Message;
+use App\Models\Service;
 use Illuminate\Support\Str;
 use Auth;
 use Mail;
@@ -39,9 +41,8 @@ class AuthController extends Controller
         ]) : false;
 
         if($user && $last_online) :
-            $user->update([
-                'last_online' => Carbon::now()
-            ]);
+            $user->last_online = Carbon::now();
+            $user->save();
         endif;
         
         return response()->json($user);
@@ -72,12 +73,12 @@ class AuthController extends Controller
                 endif;
 
                 if(isValidTimezone($request->timezone)) :
-                    $user->update([
-                        'timezone' => $request->timezone
-                    ]);
+                    $user->timezone = $request->timezone;
+                    $user->save();
                 endif;
 
                 $this->createStripeCustomer($user);
+                $this->createPresetService($user);
 
                 return response()->json($response);
             else:
@@ -112,10 +113,13 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
             'widget_id' => $widget->id,
             'last_online' => NULL,
-            'timezone' => $timezone,
         ]);
+        $user->timezone = $timezone;
+        $user->save();
 		Auth::login($user);
         $this->createStripeCustomer($user);
+        $this->createInitialConversations($user);
+        $this->createPresetService($user);
         
         // check invite token
         if($request->invite_token) :
@@ -213,6 +217,7 @@ class AuthController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
+            'profile_image_file' => 'nullable|mimes:jpeg,png',
         ]);
         $emailExists = User::where('email', $request->email)->where('id', '<>', Auth::user()->id)->first();
         if($emailExists) return abort(403, 'Email already exists.');
@@ -223,6 +228,24 @@ class AuthController extends Controller
         $data = $request->all();
         $data['username'] = str_replace(' ', '', $request->username);
         $user = Auth::user();
+
+        if($request->hasFile('profile_image_file') && $request->file('profile_image_file')->isValid()) :
+            $destinationPath = 'storage/profile-images/';
+            $extension = $request->profile_image_file->extension();
+            $fileName = time() . '.' . $extension;
+
+            $img = Image::make($request->profile_image_file);
+            if ($img->width() > 350) :
+                $img->resize(350, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+            endif;
+            $img->save($destinationPath.$fileName);
+            $user->profile_image = '/'.$destinationPath.$fileName;
+            $user->save();
+        endif;
+
         $user->update($data);
         return $this->get($request, false);
     }
@@ -239,9 +262,9 @@ class AuthController extends Controller
 
         if($request->password != $request->password_confirmation) return abort(403, 'Passwords do not match.');
 
-        Auth::user()->update([
-            'password' => bcrypt($request->password)
-        ]);
+        $user = Auth::user();
+        $user->password = bcrypt($request->password);
+        $user->save();
 
         return response()->json(['success' => true]);
 
@@ -270,12 +293,16 @@ class AuthController extends Controller
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'facebook_id' => $request->id,
-                    'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
                     'widget_id' => $widget->id
                 ]);
+                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
+                $user->facebook_id = $request->id;
+                $user->save();
             endif;
             Auth::login($user);
+            $this->createStripeCustomer($user);
+            $this->createInitialConversations($user);
+            $this->createPresetService($user);
             $response = [
                 'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
             ]; 
@@ -308,12 +335,16 @@ class AuthController extends Controller
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'google' => $request->id,
-                    'profile_image' => '/storage/profile-images/' . $time . '.jpeg',
                     'widget_id' => $widget->id
                 ]);
+                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
+                $user->google_id = $request->id;
+                $user->save();
             endif;
             Auth::login($user);
+            $this->createStripeCustomer($user);
+            $this->createInitialConversations($user);
+            $this->createPresetService($user);
             $response = [
                 'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
             ]; 
@@ -331,9 +362,8 @@ class AuthController extends Controller
 
         if (!$user->stripe_customer_id) :
             $customer = $stripe_api->customer('create', [ 'email' => $user->email ]);
-            $user->update([
-                'stripe_customer_id' => $customer->id
-            ]);
+            $user->stripe_customer_id = $customer->id;
+            $user->save();
         endif;
     }
 
@@ -414,9 +444,8 @@ class AuthController extends Controller
             $account = $stripe_api->account('create', $account_data);
         endif;
 
-        $user->update([
-            'stripe_account' => $account
-        ]);
+        $user->stripe_account = $account;
+        $user->save();
 
         return response()->json(['message' => 'Payout details successfuly saved.', 'stripe_account' => $user->stripe_account]);
     }
@@ -432,5 +461,78 @@ class AuthController extends Controller
         endwhile;
 
         return $username;
+    }
+
+    public function createInitialConversations(User $user)
+    {
+        // Support conversation
+        $support = User::where('role_id', 5)->first();
+        $conversation = Conversation::create([
+            'user_id' => $support->id
+        ]);
+        ConversationMember::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $user->id
+        ]);
+        Message::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $support->id,
+            'message' => 'Hi my name is Harry, welcome to telloe.  Take a look around and if you need any help send me a message and I will get back to you as soon as I can',
+            'type' => 'text'
+        ]);
+    }
+
+    public function createPresetService(User $user)
+    {
+        if ($user->role->role == 'client'):
+            $presetService = $user->services()->where('is_preset', true)->first();
+            if(!$presetService) :
+                Service::create([
+                    'user_id' => $user->id,
+                    'name' => '60 Minute Call',
+                    'description' => 'The 60-minute coaching call begins with a questionnaire to be completed before the call. During the call, I will have a few things to discuss before we get into the full coaching session.',
+                    'duration' => 60,
+                    'interval' => 10,
+                    'is_preset' => 1,
+                    'days' => json_decode('{
+                        "Friday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": true
+                        },
+                        "Monday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": true
+                        },
+                        "Sunday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": false
+                        },
+                        "Tuesday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": true
+                        },
+                        "Saturday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": false
+                        },
+                        "Thursday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": true
+                        },
+                        "Wednesday": {
+                            "end": "17:00",
+                            "start": "08:00",
+                            "isOpen": true
+                        }
+                    }')
+                ]);
+            endif;
+        endif;
     }
 }
