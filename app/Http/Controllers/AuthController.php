@@ -79,6 +79,7 @@ class AuthController extends Controller
 
                 $this->createStripeCustomer($user);
                 $this->createPresetService($user);
+                $this->createInitialConversations($user);
 
                 return response()->json($response);
             else:
