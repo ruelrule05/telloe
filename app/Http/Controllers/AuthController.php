@@ -468,7 +468,7 @@ class AuthController extends Controller
         // Support conversation
         $support = User::where('role_id', 5)->first();
         $conversation = Conversation::where('user_id', $support->id)->first();
-        if($conversation) :
+        if(!$conversation) :
             $conversation = Conversation::create([
                 'user_id' => $support->id
             ]);
