@@ -467,19 +467,22 @@ class AuthController extends Controller
     {
         // Support conversation
         $support = User::where('role_id', 5)->first();
-        $conversation = Conversation::create([
-            'user_id' => $support->id
-        ]);
-        ConversationMember::create([
-            'conversation_id' => $conversation->id,
-            'user_id' => $user->id
-        ]);
-        Message::create([
-            'conversation_id' => $conversation->id,
-            'user_id' => $support->id,
-            'message' => 'Hi my name is Harry, welcome to telloe.  Take a look around and if you need any help send me a message and I will get back to you as soon as I can',
-            'type' => 'text'
-        ]);
+        $conversation = Conversation::where('user_id', $support->id)->first();
+        if($conversation) :
+            $conversation = Conversation::create([
+                'user_id' => $support->id
+            ]);
+            ConversationMember::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => $user->id
+            ]);
+            Message::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => $support->id,
+                'message' => 'Hi my name is Harry, welcome to telloe.  Take a look around and if you need any help send me a message and I will get back to you as soon as I can',
+                'type' => 'text'
+            ]);
+        endif;
     }
 
     public function createPresetService(User $user)
