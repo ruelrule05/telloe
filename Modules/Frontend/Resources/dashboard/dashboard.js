@@ -142,7 +142,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: 'bookings',
+        detailsTab: '',
         profileTab: 'overview', //overview
 
         call_sound: null,
