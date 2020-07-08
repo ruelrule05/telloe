@@ -46,9 +46,9 @@ class Conversation extends BaseModel
     {
         $member = null;
         if($this->members->count() == 1) :
-            $member = $this->user;
+            $member = $this->user->load('role');
             if(Auth::user()->id == $member->id) :
-                $member = $this->members()->first()->user;
+                $member = $this->members()->first()->user->load('role');
             endif;
         elseif(isset($this->attributes['contact_id'])):
             $member = Contact::find($this->attributes['contact_id']);

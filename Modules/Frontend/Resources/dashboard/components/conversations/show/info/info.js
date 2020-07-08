@@ -15,8 +15,12 @@ import BookmarkIcon from '../../../../../icons/bookmark';
 import TrashIcon from '../../../../../icons/trash';
 import HistoryIcon from '../../../../../icons/history';
 import PencilIcon from '../../../../../icons/pencil';
+import ChevronRightIcon from '../../../../../icons/chevron-right';
+import ClockIcon from '../../../../../icons/clock';
+import PlannerIcon from '../../../../../icons/planner';
 
 import VueScrollTo from 'vue-scrollto';
+import Tooltip from '../../../../../js/directives/tooltip';
 
 export default {
 	components: {
@@ -35,9 +39,12 @@ export default {
         TrashIcon,
         HistoryIcon,
         PencilIcon,
+        ChevronRightIcon,
+        ClockIcon,
+        PlannerIcon,
 	},
 
-    directives: {VueScrollTo},
+    directives: {VueScrollTo, Tooltip},
 
 	props: {
 		conversation: {
@@ -46,6 +53,7 @@ export default {
 	},
 
 	data: () => ({
+        open: false,
 		newTag: '',
         fileType: 'all',
         newNote: '',
@@ -112,9 +120,13 @@ export default {
 	},
 
     watch: {
+        '$root.detailsTab': function(value) {
+            this.open = !!value;
+        },
         '$root.profileTab': function(value) {
             if(value == 'notes' && this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
             this.tagSearch = '';
+            if(value) this.open = true;
         },
         'conversation.id': function() {
             if(this.conversation.members.length == 1) {
@@ -131,6 +143,7 @@ export default {
     },
 
 	created() {
+        this.open = !!this.$root.detailsTab;
         if(this.conversation.members.length == 1) {
             this.getServices();
             this.getUserBlacklistedServices(this.conversation.member.id);
@@ -152,6 +165,13 @@ export default {
             showUserCustomFields: 'user_custom_fields/show',
             storeUserCustomFields: 'user_custom_fields/store',
 		}),
+
+        closeInfo() {
+            this.open = false;
+            setTimeout(() => {
+                this.$root.detailsTab = '';
+            }, 150);
+        },
 
         updateCustomField(custom_field) {
             this.$set(custom_field, 'name', custom_field.new_name);

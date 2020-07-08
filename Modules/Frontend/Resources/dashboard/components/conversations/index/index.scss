@@ -2,7 +2,10 @@
 .conversation-list {
     width: 350px;
 }
-
+.conversations-header{
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
 .str-limit {
     overflow: hidden;
     display: -webkit-box;
@@ -19,6 +22,9 @@
 
 .conversation-preview {
     transition: $transition-base;
+    .last-message-time{
+        transition: $transition-base;
+    }
     .conversation-dropdown{
         transition: $transition-base;
 	    right: 0;
@@ -33,6 +39,9 @@
         background-color: $gray-100;
         .conversation-dropdown {
             opacity: 1;
+        }
+        .last-message-time{
+            opacity: 0;
         }
     }
 }

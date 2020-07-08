@@ -12,6 +12,9 @@
         svg{
             opacity: 1;
         }
+        .btn-checkmark{
+            border: solid 1px $border-color;
+        }
     }
     &:hover:not(.active),
     &.selected:not(.active){

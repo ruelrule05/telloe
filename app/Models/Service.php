@@ -48,19 +48,19 @@ class Service extends BaseModel
                 $timeEnd->hour = $partsEnd[0];
                 $timeEnd->minute = $partsEnd[1];
 
-                $ignoredCalendarEvents = Auth::user()->ignored_calendar_events;
-                $googleEventsList = Auth::user()->google_calendar_events;
-                $outlookEventsList = Auth::user()->outlook_calendar_events;
+                $ignoredCalendarEvents = $this->user->ignored_calendar_events;
+                $googleEventsList = $this->user->google_calendar_events;
+                $outlookEventsList = $this->user->outlook_calendar_events;
 
                 while($timeStart->lessThan($timeEnd)) :
                     $timeslot = [
                         'label' => $timeStart->format('h:iA'),
                         'time' => $timeStart->format('H:i'),
                     ];
-                    $endTime = $timeStart->copy()->add($this->attributes['timegap'], 'minute')->format('H:i');
+                    $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
                     $bookings = Booking::whereHas('service', function($service) {
                             $service->whereHas('user', function($user) {
-                                $user->where('id', Auth::user()->id);
+                                $user->where('id', $this->user->id);
                             });
                         })
                         ->where('date', $dateString)
@@ -94,10 +94,10 @@ class Service extends BaseModel
                                 $outlookEvents[] = $event;
                             elseif(!$event['isAllDay']) :
                                 $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-                                $start->tz = new \DateTimeZone(Auth::user()->timezone);
+                                $start->tz = new \DateTimeZone($this->user->timezone);
                                 $start = $start->format('H:i');
                                 $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-                                $end->tz = new \DateTimeZone(Auth::user()->timezone);
+                                $end->tz = new \DateTimeZone($this->user->timezone);
                                 $end = $end->format('H:i');
                                 if($start <= $timeslot['time'] && $end >= $timeslot['time']):
                                     $outlookEvents[] = $event;
@@ -109,7 +109,7 @@ class Service extends BaseModel
 
                     if($bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0) $timeslots[] = $timeslot;
 
-                    $timeStart->add($this->attributes['duration'] + $this->attributes['timegap'], 'minute');
+                    $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
                 endwhile;
 
             endif;

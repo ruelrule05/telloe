@@ -1,10 +1,23 @@
 @import '../../../sass/variables';
+.info{
+    transition: $transition-base;
+    width: 350px;
+    margin-right: -350px;
+    &.open{
+        margin-right: 0
+    }
+}
 .user-profile-image-sm{
 	width: 40px;
 	height: 40px;
 	span {
 		font-size: 13px;
 	}
+}
+.contact {
+    &.active{
+        box-shadow: 0 0 0 0.1rem $primary;
+    }
 }
 .w-35{
 	width: 35% !important;

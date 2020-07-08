@@ -166,7 +166,6 @@
 			</vue-form-validate>
 		</modal>
 
-
 		<modal ref="deleteModal" :close-button="false">
 			<template v-if="selectedService">
 				<h5 class="font-heading text-center">Delete Service</h5>

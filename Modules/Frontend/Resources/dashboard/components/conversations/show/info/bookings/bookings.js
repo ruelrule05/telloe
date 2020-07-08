@@ -87,6 +87,7 @@ export default {
 
     created() {
         this.getBookings();
+        this.selectedService = (this.services[0] || {}).id;
     },
 
     mounted() {
@@ -141,7 +142,7 @@ export default {
 
         resetBookingForm() {
             this.selectedDate = null;
-            this.selectedService = '';
+            this.selectedService = (this.services[0] || {}).id;
             this.selectedTimeslot = '';
             this.timeslotDropdown = false;
             this.customTime = false;

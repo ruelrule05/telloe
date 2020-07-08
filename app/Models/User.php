@@ -76,17 +76,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function inquiries()
-    {
-        return $this->hasMany(Inquiry::class)->orderBy('created_at', 'DESC');
-    }
-
-
-    public function offers()
-    {
-        return $this->hasMany(Offer::class, 'customer_id')->orderBy('created_at', 'DESC');
-    }
-
     public function subscription()
     {
         return $this->hasOne(Subscription::class);

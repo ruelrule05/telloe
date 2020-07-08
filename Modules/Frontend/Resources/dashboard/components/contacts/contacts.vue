@@ -1,11 +1,14 @@
 <template>
-	<div class="h-100 py-4" v-if="ready">
-		<div class="row h-100">
-			<div class="col-md-8 h-100">
+	<div class="h-100" v-if="ready">
+		<div class="d-flex h-100">
+			<div class="h-100 flex-grow-1 py-4">
 				<div class="d-flex flex-column h-100">
 					<div class="d-flex align-items-center px-4">
 						<h5 class="font-heading">Manage Contacts</h5>
-						<button class="btn btn-primary ml-auto d-flex align-items-center" @click="$refs['addModal'].show()"><plus-icon height="13" width="13" transform="scale(1.6)" fill="white" class="mr-1"></plus-icon>Add Contact</button>
+						<div class="ml-auto d-flex align-items-center">
+							<button type="button" class="btn btn-primary d-flex align-items-center" @click="$refs['addModal'].show()"><plus-icon height="13" width="13" transform="scale(1.6)" fill="white" class="mr-1"></plus-icon>Add Contact</button>
+							<button type="button" class="btn btn-white ml-1 border" @click="manageFields = true; selectedContact = false; manageContact = false;">Manage Fields</button>
+						</div>
 					</div>
 
 					<div class="rounded mt-3 overflow-auto h-100 flex-grow-1 d-flex flex-column">
@@ -25,7 +28,7 @@
 							</div>
 							
 							<div class="overflow-auto px-4 pt-1">
-								<div v-for="contact in contacts" class="border-top p-3 bg-white rounded shadow-sm mb-3">
+								<div v-for="contact in contacts" class="contact border-top p-3 bg-white rounded mb-3" :class="[selectedContact && contact.id == selectedContact.id && manageContact ? 'active' : 'shadow-sm']">
 									<div class="d-flex align-items-center flex-nowrap">
 										<div class="d-flex align-items-center w-35">
 					                        <div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+contact.contact_user.profile_image+')'}">
@@ -50,7 +53,7 @@
 													<more-h-icon width="20" height="20"></more-h-icon>
 					                    		</button>
 												<div class="dropdown-menu dropdown-menu-right">
-												    <span class="dropdown-item cursor-pointer" :class="{'disabled': !hasConversation(contact)}" @click="goToConversation(contact)">Manage</span>
+												    <span class="dropdown-item cursor-pointer" :class="{'disabled': contact.is_pending}" @click="selectedContact = contact; manageContact = true; manageFields = false; getUserBlacklistedServices(contact.contact_user.id)">Manage</span>
 												    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; $refs['deleteModal'].show()">Delete</span>
 												</div>
 					                    	</div>
@@ -63,51 +66,74 @@
 				</div>
 			</div>
 
-			<div class="col-md-4">
-				<div class="pr-4">
-					<div class="shadow-sm rounded bg-white p-3 h-100">
-						<div class="dropdown">
-		                    <label class="text-gray mb-0 d-block mb-1" ref="customFieldsLabel">Fields</label>
-		                    <button class="btn btn-sm btn-light border d-flex align-items-center" data-toggle="dropdown"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon> Add Field</button>
-		                    <div class="dropdown-menu w-100 p-2 bg-white mt-2" @click.stop>
-		                        <vue-form-validate @submit="addCustomField()">
+			<div class="info bg-white h-100 border-left" :class="{'open': openInfo}">
+			    <div class="d-flex align-items-center border-bottom py-3 px-3">
+	                <strong>Manage {{ selectedContact ? 'Contact' : manageFields ? 'Fields' : '' }}</strong>
+	                <button class="btn btn-white p-0 ml-auto" @click="closeInfo()"><close-icon height="30" width="30"></close-icon></button>
+	            </div>
+				<template v-if="selectedContact">
+					<div class="text-center pt-4">
+                        <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedContact.contact_user.profile_image+')'}">
+                            <span v-if="!selectedContact.contact_user.profile_image">{{ selectedContact.contact_user.initials }}</span>
+                        </div>
+                        <h4 class="h5 font-heading mb-0 rounded">{{ selectedContact.contact_user.full_name }}</h4>
+                        <div class="text-muted mb-1">{{ selectedContact.contact_user.email }}</div>
+                    </div>
+                    <div class="px-3 mt-4">
+	                    <label class="text-muted mb-2">Available Services</label>
+	                    <div v-for="service in services" class="d-flex align-items-center mb-2">
+	                        <div>
+	                            <h6 class="font-heading mb-0">{{ service.name }}</h6>
+	                            <small class="text-muted d-block">{{ service.duration }} minutes</small>
+	                        </div>
+	                        <div class="ml-auto">
+	                            <toggle-switch :value="!(blacklisted_services.find((x) => x.service_id == service.id) || {}).is_blacklisted" @input="storeUserBlacklistedService({user_id: selectedContact.contact_user.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
+	                        </div>
+	                    </div>
+                    </div>
+
+				</template>
+				<div v-else-if="manageFields" class="p-3" ref="customFieldsLabel">
+					<div class="dropdown mb-2">
+	                    <button class="btn btn-sm btn-light border d-flex align-items-center" data-toggle="dropdown" data-display="static"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon> Add Field</button>
+	                    <div class="dropdown-menu w-100 p-2" @click.stop>
+	                        <vue-form-validate @submit="addCustomField()">
+	                            <div class="form-group mb-0">
+	                                <label class="form-label">Field name</label>
+	                                <input type="text" class="form-control form-control-sm shadow-none" v-model="newCustomField" placeholder="Field name" data-required>
+	                            </div>
+	                            <div class="d-flex justify-content-end align-items-center mt-2">
+	                                <button type="button" class="btn btn-sm btn-white border text-body mr-1" @click="resetCustomField()">Cancel</button>
+	                                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+	                            </div>
+	                        </vue-form-validate>
+	                    </div>
+					</div>
+	                <div v-for="(custom_field, index) in $root.auth.custom_fields" class="d-flex align-items-center custom-field position-relative">
+	                    <div class="overflow-hidden">
+	                        <div class="text-ellipsis">{{ custom_field }}</div>
+	                    </div>
+	                    <div class="ml-auto position-static d-flex align-items-center pl-1 dropdown">
+	                        <button type="button" class="btn btn-light btn-sm p-1 badge-pill line-height-0 edit-custom-field" data-toggle="dropdown" data-display="static" @click="editCustomField = custom_field"><pencil-icon width="16" height="16"></pencil-icon></button>
+	                        <div class="dropdown-menu w-100 p-2" @click.stop>
+	                            <vue-form-validate @submit="updateCustomField(index)">
 	                                <div class="form-group mb-0">
 	                                    <label class="form-label">Field name</label>
-	                                    <input type="text" class="form-control form-control-sm shadow-none" v-model="newCustomField" placeholder="Field name" data-required>
+	                                    <input type="text" class="form-control form-control-sm shadow-none border" v-model="editCustomField" placeholder="Field name" data-required>
 	                                </div>
-	                                <div class="d-flex justify-content-end align-items-center mt-2">
-	                                    <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="resetCustomField()">Cancel</button>
-	                                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
-	                                </div>
-		                        </vue-form-validate>
-		                    </div>
-						</div>
-		                <div v-for="(custom_field, index) in $root.auth.custom_fields" class="d-flex align-items-center my-2 custom-field position-relative">
-		                    <div class="overflow-hidden">
-		                        <div class="text-ellipsis">{{ custom_field }}</div>
-		                    </div>
-		                    <div class="ml-auto position-static d-flex align-items-center pl-1 dropdown">
-		                        <button type="button" class="btn btn-light btn-sm p-1 badge-pill line-height-0 edit-custom-field" data-toggle="dropdown" data-offset="-205,0" @click="editCustomField = custom_field"><pencil-icon width="16" height="16"></pencil-icon></button>
-		                        <div class="dropdown-menu w-100 p-2 bg-white pl-2 mt-2" @click.stop>
-		                            <vue-form-validate @submit="updateCustomField(index)">
-	                                    <div class="form-group mb-0">
-	                                        <label class="form-label">Field name</label>
-	                                        <input type="text" class="form-control form-control-sm shadow-none border" v-model="editCustomField" placeholder="Field name" data-required>
+	                                <div class="d-flex align-items-center mt-2">
+	                                    <button type="button" class="btn btn-white line-height-0 btn-sm btn-link text-body p-1 badge-pill" @click="$refs['customFieldsLabel'].click(); $root.auth.custom_fields.splice(index, 1); storeUserCustomFields()">
+	                                        <trash-icon fill="red" width="18" height="18"></trash-icon>
+	                                    </button>
+	                                    <div class="ml-auto">
+	                                        <button type="button" class="btn btn-sm btn-white border mr-1" @click="$refs['customFieldsLabel'].click();">Cancel</button>
+	                                        <button type="submit" class="btn btn-sm btn-primary">Save</button>
 	                                    </div>
-	                                    <div class="d-flex align-items-center mt-2">
-	                                        <button type="button" class="btn btn-white line-height-0 btn-sm btn-link text-body p-1 badge-pill" @click="$refs['customFieldsLabel'].click(); $root.auth.custom_fields.splice(index, 1); storeUserCustomFields()">
-	                                            <trash-icon fill="red" width="18" height="18"></trash-icon>
-	                                        </button>
-	                                        <div class="ml-auto">
-	                                            <button type="button" class="btn btn-sm btn-link text-body pl-0" @click="$refs['customFieldsLabel'].click();">Cancel</button>
-	                                            <button type="submit" class="btn btn-sm btn-primary">Save</button>
-	                                        </div>
-		                                    </div>
-		                            </vue-form-validate>
-		                        </div>
-		                    </div>
-		                </div>
-					</div>
+	                                    </div>
+	                            </vue-form-validate>
+	                        </div>
+	                    </div>
+	                </div>
 				</div>
 			</div>
 		</div>

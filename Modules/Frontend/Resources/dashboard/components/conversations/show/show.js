@@ -9,7 +9,6 @@ import MessageType from './message-type';
 
 import VideoIcon from '../../../../icons/video';
 import CastIcon from '../../../../icons/cast';
-import PlannerIcon from '../../../../icons/planner';
 import InfoCircleIcon from '../../../../icons/info-circle';
 import VideoCameraIcon from '../../../../icons/video-camera';
 import MicrophoneIcon from '../../../../icons/microphone';
@@ -18,8 +17,8 @@ import BookmarkIcon from '../../../../icons/bookmark';
 import PlusIcon from '../../../../icons/plus';
 import HistoryIcon from '../../../../icons/history';
 import CloseIcon from '../../../../icons/close';
-import ScreenRecordIcon from '../../../../icons/screen-record';
-import RecordIcon from '../../../../icons/record';
+import ExpandWideIcon from '../../../../icons/expand-wide';
+import ColoredPhoneIcon from '../../../../icons/colored-phone';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -32,7 +31,6 @@ export default {
 
         VideoIcon,
         CastIcon,
-        PlannerIcon,
         InfoCircleIcon,
         VideoCameraIcon,
         MicrophoneIcon,
@@ -41,8 +39,8 @@ export default {
         PlusIcon,
         HistoryIcon,
         CloseIcon,
-        ScreenRecordIcon,
-        RecordIcon,
+        ExpandWideIcon,
+        ColoredPhoneIcon,
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
         'file-view-modal': () => import(/* webpackChunkName: "modals-fileview" */ '../../../../modals/file-view'),

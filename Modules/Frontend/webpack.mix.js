@@ -75,6 +75,26 @@ else {
                 },
             });
     }
+
+    else if (argv.indexOf('--profile') > -1) { 
+        console.log('Running profile...');
+        browserSync();
+        mix
+            .js(__dirname + '/Resources/js/profile.js', 'js')
+            .webpackConfig({
+                output: {
+                    chunkFilename: `js/chunks/[name].js`
+                },
+                optimization: {
+                    splitChunks: {
+                        chunks: 'all',
+                        cacheGroups: {
+                            vendors: false
+                        }
+                    }
+                },
+            });
+    }
 }
 
 

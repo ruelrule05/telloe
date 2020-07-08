@@ -1,8 +1,7 @@
 <template>
-	<div class="position-relative h-100">
-		<h4 class="font-heading" ref="addBookingTitle">Bookings</h4>
+	<div class="position-relative h-100 p-3" ref="addBookingTitle">
 		<div class="dropdown" ref="newBookingDropdown">
-	        <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static" @click="selectedBooking = null; selectedService = ''"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add Booking</button>
+	        <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static" @click="selectedBooking = null;"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add Booking</button>
             <div class="dropdown-menu w-100 p-2" @click.stop>
 				<select class="form-control shadow-nonxe mb-2 cursor-pointer" @change="getTimeslots(selectedService, selectedDate)" :class="{'text-muted': !selectedService}" v-model="selectedService">
 					<option value="" selected disabled>Select service</option>
@@ -45,7 +44,7 @@
 				</div>
 
 				<div class="d-flex mt-2">
-					<button type="button" class="btn btn-sm btn-link text-body" @click="selectedDate = null; resetBookingForm();">Cancel</button>
+					<button type="button" class="btn btn-sm btn-white border mr-1" @click="selectedDate = null; resetBookingForm();">Cancel</button>
 					<button type="button" class="btn btn-sm btn-primary ml-auto" :disabled="!selectedDate || !selectedTimeslot || !selectedService" @click="store">Add</button>
 				</div>
             </div>
@@ -118,7 +117,7 @@
 					</div>
 
 					<div class="d-flex mt-2">
-						<button type="button" class="btn btn-sm btn-link text-body" @click="selectedBooking = null; selectedService = ''; booking.new_date = booking.date">Cancel</button>
+						<button type="button" class="btn btn-sm btn-white border mr-1" @click="selectedBooking = null; booking.new_date = booking.date; resetBookingForm()">Cancel</button>
 						<button type="button" class="btn btn-sm btn-primary ml-auto" :disabled="!selectedTimeslot" @click="update(booking)">Update</button>
 					</div>
 	        	</div>

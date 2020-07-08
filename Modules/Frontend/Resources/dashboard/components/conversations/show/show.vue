@@ -25,13 +25,11 @@
                         <div class="ml-auto btn-circle-actions">
                             <template v-if="!conversation.member.is_pending">
                                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.initCall(conversation.id, 'outgoing')" :class="{'active disabled': $root.callWindow ? true : false}"><video-icon width="32" height="32"></video-icon></button>
-                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Record screen'" @click="initScreenRecorder()" :class="{'active disabled': $root.screenRecorder.conversation_id}">
-                                        <screen-record-icon width="24" height="24"></screen-record-icon>
-                                        <record-icon width="12" height="12" class="position-absolute-center fill-primary"></record-icon>
-                                </button>
-                                <button v-if="$root.auth.role.role == 'client'" class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Manage bookings'"" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}"><planner-icon width="24" height="24"></planner-icon></button>
                             </template>
-                            <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Profile'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
+                            <template v-if="!conversation.member.is_pending">
+                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callWindow ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button>
+                            </template>
+                            <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
                         </div>
         			</div>
 
@@ -125,6 +123,11 @@
                             <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
                             <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
                             <input type="file" hidden ref="fileMedia" @change="addFile" />
+
+                            <button class="line-height-sm ml-2 btn px-0 position-relative" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
+                                <expand-wide-icon width="20" height="20"></expand-wide-icon>
+                                <span class="position-absolute-center h3 mb-0 mt-n2 line-height-0">.</span>
+                            </button>
                         </div>
                     </div>
         		</div>
@@ -133,9 +136,7 @@
 
 
             <!-- Info -->
-            <div class="conversation-details text-center p-3 h-100 position-relative bg-white" :class="{'open': $root.detailsTab}">
-                <info :conversation="conversation"></info>
-            </div>
+           <info :conversation="conversation"></info>
 
                 
 

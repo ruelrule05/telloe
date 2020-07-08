@@ -1,7 +1,7 @@
 <template>
 	<div class="bg-white">
 		<div class="conversation-list d-flex flex-column h-100 position-relative">
-			<div class="d-flex align-items-center">
+			<div class="d-flex align-items-center border-bottom conversations-header">
 				<div class="py-3 px-2">
 					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
 				</div>
@@ -13,7 +13,7 @@
                 </div>
 			</div>
 
-			<div class="overflow-auto px-3 pb-3 position-relative h-100" v-if="ready">
+			<div class="overflow-auto p-3 position-relative h-100" v-if="ready">
                 <div v-if="conversations.length == 0" class="position-absolute-center w-100 text-center text-muted">
                     You don't have any conversations yet.
                 </div>
@@ -51,7 +51,7 @@
     	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
                                     <div class="d-flex align-items-center text-nowrap conversation-message-preview">
                                         <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[conversation.last_message.is_read ? 'text-muted' : 'text-black font-weight-bold']"></div>    
-                                        <span class="ml-auto text-gray ">{{ conversation.last_message.created_diff }}</span>   
+                                        <span class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
                                     </div>    
     						  	</div>
     						</div>

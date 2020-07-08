@@ -27,8 +27,9 @@
                 opacity: 0.8;
             }
         }
-        &:hover:not(.active) {
+        &:hover {
             svg {
+                filter: grayscale(0);
                 opacity: 1;
             }
         }
@@ -215,14 +216,6 @@
     z-index: 100;
     border: dashed 2px $primary;
     pointer-events: none;
-}
-.conversation-details {
-    width: 350px;
-    margin-right: -350px;
-    transition: $transition-base;
-    &.open{
-        margin-right: 0;
-    }
 }
 .messages-loader{
     z-index: 100;

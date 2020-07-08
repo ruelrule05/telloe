@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<title>{{ $user->full_name }} | {{ config('app.name')}}</title>
-	@include('frontend.partials.meta_tags')
+	@include('frontend::partials.meta_tags')
 	<link rel="stylesheet" href="{{ mix('css/profile.css') }}">
 </head>
 <body>

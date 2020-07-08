@@ -41,7 +41,7 @@ class UserController extends Controller
             return response()->json($user->services);
         endif;
 
-    	return view('frontend.profile', compact('user'));
+    	return view('frontend::profile', compact('user'));
     }
 
     public function serviceTimeslots($username, $service_id, Request $request)

@@ -9,6 +9,7 @@ import TrashIcon from '../../../icons/trash';
 import PencilIcon from '../../../icons/pencil';
 import ClockIcon from '../../../icons/clock';
 import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
+import CloseIcon from '../../../icons/close';
 export default {
 	components: {
 		Modal, 
@@ -21,10 +22,14 @@ export default {
 		PencilIcon,
 		ClockIcon,
 		CheckmarkCircleIcon,
+        CloseIcon,
 	},
 
 	data: () => ({
+        openInfo: false,
 		selectedContact: null,
+        manageContact: false,
+        manageFields: false,
 		newContact: {
 			custom_fields: {},
 			blacklisted_services: []
@@ -36,21 +41,31 @@ export default {
 
 	computed: {
 		...mapState({
-      		conversations: state => state.conversations.index,
             contacts: (state) => state.contacts.index,
             ready: (state) => state.contacts.ready,
             services: (state) => state.services.index,
+            user_blacklisted_services: (state) => state.user_blacklisted_services.index,
 		}),
 
         defaultEmailMessage() {
             return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;
+        },
+
+        blacklisted_services() {
+            return this.user_blacklisted_services[(this.selectedContact.contact_user || {}).id] || [];
         },
 	},
 
     watch: {
         ready: function(value) {
             this.$root.contentloading = !value;
-        }
+        },
+        manageContact: function(value) {
+            if(value) this.openInfo = true;
+        },
+        manageFields: function(value) {
+            if(value) this.openInfo = true;
+        },
     },
 
 	created() {
@@ -58,7 +73,6 @@ export default {
 		this.getContacts();
 		this.showUserCustomFields();
 		this.getServices();
-		this.getConversations();
 	},
 
 	methods: {
@@ -69,8 +83,17 @@ export default {
             showUserCustomFields: 'user_custom_fields/show',
             storeUserCustomFields: 'user_custom_fields/store',
             getServices: 'services/index',
-      		getConversations: 'conversations/index',
+            getUserBlacklistedServices: 'user_blacklisted_services/index',
+            storeUserBlacklistedService: 'user_blacklisted_services/store',
         }),
+
+        closeInfo() {
+            this.openInfo = false;
+            setTimeout(() => {
+                this.manageContact = false;
+                this.manageFields = false;
+            }, 150);
+        },
 
         resetNewContact() {
             this.newContact = {
@@ -79,18 +102,6 @@ export default {
             };
         },
 
-        hasConversation(contact) {
-        	return this.conversations.find((c) => {
-        		return c.members.find((m) => m.user_id == contact.contact_id && m.user_id != this.$root.auth.id) || c.user_contact_id == contact.id;
-        	});
-        },
-
-        goToConversation(contact) {
-        	let conversation = this.conversations.find((c) => {
-        		return c.members.find((m) => m.user_id == contact.contact_id && m.user_id != this.$root.auth.id) || c.user_contact_id == contact.id;
-        	});
-        	if(conversation) this.$router.push(`/dashboard/conversations/${conversation.id}?tab=profile`);
-        },
 
         toggleServiceBlacklist(state, service) {
         	if(!this.newContact.blacklisted_services) this.newContact.blacklisted_services = [];

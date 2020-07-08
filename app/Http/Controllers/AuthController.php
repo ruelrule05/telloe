@@ -12,6 +12,7 @@ use App\Models\Booking;
 use App\Models\Widget;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
+use App\Models\UserCustomField;
 use App\Models\Message;
 use App\Models\Service;
 use Illuminate\Support\Str;
@@ -80,6 +81,7 @@ class AuthController extends Controller
                 $this->createStripeCustomer($user);
                 $this->createPresetService($user);
                 $this->createInitialConversations($user);
+        $this->createDefaultField($user);
 
                 return response()->json($response);
             else:
@@ -121,6 +123,7 @@ class AuthController extends Controller
         $this->createStripeCustomer($user);
         $this->createInitialConversations($user);
         $this->createPresetService($user);
+        $this->createDefaultField($user);
         
         // check invite token
         if($request->invite_token) :
@@ -299,6 +302,7 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
+                $this->createDefaultField($user);
             endif;
             Auth::login($user);
             $this->createStripeCustomer($user);
@@ -341,6 +345,7 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
+                $this->createDefaultField($user);
             endif;
             Auth::login($user);
             $this->createStripeCustomer($user);
@@ -541,4 +546,17 @@ class AuthController extends Controller
             endif;
         endif;
     }
+
+    public function createDefaultField(User $user)
+    {
+        UserCustomField::firstOrCreate(
+            [
+                'user_id' => $user->id,
+            ],
+            [
+                'fields' => ['Mobile']
+            ]
+        );
+    }
+    
 }
