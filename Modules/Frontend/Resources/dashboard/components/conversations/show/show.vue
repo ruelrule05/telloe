@@ -19,7 +19,7 @@
                                     <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
                                     <small class="text-muted">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
                                 </div>
-                                <small v-else class="d-block text-muted">{{ conversation.members.length }} members</small>
+                                <small v-else-if="(conversation.member.role || {}).role != 'support'" class="d-block text-muted">{{ conversation.members.length }} members</small>
                             </div>
                         </div>
                         <div class="ml-auto btn-circle-actions">
