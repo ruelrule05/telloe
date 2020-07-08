@@ -344,7 +344,7 @@
 
                 <!-- Bookings -->
                 <div v-else-if="$root.detailsTab == 'bookings' && $root.auth.role.role == 'client'" class="text-left h-100">
-                    <bookings :user="conversation.member"></bookings>
+                    <bookings :user="conversation.member" :membersLength="conversation.members.length"></bookings>
                 </div>
             </div>
     	</div>

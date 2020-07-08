@@ -19,6 +19,10 @@ export default {
             type: Object,
             required: true,
         },
+        membersLength: {
+            type: Number,
+            default: 0
+        }
     },
 
     data: () => ({

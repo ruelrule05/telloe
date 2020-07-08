@@ -1,5 +1,5 @@
 <template>
-	<div class="position-relative h-100 p-3" ref="addBookingTitle">
+	<div v-if="!user.is_pending && (user.role || {}).role != 'support' && membersLength == 1" class="position-relative h-100 p-3" ref="addBookingTitle">
 		<div class="dropdown" ref="newBookingDropdown">
 	        <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static" @click="selectedBooking = null;"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add Booking</button>
             <div class="dropdown-menu w-100 p-2" @click.stop>
