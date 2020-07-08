@@ -100,9 +100,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function getFullNameAttribute()
     {
-        return $this->attributes['first_name'] .
-            ' ' .
-            $this->attributes['last_name'];
+        $first_name = $this->attributes['first_name'];
+        $last_name = $this->attributes['last_name'];
+        return $first_name || $last_name ? "$first_name $last_name" : $this->attributes['email'];
     }
 
 
@@ -114,7 +114,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function getInitialsAttribute()
     {
-        return strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1));
+        $first_name = $this->attributes['first_name'];
+        $last_name = $this->attributes['last_name'];
+        return $first_name || $last_name ? strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1)) : strtoupper(substr($this->attributes['email'], 0, 1));
     }
 
 

@@ -10,7 +10,7 @@
 					<input type="text" v-model="signupForm.last_name" class="form-control form-control-lg" data-required placeholder="Last Name" />
 				</div>
 				<div class="form-group">
-					<input type="email" v-model="signupForm.email" :disabled="user_customer && user_customer.email" class="form-control form-control-lg" data-required placeholder="Email" />
+					<input type="email" v-model="signupForm.email" :disabled="contact && contact.email" class="form-control form-control-lg" data-required placeholder="Email" />
 				</div>
 				<div class="form-group">
 					<input type="password" v-model="signupForm.password" class="form-control form-control-lg" data-required placeholder="Password" />
@@ -40,7 +40,7 @@ import ArrowLeftIcon from '../../icons/arrow-left';
 export default {
 	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon, ArrowLeftIcon},
 	data: () => ({
-		user_customer: null,
+		contact: null,
 		signupForm: {
 			first_name: '',
 			last_name: '',
@@ -54,8 +54,8 @@ export default {
 	
 	created() {
 		this.signupForm.invite_token = this.$root.invite_token;
-		this.user_customer = USER_CUSTOMER;
-		if(this.user_customer && this.user_customer.email) this.signupForm.email = this.user_customer.email;
+		this.contact = CONTACT;
+		if(this.contact && this.contact.email) this.signupForm.email = this.contact.email;
 		this.signupForm.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	},
 
@@ -63,7 +63,7 @@ export default {
 		signup() {
 			if (!this.loading) {
 				this.loading = true;
-				if(this.user_customer && this.user_customer.email) this.signupForm.email = this.user_customer.email;
+				if(this.contact && this.contact.email) this.signupForm.email = this.contact.email;
 				axios
 					.post(`/signup`, this.signupForm)
 					.then((response) => {

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Conversation;
 use App\Models\User;
 use App\Models\Message;
+use App\Models\Contact;
 use App\Models\ConversationMember;
 use Auth;
 use File;
@@ -15,12 +16,17 @@ class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-        $conversations = Conversation::has('members.user')->with('user', 'members.user')->where(function($query) {
-            $query->where('user_id', Auth::user()->id)
-                ->orWhereHas('members', function($members) {
-                    $members->where('user_id', Auth::user()->id);
-                });
-        })->get();
+        $conversations = Conversation::with('user', 'members.user')
+            ->where(function($query) {
+                $query->where('user_id', Auth::user()->id)
+                    ->orWhereHas('members', function($members) {
+                        $members->where('user_id', Auth::user()->id);
+                    });
+            })
+            ->where(function($query) {
+                $query->has('members.user')->orHas('contact');
+            })
+            ->get();
     	return response()->json($conversations);
     }
 
@@ -52,32 +58,46 @@ class ConversationController extends Controller
         ]);
 
         if(count($request->members) == 1) :
-            $conversation = Conversation::where('user_id', Auth::user()->id)->whereHas('members', function($members) use ($request) {
-                $members->whereIn('user_id', $request->members);
+            $contact = Contact::findOrFail($request->members[0]);
+            $conversation = Conversation::where('user_id', Auth::user()->id)->where(function($query) use ($contact) {
+                $query->where('contact_id', $contact->id)
+                    ->orWhereHas('members', function($members) use ($contact) {
+                        $members->where('user_id', $contact->contactUser->id ?? 0);
+                    });
             })->first();
-            if($conversation && $conversation->members()->count() == 1) return response()->json($conversation->load('user', 'messages.user', 'members.user'));
+
+            if($conversation) return response()->json($conversation->load('user', 'messages.user', 'members.user'));
         endif;
 
-        $conversation = Conversation::create([
-            'user_id' => Auth::user()->id,
-            'status' => 'active',
-        ]);
-
+        $error = false;
         $members = [];
         foreach($request->members as $member_id) :
-            if(!in_array($member_id, $members)) :
-                if($member_id != Auth::user()->id) :
-                    $member = User::find($member_id);
-                    if($member) :
-                        $members[] = $member->id;
-                        ConversationMember::create([
-                            'conversation_id' => $conversation->id,
-                            'user_id' => $member->id
-                        ]);
-                    endif;
-                endif;
+            $contact = Contact::where('id', $member_id)->where('user_id', Auth::user()->id)->first();
+            if(!$contact || $contact->is_pending || !$contact->contactUser):
+                $error = true;
+                break;
+            endif;
+            if($contact && $contact->contactUser && $contact->contactUser->id != Auth::user()->id && !in_array($contact->contactUser->id, $members)) :
+                $members[] = $contact->contactUser->id;
             endif;
         endforeach;
+
+        if($error) return abort(403, 'Failed creating a conversation.');
+
+        if (count($members) > 0) :
+            $conversation = Conversation::create([
+                'user_id' => Auth::user()->id,
+                'status' => 'active',
+            ]);
+            foreach($members as $member_id) :
+                ConversationMember::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $member_id
+                ]);
+            endforeach;
+        endif;
+
+        if(!$conversation) return abort(403, 'Failed creating a conversation.');
         if(count($members) > 1) $conversation->update(['name' => 'New group chat']);
        
         return response()->json($conversation->load('members.user'));

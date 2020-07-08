@@ -54,10 +54,10 @@ const actions = {
         });
     },
 
-    store({commit}, data) {
-        axios.post(`/${name}`, data).then(response => {
-            commit('store', response.data);
-        });
+    async store({commit}, data) {
+        let response = await axios.post(`/${name}`, data, {toasted: true});
+        commit('store', response.data);
+        return response.data;
     },
 
     delete({commit}, data) {

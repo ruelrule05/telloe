@@ -50,8 +50,8 @@ class Conversation extends BaseModel
             if(Auth::user()->id == $member->id) :
                 $member = $this->members()->first()->user;
             endif;
-        elseif(isset($this->attributes['user_customer_id'])):
-            $member = UserCustomer::find($this->attributes['user_customer_id']);
+        elseif(isset($this->attributes['contact_id'])):
+            $member = Contact::find($this->attributes['contact_id']);
         else :
             $member = [
                 'profile_image' => '',

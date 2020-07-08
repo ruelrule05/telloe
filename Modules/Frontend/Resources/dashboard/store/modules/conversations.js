@@ -47,7 +47,7 @@ const actions = {
     },
 
     async store({ commit }, data) {
-        let response = await axios.post(`/${name}`, data);
+        let response = await axios.post(`/${name}`, data, {toasted: true});
         return response.data;
     },
 

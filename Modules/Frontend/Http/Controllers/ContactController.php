@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Contact;
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\ConversationMember;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -52,7 +53,8 @@ class ContactController extends Controller
     {
         $this->validate($request, [
             'email' => 'required|email',
-            'message' => 'nullable|string|max:100',
+            'invite_message' => 'nullable|string|max:100',
+            'conversation_message' => 'nullable|string|max:255',
         ]);
 
         if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as contact");
@@ -87,7 +89,7 @@ class ContactController extends Controller
             if($value) $custom_fields[] = [ 'name' => $custom_field, 'value' => $value ];
         endforeach;
 
-        if($contact) :
+        if($contactUser) :
             $conversation = Conversation::whereHas('members', function($member) use ($contactUser){
                 $member->where('user_id', $contactUser->id);
             })->has('members', '=', 1)->first();
@@ -109,7 +111,17 @@ class ContactController extends Controller
             ]);
         endif;
 
-        Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->message));
+        if($conversation && $request->conversation_message) :
+            Message::create([
+                'conversation_id' => $conversation->id,
+                'user_id' => Auth::user()->id,
+                'message' => $request->conversation_message,
+                'type' => 'text'
+            ]);
+        endif;
+
+        Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->invite_message));
+        $contact->conversation = $conversation;
         return response()->json($contact);
 
     }

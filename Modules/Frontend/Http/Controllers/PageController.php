@@ -4,7 +4,7 @@ namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\UserCustomer;
+use App\Models\Contact;
 use Auth;
 
 class PageController extends Controller
@@ -17,26 +17,26 @@ class PageController extends Controller
     		return redirect('/dashboard/conversations');
     	endif;
 
-    	return view('frontend::pages.homepage', ['userCustomer' => $this->getUserCustomer($request)]);
+    	return view('frontend::pages.homepage', ['contact' => $this->getContact($request)]);
     }
 
     public function privacyPolicy(Request $request)
     {
-        return view('frontend::pages.privacy-policy', ['userCustomer' => $this->getUserCustomer($request)]);
+        return view('frontend::pages.privacy-policy', ['contact' => $this->getContact($request)]);
     }
 
     public function termsOfService(Request $request)
     {
-        return view('frontend::pages.terms-of-service', ['userCustomer' => $this->getUserCustomer($request)]);
+        return view('frontend::pages.terms-of-service', ['contact' => $this->getContact($request)]);
     }
 
-    public function getUserCustomer(Request $request)
+    public function getContact(Request $request)
     {
-        $userCustomer = null;
+        $contact = null;
         if($request->invite_token) :
-            $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
+            $contact = Contact::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
         endif;
 
-        return $userCustomer;
+        return $contact;
     }
 }

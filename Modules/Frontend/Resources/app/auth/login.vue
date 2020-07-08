@@ -6,7 +6,7 @@
 					<h1 class="h2 mb-1 font-heading">Log In</h1>
 					<div class="mb-3 text-muted">Continue to your account</div>
 					<div class="form-group">
-						<input type="email" v-model="loginForm.email" :disabled="user_customer && user_customer.email" class="form-control form-control-lg" data-required placeholder="Email" />
+						<input type="email" v-model="loginForm.email" :disabled="contact && contact.email" class="form-control form-control-lg" data-required placeholder="Email" />
 					</div>
 					<div class="form-group">
 						<input type="password" v-model="loginForm.password" class="form-control form-control-lg" data-required placeholder="Password" />
@@ -41,7 +41,7 @@ import GoogleIcon from '../../icons/google';
 export default {
 	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon},
 	data: () => ({
-		user_customer: null,
+		contact: null,
 		loginForm: {
 			email: '',
 			password: '',
@@ -53,8 +53,8 @@ export default {
 
 	created() {
 		this.loginForm.invite_token = this.$root.invite_token;
-		this.user_customer = USER_CUSTOMER;
-		if (this.user_customer && this.user_customer.email) this.loginForm.email = this.user_customer.email;
+		this.contact = CONTACT;
+		if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
 		this.loginForm.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	},
 
@@ -62,7 +62,7 @@ export default {
 		login() {
 			if (!this.loading) {
 				this.loading = true;
-				if (this.user_customer && this.user_customer.email) this.loginForm.email = this.user_customer.email;
+				if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
 				axios
 					.post('/login', this.loginForm)
 					.then(response => {

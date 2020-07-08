@@ -64,13 +64,12 @@
 
 
         <!-- New conversation modal -->
-        <modal :close-button="false" ref="newConversationModal" @hidden="resetNewConversationForm">
-            <h5 class="font-heading mb-3">New Conversation</h5>
+        <modal :close-button="false" title="New Conversation" ref="newConversationModal" @hidden="resetNewConversationForm">
             <div class="h-100 overflow-hidden d-flex flex-column" :default="contacts" ref="addNewConversationMembersForm">
-               <input type="text" placeholder="Search active contacts..." class="form-control shadow-none border" v-model="userSearch">
+               <input type="text" placeholder="Search contacts..." class="form-control shadow-none border" v-model="userSearch">
                 <div v-if="newConversation.members.length > 0" class="mt-1">
-                    <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.profile_image+')'}">
-                        <span v-if="!member.profile_image">{{ member.initials }}</span>
+                    <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.contact_user.profile_image+')'}">
+                        <span v-if="!member.contact_user.profile_image">{{ member.contact_user.initials }}</span>
                         <button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
                             <close-icon height="16" width="16" class="cursor-pointer"></close-icon>
                         </button>
@@ -81,29 +80,84 @@
                     <div v-if="!contactsReady" class="text-center position-absolute-center w-100">
                         <div class="spinner-border spinner-border-sm text-primary"></div>
                     </div>
-                    <div v-else-if="filteredUsers.length == 0" class="text-center text-muted position-absolute-center w-100">
+                    <div v-else-if="filteredContacts.length == 0" class="text-center text-muted position-absolute-center w-100">
                         No results found.
                     </div>
-                    <div v-else-if="filteredUsers.length > 0">
-                        <div v-for="result in filteredUsers" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id)}">
-                            <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.profile_image+')'}">
-                                <span v-if="!result.profile_image">{{ result.initials }}</span>
+                    <div v-else-if="filteredContacts.length > 0">
+                        <div v-for="result in filteredContacts" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id), 'disabled': result.is_pending}">
+                            <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.contact_user.profile_image+')'}">
+                                <span v-if="!result.contact_user.profile_image">{{ result.contact_user.initials }}</span>
                             </div>
                             <div class="media-body pl-2">
-                                <div class="font-weight-bold font-heading mb-0 h6">{{ result.full_name }}</div>
-                                <div class="small text-muted text-nowrap">@{{ result.username }}</div>      
+                                <div class="font-weight-bold font-heading mb-0 h6">{{ result.contact_user.full_name }}</div>
+                                <div class="small text-muted text-nowrap">{{ result.contact_user.email }} <span v-if="result.is_pending" class="text-warning">Pending</span></div>      
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="d-flex align-items-center">
-                    <div class="ml-auto">
-                        <button class="btn btn-white border" type="button" @click="$refs['newConversationModal'].hide()">Cancel</button>
-                        <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
+            </div>
+            <template v-slot:footer>
+                <button class="mr-auto btn btn-white border d-flex align-items-center" type="button" @click="$refs['addContactModal'].show()"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon>Add Contact</button>
+                <button class="btn btn-white border" type="button" @click="$refs['newConversationModal'].hide()">Cancel</button>
+                <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
+            </template>
+        </modal>
+
+
+
+        <!-- Add contact modal -->
+        <modal ref="addContactModal" title="Add Contact" :form="true" @submit="createContact" @hidden="resetNewContact()" :close-button="false">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" v-model="newContact.email" data-required>
+            </div>
+            <div class="form-row form-group">
+                <div class="col">
+                    <label class="form-label">First Name (Optional)</label>
+                    <input type="text" class="form-control" v-model="newContact.first_name">
+                </div>
+                <div class="col">
+                    <label class="form-label">Last Name (Optional)</label>
+                    <input type="text" class="form-control" v-model="newContact.last_name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label d-block mb-n1">Available services</label>
+                <div v-for="service in services" class="d-inline-flex mt-2 border rounded shadow-sm py-2 px-3 mr-2">
+                    <div>
+                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
+                        <small class="text-gray d-block">{{ service.duration }} minutes</small>
+                    </div>
+                    <div class="ml-3">
+                        <toggle-switch :value="newContact.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>
                     </div>
                 </div>
             </div>
+            
+            <div class="form-group" v-if="($root.auth.custom_fields || []).length > 0">
+                <label class="form-label">Fields (Optional)</label>
+                <div class="form-row">
+                    <div class="col" v-for="field in $root.auth.custom_fields">
+                        <label class="form-label">{{ field }}</label>
+                        <input type="text" class="form-control" v-model="newContact.custom_fields[field]">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Invitation Message (Optional)</label>
+                <textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Initial Message (Optional)</label>
+                <textarea cols="10" class="form-control resize-none" v-model="newContact.conversation_message"></textarea>
+            </div>
+            
+            <template v-slot:footer>
+                <button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Add</button>
+            </template>
         </modal>
 
 	</div>

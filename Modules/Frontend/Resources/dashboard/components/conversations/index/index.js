@@ -2,6 +2,7 @@ import {mapState, mapActions} from 'vuex';
 
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate';
+import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 
 import ArchiveIcon from '../../../../icons/archive';
 import MoreHIcon from '../../../../icons/more-h';
@@ -15,6 +16,7 @@ export default {
     components: {
         Modal,
         VueFormValidate,
+        ToggleSwitch,
 
         ArchiveIcon,
         MoreHIcon,
@@ -31,6 +33,10 @@ export default {
             members: [],
         },
         userSearch: '',
+        newContact: {
+            custom_fields: {},
+            blacklisted_services: []
+        },
     }),
 
     computed: {
@@ -39,6 +45,7 @@ export default {
             ready: state => state.conversations.ready,
             contacts: state => state.contacts.index,
             contactsReady: state => state.contacts.ready,
+            services: (state) => state.services.index,
         }),
 
         orderedConversations() {
@@ -50,17 +57,18 @@ export default {
             });
         },
 
-        filteredUsers() {
-            let filteredUsers = [];
+        filteredContacts() {
+            let filteredContacts = [];
             let trimmedQuery = this.userSearch.trim().toLowerCase();
             this.contacts.forEach(contact => {
-                if(!contact.is_pending && contact.contact_user_id) {
-                    let user = contact.contact_user;
-                    if (user.full_name.toLowerCase().includes(trimmedQuery)) filteredUsers.push(user);
-                }
+                if (contact.contact_user.full_name.toLowerCase().includes(trimmedQuery)) filteredContacts.push(contact);
             });
 
-            return filteredUsers;
+            return filteredContacts;
+        },
+
+        defaultEmailMessage() {
+            return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;
         },
     },
 
@@ -82,6 +90,7 @@ export default {
                 if (!conversation) this.getConversation(data.conversation_id);
             }
         });
+        this.getServices();
     },
 
     mounted() {
@@ -94,7 +103,27 @@ export default {
             updateConversation: 'conversations/update',
             showConversation: 'conversations/show',
             getContacts: 'contacts/index',
+            storeContact: 'contacts/store',
+            getServices: 'services/index',
         }),
+
+        resetNewContact() {
+            this.newContact = {
+                custom_fields: {},
+                blacklisted_services: []
+            };
+        },
+
+        async createContact() {
+            if(this.newContact.email) {
+                this.$refs['addContactModal'].hide();
+                let contact = await this.storeContact(this.newContact);
+                if(contact) {
+                    this.setConversation(contact.conversation);
+                    this.$refs['newConversationModal'].hide();
+                }
+            }
+        },
 
         resetNewConversationForm() {
             this.newConversation.members = [];
@@ -108,7 +137,7 @@ export default {
         },
 
         addNewConversationMember(member) {
-            if (!this.newConversation.members.find(x => x.id == member.id)) this.newConversation.members.push(member);
+            if (!member.is_pending && !this.newConversation.members.find(x => x.id == member.id)) this.newConversation.members.push(member);
         },
 
         createConversation() {
@@ -117,6 +146,7 @@ export default {
                 this.newConversation.members.forEach(m => {
                     member_ids.push(m.id);
                 });
+
                 this.storeConversation({members: member_ids}).then(conversation => {
                     if (conversation.id != this.$route.params.id) this.setConversation(conversation);
                     this.$root.socket.emit('new_conversation', {member_ids: member_ids, conversation_id: conversation.id});

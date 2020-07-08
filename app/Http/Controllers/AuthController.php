@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\UserCustomer;
+use App\Models\Contact;
 use App\Models\PasswordReset;
 use App\Models\Inquiry;
 use App\Models\Booking;
@@ -63,9 +63,9 @@ class AuthController extends Controller
 
                 // check invite token
                 if($request->invite_token) :
-                    $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
-                    if($userCustomer) :
-                        $userCustomer->update([
+                    $contact = Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+                    if($contact) :
+                        $contact->update([
                             'customer_id' => $user->id,
                             'is_pending' => false
                         ]);
@@ -123,15 +123,15 @@ class AuthController extends Controller
         
         // check invite token
         if($request->invite_token) :
-            $userCustomer = UserCustomer::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
-            if($userCustomer) :
+            $contact = Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+            if($contact) :
                 $user->role_id = 3;
                 $user->save();
-                $userCustomer->update([
+                $contact->update([
                     'customer_id' => $user->id,
                     'is_pending' => false
                 ]);
-                $conversation = Conversation::where('user_customer_id', $userCustomer->id)->first();
+                $conversation = Conversation::where('user_customer_id', $contact->id)->first();
                 if($conversation) :
                     ConversationMember::create([
                         'conversation_id' => $conversation->id,

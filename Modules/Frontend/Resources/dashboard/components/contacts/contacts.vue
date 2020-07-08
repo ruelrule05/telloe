@@ -1,7 +1,7 @@
 <template>
 	<div class="h-100 py-4" v-if="ready">
 		<div class="row h-100">
-			<div class="col-md-9 h-100">
+			<div class="col-md-8 h-100">
 				<div class="d-flex flex-column h-100">
 					<div class="d-flex align-items-center px-4">
 						<h5 class="font-heading">Manage Contacts</h5>
@@ -63,7 +63,7 @@
 				</div>
 			</div>
 
-			<div class="col-md-3">
+			<div class="col-md-4">
 				<div class="pr-4">
 					<div class="shadow-sm rounded bg-white p-3 h-100">
 						<div class="dropdown">
@@ -153,8 +153,13 @@
 
 			<div class="form-group">
 				<label class="form-label">Invitation Message (Optional)</label>
-				<textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.message"></textarea>
+				<textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
 			</div>
+
+            <div class="form-group">
+                <label class="form-label">Initial Message (Optional)</label>
+                <textarea cols="10" class="form-control resize-none" v-model="newContact.conversation_message"></textarea>
+            </div>
 			
 			<template v-slot:footer>
 				<div class="d-flex justify-content-end">

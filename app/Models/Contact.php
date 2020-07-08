@@ -22,25 +22,26 @@ class Contact extends BaseModel
 
     public function contactUser() 
     {
-    	return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function($customer, $userCustomer) {
-            $customer->first_name = $userCustomer->attributes['first_name'];
-            $customer->last_name = $userCustomer->attributes['last_name'];
-            $customer->email = $userCustomer->attributes['email'];
-            $customer->initials = strtoupper(substr($userCustomer->attributes['first_name'], 0, 1) . substr($userCustomer->attributes['last_name'], 0, 1));
-            $customer->last_online = null;
+    	return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function($contactUser, $contact) {
+            $contactUser->first_name = $contact->attributes['first_name'];
+            $contactUser->last_name = $contact->attributes['last_name'];
+            $contactUser->email = $contact->attributes['email'];
+            $contactUser->last_online = null;
         });
     }
 
     public function getFullNameAttribute()
     {
-        return $this->attributes['first_name'] .
-            ' ' .
-            $this->attributes['last_name'];
+        $first_name = $this->attributes['first_name'];
+        $last_name = $this->attributes['last_name'];
+        return $first_name || $last_name ? "$first_name $last_name" : $this->attributes['email'];
     }
 
     public function getInitialsAttribute()
     {
-        return strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1));
+        $first_name = $this->attributes['first_name'];
+        $last_name = $this->attributes['last_name'];
+        return $first_name || $last_name ? strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1)) : strtoupper(substr($this->attributes['email'], 0, 1));
     }
 
     public function getCreatedAtFormatAttribute()

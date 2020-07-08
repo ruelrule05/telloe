@@ -126,7 +126,6 @@ export default {
 			if(this.newContact.email) {
 				this.$refs['addModal'].hide();
 				this.storeContact(this.newContact);
-				this.$refs['addModal'].hide();
 			}
 		},
 	}

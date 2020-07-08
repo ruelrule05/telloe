@@ -25,7 +25,7 @@
 	@include('frontend::partials.scripts')
 	
 	<script>
-		const USER_CUSTOMER = {!! $userCustomer ? "JSON.parse('".json_encode($userCustomer)."');" : 'null' !!};
+		const CONTACT = {!! $contact ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
 	</script>
 	@yield('scripts')
 </body>
