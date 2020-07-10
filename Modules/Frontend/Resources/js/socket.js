@@ -92,7 +92,15 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('live_call_reject', data);
     });
     socket.on('live_call_end', function(data) {
-        socket.broadcast.emit('live_call_end', data);
+        if(userData) {
+            let userIndex = call_users[userData.conversation_id].findIndex((x) => x == userData.user_id);
+            if(userIndex > -1) {
+                call_users[userData.conversation_id].splice(userIndex, 1);
+            }
+            if(call_users[userData.conversation_id].length == 1) call_users[userData.conversation_id] = [];
+            socket.broadcast.emit('live_call_end', userData);
+            userData = null;
+        }
     });
 
 
@@ -105,7 +113,7 @@ io.on('connection', function(socket) {
             if(userIndex > -1) {
                 call_users[userData.conversation_id].splice(userIndex, 1);
             }
-            socket.broadcast.emit('live_call_disconnect', userData);
+            socket.broadcast.emit('live_call_end', userData);
             //socket.broadcast.emit('live_call_end', userData);
             userData = null;
         }

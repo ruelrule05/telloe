@@ -2,6 +2,10 @@
 .plan{
     box-shadow: $box-shadow-sm;
     transition: $transition-base;
+    .btn-checkmark{
+        right: 0; 
+        top: 0;
+    }
     svg{
         opacity: 0;
         fill: $primary;

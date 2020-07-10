@@ -64,7 +64,7 @@ class ConversationController extends Controller
                     ->orWhereHas('members', function($members) use ($contact) {
                         $members->where('user_id', $contact->contactUser->id ?? 0);
                     });
-            })->first();
+            })->has('members', 1)->first();
 
             if($conversation) return response()->json($conversation->load('user', 'messages.user', 'members.user'));
         endif;

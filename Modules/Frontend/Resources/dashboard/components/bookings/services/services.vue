@@ -99,7 +99,7 @@
 												</div>
 
 												<timerangepicker v-if="newBreaktime" :start="newBreaktime.start" :end="newBreaktime.end" @update="updateNewBreaktime($event, day)" class="mt-1"></timerangepicker>
-												<button class="btn btn-link pl-0" :disabled="(newBreaktime && (!newBreaktime.start || !newBreaktime.end)) || (selectedService.days[day].start == '08:00' && selectedService.days[day].end == '17:00')" @click="newBreaktime = {}"><u>+ Add breaktime</u></button>
+												<button class="btn btn-link pl-0" :disabled="(newBreaktime && (!newBreaktime.start || !newBreaktime.end))" @click="newBreaktime = {}"><u>+ Add breaktime</u></button>
 											</div>
 										</div>
 									</div>

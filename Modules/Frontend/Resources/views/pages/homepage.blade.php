@@ -292,45 +292,22 @@
 <div class="home-content bg-gray-100 home-content-12">
 	<div class="container text-center py-md-5" id="pricing">
 		<div class="row justify-content-center">
-			<div class="col-md-8">
+			<div class="col-md-10">
 				<h5 class="h1 font-heading mb-md-5 mb-4">Choose plan & pricing</h5>
-				<div class="bg-white rounded p-md-5 p-4">
-					<h5 class="font-heading mb-3">How many seats do you need?</h5>
-					<h5 class="h4 mb-5">Start with <span class="text-primary font-heading" v-cloak>@{{ seats }}</span> seats and add more as needed</h5>
-					<range-slider class="w-100 p-0" step="1" v-model="seats" min="10" :tooltip="true" v-cloak></range-slider>
-					<div class="d-flex justify-content-between">
-						<span>10</span>
-						<span class="seats-50">50</span>
-						<span>100</span>
-					</div>
+				
+				<div class="row text-left">
+					@foreach($plans as $plan)
+					<div class="col-md-4">
+						<div class="border rounded bg-white plan p-3 position-relative" @click="selectPlan(plan)">
+							<strong class="text-orange text-uppercase">Lorem ipsum</strong>
+							<h5 class="mb-0 font-heading text-primary">{{ $plan->name }}</h5>
+							<p class="mb-0 text-muted font-weight-light mt-3">{{ $plan->description }}</p>
 
-					<div class="d-md-flex mt-4 text-left">
-						<div class="flex-1 pr-md-5 mb-4 mb-md-0">
-							<h5 class="font-heading text-primary h4 d-inline-block" v-cloak>$@{{ (3.495*seats).toFixed(2) }}</h5> USD per month
-							<button class="btn btn-primary btn-lg btn-block mt-4">Try it free now</button>
-						</div>
-						<div class="flex-1">
-							<h5 class="font-heading" v-cloak>For up to @{{ seats }} users</h5>
-							<h6 class="font-heading">Plus you get everything below:</h6>
-							<div class="d-md-flex text-muted font-weight-light">
-								<div class="w-50">
-									<div>Booking Manager</div>
-									<div>Booking URL</div>
-									<div>Time Zone Plus</div>
-									<div>Send Files</div>
-									<div>Email Reminders</div>
-									<div>Take Payments</div>
-								</div>
-								<div class="w-50">
-									<div>Delayed Chat</div>
-									<div>Live Chat</div>
-									<div>Send Files</div>
-									<div>Send Voice Memos</div>
-									<div>Live Video Calls</div>
-								</div>
-							</div>
+							<h5 class="mb-0 mt-3 mb-0">${{ $plan->price }} per month</h5>
+							<h5 class="mb-0 font-weight-normal">{{ $plan->seats }} seats</h5>
 						</div>
 					</div>
+					@endforeach
 				</div>
 
 			</div>

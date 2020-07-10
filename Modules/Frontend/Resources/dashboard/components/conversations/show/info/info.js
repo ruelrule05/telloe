@@ -53,7 +53,6 @@ export default {
 	},
 
 	data: () => ({
-        open: false,
 		newTag: '',
         fileType: 'all',
         newNote: '',
@@ -120,13 +119,9 @@ export default {
 	},
 
     watch: {
-        '$root.detailsTab': function(value) {
-            this.open = !!value;
-        },
         '$root.profileTab': function(value) {
             if(value == 'notes' && this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
             this.tagSearch = '';
-            if(value) this.open = true;
         },
         'conversation.id': function() {
             if(this.conversation.members.length == 1) {
@@ -143,7 +138,6 @@ export default {
     },
 
 	created() {
-        this.open = !!this.$root.detailsTab;
         if(this.conversation.members.length == 1) {
             this.getServices();
             this.getUserBlacklistedServices(this.conversation.member.id);
@@ -167,10 +161,7 @@ export default {
 		}),
 
         closeInfo() {
-            this.open = false;
-            setTimeout(() => {
-                this.$root.detailsTab = '';
-            }, 150);
+            this.$root.detailsTab = '';
         },
 
         updateCustomField(custom_field) {

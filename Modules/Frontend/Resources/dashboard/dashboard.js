@@ -110,7 +110,7 @@ import VirtualRealityIcon from '../icons/virtual-reality';
 import BillIcon from '../icons/bill';
 import ContactIcon from '../icons/contact';
 import ExclamationCircleIcon from '../icons/exclamation-circle';
-import IncomingCallModal from '../modals/incoming-call/incoming-call.vue';
+import VideoCall from './components/video-call/video-call.vue';
 
 import store from './store';
 window.app = new Vue({
@@ -132,7 +132,7 @@ window.app = new Vue({
         ContactIcon,
         ExclamationCircleIcon,
 
-        IncomingCallModal,
+        VideoCall,
         ScreenRecorder,
     },
     data: {
@@ -150,7 +150,7 @@ window.app = new Vue({
 
         callWindow: null,
         caller: null,
-        callConversationId: null,
+        callConversation: null,
         callUser: null,
         screenRecorder: {
             conversation_id: null,
@@ -218,36 +218,6 @@ window.app = new Vue({
             this.online_users = data;
         });
 
-        this.socket.on('live_call_incoming', data => {
-            let conversation = this.conversations.find(x => x.id == data.conversation_id);
-            if (conversation && !this.callWindow) {
-                let conversationUsers = this.conversationUsers(conversation);
-                let caller = conversationUsers.find(x => x.id == data.user_id);
-                if (caller && caller.id != this.auth.id) {
-                    this.call_sound.play();
-                    this.caller = caller;
-                    this.callConversationId = conversation.id;
-                    this.$refs['incomingCall'].show();
-                }
-            }
-        });
-        this.socket.on('live_call_reject', data => {
-            let conversation = this.conversations.find(x => x.id == data.conversation_id);
-            if (conversation) {
-                this.call_sound.pause();
-                this.call_sound.currentTime = 0;
-                this.$refs['incomingCall'].hide();
-            }
-        });
-        this.socket.on('live_call_end', data => {
-            let conversation = this.conversations.find(x => x.id == data.conversation_id);
-            if (conversation) {
-                this.call_sound.pause();
-                this.call_sound.currentTime = 0;
-                this.$refs['incomingCall'].hide();
-            }
-        });
-
         axios.get('/auth').then(response => {
             this.auth = response.data;
             this.socket.emit('user_online', this.auth.id);
@@ -292,10 +262,10 @@ window.app = new Vue({
             this.call_sound.pause();
             this.call_sound.currentTime = 0;
             this.socket.emit('live_call_reject', {
-                conversation_id: this.callConversationId,
+                conversation_id: this.callConversation.id,
             });
-            this.$refs['incomingCall'].hide();
-            this.callWindow = this.caller = this.callConversationId = null;
+            this.$refs['videoCall'].endCall();
+            this.callWindow = this.caller = this.callConversation = null;
         },
 
         initCall(conversation_id, action) {
@@ -303,7 +273,7 @@ window.app = new Vue({
                 let conversation = this.conversations.find(x => x.id == conversation_id);
                 if (conversation) {
                     if (action == 'incoming') {
-                        this.$refs['incomingCall'].hide();
+                        this.$refs['videoCall'].endCall();
                         this.callUser = this.caller;
                         this.call_sound.pause();
                         this.call_sound.currentTime = 0;
@@ -314,12 +284,12 @@ window.app = new Vue({
                     const height = 600;
                     const left = screen.width / 2 - width / 2;
                     const top = screen.height / 2 - height / 2;
-                    this.callConversationId = conversation.id;
+                    this.callConversation = conversation;
                     this.callWindow = window.open(url, 'telloe_call_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
 
                     this.callWindow.onload = () => {
                         this.callWindow.onunload = e => {
-                            this.callWindow = this.caller = this.callUser = this.callConversationId = null;
+                            this.callWindow = this.caller = this.callUser = this.callConversation = null;
                         };
                     };
                     this.callWindow.onended = () => {
@@ -327,18 +297,6 @@ window.app = new Vue({
                     };
                 }
             }
-        },
-
-        conversationUsers(conversation) {
-            let users = [];
-            if (conversation) {
-                users.push(conversation.user);
-                conversation.members.forEach(member => {
-                    users.push(member.user);
-                });
-            }
-
-            return users;
         },
 
         sendVideo(video) {

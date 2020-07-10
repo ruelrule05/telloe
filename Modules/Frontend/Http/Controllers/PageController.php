@@ -5,6 +5,7 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
+use App\Models\Plan;
 use Auth;
 
 class PageController extends Controller
@@ -17,7 +18,9 @@ class PageController extends Controller
     		return redirect('/dashboard/conversations');
     	endif;
 
-    	return view('frontend::pages.homepage', ['contact' => $this->getContact($request)]);
+        $plans = Plan::orderBy('price', 'ASC')->get();
+
+    	return view('frontend::pages.homepage', ['contact' => $this->getContact($request), 'plans' => $plans]);
     }
 
     public function privacyPolicy(Request $request)

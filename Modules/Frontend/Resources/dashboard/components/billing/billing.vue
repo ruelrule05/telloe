@@ -6,7 +6,7 @@
 				<div class="row pb-4 px-3 h-100 w-100 m-0 justify-content-center">
 					<div v-for="plan in plans" class="col-md-4 py-2">
 						<div class="border rounded bg-white plan p-3 position-relative" :class="[$root.auth.subscription && $root.auth.subscription.plan_id == plan.id ? 'active' : 'cursor-pointer', {'selected': plan.id == (selectedPlan || {}).id}]" @click="selectPlan(plan)">
-							<div class="btn btn-checkmark p-1 badge-pill line-height-0 position-absolute mr-2 mt-2" style="right: 0; top: 0">
+							<div class="btn btn-checkmark p-1 badge-pill line-height-0 position-absolute mr-2 mt-2">
 								<checkmark-icon width="14" height="14" transform="scale(1.8)" stroke-width="1"></checkmark-icon>
 							</div>
 							<strong class="text-orange text-uppercase">Lorem ipsum</strong>

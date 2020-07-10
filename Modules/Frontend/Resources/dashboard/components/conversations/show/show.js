@@ -7,7 +7,7 @@ import VueFormValidate from '../../../../components/vue-form-validate';
 import Emojipicker from '../../../../components/emojipicker';
 import MessageType from './message-type';
 
-import VideoIcon from '../../../../icons/video';
+import VideoIcon from '../../../../icons/colored-video';
 import CastIcon from '../../../../icons/cast';
 import InfoCircleIcon from '../../../../icons/info-circle';
 import VideoCameraIcon from '../../../../icons/video-camera';

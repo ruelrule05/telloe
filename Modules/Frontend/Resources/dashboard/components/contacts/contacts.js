@@ -2,6 +2,7 @@ import {mapState, mapActions} from 'vuex';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
+import Info from '../conversations/show/info/info.vue';
 
 import MoreHIcon from '../../../icons/more-h';
 import PlusIcon from '../../../icons/plus';
@@ -15,6 +16,7 @@ export default {
 		Modal, 
 		VueFormValidate, 
 		ToggleSwitch,
+        Info,
 
 		MoreHIcon, 
 		PlusIcon,
@@ -41,6 +43,7 @@ export default {
 
 	computed: {
 		...mapState({
+            conversations: (state) => state.conversations.index,
             contacts: (state) => state.contacts.index,
             ready: (state) => state.contacts.ready,
             services: (state) => state.services.index,
@@ -53,6 +56,19 @@ export default {
 
         blacklisted_services() {
             return this.user_blacklisted_services[(this.selectedContact.contact_user || {}).id] || [];
+        },
+
+        conversation() {
+            let conversation = this.conversations.find(x => 
+                x.members.length == 1 && x.member.id == this.selectedContact.contact_user.id
+            );
+            if(!conversation) {
+                conversation = {
+                    member: this.selectedContact.contact_user,
+                    members: [this.selectedContact.contact_user],
+                };
+            }
+            return conversation;
         },
 	},
 
@@ -72,7 +88,6 @@ export default {
         this.$root.contentloading = !this.ready;
 		this.getContacts();
 		this.showUserCustomFields();
-		this.getServices();
 	},
 
 	methods: {
@@ -82,9 +97,6 @@ export default {
             deleteContact: 'contacts/delete',
             showUserCustomFields: 'user_custom_fields/show',
             storeUserCustomFields: 'user_custom_fields/store',
-            getServices: 'services/index',
-            getUserBlacklistedServices: 'user_blacklisted_services/index',
-            storeUserBlacklistedService: 'user_blacklisted_services/store',
         }),
 
         closeInfo() {
@@ -100,19 +112,6 @@ export default {
                 custom_fields: {},
                 blacklisted_services: []
             };
-        },
-
-
-        toggleServiceBlacklist(state, service) {
-        	if(!this.newContact.blacklisted_services) this.newContact.blacklisted_services = [];
-        	if(state) {
-        		let index = this.newContact.blacklisted_services.findIndex((x) => x == service.id);
-        		if(index > -1) {
-        			this.newContact.blacklisted_services.splice(index, 1);
-        		}
-        	} else {
-        		if(!this.newContact.blacklisted_services.find((x) => x == service.id)) this.newContact.blacklisted_services.push(service.id);
-        	}
         },
         
         updateCustomField(index) {

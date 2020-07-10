@@ -53,7 +53,7 @@
 													<more-h-icon width="20" height="20"></more-h-icon>
 					                    		</button>
 												<div class="dropdown-menu dropdown-menu-right">
-												    <span class="dropdown-item cursor-pointer" :class="{'disabled': contact.is_pending}" @click="selectedContact = contact; manageContact = true; manageFields = false; getUserBlacklistedServices(contact.contact_user.id)">Manage</span>
+												    <span class="dropdown-item cursor-pointer" :class="{'disabled': contact.is_pending}" @click="selectedContact = contact; manageContact = true; manageFields = false">Manage</span>
 												    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; $refs['deleteModal'].show()">Delete</span>
 												</div>
 					                    	</div>
@@ -71,28 +71,10 @@
 	                <strong>Manage {{ selectedContact ? 'Contact' : manageFields ? 'Fields' : '' }}</strong>
 	                <button class="btn btn-white p-0 ml-auto" @click="closeInfo()"><close-icon height="30" width="30"></close-icon></button>
 	            </div>
-				<template v-if="selectedContact">
-					<div class="text-center pt-4">
-                        <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+selectedContact.contact_user.profile_image+')'}">
-                            <span v-if="!selectedContact.contact_user.profile_image">{{ selectedContact.contact_user.initials }}</span>
-                        </div>
-                        <h4 class="h5 font-heading mb-0 rounded">{{ selectedContact.contact_user.full_name }}</h4>
-                        <div class="text-muted mb-1">{{ selectedContact.contact_user.email }}</div>
-                    </div>
-                    <div class="px-3 mt-4">
-	                    <label class="text-muted mb-2">Available Services</label>
-	                    <div v-for="service in services" class="d-flex align-items-center mb-2">
-	                        <div>
-	                            <h6 class="font-heading mb-0">{{ service.name }}</h6>
-	                            <small class="text-muted d-block">{{ service.duration }} minutes</small>
-	                        </div>
-	                        <div class="ml-auto">
-	                            <toggle-switch :value="!(blacklisted_services.find((x) => x.service_id == service.id) || {}).is_blacklisted" @input="storeUserBlacklistedService({user_id: selectedContact.contact_user.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
-	                        </div>
-	                    </div>
-                    </div>
-
+				<template v-if="selectedContact && manageContact">
+					<info :conversation="conversation"></info>
 				</template>
+
 				<div v-else-if="manageFields" class="p-3" ref="customFieldsLabel">
 					<div class="dropdown mb-2">
 	                    <button class="btn btn-sm btn-light border d-flex align-items-center" data-toggle="dropdown" data-display="static"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon> Add Field</button>

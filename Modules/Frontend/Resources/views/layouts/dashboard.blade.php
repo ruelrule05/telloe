@@ -173,8 +173,8 @@
 					</div>
 				</div>
 			</div>
-
-			<incoming-call-modal :caller="caller" ref="incomingCall"></incoming-call-modal>
+			
+			<video-call ref="videoCall"></video-call>
 			<screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
 		</div>
 

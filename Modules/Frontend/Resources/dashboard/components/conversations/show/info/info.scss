@@ -1,14 +1,5 @@
 @import '../../../../../sass/variables';
 @import './../show.scss';
-
-.conversation-details {
-    width: 350px;
-    margin-right: -350px;
-    transition: $transition-base;
-    &.open{
-        margin-right: 0;
-    }
-}
 .user-profile-image {
     width: 50px;
     height: 50px;
@@ -19,10 +10,6 @@
         width: 35px;
         height: 35px;
     }
-}
-.info-header{
-    margin-top:1px;
-    margin-bottom: 1px;
 }
 .btn-close{
     z-index: 10;

@@ -19,14 +19,15 @@
                                     <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
                                     <small class="text-muted">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
                                 </div>
-                                <small v-else-if="(conversation.member.role || {}).role != 'support'" class="d-block text-muted">{{ conversation.members.length }} members</small>
+                                <small v-else class="d-block text-muted">
+                                    <template v-if="(conversation.member.role || {}).role != 'support'">{{ conversation.members.length }} members</template>
+                                    <template v-else>{{ conversation.member.email }}</template>
+                                </small>
                             </div>
                         </div>
                         <div class="ml-auto btn-circle-actions">
-                            <template v-if="!conversation.member.is_pending">
-                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.initCall(conversation.id, 'outgoing')" :class="{'active disabled': $root.callWindow ? true : false}"><video-icon width="32" height="32"></video-icon></button>
-                            </template>
-                            <template v-if="!conversation.member.is_pending">
+                            <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
+                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversationId ? true : false}"><video-icon width="32" height="32"></video-icon></button>
                                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callWindow ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button>
                             </template>
                             <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
@@ -136,7 +137,20 @@
 
 
             <!-- Info -->
-           <info :conversation="conversation"></info>
+            <div class="conversation-details h-100 position-relative bg-white overflow-hidden" :class="{'open': $root.detailsTab}">
+                <div class="h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center border-bottom py-3 px-3">
+                        <div class="info-header">
+                            <strong class="text-capitalize d-block">{{ $root.detailsTab }}</strong>
+                            <span class="text-muted">{{ conversation.member.full_name || conversation.name }}</span>
+                        </div>
+                        <button class="btn btn-white p-0 ml-auto" @click="$root.detailsTab = ''"><close-icon height="30" width="30"></close-icon></button>
+                    </div>
+                    <div class="text-left flex-grow-1 overflow-hidden">
+                        <info :conversation="conversation"></info>
+                    </div>
+                </div>
+            </div>
 
                 
 

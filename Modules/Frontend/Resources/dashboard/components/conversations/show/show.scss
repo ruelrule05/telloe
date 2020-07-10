@@ -223,3 +223,15 @@
 .screen-recorder-data{
     z-index: 101;
 }
+.conversation-details {
+    width: 350px;
+    margin-right: -350px;
+    transition: $transition-base;
+    &.open{
+        margin-right: 0;
+    }
+}
+.info-header{
+    margin-top:1px;
+    margin-bottom: 1px;
+}
