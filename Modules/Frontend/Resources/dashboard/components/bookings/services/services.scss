@@ -1,66 +1,54 @@
 @import '../../../../sass/variables';
-.multiline-ellipsis{
+.multiline-ellipsis {
 	overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
 }
-.service{
+.service {
 	border: solid 1px transparent;
 	transition: $transition-base;
-	&:hover:not(.active){
+	&:hover:not(.active) {
 		border-color: $gray-400;
 	}
-	&.active{
+	&.active {
 		box-shadow: 0 0 0 0.1rem $primary;
 	}
 }
-.service-add{
+.service-add {
 	background-color: $light;
 	transition: $transition-base;
 	border: dashed 1px $gray-500;
-	&:hover{
+	&:hover {
 		background-color: white;
 	}
 }
-.badge-day{
+.badge-day {
 	width: 25px;
 	height: 25px;
 }
-.service-day{
-	.chevron-down{
+.service-day {
+	.chevron-down {
 		fill: $gray-500;
 		transition: $transition-base;
 	}
 
-	.service-day-title {
-		transition: $transition-base;
-		color: $gray-600;
-	}
-	.service-day-heading{
-		&[aria-expanded="true"]{
-			svg{
+	.service-day-heading {
+		&[aria-expanded='true'] {
+			svg {
 				transform: rotate(-180deg);
-			}
-			.service-day-title {
-				color: black;
-			}
-			svg{
 				fill: black;
 			}
 		}
-		&:hover{
-			.service-day-title {
-				color: black;
-			}
-			svg{
+		&:hover {
+			svg {
 				fill: black;
 			}
 		}
 	}
 }
 .btn-tab {
-	&:after{
+	&:after {
 		content: '';
 		position: absolute;
 		bottom: 0;
@@ -70,7 +58,15 @@
 		background-color: $primary;
 		opacity: 0;
 	}
-	&.active:after{
+	&.active:after {
 		opacity: 1;
+	}
+}
+.info {
+	transition: $transition-base;
+		flex: 0 0 350px;
+		margin-right: -350px;
+	&.open {
+		margin-right: 0;
 	}
 }

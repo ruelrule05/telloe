@@ -6,7 +6,7 @@
 					<div class="d-flex align-items-center px-4">
 						<h5 class="font-heading">Manage Contacts</h5>
 						<div class="ml-auto d-flex align-items-center">
-							<button type="button" class="btn btn-primary d-flex align-items-center" @click="$refs['addModal'].show()"><plus-icon height="13" width="13" transform="scale(1.6)" fill="white" class="mr-1"></plus-icon>Add Contact</button>
+							<button type="button" class="btn btn-white border d-flex align-items-center" @click="$refs['addModal'].show()"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Contact</button>
 							<button type="button" class="btn btn-white ml-1 border" @click="manageFields = true; selectedContact = false; manageContact = false;">Manage Fields</button>
 						</div>
 					</div>
@@ -14,7 +14,7 @@
 					<div class="rounded mt-3 overflow-auto h-100 flex-grow-1 d-flex flex-column">
 						<div v-if="contacts.length == 0" class="text-gray text-center p-4">
 							<div class="h6 mb-3">You don't have any contacts yet.</div>
-							<button class="btn btn-primary" @click="$refs['addModal'].show()">Add Contact</button>
+							<button class="btn btn-white border" @click="$refs['addModal'].show()">Add Contact</button>
 						</div>
 
 						<template v-else>
