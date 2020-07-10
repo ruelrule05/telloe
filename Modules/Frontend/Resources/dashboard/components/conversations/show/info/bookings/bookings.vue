@@ -80,7 +80,7 @@
 	        	<!-- Edit -->
 	        	<div class="dropdown-menu w-100 p-2 mt-n3" :class="{'show': selectedBooking && selectedBooking.id == booking.id}">
 					<h6 class="font-heading">Edit Booking</h6>
-					{{ selectedService.name }}
+					{{ (selectedService || {}).name }}
 					<select class="form-control shadow-none mb-2 cursor-pointer" @change="getTimeslots(selectedService, booking.new_date)" :class="{'text-muted': !selectedService}" v-model="selectedService">
 						<option :value="service.id" v-for="service in services">{{ service.name }}</option>
 					</select>
