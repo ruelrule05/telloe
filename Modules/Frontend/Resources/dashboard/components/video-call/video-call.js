@@ -227,6 +227,7 @@ export default {
 	            conversation_id: this.$root.callConversation.id,
 	            user_id: this.$root.auth.id,
 	        });
+            this.notification_sound.pause();
         },
 
         endCall(emit = true) {
