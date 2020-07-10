@@ -197,7 +197,7 @@ export default {
     	},
 
 		outgoingCall(conversation) {
-            //this.notification_sound.play();
+            this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
@@ -215,7 +215,7 @@ export default {
 		},
 
 		incomingCall() {
-	       	//this.notification_sound.play();
+	       	this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
