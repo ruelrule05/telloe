@@ -31,4 +31,8 @@ class MessagePolicy
         return $message->conversation->user_id == $user->id;
     }
 
+    public function delete(User $user, Message $message)
+    {
+        return $message->conversation->user_id == $user->id;
+    }
 }

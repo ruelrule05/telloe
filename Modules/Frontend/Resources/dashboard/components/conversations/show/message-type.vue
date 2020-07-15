@@ -1,15 +1,25 @@
 <template>
-	<div class="w-100 position-relative">
+	<div class="position-relative">
 		<!-- Emoji -->
         <div class="mb-0 display-3 line-height-1" v-if="message.type == 'emoji'">{{ message.message }}</div>
 
         <!-- Image -->
-        <div class="mb-0 d-inline-block cursor-pointer" v-else-if="message.type == 'image'">
+        <div class="mb-0" v-else-if="message.type == 'image'">
+            <div v-if="message.sending" class="position-absolute-center message-sending w-100 h-100">
+                <div class="position-absolute-center">
+                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+            </div>
             <img draggable="false" class="rounded cursor-pointer border" :src="message.preview" @click="if(click) $parent.openFile(message)" />
         </div>
 
         <!-- Video -->
-        <div class="mb-0 position-relative d-inline-block cursor-pointer" v-else-if="message.type == 'video'">
+        <div class="mb-0" v-else-if="message.type == 'video'">
+            <div v-if="message.sending" class="position-absolute-center message-sending w-100 h-100">
+                <div class="position-absolute-center">
+                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+            </div>
             <img draggable="false" class="rounded border" :src="message.preview" @click="if(click) $parent.openFile(message)" />
             <div class="position-absolute-center preview-video-play pointer-events-none">
                 <play-icon height="20" width="20"></play-icon>
@@ -130,6 +140,9 @@ export default {
 </script>
 
 <style scoped>
+.message-sending{
+    background-color: rgba(255, 255, 255, 0.65);
+}
 .message-text{
     white-space: pre-wrap;
 }
@@ -137,8 +150,7 @@ p {
     line-height: 1.3;
 }
 img{
-    width: 350px;
-    max-width: 100%;
+    max-width: 450px;
     height: auto;
 }
 .preview-video-play {

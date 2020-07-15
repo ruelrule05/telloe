@@ -8,7 +8,7 @@
 				<div class="py-3 btn-tab">
 					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
 				</div>
-                <div class="ml-auto dropleft pr-3">
+                <div class="ml-auto pr-3">
                     <button class="btn btn-sm btn-white border d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon>New Chat</button>
                 </div>
 			</div>

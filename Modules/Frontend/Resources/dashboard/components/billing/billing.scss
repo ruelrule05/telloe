@@ -5,19 +5,19 @@
     .btn-checkmark{
         right: 0; 
         top: 0;
-    }
-    svg{
-        opacity: 0;
-        fill: $primary;
-        stroke: $primary;
+        svg{
+            opacity: 0;
+            fill: $primary;
+            stroke: $primary;
+        }
     }
     &.active{
         box-shadow: 0 0 0 0.1rem $primary;
-        svg{
-            opacity: 1;
-        }
         .btn-checkmark{
             border: solid 1px $border-color;
+            svg{
+                opacity: 1;
+            }
         }
     }
     &:hover:not(.active),

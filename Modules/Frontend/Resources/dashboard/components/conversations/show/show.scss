@@ -235,3 +235,11 @@
     margin-top:1px;
     margin-bottom: 1px;
 }
+.pasted-file{
+    z-index: 100;
+    .pasted-preview{
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+}

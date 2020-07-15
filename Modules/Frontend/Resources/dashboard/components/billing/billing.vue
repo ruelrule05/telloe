@@ -1,8 +1,8 @@
 <template>
-	<div class="py-4 d-flex flex-row w-100 align-items-center h-100">
-		<div class="w-100">
+	<div class="py-4 d-flex flex-row w-100 align-items-center h-100 overflow-auto ">
+		<div class="w-100 h-100">
 			<h1 class="font-heading mb-4 text-center">Choose a Plan</h1>
-			<div class="overflow-auto d-flex flex-row align-items-center justify-content-center">
+			<div class="d-flex flex-row align-items-center justify-content-center">
 				<div class="row pb-4 px-3 h-100 w-100 m-0 justify-content-center">
 					<div v-for="plan in plans" class="col-md-4 py-2">
 						<div class="border rounded bg-white plan p-3 position-relative" :class="[$root.auth.subscription && $root.auth.subscription.plan_id == plan.id ? 'active' : 'cursor-pointer', {'selected': plan.id == (selectedPlan || {}).id}]" @click="selectPlan(plan)">
@@ -25,9 +25,45 @@
 									</div> -->
 							</div>
 
-							<div class="mt-5">
+							<div class="mt-3">
 								<button v-if="$root.auth.subscription && $root.auth.subscription.plan_id == plan.id" type="button" class="btn btn-primary btn-lg btn-block" @click="unsubscribe">Cancel subscription</button>
 								<button v-else type="button" class="btn btn-outline-primary btn-lg btn-block">Subscribe</button>
+							</div>
+
+							<div class="mt-2">
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking Manager
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking URL
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Time Zone Plus
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Files
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Email Reminders
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Delayed Chat
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Live Chat
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Files
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Voice Memos
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Live Video Calls
+								</div>
 							</div>
 						</div>
 					</div>

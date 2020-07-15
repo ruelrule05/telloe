@@ -49,7 +49,7 @@ Route::group(
                 
             // Resource
             Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
-            Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update']);
+            Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
             Route::apiResource('services', 'ServiceController');
             Route::apiResource('notes', 'NoteController');
             Route::apiResource('bookings', 'BookingController');

@@ -40,7 +40,7 @@ export default {
 		stripeContacts() {
 			let contacts = [];
 			this.contacts.forEach((contact) => {
-				if(contact.contact_user.stripe_contact_id) {
+				if(contact.contact_user.stripe_customer_id) {
 					contacts.push({
 						text: contact.contact_user.full_name,
 						value: contact.id

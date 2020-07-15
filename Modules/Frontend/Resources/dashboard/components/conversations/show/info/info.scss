@@ -111,3 +111,23 @@
         background-color: white;
     }
 }
+
+#info-items{
+    h5 {
+        svg {
+            fill: $gray-500;
+            transition: $transition-base;
+        }
+        &[aria-expanded='true'] {
+            svg {
+                transform: rotate(-180deg);
+                fill: black;
+            }
+        }
+        &:hover {
+            svg {
+                fill: black;
+            }
+        }
+    }
+ }

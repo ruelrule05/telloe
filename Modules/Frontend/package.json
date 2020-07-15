@@ -28,6 +28,7 @@
         "@fullcalendar/interaction": "^4.4.0",
         "@fullcalendar/vue": "^4.4.0",
         "@nesk/puphpeteer": "^1.6.0",
+        "blueimp-load-image": "^5.13.0",
         "bootstrap": "^4.5.0",
         "bootstrap-sass": "^3.4.1",
         "browser-sync": "^2.26.7",

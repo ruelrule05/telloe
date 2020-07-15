@@ -2,9 +2,11 @@ import {mapGetters, mapActions} from 'vuex';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
 const mime = require('mime');
+const loadImage = require('blueimp-load-image');
 
 import VueFormValidate from '../../../../components/vue-form-validate';
 import Emojipicker from '../../../../components/emojipicker';
+import Modal from '../../../../components/modal/modal.vue';
 import MessageType from './message-type';
 
 import VideoIcon from '../../../../icons/colored-video';
@@ -19,6 +21,7 @@ import HistoryIcon from '../../../../icons/history';
 import CloseIcon from '../../../../icons/close';
 import ExpandWideIcon from '../../../../icons/expand-wide';
 import ColoredPhoneIcon from '../../../../icons/colored-phone';
+import TrashIcon from '../../../../icons/trash';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -27,6 +30,7 @@ export default {
     components: {
         VueFormValidate,
         Emojipicker,
+        Modal,
         MessageType,
 
         VideoIcon,
@@ -41,9 +45,10 @@ export default {
         CloseIcon,
         ExpandWideIcon,
         ColoredPhoneIcon,
+        TrashIcon,
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
-        'file-view-modal': () => import(/* webpackChunkName: "modals-fileview" */ '../../../../modals/file-view'),
+        gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
         'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "modals-audiorecorder" */ '../../../../modals/audio-recorder'),
         'screen-recorder-modal': () => import(/* webpackChunkName: "modals-screenrecorder" */ '../../../../modals/screen-recorder'),
@@ -62,6 +67,8 @@ export default {
         selectedFile: null,
         recorder: '',
         hasScreenRecording: false,
+        pastedFile: null,
+        selectedMessage: null,
     }),
 
     watch: {
@@ -77,6 +84,15 @@ export default {
         },
         'conversation.ready': function(value) {
             if (value) this.scrollDown();
+        },
+        'conversation.last_message': function(value) {
+            if (this.conversation.messages && value.id) {
+                let message = this.conversation.messages.find(x => x.id == value.id);
+                if (!message) {
+                    this.conversation.messages.push(value);
+                    this.scrollDown();
+                }
+            }
         },
         '$route.params.id': function(value) {
             if (value) {
@@ -147,23 +163,26 @@ export default {
 
     created() {
         this.checkConversation();
-        this.$root.socket.on('new_message', data => {
+        this.$root.socket.on('new_messagex', data => {
             let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
             if (conversation) {
-                this.$root.getMessageByID(data).then(message => {
-                    if (message && message.conversation_id == conversation.id) {
-                        conversation.last_message = message;
-                        this.$root.message_sound.play();
-                        if(this.conversation) {
-                            if (conversation.id == this.conversation.id) {
-                                conversation.messages.push(message);
-                                this.scrollDown();
-                            } else {
-                                this.$router.push(`/dashboard/conversations/${conversation.id}`);
+                let message = conversation.messages.find(x => x.id == data.id);
+                if (!message) {
+                    this.$root.getMessageByID(data).then(message => {
+                        if (message && message.conversation_id == conversation.id) {
+                            conversation.last_message = message;
+                            this.$root.message_sound.play();
+                            if (this.conversation) {
+                                if (conversation.id == this.conversation.id) {
+                                    conversation.messages.push(message);
+                                    this.scrollDown();
+                                } else {
+                                    this.$router.push(`/dashboard/conversations/${conversation.id}`);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     },
@@ -178,6 +197,7 @@ export default {
             updateConversation: 'conversations/update',
             storeMessage: 'messages/store',
             updateMessage: 'messages/update',
+            deleteMessage: 'messages/delete',
         }),
 
         messageInput(e) {
@@ -348,12 +368,13 @@ export default {
         },
 
         isImage(extension) {
-            let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+            let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
             return imageExtensions.indexOf(extension) > -1;
         },
 
         sendMessage(message) {
             if (this.conversation) {
+                message.sending = true;
                 message.prefix = 'You: ';
                 message.tags = [];
                 message.conversation_id = this.conversation.id;
@@ -391,25 +412,16 @@ export default {
                 if (this.isImage(fileExtension)) {
                     message.type = 'image';
                     message.message = 'image';
-                    var img = new Image();
-                    img.src = URL.createObjectURL(fileInput.files[0]);
-                    img.onload = () => {
-                        let canvas = document.createElement('canvas');
-                        let context = canvas.getContext('2d');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        let srcUrl = canvas.toDataURL(fileInput.files[0].type);
-                        // Preview
-                        let canvasPreview = document.createElement('canvas');
-                        let contextPreview = canvasPreview.getContext('2d');
-                        canvasPreview.width = img.width / 2;
-                        canvasPreview.height = img.height / 2;
-                        contextPreview.drawImage(img, 0, 0, canvasPreview.width, canvasPreview.height);
-                        let previewUrl = canvasPreview.toDataURL(fileInput.files[0].type);
-                        message.preview = previewUrl;
-                        this.sendMessage(message);
-                    };
+
+                    loadImage(
+                        fileInput.files[0],
+                        canvas => {
+                            let dataurl = canvas.toDataURL(fileInput.files[0].type);
+                            message.preview = dataurl;
+                            this.sendMessage(message);
+                        },
+                        {maxWidth: 200, canvas: true},
+                    );
                 } else {
                     let fileBase64 = await this.fileToBase64(fileInput.files[0]);
                     let messageData = {
@@ -428,6 +440,13 @@ export default {
             this.$refs['messageInput'].focus();
         },
 
+        sendPastedFile() {
+            if (this.pastedFile) {
+                this.addFile({target: {files: [this.pastedFile.file], value: this.pastedFile.file.name}});
+            }
+            this.pastedFile = null;
+        },
+
         inputPaste(e) {
             if (e.clipboardData.files.length > 0) {
                 e.preventDefault();
@@ -439,9 +458,14 @@ export default {
                 filename = parts.join('');
                 filename += '.png';
                 let file = e.clipboardData.files[0];
-                let blob = file.slice(0, file.size, file.type);
-                let newFile = new File([blob], filename, {type: file.type});
-                this.addFile({target: {files: [newFile], value: newFile.name}});
+                loadImage(
+                    file,
+                    canvas => {
+                        let dataurl = canvas.toDataURL(file.type);
+                        this.pastedFile = {file: file, preview: dataurl};
+                    },
+                    {maxWidth: 350, canvas: true},
+                );
             }
         },
 

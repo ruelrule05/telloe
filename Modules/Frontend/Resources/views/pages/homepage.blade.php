@@ -14,7 +14,7 @@
 				<h1 class="font-heading font-weight-bold mb-0 display-4">You Coach...</h1>
 				<h2 class="font-heading mb-4">Let {{ config('app.name') }} do the rest!</h2>
 				<p class="text-muted h5 font-weight-light mb-5">Fed up with clients missing their appointments, confused with managing multiple calendars, having issues tracking and accepting client payments, and keeping all your clients' communications and details together?</p>
-				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0">Start Free Trial</button>
+				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
 				<button class="btn btn-outline-primary btn-lg px-4 btn-sm-block">View Demo</button>
 			</div>
 		</div>
@@ -225,7 +225,7 @@
 				</div>
 				<h4 class="h1 font-heading my-4">Your clients can join you from any browser seamlessly</h4>
 				<p class="h5 text-muted mb-5 font-weight-light line-height-sm">Optimized to work efficiently with major and modern web browsers</p>
-				<button class="btn btn-primary btn-lg btn-sm-block px-4">Start Free Trial</button>
+				<button class="btn btn-primary btn-lg btn-sm-block px-4" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
 			</div>
 		</div>
 	</div>
@@ -305,6 +305,42 @@
 
 							<h5 class="mb-0 mt-3 mb-0">${{ $plan->price }} per month</h5>
 							<h5 class="mb-0 font-weight-normal">{{ $plan->seats }} seats</h5>
+
+							<div class="mt-2">
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking Manager
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking URL
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Time Zone Plus
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Files
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Email Reminders
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Delayed Chat
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Live Chat
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Files
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Voice Memos
+								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Live Video Calls
+								</div>
+							</div>
 						</div>
 					</div>
 					@endforeach
@@ -407,7 +443,7 @@
 		<div class="row justify-content-center">
 			<div class="col-md-8">
 				<h4 class="h1 font-heading mb-5">Ready to grow your business through the most powerful communication platform on the planet?</h4>
-				<button class="btn btn-primary btn-lg btn-sm-block px-4">Start Free Trial</button>
+				<button class="btn btn-primary btn-lg btn-sm-block px-4" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
 			</div>
 		</div>
 	</div>

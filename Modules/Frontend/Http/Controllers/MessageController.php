@@ -8,6 +8,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use File;
 use Auth;
+use Image;
 
 class MessageController extends Controller
 {
@@ -27,6 +28,7 @@ class MessageController extends Controller
 
         $time = time();
         $sourceFile = null;
+        $previewFile = null;
         if ($request->hasFile('source')) :
             $filename = $time . '-source';
             $srcDestination = 'storage/message-media/' . $filename;
@@ -41,15 +43,29 @@ class MessageController extends Controller
             endif;
             $metadata['filename'] = $originalName;
             $metadata['size'] =  formatBytes($request->source->getSize(), 0);
-        endif;
 
-        $previewFile = null;
-        if ($request->preview) :
-            $source = $request->preview;
             $filename = $time . '-preview';
             $previewDestination = 'storage/message-media/' . $filename;
-            $preview = base64_decode(substr($source, strpos($source, ',') + 1));
-            File::put($previewDestination, $preview);
+
+            if($request->type == 'image') :
+                if ($request->preview) :
+                    $source = $request->preview;
+                    $filename = $time . '-preview';
+                    $previewDestination = 'storage/message-media/' . $filename;
+                    $preview = base64_decode(substr($source, strpos($source, ',') + 1));
+                    File::put($previewDestination, $preview);
+                else :
+                    $img = Image::make($request->file('source'));
+                    if ($img->width() > 200) :
+                        $img->resize(200, null, function ($constraint) {
+                            $constraint->aspectRatio();
+                            $constraint->upsize();
+                        });
+                    endif;
+                    $img->save($previewDestination);
+                endif;
+            endif;
+
             $previewFile = '/' . $previewDestination;
         endif;
 
@@ -86,5 +102,15 @@ class MessageController extends Controller
         $message = Message::with('conversation')->findOrFail($id);
         $this->authorize('show', $message);
         return response()->json($message->load('user'));
+    }
+
+
+    public function destroy($id, Request $request)
+    {
+        $message = Message::findOrFail($id);
+        $this->authorize('delete', $message);
+        $message->delete();
+
+        return response()->json(['deleted' => true]);
     }
 }

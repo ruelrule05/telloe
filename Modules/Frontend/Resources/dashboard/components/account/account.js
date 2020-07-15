@@ -113,31 +113,31 @@ export default {
 		},
 
         updateImage(e) {
-            var input = $(e.currentTarget);
-            var file = input[0].files[0];
+            let input = $(e.currentTarget);
+            let file = input[0].files[0];
             if (file) {
                 if (file.type.match('image/jpeg') || file.type.match('image/png')) {
-                    var photosize = file.size / 1000;
+                    let photosize = file.size / 1000;
                     if (photosize > 200) {
                         alert('Error: Image file too big. Please choose image file not bigger than 200KB.');
                     } else {
                         this.user.profile_image = file;
 
-                        var img = document.createElement('img');
-                        var reader = new FileReader();
+                        let img = document.createElement('img');
+                        let reader = new FileReader();
                         reader.readAsDataURL(file);
 
                         reader.onload = (oFREvent) => {
-                            var canvas = document.createElement('canvas');
+                            let canvas = document.createElement('canvas');
                             img.src = oFREvent.target.result;
                             img.addEventListener('load', () => {
-                                var ctx = canvas.getContext('2d');
+                                let ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0);
 
-                                var MAX_WIDTH = 350;
-                                var MAX_HEIGHT = 350;
-                                var width = img.width;
-                                var height = img.height;
+                                let MAX_WIDTH = 350;
+                                let MAX_HEIGHT = 350;
+                                let width = img.width;
+                                let height = img.height;
 
                                 if (width > height) {
                                     if (width > MAX_WIDTH) {
@@ -152,10 +152,10 @@ export default {
                                 }
                                 canvas.width = width;
                                 canvas.height = height;
-                                var ctx = canvas.getContext('2d');
+                                ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0, width, height);
 
-                                var dataurl = canvas.toDataURL(file.type);
+                                let dataurl = canvas.toDataURL(file.type);
                                 let imageFile = toBlob(dataurl);
                                 this.user.profile_image = dataurl;
                                 this.user.profile_image_file = imageFile;

@@ -30,7 +30,8 @@
                                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversationId ? true : false}"><video-icon width="32" height="32"></video-icon></button>
                                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callWindow ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button>
                             </template>
-                            <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = 'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
+                            <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 
+                            'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
                         </div>
         			</div>
 
@@ -46,6 +47,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div v-if="pastedFile" class="position-absolute-center w-100 h-100 bg-white pasted-file">
+                            <div class="position-absolute-center w-75 h-100 d-flex flex-column p-5">
+                                <div class="pasted-preview flex-grow-1" :style="{'background-image': 'url('+pastedFile.preview+')'}"></div>
+                                <div class="text-center mt-3">
+                                    <button type="button" class="btn btn-light border" @click="pastedFile = null">Cancel</button>
+                                    <button type="button" class="btn btn-light border" @click="sendPastedFile()">Send</button>
+                                </div>
+                            </div>
+                        </div>
+
+
 
                         <div v-if="!ready || !conversation.ready" class="bg-white messages-loader position-absolute-center w-100 h-100">
                             <div class="position-absolute-center">
@@ -64,8 +77,8 @@
                             		<div class="px-1 flex-1">
                                     	<div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
             	                            <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find((x) => x == message.type)}">
-                                                <div class="message-actions position-absolute px-2 d-flex align-items-center dropup">
-                                                    <div class="action-content position-relative mr-1 line-height-1">
+                                                <div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
+                                                    <div class="action-content position-relative line-height-1">
                                                         <div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
                                                             <span v-if="message.tags.length > 0" class="action-label">{{ message.tags.length }}</span>
                                                             <bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
@@ -88,9 +101,14 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div v-tooltip.top="'History'" class="action-content cursor-pointer line-height-1">
+                                                    <div v-tooltip.top="'History'" class="action-content mx-1 cursor-pointer line-height-1">
                                                         <div class="action-button">
                                                             <history-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''" :class="{'active': message.is_history}" @click.native="markHistory(message)"></history-icon>
+                                                        </div>
+                                                    </div>
+                                                    <div v-tooltip.top="'Delete'" class="action-content cursor-pointer line-height-1">
+                                                        <div class="action-button">
+                                                            <trash-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''" :class="{'active': message.is_history}" @click.native="selectedMessage = message; $refs['deleteMessageModal'].show()"></trash-icon>
                                                         </div>
                                                     </div>
 
@@ -154,13 +172,26 @@
 
                 
 
-            <file-view-modal v-if="selectedFile && ['image', 'video'].find((x) => x == selectedFile.type)" :file="selectedFile" @close="selectedFile = null"></file-view-modal>
+            <gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
 
             <audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
             <screen-recorder-modal v-if="recorder == 'screen'" @submit="sendVideo" @close="recorder = ''"></screen-recorder-modal>
 
             <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal>
         </div>
+
+        <modal ref="deleteMessageModal" @hidden="selectedMessage = null">
+            <template v-if="selectedMessage">
+                <h5 class="font-heading text-center">Delete Message</h5>
+                <p class="text-center mt-3">
+                    Are you sure to delete this message?
+                </p>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-white border text-body" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger ml-auto" type="button" @click="deleteMessage(selectedMessage); $refs['deleteMessageModal'].hide()">Delete</button>
+                </div>
+            </template>
+        </modal>
     </div>
 </template>
 

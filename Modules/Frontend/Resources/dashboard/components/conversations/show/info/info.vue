@@ -22,25 +22,9 @@
                 <div class="border-bottom border-top px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview">
                         Overview
-                        <chevron-right-icon class="ml-auto mr-n2" transform="scale(1.3)"></chevron-right-icon>
+                        <chevron-down-icon class="ml-auto mr-n2" ></chevron-down-icon>
                     </h5>
                     <div id="overview" class="collapse" data-parent="#info-items">
-                        <!-- Available services -->
-                        <div v-if="conversation.members.length == 1">
-                            <div class="form-group">
-                                <label class="text-muted">Available Services</label>
-                                <div v-for="service in services" class="d-flex align-items-center mb-2">
-                                    <div>
-                                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                                        <small class="text-muted d-block">{{ service.duration }} minutes</small>
-                                    </div>
-                                    <div class="ml-auto">
-                                        <toggle-switch :value="!(blacklisted_services.find((x) => x.service_id == service.id) || {}).is_blacklisted" @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Fields -->
                         <div v-if="conversation.members.length == 1" class="form-group">
                             <div class="d-flex align-items-center dropdown">
@@ -146,10 +130,26 @@
                 <div class="border-bottom px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#bookings">
                         Bookings
-                        <chevron-right-icon class="ml-auto mr-n2" transform="scale(1.3)"></chevron-right-icon>
+                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="bookings" class="collapse pb-1" data-parent="#info-items">
                         <bookings :user="conversation.member" :membersLength="conversation.members.length"></bookings>
+                        
+                        <!-- Available services -->
+                        <div v-if="conversation.members.length == 1">
+                            <div class="form-group">
+                                <label class="text-muted">Available Services</label>
+                                <div v-for="service in services" v-if="service.is_available" class="d-flex align-items-center mb-2">
+                                    <div>
+                                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
+                                        <small class="text-muted d-block">{{ service.duration }} minutes</small>
+                                    </div>
+                                    <div class="ml-auto">
+                                        <toggle-switch :value="!(blacklisted_services.find((x) => x.service_id == service.id) || {}).is_blacklisted" @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -157,7 +157,7 @@
                 <div class="border-bottom px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#files">
                         Files
-                        <chevron-right-icon class="ml-auto mr-n2" transform="scale(1.3)"></chevron-right-icon>
+                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="files" class="collapse pb-1" data-parent="#info-items">
                         <select class="form-control form-control-sm shadow-none" v-model="fileType">
@@ -205,7 +205,7 @@
                 <div class="border-bottom px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags_history">
                         Tags & History
-                        <chevron-right-icon class="ml-auto mr-n2" transform="scale(1.3)"></chevron-right-icon>
+                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="tags_history" class="collapse" data-parent="#info-items">
                         <!-- History -->
@@ -286,7 +286,7 @@
                 <div class="border-bottom px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes">
                         Notes
-                        <chevron-right-icon class="ml-auto mr-n2" transform="scale(1.3)"></chevron-right-icon>
+                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="notes" class="collapse pb-1" data-parent="#info-items">
                         <div class="dropdown mb-2">

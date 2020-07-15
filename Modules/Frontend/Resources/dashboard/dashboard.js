@@ -142,7 +142,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: '',
+        detailsTab: 'profile',
         profileTab: 'overview', //overview
 
         call_sound: null,
@@ -197,7 +197,7 @@ window.app = new Vue({
     },
 
     created() {
-        this.getConversations();
+        if(this.$route.name != 'conversations') this.getConversations();
         this.call_sound = new Audio(`/notifications/call.mp3`);
         this.message_sound = new Audio('/notifications/new_message.mp3');
         this.socket = io(WS_URL);
@@ -205,6 +205,7 @@ window.app = new Vue({
         this.socket.on('new_message', data => {
             let conversation = this.conversations.find(x => x.id == data.conversation_id);
             if (conversation) {
+                // check if message does not exists by ID
                 this.getMessageByID(data).then(message => {
                     if (message && message.conversation_id == conversation.id) {
                         conversation.last_message = message;

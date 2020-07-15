@@ -15,9 +15,10 @@ import BookmarkIcon from '../../../../../icons/bookmark';
 import TrashIcon from '../../../../../icons/trash';
 import HistoryIcon from '../../../../../icons/history';
 import PencilIcon from '../../../../../icons/pencil';
-import ChevronRightIcon from '../../../../../icons/chevron-right';
+import ChevronDownIcon from '../../../../../icons/chevron-down';
 import ClockIcon from '../../../../../icons/clock';
 import PlannerIcon from '../../../../../icons/planner';
+import FilePdfIcon from '../../../../../icons/file-pdf';
 
 import VueScrollTo from 'vue-scrollto';
 import Tooltip from '../../../../../js/directives/tooltip';
@@ -39,9 +40,10 @@ export default {
         TrashIcon,
         HistoryIcon,
         PencilIcon,
-        ChevronRightIcon,
+        ChevronDownIcon,
         ClockIcon,
         PlannerIcon,
+        FilePdfIcon,
 	},
 
     directives: {VueScrollTo, Tooltip},

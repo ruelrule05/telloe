@@ -4,6 +4,7 @@ import 'bootstrap/js/dist/collapse';
 import RangeSlider from 'vue-range-slider'
 import 'vue-range-slider/dist/vue-range-slider.css'
 import Auth from '../app/auth/auth.vue';
+import CheckmarkIcon from '../icons/checkmark';
 
 window.Vue = require('vue');
 
@@ -13,6 +14,7 @@ new Vue({
     components: {
         RangeSlider,
         Auth,
+        CheckmarkIcon,
     },
 
     data: {
