@@ -1,6 +1,7 @@
 const app = require('express')();
 
 if (process.argv.indexOf('--production') > -1) {
+    console.log('Running on production..');
     const fs = require('fs');
     const sslOptions = {
         key: fs.readFileSync('/etc/letsencrypt/live/telloe.com/privkey.pem'),
