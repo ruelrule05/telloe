@@ -299,32 +299,34 @@
 					@foreach($plans as $plan)
 					<div class="col-md-4">
 						<div class="border rounded bg-white plan p-3 position-relative" @click="selectPlan(plan)">
-							<strong class="text-orange text-uppercase">Lorem ipsum</strong>
+							<strong class="text-orange text-uppercase">{{ $plan->subheading }}</strong>
 							<h5 class="mb-0 font-heading text-primary">{{ $plan->name }}</h5>
 							<p class="mb-0 text-muted font-weight-light mt-3">{{ $plan->description }}</p>
-
-							<h5 class="mb-0 mt-3 mb-0">${{ $plan->price }} per month</h5>
-							<h5 class="mb-0 font-weight-normal">{{ $plan->seats }} seats</h5>
-
-							<div class="mt-2">
+							
+							<div class="mt-3">
+								<strong>Bookings</strong>
 								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking Manager
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking System
 								</div>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking URL
 								</div>
 								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Time Zone Plus
-								</div>
-								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Files
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Time Zone Manager
 								</div>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Email Reminders
 								</div>
+
+								<strong class="mt-3 d-block">Payments</strong>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments
 								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Subscription Manager
+								</div>
+
+								<strong class="mt-3 d-block">Communication</strong>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Delayed Chat
 								</div>
@@ -341,6 +343,12 @@
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Live Video Calls
 								</div>
 							</div>
+
+							<h5 class="mb-0 mt-3 mb-0">${{ $plan->price }} per month</h5>
+							<h5 class="mb-4 font-weight-normal">{{ $plan->seats }} seats</h5>
+
+							<button class="btn btn-outline-primary btn-block px-4" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
+
 						</div>
 					</div>
 					@endforeach

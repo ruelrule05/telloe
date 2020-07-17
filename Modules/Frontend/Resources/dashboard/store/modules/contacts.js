@@ -66,7 +66,7 @@ const actions = {
     },
 
     async create_invoice({commit}, data) {
-        let response = await axios.post(`/${name}/${data.id}/create_invoice`, data);
+        let response = await axios.post(`/${name}/${data.id}/create_invoice`, data, {toasted: true});
         commit('create_invoice', response.data);
     },
 
@@ -76,7 +76,7 @@ const actions = {
     },
 
     async create_subscription({commit}, data) {
-        let response = await axios.post(`/${name}/${data.id}/create_subscription`, data);
+        let response = await axios.post(`/${name}/${data.id}/create_subscription`, data, {toasted: true});
         commit('create_subscription', response.data);
     },
 };

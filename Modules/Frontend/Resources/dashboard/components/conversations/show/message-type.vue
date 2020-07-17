@@ -20,7 +20,7 @@
                     <div class="spinner-border spinner-border-sm text-primary"></div>
                 </div>
             </div>
-            <img draggable="false" class="rounded border" :src="message.preview" @click="if(click) $parent.openFile(message)" />
+            <img draggable="false" class="rounded border cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
             <div class="position-absolute-center preview-video-play pointer-events-none">
                 <play-icon height="20" width="20"></play-icon>
             </div>
@@ -33,7 +33,7 @@
 
         <!-- File -->
         <div class="mb-0" v-else-if="message.type == 'file'">
-            <img draggable="false" v-if="$parent.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" />
+            <img draggable="false" v-if="$root.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" />
             <span class=" cursor-pointer" @click="if(click) $parent.downloadMedia(message)">
                 <span class="d-block text-center">
                     <component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)" :fill="outgoing ? 'white' : ''"></component>
@@ -93,7 +93,7 @@ export default {
             let videoExtensions = ['mp4', 'webm'];
             let audioExtensions = ['mp3', 'wav'];
 
-            if (this.$parent.isImage(extension)) {
+            if (this.$root.isImage(extension)) {
                 iconComponent = 'file-image-icon';
             } else if (videoExtensions.indexOf(extension) > -1) {
                 iconComponent = 'file-video-icon';

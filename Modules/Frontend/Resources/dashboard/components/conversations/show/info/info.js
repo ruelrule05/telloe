@@ -217,12 +217,7 @@ export default {
             };
             this.storeNote(note);
             this.newNote = '';
-            this.$refs['customFieldsLabel'].click();
-        },
-
-        openFile(file) {
-            this.$parent.selectedFile = file;
-            if(file.type == 'file') this.$parent.downloadMedia(file);
+            this.$refs['profileImage'].click();
         },
 
         fileIcon(extension) {

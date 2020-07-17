@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 const format = require('format-duration');
 import MultiStreamsMixer from 'multistreamsmixer';
 import toggleFullscreen, {fullscreenChange, isFullscreen} from 'toggle-fullscreen';
+import PlainDraggable from '../../../js/plugins/plain-draggable.min';
 
 import VideoIcon from '../../../icons/video';
 import PhoneIcon from '../../../icons/phone';
@@ -14,6 +15,8 @@ import ExpandIcon from '../../../icons/expand';
 import CollapseIcon from '../../../icons/collapse';
 import InterviewIcon from '../../../icons/interview';
 import MicrophoneIcon from '../../../icons/microphone';
+import ArrowBottomLeftIcon from '../../../icons/arrow-bottom-left';
+import ArrowTopRightIcon from '../../../icons/arrow-top-right';
 const randomString = require('random-string');
 
 export default {
@@ -28,6 +31,8 @@ export default {
 		CollapseIcon,
 		InterviewIcon,
 		MicrophoneIcon,
+        ArrowBottomLeftIcon,
+        ArrowTopRightIcon,
 	},
 	data: () => ({
 		notification_sound: null,
@@ -56,7 +61,24 @@ export default {
 		remoteStreamsMixer: null,
 		isMuted: false,
 		isVideoStopped: false,
+        isShrinked: false,
+        draggable: null,
 	}),
+
+    watch: {
+        isShrinked: function(value) {
+            if(value) {
+                document.querySelector('.modal-backdrop').style.display = 'none';
+            } else {
+                document.querySelector('.modal-backdrop').style.display = 'block';
+                this.$refs['modal'].removeAttribute('style');
+                this.$refs['modal'].style.display = 'block';
+                this.$refs['modal'].style.opacity = 1;
+                this.$refs['modal'].style.visibility = 'visible';
+            }
+        }
+    },
+
 
 	created() {
         this.notification_sound = new Audio(`/notifications/call.mp3`);
@@ -153,32 +175,27 @@ export default {
             e = e || window.event;
             this.endCall();
         };
-        window.onblur = window.onfocus = () => {
-	   		let remoteVideos = $(this.$refs['remoteStreams']).find('video');
-	   		for(let video of remoteVideos) {
-	   			this.PIPVideo(video);
-	   		}
-		};
     },
 
-
     methods: {
-    	async PIPVideo(video){
-    		if(video) {
-				try {
-				    if (video !== document.pictureInPictureElement) {
-				      	await video.requestPictureInPicture();
-				    	$(this.$refs['modal']).modal('hide');
-				    }
-				    else {
-				    	$(this.$refs['modal']).modal('show');
-				      	await document.exitPictureInPicture();
-				    }
-				} catch(error) {
-				    console.log(`> Argh! ${error}`);
-				}
-			}
-    	},
+        toggleDraggable() {
+            if(this.isShrinked) {
+                if(this.draggable) this.draggable.remove();
+                this.$refs['modal'].style.visibility = 'hidden';
+                setTimeout(() => {
+                    this.draggable = new PlainDraggable(this.$refs['modal'], {
+                        containment: document.querySelector('#app'),
+                        left: 20,
+                        top: document.querySelector('#app').offsetHeight - 160
+                    });
+                    this.draggable.onDragStart = () => {
+                        return this.isShrinked;
+                    };
+                    this.$refs['modal'].style.visibility = 'visible';
+                    this.$refs['modal'].style.opacity = 1;
+                }, 150);
+            }
+        },
 
     	toogleMic() {
     		this.isMuted = !this.isMuted;
@@ -197,7 +214,7 @@ export default {
     	},
 
 		outgoingCall(conversation) {
-            this.notification_sound.play();
+            //this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
@@ -212,10 +229,11 @@ export default {
                 conversation_id: this.$root.callConversation.id,
                 user_id: this.$root.auth.id,
             });
+            this.$root.callConversation = conversation;
 		},
 
 		incomingCall() {
-	       	this.notification_sound.play();
+	       	//this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
@@ -241,9 +259,15 @@ export default {
 
             this.notification_sound.pause();
             this.notification_sound.currentTime = 0;
+            this.$root.callConversation = null;
 
             if(this.isRecording) this.recordCall();
-            else $(this.$refs['modal']).modal('hide');
+            else {
+                this.$refs['modal'].removeAttribute('style');
+                $(this.$refs['modal']).modal('hide');
+                if(this.draggable) this.draggable.remove();
+                this.draggable = null;
+            }
             setTimeout(() => {
             	this.status = '';
             	this.isMuted = this.isVideoStopped = false;
@@ -463,8 +487,8 @@ export default {
                 let localVideo = this.$refs['cameraPreview'];
                 let remoteVideo = this.$refs['remotePreview'];
                 let canvas = this.$refs['preview'];
-                canvas.width = $('.live-recorder').width();
-                canvas.height = $('.live-recorder').height();
+                canvas.width = $('.video-call').width();
+                canvas.height = $('.video-call').height();
                 let canvasContext = canvas.getContext('2d');
                 this.localStream.onRender = (context, x, y, width, height, idx) => {
                     canvasContext.save();

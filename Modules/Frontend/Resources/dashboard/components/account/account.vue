@@ -176,7 +176,7 @@
 								</fieldset>
 
 
-								<hr />
+								<!-- <hr />
 								<h5>Documents</h5>
 								<label>Photo ID - Front</label>
 								<div class="form-group">
@@ -189,7 +189,7 @@
 								<label>Utility bill</label>
 								<div class="form-group form-inline">
 									<input type="file" class="form-control-file" data-rexquired>
-								</div>
+								</div> -->
 
 								<div class="text-right mt-3">
 									<vue-button :loading="stripeAccountForm.loading" type="submit" button_class="btn btn-primary">Update</vue-button>

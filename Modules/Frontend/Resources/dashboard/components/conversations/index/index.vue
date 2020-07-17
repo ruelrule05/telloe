@@ -20,7 +20,7 @@
                 <template v-else>
     				<div v-for="conversation in orderedConversations" v-if="conversation.status == conversationTab" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
                         
-                        <div v-if="$root.callWindow && $root.callConversationId == conversation.id" class="conversation-oncall position-absolute pr-3">
+                        <div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
                             <video-icon width="24" height="24"></video-icon>
                         </div>
                         
@@ -34,7 +34,7 @@
 
     	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
     						<div class="media align-items-center conversation-members">
-    						  	<div class="user-profile-image position-relative" :class="{'rounded bg-transparent': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
+    						  	<div class="user-profile-image position-relative" :class="{'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
     						  		<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
                                     <div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
                                         <div class="w-50 position-relative conversation-members-container" v-for="(member, index) in conversation.members" v-if="index < 4">
@@ -51,7 +51,7 @@
     	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
                                     <div class="d-flex align-items-center text-nowrap conversation-message-preview">
                                         <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[conversation.last_message.is_read ? 'text-muted' : 'text-black font-weight-bold']"></div>    
-                                        <span class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
+                                        <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
                                     </div>    
     						  	</div>
     						</div>

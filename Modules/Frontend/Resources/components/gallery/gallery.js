@@ -1,11 +1,15 @@
+import Waveplayer from '../../components/waveplayer';
 import CloseIcon from '../../icons/close';
 import ChevronLeftIcon from '../../icons/chevron-left';
 import ChevronRightIcon from '../../icons/chevron-right';
+import VolumeMidIcon from '../../icons/volume-mid';
 export default {
 	components: {
+		Waveplayer,
 		CloseIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
+		VolumeMidIcon,
 	},
 
 	props: {
@@ -33,7 +37,7 @@ export default {
 		media () {
 			if(!this.conversation.messages) return [];
 			return this.conversation.messages.filter(message => {
-				return ['image', 'video'].find(x => x == message.type);
+				return ['image', 'video', 'audio'].find(x => x == message.type);
 			});
 		},
 

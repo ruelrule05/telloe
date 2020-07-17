@@ -9,12 +9,9 @@
 							<div class="btn btn-checkmark p-1 badge-pill line-height-0 position-absolute mr-2 mt-2">
 								<checkmark-icon width="14" height="14" transform="scale(1.8)" stroke-width="1"></checkmark-icon>
 							</div>
-							<strong class="text-orange text-uppercase">Lorem ipsum</strong>
+							<strong class="text-orange text-uppercase">{{ plan.subheading }}</strong>
 							<h5 class="mb-0 font-heading text-primary">{{ plan.name }}</h5>
 							<p class="mb-0 text-muted font-weight-light mt-3">{{ plan.description }}</p>
-
-							<h5 class="mb-0 font-weight-normal mt-3 mb-0">${{ plan.price }} per month</h5>
-							<h5 class="mb-0 font-weight-normal">{{ plan.seats }} seats</h5>
 
 							<div class="ml-auto text-right align-self-stretch pr-4 d-flex align-items-center plan-price">
 								<div class="pl-4">
@@ -30,25 +27,30 @@
 								<button v-else type="button" class="btn btn-outline-primary btn-lg btn-block">Subscribe</button>
 							</div>
 
-							<div class="mt-2">
+							<div class="mt-3">
+								<strong>Bookings</strong>
 								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking Manager
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking System
 								</div>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Booking URL
 								</div>
 								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Time Zone Plus
-								</div>
-								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Send Files
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Time Zone Manager
 								</div>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Email Reminders
 								</div>
+
+								<strong class="mt-3 d-block">Payments</strong>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments
 								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Subscription Manager
+								</div>
+
+								<strong class="mt-3 d-block">Communication</strong>
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Delayed Chat
 								</div>
@@ -65,6 +67,9 @@
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Live Video Calls
 								</div>
 							</div>
+
+							<h5 class="mb-0 font-weight-normal mt-3 mb-0">${{ plan.price }} per month</h5>
+							<h5 class="mb-0 font-weight-normal">{{ plan.seats }} seats</h5>
 						</div>
 					</div>
 				</div>

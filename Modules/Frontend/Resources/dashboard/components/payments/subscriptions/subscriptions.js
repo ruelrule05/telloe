@@ -112,7 +112,7 @@ export default {
         	}
         },
 
-        async createSubscription() {
+        createSubscription() {
         	this.newSubscriptionForm.loading = true;
         	this.newSubscriptionForm.id = this.newSubscriptionForm.customer_id;
         	this.newSubscriptionForm.services = [];
@@ -122,8 +122,11 @@ export default {
         			bookings_count: this.newSubscriptionForm.service_bookings[service_id]
         		});
         	});
-        	await this.createUserCustomerSubscription(this.newSubscriptionForm);
-        	this.$refs['createSubscriptionModal'].hide();
+        	this.createUserCustomerSubscription(this.newSubscriptionForm).then(() => {
+        		this.$refs['createSubscriptionModal'].hide();
+        	}).catch(() => {
+        		this.newSubscriptionForm.loading = false;
+        	});
         },
 
         formatDate(date) {

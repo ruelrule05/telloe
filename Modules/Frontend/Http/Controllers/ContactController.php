@@ -187,7 +187,7 @@ class ContactController extends Controller
         $contact->update([
             'invoices' => $invoices
         ]);
-        $invoice->contactUser_id = $contact->id;
+        $invoice->contact_id = $contact->id;
 
         return response()->json($invoice);  
     }
@@ -215,7 +215,7 @@ class ContactController extends Controller
             'invoices' => $invoices
         ]);
 
-        $invoice->contactUser_id = $contact->id;
+        $invoice->contact_id = $contact->id;
         return response()->json($invoice);  
     }
 
@@ -288,7 +288,7 @@ class ContactController extends Controller
             'subscriptions' => $subscriptions
         ]);
 
-        $subscription->contactUser_id = $contact->id;
+        $subscription->contact_id = $contact->id;
         return response()->json($subscription);
     }
     

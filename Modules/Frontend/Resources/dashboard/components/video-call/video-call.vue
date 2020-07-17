@@ -1,9 +1,9 @@
 <template>
-	<div class="modal fade" tabindex="-1" role="dialog" ref="modal">
+	<div class="modal fade" tabindex="-1" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded' : 'cursor-auto']">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content overflow-hidden rounded">
-                <div v-if="$root.callConversation" class="modal-body p-0">
-			    	<div class="live-recorder w-100 overflow-hidden position-relative" v-cloak>
+            <div class="modal-content overflow-hidden rounded h-100">
+                <div v-if="$root.callConversation" class="modal-body p-0 h-100">
+			    	<div class="video-call w-100 overflow-hidden position-relative" v-cloak>
 			    		<div v-if="!status" class="caller position-absolute-center text-center bg-white">
 			    			<!-- Outgoing -->
 			    			<div v-if="action == 'outgoing'">
@@ -24,7 +24,7 @@
 					            </div>
 					            <h3 class="font-heading">{{ caller.full_name }}</h3>
 					            <h6 class="font-weight-light mb-5">is calling..</h6>
-					            <button class="btn btn-danger btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
+					            <button type="button" class="btn btn-danger btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
 					                <phone-icon fill="white"></phone-icon>
 					            </button>
 					            <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="endCall()">
@@ -55,7 +55,7 @@
 							</button> -->
 
 							<!-- Local camera -->
-							<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing'}">
+							<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing', 'd-none': isShrinked}">
 								<div class="video-container h-100 w-100" :class="{'mirror': isScreenSharing}">
 									<video ref="cameraPreview" @onplaying="localCameraReady = true" :class="{'w-100 h-100 position-absolute-center': !status}" autoplay playsinline muted></video>
 								</div>
@@ -68,31 +68,39 @@
 							
 
 							<div id="recorderControls" class="position-absolute w-100 text-center" v-if="status == 'ongoing'">
-					            <button class="btn btn-white border btn-lg badge-pill line-height-1 px-2 position-relative" @click="toogleMic()">
-					                <microphone-icon :class="{'fill-danger': isMuted}"></microphone-icon>
-					                <span v-if="isMuted" class="disabled-line"></span>
-					            </button>
-					            <button class="btn btn-danger btn-lg badge-pill line-height-1 px-2 mx-2" @click="endCall()">
-					                <phone-icon fill="white"></phone-icon>
-					            </button>
-					            <button class="btn btn-white border btn-lg badge-pill line-height-1 px-2 position-relative" @click="toggleVideo()">
-					                <video-icon :class="{'fill-danger': isVideoStopped}"></video-icon>
-					                <span v-if="isVideoStopped" class="disabled-line"></span>
-					            </button>
+					        	<template v-if="!isShrinked">
+						            <button type="button" class="btn btn-white border btn-lg badge-pill line-height-1 position-relative" :class="[isShrinked ? 'p-1' : 'px-2']" @click="toogleMic()">
+						                <microphone-icon :class="{'fill-danger': isMuted}"></microphone-icon>
+						                <span v-if="isMuted" class="disabled-line"></span>
+						            </button>
+						            <button type="button" class="btn btn-danger btn-lg badge-pill line-height-1" :class="[isShrinked ? 'p-1 mx-1' : 'px-2 mx-2']" @click="endCall()">
+						                <phone-icon fill="white"></phone-icon>
+						            </button>
+						            <button type="button" class="btn btn-white border btn-lg badge-pill line-height-1 position-relative" :class="[isShrinked ? 'p-1' : 'px-2']" @click="toggleVideo()">
+						                <video-icon :class="{'fill-danger': isVideoStopped}"></video-icon>
+						                <span v-if="isVideoStopped" class="disabled-line"></span>
+						            </button>
+						        </template>
 					        </div>
 
 					        <div v-if="status == 'ongoing'" class="btn-share-screen position-absolute">
-						        <button v-if="!isScreenSharing" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
-						            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
-						        </button>
-						        <button v-else class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
-						            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
-						        </button>
-						        <button v-if="!isFullScreen" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
-						            <expand-icon width="20" height="20"></expand-icon>
-						        </button>
-						        <button v-else class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
-						            <collapse-icon width="20" height="20"></collapse-icon>
+					        	<template v-if="!isShrinked">
+							        <button type="button" v-if="!isScreenSharing" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
+							            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
+							        </button>
+							        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
+							            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
+							        </button>
+							        <button type="button" v-if="!isFullScreen" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
+							            <expand-icon width="20" height="20"></expand-icon>
+							        </button>
+							        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
+							            <collapse-icon width="20" height="20"></collapse-icon>
+							        </button>
+					        	</template>
+						        <button type="button" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
+						            <arrow-top-right-icon v-if="isShrinked" width="20" height="20"></arrow-top-right-icon>
+							        <arrow-bottom-left-icon v-else width="20" height="20"></arrow-bottom-left-icon>
 						        </button>
 					        </div>
 				        </div>

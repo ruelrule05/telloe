@@ -40,8 +40,8 @@ class SubscriptionController extends Controller
             ];
             $stripe_card = $stripe_api->card('create', $data);
             $data = [ 
-                'stripe_customer_id' => $user->stripe_customer_id,
-                'plan_id' => $plan->stripe_plan_id,
+                'customer' => $user->stripe_customer_id,
+                'plan' => $plan->stripe_plan_id,
             ];
             $stripe_subscription = $stripe_api->subscription('create', $data);
             $subscription = Subscription::create([

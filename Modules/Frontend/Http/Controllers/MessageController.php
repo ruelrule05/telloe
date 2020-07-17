@@ -47,7 +47,7 @@ class MessageController extends Controller
             $filename = $time . '-preview';
             $previewDestination = 'storage/message-media/' . $filename;
 
-            if($request->type == 'image') :
+            if($request->type == 'image' || $request->type == 'video') :
                 if ($request->preview) :
                     $source = $request->preview;
                     $filename = $time . '-preview';

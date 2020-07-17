@@ -27,8 +27,8 @@
                         </div>
                         <div class="ml-auto btn-circle-actions">
                             <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
-                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversationId ? true : false}"><video-icon width="32" height="32"></video-icon></button>
-                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callWindow ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button>
+                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><video-icon width="32" height="32"></video-icon></button>
+                                <!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
                             </template>
                             <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 
                             'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
@@ -37,18 +37,19 @@
 
         			<div class="overflow-hidden flex-grow-1 bg-white position-relative">
                         
-                        <div v-if="hasScreenRecording" class="position-absolute-center w-100 h-100 bg-white screen-recorder-data">
+                        <div v-if="hasScreenRecording" class="position-absolute w-100 h-100 bg-white screen-recorder-data">
                             <div class="position-absolute-center w-75 text-center">
                                 <h6 class="font-heading h5">Screen recording</h6>
                                 <video src="" class="w-100 h-100 bg-black rounded d-block outline-0" controls ref="screenRecorderData"></video>
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-light border" @click="downloadScreenRecording">Download</button>
-                                    <button type="button" class="btn  btn-light border" @click="sendScreenRecording">Send</button>
+                                    <button type="button" class="btn btn-light border" @click="downloadScreenRecording()">Download</button>
+                                    <button type="button" class="btn  btn-light border" @click="sendScreenRecording">Send
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div v-if="pastedFile" class="position-absolute-center w-100 h-100 bg-white pasted-file">
+                        <div v-if="pastedFile" class="position-absolute w-100 h-100 bg-white pasted-file">
                             <div class="position-absolute-center w-75 h-100 d-flex flex-column p-5">
                                 <div class="pasted-preview flex-grow-1" :style="{'background-image': 'url('+pastedFile.preview+')'}"></div>
                                 <div class="text-center mt-3">
@@ -86,8 +87,8 @@
                                                         <div class="dropdown-menu dropdown-menu-x-center p-1 bg-light" @click.stop>
                                                             <vue-form-validate class="input-group border rounded overflow-hidden" @submit="updateMessageTags(message)">
                                                                 <input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add tag" data-required v-model="message.newTag">
-                                                                <div class="input-group-append">
-                                                                    <button type="submit" class="btn btn-secondary p-1 shadow-none btn-sm border-0 line-height-1">
+                                                                <div class="input-group-append border-left">
+                                                                    <button type="submit" class="btn btn-light border-0 p-1 btn-sm line-height-1">
                                                                         <plus-icon width="20" height="20" class="no-action"></plus-icon>
                                                                     </button>
                                                                 </div>
@@ -175,7 +176,6 @@
             <gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
 
             <audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
-            <screen-recorder-modal v-if="recorder == 'screen'" @submit="sendVideo" @close="recorder = ''"></screen-recorder-modal>
 
             <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal>
         </div>

@@ -173,7 +173,6 @@ window.app = new Vue({
         },
 
         payoutComplete() {
-            return true;
             return !this.auth.stripe_account.individual || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
         },
 
@@ -247,6 +246,11 @@ window.app = new Vue({
         ...mapActions({
             getConversations: 'conversations/index',
         }),
+
+        isImage(extension) {
+            let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
+            return imageExtensions.indexOf(extension) > -1;
+        },
 
         async getMessageByID(data) {
             let message = await axios.get(`/messages/${data.id}`).catch((e) => {});

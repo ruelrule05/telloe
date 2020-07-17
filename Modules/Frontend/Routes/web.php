@@ -59,9 +59,9 @@ Route::group(
             Route::apiResource('users', 'UserController')->only('index');
             Route::apiResource('plans', 'PlanController')->only('index');
 
-            Route::post('contacts/{id}/create_invoice', 'UserCustomerController@createInvoice');
-            Route::post('contacts/{id}/finalize_invoice', 'UserCustomerController@finalizeInvoice');
-            Route::post('contacts/{id}/create_subscription', 'UserCustomerController@createSubscription');
+            Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
+            Route::post('contacts/{id}/finalize_invoice', 'ContactController@finalizeInvoice');
+            Route::post('contacts/{id}/create_subscription', 'ContactController@createSubscription');
 
             Route::get('tags/search', 'DashboardController@searchTags');
 

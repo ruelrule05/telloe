@@ -10,7 +10,7 @@ import PlusIcon from '../../../../icons/plus';
 import DownloadIcon from '../../../../icons/download';
 import SearchIcon from '../../../../icons/search';
 import CloseIcon from '../../../../icons/close';
-import VideoIcon from '../../../../icons/video';
+import VideoIcon from '../../../../icons/colored-video';
 
 export default {
     components: {

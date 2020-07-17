@@ -3,11 +3,11 @@
         <!-- Profile -->
         <div class="h-100 py-3 overflow-auto">
             <div class="text-center">
-                <div class="user-profile-image d-inline-block" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
+                <div class="user-profile-image d-inline-block" ref="profileImage" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
                     <span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
                 </div>
                 <h4 class="h5 font-heading conversation-title mb-0 rounded" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="conversation.members.length > 1">{{ conversation.member.full_name || conversation.name }}</h4>
-                <div class="text-muted">{{ conversation.member.email }}</div>
+                <div class="text-muted">{{ conversation.member.email || `${conversation.members.length} members` }}</div>
                 <div v-if="conversation.member.is_pending" class="mt-1 badge badge-icon d-inline-flex align-items-center bg-warning-light text-warning">
                     <clock-icon class="fill-warning" height="12" width="12"></clock-icon>&nbsp;Pending
                 </div>
@@ -127,7 +127,7 @@
                 </div>
 
                 <!-- Bookings -->
-                <div class="border-bottom px-3 py-1">
+                <div v-if="conversation.members.length == 1" class="border-bottom px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#bookings">
                         Bookings
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
@@ -169,9 +169,9 @@
                         </select>
                         
                         <div v-if="conversation.messages" class="mt-2">
-                            <div v-for="file in conversation.messages.slice().reverse()" v-if="isFile(file) && (file.type == fileType || fileType == 'all') && file.updated_at" class="p-2 mb-2 d-flex align-items-center border bg-white rounded position-relative cursor-pointer" @click="openFile(file)">
+                            <div v-for="file in conversation.messages.slice().reverse()" v-if="isFile(file) && (file.type == fileType || fileType == 'all') && file.updated_at" class="p-2 mb-2 d-flex align-items-center border bg-white rounded position-relative cursor-pointer" @click="$parent.openFile(file)">
                                 <div class="flex-1">
-                                    <div style="width: 50px; height: 50px" class="position-relative rounded overflow-hidden bg-secondary">
+                                    <div style="width: 50px; height: 50px" class="position-relative rounded overflow-hidden bg-light">
                                         <div v-if="file.type == 'image' || file.type == 'video'" :style="{backgroundImage: 'url('+file.preview+')'}" class="file-thumbnail">
                                             <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
                                                 <play-icon height="15" width="15"></play-icon>
@@ -295,7 +295,7 @@
                                 <vue-form-validate @submit="addNote()">
                                     <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none border" placeholder="Add note.."></textarea>
                                     <div class="d-flex justify-content-end align-items-center mt-2">
-                                        <button type="button" class="btn btn-sm btn-white border mr-1" @click="newNote = ''; $refs['customFieldsLabel'].click()">Cancel</button>
+                                        <button type="button" class="btn btn-sm btn-white border mr-1" @click="newNote = ''; $refs['profileImage'].click()">Cancel</button>
                                         <button type="submit" class="btn btn-sm btn-primary">Add</button>
                                     </div>
                                 </vue-form-validate>

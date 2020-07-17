@@ -1,6 +1,6 @@
 <template>
 	<div class="d-flex align-items-center justify-content-between waveplayer-container">
-		<button class="audio-control shadow-sm position-relative p-0 mr-2" @click="togglePlayer">
+		<button class="audio-control shadow-sm position-relative p-0 mr-2 border btn-white" @click="togglePlayer">
 			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="#999"></play-icon>
 			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="#999"></pause-icon>
 		</button>

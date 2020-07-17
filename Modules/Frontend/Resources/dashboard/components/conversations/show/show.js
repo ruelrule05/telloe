@@ -51,7 +51,6 @@ export default {
         gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
         'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "modals-audiorecorder" */ '../../../../modals/audio-recorder'),
-        'screen-recorder-modal': () => import(/* webpackChunkName: "modals-screenrecorder" */ '../../../../modals/screen-recorder'),
     },
 
     directives: {
@@ -86,7 +85,7 @@ export default {
             if (value) this.scrollDown();
         },
         'conversation.last_message': function(value) {
-            if (this.conversation.messages && value.id) {
+            if (this.conversation && this.conversation.messages && value.id) {
                 let message = this.conversation.messages.find(x => x.id == value.id);
                 if (!message) {
                     this.conversation.messages.push(value);
@@ -216,7 +215,7 @@ export default {
         },
 
         async downloadScreenRecording() {
-            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isDownloaded) {
                 let video = await this.$root.$refs['screenRecorder'].submit();
                 let filename = `${video.timestamp}.${mime.getExtension(video.source.type)}`;
                 let link = document.createElement('a');
@@ -230,7 +229,7 @@ export default {
         },
 
         async sendScreenRecording() {
-            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+            if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isSent) {
                 let video = await this.$root.$refs['screenRecorder'].submit();
                 this.sendVideo(video);
             }
@@ -327,8 +326,8 @@ export default {
         },
 
         openFile(file) {
-            this.selectedFile = file;
             if (file.type == 'file') this.downloadMedia(file);
+            else this.selectedFile = file;
         },
 
         dropFile(e) {
@@ -365,11 +364,6 @@ export default {
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = error => reject(error);
             });
-        },
-
-        isImage(extension) {
-            let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
-            return imageExtensions.indexOf(extension) > -1;
         },
 
         sendMessage(message) {
