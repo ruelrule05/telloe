@@ -88,7 +88,7 @@
 			</div>
 
 			<!-- Payout -->
-			<div v-else-if="tab == 'Payout'" class="row">
+			<div v-else-if="tab == 'Payout' && $root.auth.role.role == 'client'" class="row">
 				<div class="col-md-8">
 					<div class="card shadow-sm">
 						<div class="card-body">

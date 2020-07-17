@@ -35,7 +35,7 @@
 										<div class="cursor-pointer dropdown-toggle d-flex align-items-center justify-content-center">
 											<div class="user-profile user-profile-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
 												<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
-												<exclamation-circle-icon v-if="!payoutComplete" class="fill-warning bg-white rounded-circle" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
+												<exclamation-circle-icon v-if="auth.role.role == 'client' && !payoutComplete" class="fill-warning bg-white rounded-circle" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 											</div>
 											<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
 												<h6 class="font-heading mb-0 text-ellipsis text-body ">@{{ auth.full_name }}</h6>
@@ -50,7 +50,7 @@
 								    	</a>
 								    	<router-link to="/dashboard/account" class="dropdown-item d-flex align-items-center">
 								    		Account
-								    		<exclamation-circle-icon v-if="!payoutComplete" class="fill-warning ml-auto" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
+								    		<exclamation-circle-icon v-if="auth.role.role == 'client' && !payoutComplete" class="fill-warning ml-auto" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 								    	</router-link>
 								    	<router-link to="/dashboard/billing" class="dropdown-item">
 								    		Billing

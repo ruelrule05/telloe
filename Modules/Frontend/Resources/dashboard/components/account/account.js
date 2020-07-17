@@ -18,7 +18,6 @@ export default {
 
 	data: () => ({
 		user: null,
-		tabs: ['Profile', 'Security', 'Payout'],
 		tab: 'Profile',
 		securityForm: {
 			current_password: '',
@@ -33,6 +32,12 @@ export default {
 	}),
 
 	computed: {
+		tabs() {
+			let tabs = ['Profile', 'Security'];
+			if(this.$root.auth.role.role == 'client') tabs.push('Payout');
+			return tabs;
+		},
+
 		countries() {
 			let countries = [];
 			Object.entries(getNameList()).forEach(([name, code]) => {
@@ -51,7 +56,7 @@ export default {
 	created() {
 		this.user = Object.assign({}, this.$root.auth);
 		this.$root.heading = 'Account';
-		if (Object.keys(this.user.stripe_account).length > 0) {
+		if (this.$root.auth.role.role == 'client' && Object.keys(this.user.stripe_account).length > 0) {
 			let stripe_account = this.user.stripe_account;
 			this.stripeAccountForm.country = stripe_account.country;
 			this.stripeAccountForm.address = stripe_account.individual.address.line1;
