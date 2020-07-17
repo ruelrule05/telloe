@@ -59,10 +59,11 @@ const actions = {
         });
     },
 
-    update({commit}, data) {
-        axios.put(`/${name}/${data.id}`, data).then(response => {
-            commit('update', response.data);
-        });
+    async update({commit}, data) {
+        let response = await axios.put(`/${name}/${data.id}`, data);
+        commit('update', response.data);
+
+        return response;
     },
 
     delete({commit}, data) {

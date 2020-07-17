@@ -97,8 +97,9 @@ class BookingController extends Controller
             'start' => 'required',
         ]);
 
-        $service = Service::findOrfail($request->service_id);
-        $this->authorize('addBooking', $service);
+
+        /*$service = Service::findOrfail($request->service_id);
+        $this->authorize('addBooking', $service);*/
 
         $booking = Booking::findOrfail($id);
         $this->authorize('update', $booking);
@@ -131,7 +132,7 @@ class BookingController extends Controller
         $data['end'] = $endTime->format('H:i');
 
         $booking->update($data);
-        return response()->json($booking->load('service'));
+        return response()->json($booking->load('service.user'));
     }
 
 

@@ -113,7 +113,7 @@
 									</template>
 
 									<router-link v-else-if="auth.role.role == 'customer'" to="/dashboard/bookings" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" exact data-toggle="collapse" data-target="#item-bookings">
-										<calendar-day-icon></calendar-day-icon>
+										<planner-icon height="22" width="22"></planner-icon>
 										<span class="ml-3">Bookings</span>
 									</router-link>
 									<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
