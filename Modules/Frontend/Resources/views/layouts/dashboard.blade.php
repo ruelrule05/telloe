@@ -52,7 +52,7 @@
 								    		Account
 								    		<exclamation-circle-icon v-if="auth.role.role == 'client' && !payoutComplete" class="fill-warning ml-auto" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 								    	</router-link>
-								    	<router-link to="/dashboard/billing" class="dropdown-item">
+								    	<router-link v-if="auth.role.role == 'client'" to="/dashboard/billing" class="dropdown-item">
 								    		Billing
 								    	</router-link>
 	  									<div class="dropdown-divider"></div>
