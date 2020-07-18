@@ -43,19 +43,56 @@
 											</div>
 										</div>
 									</div>
-									<div class="dropdown-menu w-100 overflow-hidden">
-								    	<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+									<div class="dropdown-menu arrow-left w-100 overflow-hidden cursor-auto">
+										<span class="dropdown-header">Account</span>
+								    	<!-- <a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+								    		<shortcut-icon height="17" width="17" class="mr-2"></shortcut-icon>
 								    		View Profile
-								    		<shortcut-icon height="17" width="17" class="ml-auto"></shortcut-icon>
-								    	</a>
-								    	<router-link to="/dashboard/account" class="dropdown-item d-flex align-items-center">
-								    		Account
+								    	</a> -->
+								    	<router-link exact to="/dashboard/account?tab=profile" class="dropdown-item d-flex align-items-center">
+								    		<user-circle-icon height="18" width="18" class="dropdown-item-icon"></user-circle-icon>
+								    		Profile
 								    		<exclamation-circle-icon v-if="auth.role.role == 'client' && !payoutComplete" class="fill-warning ml-auto" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 								    	</router-link>
-								    	<router-link v-if="auth.role.role == 'client'" to="/dashboard/billing" class="dropdown-item">
+								    	<router-link exact to="/dashboard/account?tab=security" class="dropdown-item d-flex align-items-center">
+								    		<password-icon height="18" width="18" class="dropdown-item-icon"></password-icon>
+								    		Security
+								    	</router-link>
+								    	<router-link v-if="auth.role.role == 'client'" to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
+								    		<wallet-icon height="18" width="18" class="dropdown-item-icon"></wallet-icon>
 								    		Billing
 								    	</router-link>
-	  									<div class="dropdown-divider"></div>
+
+	  									<div class="dropdown-divider mx-n2"></div>
+
+										<span class="dropdown-header">Help & Feedback</span>
+								    	<!-- <router-link to="#" class="dropdown-item d-flex align-items-center">
+								    		<play-alt-icon height="18" width="18" class="dropdown-item-icon"></play-alt-icon>
+								    		Watch a Demo
+								    	</router-link>
+								    	<router-link to="#" class="dropdown-item d-flex align-items-center">
+								    		<info-circle-icon height="18" width="18" class="dropdown-item-icon"></info-circle-icon>
+								    		Help Center
+								    	</router-link> -->
+								    	<router-link to="#" class="dropdown-item d-flex align-items-center">
+								    		<headphone-icon height="18" width="18" class="dropdown-item-icon"></headphone-icon>
+								    		Support
+								    	</router-link>
+
+	  									<div class="dropdown-divider mx-n2"></div>
+
+										<span class="dropdown-header">About</span>
+								    	<a target="_blank" href="/privacy-policy" class="dropdown-item d-flex align-items-center">
+								    		<lock-icon height="18" width="18" class="dropdown-item-icon"></lock-icon>
+								    		Privacy Policy
+								    	</a>
+								    	<a target="_blank" href="/terms-of-service" class="dropdown-item d-flex align-items-center">
+								    		<list-bullet-icon height="18" width="18" class="dropdown-item-icon"></list-bullet-icon>
+								    		Terms of Service
+								    	</a>
+
+	  									<div class="dropdown-divider mx-n2"></div>
+
 								    	<form action="/logout" method="POST">
 								    		@csrf
 								    		<button type="submit" class="dropdown-item outline-0">Log Out</button>

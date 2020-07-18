@@ -1,20 +1,23 @@
 <template>
 	<div class="row h-100">
 		<div v-if="ready" class="col-md-12 h-100">
-			<div v-if="services.length == 0" class="py-5 text-center bg-white rounded shadow-sm p-2">
+			<div class="border-bottom bg-white p-3 d-flex align-items-center">
+				<h5 class="font-heading mb-0">Services</h5>
+				<div class="ml-auto d-flex align-items-center">
+                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="newService = {}; $refs['modal'].show()">
+                        <plus-icon class="btn-icon"></plus-icon>
+                        Add Service
+                    </button>
+				</div>
+			</div>
+
+			<div v-if="services.length == 0" class="py-5 text-center p-2 position-absolute-center">
 				<h6 class="text-grayer mb-3">You don't have any services added yet</h6>
 				<button class="btn btn-primary" @click="newService = {}; $refs['modal'].show()">Add Service</button>
 			</div>
 
 			<div v-else class="d-flex h-100">
 				<div class="flex-grow-1 p-4 h-100 overflow-auto">
-					<div class="d-flex align-items-center mb-3">
-						<h5 class="font-heading">Services</h5>
-						<div class="ml-auto d-flex align-items-center">
-							<button type="button" class="btn btn-white border d-flex align-items-center" @click="newService = {}; $refs['modal'].show()"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Service</button>
-						</div>
-					</div>
-
 					<div class="row">
 						<div class="col-md-6 mb-4" v-for="service in services">
 							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm']" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
@@ -46,7 +49,7 @@
 									<toggle-switch @input="updateService(selectedService)" v-model="selectedService.is_available"></toggle-switch>
 									<div class="dropdown ml-2">
 										<button class="btn p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
-										<div class="dropdown-menu shadow-sm">
+										<div class="dropdown-menu">
 											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="newService = JSON.parse(JSON.stringify(selectedService));$refs['modal'].show()">
 												<pencil-icon width="16" height="16" class="mr-2"></pencil-icon>Edit
 											</span>
@@ -158,7 +161,7 @@
 					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.interval" placeholder="Defaults to 15 mins">
 				</div>
 				<div class="d-flex justify-content-end">
-					<button class="btn btn-light border mr-1" type="button" data-dismiss="modal">Cancel</button>
+					<button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
 					<button class="btn btn-primary" type="submit">{{ selectedService ? 'Update' : 'Add'}}</button>
 				</div>
 			</vue-form-validate>

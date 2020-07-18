@@ -19,7 +19,6 @@ class MessageController extends Controller
         $this->validate($request, [
             'conversation_id' => 'required|exists:conversations,id',
             'type' => 'required',
-            'timestamp' => 'required',
         ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addMessage', $conversation);
@@ -74,7 +73,6 @@ class MessageController extends Controller
             'user_id' => Auth::user()->id,
             'type' => $request->type,
             'message' => $request->message,
-            'timestamp' => $request->timestamp,
             'source' => $sourceFile,
             'preview' => $previewFile,
             'metadata' => $metadata,
@@ -83,6 +81,13 @@ class MessageController extends Controller
         return response()->json($message);
     }
 
+
+    public function show($id, Request $request)
+    {
+        $message = Message::with('conversation')->findOrFail($id);
+        $this->authorize('show', $message);
+        return response()->json($message->load('user'));
+    }
 
 
     public function update($id, Request $request)
@@ -94,14 +99,6 @@ class MessageController extends Controller
             'tags' => $request->tags,
         ]);
         return response()->json($message);
-    }
-
-
-    public function show($id, Request $request)
-    {
-        $message = Message::with('conversation')->findOrFail($id);
-        $this->authorize('show', $message);
-        return response()->json($message->load('user'));
     }
 
 

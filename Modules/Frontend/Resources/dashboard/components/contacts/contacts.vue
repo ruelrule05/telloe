@@ -1,13 +1,16 @@
 <template>
 	<div class="h-100" v-if="ready">
 		<div class="d-flex h-100">
-			<div class="h-100 flex-grow-1 py-4">
+			<div class="h-100 flex-grow-1">
 				<div class="d-flex flex-column h-100">
-					<div class="d-flex align-items-center px-4">
-						<h5 class="font-heading">Manage Contacts</h5>
+					<div class="border-bottom bg-white p-3 d-flex align-items-center">
+						<h5 class="font-heading mb-0">Contacts</h5>
 						<div class="ml-auto d-flex align-items-center">
-							<button type="button" class="btn btn-white border d-flex align-items-center" @click="$refs['addModal'].show()"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Contact</button>
-							<button type="button" class="btn btn-white ml-1 border" @click="manageFields = true; selectedContact = false; manageContact = false;">Manage Fields</button>
+		                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addModal'].show()">
+		                        <plus-icon class="btn-icon"></plus-icon>
+		                        Add Contact
+		                    </button>
+							<button type="button" class="btn btn-light ml-1 shadow-none" @click="manageFields = true; selectedContact = false; manageContact = false;">Manage Fields</button>
 						</div>
 					</div>
 
@@ -28,7 +31,7 @@
 							</div>
 							
 							<div class="overflow-auto px-4 pt-1">
-								<div v-for="contact in contacts" class="contact border-top p-3 bg-white rounded mb-3" :class="[selectedContact && contact.id == selectedContact.id && manageContact ? 'active' : 'shadow-sm']">
+								<div v-for="contact in contacts" class="contact p-3 bg-white rounded mb-3" :class="[selectedContact && contact.id == selectedContact.id && manageContact ? 'active' : 'shadow-sm']">
 									<div class="d-flex align-items-center flex-nowrap">
 										<div class="d-flex align-items-center w-35">
 					                        <div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+contact.contact_user.profile_image+')'}">

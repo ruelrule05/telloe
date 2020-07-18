@@ -2,7 +2,7 @@
 	<div class="h-100 p-4 row" ref="calendar">
 		<div class="col-md-8">
 			<div class="h-100 d-flex flex-column">
-				<div class="bg-white rounded shadow-sm h-100 p-1 border flex-grow-1">
+				<div class="bg-white rounded shadow-sm h-100 p-1 flex-grow-1">
 					<div class="h-100 position-relative">
 						<div class="calendar-buttons position-absolute">
 							<button class="btn btn-white border" @click="goToDate('today')">Today</button>
@@ -86,7 +86,7 @@
 				<div v-if="selectedDate">
 					<div v-if="selectedDateBookingsEvents.length > 0">
 						<div class="h6 font-heading">{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</div>
-						<div v-for="item in selectedDateBookingsEvents" class="p-3 mt-3 rounded bg-white border shadow-sm booking">
+						<div v-for="item in selectedDateBookingsEvents" class="p-3 mt-3 rounded bg-white shadow-sm booking">
 
 							<!-- Booking -->
 							<template v-if="item.type == 'booking'">

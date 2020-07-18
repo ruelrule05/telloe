@@ -11,7 +11,7 @@ class Message extends BaseModel
     use SoftDeletes;
     
     protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
-    protected $appends = ['created_at_format', 'created_diff'];
+    protected $appends = ['created_at_format', 'created_diff', 'timestamp'];
    
     protected $casts = [
         'metadata' => 'array',
@@ -41,11 +41,15 @@ class Message extends BaseModel
     	return Carbon::parse($this->attributes['created_at'])->format('h:iA \\o\\n D');
     }
 
-
     public function getCreatedDiffAttribute()
     {
         $created_diff = Carbon::parse($this->attributes['created_at'])->diffForHumans(null, true);
         return str_replace(['hour', 'hours', 'minute', 'minutes'], ['hr', 'hrs', 'min', 'mins'], $created_diff);
+    }
+
+    public function getTimestampAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->timestamp;
     }
 
     public function getSourceAttribute($value)

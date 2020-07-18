@@ -1,6 +1,6 @@
 <template>
-	<div class="overflow-hidden py-4 h-100 flex-grow-1 d-flex flex-column">
-		<div v-if="$root.payoutComplete">
+	<div class="overflow-hidden h-100 flex-grow-1 d-flex flex-column">
+		<div v-if="$root.payoutComplete" class="h-100">
 			<div v-if="invoices.length == 0" class="text-muted text-center p-4 position-absolute-center">
 				<div class="h6 font-weight-normal mb-3">You don't have any invoices yet.</div>
 				<button type="button" @click="$refs['createInvoiceModal'].show()" class="btn btn-white border d-inline-flex align-items-center">
@@ -9,15 +9,18 @@
 			</div>
 
 			<template v-else>
-				<div class="px-4 d-flex flex-column h-100">
-					<div class="d-flex align-items-center">
-						<h4 class="font-heading mb-0">Invoices</h4>
-						<button type="button" @click="$refs['createInvoiceModal'].show()" class="ml-auto btn btn-white d-flex align-items-center border">
-							<plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>New invoice
-						</button>
+				<div class="d-flex flex-column h-100 overflow-hidden">
+					<div class="border-bottom bg-white p-3 d-flex align-items-center">
+						<h5 class="font-heading mb-0">Invoices</h5>
+						<div class="ml-auto d-flex align-items-center">
+		                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['createInvoiceModal'].show()">
+		                        <plus-icon class="btn-icon"></plus-icon>
+		                        New Invoice
+		                    </button>
+						</div>
 					</div>
 
-					<div class="flex-grow-1 overflow-auto">
+					<div class="flex-grow-1 overflow-auto px-4 pb-4">
 						<table class="table table-borderless table-fixed-header mb-0">
 							<thead>
 								<tr>

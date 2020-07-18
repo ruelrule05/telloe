@@ -28,8 +28,10 @@
                         <!-- Fields -->
                         <div v-if="conversation.members.length == 1" class="form-group">
                             <div class="d-flex align-items-center dropdown">
-                                <label class="text-muted mb-0" ref="customFieldsLabel">Bespoke Fields</label>
-                                <button class="ml-auto btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon> Add Field</button>
+                                <template v-if="$root.auth.role.role == 'client'">
+                                    <label class="text-muted mb-0" ref="customFieldsLabel">Bespoke Fields</label>
+                                    <button class="ml-auto btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon> Add Field</button>
+                                </template>
                                 <div class="dropdown-menu w-100 p-2" @click.stop>
                                     <vue-form-validate @submit="addCustomField()">
                                         <div class="form-group mb-2">
@@ -52,12 +54,12 @@
                                     </vue-form-validate>
                                 </div>
                             </div>
-                            <div v-for="(custom_field, index) in conversation.custom_fields" class="d-flex align-items-center my-2 custom-field position-relative">
+                            <div v-for="(custom_field, index) in conversation.custom_fields" v-if="custom_field.is_visible || $root.auth.id == conversation.user_id" class="d-flex align-items-center my-2 custom-field position-relative">
                                 <div class="overflow-hidden">
                                     <small class="d-block mb-n1 text-muted text-ellipsis">{{ custom_field.name }}</small>
                                     <div class="text-ellipsis">{{ custom_field.value }}</div>
                                 </div>
-                                <div class="ml-auto position-static d-flex align-items-center pl-1 dropdown">
+                                <div v-if="$root.auth.role.role == 'client'" class="ml-auto position-static d-flex align-items-center pl-1 dropdown">
                                     <button type="button" class="btn btn-light btn-sm p-1 badge-pill line-height-0 mr-1 edit-custom-field" data-toggle="dropdown" data-display="static" @click="editCustomField(custom_field)"><pencil-icon width="16" height="16"></pencil-icon></button>
                                     <div class="dropdown-menu w-100 p-2" @click.stop>
                                         <vue-form-validate @submit="updateCustomField(custom_field)">
@@ -133,13 +135,13 @@
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="bookings" class="collapse pb-1" data-parent="#info-items">
-                        <bookings :user="conversation.member" :membersLength="conversation.members.length"></bookings>
+                        <bookings v-if="conversation.ready" :conversation="conversation" :membersLength="conversation.members.length"></bookings>
                         
                         <!-- Available services -->
-                        <div v-if="conversation.members.length == 1">
+                        <div v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1">
                             <div class="form-group">
                                 <label class="text-muted">Available Services</label>
-                                <div v-for="service in services" v-if="service.is_available" class="d-flex align-items-center mb-2">
+                                <div v-for="service in conversation.user.services" v-if="service.is_available" class="d-flex align-items-center mb-2">
                                     <div>
                                         <h6 class="font-heading mb-0">{{ service.name }}</h6>
                                         <small class="text-muted d-block">{{ service.duration }} minutes</small>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Booking;
+use App\Models\Conversation;
 use Auth;
 use Carbon\Carbon;
 use Google_Service_Calendar;
@@ -30,20 +31,33 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $this->validate($request, [
-            'user_id' => 'nullable|exists:users,id'
+            'conversation_id' => 'nullable|exists:conversations,id'
         ]);
-
         $role = Auth::user()->role->role;
-        if($role == 'client') :
-            $bookings = Booking::with('user', 'service')->whereHas('service', function($service) {
-                    $service->where('user_id', Auth::user()->id);
-                })->orderBy('created_at', 'DESC');
-            if($request->user_id) :
-                $bookings = $bookings->where('user_id', $request->user_id);
+        if($request->conversation_id) :
+            $conversation = Conversation::findOrFail($request->conversation_id);
+            $this->authorize('show', $conversation);
+            if($role == 'client') :
+                $bookings = Booking::with('user', 'service')->where('user_id', $conversation->member->id)->whereHas('service', function($service) use ($conversation){
+                    $service->where('user_id', $conversation->user_id);
+                })->orderBy('created_at', 'DESC')->get();
+            elseif($role == 'customer') :
+                $bookings = Booking::with('user', 'service')->where('user_id', Auth::user()->id)->whereHas('service', function($service) use ($conversation){
+                    $service->where('user_id', $conversation->user_id);
+                })->orderBy('created_at', 'DESC')->get();
             endif;
-            $bookings = $bookings->get();
-        elseif($role == 'customer') :
-            $bookings = Booking::with('service.user')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+        else:
+            if($role == 'client') :
+                $bookings = Booking::with('user', 'service')->whereHas('service', function($service) {
+                        $service->where('user_id', Auth::user()->id);
+                    })->orderBy('created_at', 'DESC');
+                if($request->user_id) :
+                    $bookings = $bookings->where('user_id', $request->user_id);
+                endif;
+                $bookings = $bookings->get();
+            elseif($role == 'customer') :
+                $bookings = Booking::with('service.user')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+            endif;
         endif;
         
         return response()->json($bookings);

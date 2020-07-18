@@ -27,11 +27,11 @@
                         </div>
                         <div class="ml-auto btn-circle-actions">
                             <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
-                                <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><video-icon width="32" height="32"></video-icon></button>
+                                <button class="btn border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><colored-phone-icon width="28" height="28"></colored-phone-icon></button>
                                 <!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
                             </template>
                             <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 
-                            'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="24" height="24"></info-circle-icon></button>
+                            'profile'" :class="{'active': $root.detailsTab == 'profile'}"><info-circle-icon width="28" height="28"></info-circle-icon></button>
                         </div>
         			</div>
 
@@ -51,7 +51,8 @@
 
                         <div v-if="pastedFile" class="position-absolute w-100 h-100 bg-white pasted-file">
                             <div class="position-absolute-center w-75 h-100 d-flex flex-column p-5">
-                                <div class="pasted-preview flex-grow-1" :style="{'background-image': 'url('+pastedFile.preview+')'}"></div>
+                                <div v-if="!pastedFile.preview" class="position-relative border"></div>
+                                <div v-else class="pasted-preview flex-grow-1" :style="{'background-image': 'url('+pastedFile.preview+')'}"></div>
                                 <div class="text-center mt-3">
                                     <button type="button" class="btn btn-light border" @click="pastedFile = null">Cancel</button>
                                     <button type="button" class="btn btn-light border" @click="sendPastedFile()">Send</button>

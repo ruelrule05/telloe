@@ -18,7 +18,7 @@ export default {
 
 	data: () => ({
 		user: null,
-		tab: 'Profile',
+		tab: 'profile',
 		securityForm: {
 			current_password: '',
 			password: '',
@@ -31,10 +31,16 @@ export default {
 		},
 	}),
 
+	watch: {
+		'$route.query.tab': function(value) {
+			this.tab = value;
+		}
+	},
+
 	computed: {
 		tabs() {
-			let tabs = ['Profile', 'Security'];
-			if(this.$root.auth.role.role == 'client') tabs.push('Payout');
+			let tabs = ['profile', 'security'];
+			if(this.$root.auth.role.role == 'client') tabs.push('payout');
 			return tabs;
 		},
 
@@ -76,13 +82,16 @@ export default {
 				this.stripeAccountForm.routing_number = external_account.routing_number.replace(' ', '');
 			}
 		}
+		if(this.$route.query.tab) this.tab = this.$route.query.tab;
 	},
 
 	mounted() {
 		this.$root.contentloading = false;
+		console.log('eww');
 	},
 
 	methods: {
+
 		async save() {
             let bodyFormData = new FormData();
             Object.keys(this.user).map((k) => {

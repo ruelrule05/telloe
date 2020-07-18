@@ -1,5 +1,5 @@
 <template>
-	<div class="modal fade" tabindex="-1" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded' : 'cursor-auto']">
+	<div class="modal fade video-call-modal" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', {'is-fullscreen show': isFullScreen}]">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content overflow-hidden rounded h-100">
                 <div v-if="$root.callConversation" class="modal-body p-0 h-100">
@@ -98,7 +98,7 @@
 							            <collapse-icon width="20" height="20"></collapse-icon>
 							        </button>
 					        	</template>
-						        <button type="button" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
+						        <button v-if="!isFullScreen" type="button" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
 						            <arrow-top-right-icon v-if="isShrinked" width="20" height="20"></arrow-top-right-icon>
 							        <arrow-bottom-left-icon v-else width="20" height="20"></arrow-bottom-left-icon>
 						        </button>
@@ -134,4 +134,4 @@
 </template>
 
 <script src="./video-call.js"></script>
-<style scoped lang="scss" src="./video-call.scss"></style>
+<style lang="scss" src="./video-call.scss"></style>

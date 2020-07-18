@@ -1,5 +1,5 @@
 <template>
-	<div class="overflow-hidden py-4 h-100 flex-grow-1 d-flex flex-column">
+	<div class="overflow-hiddenh-100 flex-grow-1 d-flex flex-column">
 		<div v-if="$root.payoutComplete">
 			<div v-if="subscriptions.length == 0" class="text-muted text-center p-4 position-absolute-center">
 				<div class="h6 font-weight-normal mb-3">You don't have any subscriptions yet.</div>
@@ -9,15 +9,18 @@
 			</div>
 
 			<template v-else>
-				<div class="px-4 d-flex flex-column h-100">
-					<div class="d-flex align-items-center">
-						<h4 class="font-heading mb-0">Subscriptions</h4>
-						<button type="button" @click="$refs['createSubscriptionModal'].show()" class="ml-auto btn btn-white d-flex align-items-center border">
-							<plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>New subscription
-						</button>
+				<div class="d-flex flex-column h-100">
+					<div class="border-bottom bg-white p-3 d-flex align-items-center">
+						<h5 class="font-heading mb-0">Subscriptions</h5>
+						<div class="ml-auto d-flex align-items-center">
+		                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['createSubscriptionModal'].show()">
+		                        <plus-icon class="btn-icon"></plus-icon>
+		                        New Subscription
+		                    </button>
+						</div>
 					</div>
 
-					<div class="flex-grow-1 overflow-auto">
+					<div class="flex-grow-1 overflow-auto px-4 py-2">
 						<table class="table table-borderless table-fixed-header mb-0">
 							<thead>
 								<tr>
@@ -26,7 +29,7 @@
 									<th>Customer</th>
 									<th>Status</th>
 									<th>Date Created</th>
-									<th></th>
+									<!-- <th></th> -->
 								</tr>
 							</thead>
 							<tbody>
@@ -43,7 +46,7 @@
 										</span>
 									</td>
 									<td class="align-middle text-muted">{{ formatDate(subscription.created) }}</td>
-									<td class="text-right align-middle">
+									<!-- <td class="text-right align-middle">
 										<div class="dropdown">
 				                    		<button class="btn btn-white border p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
 												<more-h-icon width="20" height="20"></more-h-icon>
@@ -52,7 +55,7 @@
 												
 											</div>
 				                    	</div>
-									</td>
+									</td> -->
 								</tr>
 							</tbody>
 						</table>

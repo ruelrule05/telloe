@@ -9,9 +9,8 @@ import Emojipicker from '../../../../components/emojipicker';
 import Modal from '../../../../components/modal/modal.vue';
 import MessageType from './message-type';
 
-import VideoIcon from '../../../../icons/colored-video';
 import CastIcon from '../../../../icons/cast';
-import InfoCircleIcon from '../../../../icons/info-circle';
+import InfoCircleIcon from '../../../../icons/colored-info-circle';
 import VideoCameraIcon from '../../../../icons/video-camera';
 import MicrophoneIcon from '../../../../icons/microphone';
 import AddNoteIcon from '../../../../icons/add-note';
@@ -33,7 +32,6 @@ export default {
         Modal,
         MessageType,
 
-        VideoIcon,
         CastIcon,
         InfoCircleIcon,
         VideoCameraIcon,
@@ -284,14 +282,11 @@ export default {
 
         sendAudio(audio) {
             if (this.conversation) {
-                const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
                     source: audio.source,
-                    timestamp: dayjs().valueOf(),
                     type: 'audio',
                     message: 'audio',
-                    created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
                     metadata: {duration: audio.duration},
@@ -303,15 +298,12 @@ export default {
 
         sendVideo(video) {
             if (this.conversation) {
-                const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
                     source: video.source,
                     preview: video.preview,
-                    timestamp: dayjs().valueOf(),
                     type: 'video',
                     message: 'video',
-                    created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
                     metadata: {duration: video.duration},
@@ -389,21 +381,17 @@ export default {
         async addFile(e) {
             let fileInput = e.target;
             if (this.conversation && fileInput.files.length > 0) {
-                const timestamp = dayjs().valueOf();
                 let message = {
                     user: this.$root.auth,
-                    timestamp: dayjs().valueOf(),
                     type: 'file',
                     message: 'file',
                     source: fileInput.files[0],
-                    timestamp: dayjs().valueOf(),
-                    created_at: dayjs(timestamp).format('hh:mm A'),
                     is_read: 1,
                     created_diff: 'Just now',
                 };
 
                 let fileExtension = fileInput.value.split('.').pop();
-                if (this.isImage(fileExtension)) {
+                if (this.$root.isImage(fileExtension)) {
                     message.type = 'image';
                     message.message = 'image';
 
@@ -458,20 +446,17 @@ export default {
                         let dataurl = canvas.toDataURL(file.type);
                         this.pastedFile = {file: file, preview: dataurl};
                     },
-                    {maxWidth: 350, canvas: true},
+                    {maxWidth: 500, canvas: true, pixelRatio: window.devicePixelRatio, downsamplingRatio: 0.5, imageSmoothingEnabled: true},
                 );
             }
         },
 
         sendText() {
-            const timestamp = dayjs().valueOf();
             let message = {
                 user: this.$root.auth,
                 message: this.textMessage.trim(),
                 type: 'text',
                 is_read: 1,
-                timestamp: dayjs().valueOf(),
-                created_at: dayjs(timestamp).format('hh:mm A'),
                 created_diff: 'Just now',
             };
             this.sendMessage(message);

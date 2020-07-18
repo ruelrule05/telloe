@@ -290,7 +290,9 @@ export default {
                     if (isFullscreen()) {
                       this.isFullScreen = true;
                     } else {
-                      this.isFullScreen = false;
+                        this.isFullScreen = false;
+                        this.$refs['modal'].style.display = 'block';
+                        this.$refs['modal'].style.opacity = 1;
                     }
                 });
             });

@@ -69,7 +69,6 @@ export default {
 
 	computed: {
 		...mapState({
-            services: (state) => state.services.index,
             user_blacklisted_services: (state) => state.user_blacklisted_services.index,
 		}),
 
@@ -141,7 +140,6 @@ export default {
 
 	created() {
         if(this.conversation.members.length == 1) {
-            this.getServices();
             this.getUserBlacklistedServices(this.conversation.member.id);
         }
         if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
@@ -150,7 +148,6 @@ export default {
 
 	methods: {
 		...mapActions({
-            getServices: 'services/index',
             getNotes: 'notes/index',
             getUserBlacklistedServices: 'user_blacklisted_services/index',
             storeUserBlacklistedService: 'user_blacklisted_services/store',

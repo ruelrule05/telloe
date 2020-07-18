@@ -46,11 +46,12 @@ const mutations = {
 };
 
 const actions = {
-    index({commit, rootState}, user_id) {
-        const user_query = user_id ? `?user_id=${user_id}` : '';
-        axios.get(`/${name}${user_query}`).then(response => {
-            commit('index', response.data);
-        });
+    async index({commit, rootState}, conversation) {
+        let queryString = '';
+        if(conversation) queryString = `?conversation_id=${conversation.id}`;
+        let response = await axios.get(`/${name}${queryString}`);
+        commit('index', response.data);
+        return response;
     },
 
     store({commit}, data) {

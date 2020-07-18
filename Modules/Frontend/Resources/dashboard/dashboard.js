@@ -100,12 +100,20 @@ import NotebookIcon from '../icons/notebook';
 import CogIcon from '../icons/cog';
 import ChevronDownIcon from '../icons/chevron-down';
 import UsersIcon from '../icons/users';
+import UserCircleIcon from '../icons/user-circle';
 import ShortcutIcon from '../icons/shortcut';
 import PlannerIcon from '../icons/planner';
 import VirtualRealityIcon from '../icons/virtual-reality';
 import BillIcon from '../icons/bill';
 import ContactIcon from '../icons/contact';
+import WalletIcon from '../icons/wallet';
+import LockIcon from '../icons/lock';
 import ExclamationCircleIcon from '../icons/exclamation-circle';
+import PlayAltIcon from '../icons/play-alt';
+import InfoCircleIcon from '../icons/info-circle';
+import HeadphoneIcon from '../icons/headphone';
+import PasswordIcon from '../icons/password';
+import ListBulletIcon from '../icons/list-bullet';
 import VideoCall from './components/video-call/video-call.vue';
 
 import store from './store';
@@ -121,12 +129,20 @@ window.app = new Vue({
         CogIcon,
         VirtualRealityIcon,
         UsersIcon,
+        UserCircleIcon,
         ShortcutIcon,
         PlannerIcon,
         ChevronDownIcon,
         BillIcon,
         ContactIcon,
+        WalletIcon,
+        LockIcon,
         ExclamationCircleIcon,
+        PlayAltIcon,
+        InfoCircleIcon,
+        HeadphoneIcon,
+        PasswordIcon,
+        ListBulletIcon,
 
         VideoCall,
         ScreenRecorder,

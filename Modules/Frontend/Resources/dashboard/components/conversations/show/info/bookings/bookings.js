@@ -15,7 +15,7 @@ export default {
     },
 
     props: {
-        user: {
+        conversation: {
             type: Object,
             required: true,
         },
@@ -26,6 +26,8 @@ export default {
     },
 
     data: () => ({
+        bookings: [],
+        user: null,
         selectedBooking: null,
         selectedDate: null,
         selectedTimeslot: '',
@@ -38,19 +40,15 @@ export default {
 
     computed: {
         ...mapState({
-            services: (state) => state.services.index,
-            bookings: (state) => state.bookings.index,
             bookingsReady: (state) => state.bookings.ready,
         }),
 
         userBookings() {
             let bookings = [];
             this.bookings.forEach((booking) => {
-                if (booking.user_id == this.user.id) {
-                    let parts = booking.date.split('-');
-                    booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
-                    bookings.push(booking);
-                }
+                let parts = booking.date.split('-');
+                booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
+                bookings.push(booking);
             });
 
             return bookings;
@@ -59,7 +57,7 @@ export default {
         formattedHolidays() {
             let formattedHolidays = [];
             if (this.selectedService) {
-                let service = this.services.find((x) => x.id == this.selectedService);
+                let service = this.conversation.user.services.find((x) => x.id == this.selectedService);
                 if (service) {
                     service.holidays.forEach((holiday) => {
                         let parts = holiday.split('-');
@@ -83,15 +81,11 @@ export default {
         },
     },
 
-    watch: {
-        'user.id': function() {
-            this.getBookings();
-        },
-    },
-
     created() {
-        this.getBookings();
-        this.selectedService = (this.services[0] || {}).id;
+        this.selectedService = (this.conversation.user.services[0] || {}).id;
+        this.getBookings(this.conversation).then((response) => {
+            this.bookings = response.data;
+        });
     },
 
     mounted() {
@@ -146,7 +140,7 @@ export default {
 
         resetBookingForm() {
             this.selectedDate = null;
-            this.selectedService = (this.services[0] || {}).id;
+            this.selectedService = (this.conversation.user.services[0] || {}).id;
             this.selectedTimeslot = '';
             this.timeslotDropdown = false;
             this.customTime = false;
@@ -163,12 +157,12 @@ export default {
 
         getTimeslots(service_id = '', date = '') {
             if (service_id && date) {
-                let service = this.services.find((x) => x.id == service_id);
+                let service = this.conversation.user.services.find((x) => x.id == service_id);
                 if (service) {
                     this.timeslots = [];
                     this.selectedTimeslot = null;
                     let dateFormat = dayjs(date).format('YYYY-MM-DD');
-                    axios.get(`/@${service.user.username}/${service_id}/timeslots?date=${dateFormat}`).then((response) => {
+                    axios.get(`/@${this.conversation.user.username}/${service_id}/timeslots?date=${dateFormat}`).then((response) => {
                         let timeslots = response.data;
                         if (this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
                             let parts = this.selectedBooking.start.split(':');
@@ -216,7 +210,7 @@ export default {
                 let data = {
                     date: formatDate,
                     start: this.selectedTimeslot.time,
-                    user_id: this.user.id,
+                    user_id: this.conversation.member.id,
                     service_id: this.selectedService,
                 };
                 this.storeBooking(data);

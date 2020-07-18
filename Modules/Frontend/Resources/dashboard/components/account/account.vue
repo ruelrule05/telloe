@@ -3,14 +3,14 @@
 		<div class="p-4">
 			<ul class="nav nav-tabs">
 			  	<li v-for="t in tabs" class="nav-item">
-			    	<span class="nav-link  cursor-pointer" :class="{'active': t == tab}" @click="tab = t">{{ t }}</span>
+			    	<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer text-capitalize text-body" @click.native="tab = t">{{ t }}</router-link>
 			  	</li>
 			</ul>
 		</div>
 
 		<div class="flex-grow-1 overflow-auto container pb-4">
 			<!-- Profile -->
-			<div v-if="tab == 'Profile'" class="row">
+			<div v-if="tab == 'profile'" class="row">
 				<div class="col-md-6">
 					<div class="card shadow-sm mb-3">
 						<div class="card-body">
@@ -60,7 +60,7 @@
 			</div>
 
 			<!-- Security -->
-			<div v-else-if="tab == 'Security'" class="row">
+			<div v-else-if="tab == 'security'" class="row">
 				<div class="col-md-6">
 					<div class="card shadow-sm">
 						<div class="card-body">
@@ -88,7 +88,7 @@
 			</div>
 
 			<!-- Payout -->
-			<div v-else-if="tab == 'Payout' && $root.auth.role.role == 'client'" class="row">
+			<div v-else-if="tab == 'payout' && $root.auth.role.role == 'client'" class="row">
 				<div class="col-md-8">
 					<div class="card shadow-sm">
 						<div class="card-body">

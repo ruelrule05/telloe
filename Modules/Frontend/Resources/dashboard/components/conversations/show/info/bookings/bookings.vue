@@ -1,11 +1,11 @@
 <template>
-	<div v-if="!user.is_pending && (user.role || {}).role != 'support' && membersLength == 1" class="position-relative h-100 pb-2" ref="addBookingTitle">
+	<div v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support' && membersLength == 1" class="position-relative h-100 pb-2" ref="addBookingTitle">
 		<div class="dropdown" ref="newBookingDropdown">
 	        <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static" @click="selectedBooking = null;"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add Booking</button>
             <div class="dropdown-menu w-100 p-2" @click.stop>
 				<select class="form-control shadow-nonxe mb-2 cursor-pointer" @change="getTimeslots(selectedService, selectedDate)" :class="{'text-muted': !selectedService}" v-model="selectedService">
 					<option value="" selected disabled>Select service</option>
-					<option :value="service.id" v-for="service in services">{{ service.name }}</option>
+					<option :value="service.id" v-for="service in conversation.user.services">{{ service.name }}</option>
 				</select>
 				<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
 					<div class="text-muted bg-gray-300 p-2">Date</div>
@@ -30,8 +30,8 @@
 											{{ timeslot.label }}
 										</div>
 										<div class="rounded border p-2">
-											<small class="d-block">Client's time: {{ user.timezone }}</small>
-											{{ timezoneTime($root.auth.timezone, user.timezone, timeslot.time) }}
+											<small class="d-block">Client's time: {{ conversation.member.timezone }}</small>
+											{{ timezoneTime($root.auth.timezone, conversation.member.timezone, timeslot.time) }}
 										</div>
 									</div>
 								</div>
@@ -53,12 +53,6 @@
 
 
 		<div class="position-relative h-100">
-			<div v-if="!bookingsReady" class="modal-loader bg-white position-absolute w-100 h-100">
-	            <div class="position-absolute-center">
-	                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-	            </div>
-	        </div>
-
 	        <div v-for="booking in userBookings" class="p-3 booking mt-2 dropdown shadow-sm rounded border">
 	        	<div class="d-flex">
 		            <div>
@@ -82,7 +76,7 @@
 					<h6 class="font-heading">Edit Booking</h6>
 					{{ (selectedService || {}).name }}
 					<select class="form-control shadow-none mb-2 cursor-pointer" @change="getTimeslots(selectedService, booking.new_date)" :class="{'text-muted': !selectedService}" v-model="selectedService">
-						<option :value="service.id" v-for="service in services">{{ service.name }}</option>
+						<option :value="service.id" v-for="service in conversation.user.services">{{ service.name }}</option>
 					</select>
 	        		<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
 						<div class="text-muted bg-gray-300 p-2">Date</div>
@@ -107,8 +101,8 @@
 											{{ timeslot.label }}
 										</div>
 										<div class="rounded border p-2">
-											<small class="d-block">Client's time: {{ user.timezone }}</small>
-											{{ timezoneTime($root.auth.timezone, user.timezone, timeslot.time) }}
+											<small class="d-block">Client's time: {{ conversation.member.timezone }}</small>
+											{{ timezoneTime($root.auth.timezone, conversation.member.timezone, timeslot.time) }}
 										</div>
 									</div>
 								</div>

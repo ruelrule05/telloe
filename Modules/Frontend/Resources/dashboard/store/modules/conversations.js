@@ -20,6 +20,7 @@ const mutations = {
             let conversation = state.index.find((x) => x.id == data.id);
             if(conversation) {
                 Vue.set(conversation, 'messages', data.messages);
+                Vue.set(conversation, 'user', data.user);
                 Vue.set(conversation, 'ready', true);
                 Vue.set(conversation.last_message, 'is_read', true);
             } else {

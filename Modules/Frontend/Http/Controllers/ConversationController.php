@@ -34,7 +34,7 @@ class ConversationController extends Controller
     {
         $conversation = Conversation::where(function($query){
             $query->has('members.user')->orHas('contact');
-        })->with('user', 'messages.user', 'members.user')->findOrfail($id);
+        })->with('user.services', 'messages.user', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 
         //if ($request->is_read) :

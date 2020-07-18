@@ -4,6 +4,7 @@
 @import 'node_modules/bootstrap/scss/mixins';
 
 @import '../sass/variables';
+@import '../sass/mixins';
 @import 'node_modules/v-color/dist/index';
 @import 'node_modules/bootstrap/scss/reboot';
 @import 'node_modules/bootstrap/scss/grid';
@@ -33,17 +34,7 @@
 	-moz-osx-font-smoothing: grayscale;
 	font-smoothing: antialiased;
 }
-@each $color, $value in $theme-colors {
-	.btn-#{$color} {
-		&:hover,
-		&:focus{
-			background-color: $value !important;
-		}
-		&:hover{
-			box-shadow: $box-shadow-xs;
-		}
-	}
-}
+
 
 .modal {
 	.modal-dialog {
@@ -63,6 +54,12 @@
 	}
 }
 @each $color, $value in $theme-colors {
+	.btn-#{$color} {
+		&:hover{
+			box-shadow: $box-shadow-xs;
+		}
+	}
+	
 	.btn-outline-#{$color} {
 		&:focus,
 		&.focus {
@@ -199,16 +196,26 @@
 	}
 }
 .dropdown-menu {
-	box-shadow: $box-shadow-sm;
-	border: solid 1px rgba($dark, 0.035);
+	padding-left:  .5rem;
+	padding-right:  .5rem;
+	box-shadow: rgba($dark, 0.2) 0px 0px 15px, rgba($dark, 0.15) 0px 0px 3px 1px;
 	.dropdown-item{
+		padding: 0.25rem 0.5rem 0.3rem 0.5rem;
+		transition: $transition-base;
+		border-radius: $border-radius-sm;
 		&.disabled{
 			svg {
 				fill: $gray-600;
 			}
 		}
+		.dropdown-item-icon{
+			margin-right: 10px;
+			margin-left: -2px;
+			fill: $gray-600;
+		}
 	}
 }
+
 .form-control {
 	&:disabled,
 	&.disabled {
