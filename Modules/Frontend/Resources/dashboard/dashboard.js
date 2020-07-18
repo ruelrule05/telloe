@@ -198,6 +198,18 @@ window.app = new Vue({
             });
             return count;
         },
+
+        supportLink() {
+            let supportLink = '#';
+            for(let conversation of this.conversations) {
+                let role = (conversation.member.role || {}).role;
+                if(role == 'support') {
+                    supportLink = `/dashboard/conversations/${conversation.id}`;
+                    break;
+                }
+            }
+            return supportLink;
+        },
     },
 
     watch: {

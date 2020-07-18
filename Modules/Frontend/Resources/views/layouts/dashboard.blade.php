@@ -74,7 +74,7 @@
 								    		<info-circle-icon height="18" width="18" class="dropdown-item-icon"></info-circle-icon>
 								    		Help Center
 								    	</router-link> -->
-								    	<router-link to="#" class="dropdown-item d-flex align-items-center">
+								    	<router-link :to="supportLink" class="dropdown-item d-flex align-items-center">
 								    		<headphone-icon height="18" width="18" class="dropdown-item-icon"></headphone-icon>
 								    		Support
 								    	</router-link>
