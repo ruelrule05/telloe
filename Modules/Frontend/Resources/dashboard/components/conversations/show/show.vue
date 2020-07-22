@@ -110,7 +110,7 @@
                                                     </div>
                                                     <div v-tooltip.top="'Delete'" class="action-content cursor-pointer line-height-1">
                                                         <div class="action-button">
-                                                            <trash-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''" :class="{'active': message.is_history}" @click.native="selectedMessage = message; $refs['deleteMessageModal'].show()"></trash-icon>
+                                                            <trash-icon height="20" width="20" @click.native="selectedMessage = message; $refs['deleteMessageModal'].show()"></trash-icon>
                                                         </div>
                                                     </div>
 
