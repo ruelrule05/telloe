@@ -1,0 +1,9 @@
+<template>
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">    <path d="M 6 10 A 2 2 0 0 0 4 12 A 2 2 0 0 0 6 14 A 2 2 0 0 0 8 12 A 2 2 0 0 0 6 10 z M 12 10 A 2 2 0 0 0 10 12 A 2 2 0 0 0 12 14 A 2 2 0 0 0 14 12 A 2 2 0 0 0 12 10 z M 18 10 A 2 2 0 0 0 16 12 A 2 2 0 0 0 18 14 A 2 2 0 0 0 20 12 A 2 2 0 0 0 18 10 z"></path></svg>
+</template>
+
+<script>
+export default {
+	name: 'more-h',
+};
+</script>

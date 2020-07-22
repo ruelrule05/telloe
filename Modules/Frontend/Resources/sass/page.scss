@@ -1,0 +1,167 @@
+@import '../sass/bootstrap';
+
+
+@each $breakpoint, $value in $grid-breakpoints {
+    @media screen and (max-width: #{$value}) {
+        .btn-#{$breakpoint}-block {
+            display: block;
+            width: 100%;
+        }
+    }
+}
+[v-cloak]{
+    opacity: 0;
+}
+.navbar-collapse{
+    &.show,
+    &.collapsing{
+        margin-top: 20px;
+        background-color: $gray-200;
+    }
+}
+.font-heading{
+    font-family: 'Avenir Next', sans-serif;
+}
+.home-content{
+    padding: 15vh 0;
+    overflow: hidden;
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        padding: $grid-gutter-width 0;
+        overflow: visible;
+    }
+
+    &.home-content-2{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -100px;
+            width: 150%;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            img {
+                width: 80%;
+                position: static;
+                right: auto;
+                margin-top: -80px;
+                margin-bottom: 10px;
+                transform: none;
+                top: auto;
+            }
+            .col-md-4{
+                text-align: center;
+            }
+        }
+    }
+    &.home-content-5{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -150px;
+            width: 100%;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            img {
+                top: -70px;
+                right: -120px;
+                transform: none;
+                width: 95%;
+            }
+        }
+    }
+    &.home-content-3{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -70px;
+            width: 130%;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            .col-md-5{
+                text-align: center;
+            }
+            img {
+                width: 90%;
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
+                margin-top: -50px;
+            }
+        }
+    }
+    &.home-content-6{
+        img {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: -150px;
+        }
+        @media (max-width: map-get($grid-breakpoints, 'md')) {
+            .col-md-4{
+                text-align: center;
+            }
+            img {
+                width: 100%;
+                margin-top: -100px;
+                margin-right: -140px;
+                margin-bottom: -40px;
+                position: static;
+                transform: none;
+            }
+        }
+    }
+}
+
+.hero{
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        padding: 10vh 0 !important;
+    }
+    h2{
+        line-height: 1.5;
+    }
+    p{
+        line-height: 1.4;
+    }
+}
+.range-slider{
+    .range-slider-rail, .range-slider-fill {
+        height: 10px !important;
+        border-radius: 15px !important;
+    }
+    .range-slider-fill{
+        background-color: #8E98B3 !important
+    }
+    .range-slider-knob{
+        background-color: #2D2C68 !important;
+        border: solid 2px white;
+    }
+}
+.cursor-pointer{
+    cursor: pointer !important;
+}
+.opacity-0{
+    opacity: 0 !important;
+}
+.flex-1{
+    flex: 1 !important;
+}
+.h-100vh{
+    height: 100vh;
+}
+.line-height-sm {
+    line-height: $line-height-sm !important;
+}
+.line-height-1 {
+    line-height: 1 !important;
+}
+.line-height-0 {
+    line-height: 0 !important;
+}
+.line-height-base {
+    line-height: $line-height-base !important;
+}
+.seats-50{
+    margin-right: 62px;
+}

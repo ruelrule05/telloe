@@ -1,7 +1,9 @@
 <?php
 
 return [
-
+    'conversation_cache_time' => 40,
+  
+    'user_cache_time' => 30,
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -14,6 +16,10 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+
+    'fb_app_id' => env('FB_APP_ID', ''),
+    'fb_app_secret' => env('FB_APP_SECRET', ''),
+    'noreply_email' => env('NOREPLY_EMAIL', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -53,6 +59,8 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'api_url' => env('API_URL', 'http://api.localhost'),
+    'admin_url' => env('ADMIN_URL', 'http://api.localhost'),
 
     'asset_url' => env('ASSET_URL', null),
 
@@ -67,7 +75,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('TIMEZONE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -174,6 +182,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -225,6 +234,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Image' => Intervention\Image\Facades\Image::class,
 
     ],
 

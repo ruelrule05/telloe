@@ -1,0 +1,29 @@
+@import '../../../sass/variables';
+.plan{
+    box-shadow: $box-shadow-sm;
+    transition: $transition-base;
+    .btn-checkmark{
+        right: 0; 
+        top: 0;
+        svg{
+            opacity: 0;
+            fill: $white;
+            stroke: $white;
+        }
+    }
+    &.active{
+        .btn-checkmark{
+            background: $primary;
+            svg{
+                opacity: 1;
+            }
+        }
+    }
+    &:hover:not(.active),
+    &.selected:not(.active){
+        box-shadow: 0 0 0 0.1rem rgba($primary, 0.6);
+    }
+}
+.plan-price{
+    background: rgba($primary, 0.035)
+}

@@ -1,0 +1,133 @@
+@import '../../../../../sass/variables';
+@import './../show.scss';
+.user-profile-image {
+    width: 50px;
+    height: 50px;
+    span {
+        font-size: 22px;
+    }
+    &.user-profile-image-message {
+        width: 35px;
+        height: 35px;
+    }
+}
+.btn-close{
+    z-index: 10;
+    top: 0;
+    right: 0;
+}
+.file-details{
+    font-size: 13px;
+}
+.file-thumbnail {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.preview-video-play {
+    line-height: 0;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.75);
+    padding: 5px;
+}
+.note:hover .note-actions {
+    .action-button {
+        opacity: 1;
+    }
+    .note-metalabel{
+        opacity: 0;
+    }
+}
+
+.note-actions {
+    right: 0;
+    .note-metalabel{
+        transition: $transition-base;
+        right: 0;
+        pointer-events: none;
+    }
+    .action-button {
+        line-height: 0;
+        color: $gray-500;
+        opacity: 0;
+        transition: $transition-base;
+        .action-label{
+            margin-right: -3px;
+            font-size: 12px;
+        }
+        svg:not(.delete-note) {
+            fill: #999;
+            &.active{
+                fill: $primary !important;
+            }
+        }
+        &:hover,
+        &[aria-expanded="true"]{
+            transform: scale(1.1);
+            color: #000;
+            opacity: 1;
+            svg:not(.delete-note) {
+                fill: #000;
+            }
+        }
+    }
+
+    .action-content.show ~ .action-content{
+        .action-button {
+            opacity: 1;
+        }
+    }
+    .action-content.show ~ .note-metalabel{
+        opacity: 0 !important;
+    }
+    .tags-container{
+        .badge{
+            font-size: 10px;
+        }
+    }
+}
+.custom-field {
+    .edit-custom-field{
+        opacity: 0;
+        transition: $transition-base;
+        &[aria-expanded="true"]{
+            opacity: 1;
+        }
+    }
+    &:hover{
+        .edit-custom-field{
+            opacity: 1;
+        }
+    }
+}
+
+.conversation-title[contenteditable] {
+    border: solid 1px transparent;
+    &:focus {
+        border-color: $gray-300;
+        outline: 0;
+        background-color: white;
+    }
+}
+
+#info-items{
+    h5 {
+        svg {
+            fill: $gray-500;
+            transition: $transition-base;
+        }
+        &[aria-expanded='true'] {
+            svg {
+                transform: rotate(-180deg);
+                fill: black;
+            }
+        }
+        &:hover {
+            svg {
+                fill: black;
+            }
+        }
+    }
+ }

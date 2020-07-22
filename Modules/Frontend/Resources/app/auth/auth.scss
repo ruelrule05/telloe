@@ -1,0 +1,27 @@
+@import '../../sass/variables';
+.auth-container{
+    top: 0;
+    left: 0;
+    z-index: 9000;
+    background-color: rgba(#2D2C68, 0.75);
+    transition: $transition-base;
+    visibility: hidden;
+    opacity: 0;
+    .auth-body{
+        width: 50%;
+        transition: $transition-base;
+        right: -100%;
+    }
+    @media (max-width: map-get($grid-breakpoints, 'md')) {
+        .auth-body{
+            width: 100%;
+        }
+    }
+    &.open{
+        visibility: visible;
+        opacity: 1;
+        .auth-body{
+            right: 0;
+        }
+    }
+}

@@ -1,0 +1,191 @@
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/mixins';
+
+$border-radius: .5rem;
+$border-radius-sm: 0.4rem;
+$border-radius-lg: 0.6rem;
+$container-max-widths: (
+    xl: 1180px,
+);
+$grid-gutter-width: 40px;
+$primary: #5A5ADF;
+$orange: #FBBC1B;
+$facebook: #4267b2;
+$google: #DC3E29;
+$secondary: #F2F4F9;
+$text-muted: #818ca1;
+
+@import 'node_modules/bootstrap/scss/variables';
+$border-color: $gray-200;
+$body-color: $black;
+$nav-pills-link-active-bg: rgba($primary, 0.15);
+$nav-pills-link-active-color: $primary;
+$modal-scale-transform: 0;
+$theme-colors: (
+    'primary': $primary,
+    'orange': $orange,
+    'requires_payment': $warning,
+    'white': $white,
+    'gray': #999,
+    'secondary': $secondary,
+    'black': $black,
+    'facebook': $facebook,
+    'google': $google,
+    'light': $light,
+    'dark': $dark,
+    'danger': $danger,
+    'success': $success,
+    'warning': $warning,
+    'gray-200': $gray-200,
+    'gray-300': $gray-300,
+    'gray-400': $gray-400,
+    'gray-500': $gray-500,
+);
+@each $color, $value in $theme-colors {
+    .bg-#{$color}-light {
+        background-color: rgba($value, 12.5%);
+    }
+}
+$modal-header-border-width: 0;
+$modal-footer-border-width: 0;
+$card-border-width: 0;
+$link-color: #1e70bf;
+$nav-link-padding-y: 0.85rem;
+$input-height-lg: calc(#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 3} + #{$input-height-border});
+$input-font-size-lg: 1rem;
+$font-weight-bold: 600;
+$dropdown-padding-y: 0.45rem;
+$dropdown-item-padding-x: 1rem;
+$input-placeholder-color: $gray-500;
+$close-font-size: 2rem;
+$close-font-weight: 200;
+$modal-content-border-width: 0;
+$dropdown-font-size: 0.95rem;
+$navbar-nav-link-padding-x: 0.75rem;
+$dropdown-divider-margin-y: 0.45rem;
+$enable-caret: false;
+$dropdown-border-width: 0;
+
+
+$pagination-color: $secondary;
+$pagination-hover-color: $secondary;
+$pagination-active-color: $primary;
+$pagination-active-bg: white;
+$pagination-active-border-color: transparent;
+$pagination-border-color: transparent;
+$pagination-disabled-border-color: transparent;
+$pagination-hover-border-color: transparent;
+$pagination-disabled-color: #ddd;
+
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$headings-font-weight: 600;
+
+$alert-padding-y: 0.35rem;
+$transition-base: all 0.1s ease-in-out;
+$transition-fade: opacity 0.1s linear;
+$modal-transition: transform 0.15s ease-out;
+$modal-fade-transform: scale(0.95);
+
+// Typography
+$font-size-base: 0.9rem;
+$line-height-base: 1.4;
+$line-height-sm: 1.2;
+$text-color: #636b6f;
+$small-font-size: 90%;
+
+// Buttons 
+$btn-default-color: $text-color;
+$btn-padding-x-lg: 1.2rem;
+$btn-font-size-lg: 1.05rem;
+$btn-box-shadow: 5px;
+$btn-focus-box-shadow: 0;
+$btn-border-radius: 0.48rem;
+$btn-border-radius-sm: 0.4rem;
+$btn-padding-y: .33rem;
+$btn-padding-x: 0.75rem;
+$btn-padding-y-sm: .25rem;
+$btn-font-size: $font-size-base;
+$btn-focus-width: 0;
+$btn-transition: color 0.1s ease-in-out, background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+$input-btn-font-size: $font-size-base;
+$input-btn-focus-color: $primary;
+$input-btn-focus-width: 0.05rem;
+
+// Brands
+$brand-primary: #3f51b5;
+$brand-info: #8eb4cb;
+$brand-success: #2ab27b;
+$brand-warning: #cbb956;
+$brand-danger: #bf5329;
+
+// Dropdown
+$dropdown-link-active-bg: $primary;
+$dropdown-border-radius: $border-radius;
+$dropdown-color: $black;
+$dropdown-link-color: $black;
+
+// Badge
+$badge-font-size:  100%;
+$badge-font-weight: $font-weight-base;
+$badge-padding-x: 0.5rem;
+$badge-padding-y: 0.25rem;
+
+// Navbar
+$navbar-default-bg: #fff;
+$navbar-brand-padding-y: 0;
+$navbar-light-color: #212b35;
+$navbar-brand-font-size: inherit;
+$enable-validation-icons: false;
+$enable-responsive-font-size: true;
+
+$navbar-nav-link-padding-x: 1.25rem;
+
+// Inputs
+$input-color: #000;
+$input-focus-color: #000;
+$input-border: lighten($text-color, 40%);
+$input-border-focus: lighten($brand-primary, 25%);
+$input-color-placeholder: lighten($text-color, 30%);
+$input-border-radius: $border-radius;
+$input-border-radius-lg: $border-radius-lg;
+$input-border-radius-sm: $border-radius-sm;
+$input-border-color: $gray-400;
+$input-focus-border-color: $primary;
+$input-bg: $gray-100;
+$input-focus-width: 0;
+$input-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+
+
+$spinner-width: 2rem;
+$spinner-height: 2rem;
+$spinner-border-width: 0.1em;
+$spinner-border-width-sm: 0.035rem;
+
+$list-group-color: darken($primary, 30%);
+$list-group-bg: transparent;
+$list-group-hover-bg: rgba($primary, 3%);
+$list-group-action-active-bg: rgba($primary, 6%);
+$list-group-active-bg: rgba($primary, 6%);
+$list-group-action-hover-color: rgba($black, 80%);
+$list-group-active-color: $black;
+$list-group-action-active-color: $black;
+$list-group-item-padding-y: 0.5rem;
+$list-group-item-padding-x: 0.8rem;
+$list-group-color: $black;
+
+$table-hover-bg: rgba($secondary, 3%);
+$box-shadow-sm: 0 0.1rem 0.5rem $gray-300;
+
+$viewport_heights: (
+    '10vh': 10vh,
+    '20vh': 20vh,
+    '30vh': 30vh,
+    '40vh': 40vh,
+    '50vh': 50vh,
+    '60vh': 60vh,
+    '70vh': 70vh,
+    '80vh': 80vh,
+    '90vh': 90vh,
+    '100vh': 100vh,
+);

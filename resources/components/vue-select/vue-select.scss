@@ -1,0 +1,14 @@
+@import '../../sass/variables';
+.dropdown-container{
+	.dropdown-caret{
+		fill: $gray-500;
+		transition: $transition-base;
+	}
+	.dropdown-toggle {
+		&:focus{
+			.dropdown-caret{
+				fill: $primary;
+			}
+		}
+	}
+}
