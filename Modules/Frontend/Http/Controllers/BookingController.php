@@ -37,15 +37,9 @@ class BookingController extends Controller
         if($request->conversation_id) :
             $conversation = Conversation::findOrFail($request->conversation_id);
             $this->authorize('show', $conversation);
-            if($role == 'client') :
-                $bookings = Booking::with('user', 'service')->where('user_id', $conversation->member->id)->whereHas('service', function($service) use ($conversation){
-                    $service->where('user_id', $conversation->user_id);
-                })->orderBy('created_at', 'DESC')->get();
-            elseif($role == 'customer') :
-                $bookings = Booking::with('user', 'service')->where('user_id', Auth::user()->id)->whereHas('service', function($service) use ($conversation){
-                    $service->where('user_id', $conversation->user_id);
-                })->orderBy('created_at', 'DESC')->get();
-            endif;
+            $bookings = Booking::with('user', 'service')->whereIn('user_id', [$conversation->member->id, Auth::user()->id])->whereHas('service', function($service) use ($conversation){
+                $service->where('user_id', $conversation->user_id);
+            })->orderBy('created_at', 'DESC')->get();
         else:
             if($role == 'client') :
                 $bookings = Booking::with('user', 'service')->whereHas('service', function($service) {
