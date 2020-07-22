@@ -15,9 +15,8 @@
 					</div>
 
 					<div class="rounded mt-3 overflow-auto h-100 flex-grow-1 d-flex flex-column">
-						<div v-if="contacts.length == 0" class="text-gray text-center p-4">
-							<div class="h6 mb-3">You don't have any contacts yet.</div>
-							<button class="btn btn-white border" @click="$refs['addModal'].show()">Add Contact</button>
+						<div v-if="contacts.length == 0" class="text-secondary text-center p-4 position-absolute-center">
+							<div class="h6 mb-0 font-weight-normal">You don't have any contacts yet.</div>
 						</div>
 
 						<template v-else>

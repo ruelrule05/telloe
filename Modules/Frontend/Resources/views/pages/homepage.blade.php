@@ -301,7 +301,6 @@
 						<div class="border rounded bg-white plan p-3 position-relative" @click="selectPlan(plan)">
 							<strong class="text-orange text-uppercase">{{ $plan->subheading }}</strong>
 							<h5 class="mb-0 font-heading text-primary">{{ $plan->name }}</h5>
-							<p class="mb-0 text-muted font-weight-light mt-3">{{ $plan->description }}</p>
 							
 							<div class="mt-3">
 								<strong>Bookings</strong>
@@ -345,9 +344,10 @@
 							</div>
 
 							<h5 class="mb-0 mt-3 mb-0">${{ $plan->price }} per month</h5>
-							<h5 class="mb-4 font-weight-normal">{{ $plan->seats }} seats</h5>
+							<h5 class="mb-2 font-weight-normal">{{ $plan->seats }} seats</h5>
+							<small class="text-secondary">+ Stripe processing fees of 2.9% + 30¢ per successful card charge.</small>
 
-							<button class="btn btn-outline-primary btn-block px-4" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
+							<button class="btn btn-outline-primary btn-block px-4 mt-4" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
 
 						</div>
 					</div>

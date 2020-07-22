@@ -1,5 +1,36 @@
 <?php
 
+function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $request, $isNew = false)
+{
+    if($request->invite_token) :
+        $contact = App\Models\Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+        if($contact) :
+            if($isNew) :
+                $user->role_id = 3;
+                $user->save();
+            endif;
+            $contact->update([
+                'contact_user_id' => $user->id,
+                'is_pending' => false
+            ]);
+            $conversation = App\Models\Conversation::withTrashed()->where('contact_id', $contact->id)->first();
+            if($conversation) :
+                $conversation->restore();
+                if(!in_array($user->id, $conversation->members()->pluck('user_id')->toArray())) :
+                    App\Models\ConversationMember::create([
+                        'conversation_id' => $conversation->id,
+                        'user_id' => $user->id
+                    ]);
+                endif;
+            endif;
+
+            if(!$contact->stripe_customer_id) :
+                App\Jobs\CreateStripeCustomer::dispatch($user, $contact);
+            endif;
+        endif;
+    endif;
+}
+
 function is_base64_encoded($data)
 {
 	$data = substr($data, strpos($data, 'base64,') + 7);

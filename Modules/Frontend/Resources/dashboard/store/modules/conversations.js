@@ -31,6 +31,13 @@ const mutations = {
             resolve();
         });
     },
+
+    update(state, data) {
+        let conversation = state.index.find(x => x.id == data.id);
+        if(conversation) {
+            conversation.archive_users = data.archive_users;
+        }
+    } 
 };
 
 const actions = {
@@ -52,8 +59,9 @@ const actions = {
         return response.data;
     },
 
-    update({ commit }, data) {
-        axios.put(`/${name}/${data.id}`, data);
+    async update({ commit }, data) {
+        let response = await axios.put(`/${name}/${data.id}`, data);
+        await commit('update', response.data);
     },
 };
 

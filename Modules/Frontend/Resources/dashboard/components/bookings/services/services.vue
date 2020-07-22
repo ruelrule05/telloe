@@ -1,6 +1,6 @@
 <template>
 	<div class="row h-100">
-		<div v-if="ready" class="col-md-12 h-100">
+		<div v-if="ready" class="col-md-12 h-100 d-flex flex-column">
 			<div class="border-bottom bg-white p-3 d-flex align-items-center">
 				<h5 class="font-heading mb-0">Services</h5>
 				<div class="ml-auto d-flex align-items-center">
@@ -16,10 +16,10 @@
 				<button class="btn btn-primary" @click="newService = {}; $refs['modal'].show()">Add Service</button>
 			</div>
 
-			<div v-else class="d-flex h-100">
-				<div class="flex-grow-1 p-4 h-100 overflow-auto">
-					<div class="row">
-						<div class="col-md-6 mb-4" v-for="service in services">
+			<div v-else class="d-flex flex-grow-1 overflow-hidden">
+				<div class="flex-grow-1 p-2 overflow-auto">
+					<div class="d-flex flex-wrap">
+						<div class="w-50 p-2" v-for="service in services">
 							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm']" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
 								<div class="d-flex">
 									<h5 class="font-heading mb-1">{{ service.name }}</h5>

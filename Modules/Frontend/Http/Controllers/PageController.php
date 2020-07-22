@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Models\Plan;
+use App\Models\PasswordReset;
+use App\Models\Conversation;
+use App\Models\ConversationMember;
 use Auth;
 
 class PageController extends Controller
@@ -15,8 +18,14 @@ class PageController extends Controller
     public function homepage(Request $request)
     {
     	if (Auth::check()) :
+            checkInviteToken(Auth::user(), $request);
     		return redirect('/dashboard/conversations');
     	endif;
+
+        if($request->auth == 'reset' && $request->token) :
+            $passwordReset = PasswordReset::where('token', $request->token)->first();
+            if(!$passwordReset) return redirect('/');
+        endif;
 
         $plans = Plan::orderBy('price', 'ASC')->get();
 

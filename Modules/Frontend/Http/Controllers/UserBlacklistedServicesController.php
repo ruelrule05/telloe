@@ -16,11 +16,7 @@ class UserBlacklistedServicesController extends Controller
         $this->validate($request, [
             'user_id' => 'required|exists:users,id'
         ]);
-        $userBlacklistedServices = UserBlacklistedService::where('user_id', $request->user_id)
-        	->whereHas('service', function($service) {
-        		$service->where('user_id', Auth::user()->id);
-        	})
-        	->get();
+        $userBlacklistedServices = UserBlacklistedService::where('user_id', $request->user_id)->get();
 
         return response()->json($userBlacklistedServices);
     }

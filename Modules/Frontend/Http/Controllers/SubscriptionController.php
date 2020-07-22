@@ -28,9 +28,8 @@ class SubscriptionController extends Controller
             // Create Stripe Customer ID if not set
             if (!$user->stripe_customer_id) :
                 $customer = $stripe_api->customer('create', [ 'email' => $user->email ]);
-                $user->update([
-                    'stripe_customer_id' => $customer->id
-                ]);
+                $user->stripe_customer_id = $customer->id;
+                $user->save();
             endif;
 
             // Add Card to Stripe
@@ -63,10 +62,7 @@ class SubscriptionController extends Controller
     	$subscription = Auth::user()->subscription;
         if ($subscription) :
             $stripe_api = new StripeAPI();
-            $data = [ 
-                'subscription_id' => $subscription->stripe_subscription_id
-            ];
-            $stripe_subscription = $stripe_api->subscription('cancel', $data);
+            $stripe_subscription = $stripe_api->subscription('cancel', $subscription->stripe_subscription_id);
             $subscription->delete();
             return response()->json(['cancelled' => true]);
         endif;

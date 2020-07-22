@@ -19,11 +19,11 @@ class StripeAPI
     }
 
     // Invoice item methods
-    public function invoiceItem( $action, $params )
+    public function invoiceItem( $action, $data, $stripe_account = [] )
     {
         switch( $action ) :
             case 'create' :
-                $invoiceItem = \Stripe\InvoiceItem::create($params);
+                $invoiceItem = \Stripe\InvoiceItem::create($data, $stripe_account);
                 return $invoiceItem;
                 break;
 
@@ -33,16 +33,16 @@ class StripeAPI
 
 
     // Invoice methods
-    public function invoice( $action, $params )
+    public function invoice( $action, $data, $stripe_account = [] )
     {
         switch( $action ) :
             case 'create' :
-                $invoice = \Stripe\Invoice::create($params);
+                $invoice = \Stripe\Invoice::create($data, $stripe_account);
                 return $invoice;
                 break;
 
             case 'retrieve' :
-                $invoice = \Stripe\Invoice::retrieve($params);
+                $invoice = \Stripe\Invoice::retrieve($data, $stripe_account);
                 return $invoice;
                 break;
         endswitch;
@@ -80,17 +80,17 @@ class StripeAPI
 
 
     // Customer methods
-    public function customer( $action, $params )
+    public function customer( $action, $data, $stripe_account = [] )
     {
         switch( $action ) :
 
-            case 'retrieve' :
-                $customer = \Stripe\Customer::retrieve($params);
+            case 'create' :
+                $customer = \Stripe\Customer::create($data, $stripe_account);
                 return $customer;
                 break;
 
-            case 'create' :
-                $customer = \Stripe\Customer::create($params);
+            case 'retrieve' :
+                $customer = \Stripe\Customer::retrieve($data);
                 return $customer;
                 break;
 
@@ -99,14 +99,14 @@ class StripeAPI
 
 
     // Card methods
-    public function card( $action, $params = [] )
+    public function card( $action, $data, $stripe_account = [] )
     {
 
         switch( $action ) :
 
             case 'create' :
-                $customer = \Stripe\Customer::retrieve($params['stripe_customer_id']);
-                $card = $customer->sources->create([ 'source' => $params['card_token'] ]);
+                $customer = \Stripe\Customer::retrieve($data['stripe_customer_id'], $stripe_account);
+                $card = $customer->sources->create([ 'source' => $data['card_token'] ]);
                 return $card;
                 break;
 
@@ -173,22 +173,23 @@ class StripeAPI
 
 
     // Subscription method
-    public function subscription( $action, $params )
+    public function subscription( $action, $data, $stripe_account = [] )
     {
         switch( $action ) :
 
             case 'create' :
-                $subscription = \Stripe\Subscription::create($params);
+                $subscription = \Stripe\Subscription::create($data, $stripe_account);
                 return $subscription;
                 break;
 
             case 'cancel' :
-                $subscription = \Stripe\Subscription::retrieve($params['subscription_id']);
-                $subscription->delete();
+                $subscription = \Stripe\Subscription::retrieve($data, $stripe_account);
+                $subscription->cancel();
+                return $subscription;
                 break;
 
             case 'apply_referral_coupon' :
-                $subscription = \Stripe\Subscription::retrieve($params['subscription_id']);
+                $subscription = \Stripe\Subscription::retrieve($data);
                 $subscription->coupon = $this->referral_coupon;
                 $subscription->save();
                 break;
@@ -200,17 +201,17 @@ class StripeAPI
 
 
     // Product method
-    public function product( $action, $params = [] )
+    public function product( $action, $data, $stripe_account = [] )
     {
         switch( $action ) :
 
             case 'create' :
-                $product = \Stripe\Product::create($params);
+                $product = \Stripe\Product::create($data, $stripe_account);
                 return $product;
                 break;
 
             case 'retrieve' :
-                $product = \Stripe\Product::retrieve($params['product_id']);
+                $product = \Stripe\Product::retrieve($data);
                 return $product;
                 break;
 
@@ -219,11 +220,11 @@ class StripeAPI
 
 
     // Price method
-    public function price( $action, $params = [] )
+    public function price( $action, $data, $stripe_account = [] )
     {
         switch( $action ) :
             case 'create' :
-                $price = \Stripe\Price::create($params);
+                $price = \Stripe\Price::create($data, $stripe_account);
                 return $price;
                 break;
         endswitch;

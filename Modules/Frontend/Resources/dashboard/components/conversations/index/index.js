@@ -1,5 +1,5 @@
 import {mapState, mapActions} from 'vuex';
-
+import dayjs from 'dayjs';
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate';
 import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
@@ -11,6 +11,11 @@ import DownloadIcon from '../../../../icons/download';
 import SearchIcon from '../../../../icons/search';
 import CloseIcon from '../../../../icons/close';
 import VideoIcon from '../../../../icons/colored-video';
+import UserCircleIcon from '../../../../icons/user-circle';
+import PasswordIcon from '../../../../icons/password';
+import HeadphoneIcon from '../../../../icons/headphone';
+import LockIcon from '../../../../icons/lock';
+import ListBulletIcon from '../../../../icons/list-bullet';
 
 export default {
     components: {
@@ -25,6 +30,11 @@ export default {
         SearchIcon,
         CloseIcon,
         VideoIcon,
+        UserCircleIcon,
+        PasswordIcon,
+        HeadphoneIcon,
+        LockIcon,
+        ListBulletIcon,
     },
 
     data: () => ({
@@ -50,10 +60,17 @@ export default {
 
         orderedConversations() {
             let conversations = Object.assign([], this.conversations);
-            return conversations.sort((a, b) => {
-                const a_timestamp = a.last_message.timestamp || a.timestamp;
-                const b_timestamp = b.last_message.timestamp || b.timestamp;
+            conversations.sort((a, b) => {
+                //console.log(a.last_message.timestamp);
+                const a_timestamp = a.last_message.timestamp || 0;
+                const b_timestamp = b.last_message.timestamp || 0;
                 return a_timestamp > b_timestamp ? -1 : 1;
+            });
+
+            return conversations.filter(conversation => {
+                let is_archived = conversation.archive_users.find(x => x == this.$root.auth.id);
+                conversation.archive = is_archived;
+                return (this.conversationTab == 'active' && !is_archived) || (this.conversationTab == 'archive' && is_archived);
             });
         },
 
@@ -81,7 +98,7 @@ export default {
 
     created() {
         this.$root.contentloading = !this.ready;
-        if (this.ready && !this.$route.params.id && this.conversations.length > 0) this.setConversation(this.orderedConversations[0]);
+        if (this.ready && !this.$route.params.id && this.conversations.length > 0 && this.$route.name == 'conversations') this.setConversation(this.orderedConversations[0]);
         this.getConversations();
         this.getContacts();
         this.$root.socket.on('new_conversation', data => {

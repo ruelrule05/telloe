@@ -29,6 +29,9 @@ class MessageController extends Controller
         $sourceFile = null;
         $previewFile = null;
         if ($request->hasFile('source')) :
+
+            // get mime type
+            
             $filename = $time . '-source';
             $srcDestination = 'storage/message-media/' . $filename;
             $request->file('source')->storeAs('public/message-media/', $filename);
@@ -43,8 +46,6 @@ class MessageController extends Controller
             $metadata['filename'] = $originalName;
             $metadata['size'] =  formatBytes($request->source->getSize(), 0);
 
-            $filename = $time . '-preview';
-            $previewDestination = 'storage/message-media/' . $filename;
 
             if($request->type == 'image' || $request->type == 'video') :
                 if ($request->preview) :
@@ -63,9 +64,11 @@ class MessageController extends Controller
                     endif;
                     $img->save($previewDestination);
                 endif;
+                $filename = $time . '-preview';
+                $previewDestination = 'storage/message-media/' . $filename;
+                $previewFile = '/' . $previewDestination;
             endif;
 
-            $previewFile = '/' . $previewDestination;
         endif;
 
         $message = Message::create([

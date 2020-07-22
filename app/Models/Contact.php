@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class Contact extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id'];
     protected $appends = ['full_name', 'initials', 'created_at_format'];
     protected $casts = [
         'blacklisted_services' => 'array',

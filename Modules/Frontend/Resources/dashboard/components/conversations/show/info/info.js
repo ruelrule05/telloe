@@ -5,6 +5,7 @@ import VueFormValidate from '../../../../../components/vue-form-validate';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import Bookings from './bookings/bookings.vue';
 import FormSearch from '../../../../../components/form-search/form-search.vue';
+import VuePaginate from 'vue-paginate';
 
 import CloseIcon from '../../../../../icons/close';
 import PlusIcon from '../../../../../icons/plus';
@@ -65,6 +66,7 @@ export default {
             is_custom: false,
         },
         tagSearch: '',
+        paginate: ['files']
 	}),
 
 	computed: {
@@ -73,7 +75,8 @@ export default {
 		}),
 
         blacklisted_services() {
-            return this.user_blacklisted_services[this.conversation.member.id] || [];
+            let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
+            return this.user_blacklisted_services[user_id] || [];
         },
 
         tagsData() {
@@ -116,6 +119,24 @@ export default {
             }
 
             return tagsData;
+        },
+
+        availableServices() {
+            let availableServices = [];
+            (this.conversation.user.services || []).forEach(service => {
+                if(service.is_available && (this.$root.auth.id == service.user_id || !this.blacklisted_services.find((x) => x.service_id == service.id && x.is_blacklisted))) {
+                    availableServices.push(service);
+                }
+            })
+            return availableServices;
+        },
+
+        files() {
+            let files = [];
+            (this.conversation.messages || []).slice().reverse().forEach(message => {
+                if(this.isFile(message) && (message.type == this.fileType || this.fileType == 'all') && message.updated_at) files.push(message);
+            });
+            return files;
         }
 	},
 
@@ -126,7 +147,8 @@ export default {
         },
         'conversation.id': function() {
             if(this.conversation.members.length == 1) {
-                this.getUserBlacklistedServices(this.conversation.member.id);
+                let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
+                this.getUserBlacklistedServices(user_id);
             }
             if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
         },
@@ -140,7 +162,8 @@ export default {
 
 	created() {
         if(this.conversation.members.length == 1) {
-            this.getUserBlacklistedServices(this.conversation.member.id);
+            let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
+            this.getUserBlacklistedServices(user_id);
         }
         if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
         this.showUserCustomFields();

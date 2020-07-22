@@ -1,24 +1,23 @@
 import Login from './login.vue';
 import Signup from './signup.vue';
+import Recover from './recover.vue';
+import Reset from './reset.vue';
 import CloseIcon from '../../icons/close.vue';
 export default {
-    components: {Login, Signup, CloseIcon},
+    components: {
+        Login,
+        Signup,
+        Recover,
+        Reset,
+
+        CloseIcon,
+    },
 
     data: () => ({
         pageloading: false,
         loading: false,
         open: false,
         error: '',
-
-        recoverForm: {
-            email: '',
-            success: false,
-        },
-
-        resetForm: {
-            password: '',
-            password_confirmation: '',
-        },
 
         GoogleAuth: null,
     }),
@@ -45,33 +44,6 @@ export default {
             }, 150);
         },
 
-        recover() {
-            this.loading = true;
-            axios
-                .post('/recover', this.recoverForm)
-                .then(response => {
-                    this.loading = false;
-                    this.recoverForm.success = true;
-                })
-                .catch(() => {
-                    this.loading = false;
-                });
-        },
-
-        reset() {
-            this.loading = true;
-            this.resetForm.token = this.$route.query.token;
-            axios
-                .post('/reset', this.resetForm)
-                .then(response => {
-                    this.loading = false;
-                    window.location.href = '/login';
-                })
-                .catch(() => {
-                    this.loading = false;
-                });
-        },
-
         FacebookLogin() {
             if (typeof FB != 'undefined') {
                 this.pageloading = true;
@@ -80,6 +52,10 @@ export default {
                         FB.api('/me', {fields: 'first_name, last_name, email'}, response => {
                             if (response && !response.error) {
                                 response.action = this.$root.action;
+                                let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                let invite_token = this.$root.invite_token;
+                                response.timezone = timezone;
+                                response.invite_token = invite_token;
                                 axios
                                     .post('/login/facebook', response)
                                     .then(response => {
@@ -106,13 +82,17 @@ export default {
                 this.GoogleAuth.signIn()
                     .then(googleUser => {
                         let profile = googleUser.getBasicProfile();
+                        let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        let invite_token = this.$root.invite_token;
                         let user = {
                             id: profile.getId(),
                             first_name: profile.getGivenName(),
                             last_name: profile.getFamilyName(),
                             email: profile.getEmail(),
                             image_url: profile.getImageUrl(),
-                            action: this.$root.action
+                            action: this.$root.action,
+                            timezone: timezone,
+                            invite_token: invite_token
                         };
                         axios
                             .post('/login/google', user)

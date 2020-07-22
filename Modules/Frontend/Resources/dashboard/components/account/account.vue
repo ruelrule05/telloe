@@ -3,7 +3,9 @@
 		<div class="p-4">
 			<ul class="nav nav-tabs">
 			  	<li v-for="t in tabs" class="nav-item">
-			    	<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer text-capitalize text-body" @click.native="tab = t">{{ t }}</router-link>
+			    	<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer d-flex align-items-center text-capitalize text-body" @click.native="tab = t">
+			    		<exclamation-circle-icon v-if="t == 'payout' && $root.auth.role.role == 'client' && !$root.payoutComplete" class="fill-warning rounded-circle mr-2" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>{{ t }}
+			    	</router-link>
 			  	</li>
 			</ul>
 		</div>
@@ -96,7 +98,10 @@
 								<checkmark-circle-icon class="fill-primary"></checkmark-circle-icon>
 								<p class="mb-0">Your account is verified and legible for payments and payouts.</p>
 							</div>
-							<div v-else class="alert alert-warning text-center">Please complete this form to make your account legible for payments and payouts.</div>
+							<div v-else class="alert alert-warning text-center">
+								<exclamation-circle-icon class="fill-warning mb-2" width="30" height="30"></exclamation-circle-icon>
+								<p class="mb-0">Please complete this form to make your account legible for payments and payouts.</p>
+							</div>
 							<h5 class="font-heading h3 mb-0">Payout</h5>
 							<p class="text-muted d-block mb-3">Please complete this form to make your account legible for payments and payouts. We might require additional documents for verification purposes.</p>
 							<vue-form-validate @submit="updateStripeAccount()">

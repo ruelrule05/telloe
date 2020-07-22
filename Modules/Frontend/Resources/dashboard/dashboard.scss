@@ -4,7 +4,7 @@
     height: 100vh;
 }
 .contentloader{
-    z-index: 100;
+    z-index: 555555;
 }
 .hover-shadow-sm:hover {
     box-shadow: $box-shadow-sm !important;
@@ -59,6 +59,13 @@
                     opacity: 1;
                 }
             }
+        }
+    }
+    &.sidebar-customer {
+        width: 350px !important;
+        .profile-dropdown{
+            border-bottom: solid 1px $border-color;
+            padding: 0.2rem 0;
         }
     }
 }

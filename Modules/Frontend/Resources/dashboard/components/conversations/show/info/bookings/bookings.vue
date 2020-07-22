@@ -3,9 +3,9 @@
 		<div class="dropdown" ref="newBookingDropdown">
 	        <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static" @click="selectedBooking = null;"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon> Add Booking</button>
             <div class="dropdown-menu w-100 p-2" @click.stop>
-				<select class="form-control shadow-nonxe mb-2 cursor-pointer" @change="getTimeslots(selectedService, selectedDate)" :class="{'text-muted': !selectedService}" v-model="selectedService">
+				<select class="form-control mb-2 cursor-pointer" @change="getTimeslots(selectedService, selectedDate)" :class="{'text-muted': !selectedService}" v-model="selectedService">
 					<option value="" selected disabled>Select service</option>
-					<option :value="service.id" v-for="service in conversation.user.services">{{ service.name }}</option>
+					<option :value="service.id" v-for="service in availableServices">{{ service.name }}</option>
 				</select>
 				<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
 					<div class="text-muted bg-gray-300 p-2">Date</div>
@@ -74,9 +74,8 @@
 	        	<!-- Edit -->
 	        	<div class="dropdown-menu w-100 p-2 mt-n3" :class="{'show': selectedBooking && selectedBooking.id == booking.id}">
 					<h6 class="font-heading">Edit Booking</h6>
-					{{ (selectedService || {}).name }}
 					<select class="form-control shadow-none mb-2 cursor-pointer" @change="getTimeslots(selectedService, booking.new_date)" :class="{'text-muted': !selectedService}" v-model="selectedService">
-						<option :value="service.id" v-for="service in conversation.user.services">{{ service.name }}</option>
+						<option :value="service.id" v-for="service in availableServices">{{ service.name }}</option>
 					</select>
 	        		<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
 						<div class="text-muted bg-gray-300 p-2">Date</div>

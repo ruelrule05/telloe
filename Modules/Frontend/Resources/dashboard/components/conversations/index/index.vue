@@ -1,14 +1,14 @@
 <template>
-	<div class="bg-white">
+	<div class="bg-white text-left border-right">
 		<div class="conversation-list d-flex flex-column h-100 position-relative">
 			<div class="d-flex align-items-center border-bottom conversations-header">
 				<div class="py-3 px-2">
-					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
+					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
 				</div>
 				<div class="py-3 btn-tab">
-					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-muted-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
+					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
 				</div>
-                <div class="ml-auto pr-3">
+                <div v-if="$root.auth.role.role == 'client'" class="ml-auto pr-3">
                     <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()">
                         <plus-icon class="btn-icon"></plus-icon>
                         New Chat
@@ -21,8 +21,7 @@
                     You don't have any conversations yet.
                 </div>
                 <template v-else>
-    				<div v-for="conversation in orderedConversations" v-if="conversation.status == conversationTab" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
-                        
+    				<div v-for="conversation in orderedConversations" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
                         <div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
                             <video-icon width="24" height="24"></video-icon>
                         </div>
@@ -30,8 +29,8 @@
                         <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
                             <button class="btn btn-sm btn-white p-1 border line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
                             <div class="dropdown-menu py-1">
-                                <small v-if="conversation.status == 'active'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'archive'; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
-                                <small v-else-if="conversation.status == 'archive'" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.status = 'active'; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                                <small v-if="!conversation.archive" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
+                                <small v-else class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
                             </div>
                         </div>
 

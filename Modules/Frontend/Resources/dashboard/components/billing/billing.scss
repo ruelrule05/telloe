@@ -7,14 +7,13 @@
         top: 0;
         svg{
             opacity: 0;
-            fill: $primary;
-            stroke: $primary;
+            fill: $white;
+            stroke: $white;
         }
     }
     &.active{
-        box-shadow: 0 0 0 0.1rem $primary;
         .btn-checkmark{
-            border: solid 1px $border-color;
+            background: $primary;
             svg{
                 opacity: 1;
             }

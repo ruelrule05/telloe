@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Http\StripeAPI;
 use Illuminate\Support\Facades\Validator;
+use App\Jobs\CreateStripeCustomer;
 
 class AuthController extends Controller
 {
@@ -62,27 +63,15 @@ class AuthController extends Controller
                     'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
                 ];
 
-                // check invite token
-                if($request->invite_token) :
-                    $contact = Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
-                    if($contact) :
-                        $contact->update([
-                            'customer_id' => $user->id,
-                            'is_pending' => false
-                        ]);
-                    endif;
-                endif;
-
                 if(isValidTimezone($request->timezone)) :
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
 
-                $this->createStripeCustomer($user);
+                checkInviteToken($user, $request);
                 $this->createPresetService($user);
                 $this->createInitialConversations($user);
-        $this->createDefaultField($user);
-
+                $this->createDefaultField($user);
                 return response()->json($response);
             else:
                 return abort(403, 'Invalid password');
@@ -104,10 +93,6 @@ class AuthController extends Controller
 
         $username = $this->generateUsername($request);
 
-        $timezone = $request->timezone;
-        if(!isValidTimezone($timezone)) :
-            $timezone = NULL;
-        endif;
 		$user = User::create([
             'username' => $username,
             'first_name' => $request->first_name,
@@ -117,33 +102,20 @@ class AuthController extends Controller
             'widget_id' => $widget->id,
             'last_online' => NULL,
         ]);
-        $user->timezone = $timezone;
-        $user->save();
+
+        if(isValidTimezone($request->timezone)) :
+            $user->timezone = $request->timezone;
+            $user->save();
+        endif;
+
+        $user = $user->fresh();
+
 		Auth::login($user);
-        $this->createStripeCustomer($user);
+        checkInviteToken($user, $request, true);
         $this->createInitialConversations($user);
         $this->createPresetService($user);
         $this->createDefaultField($user);
         
-        // check invite token
-        if($request->invite_token) :
-            $contact = Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
-            if($contact) :
-                $user->role_id = 3;
-                $user->save();
-                $contact->update([
-                    'customer_id' => $user->id,
-                    'is_pending' => false
-                ]);
-                $conversation = Conversation::where('user_customer_id', $contact->id)->first();
-                if($conversation) :
-                    ConversationMember::create([
-                        'conversation_id' => $conversation->id,
-                        'user_id' => $user->id
-                    ]);
-                endif;
-            endif;
-        endif;
 
         $response = [
             'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
@@ -173,8 +145,8 @@ class AuthController extends Controller
             );
 
             // send email
-            $email = new \App\Mail\SendPasswordReset($passwordReset);
-            Mail::to($user->email)->send($email);
+            $email = new \Modules\Frontend\Mail\SendPasswordReset($passwordReset);
+            Mail::to($user->email)->queue($email);
 
 
             return response()->json(['success' => true]); 
@@ -198,7 +170,7 @@ class AuthController extends Controller
             ]);
             $passwordReset->delete();
 
-            return response()->json(['success' => true]); 
+            return response()->json(['success' => true, 'email' => $user->email]); 
         else:
             return abort(404, 'The email associated with this reset token does not exist anymore.');
         endif;
@@ -274,7 +246,6 @@ class AuthController extends Controller
 
     }
 
-    
 
     public function loginFacebook(Request $request)
     {
@@ -286,7 +257,9 @@ class AuthController extends Controller
         ]);
         $user = User::where('email', $request->email)->first();
         if(!$user || $user->facebook_id == $request->id) :
+            $isNew = false;
             if(!$user) :
+                $isNew = true;
                 $time = time();
                 $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
                 Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
@@ -302,10 +275,14 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
+                if(isValidTimezone($request->timezone)) :
+                    $user->timezone = $request->timezone;
+                    $user->save();
+                endif;
                 $this->createDefaultField($user);
             endif;
             Auth::login($user);
-            $this->createStripeCustomer($user);
+            checkInviteToken($user, $request, $isNew);
             $this->createInitialConversations($user);
             $this->createPresetService($user);
             $response = [
@@ -330,7 +307,9 @@ class AuthController extends Controller
         ]);
         $user = User::where('email', $request->email)->first();
         if(!$user || $user->google_id == $request->id) :
+            $isNew = false;
             if(!$user) :
+                $isNew = true;
                 $time = time();
                 Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
                 $widget = Widget::create([]);
@@ -340,15 +319,19 @@ class AuthController extends Controller
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'widget_id' => $widget->id
+                    'widget_id' => $widget->id,
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
+                if(isValidTimezone($request->timezone)) :
+                    $user->timezone = $request->timezone;
+                    $user->save();
+                endif;
                 $this->createDefaultField($user);
             endif;
             Auth::login($user);
-            $this->createStripeCustomer($user);
+            checkInviteToken($user, $request, $isNew);
             $this->createInitialConversations($user);
             $this->createPresetService($user);
             $response = [
@@ -362,16 +345,6 @@ class AuthController extends Controller
         return abort(403, $message);
     }
 
-    public function createStripeCustomer(User $user)
-    {
-        $stripe_api = new StripeAPI();
-
-        if (!$user->stripe_customer_id) :
-            $customer = $stripe_api->customer('create', [ 'email' => $user->email ]);
-            $user->stripe_customer_id = $customer->id;
-            $user->save();
-        endif;
-    }
 
     public function updateStripeAccount(Request $request)
     {   
@@ -391,7 +364,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         if ($validator->fails()) return abort(422, $validator->errors());
-        if (!$user->stripe_customer_id) return abort(403, "No customer ID set for this account.");
+        //if (!$user->stripe_customer_id) return abort(403, "No customer ID set for this account.");
 
         $stripe_api = new StripeAPI();
         $country = country('AU');
@@ -450,6 +423,11 @@ class AuthController extends Controller
             $account = $stripe_api->account('create', $account_data);
         endif;
 
+        // create Stripe customer for contacts
+        foreach(Auth::user()->contacts as $contact) :
+            CreateStripeCustomer::dispatch($user, $contact);
+        endforeach;
+
         $user->stripe_account = $account;
         $user->save();
 
@@ -475,7 +453,7 @@ class AuthController extends Controller
         $support = User::where('role_id', 5)->first();
         $conversation = Conversation::where('user_id', $support->id)->whereHas('members', function($members) use ($user) {
             $members->where('user_id', $user->id);
-        })->first();
+        })->has('members', '=', 1)->first();
         if(!$conversation) :
             $conversation = Conversation::create([
                 'user_id' => $support->id

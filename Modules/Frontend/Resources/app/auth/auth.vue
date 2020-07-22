@@ -8,6 +8,8 @@
 				<div class="flex-grow-1 w-100 px-md-4 px-2">
 					<login v-if="$root.action == 'login'"></login>
 					<signup v-else-if="$root.action == 'signup'"></signup>
+					<recover v-else-if="$root.action == 'recover'"></recover>
+					<reset v-else-if="$root.action == 'reset'"></reset>
 				</div>
 				<div class="text-center text-danger auth-error w-100 p-3">&nbsp;{{ error }}&nbsp;</div>
 			</div>

@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Auth;
 
 class Conversation extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_id', 'metadata', 'source', 'status', 'name', 'tags', 'custom_fields'];
+    use SoftDeletes;
+    
+    protected $fillable = ['user_id', 'contact_id', 'metadata', 'source', 'name', 'tags', 'custom_fields'];
     public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
         'custom_fields' => 'array',
+        'archive_users' => 'array',
     ];
 
     public function user()

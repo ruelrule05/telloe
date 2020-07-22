@@ -87,7 +87,6 @@ class ConversationController extends Controller
         if (count($members) > 0) :
             $conversation = Conversation::create([
                 'user_id' => Auth::user()->id,
-                'status' => 'active',
             ]);
             foreach($members as $member_id) :
                 ConversationMember::create([
@@ -112,12 +111,25 @@ class ConversationController extends Controller
         foreach($request->custom_fields as $custom_field) :
             if($custom_field['name'] && $custom_field['value'] && isset($custom_field['is_visible'])) $custom_fields[] = $custom_field;
         endforeach;
+
+        $archive_users = $conversation->archive_users;
+        if($request->archive) :
+            if(!in_array(Auth::user()->id, $archive_users)) :
+                $archive_users[] = Auth::user()->id;
+            endif;
+        else:
+            $archive_users = array_values(array_diff($archive_users, [Auth::user()->id]));
+        endif;
+
+        $conversation->archive_users = $archive_users;
+        $conversation->save();
+
         $conversation->update([
-            'status' => $request->status,
             'name' => $request->name,
             'tags' => $request->tags,
             'custom_fields' => $custom_fields,
         ]);
+
 
         return response()->json($conversation);
     }

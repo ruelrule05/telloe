@@ -58,10 +58,13 @@ Route::group(
             Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
             Route::apiResource('users', 'UserController')->only('index');
             Route::apiResource('plans', 'PlanController')->only('index');
+            Route::apiResource('pending_subscriptions', 'PendingSubscriptionController')->only(['index', 'store', 'destroy']);
+            Route::apiResource('pending_invoices', 'PendingInvoiceController')->only(['index', 'store', 'destroy']);
 
             Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
             Route::post('contacts/{id}/finalize_invoice', 'ContactController@finalizeInvoice');
             Route::post('contacts/{id}/create_subscription', 'ContactController@createSubscription');
+            Route::post('contacts/{id}/cancel_subscription', 'ContactController@cancelSubscription');
 
             Route::get('tags/search', 'DashboardController@searchTags');
 

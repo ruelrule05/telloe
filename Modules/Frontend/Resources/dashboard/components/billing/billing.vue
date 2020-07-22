@@ -7,11 +7,10 @@
 					<div v-for="plan in plans" class="col-md-4 py-2">
 						<div class="border rounded bg-white plan p-3 position-relative" :class="[$root.auth.subscription && $root.auth.subscription.plan_id == plan.id ? 'active' : 'cursor-pointer', {'selected': plan.id == (selectedPlan || {}).id}]" @click="selectPlan(plan)">
 							<div class="btn btn-checkmark p-1 badge-pill line-height-0 position-absolute mr-2 mt-2">
-								<checkmark-icon width="14" height="14" transform="scale(1.8)" stroke-width="1"></checkmark-icon>
+								<checkmark-icon width="20" height="20" transform="scale(1.8)" stroke-width="1"></checkmark-icon>
 							</div>
 							<strong class="text-orange text-uppercase">{{ plan.subheading }}</strong>
 							<h5 class="mb-0 font-heading text-primary">{{ plan.name }}</h5>
-							<p class="mb-0 text-muted font-weight-light mt-3">{{ plan.description }}</p>
 
 							<div class="ml-auto text-right align-self-stretch pr-4 d-flex align-items-center plan-price">
 								<div class="pl-4">
@@ -69,7 +68,8 @@
 							</div>
 
 							<h5 class="mb-0 font-weight-normal mt-3 mb-0">${{ plan.price }} per month</h5>
-							<h5 class="mb-0 font-weight-normal">{{ plan.seats }} seats</h5>
+							<h5 class="mb-3 font-weight-normal">{{ plan.seats }} seats</h5>
+							<small class="text-secondary">+ Stripe processing fees of 2.9% + 30¢ per successful card charge.</small>
 						</div>
 					</div>
 				</div>

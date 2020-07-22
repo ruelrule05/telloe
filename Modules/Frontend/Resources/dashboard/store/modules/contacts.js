@@ -44,6 +44,16 @@ const mutations = {
             contact.subscriptions.push(data);
         }
     },
+
+    cancel_subscription(state, data) {
+        let contact = state.index.find(x => x.id == data.contact_id);
+        if (contact) {
+            let subscription = contact.subscriptions.find(x => x.id == data.id);
+            if(subscription) {
+                subscription.status = data.status;
+            }
+        }
+    },
 };
 
 const actions = {
@@ -78,6 +88,11 @@ const actions = {
     async create_subscription({commit}, data) {
         let response = await axios.post(`/${name}/${data.id}/create_subscription`, data, {toasted: true});
         commit('create_subscription', response.data);
+    },
+
+    async cancel_subscription({commit}, data) {
+        let response = await axios.post(`/${name}/${data.contact.id}/cancel_subscription?subscription_id=${data.id}`, null, {toasted: true});
+        commit('cancel_subscription', response.data);
     },
 };
 

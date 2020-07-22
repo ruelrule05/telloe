@@ -28,7 +28,7 @@ class ConversationPolicy
 
     public function update(User $user, Conversation $conversation)
     {
-        return $user->id == $conversation->user_id;
+        return $user->id == $conversation->user_id || $user->id == $conversation->user_id || $conversation->members()->where('user_id', $user->id)->first();
     }
 
     public function addMessage(User $user, Conversation $conversation)

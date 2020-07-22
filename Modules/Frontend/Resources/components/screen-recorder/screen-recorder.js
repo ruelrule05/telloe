@@ -5,6 +5,7 @@ import CameraIcon from '../../icons/camera.vue';
 import CloseIcon from '../../icons/close.vue';
 import PauseAltIcon from '../../icons/pause-alt';
 import CommentIcon from '../../icons/comment';
+const loadImage = require('blueimp-load-image');
 export default {
 	components: {CameraIcon, CloseIcon, PauseAltIcon, CommentIcon},
 

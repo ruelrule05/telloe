@@ -22,6 +22,10 @@ export default {
         membersLength: {
             type: Number,
             default: 0
+        },
+        blacklisted_services:  {
+            type: Array,
+            default: []
         }
     },
 
@@ -79,10 +83,18 @@ export default {
             }
             return formattedHolidays;
         },
+
+        availableServices() {
+            let availableServices = [];
+            (this.conversation.user.services || []).forEach(service => {
+                if(service.is_available && !this.blacklisted_services.find((x) => x.service_id == service.id && x.is_blacklisted)) availableServices.push(service);
+            })
+            return availableServices;
+        },
     },
 
     created() {
-        this.selectedService = (this.conversation.user.services[0] || {}).id;
+        this.selectedService = (this.availableServices[0] || {}).id || '';
         this.getBookings(this.conversation).then((response) => {
             this.bookings = response.data;
         });
@@ -140,7 +152,7 @@ export default {
 
         resetBookingForm() {
             this.selectedDate = null;
-            this.selectedService = (this.conversation.user.services[0] || {}).id;
+            this.selectedService = (this.availableServices[0] || {}).id;
             this.selectedTimeslot = '';
             this.timeslotDropdown = false;
             this.customTime = false;

@@ -41,7 +41,6 @@ class User extends Authenticatable implements JWTSubject
         'facebook_id', 
         'google_id', 
         'stripe_account',
-        'stripe_customer_id',
         'phone', 
         'google_calendars',
         'google_calendar_id', 
@@ -75,7 +74,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Widget::class);
     }
 
-
     public function subscription()
     {
         return $this->hasOne(Subscription::class);
@@ -84,6 +82,12 @@ class User extends Authenticatable implements JWTSubject
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class)->orderBy('created_at', 'DESC');
     }
 
 

@@ -87,7 +87,7 @@ export default {
 
 	mounted() {
 		this.$root.contentloading = false;
-		console.log('eww');
+		//if(this.$root.auth.role.role == 'client' && !this.$root.payoutComplete && this.tab != 'payout') this.$router.replace('/dashboard/account?tab=payout');
 	},
 
 	methods: {

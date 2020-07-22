@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-grow-1 border-left bg-white" v-if="conversation">
+    <div class="flex-grow-1 bg-white" v-if="conversation">
         <div class="d-flex h-100">
         	<div class="conversation-messages flex-grow-1 border-right text-nowrap overflow-hidden position-relative" @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="dropFile">
                 <div v-if="dragOver" class="filedrop position-absolute w-100 h-100 bg-light">
@@ -140,7 +140,7 @@
                             <button type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
                                <emojipicker @select="selectEmoji"></emojipicker>
                             </button>
-                            <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="24" height="24" class="mt-1"></video-camera-icon></button>
+                            <!-- <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="24" height="24" class="mt-1"></video-camera-icon></button> -->
                             <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
                             <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
                             <input type="file" hidden ref="fileMedia" @change="addFile" />
@@ -178,7 +178,7 @@
 
             <audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
 
-            <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal>
+            <!-- <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal> -->
         </div>
 
         <modal ref="deleteMessageModal" @hidden="selectedMessage = null">

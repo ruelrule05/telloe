@@ -8,12 +8,13 @@ import PencilIcon from '../../../../icons/pencil';
 import ShortcutIcon from '../../../../icons/shortcut';
 import InfoCircleIcon from '../../../../icons/info-circle';
 import EyeSlashIcon from '../../../../icons/eye-slash';
+import PlusIcon from '../../../../icons/plus';
 import VCalendar from 'v-calendar';
 import utcPlugin from 'dayjs/plugin/utc'
 window.Vue.use(VCalendar);
 export default {
 	components: {
-		Modal, VueButton, ChevronLeft, ChevronRight, PencilIcon, ShortcutIcon, InfoCircleIcon, EyeSlashIcon,
+		Modal, VueButton, ChevronLeft, ChevronRight, PencilIcon, ShortcutIcon, InfoCircleIcon, EyeSlashIcon, PlusIcon,
 	},
 
 	data: () => ({
@@ -378,7 +379,7 @@ export default {
         },
 
         getConversationIdByUserId(user_id) {
-        	let conversation = this.conversations.find((x) => x.members.find((m) => m.user.id == user_id));
+        	let conversation = this.conversations.find((x) => x.members.length == 1 && x.members.find((m) => m.user.id == user_id));
         	return (conversation || {}).id;
         },
 

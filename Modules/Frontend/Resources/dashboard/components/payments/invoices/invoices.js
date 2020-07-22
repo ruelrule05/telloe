@@ -8,7 +8,9 @@ import PlusIcon from '../../../../icons/plus';
 import ShortcutIcon from '../../../../icons/shortcut';
 import ArrowDownIcon from '../../../../icons/arrow-down';
 import TaskIcon from '../../../../icons/task';
+import TrashIcon from '../../../../icons/trash';
 import dayjs from 'dayjs';
+import Tooltip from '../../../../js/directives/tooltip';
 export default {
 	components: {
 		Modal,
@@ -21,13 +23,17 @@ export default {
 		ShortcutIcon,
 		ArrowDownIcon,
 		TaskIcon,
+		TrashIcon,
 	},
+
+	directives: {Tooltip},
 
 	data: () => ({
 		newInvoiceForm: {
 			loading: false,
 			service_ids: [],
 		},
+		selectedInvoice: null
 	}),
 
 	computed: {
@@ -35,12 +41,13 @@ export default {
 			ready: state => state.contacts.ready,
 			contacts: state => state.contacts.index,
 			services: state => state.services.index,
+            pending_invoices: (state) => state.pending_invoices.index,
 		}),
 
 		stripeContacts() {
 			let contacts = [];
 			this.contacts.forEach(contact => {
-				if (contact.contact_user.stripe_customer_id) {
+				if (!contact.is_pending) {
 					contacts.push({
 						text: contact.contact_user.full_name,
 						value: contact.id,
@@ -70,6 +77,7 @@ export default {
 					invoices.push(invoice);
 				});
 			});
+			invoices = invoices.concat(this.pending_invoices);
 			invoices.sort((a, b) => {
 				return a.created > b.created ? -1 : 1;
 			});
@@ -87,6 +95,7 @@ export default {
 		this.$root.contentloading = !this.ready;
 		this.getUserContacts();
 		this.getServices();
+		this.getPendingInvoices();
 	},
 
 	mounted() {},
@@ -94,10 +103,17 @@ export default {
 	methods: {
 		...mapActions({
 			getUserContacts: 'contacts/index',
-			createUserContactInvoice: 'contacts/create_invoice',
+			createContactInvoice: 'contacts/create_invoice',
 			finalizeContactInvoice: 'contacts/finalize_invoice',
 			getServices: 'services/index',
+            getPendingInvoices: 'pending_invoices/index',
+            storePendingInvoice: 'pending_invoices/store',
+            deletePendingInvoice: 'pending_invoices/delete',
 		}),
+
+        getCurrency(invoice) {
+        	return !invoice.is_pending ? invoice.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
+        },
 
 		async finalizeInvoice(invoice) {
 			invoice.statusLoading = true;
@@ -112,16 +128,52 @@ export default {
 			};
 		},
 
+		draftInvoice(invoice) {
+			if(invoice.is_pending) {
+	        	this.$set(invoice, 'statusLoading', true);
+	        	let data = {
+	        		'id': invoice.contact_id,
+	        		'service_ids': invoice.service_ids,
+	        		'amount': invoice.amount / 100,
+	        	};
+
+				this.createContactInvoice(data)
+					.then(() => {
+	        			this.$set(invoice, 'statusLoading', false);
+        				this.deleteInvoice(invoice);
+					})
+					.catch(() => {
+	        			this.$set(invoice, 'statusLoading', false);
+					});
+			}
+		},
+
+
+        deleteInvoice(invoice) {
+        	if(invoice.is_pending) {
+        		this.deletePendingInvoice(invoice);
+        	}
+        },
+
 		createInvoice() {
 			this.newInvoiceForm.loading = true;
 			this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
-			this.createUserContactInvoice(this.newInvoiceForm)
-				.then(() => {
-					this.$refs['createInvoiceModal'].hide();
-				})
-				.catch(() => {
-					this.newInvoiceForm.loading = false;
-				});
+
+        	if(this.$root.payoutComplete) {
+				this.createContactInvoice(this.newInvoiceForm)
+					.then(() => {
+						this.$refs['createInvoiceModal'].hide();
+					})
+					.catch(() => {
+						this.newInvoiceForm.loading = false;
+					});
+			} else {
+	        	this.storePendingInvoice(this.newInvoiceForm).then(() => {
+	        		this.$refs['createInvoiceModal'].hide();
+	        	}).catch(() => {
+	        		this.newInvoiceForm.loading = false;
+	        	});
+			}
 		},
 
 		formatDate(date) {

@@ -8,7 +8,10 @@ import PlusIcon from '../../../../icons/plus';
 import ShortcutIcon from '../../../../icons/shortcut';
 import ArrowDownIcon from '../../../../icons/arrow-down';
 import TaskIcon from '../../../../icons/task';
+import BlockIcon from '../../../../icons/block';
+import TrashIcon from '../../../../icons/trash';
 import dayjs from 'dayjs';
+import Tooltip from '../../../../js/directives/tooltip';
 export default {
 	components: {
 		Modal,
@@ -21,14 +24,19 @@ export default {
 		ShortcutIcon,
 		ArrowDownIcon,
 		TaskIcon,
+		BlockIcon,
+		TrashIcon,
 	},
+
+	directives: {Tooltip},
 
 	data: () => ({
 		newSubscriptionForm: {
 			loading: false,
 			service_ids: [],
 			service_bookings: {},
-		}
+		},
+		selectedSubscription: null,
 	}),
 
 	computed: {
@@ -36,12 +44,13 @@ export default {
             ready: (state) => state.contacts.ready,
             contacts: (state) => state.contacts.index,
             services: (state) => state.services.index,
+            pending_subscriptions: (state) => state.pending_subscriptions.index,
 		}),
 
 		stripeCustomers() {
 			let customers = [];
 			this.contacts.forEach((contact) => {
-				if(contact.contact_user.stripe_customer_id) {
+				if(!contact.is_pending) {
 					customers.push({
 						text: contact.contact_user.full_name,
 						value: contact.id
@@ -71,6 +80,7 @@ export default {
 					subscriptions.push(subscription);
 				})
 			});
+			subscriptions = subscriptions.concat(this.pending_subscriptions);
 			subscriptions.sort((a, b) => {
 				return (a.created > b.created) ? -1 : 1;
 			});
@@ -88,6 +98,7 @@ export default {
         this.$root.contentloading = !this.ready;
 		this.getUserCustomers();
 		this.getServices();
+		this.getPendingSubscriptions();
 	},
 
 	mounted() {
@@ -96,9 +107,48 @@ export default {
 	methods: {
         ...mapActions({
             getUserCustomers: 'contacts/index',
-            createUserCustomerSubscription: 'contacts/create_subscription',
+            createContactSubscription: 'contacts/create_subscription',
+            cancelContactSubscription: 'contacts/cancel_subscription',
             getServices: 'services/index',
+            getPendingSubscriptions: 'pending_subscriptions/index',
+            storePendingSubscription: 'pending_subscriptions/store',
+            deletePendingSubscription: 'pending_subscriptions/delete',
         }),
+
+        getCurrency(subscription) {
+        	return subscription.plan ? subscription.plan.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
+        },
+
+        startSubscription(subscription) {
+        	this.$set(subscription, 'statusLoading', true);
+        	let data = {
+        		'id': subscription.contact_id,
+        		'services': subscription.services,
+        		'amount': subscription.amount / 100,
+        	};
+
+        	this.createContactSubscription(data).then(() => {
+        		this.$set(subscription, 'statusLoading', false);
+        		this.deleteSubscription(subscription);
+        	}).catch(() => {
+        		this.$set(subscription, 'statusLoading', false);
+        	});
+        },
+
+        cancelSubscription(subscription) {
+        	this.$set(subscription, 'statusLoading', true);
+			this.cancelContactSubscription(subscription).then(() => {
+        		this.$set(subscription, 'statusLoading', false);
+        	}).catch(() => {
+        		this.$set(subscription, 'statusLoading', false);
+        	});
+        },
+
+        deleteSubscription(subscription) {
+        	if(!subscription.plan) {
+        		this.deletePendingSubscription(subscription);
+        	}
+        },
 
         getServiceName(service_id) {
         	return this.services.find(x => x.id == service_id).name;
@@ -114,7 +164,7 @@ export default {
 
         createSubscription() {
         	this.newSubscriptionForm.loading = true;
-        	this.newSubscriptionForm.id = this.newSubscriptionForm.customer_id;
+        	this.newSubscriptionForm.id = this.newSubscriptionForm.contact_id;
         	this.newSubscriptionForm.services = [];
         	this.newSubscriptionForm.service_ids.forEach(service_id => {
         		this.newSubscriptionForm.services.push({
@@ -122,11 +172,19 @@ export default {
         			bookings_count: this.newSubscriptionForm.service_bookings[service_id]
         		});
         	});
-        	this.createUserCustomerSubscription(this.newSubscriptionForm).then(() => {
-        		this.$refs['createSubscriptionModal'].hide();
-        	}).catch(() => {
-        		this.newSubscriptionForm.loading = false;
-        	});
+        	if(this.$root.payoutComplete) {
+	        	this.createContactSubscription(this.newSubscriptionForm).then(() => {
+	        		this.$refs['createSubscriptionModal'].hide();
+	        	}).catch(() => {
+	        		this.newSubscriptionForm.loading = false;
+	        	});
+        	} else {
+	        	this.storePendingSubscription(this.newSubscriptionForm).then(() => {
+	        		this.$refs['createSubscriptionModal'].hide();
+	        	}).catch(() => {
+	        		this.newSubscriptionForm.loading = false;
+	        	});
+        	}
         },
 
         formatDate(date) {

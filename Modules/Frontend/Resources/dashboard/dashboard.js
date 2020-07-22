@@ -104,7 +104,7 @@ import UserCircleIcon from '../icons/user-circle';
 import ShortcutIcon from '../icons/shortcut';
 import PlannerIcon from '../icons/planner';
 import VirtualRealityIcon from '../icons/virtual-reality';
-import BillIcon from '../icons/bill';
+import ColoredBillIcon from '../icons/colored-bill';
 import ContactIcon from '../icons/contact';
 import WalletIcon from '../icons/wallet';
 import LockIcon from '../icons/lock';
@@ -114,6 +114,8 @@ import InfoCircleIcon from '../icons/info-circle';
 import HeadphoneIcon from '../icons/headphone';
 import PasswordIcon from '../icons/password';
 import ListBulletIcon from '../icons/list-bullet';
+import CreditCardIcon from '../icons/credit-card';
+import BillIcon from '../icons/bill';
 import VideoCall from './components/video-call/video-call.vue';
 
 import store from './store';
@@ -133,7 +135,7 @@ window.app = new Vue({
         ShortcutIcon,
         PlannerIcon,
         ChevronDownIcon,
-        BillIcon,
+        ColoredBillIcon,
         ContactIcon,
         WalletIcon,
         LockIcon,
@@ -143,9 +145,14 @@ window.app = new Vue({
         HeadphoneIcon,
         PasswordIcon,
         ListBulletIcon,
+        CreditCardIcon,
+        BillIcon,
 
         VideoCall,
         ScreenRecorder,
+
+
+        'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue'),
     },
     data: {
         auth: null,
@@ -210,10 +217,17 @@ window.app = new Vue({
             }
             return supportLink;
         },
+
+        profileLink() {
+            let profileLink = '/dashboard/account?tab=profile';
+            if(this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
+
+            return profileLink;
+        }
     },
 
     watch: {
-        '$route.name': function() {
+        '$route.name': function(value) {
             this.contentloading = true;
             $('.leader-line').remove();
         },

@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import filesize from 'filesize';
 const mime = require('mime');
 const loadImage = require('blueimp-load-image');
+import Compressor from 'compressorjs';
 
 import VueFormValidate from '../../../../components/vue-form-validate';
 import Emojipicker from '../../../../components/emojipicker';
@@ -47,7 +48,7 @@ export default {
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
         gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
-        'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
+        //'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
         'audio-recorder-modal': () => import(/* webpackChunkName: "modals-audiorecorder" */ '../../../../modals/audio-recorder'),
     },
 
@@ -70,6 +71,7 @@ export default {
 
     watch: {
         ready: function(value) {
+            if(value) this.$root.contentloading = false;
             setTimeout(() => {
                 this.scrollDown();
             }, 50);
@@ -137,6 +139,7 @@ export default {
                 let message_group = {sender: Object.assign({}, messages[i].user) || (messages[i].metadata.is_chatbot ? {id: 'chatbot'} : ''), messages: [messages[i]]};
                 groupMessage();
 
+
                 function groupMessage() {
                     const next_message = messages[i + 1];
                     if (next_message && next_message.user.id == message_group.sender.id) {
@@ -160,7 +163,7 @@ export default {
 
     created() {
         this.checkConversation();
-        this.$root.socket.on('new_messagex', data => {
+       /* this.$root.socket.on('new_messagex', data => {
             let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
             if (conversation) {
                 let message = conversation.messages.find(x => x.id == data.id);
@@ -181,7 +184,7 @@ export default {
                     });
                 }
             }
-        });
+        });*/
     },
 
     mounted() {
@@ -364,6 +367,7 @@ export default {
                 message.prefix = 'You: ';
                 message.tags = [];
                 message.conversation_id = this.conversation.id;
+                message.timestamp = dayjs().unix();
 
                 if (message.type == 'text' && message.message.trim().length == 2) {
                     let regex = emojiRegex();
@@ -381,11 +385,12 @@ export default {
         async addFile(e) {
             let fileInput = e.target;
             if (this.conversation && fileInput.files.length > 0) {
+                let file = fileInput.files[0];
                 let message = {
                     user: this.$root.auth,
                     type: 'file',
                     message: 'file',
-                    source: fileInput.files[0],
+                    source: file,
                     is_read: 1,
                     created_diff: 'Just now',
                 };
@@ -394,16 +399,25 @@ export default {
                 if (this.$root.isImage(fileExtension)) {
                     message.type = 'image';
                     message.message = 'image';
-
-                    loadImage(
-                        fileInput.files[0],
-                        canvas => {
-                            let dataurl = canvas.toDataURL(fileInput.files[0].type);
-                            message.preview = dataurl;
-                            this.sendMessage(message);
+                    new Compressor(file, {
+                        quality: 0.6,
+                        success: (result) => {
+                            message.source = result;
+                            loadImage(
+                                result,
+                                canvas => {
+                                    let dataurl = canvas.toDataURL(fileInput.files[0].type);
+                                    message.preview = dataurl;
+                                    this.sendMessage(message);
+                                },
+                                {maxWidth: 200, canvas: true},
+                            );
                         },
-                        {maxWidth: 200, canvas: true},
-                    );
+                        error(err) {
+                            console.log(err.message);
+                        },
+                    });
+
                 } else {
                     let fileBase64 = await this.fileToBase64(fileInput.files[0]);
                     let messageData = {

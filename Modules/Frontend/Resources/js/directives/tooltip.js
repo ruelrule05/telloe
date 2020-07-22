@@ -15,8 +15,7 @@ export default {
 		tooltip.appendChild(tooltipArrow);
 		tooltip.appendChild(tooltipInner);
 		tooltip.setAttribute('x-placement', Object.keys(binding.modifiers)[0]);
-		let textNode = document.createTextNode(binding.value);
-		tooltipInner.appendChild(textNode);
+		tooltipInner.innerHTML = binding.value;
 
 		el.style.position = 'relative';
 		el.appendChild(tooltip);

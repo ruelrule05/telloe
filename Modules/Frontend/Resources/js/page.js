@@ -19,9 +19,10 @@ new Vue({
 
     data: {
         auth: false,
-        action: 'login',
+        action: 'login', // login
     	seats: 10,
         invite_token: null,
+        email: '',
     },
 
     watch: {
@@ -36,7 +37,10 @@ new Vue({
             const urlParams = new URLSearchParams(queryString);
             const invite_token = urlParams.get('invite_token');
             const authTab = urlParams.get('auth');
-            if(authTab) this.action = authTab;
+            if(authTab) {
+                this.action = authTab;
+                this.auth = true;
+            }
             if(invite_token) {
                 this.invite_token = invite_token;
                 this.auth = true;

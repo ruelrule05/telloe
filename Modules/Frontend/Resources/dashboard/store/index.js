@@ -10,6 +10,8 @@ import contacts from './modules/contacts';
 import users from './modules/users';
 import user_custom_fields from './modules/user_custom_fields';
 import plans from './modules/plans';
+import pending_subscriptions from './modules/pending_subscriptions';
+import pending_invoices from './modules/pending_invoices';
 
 
 
@@ -27,5 +29,7 @@ export default new Vuex.Store({
 		users,
 		user_custom_fields,
 		plans,
+		pending_subscriptions,
+		pending_invoices,
 	},
 });
