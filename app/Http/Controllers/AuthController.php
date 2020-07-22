@@ -108,7 +108,7 @@ class AuthController extends Controller
             $user->save();
         endif;
 
-        $user = $user->fresh();
+        $user->load('role');
 
 		Auth::login($user);
         checkInviteToken($user, $request, true);
