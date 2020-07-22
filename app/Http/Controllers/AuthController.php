@@ -108,7 +108,6 @@ class AuthController extends Controller
             $user->save();
         endif;
 
-        $user->load('role');
 
 		Auth::login($user);
         checkInviteToken($user, $request, true);
@@ -473,55 +472,53 @@ class AuthController extends Controller
 
     public function createPresetService(User $user)
     {
-        if ($user->role->role == 'client'):
-            $presetService = $user->services()->where('is_preset', true)->first();
-            if(!$presetService) :
-                Service::create([
-                    'user_id' => $user->id,
-                    'name' => '60 Minute Call',
-                    'description' => 'The 60-minute coaching call begins with a questionnaire to be completed before the call. During the call, I will have a few things to discuss before we get into the full coaching session.',
-                    'duration' => 60,
-                    'interval' => 10,
-                    'is_preset' => 1,
-                    'days' => json_decode('{
-                        "Friday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": true
-                        },
-                        "Monday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": true
-                        },
-                        "Sunday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": false
-                        },
-                        "Tuesday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": true
-                        },
-                        "Saturday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": false
-                        },
-                        "Thursday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": true
-                        },
-                        "Wednesday": {
-                            "end": "17:00",
-                            "start": "08:00",
-                            "isOpen": true
-                        }
-                    }')
-                ]);
-            endif;
+        $presetService = $user->services()->where('is_preset', true)->first();
+        if(!$presetService) :
+            Service::create([
+                'user_id' => $user->id,
+                'name' => '60 Minute Call',
+                'description' => 'The 60-minute coaching call begins with a questionnaire to be completed before the call. During the call, I will have a few things to discuss before we get into the full coaching session.',
+                'duration' => 60,
+                'interval' => 10,
+                'is_preset' => 1,
+                'days' => json_decode('{
+                    "Friday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": true
+                    },
+                    "Monday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": true
+                    },
+                    "Sunday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": false
+                    },
+                    "Tuesday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": true
+                    },
+                    "Saturday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": false
+                    },
+                    "Thursday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": true
+                    },
+                    "Wednesday": {
+                        "end": "17:00",
+                        "start": "08:00",
+                        "isOpen": true
+                    }
+                }')
+            ]);
         endif;
     }
 
