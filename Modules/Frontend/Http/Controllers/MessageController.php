@@ -98,7 +98,7 @@ class MessageController extends Controller
         $message = Message::findOrFail($id);
         $this->authorize('update', $message);
         $message->update([
-            'is_history' => $request->is_history,
+            'is_history' => $request->is_history ?? false,
             'tags' => $request->tags,
         ]);
         return response()->json($message);
