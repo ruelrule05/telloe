@@ -167,7 +167,7 @@
                         Files
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="files" class="collapse pb-1 show" data-parent="#info-items">
+                    <div id="files" class="collapse pb-1" data-parent="#info-items">
                         <select class="form-control form-control-sm shadow-none" v-model="fileType">
                             <option value="all">All Files</option>
                             <option value="image">Photos</option>
