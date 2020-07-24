@@ -165,9 +165,8 @@ class AuthController extends Controller
         if ($request->password != $request->password_confirmation) return abort(422, 'The passwords does not match');
         $user = User::where('email', $passwordReset->email)->first();
         if ($user):
-            $user->update([
-                'password' => bcrypt($request->password)
-            ]);
+            $user->password = bcrypt($request->password);
+            $user->save();
             $passwordReset->delete();
 
             return response()->json(['success' => true, 'email' => $user->email]); 
