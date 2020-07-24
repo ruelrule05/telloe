@@ -98,10 +98,11 @@ class AuthController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
             'widget_id' => $widget->id,
             'last_online' => NULL,
         ]);
+        $user->password = bcrypt($request->password);
+        $user->save();
 
         if(isValidTimezone($request->timezone)) :
             $user->timezone = $request->timezone;
