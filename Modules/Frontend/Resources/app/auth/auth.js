@@ -106,7 +106,7 @@ export default {
                     })
                     .catch(() => {
                         this.pageloading = false;
-                        this.error = 'Google API went wrong.';
+                        //this.error = 'Google API went wrong.';
                     });
             }
         },
