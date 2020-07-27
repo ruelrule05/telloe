@@ -25,7 +25,7 @@ const actions = {
             Vue.set(data, 'updated_at', response.data.updated_at);
             Vue.set(data, 'metadata', response.data.metadata);
             Vue.set(data, 'timestamp', response.data.timestamp);
-            /*Vue.set(data, 'created_at_format', response.data.created_at_format);*/
+            Vue.set(data, 'created_at_format', response.data.created_at_format);
             Vue.set(data, 'sending', false);
             return response.data;
         }

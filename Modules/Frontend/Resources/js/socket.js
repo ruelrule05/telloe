@@ -39,6 +39,15 @@ io.on('connection', function(socket) {
     socket.on('message_sent', function(data) {
         socket.broadcast.emit('new_message', data);
     });
+
+    socket.on('last_message_read', function(data) {
+        socket.broadcast.emit('last_message_read', data);
+    });
+
+    socket.on('is_typing', function(data) {
+        socket.broadcast.emit('is_typing', data);
+    });
+    
     socket.on('user_online', function(user_id) {
         let user_ids = Object.values(online_users);
         if(!user_ids[user_id]) {

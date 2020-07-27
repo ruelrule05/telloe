@@ -22,6 +22,7 @@ import CloseIcon from '../../../../icons/close';
 import ExpandWideIcon from '../../../../icons/expand-wide';
 import ColoredPhoneIcon from '../../../../icons/colored-phone';
 import TrashIcon from '../../../../icons/trash';
+import EyeIcon from '../../../../icons/eye';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -45,6 +46,7 @@ export default {
         ExpandWideIcon,
         ColoredPhoneIcon,
         TrashIcon,
+        EyeIcon,
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
         gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
@@ -67,6 +69,8 @@ export default {
         hasScreenRecording: false,
         pastedFile: null,
         selectedMessage: null,
+        isTyping: false,
+        typingTimeout: null,
     }),
 
     watch: {
@@ -82,7 +86,10 @@ export default {
             this.scrollDown();
         },
         'conversation.ready': function(value) {
-            if (value) this.scrollDown();
+            if (value) {
+                this.scrollDown();
+                this.$root.socket.emit('last_message_read', {conversation_id: this.conversation.id, message_id: this.conversation.last_message.id});
+            }
         },
         'conversation.last_message': function(value) {
             if (this.conversation && this.conversation.messages && value.id) {
@@ -138,11 +145,11 @@ export default {
             for (var i = 0; i <= messages.length - 1; i++) {
                 let message_group = {sender: Object.assign({}, messages[i].user) || (messages[i].metadata.is_chatbot ? {id: 'chatbot'} : ''), messages: [messages[i]]};
                 groupMessage();
-
+                let message = message_group.messages[message_group.messages.length - 1];
 
                 function groupMessage() {
                     const next_message = messages[i + 1];
-                    if (next_message && next_message.user.id == message_group.sender.id) {
+                    if (next_message && next_message.user && next_message.user.id == message_group.sender.id) {
                         message_group.messages.push(messages[i + 1]);
                         i++;
                         groupMessage();
@@ -152,8 +159,9 @@ export default {
                 if (message_group.sender.id == this.$root.auth.id || message_group.sender.id == 'chatbot') {
                     message_group.sender.full_name = 'You';
                     message_group.outgoing = true;
+                    message_group.is_read = message.is_read;
                 }
-                message_group.created_at_format = message_group.messages[message_group.messages.length - 1].created_at_format;
+                message_group.created_at_format = message.created_at_format;
                 grouped_messages.push(message_group);
             }
 
@@ -163,6 +171,28 @@ export default {
 
     created() {
         this.checkConversation();
+        this.$root.socket.on('last_message_read', data => {
+            if(this.conversation.id == data.conversation_id) {
+                let message = this.conversation.messages.find(x => x.id == data.message_id);
+                if(message) this.$set(message, 'is_read', true);
+            }
+        });
+
+        this.$root.socket.on('is_typing', data => {
+            if(this.conversation.id == data.conversation_id) {
+                if(this.conversation.user.id == data.user_id) {
+                    this.$set(this.conversation.user, 'is_typing', data.typing);
+                } else {
+                    for(let member of this.conversation.members) {
+                        if(member.user_id == data.user_id) {
+                            this.$set(member, 'is_typing', data.typing);
+                            break;
+                        }
+                    }
+                }
+                if(data.typing) this.scrollDown();
+            }
+        });
        /* this.$root.socket.on('new_messagex', data => {
             let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
             if (conversation) {
@@ -185,6 +215,9 @@ export default {
                 }
             }
         });*/
+        window.onbeforeunload = () => {
+            this.$root.socket.emit('is_typing', {typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
+        };
     },
 
     mounted() {
@@ -200,11 +233,29 @@ export default {
             deleteMessage: 'messages/delete',
         }),
 
-        messageInput(e) {
-            if ((e.keyCode ? e.keyCode : e.which) == 13) {
-                e.preventDefault();
-                this.$refs['messageForm'].submit();
+        typing() {
+            if(!this.isTyping) {
+                this.isTyping = true;
+                this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
+            } else {
+                clearTimeout(this.typingTimeout);
             }
+
+            this.typingTimeout = setTimeout(() => {
+                this.isTyping = false;
+                this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
+            }, 5000);
+        },
+
+        messageInput(e) {
+            setTimeout(() => {
+                if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                    e.preventDefault();
+                    this.$refs['messageForm'].submit();
+                } else if(this.textMessage.trim().length) {
+                    this.typing();
+                }
+            }, 50);
         },
 
         async checkConversation() {
@@ -290,7 +341,6 @@ export default {
                     source: audio.source,
                     type: 'audio',
                     message: 'audio',
-                    is_read: 1,
                     created_diff: 'Just now',
                     metadata: {duration: audio.duration},
                 };
@@ -307,7 +357,6 @@ export default {
                     preview: video.preview,
                     type: 'video',
                     message: 'video',
-                    is_read: 1,
                     created_diff: 'Just now',
                     metadata: {duration: video.duration},
                 };
@@ -363,6 +412,7 @@ export default {
 
         sendMessage(message) {
             if (this.conversation) {
+                message.user_id = this.$root.auth.id;
                 message.sending = true;
                 message.prefix = 'You: ';
                 message.tags = [];
@@ -375,6 +425,9 @@ export default {
                         message.type = 'emoji';
                     }
                 }
+
+                this.isTyping = false;
+                this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
                 this.storeMessage(message).then(message => {
                     this.scrollDown();
                     this.$root.socket.emit('message_sent', {id: message.id, conversation_id: this.conversation.id});
@@ -391,7 +444,6 @@ export default {
                     type: 'file',
                     message: 'file',
                     source: file,
-                    is_read: 1,
                     created_diff: 'Just now',
                 };
 
@@ -470,7 +522,6 @@ export default {
                 user: this.$root.auth,
                 message: this.textMessage.trim(),
                 type: 'text',
-                is_read: 1,
                 created_diff: 'Just now',
             };
             this.sendMessage(message);

@@ -1,3 +1,4 @@
+import VLazyImage from "v-lazy-image";
 import Waveplayer from '../../components/waveplayer';
 import CloseIcon from '../../icons/close';
 import ChevronLeftIcon from '../../icons/chevron-left';
@@ -5,6 +6,7 @@ import ChevronRightIcon from '../../icons/chevron-right';
 import VolumeMidIcon from '../../icons/volume-mid';
 export default {
 	components: {
+		VLazyImage,
 		Waveplayer,
 		CloseIcon,
 		ChevronLeftIcon,
@@ -57,6 +59,10 @@ export default {
 	mounted() {},
 
 	methods: {
+		imageLoaded(file) {
+			this.$set(file, 'loaded', true);
+		},
+
 		goToNext() {
 			let media = this.media;
 			let index = media.findIndex(x => x.id == (this.file || {}).id);

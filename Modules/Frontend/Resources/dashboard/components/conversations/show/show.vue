@@ -3,7 +3,7 @@
         <div class="d-flex h-100">
         	<div class="conversation-messages flex-grow-1 border-right text-nowrap overflow-hidden position-relative" @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="dropFile">
                 <div v-if="dragOver" class="filedrop position-absolute w-100 h-100 bg-light">
-                    <span class="h3 position-absolute-center text-muted">Drop Files Here</span>
+                    <span class="h3 position-absolute-center text-secondary">Drop Files Here</span>
                 </div>
                 
         		<div class="d-flex flex-column h-100">
@@ -17,9 +17,9 @@
                                 <small v-if="conversation.member.is_pending" class="d-block text-warning">Pending account</small>
                                 <div class="d-flex align-items-center" v-else-if="conversation.member.id && conversation.member.last_online">
                                     <span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span> 
-                                    <small class="text-muted">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
+                                    <small class="text-secondary">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
                                 </div>
-                                <small v-else class="d-block text-muted">
+                                <small v-else class="d-block text-secondary">
                                     <template v-if="(conversation.member.role || {}).role != 'support'">{{ conversation.members.length }} members</template>
                                     <template v-else>{{ conversation.member.email }}</template>
                                 </small>
@@ -68,7 +68,7 @@
                             </div>
                         </div>
                         <div class="p-3 h-100 overflow-y-auto" :class="{'opacity-0': !ready}" ref="message-group-container">
-                            <div v-for="grouped_message in grouped_messages" class="w-100 message-group">
+                            <div v-for="(grouped_message, index) in grouped_messages" class="w-100 message-group">
                                 <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.sender.full_name }}</small>
                             	<div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': grouped_message.outgoing}">
                                     <div>
@@ -114,7 +114,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="message-metalabel text-nowrap text-muted small position-absolute">
+                                                    <div class="message-metalabel text-nowrap text-secondary small position-absolute">
                                                         <div v-if="message.is_history">
                                                             <history-icon height="16" width="16" class="no-action"></history-icon>
                                                         </div>
@@ -126,14 +126,38 @@
                                         </div>
                                     </div>
                             	</div>
-                                <small class="text-muted d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at_format }}</small>
+                                <small v-if="index == grouped_messages.length - 1" class="text-secondary d-flex align-items-center" :class="{'justify-content-end': grouped_message.outgoing}">
+                                    <template v-if="grouped_message.outgoing && grouped_message.is_read">Seen&nbsp;<eye-icon width="14" height="14" class="fill-primary"></eye-icon>&nbsp;•</template>
+                                    {{ grouped_message.created_at_format }}
+                                </small>
                             </div>
+                            
+                            <template>
+                                <div class="d-flex align-items-center text-secondary" v-if="conversation.user.is_typing">
+                                    <div class="typing-indicator mr-1">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                    <small>{{ conversation.user.first_name }} is typing</small>
+                                </div>
+                                <div v-for="member in conversation.members">
+                                    <div class="d-flex align-items-center text-secondary" v-if="member.is_typing">
+                                        <div class="typing-indicator mr-1">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                        <small>{{ member.user.first_name }} is typing</small>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
                     <div v-if="!conversation.member.is_pending" class="border-top shadow-sm p-2 align-items-center bg-white message-form d-flex">
                         <vue-form-validate @submit="sendText" class="flex-grow-1" ref="messageForm">
-                            <textarea type="text" @paste="inputPaste" @keypress="messageInput" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" rows="1" placeholder="Write a message.." data-required></textarea>
+                            <textarea type="text" @paste="inputPaste" @keydown="messageInput" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" rows="1" placeholder="Write a message.." data-required></textarea>
                         </vue-form-validate>
 
                         <div class="px-1 text-nowrap overflow-hidden" :class="{'expand': moreActions}">
@@ -162,7 +186,7 @@
                     <div class="d-flex align-items-center border-bottom py-3 px-3">
                         <div class="info-header">
                             <strong class="text-capitalize d-block">{{ $root.detailsTab }}</strong>
-                            <span class="text-muted">{{ conversation.member.full_name || conversation.name }}</span>
+                            <span class="text-secondary">{{ conversation.member.full_name || conversation.name }}</span>
                         </div>
                         <button class="btn btn-white p-0 ml-auto" @click="$root.detailsTab = ''"><close-icon height="30" width="30"></close-icon></button>
                     </div>
