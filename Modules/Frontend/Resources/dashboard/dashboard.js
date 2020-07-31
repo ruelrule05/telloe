@@ -161,7 +161,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: '',
+        detailsTab: 'profile',
         profileTab: 'overview', //overview
 
         call_sound: null,
@@ -198,7 +198,7 @@ window.app = new Vue({
         newMessagesCount() {
             let count;
             this.conversations.forEach(conversation => {
-                if (!conversation.last_message.is_read) {
+                if (conversation.last_message.user_id != this.auth.id && !conversation.last_message.is_read) {
                     if(!count) count = 0;
                     count++;
                 }

@@ -19,12 +19,21 @@
 .file-details{
     font-size: 13px;
 }
-.file-thumbnail {
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+#files{
+    .file-thumbnail {
+        flex: 0 0 25%;
+        height: 80px;
+        > div {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    }
+    .file-filename {
+        bottom: 5px;
+        left: 0;
+        pointer-events: none;
+    }
 }
 .preview-video-play {
     line-height: 0;
@@ -128,6 +137,11 @@
             svg {
                 fill: black;
             }
+        }
+    }
+    > div{
+        &.active {
+            order: -1;
         }
     }
  }

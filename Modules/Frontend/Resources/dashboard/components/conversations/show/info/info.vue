@@ -15,10 +15,10 @@
                     </button>
                 </div> -->
             </div>
-            <div v-if="(conversation.member.role || {}).role != 'support' && !conversation.member.is_pending" id="info-items" class="mt-3">
+            <div v-if="(conversation.member.role || {}).role != 'support' && !conversation.member.is_pending" id="info-items" class="mt-3 d-flex flex-column">
                 <!-- Overview -->
-                <div class="border-bottom border-top px-3 py-1">
-                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview">
+                <div class="border-top border-top px-3 py-1">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview" @click="toggleCollapse">
                         Overview
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
@@ -135,12 +135,12 @@
                 </div>
 
                 <!-- Bookings -->
-                <div v-if="conversation.members.length == 1" class="border-bottom px-3 py-1">
-                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#bookings">
+                <div v-if="conversation.members.length == 1" class="border-top px-3 py-1 active">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#bookings" @click="toggleCollapse">
                         Bookings
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="bookings" class="collapse pb-1" data-parent="#info-items">
+                    <div id="bookings" class="collapse pb-1 show" data-parent="#info-items">
                         <bookings v-if="conversation.ready" :conversation="conversation" :blacklisted_services="blacklisted_services" :membersLength="conversation.members.length"></bookings>
 
                         <!-- Available services -->
@@ -162,94 +162,46 @@
                 </div>
 
                 <!-- Files -->
-                <div class="border-bottom px-3 py-1">
-                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#files">
+                <div class="border-top px-3 py-1">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#files" @click="toggleCollapse">
                         Files
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="files" class="collapse pb-1" data-parent="#info-items">
-                        <select class="form-control form-control-sm shadow-none" v-model="fileType">
-                            <option value="all">All Files</option>
-                            <option value="image">Photos</option>
-                            <option value="video">Videos</option>
-                            <option value="audio">Audios</option>
-                            <option value="file">Documents & Others</option>
-                        </select>
-
-                        <div v-if="files.length > 0" class="mt-2">
-                            <paginate-links for="files" :show-step-links="true" :limit="6" :classes="{'ul': ['pagination', 'pagination-sm', 'd-inline-flex', 'overflow-hidden', 'border', 'mb-1'], 'li': 'page-item', 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
-                            <paginate name="files" :list="files" :per="5" class="p-0 m-0">
-                                <li v-for="file in paginated('files')" class="p-2 mb-2 d-flex align-items-center border bg-white rounded position-relative cursor-pointer" @click="$parent.openFile(file)">
-                                    <div class="flex-1">
-                                        <div style="width: 50px; height: 50px" class="position-relative rounded overflow-hidden bg-light">
-                                            <div v-if="file.type == 'image' || file.type == 'video'" :style="{backgroundImage: 'url(' + file.preview + ')'}" class="file-thumbnail">
-                                                <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
-                                                    <play-icon height="15" width="15"></play-icon>
-                                                </div>
-                                            </div>
-                                            <div v-else-if="file.type == 'audio'">
-                                                <volume-mid-icon height="30" width="30" class="position-absolute-center"></volume-mid-icon>
-                                            </div>
-                                            <div v-else-if="file.type == 'file'" class="p-1">
-                                                <component height="30" width="30" class="position-absolute-center" :is="fileIcon(file.metadata.extension)"></component>
-                                            </div>
+                        <div class="d-flex flex-wrap mx-n1">
+                            <div v-for="file in (conversation.files || {}).data" class="position-relative file-thumbnail p-1 overflow-hidden">
+                                <div class="position-relative rounded bg-light h-100 cursor-pointer" @click="$parent.openFile(file)" :style="{backgroundImage: 'url(' + file.preview + ')'}">
+                                    <div v-if="file.type == 'image' || file.type == 'video'">
+                                        <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
+                                            <play-icon height="15" width="15"></play-icon>
                                         </div>
                                     </div>
-                                    <div class="w-100 overflow-hidden pl-2 file-details">
-                                        <span class="font-weight-bold file-filename d-block text-nowrap text-ellipsis">{{ (file.metadata || {}).filename }}</span>
-                                        <div class="text-muted text-ellipsis">
-                                            <span class="mr-2">{{ ['audio', 'video'].find(x => x == file.type) ? file.metadata.duration : file.metadata.size }}</span>
-                                            <!-- {{ file.created_diff }} -->
-                                        </div>
-                                        <div v-if="file.tags.length > 0" class="d-flex align-items-center">
-                                            <bookmark-icon width="18" height="18" fill="#999" class="ml-n1"></bookmark-icon>
-                                            <span>{{ file.tags.join(', ') }}</span>
-                                        </div>
+                                    <div v-else-if="file.type == 'audio'">
+                                        <volume-mid-icon height="30" width="30" class="position-absolute-center"></volume-mid-icon>
                                     </div>
-                                </li>
-                            </paginate>
-                            <paginate-links for="files" :show-step-links="true" :limit="6" :classes="{'ul': ['pagination', 'pagination-sm', 'd-inline-flex', 'overflow-hidden', 'border', 'mb-1'], 'li': 'page-item', 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
+                                    <div v-else-if="file.type == 'file'" class="p-1">
+                                        <file-empty-icon height="30" width="30" class="position-absolute-center" :is="$parent.fileIcon(file.metadata.extension)"></file-empty-icon>
+                                    </div>
+                                </div>
+                                <small v-if="file.type == 'file'" class="file-filename position-absolute text-ellipsis text-secondary px-2 text-center w-100">{{ file.metadata.filename }}</small>
+                            </div>
+                        </div>
+                        <div v-if="(conversation.files || {}).next_page_url && !conversation.filesLoading" class="text-center my-2">
+                            <button type="button" class="btn btn-sm btn-link text-body" @click="$parent.getFiles()">Show more..</button>
+                        </div>
+                        <div v-else-if="conversation.filesLoading" class="text-center my-3">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tags & History -->
-                <div class="border-bottom px-3 py-1">
-                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags_history">
-                        Tags & History
+                <!-- Tags -->
+                <div class="border-top px-3 py-1">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
+                        Tags
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="tags_history" class="collapse" data-parent="#info-items">
-                        <!-- History -->
-                        <div v-for="grouped_message in $parent.grouped_messages" v-if="grouped_message.messages.find(x => x.is_history)" class="w-100 message-group">
-                            <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.sender.full_name }}</small>
-                            <div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': grouped_message.outgoing}">
-                                <div>
-                                    <div class="user-profile-image" :style="{backgroundImage: 'url(' + grouped_message.sender.profile_image + ')'}">
-                                        <span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
-                                    </div>
-                                </div>
-                                <div class="px-1 flex-1">
-                                    <div v-for="message in grouped_message.messages" v-if="message.is_history" v-cloak class="message-item">
-                                        <div class="text-wrap position-relative message-content cursor-pointer" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type)}" v-scroll-to="{el: '#message-' + message.id, container: '#message-group-container', offset: -30, onStart: highlightMessage, onDone: removeHiglightMessage, cancelable: false}">
-                                            <div class="message-actions p-1 position-absolute" :class="{show: message.is_history}">
-                                                <div class="action-content cursor-pointer line-height-1">
-                                                    <div class="action-content cursor-pointer line-height-1">
-                                                        <div class="action-button show">
-                                                            <history-icon height="20" width="20" class="active" @click.native="$parent.markHistory(message)"></history-icon>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <message-type :click="false" :message="message" :outgoing="grouped_message.outgoing"></message-type>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.created_at_format }}</small>
-                        </div>
-
+                    <div id="tags" class="collapse" data-parent="#info-items">
                         <!-- Tags -->
                         <div class="h-100 overflow-hidden d-flex flex-column">
                             <div>
@@ -295,8 +247,8 @@
                 </div>
 
                 <!-- Notes -->
-                <div class="border-bottom px-3 py-1">
-                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes">
+                <div class="border-top px-3 py-1">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes" @click="toggleCollapse">
                         Notes
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>

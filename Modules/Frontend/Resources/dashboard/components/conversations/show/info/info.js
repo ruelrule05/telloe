@@ -5,13 +5,11 @@ import VueFormValidate from '../../../../../components/vue-form-validate';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import Bookings from './bookings/bookings.vue';
 import FormSearch from '../../../../../components/form-search/form-search.vue';
-import VuePaginate from 'vue-paginate';
 
 import CloseIcon from '../../../../../icons/close';
 import PlusIcon from '../../../../../icons/plus';
 import PlayIcon from '../../../../../icons/play';
 import VolumeMidIcon from '../../../../../icons/volume-mid';
-import DocumentIcon from '../../../../../icons/document';
 import BookmarkIcon from '../../../../../icons/bookmark';
 import TrashIcon from '../../../../../icons/trash';
 import HistoryIcon from '../../../../../icons/history';
@@ -19,7 +17,7 @@ import PencilIcon from '../../../../../icons/pencil';
 import ChevronDownIcon from '../../../../../icons/chevron-down';
 import ClockIcon from '../../../../../icons/clock';
 import PlannerIcon from '../../../../../icons/planner';
-import FilePdfIcon from '../../../../../icons/file-pdf';
+import DocumentIcon from '../../../../../icons/document';
 
 import VueScrollTo from 'vue-scrollto';
 import Tooltip from '../../../../../js/directives/tooltip';
@@ -36,7 +34,6 @@ export default {
 		PlusIcon,
 		PlayIcon,
 		VolumeMidIcon,
-		DocumentIcon,
 		BookmarkIcon,
         TrashIcon,
         HistoryIcon,
@@ -44,7 +41,7 @@ export default {
         ChevronDownIcon,
         ClockIcon,
         PlannerIcon,
-        FilePdfIcon,
+        DocumentIcon,
 	},
 
     directives: {VueScrollTo, Tooltip},
@@ -66,7 +63,6 @@ export default {
             is_custom: false,
         },
         tagSearch: '',
-        paginate: ['files']
 	}),
 
 	computed: {
@@ -86,7 +82,7 @@ export default {
             };
             let allTags = [];
 
-            (this.conversation.messages || []).forEach((message) => {
+            ((this.conversation.paginated_messages || {}).data || []).forEach((message) => {
                 if(message.tags.length > 0) {
                     allTags.push({
                         type: 'message',
@@ -130,14 +126,6 @@ export default {
             })
             return availableServices;
         },
-
-        files() {
-            let files = [];
-            (this.conversation.messages || []).slice().reverse().forEach(message => {
-                if(this.isFile(message) && (message.type == this.fileType || this.fileType == 'all') && message.updated_at) files.push(message);
-            });
-            return files;
-        }
 	},
 
     watch: {
@@ -181,6 +169,17 @@ export default {
             showUserCustomFields: 'user_custom_fields/show',
             storeUserCustomFields: 'user_custom_fields/store',
 		}),
+
+        toggleCollapse(e) {
+            $('#info-items > div.active').removeClass('active');
+            let parent = $(e.currentTarget).parent()[0];
+            let currentTarget = e.currentTarget;
+            setTimeout(() => {
+                if(currentTarget.getAttribute('aria-expanded') == 'true') {
+                   $(parent).addClass('active');
+                }
+            }, 150);
+        },
 
         closeInfo() {
             this.$root.detailsTab = '';
@@ -238,51 +237,6 @@ export default {
             this.storeNote(note);
             this.newNote = '';
             this.$refs['profileImage'].click();
-        },
-
-        fileIcon(extension) {
-            let iconComponent = 'document-icon';
-            let videoExtensions = ['mp4', 'webm'];
-            let audioExtensions = ['mp3', 'wav'];
-            if (videoExtensions.indexOf(extension) > -1) {
-                iconComponent = 'file-video-icon';
-            } else if (audioExtensions.indexOf(extension) > -1) {
-                iconComponent = 'file-audio-icon';
-            } else {
-                switch (extension) {
-                    case 'pdf':
-                        iconComponent = 'file-pdf-icon';
-                        break;
-
-                    case 'zip':
-                        iconComponent = 'file-archive-icon';
-                        break;
-
-                    case 'rar':
-                        iconComponent = 'file-archive-icon';
-                        break;
-
-                    case 'docx':
-                        iconComponent = 'document-icon';
-                        break;
-
-                    case 'doc':
-                        iconComponent = 'document-icon';
-                        break;
-
-                    case 'txt':
-                        iconComponent = 'document-icon';
-                        break;
-
-                    case 'xls':
-                        break;
-
-                    case 'xlsx':
-                        break;
-                }
-            }
-
-            return iconComponent;
         },
 
 

@@ -7,11 +7,13 @@
     font-size: 14px;
     resize: none !important;
 }
-.message-form svg {
-    transition: $transition-base;
-}
-.message-form svg:hover {
-    transform: scale(1.1);
+.message-form-inputs {
+    svg {
+        transition: $transition-base;
+        &:hover {
+        transform: scale(1.1);
+    }
+    }
 }
 .conversation-messages {
     width: 0;
@@ -58,7 +60,6 @@
         font-size: 14px;
         display: inline-block;
         text-align: left;
-        transition: $transition-base;
         border-radius: 2px;
         max-width: 80%;
         &:after{
@@ -277,4 +278,34 @@
   50% {
     opacity: 1;
   }
+}
+.pending-file-preview{
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    .file-thumbnail {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .remove-file {
+        top: 5px;
+        right: 5px;
+        opacity: 0;
+    }
+    &:hover{
+        .remove-file{
+            opacity: 1;
+        }
+    }
+    .pending-filename {
+        bottom: 2px;
+        left: 0;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 }

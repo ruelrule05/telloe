@@ -34,7 +34,7 @@ class ConversationController extends Controller
     {
         $conversation = Conversation::where(function($query){
             $query->has('members.user')->orHas('contact');
-        })->with('user.services', 'messages.user', 'members.user')->findOrfail($id);
+        })->with('user.services', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 
         //if ($request->is_read) :
@@ -47,6 +47,8 @@ class ConversationController extends Controller
                 ->where('is_read', 0)
                 ->update(['is_read' => 1]);
         //endif;
+
+        $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20)->withPath('/dashboard/conversations/' . $conversation->id);
 
         return response()->json($conversation);
     }
@@ -140,5 +142,13 @@ class ConversationController extends Controller
         $this->authorize('call', $conversation);
 
         return view('frontend::call', compact('conversation'));
+    }
+
+    public function files($id, Request $request)
+    {
+        $conversation = Conversation::findOrFail($id);
+        $this->authorize('show', $conversation);
+        $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(5)->withPath('/dashboard/conversations/' . $conversation->id);
+        return response()->json($files);
     }
 }

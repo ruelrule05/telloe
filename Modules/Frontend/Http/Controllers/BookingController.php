@@ -13,6 +13,9 @@ use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Modules\Frontend\Http\GoogleCalendarClient;
 use Modules\Frontend\Http\OutlookClient;
+use Mail;
+use Modules\Frontend\Mail\NewBooking;
+use Modules\Frontend\Mail\UpdateBooking;
 
 class BookingController extends Controller
 {
@@ -66,7 +69,7 @@ class BookingController extends Controller
             'date' => 'required|date',
             'start' => 'required',
         ]);
-        if(Carbon::parse(Carbon::now()->format('Y-m-d'))->gt(Carbon::parse($request->date))) return abort(403, 'Invalid date.');
+        if(Carbon::now()->gt(Carbon::parse($request->date . ' ' . $request->start))) return abort(403, 'Invalid date.');
         if($request->user_id == Auth::user()->id) return abort(403, 'Action is not allowed.');
 
         $service = Service::findOrfail($request->service_id);
@@ -91,8 +94,11 @@ class BookingController extends Controller
         $endTime->set('minute', $parts[1]);
         $endTime->add('minute', $service->duration);
         $data['end'] = $endTime->format('H:i');
+        $data['user_id'] = ($service->user_id == $request->user_id) ? Auth::user()->id : $data['user_id'];
         
         $booking = Booking::create($data);
+        Mail::queue(new NewBooking($booking));
+
         return response()->json($booking->load('service'));
     }
 
@@ -100,14 +106,11 @@ class BookingController extends Controller
     public function update($id, Request $request)
     {
         $this->validate($request, [
-            'service_id' => 'required|exists:services,id',
             'date' => 'required|date',
             'start' => 'required',
         ]);
 
 
-        /*$service = Service::findOrfail($request->service_id);
-        $this->authorize('addBooking', $service);*/
 
         $booking = Booking::findOrfail($id);
         $this->authorize('update', $booking);
@@ -140,6 +143,8 @@ class BookingController extends Controller
         $data['end'] = $endTime->format('H:i');
 
         $booking->update($data);
+        Mail::queue(new UpdateBooking($booking));
+
         return response()->json($booking->load('service.user'));
     }
 

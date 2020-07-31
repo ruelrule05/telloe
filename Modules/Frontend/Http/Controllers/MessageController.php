@@ -9,6 +9,7 @@ use App\Models\Message;
 use File;
 use Auth;
 use Image;
+use Carbon\Carbon;
 
 class MessageController extends Controller
 {
@@ -16,9 +17,10 @@ class MessageController extends Controller
 
     public function store(Request $request)
     {
+        $timestamp = Carbon::now()->getPreciseTimestamp(3);
         $this->validate($request, [
             'conversation_id' => 'required|exists:conversations,id',
-            'type' => 'required',
+            'type' => 'required|in:text,emoji,image,audio,video,file',
         ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addMessage', $conversation);
@@ -45,7 +47,6 @@ class MessageController extends Controller
             endif;
             $metadata['filename'] = $originalName;
             $metadata['size'] =  formatBytes($request->source->getSize(), 0);
-
 
             if($request->type == 'image' || $request->type == 'video') :
                 if ($request->preview) :
@@ -79,6 +80,7 @@ class MessageController extends Controller
             'source' => $sourceFile,
             'preview' => $previewFile,
             'metadata' => $metadata,
+            'timestamp' => $timestamp
         ]);
 
         return response()->json($message);

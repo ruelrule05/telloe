@@ -19,7 +19,13 @@ const mutations = {
         return new Promise((resolve, reject) => {
             let conversation = state.index.find((x) => x.id == data.id);
             if(conversation) {
-                Vue.set(conversation, 'messages', data.messages);
+                if(!conversation.paginated_messages) {
+                    Vue.set(conversation, 'paginated_messages', data.paginated_messages);
+                } else {
+                    if(data.page == 1) conversation.paginated_messages.data = [];
+                    conversation.paginated_messages.data = conversation.paginated_messages.data.concat(data.paginated_messages.data);
+                    conversation.paginated_messages.next_page_url = data.paginated_messages.next_page_url;
+                }
                 Vue.set(conversation, 'user', data.user);
                 Vue.set(conversation, 'ready', true);
                 Vue.set(conversation.last_message, 'is_read', true);
@@ -47,10 +53,15 @@ const actions = {
         });
     },
 
-    async show({ commit, state }, id) {
-        let conversation = state.index.find((x) => x.id == id);
-        if(conversation) Vue.set(conversation, 'ready', false);
-        let response = await axios.get(`/${name}/${id}`);
+    async show({ commit, state }, data) {
+        let conversation = state.index.find((x) => x.id == data.id);
+        const page = data.page || 1;
+        if(conversation && page == 1) {
+            Vue.set(conversation, 'files', null);
+            Vue.set(conversation, 'ready', false);
+        }
+        let response = await axios.get(`/${name}/${data.id}?page=${page}`);
+        response.data.page = page;
         await commit('show', response.data);
     },
 

@@ -23,6 +23,12 @@ import ExpandWideIcon from '../../../../icons/expand-wide';
 import ColoredPhoneIcon from '../../../../icons/colored-phone';
 import TrashIcon from '../../../../icons/trash';
 import EyeIcon from '../../../../icons/eye';
+import DocumentIcon from '../../../../icons/document';
+import FileArchiveIcon from '../../../../icons/file-archive';
+import FilePdfIcon from '../../../../icons/file-pdf';
+import FileAudioIcon from '../../../../icons/file-audio';
+import VolumeMidIcon from '../../../../icons/volume-mid';
+import PlayIcon from '../../../../icons/play';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -47,6 +53,13 @@ export default {
         ColoredPhoneIcon,
         TrashIcon,
         EyeIcon,
+        DocumentIcon,
+        FileArchiveIcon,
+        FilePdfIcon,
+        FileAudioIcon,
+        VolumeMidIcon,
+        PlayIcon,
+
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
         gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
@@ -71,11 +84,16 @@ export default {
         selectedMessage: null,
         isTyping: false,
         typingTimeout: null,
+        pendingFiles: [],
+        messagePaginateLoading: false,
     }),
 
     watch: {
         ready: function(value) {
-            if(value) this.$root.contentloading = false;
+            if(value) {
+                this.$root.contentloading = false;
+                this.getFiles(1);
+            }
             setTimeout(() => {
                 this.scrollDown();
             }, 50);
@@ -92,17 +110,20 @@ export default {
             }
         },
         'conversation.last_message': function(value) {
-            if (this.conversation && this.conversation.messages && value.id) {
-                let message = this.conversation.messages.find(x => x.id == value.id);
+            if (this.conversation && this.conversation.paginated_messages && value.id) {
+                let message = this.conversation.paginated_messages.data.find(x => x.id == value.id);
                 if (!message) {
-                    this.conversation.messages.push(value);
+                    this.conversation.paginated_messages.data.push(value);
+                    if(!['text', 'emoji'].find(x => x == value.type)) {
+                        this.conversation.files.data.unshift(value);
+                    }
                     this.scrollDown();
                 }
             }
         },
         '$route.params.id': function(value) {
             if (value) {
-                this.showConversation(value);
+                this.showConversation({id: value});
                 this.checkScreenRecorder();
             }
         },
@@ -138,7 +159,7 @@ export default {
         grouped_messages() {
             const grouped_messages = [];
             // sort messages by timestamp
-            const messages = (this.conversation.messages || []).sort((a, b) => {
+            const messages = ((this.conversation.paginated_messages || {}).data || []).sort((a, b) => {
                 return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
             });
 
@@ -173,7 +194,7 @@ export default {
         this.checkConversation();
         this.$root.socket.on('last_message_read', data => {
             if(this.conversation.id == data.conversation_id) {
-                let message = this.conversation.messages.find(x => x.id == data.message_id);
+                let message = this.conversation.paginated_messages.data.find(x => x.id == data.message_id);
                 if(message) this.$set(message, 'is_read', true);
             }
         });
@@ -193,28 +214,6 @@ export default {
                 if(data.typing) this.scrollDown();
             }
         });
-       /* this.$root.socket.on('new_messagex', data => {
-            let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
-            if (conversation) {
-                let message = conversation.messages.find(x => x.id == data.id);
-                if (!message) {
-                    this.$root.getMessageByID(data).then(message => {
-                        if (message && message.conversation_id == conversation.id) {
-                            conversation.last_message = message;
-                            this.$root.message_sound.play();
-                            if (this.conversation) {
-                                if (conversation.id == this.conversation.id) {
-                                    conversation.messages.push(message);
-                                    this.scrollDown();
-                                } else {
-                                    this.$router.push(`/dashboard/conversations/${conversation.id}`);
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        });*/
         window.onbeforeunload = () => {
             this.$root.socket.emit('is_typing', {typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
         };
@@ -233,6 +232,53 @@ export default {
             deleteMessage: 'messages/delete',
         }),
 
+
+        getFiles() {
+            if(this.conversation) {
+                let page = 0;
+                if(!this.conversation.files) {
+                    this.$set(this.conversation, 'files', {data: []});
+                    page = 1;
+                }
+                if((this.conversation.files || {}).next_page_url) {
+                    const url = new URL(window.location.origin + this.conversation.files.next_page_url);
+                    const urlParams = new URLSearchParams(url.search);
+                    page = urlParams.get('page');
+                }
+                if(page) {
+                    this.$set(this.conversation, 'filesLoading', true);
+                    axios.get(`/conversations/${this.conversation.id}/files?page=${page}`).then(response => {
+                        this.conversation.files.data = this.conversation.files.data.concat(response.data.data);
+                        this.conversation.files.next_page_url = response.data.next_page_url;
+                        this.conversation.filesLoading = false;
+                    });
+                }
+            }
+        },
+
+        async messageScroll(e) {
+            if (
+                e.target.scrollTop == 0 && 
+                !this.messagePaginateLoading && 
+                this.conversation && 
+                (this.conversation.paginated_messages || {}).next_page_url) {
+                    let initialHeight = this.$refs['message-group-container'].scrollHeight;
+                    this.messagePaginateLoading = true;
+                    this.$refs['message-group-container'].classList.add('overflow-hidden', 'pr-2');
+                    const url = new URL(window.location.origin + this.conversation.paginated_messages.next_page_url);
+                    const urlParams = new URLSearchParams(url.search);
+                    const page = urlParams.get('page') || 1;
+
+                    await this.showConversation({id: this.$route.params.id, page: page}).catch(e => {
+                    });
+                    this.messagePaginateLoading = false;
+                    this.$refs['message-group-container'].classList.remove('overflow-hidden', 'pr-2');
+                    this.$nextTick(() => {
+                        this.$refs['message-group-container'].scrollTop = this.$refs['message-group-container'].scrollHeight - initialHeight;
+                    });
+            }
+        },
+
         typing() {
             if(!this.isTyping) {
                 this.isTyping = true;
@@ -248,11 +294,13 @@ export default {
         },
 
         messageInput(e) {
+            let isEnter = false;
+            if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                isEnter = true;
+                this.$refs['messageForm'].submit();
+            }
             setTimeout(() => {
-                if ((e.keyCode ? e.keyCode : e.which) == 13) {
-                    e.preventDefault();
-                    this.$refs['messageForm'].submit();
-                } else if(this.textMessage.trim().length) {
+                if(!isEnter && this.textMessage.trim().length) {
                     this.typing();
                 }
             }, 50);
@@ -260,7 +308,7 @@ export default {
 
         async checkConversation() {
             if (this.$route.params.id) {
-                await this.showConversation(this.$route.params.id).catch(e => {
+                await this.showConversation({id: this.$route.params.id}).catch(e => {
                     this.$router.push('/dashboard/conversations');
                 });
             }
@@ -376,7 +424,36 @@ export default {
 
         dropFile(e) {
             this.dragOver = false;
-            this.addFile({target: {files: e.dataTransfer.files, value: e.dataTransfer.files[0].name}});
+            this.typing();
+            for(let file of e.dataTransfer.files) {
+                let parts = file.type.split('/');
+                file.extension = file.name.split('.').pop();
+                if(this.$root.isImage(file.extension)) {
+                    file.dataType = 'image'; 
+                } else if(parts[0] == 'video') {
+                    file.dataType = 'video'; 
+                } else if(parts[0] == 'audio') {
+                    file.dataType = 'audio'; 
+                } else if(parts[1] == 'pdf') {
+                    file.dataType = 'pdf'; 
+                } else {
+                    file.dataType = 'document'; 
+                }
+
+                if(file.dataType == 'image') {
+                    loadImage(
+                        file,
+                        canvas => {
+                            let dataurl = canvas.toDataURL(file.type);
+                            this.pendingFiles.push({file: file, preview: dataurl});
+                        },
+                        {maxWidth: 500, canvas: true, pixelRatio: window.devicePixelRatio, downsamplingRatio: 0.5, imageSmoothingEnabled: true},
+                    );
+                } else {
+                    this.pendingFiles.push({file: file});
+                }
+
+            }
         },
 
         downloadMedia(message) {
@@ -410,14 +487,14 @@ export default {
             });
         },
 
-        sendMessage(message) {
+        async sendMessage(message) {
             if (this.conversation) {
                 message.user_id = this.$root.auth.id;
                 message.sending = true;
                 message.prefix = 'You: ';
                 message.tags = [];
                 message.conversation_id = this.conversation.id;
-                message.timestamp = dayjs().unix();
+                message.timestamp = dayjs().valueOf();
 
                 if (message.type == 'text' && message.message.trim().length == 2) {
                     let regex = emojiRegex();
@@ -426,12 +503,16 @@ export default {
                     }
                 }
 
+
                 this.isTyping = false;
                 this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
-                this.storeMessage(message).then(message => {
-                    this.scrollDown();
-                    this.$root.socket.emit('message_sent', {id: message.id, conversation_id: this.conversation.id});
-                });
+                let response = await this.storeMessage(message);
+
+                if(!['text', 'emoji'].find(x => x == response.type)) {
+                    this.conversation.files.data.unshift(response);
+                }
+                this.scrollDown();
+                this.$root.socket.emit('message_sent', {id: response.id, conversation_id: this.conversation.id});
             }
         },
 
@@ -447,29 +528,22 @@ export default {
                     created_diff: 'Just now',
                 };
 
+
                 let fileExtension = fileInput.value.split('.').pop();
+
                 if (this.$root.isImage(fileExtension)) {
                     message.type = 'image';
                     message.message = 'image';
-                    new Compressor(file, {
-                        quality: 0.6,
-                        success: (result) => {
-                            message.source = result;
-                            loadImage(
-                                result,
-                                canvas => {
-                                    let dataurl = canvas.toDataURL(fileInput.files[0].type);
-                                    message.preview = dataurl;
-                                    this.sendMessage(message);
-                                },
-                                {maxWidth: 200, canvas: true},
-                            );
+                    message.source = file;
+                    loadImage(
+                        file,
+                        canvas => {
+                            let dataurl = canvas.toDataURL(fileInput.files[0].type);
+                            message.preview = dataurl;
+                            this.sendMessage(message);
                         },
-                        error(err) {
-                            console.log(err.message);
-                        },
-                    });
-
+                        {maxWidth: 200, canvas: true},
+                    );
                 } else {
                     let fileBase64 = await this.fileToBase64(fileInput.files[0]);
                     let messageData = {
@@ -506,10 +580,13 @@ export default {
                 filename = parts.join('');
                 filename += '.png';
                 let file = e.clipboardData.files[0];
+                file = new File([file], filename, {type: file.type});
+
                 loadImage(
                     file,
                     canvas => {
                         let dataurl = canvas.toDataURL(file.type);
+
                         this.pastedFile = {file: file, preview: dataurl};
                     },
                     {maxWidth: 500, canvas: true, pixelRatio: window.devicePixelRatio, downsamplingRatio: 0.5, imageSmoothingEnabled: true},
@@ -517,15 +594,68 @@ export default {
             }
         },
 
-        sendText() {
-            let message = {
-                user: this.$root.auth,
-                message: this.textMessage.trim(),
-                type: 'text',
-                created_diff: 'Just now',
-            };
-            this.sendMessage(message);
+        async sendText() {
+            let textMessage = this.textMessage.trim();
             this.textMessage = '';
+            if(textMessage.length > 0) {
+                let message = {
+                    user: this.$root.auth,
+                    message: textMessage,
+                    type: 'text',
+                    created_diff: 'Just now',
+                };
+                await this.sendMessage(message);
+            }
+
+            this.pendingFiles.forEach(file => {
+                this.addFile({target: {files: [file.file], value: file.file.name}});
+            });
+            this.pendingFiles = [];
+        },
+
+        fileIcon(extension) {
+            let iconComponent = 'document-icon';
+            let videoExtensions = ['mp4', 'webm'];
+            let audioExtensions = ['mp3', 'wav'];
+            if (videoExtensions.indexOf(extension) > -1) {
+                iconComponent = 'file-video-icon';
+            } else if (audioExtensions.indexOf(extension) > -1) {
+                iconComponent = 'file-audio-icon';
+            } else {
+                switch (extension) {
+                    case 'pdf':
+                        iconComponent = FilePdfIcon;
+                        break;
+
+                    case 'zip':
+                        iconComponent = FileArchiveIcon;
+                        break;
+
+                    case 'rar':
+                        iconComponent = FileArchiveIcon;
+                        break;
+
+                    case 'docx':
+                        iconComponent = DocumentIcon;
+                        break;
+
+                    case 'doc':
+                        iconComponent = DocumentIcon;
+                        break;
+
+                    case 'txt':
+                        iconComponent = DocumentIcon;
+                        break;
+
+                    case 'xls':
+                        break;
+
+                    case 'xlsx':
+                        break;
+                }
+            }
+
+            return iconComponent;
         },
     },
 };

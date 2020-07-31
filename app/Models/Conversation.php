@@ -37,7 +37,7 @@ class Conversation extends BaseModel
 
     public function messages()
     {
-    	return $this->hasMany(Message::class);
+    	return $this->hasMany(Message::class)->orderBy('timestamp', 'DESC');
     }
 
 

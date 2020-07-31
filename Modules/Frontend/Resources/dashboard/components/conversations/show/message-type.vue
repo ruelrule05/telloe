@@ -10,7 +10,7 @@
                     <div class="spinner-border spinner-border-sm text-primary"></div>
                 </div>
             </div>
-            <img draggable="false" class="rounded cursor-pointer border" :src="message.preview" @click="if(click) $parent.openFile(message)" />
+            <img draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
         </div>
 
         <!-- Video -->
@@ -20,7 +20,7 @@
                     <div class="spinner-border spinner-border-sm text-primary"></div>
                 </div>
             </div>
-            <img draggable="false" class="rounded border cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
+            <img draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
             <div class="position-absolute-center preview-video-play pointer-events-none">
                 <play-icon height="20" width="20"></play-icon>
             </div>

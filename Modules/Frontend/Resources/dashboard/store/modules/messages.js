@@ -11,7 +11,7 @@ const actions = {
         let conversation = rootState.conversations.index.find((x) => x.id == data.conversation_id);
         if(conversation) {
             Vue.set(conversation, 'last_message', data);
-            conversation.messages.push(data);
+            conversation.paginated_messages.data.push(data);
 
             data.metadata = JSON.stringify(data.metadata);
             let bodyFormData = new FormData();

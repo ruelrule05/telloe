@@ -37,8 +37,8 @@ export default {
 
 	computed: {
 		media () {
-			if(!this.conversation.messages) return [];
-			return this.conversation.messages.filter(message => {
+			if(!this.conversation.files) return [];
+			return this.conversation.files.data.filter(message => {
 				return ['image', 'video', 'audio'].find(x => x == message.type);
 			});
 		},

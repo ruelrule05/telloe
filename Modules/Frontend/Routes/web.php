@@ -5,8 +5,8 @@
  *
  */
 Route::get('email', function() {
-    $email = new Modules\Frontend\Mail\SendInvitation(App\Models\Contact::first(), 'login');
-    \Mail::to('clydewinux@gmail.com')->queue($email);
+    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::find(44));
+    //\Mail::send($email);
     return $email;
 });
 
@@ -67,6 +67,7 @@ Route::group(
             Route::post('contacts/{id}/cancel_subscription', 'ContactController@cancelSubscription');
 
             Route::get('tags/search', 'DashboardController@searchTags');
+            Route::get('conversations/{id}/files', 'ConversationController@files');
 
             // Google calendar
             Route::get('google_client', 'BookingController@googleClient');

@@ -54,10 +54,9 @@ const actions = {
         return response;
     },
 
-    store({commit}, data) {
-        axios.post(`/${name}`, data).then(response => {
-            commit('store', response.data);
-        });
+    async store({commit}, data) {
+        let response = await axios.post(`/${name}`, data);
+        commit('store', response.data);
     },
 
     async update({commit}, data) {

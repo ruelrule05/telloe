@@ -19,7 +19,6 @@
             }
         }
     }
-    &:hover:not(.active),
     &.selected:not(.active){
         box-shadow: 0 0 0 0.1rem rgba($primary, 0.6);
     }
