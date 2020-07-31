@@ -299,9 +299,15 @@
 					@foreach($plans as $plan)
 					<div class="col-md-4">
 						<div class="border rounded bg-white plan p-3 position-relative" @click="selectPlan(plan)">
-							<strong class="text-orange text-uppercase">{{ $plan->subheading }}</strong>
-							<h5 class="mb-0 font-heading text-primary">{{ $plan->name }}</h5>
-							<h5 class="mb-0 font-weight-normal mb-0 text-capitalize"><strong>${{ $plan->price }}</strong> per {{ $plan->interval }}</h5>
+							<h5 class="mb-4 font-heading text-primary text-uppercase">{{ $plan->name }}</h5>
+							<h4 class="mb-0 font-weight-normal d-inline @if($plan->interval == 'year') text-warning @endif"><strong>${{ intval($plan->price) }}</strong></h4><span class="@if($plan->interval == 'year') text-warning @endif">{{ substr(strval($plan->price - intval($plan->price)), 1) }}</span> / month
+
+							<div class="text-secondary">
+								@if($plan->every_months > 1)
+									Billed as one payment of ${{ number_format($plan->price * $plan->every_months, 2) }}
+								@endif
+								&nbsp;
+							</div>
 							
 							<div class="my-3">
 								<strong>Bookings</strong>
