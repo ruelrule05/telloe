@@ -98,9 +98,9 @@
                                                             </vue-form-validate>
 
                                                             <div class="text-left tags-container" v-if="message.tags.length > 0">
-                                                                <div v-for="(tag, index) in message.tags" class="d-inline-block badge badge-primary py-1 px-2 mr-1 mt-1">
+                                                                <div v-for="(tag, index) in message.tags" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
                                                                 {{ tag }}&nbsp;
-                                                                    <close-icon height="8" width="8" fill="white" transform="scale(2.5)" class="cursor-pointer no-action" @click.native="message.tags.splice(index, 1); updateMessageTags(message)"></close-icon>
+                                                                    <close-icon height="8" width="8" transform="scale(2.5)" class="cursor-pointer no-action" @click.native="message.tags.splice(index, 1); updateMessageTags(message)"></close-icon>
                                                                 </div>
                                                             </div>
                                                         </div>

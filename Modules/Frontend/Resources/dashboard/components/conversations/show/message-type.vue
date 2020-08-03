@@ -10,7 +10,8 @@
                     <div class="spinner-border spinner-border-sm text-primary"></div>
                 </div>
             </div>
-            <img draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
+            <div v-if="squareThumbnail" class="image-square rounded" :style="{backgroundImage: 'url('+message.preview+')'}" @click="if(click) $parent.openFile(message)"></div>
+            <img v-else draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
         </div>
 
         <!-- Video -->
@@ -20,7 +21,8 @@
                     <div class="spinner-border spinner-border-sm text-primary"></div>
                 </div>
             </div>
-            <img draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
+            <div v-if="squareThumbnail" class="image-square rounded" :style="{backgroundImage: 'url('+message.preview+')'}" @click="if(click) $parent.openFile(message)"></div>
+            <img v-else draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
             <div class="position-absolute-center preview-video-play pointer-events-none">
                 <play-icon height="20" width="20"></play-icon>
             </div>
@@ -82,6 +84,11 @@ export default {
         click: {
             type: Boolean,
             default: true,
+        },
+
+        squareThumbnail: {
+            type: Boolean,
+            default: false,
         }
 	},
 
@@ -139,7 +146,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .message-sending{
     background-color: rgba(255, 255, 255, 0.65);
 }
@@ -152,6 +159,13 @@ p {
 img{
     max-width: 450px;
     height: auto;
+}
+.image-square {
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .preview-video-play {
     line-height: 0;

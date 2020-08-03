@@ -9,10 +9,15 @@
 							<div class="btn btn-checkmark p-1 badge-pill line-height-0 position-absolute mr-2 mt-2">
 								<checkmark-icon width="20" height="20" transform="scale(1.8)" stroke-width="1"></checkmark-icon>
 							</div>
-							<strong class="text-orange text-uppercase">{{ plan.subheading }}</strong>
-							<h5 class="mb-0 font-heading text-primary">{{ plan.name }}</h5>
+							<h5 class="mb-4 font-heading text-primary text-uppercase">{{ plan.name }}</h5>
+							<h4 class="mb-0 font-weight-normal d-inline @if($plan->interval == 'year') text-warning @endif"><strong>${{ parseInt(plan.price) }}</strong></h4><span class="@if($plan->interval == 'year') text-warning @endif">.{{ plan.price.split('.')[1] }}</span> / month
 
-							<h5 class="mb-0 font-weight-normal mb-0 text-capitalize"><strong>${{ plan.price }}</strong> per {{ plan.interval }}</h5>
+							<div class="text-secondary">
+								<template v-if="plan.every_months > 1">
+									Billed as one payment of ${{ $root.number_format(plan.price * plan.every_months, 2) }}
+								</template>
+								&nbsp;
+							</div>
 
 							<div class="mt-3">
 								<button v-if="$root.auth.subscription && $root.auth.subscription.plan_id == plan.id" type="button" class="btn btn-primary btn-lg btn-block" @click="unsubscribe">Cancel subscription</button>

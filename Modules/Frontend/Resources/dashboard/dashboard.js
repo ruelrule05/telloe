@@ -155,7 +155,6 @@ window.app = new Vue({
         ScreenRecorder,
         Notification,
 
-
         'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue'),
     },
     data: {
@@ -165,7 +164,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: '',
+        detailsTab: 'profile',
         profileTab: 'overview', //overview
 
         call_sound: null,
@@ -204,7 +203,7 @@ window.app = new Vue({
             let count;
             this.conversations.forEach(conversation => {
                 if (conversation.last_message.user_id != this.auth.id && !conversation.last_message.is_read) {
-                    if(!count) count = 0;
+                    if (!count) count = 0;
                     count++;
                 }
             });
@@ -213,9 +212,9 @@ window.app = new Vue({
 
         supportLink() {
             let supportLink = '#';
-            for(let conversation of this.conversations) {
+            for (let conversation of this.conversations) {
                 let role = (conversation.member.role || {}).role;
-                if(role == 'support') {
+                if (role == 'support') {
                     supportLink = `/dashboard/conversations/${conversation.id}`;
                     break;
                 }
@@ -225,7 +224,7 @@ window.app = new Vue({
 
         profileLink() {
             let profileLink = '/dashboard/account?tab=profile';
-            if(this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
+            if (this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
 
             return profileLink;
         },
@@ -234,7 +233,7 @@ window.app = new Vue({
             let count;
             this.notifications.forEach(notification => {
                 if (!notification.is_read) {
-                    if(!count) count = 0;
+                    if (!count) count = 0;
                     count++;
                 }
             });
@@ -251,7 +250,7 @@ window.app = new Vue({
     },
 
     created() {
-        if(this.$route.name != 'conversations') this.getConversations();
+        if (this.$route.name != 'conversations') this.getConversations();
         this.call_sound = new Audio(`/notifications/call.mp3`);
         this.message_sound = new Audio('/notifications/new_message.mp3');
         this.socket = io(WS_URL);
@@ -269,11 +268,9 @@ window.app = new Vue({
             }
         });
 
-
         this.socket.on('new_notification', data => {
             this.getNotificationByID(data);
         });
-
 
         this.socket.on('online_users', data => {
             this.online_users = data;
@@ -312,16 +309,40 @@ window.app = new Vue({
             updateNotification: 'notifications/update',
         }),
 
+        number_format(number, decimals, dec_point, thousands_sep) {
+            // Strip all characters but numerical ones.
+            number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+            var n = !isFinite(+number) ? 0 : +number,
+                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                sep = typeof thousands_sep === 'undefined' ? ',' : thousands_sep,
+                dec = typeof dec_point === 'undefined' ? '.' : dec_point,
+                s = '',
+                toFixedFix = function(n, prec) {
+                    var k = Math.pow(10, prec);
+                    return '' + Math.round(n * k) / k;
+                };
+            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+            s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+            if (s[0].length > 3) {
+                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+            }
+            if ((s[1] || '').length < prec) {
+                s[1] = s[1] || '';
+                s[1] += new Array(prec - s[1].length + 1).join('0');
+            }
+            return s.join(dec);
+        },
+
         async getNotificationByID(data) {
-            let notification = await axios.get(`/notifications/${data.id}`).catch((e) => {});
-            if(notification) {
+            let notification = await axios.get(`/notifications/${data.id}`).catch(e => {});
+            if (notification) {
                 this.$refs['notification'].show(notification.data);
                 this.notifications.unshift(notification.data);
             }
         },
 
         goToNotifLink(notification) {
-            if(notification.link && this.$route.fullPath != notification.link) {
+            if (notification.link && this.$route.fullPath != notification.link) {
                 this.$router.push(notification.link);
             }
         },
@@ -332,8 +353,8 @@ window.app = new Vue({
         },
 
         async getMessageByID(data) {
-            let message = await axios.get(`/messages/${data.id}`).catch((e) => {});
-            if(message) return message.data;
+            let message = await axios.get(`/messages/${data.id}`).catch(e => {});
+            if (message) return message.data;
         },
 
         focusCallWindow() {
