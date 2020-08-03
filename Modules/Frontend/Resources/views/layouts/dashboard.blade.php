@@ -30,7 +30,7 @@
 											</div>
 										</div>
 									</div>
-									<div class="dropdown-menu arrow-left overflow-hidden cursor-auto">
+									<div class="dropdown-menu overflow-hidden cursor-auto">
 										<span class="dropdown-header">Account</span>
 								    	<!-- <a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
 								    		<shortcut-icon height="17" width="17" class="mr-2"></shortcut-icon>
@@ -111,7 +111,7 @@
 												</div>
 											</button>
 											<div class="collapse show" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
-												<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+												<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 													<span class="pl-3">Calendar</span>
 												</router-link>
 												<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
@@ -144,6 +144,23 @@
 										</template>
 										<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
 									</div>
+
+									
+									<div class="mt-auto mb-2 sidebar-menu">
+										<div class="dropright">
+											<div class="cursor-pointer d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" data-toggle="dropdown" data-offset="10, 5">
+												<colored-bell-icon height="22" width="22"></colored-bell-icon>
+												<span class="pl-3">Notifications</span>
+												<small class="badge badge-danger text-white ml-auto message-count">@{{ notificationsCount }}</small>
+											</div>
+											<div class="dropdown-menu overflow-y-only mh-100vh cursor-auto">
+												<div v-for="notification in notifications" class="dropdown-item cursor-pointer" :class="{'bg-light': !notification.is_read}" @click="updateNotification(notification); notification.is_read = true; goToNotifLink(notification);">
+													<div v-html="notification.description"></div>
+													<small class="text-secondary">@{{ notification.created_at }}</small>
+												</div>
+											</div>
+										</div>
+									</div>
 								</template>
 
 								<div v-else class="overflow-y-only">
@@ -169,6 +186,7 @@
 			
 			<video-call ref="videoCall"></video-call>
 			<screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
+			<notification ref="notification"></notification>
 		</div>
 
 

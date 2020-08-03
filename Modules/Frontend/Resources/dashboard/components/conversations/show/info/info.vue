@@ -1,8 +1,8 @@
 <template>
-    <div class="h-100 overflow-auto">
+    <div class="h-100 overflow-hidden">
         <!-- Profile -->
-        <div class="h-100 py-3 overflow-auto">
-            <div class="text-center">
+        <div class="h-100 py-3 overflow-auto" ref="info-container">
+            <div class="text-center info-profile" :class="{'hidden': hideProfile}">
                 <div class="user-profile-image d-inline-block" ref="profileImage" :style="{backgroundImage: 'url(' + conversation.member.profile_image + ')'}">
                     <span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
                 </div>
@@ -15,6 +15,7 @@
                     </button>
                 </div> -->
             </div>
+
             <div v-if="(conversation.member.role || {}).role != 'support' && !conversation.member.is_pending" id="info-items" class="mt-3 d-flex flex-column">
                 <!-- Overview -->
                 <div class="border-top border-top px-3 py-1">
@@ -135,29 +136,13 @@
                 </div>
 
                 <!-- Bookings -->
-                <div v-if="conversation.members.length == 1" class="border-top px-3 py-1 active">
+                <div v-if="conversation.members.length == 1" class="border-top px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#bookings" @click="toggleCollapse">
                         Bookings
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="bookings" class="collapse pb-1 show" data-parent="#info-items">
+                    <div id="bookings" class="collapse pb-1" data-parent="#info-items">
                         <bookings v-if="conversation.ready" :conversation="conversation" :blacklisted_services="blacklisted_services" :membersLength="conversation.members.length"></bookings>
-
-                        <!-- Available services -->
-                        <div>
-                            <div class="form-group">
-                                <label class="text-muted">Available Services</label>
-                                <div v-for="service in availableServices" class="d-flex align-items-center mb-2">
-                                    <div>
-                                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                                        <small class="text-muted d-block">{{ service.duration }} minutes</small>
-                                    </div>
-                                    <div class="ml-auto" v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1">
-                                        <toggle-switch :value="!(blacklisted_services.find(x => x.service_id == service.id) || {}).is_blacklisted" @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

@@ -63,6 +63,8 @@ export default {
 		isVideoStopped: false,
         isShrinked: false,
         draggable: null,
+        rejectsCount: 0,
+        callTimeout: null,
 	}),
 
     watch: {
@@ -165,9 +167,15 @@ export default {
             }
         });
 
-        this.$root.socket.on('live_call_reject', (data) => {
-            if(this.$root.callConversation.id == data.conversation_id) {
-            	//if(this.connections.length == 0) this.endCall(false);
+
+        this.$root.socket.on('live_call_reject', async (data) => {
+            let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
+            if (conversation) {
+                this.rejectsCount++;
+                if(this.rejectsCount >= conversation.members.length) {
+                    this.endCall(false);
+                    this.rejectsCount = 0;
+                }
             }
         });
         
@@ -214,6 +222,7 @@ export default {
     	},
 
 		outgoingCall(conversation) {
+            clearTimeout(this.callTimeout);
             this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
@@ -230,6 +239,9 @@ export default {
                 user_id: this.$root.auth.id,
             });
             this.$root.callConversation = conversation;
+            this.callTimeout = setTimeout(() => {
+                if(!this.status) this.endCall();
+            }, 15000);
 		},
 
 		incomingCall() {
@@ -248,11 +260,17 @@ export default {
             this.notification_sound.pause();
         },
 
+        rejectCall() {
+            this.$root.socket.emit('live_call_reject', {
+                conversation_id: this.$root.callConversation.id,
+            });
+            this.endCall(false);
+        },
+
         endCall(emit = true) {
             this.notification_sound.pause();
             if(emit && this.$root.callConversation) {
             	this.$root.socket.emit('live_call_end', {conversation_id: this.$root.callConversation.id});
-            	this.$root.socket.emit('live_call_disconnect', {conversation_id: this.$root.callConversation.id});
             }
 
             this.stopLocalStream();
@@ -386,7 +404,7 @@ export default {
                     videoEl.playsinline = true;
                     videoEl.controls = false;
                     videoEl.classList.add('w-100');
-                    videoEl.classList.add('h-auto');
+                    videoEl.classList.add('h-100');
                     videoEl.classList.add('position-absolute-center');
                     videoEl.srcObject = connection.remoteStream;
                     videoContainer.appendChild(videoEl);
@@ -394,7 +412,7 @@ export default {
                 }
             }
             connection.onicecandidate = ({candidate}) => {
-                if(candidate) {
+                if(candidate && this.$root.callConversation) {
                     //console.log('emit: candidate');
                     this.$root.socket.emit('live_call_candidate', {
                         conversation_id: this.$root.callConversation.id,

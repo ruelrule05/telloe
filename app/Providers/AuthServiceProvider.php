@@ -27,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Contact' => 'App\Policies\ContactPolicy',
         'App\Models\PendingSubscription' => 'App\Policies\PendingSubscriptionPolicy',
         'App\Models\PendingInvoice' => 'App\Policies\PendingInvoicePolicy',
+        'App\Models\Notification' => 'App\Policies\NotificationPolicy',
 
     ];
 

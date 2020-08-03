@@ -36,16 +36,19 @@ h2 {
 .bs-tooltip-auto[x-placement^='left'] .arrow::before {
 	border-left-color: $primary !important;
 }
-.user-profile-image-xs {
-	width: 25px;
-	height: 25px;
+.user-profile-image-sm {
+	width: 35px;
+	height: 35px;
 	span{
-		font-size: 10px;
+		font-size: 15px;
 	}
 }
 .booking:hover {
 	.opacity-0 {
 		opacity: 1;
+	}
+	.eye-icon{
+		opacity: 0;
 	}
 }
 
@@ -118,4 +121,12 @@ h2 {
 	.vc-dots{
 		display: none;
 	}
+}
+.info{
+    transition: $transition-base;
+    width: 350px;
+    margin-right: -350px;
+    &.open{
+        margin-right: 0
+    }
 }

@@ -60,6 +60,7 @@ Route::group(
             Route::apiResource('plans', 'PlanController')->only('index');
             Route::apiResource('pending_subscriptions', 'PendingSubscriptionController')->only(['index', 'store', 'destroy']);
             Route::apiResource('pending_invoices', 'PendingInvoiceController')->only(['index', 'store', 'destroy']);
+            Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
 
             Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
             Route::post('contacts/{id}/finalize_invoice', 'ContactController@finalizeInvoice');

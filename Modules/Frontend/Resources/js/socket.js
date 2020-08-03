@@ -32,6 +32,11 @@ const io = require('socket.io')(server, {
 let online_users = {};
 let call_users = {};
 io.on('connection', function(socket) {
+
+    socket.on('new_notification', function(data) {
+        socket.broadcast.emit('new_notification', data);
+    });
+
     socket.on('new_conversation', function(data) {
         socket.broadcast.emit('new_conversation', data);
     });
@@ -90,8 +95,6 @@ io.on('connection', function(socket) {
     socket.on('live_call_candidate', function(data) {
         socket.broadcast.emit('live_call_candidate', data);
     });
-
-
 
 
 

@@ -203,6 +203,7 @@
 .dropdown-menu {
 	padding-left:  .5rem;
 	padding-right:  .5rem;
+	max-height: 98vh;
 	box-shadow: rgba($dark, 0.2) 0px 0px 15px, rgba($dark, 0.15) 0px 0px 3px 1px;
 	.dropdown-item{
 		padding: 0.25rem 0.5rem 0.3rem 0.5rem;

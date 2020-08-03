@@ -25,7 +25,7 @@
 									<h5 class="font-heading mb-1">{{ service.name }}</h5>
 									<span class="ml-auto text-gray">{{ service.is_available ? 'Available' : 'Not Available' }}</span>
 								</div>
-								<p class="text-muted mb-0 multiline-ellipsis">{{ service.description }}</p>
+								<p class="text-secondary mb-0 multiline-ellipsis small">{{ service.description }}</p>
 								<div class="d-flex align-items-center mt-3">
 									<clock-icon width="17" height="17" fill="#888"></clock-icon>
 									<span class="ml-1">{{ service.duration }} minutes</span>
@@ -60,7 +60,7 @@
 									</div>
 								</div>
 							</div>
-							<p class="mb-0">{{ selectedService.description }}</p>
+							<p class="mb-0 small text-secondary">{{ selectedService.description }}</p>
 						</div>
 
 						<hr />
@@ -72,24 +72,21 @@
 							</div>
 						</div>
 
-						<div class="d-flex mb-2 px-3">
-							<button class="btn btn-tab px-0 position-relative" :class="{'active': serviceDetailsTab == 'availability'}" @click="serviceDetailsTab = 'availability'">Availability</button>
-							<button class="btn btn-tab px-0 position-relative ml-3" :class="{'active': serviceDetailsTab == 'holidays'}" @click="serviceDetailsTab = 'holidays'">Holidays</button>
+						<div class="d-flex mb-2">
+							<button class="btn pposition-relative w-50 rounded-0" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">Availability</button>
+							<button class="btn btn-tab position-relative w-50 rounded-0" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">Holidays</button>
 						</div>
 
 						<div v-if="serviceDetailsTab == 'availability'" id="service-days">
 							<div v-for="day in days" class="service-day py-1 border-bottom">
 								<div class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer" data-toggle="collapse" :data-target="`#day-${day}`">
+									<toggle-switch class="mr-2" @click.native.stop @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
 									<div class="h6 mb-0">{{ day.toUpperCase() }}</div>
 									<chevron-down-icon class="ml-auto chevron-down"></chevron-down-icon>
 								</div>
 								<div class="collapse" data-parent="#service-days" :id="`day-${day}`">
 									<div class="py-2 px-3">
 										<div class="">
-											<div class="d-flex align-items-center mb-3">
-												<span class="mr-2">Available</span>
-												<toggle-switch @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
-											</div>
 											<label class="mb-1 text-gray">Available Time</label>
 											<timerangepicker @update="updateAvailableHours($event, day)" :start="selectedService.days[day].start" :end="selectedService.days[day].end"></timerangepicker>
 

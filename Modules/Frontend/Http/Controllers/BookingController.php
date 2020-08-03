@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Booking;
 use App\Models\Conversation;
+use App\Models\Notification;
 use Auth;
 use Carbon\Carbon;
 use Google_Service_Calendar;
@@ -99,6 +100,26 @@ class BookingController extends Controller
         $booking = Booking::create($data);
         Mail::queue(new NewBooking($booking));
 
+        $user_id = null;
+        $description = '';
+        $link = '';
+        if(Auth::user()->id == $booking->user_id) : // if contact - notify client
+            $user_id = $booking->service->user->id;
+            $description = "<strong>{$booking->user->full_name}</strong> has placed a booking.";
+            $link = "/dashboard/bookings/calendar?date={$booking->date}";
+        elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
+            $user_id = $booking->user->id;
+            $description = "A booking has been placed for your account.";
+        endif;
+
+        $notification = Notification::create([
+            'user_id' => $user_id,
+            'description' => $description,
+            'link' => $link
+        ]);
+
+        $booking->notification_id = $notification->id;
+
         return response()->json($booking->load('service'));
     }
 
@@ -144,6 +165,25 @@ class BookingController extends Controller
 
         $booking->update($data);
         Mail::queue(new UpdateBooking($booking));
+
+        $user_id = null;
+        $description = '';
+        $link = '';
+        if(Auth::user()->id == $booking->user_id) : // if contact - notify client
+            $user_id = $booking->service->user->id;
+            $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
+            $link = "/dashboard/bookings/calendar?date={$booking->date}";
+        elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
+            $user_id = $booking->user->id;
+            $description = "A booking you made has been modified.";
+        endif;
+
+        $notification = Notification::create([
+            'user_id' => $user_id,
+            'description' => $description,
+            'link' => $link
+        ]);
+        $booking->notification_id = $notification->id;
 
         return response()->json($booking->load('service.user'));
     }

@@ -4,22 +4,32 @@ import dayjs from 'dayjs';
 import VCalendar from 'v-calendar';
 import convertTime from 'convert-time';
 Vue.use(VCalendar);
+import ToggleSwitch from '../../../../../../components/toggle-switch/toggle-switch.vue';
 import VueFormValidate from '../../../../../../components/vue-form-validate';
 import VueButton from '../../../../../../components/vue-button';
+import VueCheckbox from '../../../../../../components/vue-checkbox/vue-checkbox.vue';
 import Modal from '../../../../../../components/modal/modal.vue';
 import PlusIcon from '../../../../../../icons/plus';
 import TrashIcon from '../../../../../../icons/trash';
 import PencilIcon from '../../../../../../icons/pencil';
 import CheckmarkCircleIcon from '../../../../../../icons/checkmark-circle';
+import ChevronLeftIcon from '../../../../../../icons/chevron-left';
+import ChevronRightIcon from '../../../../../../icons/chevron-right';
+import CalendarMonthIcon from '../../../../../../icons/calendar-month';
 export default {
     components: {
+        ToggleSwitch,
         VueFormValidate,
         VueButton,
+        VueCheckbox,
         Modal,
         PlusIcon,
         TrashIcon,
         PencilIcon,
         CheckmarkCircleIcon,
+        CalendarMonthIcon,
+        ChevronLeftIcon,
+        ChevronRightIcon,
     },
 
     props: {
@@ -42,6 +52,7 @@ export default {
         selectedService: null,
         selectedBooking: null,
         selectedDate: null,
+        dateForWeekView: null,
         selectedTimeslot: '',
         selectedService: '',
         timeslots: [],
@@ -49,21 +60,26 @@ export default {
         days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         timeslotDropdown: false,
         customTime: false,
-        step: 1,
         error: '',
         selectAttribute: {
             highlight: {
                 fillMode: 'solid',
-                contentClass: 'bg-primary',
+                contentClass: 'bg-blue',
             },
         },
         loading: false,
+        calendarView: 'month',
+        sliderNavIndex: 0,
+        sliderTranslate: 0,
+        bookingCreated: false,
+        addingBooking: false,
+        showExpiredBookings: false,
     }),
 
     watch: {
         selectedDate: function(value) {
-            this.selectedTimeslot = null;
-        },
+            if(value && this.selectedService) this.getTimeslots(this.selectedService.id, value);
+        }
     },
 
     computed: {
@@ -73,11 +89,15 @@ export default {
         }),
 
         userBookings() {
+            let now = dayjs();
             let bookings = [];
             this.bookings.forEach(booking => {
-                let parts = booking.date.split('-');
-                booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
-                bookings.push(booking);
+                    let parts = booking.date.split('-');
+                    booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
+                    if (now.isAfter(dayjs(`${booking.date} ${booking.start}`))) {
+                        this.$set(booking, 'is_expired', true);
+                    }
+                    bookings.push(booking);
             });
 
             return bookings;
@@ -112,28 +132,48 @@ export default {
         availableServices() {
             let availableServices = [];
             (this.conversation.user.services || []).forEach(service => {
-                if (service.is_available && !this.blacklisted_services.find(x => x.service_id == service.id && x.is_blacklisted)) availableServices.push(service);
+                if (service.is_available && (this.$root.auth.id == service.user_id || !this.blacklisted_services.find(x => x.service_id == service.id && x.is_blacklisted))) {
+                    availableServices.push(service);
+                }
             });
             return availableServices;
         },
 
-        nextDisabled() {
-            let disabled = true;
-            switch (this.step) {
-                case 1:
-                    if (this.selectedService) disabled = false;
-                    break;
+        weekDayOptions() {
+            let options = [];
 
-                case 2:
-                    if (this.selectedDate) disabled = false;
-                    break;
-
-                case 3:
-                    if (this.selectedTimeslot) disabled = false;
-                    break;
+            let dateForWeekView = dayjs();
+            if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
+            let daysBefore = [];
+            let daysAfter = [];
+            for (var i = 1; i <= 15; i++) {
+                let before = dateForWeekView.subtract(i, 'day');
+                let after = dateForWeekView.add(i, 'day');
+                daysBefore.unshift({
+                    date: before.toDate(),
+                    title: before.format('ddd'),
+                    description: before.format('D MMM'),
+                    label: before.format('YYYY-MM-DD'),
+                    id: before.format('MMMDYYYY'),
+                });
+                daysAfter.push({
+                    date: after.toDate(),
+                    title: after.format('ddd'),
+                    description: after.format('D MMM'),
+                    label: after.format('YYYY-MM-DD'),
+                    id: after.format('MMMDYYYY'),
+                });
             }
+            dateForWeekView = {
+                date: dateForWeekView.toDate(),
+                title: dateForWeekView.format('ddd'),
+                description: dateForWeekView.format('D MMM'),
+                label: dateForWeekView.format('YYYY-MM-DD'),
+                id: dateForWeekView.format('MMMDYYYY'),
+            };
+            options = [...daysBefore, ...[dateForWeekView], ...daysAfter];
 
-            return disabled;
+            return options;
         },
     },
 
@@ -153,10 +193,64 @@ export default {
             storeBooking: 'bookings/store',
             updateBooking: 'bookings/update',
             deleteBooking: 'bookings/delete',
+            storeUserBlacklistedService: 'user_blacklisted_services/store',
         }),
 
+        calcSliderTranslate() {
+            if(this.$refs['weekday-slider'] && this.calendarView == 'week') {
+                let date = this.selectedDate || new Date();
+                let dateID = dayjs(date).format('MMMDYYYY');
+                let sliderItem = this.$refs['weekday-slider'].querySelector(`#${dateID}`);
+                let sliderSize = 95;
+                if(sliderItem) {
+                    let index = Array.from(this.$refs['weekday-slider'].children).indexOf(sliderItem);
+                    if(index > -1) {
+                        index = index ? index - 1 : 1;
+                        this.sliderTranslate = (sliderSize * index) * -1;
+                    }
+                }
+            }
+        },
+
+        adjustSlider(step) {
+            let weekdaySlider = this.$refs['weekday-slider'];
+
+            let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - 95;
+            if((step == -1 && translateX < -95) || (step == 1 && translateX > ((95 * 29) * -1))) {
+                this.sliderNavIndex += step;
+            }
+        },
+
+        dateSelected(date) {
+            if(date && this.calendarView == 'month') {
+                this.selectedDate = date;
+                this.dateForWeekView = date;
+                this.calendarView = 'week';
+                this.sliderNavIndex = 0;
+                this.selectedTimeslot = null;
+                this.$nextTick(() => {
+                    this.calcSliderTranslate();
+                });
+            }
+        },
+
+        isServiceBlacklisted(service) {
+            return (this.blacklisted_services.find(x => x.service_id == service.id) || {}).is_blacklisted;
+        },
+
+        selectService(service) {
+            if (!this.isServiceBlacklisted(service) && (this.selectedService || {}).id != service.id) {
+                this.selectedService = service;
+                this.calendarView = 'month';
+                this.selectedBooking = null;
+                this.addingBooking = true;
+                this.$nextTick(() => {
+                    this.$parent.$refs['info-container'].scrollTop = 0;
+                });
+            }
+        },
+
         resetBookingForm() {
-            this.step = 1;
             this.selectedBooking = null;
             this.selectedService = null;
             this.selectedTimeslot = null;
@@ -164,6 +258,10 @@ export default {
             this.timeslots = [];
             this.timeslotsLoading = false;
             this.loading = false;
+            this.bookingCreated = false;
+            this.error = '';
+            this.addingBooking = false;
+            this.sliderNavIndex = 0;
         },
 
         submit() {
@@ -172,10 +270,6 @@ export default {
             } else {
                 this.store();
             }
-        },
-
-        nextStep() {
-            if (!this.nextDisabled) this.step++;
         },
 
         getTimeZoneOffset(date, timeZone) {
@@ -219,10 +313,15 @@ export default {
 
         edit(booking) {
             if (booking && booking.id != (this.selectedBooking || {}).id) {
-                this.step = 2;
                 this.selectedBooking = booking;
                 this.selectedService = booking.service;
                 this.getTimeslots(booking.service_id, booking.date);
+                let parts = booking.date.split('-');
+                this.calendarView = 'month';
+                this.$set(this.selectedBooking, 'date_object', new Date(parts[0], parts[1] - 1, parts[2]));
+                this.$nextTick(() => {
+                    this.$parent.$refs['info-container'].scrollTop = 0;
+                });
             }
         },
 
@@ -271,7 +370,7 @@ export default {
                 };
                 this.updateBooking(data)
                     .then(() => {
-                        this.step = 5;
+                        this.bookingCreated = true;
                     })
                     .catch(e => {
                         this.loading = false;
@@ -292,7 +391,7 @@ export default {
                 };
                 this.storeBooking(data)
                     .then(() => {
-                        this.step = 5;
+                        this.bookingCreated = true;
                     })
                     .catch(e => {
                         this.loading = false;

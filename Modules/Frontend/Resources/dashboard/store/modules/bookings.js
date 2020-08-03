@@ -46,7 +46,7 @@ const mutations = {
 };
 
 const actions = {
-    async index({commit, rootState}, conversation) {
+    async index({commit}, conversation) {
         let queryString = '';
         if(conversation) queryString = `?conversation_id=${conversation.id}`;
         let response = await axios.get(`/${name}${queryString}`);
@@ -57,11 +57,13 @@ const actions = {
     async store({commit}, data) {
         let response = await axios.post(`/${name}`, data);
         commit('store', response.data);
+        if(response.data.notification_id) window.app.socket.emit('new_notification', {id: response.data.notification_id});
     },
 
     async update({commit}, data) {
         let response = await axios.put(`/${name}/${data.id}`, data);
         commit('update', response.data);
+        if(response.data.notification_id) window.app.socket.emit('new_notification', {id: response.data.notification_id});
 
         return response;
     },

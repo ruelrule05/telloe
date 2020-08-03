@@ -12,6 +12,7 @@ import user_custom_fields from './modules/user_custom_fields';
 import plans from './modules/plans';
 import pending_subscriptions from './modules/pending_subscriptions';
 import pending_invoices from './modules/pending_invoices';
+import notifications from './modules/notifications';
 
 
 
@@ -31,5 +32,6 @@ export default new Vuex.Store({
 		plans,
 		pending_subscriptions,
 		pending_invoices,
+		notifications,
 	},
 });

@@ -59,6 +59,12 @@
                     opacity: 1;
                 }
             }
+            &[aria-expanded="true"] {
+                svg {
+                    filter: grayscale(0);
+                    opacity: 1;
+                }
+            }
         }
     }
     &.sidebar-customer {
@@ -424,10 +430,6 @@
             right: 10px;
         }
     }
-}
-#recorderControls {
-    bottom: 10px;
-    left: 0;
 }
 #videoOutput {
     z-index: 10;

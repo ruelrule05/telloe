@@ -63,6 +63,7 @@ export default {
             is_custom: false,
         },
         tagSearch: '',
+        hideProfile: false,
 	}),
 
 	computed: {
@@ -116,16 +117,6 @@ export default {
 
             return tagsData;
         },
-
-        availableServices() {
-            let availableServices = [];
-            (this.conversation.user.services || []).forEach(service => {
-                if(service.is_available && (this.$root.auth.id == service.user_id || !this.blacklisted_services.find((x) => x.service_id == service.id && x.is_blacklisted))) {
-                    availableServices.push(service);
-                }
-            })
-            return availableServices;
-        },
 	},
 
     watch: {
@@ -161,7 +152,6 @@ export default {
 		...mapActions({
             getNotes: 'notes/index',
             getUserBlacklistedServices: 'user_blacklisted_services/index',
-            storeUserBlacklistedService: 'user_blacklisted_services/store',
             storeNote: 'notes/store',
             updateNote: 'notes/update',
 			deleteNote: 'notes/delete',
@@ -171,12 +161,15 @@ export default {
 		}),
 
         toggleCollapse(e) {
+            this.hideProfile = true;
             $('#info-items > div.active').removeClass('active');
             let parent = $(e.currentTarget).parent()[0];
             let currentTarget = e.currentTarget;
             setTimeout(() => {
                 if(currentTarget.getAttribute('aria-expanded') == 'true') {
                    $(parent).addClass('active');
+                } else {
+                    this.hideProfile = false;
                 }
             }, 150);
         },

@@ -116,7 +116,9 @@ import PasswordIcon from '../icons/password';
 import ListBulletIcon from '../icons/list-bullet';
 import CreditCardIcon from '../icons/credit-card';
 import BillIcon from '../icons/bill';
+import ColoredBellIcon from '../icons/colored-bell';
 import VideoCall from './components/video-call/video-call.vue';
+import Notification from '../components/notification/notification.vue';
 
 import store from './store';
 window.app = new Vue({
@@ -147,9 +149,11 @@ window.app = new Vue({
         ListBulletIcon,
         CreditCardIcon,
         BillIcon,
+        ColoredBellIcon,
 
         VideoCall,
         ScreenRecorder,
+        Notification,
 
 
         'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue'),
@@ -161,7 +165,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: 'profile',
+        detailsTab: '',
         profileTab: 'overview', //overview
 
         call_sound: null,
@@ -181,6 +185,7 @@ window.app = new Vue({
     computed: {
         ...mapState({
             conversations: state => state.conversations.index,
+            notifications: state => state.notifications.index,
         }),
 
         ...mapGetters({
@@ -223,7 +228,19 @@ window.app = new Vue({
             if(this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
 
             return profileLink;
-        }
+        },
+
+        notificationsCount() {
+            let count;
+            this.notifications.forEach(notification => {
+                if (!notification.is_read) {
+                    if(!count) count = 0;
+                    count++;
+                }
+            });
+
+            return count;
+        },
     },
 
     watch: {
@@ -252,6 +269,12 @@ window.app = new Vue({
             }
         });
 
+
+        this.socket.on('new_notification', data => {
+            this.getNotificationByID(data);
+        });
+
+
         this.socket.on('online_users', data => {
             this.online_users = data;
         });
@@ -274,6 +297,8 @@ window.app = new Vue({
             js.src = '//connect.facebook.net/en_US/all.js';
             ref.parentNode.insertBefore(js, ref);
         })(document);
+
+        this.getNotifications();
     },
 
     mounted() {
@@ -283,7 +308,23 @@ window.app = new Vue({
     methods: {
         ...mapActions({
             getConversations: 'conversations/index',
+            getNotifications: 'notifications/index',
+            updateNotification: 'notifications/update',
         }),
+
+        async getNotificationByID(data) {
+            let notification = await axios.get(`/notifications/${data.id}`).catch((e) => {});
+            if(notification) {
+                this.$refs['notification'].show(notification.data);
+                this.notifications.unshift(notification.data);
+            }
+        },
+
+        goToNotifLink(notification) {
+            if(notification.link && this.$route.fullPath != notification.link) {
+                this.$router.push(notification.link);
+            }
+        },
 
         isImage(extension) {
             let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];

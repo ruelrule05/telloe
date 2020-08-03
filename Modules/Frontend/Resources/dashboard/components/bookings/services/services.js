@@ -18,7 +18,7 @@ export default {
 	data: () => ({
 		newService: {},
 		selectedService: null,
-		days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		newBreaktime: null,
 		newHoliday: null,
 		serviceDetailsTab: 'availability'

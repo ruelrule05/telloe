@@ -1,5 +1,5 @@
 <template>
-    <button :type="type" class="btn position-relative" :class="button_class" :disabled="loading || disabled">
+    <button :type="type" class="btn position-relative" :class="button_class" :disabled="loading || disabled" @click="$emit('click')">
         <span v-if="loading" class="spinner position-absolute-center">
             <span class="spinner-border spinner-border-sm align-middle" role="status" aria-hidden="true"></span>
         </span>

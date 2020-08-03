@@ -145,3 +145,9 @@
         }
     }
  }
+ .info-profile{
+    transition: $transition-base;
+    &.hidden {
+        margin-top: -132px;
+    }
+ }

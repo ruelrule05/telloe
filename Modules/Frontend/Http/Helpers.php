@@ -27,6 +27,12 @@ function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $reques
             if(!$contact->stripe_customer_id) :
                 App\Jobs\CreateStripeCustomer::dispatch($user, $contact);
             endif;
+
+            App\Models\Notification::create([
+                'user_id' => $contact->user_id,
+                'description' => "<strong>{$contact->contactUser->full_name}</strong> has accepted your invitation.",
+                'link' => '/dashboard/contacts'
+            ]);
         endif;
     endif;
 }
