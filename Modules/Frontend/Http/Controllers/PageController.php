@@ -27,7 +27,7 @@ class PageController extends Controller
             if(!$passwordReset) return redirect('/');
         endif;
 
-        $plans = Plan::orderBy('price', 'ASC')->get();
+        $plans = Plan::orderBy('id', 'ASC')->get();
 
     	return view('frontend::pages.homepage', ['contact' => $this->getContact($request), 'plans' => $plans]);
     }
