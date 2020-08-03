@@ -181,12 +181,12 @@
                 </div>
 
                 <!-- Tags -->
-                <div class="border-top px-3 py-1 active">
+                <div class="border-top px-3 py-1">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
                         Tags
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="tags" class="collapse show" data-parent="#info-items">
+                    <div id="tags" class="collapse" data-parent="#info-items">
                         <!-- Tags -->
                         <div class="h-100 overflow-hidden d-flex flex-column">
                             <div>
