@@ -73,7 +73,7 @@ export default {
         sliderTranslate: 0,
         bookingCreated: false,
         addingBooking: false,
-        showExpiredBookings: false,
+        showExpiredBookings: true,
     }),
 
     watch: {

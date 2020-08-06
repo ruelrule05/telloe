@@ -1,7 +1,16 @@
+@import '../../../../sass/variables';
 .user-profile-image-sm{
 	width: 35px;
 	height: 35px;
 	span {
 		font-size: 12px;
 	}
+}
+.info{
+    transition: $transition-base;
+    width: 350px;
+    margin-right: -350px;
+    &.open{
+        margin-right: 0
+    }
 }

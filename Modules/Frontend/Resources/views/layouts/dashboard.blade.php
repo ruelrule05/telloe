@@ -115,7 +115,7 @@
 													<span class="pl-3">Calendar</span>
 												</router-link>
 												<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-													<span class="pl-3">Services</span>
+													<span class="pl-3">Booking Types</span>
 												</router-link>
 											</div>
 
@@ -154,10 +154,13 @@
 												<small class="badge badge-danger text-white ml-auto message-count">@{{ notificationsCount }}</small>
 											</div>
 											<div class="dropdown-menu overflow-y-only mh-100vh cursor-auto">
-												<div v-for="notification in notifications" class="dropdown-item cursor-pointer" :class="{'bg-light': !notification.is_read}" @click="updateNotification(notification); notification.is_read = true; goToNotifLink(notification);">
-													<div v-html="notification.description"></div>
-													<small class="text-secondary">@{{ notification.created_at }}</small>
-												</div>
+												<template v-if="notifications.length > 0">
+													<div v-for="notification in notifications" class="dropdown-item cursor-pointer" :class="{'bg-light': !notification.is_read}" @click="updateNotification(notification); notification.is_read = true; goToNotifLink(notification);">
+														<div v-html="notification.description"></div>
+														<small class="text-secondary">@{{ notification.created_at }}</small>
+													</div>
+												</template>
+												<div v-else class="text-secondary dropdown-item disabled">No new notifications.</div>
 											</div>
 										</div>
 									</div>

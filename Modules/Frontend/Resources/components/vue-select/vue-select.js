@@ -54,6 +54,11 @@ export default {
             type: String,
             default: '',
         },
+
+        label: {
+            type: String,
+            default: '',
+        },
     },
 
     data: () => ({

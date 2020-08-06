@@ -92,7 +92,7 @@ export default {
         ready: function(value) {
             if(value) {
                 this.$root.contentloading = false;
-                this.getFiles(1);
+                this.$root.getFiles(this.conversation);
             }
             setTimeout(() => {
                 this.scrollDown();
@@ -193,14 +193,14 @@ export default {
     created() {
         this.checkConversation();
         this.$root.socket.on('last_message_read', data => {
-            if(this.conversation.id == data.conversation_id) {
+            if(this.conversation && this.conversation.id == data.conversation_id) {
                 let message = this.conversation.paginated_messages.data.find(x => x.id == data.message_id);
                 if(message) this.$set(message, 'is_read', true);
             }
         });
 
         this.$root.socket.on('is_typing', data => {
-            if(this.conversation.id == data.conversation_id) {
+            if(this.conversation && this.conversation.id == data.conversation_id) {
                 if(this.conversation.user.id == data.user_id) {
                     this.$set(this.conversation.user, 'is_typing', data.typing);
                 } else {
@@ -611,51 +611,6 @@ export default {
                 this.addFile({target: {files: [file.file], value: file.file.name}});
             });
             this.pendingFiles = [];
-        },
-
-        fileIcon(extension) {
-            let iconComponent = 'document-icon';
-            let videoExtensions = ['mp4', 'webm'];
-            let audioExtensions = ['mp3', 'wav'];
-            if (videoExtensions.indexOf(extension) > -1) {
-                iconComponent = 'file-video-icon';
-            } else if (audioExtensions.indexOf(extension) > -1) {
-                iconComponent = 'file-audio-icon';
-            } else {
-                switch (extension) {
-                    case 'pdf':
-                        iconComponent = FilePdfIcon;
-                        break;
-
-                    case 'zip':
-                        iconComponent = FileArchiveIcon;
-                        break;
-
-                    case 'rar':
-                        iconComponent = FileArchiveIcon;
-                        break;
-
-                    case 'docx':
-                        iconComponent = DocumentIcon;
-                        break;
-
-                    case 'doc':
-                        iconComponent = DocumentIcon;
-                        break;
-
-                    case 'txt':
-                        iconComponent = DocumentIcon;
-                        break;
-
-                    case 'xls':
-                        break;
-
-                    case 'xlsx':
-                        break;
-                }
-            }
-
-            return iconComponent;
         },
     },
 };

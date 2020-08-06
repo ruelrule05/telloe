@@ -2,18 +2,18 @@
 	<div class="row h-100">
 		<div v-if="ready" class="col-md-12 h-100 d-flex flex-column">
 			<div class="border-bottom bg-white p-3 d-flex align-items-center">
-				<h5 class="font-heading mb-0">Services</h5>
+				<h5 class="font-heading mb-0">Booking Types</h5>
 				<div class="ml-auto d-flex align-items-center">
-                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="newService = {}; $refs['modal'].show()">
+                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="newService = {}; $refs['addModal'].show()">
                         <plus-icon class="btn-icon"></plus-icon>
-                        Add Service
+                        Add Booking Type
                     </button>
 				</div>
 			</div>
 
 			<div v-if="services.length == 0" class="py-5 text-center p-2 position-absolute-center">
 				<h6 class="text-grayer mb-3">You don't have any services added yet</h6>
-				<button class="btn btn-primary" @click="newService = {}; $refs['modal'].show()">Add Service</button>
+				<button class="btn btn-primary" @click="newService = {}; $refs['addModal'].show()">Add Booking Type</button>
 			</div>
 
 			<div v-else class="d-flex flex-grow-1 overflow-hidden">
@@ -50,7 +50,7 @@
 									<div class="dropdown ml-2">
 										<button class="btn p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
 										<div class="dropdown-menu">
-											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="newService = JSON.parse(JSON.stringify(selectedService));$refs['modal'].show()">
+											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="newService = JSON.parse(JSON.stringify(selectedService));$refs['editModal'].show()">
 												<pencil-icon width="16" height="16" class="mr-2"></pencil-icon>Edit
 											</span>
 											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="$refs['deleteModal'].show()">
@@ -68,8 +68,9 @@
 						<div class="px-3">
 							<h6 class="font-heading d-inline-block mb-1">Duration: </h6> {{ selectedService.duration }} minutes
 							<div>
-								<h6 class="font-heading d-inline-block mb-3">Interval: </h6> {{ selectedService.interval }} minutes
+								<h6 class="font-heading d-inline-block mb-1">Interval: </h6> {{ selectedService.interval }} minutes
 							</div>
+							<h6 class="font-heading d-inline-block mb-3">Default Rate: </h6> ${{ selectedService.default_rate }}
 						</div>
 
 						<div class="d-flex mb-2">
@@ -138,8 +139,8 @@
 			</div>
 		</div>
 
-		<modal ref="modal" :close-button="false">
-			<h5 class="font-heading mb-3">{{ selectedService ? 'Edit' : 'Add'}} Service</h5>
+		<modal ref="addModal" :close-button="false">
+			<h5 class="font-heading mb-3">Add Booking Type</h5>
 			<vue-form-validate @submit="submit">
 				<div class="form-group">
 					<label class="form-label">Service name</label>
@@ -147,7 +148,7 @@
 				</div>
 				<div class="form-group">
 					<label class="form-label">Description</label>
-					<textarea class="form-control resize-none" v-model="newService.description" data-required rows="5"></textarea>
+					<textarea class="form-control resize-none" v-model="newService.description" data-required rows="3"></textarea>
 				</div>
 				<div class="form-group">
 					<label class="form-label">Duration (in minutes)</label>
@@ -157,16 +158,51 @@
 					<label class="form-label">Interval (in minutes)</label>
 					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.interval" placeholder="Defaults to 15 mins">
 				</div>
-				<div class="d-flex justify-content-end">
+				<div class="form-group">
+					<label class="form-label">Default Rate</label>
+					<input type="number" step="0.01" class="form-control" v-model="newService.default_rate" placeholder="$0.00">
+				</div>
+				<div class="d-flex align-items-center">
 					<button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
-					<button class="btn btn-primary" type="submit">{{ selectedService ? 'Update' : 'Add'}}</button>
+					<button class="ml-auto btn btn-primary" type="submit">{{ selectedService ? 'Update' : 'Add'}}</button>
+				</div>
+			</vue-form-validate>
+		</modal>
+
+
+		<modal ref="editModal" :close-button="false">
+			<h5 class="font-heading mb-3">Edit Booking Type</h5>
+			<vue-form-validate @submit="submit">
+				<div class="form-group">
+					<label class="form-label">Service name</label>
+					<input type="text" class="form-control" v-model="newService.name" data-required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Description</label>
+					<textarea class="form-control resize-none" v-model="newService.description" data-required rows="3"></textarea>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Duration (in minutes)</label>
+					<input type="number" class="form-control" v-model="newService.duration" data-required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Interval (in minutes)</label>
+					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.interval" placeholder="Defaults to 15 mins">
+				</div>
+				<div class="form-group">
+					<label class="form-label">Default Rate</label>
+					<input type="number" step="0.01" class="form-control" v-model="newService.default_rate" placeholder="$0.00">
+				</div>
+				<div class="d-flex align-items-center">
+					<button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
+					<button class="ml-auto btn btn-primary" type="submit">{{ selectedService ? 'Update' : 'Add'}}</button>
 				</div>
 			</vue-form-validate>
 		</modal>
 
 		<modal ref="deleteModal" :close-button="false">
 			<template v-if="selectedService">
-				<h5 class="font-heading text-center">Delete Service</h5>
+				<h5 class="font-heading text-center">Delete Booking Type</h5>
 				<p class="text-center mt-3">
 					Are you sure to delete the service <strong>{{ selectedService.name }}</strong>? <br />
 					<span class="text-danger">This action cannot be undone</span>

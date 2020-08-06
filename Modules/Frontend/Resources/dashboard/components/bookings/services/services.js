@@ -123,8 +123,9 @@ export default {
 				this.selectedService.description = this.newService.description;
 				this.selectedService.duration = this.newService.duration;
 				this.selectedService.interval = this.newService.interval;
+				this.selectedService.default_rate = this.newService.default_rate;
 				this.updateService(this.selectedService);
-				this.$refs['modal'].hide();
+				this.$refs['editModal'].hide();
 			} else {
 				this.store();
 			}
@@ -142,7 +143,7 @@ export default {
 			});
 			this.newService.days = days;
 			if(this.newService.name && this.newService.description) {
-				this.$refs['modal'].hide();
+				this.$refs['addModal'].hide();
 				let data = JSON.parse(JSON.stringify(this.newService));
 				this.storeService(data);
 			}

@@ -12,6 +12,10 @@ import BlockIcon from '../../../../icons/block';
 import TrashIcon from '../../../../icons/trash';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
+import Vue from 'vue';
+import VuePaginate from 'vue-paginate';
+Vue.use(VuePaginate);
+
 export default {
 	components: {
 		Modal,
@@ -37,6 +41,46 @@ export default {
 			service_bookings: {},
 		},
 		selectedSubscription: null,
+		openInfo: false,
+		recurringOptions: [
+			{
+				text: 'Weekly',
+				value: 'weekly'
+			},
+			{
+				text: 'Monthly',
+				value: 'monthly'
+			},
+			{
+				text: 'Quarterly',
+				value: 'quarterly'
+			},
+			{
+				text: 'Yearly',
+				value: 'yearly'
+			},
+		],
+		paginate: ['subscriptions'],
+		subscriptionStatuses: [
+			{ 
+				'text': 'All', 
+				'value': 'all' 
+			},
+			{ 
+				'text': 'Trialing', 
+				'value': 'trialing' 
+			},
+			{ 
+				'text': 'Canceled', 
+				'value': 'canceled' 
+			},
+			{ 
+				'text': 'Draft', 
+				'value': 'draft' 
+			},
+		],
+		subscriptionStatus: 'all',
+		hasSubscriptions: false,
 	}),
 
 	computed: {
@@ -77,13 +121,19 @@ export default {
 				contact.subscriptions.forEach((subscription) => {
 					subscription.contact = contact;
 					this.$set(subscription, 'statusLoading', false);
-					subscriptions.push(subscription);
+					if(this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) subscriptions.push(subscription);
 				})
 			});
 			subscriptions = subscriptions.concat(this.pending_subscriptions);
 			subscriptions.sort((a, b) => {
 				return (a.created > b.created) ? -1 : 1;
 			});
+			if(subscriptions.length > 0) {
+				this.hasSubscriptions = true;
+			} else {
+				subscriptions.push({ 'placeholder': true });
+				this.hasSubscriptions = false;
+			}
 			return subscriptions;
 		}
 	},
@@ -188,7 +238,7 @@ export default {
         },
 
         formatDate(date) {
-        	return dayjs.unix(date).format('MMM d, YYYY h:mmA');
+        	return dayjs.unix(date).format('MMM d, YYYY');
         }
 	}
 }

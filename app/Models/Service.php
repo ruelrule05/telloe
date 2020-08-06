@@ -8,12 +8,13 @@ use Auth;
 class Service extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset'];
+    protected $fillable = ['user_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate'];
     protected $casts = [
         'days' => 'array',
         'holidays' => 'array',
         'is_available' => 'boolean',
-        'ignored_calendar_events_google' => 'array'
+        'ignored_calendar_events_google' => 'array',
+        'default_rate' => 'decimal:2'
     ];
 
     public function user()

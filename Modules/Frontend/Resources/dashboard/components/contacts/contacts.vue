@@ -55,7 +55,7 @@
 													<more-h-icon width="20" height="20"></more-h-icon>
 					                    		</button>
 												<div class="dropdown-menu dropdown-menu-right">
-												    <span class="dropdown-item cursor-pointer" :class="{'disabled': contact.is_pending}" @click="selectedContact = contact; manageContact = true; manageFields = false">Manage</span>
+												    <span class="dropdown-item cursor-pointer" :class="{'disabled': contact.is_pending}" @click="selectedContact = contact; manageContact = true; manageFields = false; selectedContact.ready = false;">Manage</span>
 												    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; $refs['deleteModal'].show()">Delete</span>
 												</div>
 					                    	</div>

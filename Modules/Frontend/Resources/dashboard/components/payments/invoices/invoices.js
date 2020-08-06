@@ -11,6 +11,9 @@ import TaskIcon from '../../../../icons/task';
 import TrashIcon from '../../../../icons/trash';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
+import Vue from 'vue';
+import VuePaginate from 'vue-paginate';
+Vue.use(VuePaginate);
 export default {
 	components: {
 		Modal,
@@ -33,7 +36,24 @@ export default {
 			loading: false,
 			service_ids: [],
 		},
-		selectedInvoice: null
+		selectedInvoice: null,
+		paginate: ['invoices'],
+		invoiceStatuses: [
+			{ 
+				'text': 'All', 
+				'value': 'all' 
+			},
+			{ 
+				'text': 'Draft', 
+				'value': 'draft' 
+			},
+			{ 
+				'text': 'Open', 
+				'value': 'open' 
+			},
+		],
+		invoiceStatus: 'all',
+		hasInvoices: false,
 	}),
 
 	computed: {
@@ -74,13 +94,19 @@ export default {
 				contact.invoices.forEach(invoice => {
 					invoice.contact = contact;
 					this.$set(invoice, 'statusLoading', false);
-					invoices.push(invoice);
+					if(this.invoiceStatus == 'all' || this.invoiceStatus == invoice.status) invoices.push(invoice);
 				});
 			});
 			invoices = invoices.concat(this.pending_invoices);
 			invoices.sort((a, b) => {
 				return a.created > b.created ? -1 : 1;
 			});
+			if(invoices.length > 0) {
+				this.hasInvoices = true;
+			} else {
+				invoices.push({ 'placeholder': true });
+				this.hasInvoices = false;
+			}
 			return invoices;
 		},
 	},
@@ -89,6 +115,9 @@ export default {
 		ready: function(value) {
 			this.$root.contentloading = !value;
 		},
+		invoiceStatus: function(value) {
+			if(this.$refs['paginate']) this.$refs['paginate'].goToPage(1);
+		}
 	},
 
 	created() {

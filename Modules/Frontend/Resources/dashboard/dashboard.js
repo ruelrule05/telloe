@@ -117,6 +117,10 @@ import ListBulletIcon from '../icons/list-bullet';
 import CreditCardIcon from '../icons/credit-card';
 import BillIcon from '../icons/bill';
 import ColoredBellIcon from '../icons/colored-bell';
+import FilePdfIcon from '../icons/file-pdf';
+import FileArchiveIcon from '../icons/file-archive';
+
+import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
 import Notification from '../components/notification/notification.vue';
 
@@ -164,7 +168,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: '',
+        detailsTab: 'profile',
         profileTab: 'overview', //overview
 
         call_sound: null,
@@ -308,6 +312,74 @@ window.app = new Vue({
             getNotifications: 'notifications/index',
             updateNotification: 'notifications/update',
         }),
+
+        getFiles(conversation) {
+            if(conversation) {
+                let page = 0;
+                if(!conversation.files) {
+                    this.$set(conversation, 'files', {data: []});
+                    page = 1;
+                }
+                if((conversation.files || {}).next_page_url) {
+                    const url = new URL(window.location.origin + conversation.files.next_page_url);
+                    const urlParams = new URLSearchParams(url.search);
+                    page = urlParams.get('page');
+                }
+                if(page) {
+                    this.$set(conversation, 'filesLoading', true);
+                    axios.get(`/conversations/${conversation.id}/files?page=${page}`).then(response => {
+                        conversation.files.data = conversation.files.data.concat(response.data.data);
+                        conversation.files.next_page_url = response.data.next_page_url;
+                        conversation.filesLoading = false;
+                    });
+                }
+            }
+        },
+
+        fileIcon(extension) {
+            let iconComponent = 'document-icon';
+            let videoExtensions = ['mp4', 'webm'];
+            let audioExtensions = ['mp3', 'wav'];
+            if (videoExtensions.indexOf(extension) > -1) {
+                iconComponent = 'file-video-icon';
+            } else if (audioExtensions.indexOf(extension) > -1) {
+                iconComponent = 'file-audio-icon';
+            } else {
+                switch (extension) {
+                    case 'pdf':
+                        iconComponent = FilePdfIcon;
+                        break;
+
+                    case 'zip':
+                        iconComponent = FileArchiveIcon;
+                        break;
+
+                    case 'rar':
+                        iconComponent = FileArchiveIcon;
+                        break;
+
+                    case 'docx':
+                        iconComponent = DocumentIcon;
+                        break;
+
+                    case 'doc':
+                        iconComponent = DocumentIcon;
+                        break;
+
+                    case 'txt':
+                        iconComponent = DocumentIcon;
+                        break;
+
+                    case 'xls':
+                        break;
+
+                    case 'xlsx':
+                        break;
+                }
+            }
+
+            return iconComponent;
+        },
 
         number_format(number, decimals, dec_point, thousands_sep) {
             // Strip all characters but numerical ones.

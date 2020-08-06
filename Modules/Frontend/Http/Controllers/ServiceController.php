@@ -23,6 +23,7 @@ class ServiceController extends Controller
     		'description' => 'required',
     		'duration' => 'required|integer',
             'days' => 'required',
+            'default_rate' => 'nullable|numeric'
     	]);
     	$data = $request->all();
     	$data['user_id'] = Auth::user()->id;
@@ -45,6 +46,7 @@ class ServiceController extends Controller
             'description' => 'required',
             'duration' => 'required|integer',
             'days' => 'required',
+            'default_rate' => 'nullable|numeric'
         ]);
         $service = Service::findOrFail($id);
         $this->authorize('update', $service);

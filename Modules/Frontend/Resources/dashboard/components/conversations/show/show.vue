@@ -170,7 +170,7 @@
                                     <volume-mid-icon height="30" width="30" class="position-absolute-center"></volume-mid-icon>
                                 </div>
                                 <div v-else class="p-1">
-                                    <component height="30" width="30" class="position-absolute-center" :is="fileIcon(file.extension)"></component>
+                                    <component height="30" width="30" class="position-absolute-center" :is="$root.fileIcon(file.extension)"></component>
                                     <small class="text-secondary text-center text-ellipsis pending-filename position-absolute w-100">{{ file.file.name }}</small>
                                 </div>
                             </div>

@@ -63,7 +63,9 @@ export default {
             is_custom: false,
         },
         tagSearch: '',
-        hideProfile: false,
+        editFields: false,
+        addField: false,
+        new_field: {}
 	}),
 
 	computed: {
@@ -136,7 +138,7 @@ export default {
                 this.customFieldForm.name = '';
                 this.customFieldForm.is_custom = true;
             }
-        }
+        },
     },
 
 	created() {
@@ -160,16 +162,23 @@ export default {
             storeUserCustomFields: 'user_custom_fields/store',
 		}),
 
+        addNewField() {
+            if(this.new_field.name && this.new_field.value) {
+                this.new_field.is_visible = false;
+                this.conversation.custom_fields.push(this.new_field);
+                this.updateConversation(this.conversation);
+                this.new_field = {};
+                this.addField = false;
+            }
+        },
+
         toggleCollapse(e) {
-            this.hideProfile = true;
-            $('#info-items > div.active').removeClass('active');
             let parent = $(e.currentTarget).parent()[0];
+            $('#info-items > div').not(parent).hide();
             let currentTarget = e.currentTarget;
             setTimeout(() => {
-                if(currentTarget.getAttribute('aria-expanded') == 'true') {
-                   $(parent).addClass('active');
-                } else {
-                    this.hideProfile = false;
+                if(currentTarget.getAttribute('aria-expanded') == 'false') {
+                    $('#info-items > div').show();
                 }
             }, 150);
         },
@@ -178,7 +187,11 @@ export default {
             this.$root.detailsTab = '';
         },
 
-        updateCustomField(custom_field) {
+        updateField(custom_field) {
+            console.log(custom_field);
+        },
+
+     /*   updateCustomField(custom_field) {
             this.$set(custom_field, 'name', custom_field.new_name);
             this.$set(custom_field, 'value', custom_field.new_value);
             this.updateConversation(this.conversation);
@@ -194,16 +207,8 @@ export default {
             if(this.customFieldForm.name && this.customFieldForm.value) {
                 this.conversation.custom_fields.unshift(Object.assign({}, this.customFieldForm));
                 this.updateConversation(this.conversation);
-                this.resetCustomFieldForm();
             }
-        },
-
-        resetCustomFieldForm() {
-            this.customFieldForm.name = '';
-            this.customFieldForm.value = '';
-            this.customFieldForm.is_custom = false;
-            this.$refs['customFieldsLabel'].click();
-        },
+        },*/
 
         updateNoteTags(note) {
             const newTag = (note.newTag || '').trim();

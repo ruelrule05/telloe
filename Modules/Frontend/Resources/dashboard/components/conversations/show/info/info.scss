@@ -139,15 +139,4 @@
             }
         }
     }
-    > div{
-        &.active {
-            order: -1;
-        }
-    }
- }
- .info-profile{
-    transition: $transition-base;
-    &.hidden {
-        margin-top: -132px;
-    }
  }
