@@ -24,7 +24,7 @@
                         {{ editFields ? 'Edit Fields' : 'Overview' }}
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="overview" class="collapse show" data-parent="#info-items">
+                    <div id="overview" class="collapse" data-parent="#info-items">
                         <!-- Fields -->
                         <div v-if="conversation.members.length == 1" class="form-group">
                             <div class="d-flex align-items-center">
