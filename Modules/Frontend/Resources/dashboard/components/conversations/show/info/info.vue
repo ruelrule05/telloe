@@ -20,7 +20,7 @@
             <div v-if="(conversation.member.role || {}).role != 'support' && !conversation.member.is_pending" id="info-items" class="mt-3 d-flex flex-column">
                 <!-- Overview -->
                 <div class="border-top border-top px-3 py-1">
-                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview" @click="toggleCollapse; editFields = false;">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview" @click="toggleCollapse($event); editFields = false;">
                         {{ editFields ? 'Edit Fields' : 'Overview' }}
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
