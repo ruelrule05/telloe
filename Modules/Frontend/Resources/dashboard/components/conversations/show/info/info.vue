@@ -49,11 +49,11 @@
                                 <div v-if="addField || conversation.custom_fields.length == 0" class="d-flex align-items-center">
                                     <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1">
                                     <input type="text" placeholder="Value" @blur="addNewField" v-model="new_field.value" class="form-control form-control-sm w-50 ml-1">
-                                    <trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="addField = false; new_field = {}"></trash-icon>
+                                    <trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
                                 </div>
                                 <div class="d-flex align-items-center mt-4">
                                     <button type="button" class="btn btn-sm btn-white border mr-1" @click="editFields = false">Close</button>
-                                    <button type="button" :disabled="addField" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
+                                    <button type="button" :disabled="addField || conversation.custom_fields.length == 0" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
                                 </div>
                             </div>
 
