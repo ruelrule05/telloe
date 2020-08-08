@@ -148,7 +148,7 @@ class ConversationController extends Controller
     {
         $conversation = Conversation::findOrFail($id);
         $this->authorize('show', $conversation);
-        $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(5)->withPath('/dashboard/conversations/' . $conversation->id);
+        $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/conversations/' . $conversation->id);
         return response()->json($files);
     }
 }

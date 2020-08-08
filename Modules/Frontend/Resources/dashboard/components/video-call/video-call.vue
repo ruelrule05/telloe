@@ -50,7 +50,7 @@
 
 						<!-- Ongoing -->
 			    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column overflow-hidden">
-			    			<div class="py-3 px-3 bg-dark" v-if="status == 'ongoing' && !isShrinked" style="z-index: 1">
+			    			<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked" style="z-index: 1">
 			    				<h5 class="font-heading mb-0 text-white">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h5>
 			    			</div>
 							<!-- <button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center">
@@ -58,10 +58,13 @@
 							</button> -->
 
 							<!-- Local camera -->
-							<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing', 'd-none': isShrinked}">
-								<div class="video-container h-100 w-100" :class="{'mirror': isScreenSharing}">
-									<video ref="cameraPreview" @onplaying="localCameraReady = true" :class="{'w-100 h-100 position-absolute-center': !status}" autoplay playsinline muted></video>
+							<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing', 'd-none': isShrinked, 'profile-image': isVideoStopped}">
+								<div class="video-container h-100 w-100" :class="{'mirror': isScreenSharing, 'd-none': isVideoStopped}">
+									<video ref="cameraPreview" @onplaying="localCameraReady = true" class="w-100 h-auto" autoplay playsinline muted></video>
 								</div>
+								<span v-if="isVideoStopped" class="position-absolute-center w-100 h-100 rounded-circle bg-light" :style="{backgroundImage: 'url('+$root.callConversation.member.profile_image+')'}">
+									<span v-if="!$root.callConversation.member.profile_image" class="text-secondary position-absolute-center">{{ $root.callConversation.member.initials }}</span>
+								</span>
 							</div>
 							
 							<!-- Remote camera -->
@@ -70,7 +73,7 @@
 							</div>
 							
 
-							<div id="recorderControls" class="text-center bg-dark px-3 d-flex align-items-center" :class="{'py-2': !isShrinked}" v-if="status == 'ongoing'">
+							<div id="recorderControls" class="text-center px-3 d-flex align-items-center call-bottombar" :class="{'py-2': !isShrinked}" v-if="status == 'ongoing'">
 				        		<div class="w-25"></div>
 				        		<div class="text-center flex-grow-1">
 				        			<template v-if="!isShrinked">

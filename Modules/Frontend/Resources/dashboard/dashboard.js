@@ -168,7 +168,7 @@ window.app = new Vue({
         contentloading: true,
         socket: null,
         online_users: [],
-        detailsTab: '',
+        detailsTab: 'profile',
         profileTab: 'overview', //overview
 
         call_sound: null,

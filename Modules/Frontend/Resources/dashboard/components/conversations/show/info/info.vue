@@ -24,7 +24,7 @@
                         {{ editFields ? 'Edit Fields' : 'Overview' }}
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
-                    <div id="overview" class="collapse" data-parent="#info-items">
+                    <div id="overview" class="collapse show" data-parent="#info-items">
                         <!-- Fields -->
                         <div v-if="conversation.members.length == 1" class="form-group">
                             <div class="d-flex align-items-center">
@@ -38,14 +38,18 @@
                             </div>
                             <div v-if="editFields" class="mt-2">
                                 <div class="d-flex mb-2">
-                                    <strong class="w-50">Label</strong>
+                                    <strong class="w-50 ml-3">Label</strong>
                                     <strong class="w-50 ml-n1">Value</strong>
                                 </div>
-                                <div v-for="(custom_field, index) in conversation.custom_fields" class="d-flex mb-2 align-items-center">
-                                    <input type="text" placeholder="Label" @blur="updateConversation(conversation)" v-model="custom_field.name" class="form-control form-control-sm w-50 mr-1">
+                                <sortable v-model="dragData"  v-for="(custom_field, index) in conversation.custom_fields" :key="index" :index="index" class="d-flex mb-2 align-items-center" drag-direction="vertical">
+                                    <button class="btn p-0 d-flex align-items-center" type="button">
+                                        <more-v-icon width="10" height="10" transform="scale(2)" class="ml-n1"></more-v-icon>
+                                        <more-v-icon width="10" height="10" transform="scale(2)" class="ml-n1"></more-v-icon>
+                                    </button>
+                                    <input type="text" placeholder="Label" @blur="updateConversation(conversation)" v-model="custom_field.name" class="form-control form-control-sm w-50 mr-1 ml-1">
                                     <input type="text" placeholder="Value" @blur="updateConversation(conversation)" v-model="custom_field.value" class="form-control form-control-sm w-50 ml-1">
                                     <trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="conversation.custom_fields.splice(index, 1); updateConversation(conversation)"></trash-icon>
-                                </div>
+                                </sortable>
                                 <div v-if="addField || conversation.custom_fields.length == 0" class="d-flex align-items-center">
                                     <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1">
                                     <input type="text" placeholder="Value" @blur="addNewField" v-model="new_field.value" class="form-control form-control-sm w-50 ml-1">
@@ -127,9 +131,23 @@
                         <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
                     </h5>
                     <div id="files" class="collapse pb-1" data-parent="#info-items">
-                        <template v-if="conversation.files && conversation.files.data.length > 0">
+                        <ul class="nav nav-pills nav-fill mb-2">
+                            <li class="nav-item">
+                                <span class="nav-link cursor-pointer py-2" :class="{'active': fileType == 'image'}" @click="fileType = 'image'">Photos</span>
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link cursor-pointer py-2" :class="{'active': fileType == 'video'}" @click="fileType = 'video'">Videos</span>
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link cursor-pointer py-2" :class="{'active': fileType == 'audio'}" @click="fileType = 'audio'">Audio</span>
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link cursor-pointer py-2" :class="{'active': fileType == 'file'}" @click="fileType = 'file'">Files</span>
+                            </li>
+                        </ul>
+                        <template v-if="files.length > 0">
                             <div class="d-flex flex-wrap mx-n1">
-                                <div v-for="file in (conversation.files || {}).data" class="position-relative file-thumbnail p-1 overflow-hidden">
+                                <div v-for="file in files" class="position-relative file-thumbnail p-1 overflow-hidden">
                                     <div class="position-relative rounded bg-light h-100 cursor-pointer" @click="$parent.openFile(file)" :style="{backgroundImage: 'url(' + file.preview + ')'}">
                                         <div v-if="file.type == 'image' || file.type == 'video'">
                                             <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
@@ -153,7 +171,7 @@
                                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
                             </div>
                         </template>
-                        <div v-else class="text-center text-secondary pb-2">You don't have any files yet.</div>
+                        <div v-else class="text-center text-secondary py-3">No {{ fileType }}s found.</div>
                     </div>
                 </div>
 
@@ -243,7 +261,7 @@
                                 </div>
                             </div>
                             <template v-if="(conversation.notes || []).length > 0">
-                                <div v-for="note in conversation.notes" class="mb-2 position-relative note">
+                                <div v-for="note in conversation.notes" class="position-relative note py-3">
                                     <div class="note-actions position-absolute d-flex align-items-center dropleft w-25 justify-content-end">
                                         <div class="action-content position-relative mr-1 line-height-1">
                                             <div data-toggle="dropdown" data-offset="-140,0" class="action-button d-flex align-items-center">
@@ -291,7 +309,7 @@
                                     <small class="text-muted d-block">{{ note.created_at_format }}</small>
                                 </div>
                             </template>
-                            <div v-else class="text-center text-secondary pb-3">You don't have any notes yet.</div>
+                            <div v-else class="text-center text-secondary py-3">You don't have any notes yet.</div>
                     </div>
                 </div>
             </div>

@@ -18,9 +18,10 @@ import ChevronDownIcon from '../../../../../icons/chevron-down';
 import ClockIcon from '../../../../../icons/clock';
 import PlannerIcon from '../../../../../icons/planner';
 import DocumentIcon from '../../../../../icons/document';
-
+import MoreVIcon from '../../../../../icons/more-v';
 import VueScrollTo from 'vue-scrollto';
 import Tooltip from '../../../../../js/directives/tooltip';
+import Sortable from 'vue-drag-sortable'
 
 export default {
 	components: {
@@ -42,6 +43,8 @@ export default {
         ClockIcon,
         PlannerIcon,
         DocumentIcon,
+        MoreVIcon,
+        Sortable,
 	},
 
     directives: {VueScrollTo, Tooltip},
@@ -63,9 +66,11 @@ export default {
             is_custom: false,
         },
         tagSearch: '',
-        editFields: false,
+        editFields: true,
         addField: false,
-        new_field: {}
+        new_field: {},
+        fileType: 'image',
+        dragData: {},
 	}),
 
 	computed: {
@@ -119,6 +124,14 @@ export default {
 
             return tagsData;
         },
+
+        files() {
+            let files = [];
+            ((this.conversation.files || {}).data || []).forEach(file => {
+                if(file.type == this.fileType) files.push(file);
+            });
+            return files;
+        }
 	},
 
     watch: {
