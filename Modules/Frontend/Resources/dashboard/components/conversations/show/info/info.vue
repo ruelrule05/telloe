@@ -268,7 +268,7 @@
                         Notes
                         <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
                     </h5>
-                    <div id="notes" class="collapse pb-1 show" data-parent="#info-items">
+                    <div id="notes" class="collapse pb-1" data-parent="#info-items">
                             <button v-if="!addingNote && !selectedNote" class="btn btn-sm btn-white border d-flex align-items-center" @click="addingNote = true"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Note</button>
                             <template v-if="addingNote">
                                 <vue-form-validate @submit="addNote()">
