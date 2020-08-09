@@ -312,6 +312,18 @@ window.app = new Vue({
             getNotifications: 'notifications/index',
             updateNotification: 'notifications/update',
         }),
+        
+        downloadMedia(message) {
+            if (message.source) {
+                let link = document.createElement('a');
+                link.href = message.source;
+                link.download = message.metadata.filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+        },
 
         getFiles(conversation) {
             if(conversation) {

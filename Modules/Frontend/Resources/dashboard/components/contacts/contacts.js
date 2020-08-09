@@ -25,6 +25,7 @@ export default {
 		ClockIcon,
 		CheckmarkCircleIcon,
         CloseIcon,
+        gallery: () => import(/* webpackChunkName: "gallery" */ '../../../components/gallery/gallery.vue'),
 	},
 
 	data: () => ({
@@ -39,6 +40,7 @@ export default {
 		activeTab: 'custom_fields',
 		newCustomField: '',
 		editCustomField: '',
+        selectedFile: null,
 	}),
 
 	computed: {
@@ -59,6 +61,8 @@ export default {
         },
 
         conversation() {
+            if(!this.selectedContact) return {};
+            
             let conversation = this.conversations.find(x => 
                 x.members.length == 1 && x.member.id == this.selectedContact.contact_user.id
             );
@@ -107,6 +111,11 @@ export default {
             storeUserCustomFields: 'user_custom_fields/store',
             showConversation: 'conversations/show',
         }),
+
+        openFile(file) {
+            if (file.type == 'file') this.$root.downloadMedia(file);
+            else this.selectedFile = file;
+        },
 
         closeInfo() {
             this.openInfo = false;

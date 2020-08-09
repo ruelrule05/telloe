@@ -15,6 +15,8 @@ import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
+import VCalendar from 'v-calendar';
+Vue.use(VCalendar);
 
 export default {
 	components: {
@@ -37,27 +39,26 @@ export default {
 	data: () => ({
 		newSubscriptionForm: {
 			loading: false,
-			service_ids: [],
-			service_bookings: {},
+			services: [],
+			date: null,
+			recurring_frequency: 'week',
+			duration: 6,
+			duration_frequency: 'month',
 		},
 		selectedSubscription: null,
 		openInfo: false,
 		recurringOptions: [
 			{
 				text: 'Weekly',
-				value: 'weekly'
+				value: 'week'
 			},
 			{
 				text: 'Monthly',
-				value: 'monthly'
-			},
-			{
-				text: 'Quarterly',
-				value: 'quarterly'
+				value: 'month'
 			},
 			{
 				text: 'Yearly',
-				value: 'yearly'
+				value: 'year'
 			},
 		],
 		paginate: ['subscriptions'],
@@ -91,10 +92,18 @@ export default {
             pending_subscriptions: (state) => state.pending_subscriptions.index,
 		}),
 
+		subscriptionTotal() {
+			let total = 0;
+			this.newSubscriptionForm.services.forEach(service => {
+				total += (service.rate * service.frequency);
+			});
+			return total.toFixed(2);
+		},
+
 		stripeCustomers() {
 			let customers = [];
 			this.contacts.forEach((contact) => {
-				if(!contact.is_pending) {
+				if(!contact.is_pending && contact.stripe_customer_id) {
 					customers.push({
 						text: contact.contact_user.full_name,
 						value: contact.id
@@ -107,10 +116,16 @@ export default {
 		servicesList() {
 			let services = [];
 			this.services.forEach((service) => {
-				services.push({
-					text: service.name,
-					value: service.id
-				});
+				if(service.is_available) {
+					let serviceCopy =  Object.assign({}, service);
+					serviceCopy.frequency = 1;
+					serviceCopy.frequency_interval = 'day';
+					serviceCopy.rate = service.default_rate;
+					services.push({
+						text: serviceCopy.name,
+						value: serviceCopy
+					});
+				}
 			});
 			return services;
 		},
@@ -200,31 +215,25 @@ export default {
         	}
         },
 
-        getServiceName(service_id) {
-        	return this.services.find(x => x.id == service_id).name;
-        },
-
         resetSubscriptionForm() {
         	this.newSubscriptionForm = {
-        		loading: false,
-        		service_ids: [],
-				service_bookings: {},
-        	}
+				loading: false,
+				services: [],
+				date: null,
+				recurring_frequency: 'week',
+				duration: 6,
+				duration_frequency: 'month',
+			};
         },
 
         createSubscription() {
         	this.newSubscriptionForm.loading = true;
         	this.newSubscriptionForm.id = this.newSubscriptionForm.contact_id;
-        	this.newSubscriptionForm.services = [];
-        	this.newSubscriptionForm.service_ids.forEach(service_id => {
-        		this.newSubscriptionForm.services.push({
-        			id: service_id,
-        			bookings_count: this.newSubscriptionForm.service_bookings[service_id]
-        		});
-        	});
+    
         	if(this.$root.payoutComplete) {
 	        	this.createContactSubscription(this.newSubscriptionForm).then(() => {
-	        		this.$refs['createSubscriptionModal'].hide();
+	        		this.resetSubscriptionForm();
+	        		this.openInfo = false;
 	        	}).catch(() => {
 	        		this.newSubscriptionForm.loading = false;
 	        	});

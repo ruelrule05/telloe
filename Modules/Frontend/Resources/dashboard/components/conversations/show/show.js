@@ -418,7 +418,7 @@ export default {
         },
 
         openFile(file) {
-            if (file.type == 'file') this.downloadMedia(file);
+            if (file.type == 'file') this.$root.downloadMedia(file);
             else this.selectedFile = file;
         },
 
@@ -453,18 +453,6 @@ export default {
                     this.pendingFiles.push({file: file});
                 }
 
-            }
-        },
-
-        downloadMedia(message) {
-            if (message.source) {
-                let link = document.createElement('a');
-                link.href = message.source;
-                link.download = message.metadata.filename;
-                link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
             }
         },
 

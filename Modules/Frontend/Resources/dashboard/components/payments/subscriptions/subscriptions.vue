@@ -13,7 +13,7 @@
 
 			<div class="flex-grow-1 d-flex h-100 overflow-hidden"> 
 				<div class="d-flex overflow-hidden h-100 w-100">
-					<div class="d-flex flex-column flex-grow-1 px-4 ">
+					<div class="d-flex flex-column flex-grow-1 px-4">
 						<div class="mt-3 mb-2">
 							<paginate-links :key="subscriptions.length" :async="true" for="subscriptions" :show-step-links="true" :classes="{'ul': ['pagination', 'shadow-sm', 'd-inline-flex', 'mb-0', 'paginatxion-sm'], 'li': ['page-item', !hasSubscriptions ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
 							<div class="mx-2 d-inline-flex align-items-center">
@@ -92,37 +92,67 @@
 						</div>
 					</div>
 
-					<div class="info bg-white h-100 border-left p-3 overflow-auto" :class="{'open': openInfo}">
+					<div class="info bg-white h-100 border-left p-3 overflow-auto d-flex flex-column" :class="{'open': openInfo}">
 						<h5 class="font-heading mb-3">New Subscription</h5>
-						<vue-form-validate @submit="createSubscription()">
-							<div class="form-group">
-								<label class="form-label">Customer</label>
-								<vue-select v-model="newSubscriptionForm.contact_id" :options="stripeCustomers" searchable required placeholder="Find customer"></vue-select>
-							</div>
-							<div class="form-group">
-								<label class="form-label">Services</label>
-								<vue-select v-model="newSubscriptionForm.service_ids" :options="servicesList" multiple required placeholder="Select services"></vue-select>
-								<div v-for="service_id in newSubscriptionForm.service_ids" class="my-2 bg-light rounded p-2">
-									<strong class="d-block mb-1">{{ getServiceName(service_id) }}</strong>
-									<input type="number" min="1" class="form-control" v-model="newSubscriptionForm.service_bookings[service_id]" placeholder="Maximum interval bookings" data-required>
-									<input type="number" min="1" step="0.01" class="form-control mt-2" placeholder="Rate per session" data-required>
+						<vue-form-validate @submit="createSubscription()" class="d-flex flex-column flex-grow-1">
+							<div class="flex-grow-1">
+								<div class="form-group">
+									<label class="form-label">Customer</label>
+									<vue-select v-model="newSubscriptionForm.contact_id" :options="stripeCustomers" searchable required placeholder="Find customer"></vue-select>
+								</div>
+								<div class="form-group">
+									<label class="form-label">Booking Types</label>
+									<vue-select v-model="newSubscriptionForm.services" :options="servicesList" multiple required placeholder="Select booking type"></vue-select>
+									<div v-for="(service, index) in newSubscriptionForm.services" class="my-2 bg-light rounded p-2">
+										<strong class="d-block mb-1">{{ service.name }}</strong>
+										<label class="form-label">Rate per session (Default pricing: ${{ newSubscriptionForm.services[index].default_rate }})</label>
+										<input type="number" min="1" step="0.01" v-model="newSubscriptionForm.services[index].rate" class="form-control" placeholder="Rate per session" data-required>
+
+										<label class="form-label d-block mt-2">Booking frequency</label>
+										<div class="form-row align-items-center">
+											<div class="col">
+												<input type="number" min="1" class="form-control" v-model="newSubscriptionForm.services[index].frequency" placeholder="Maximum interval bookings" data-required>
+											</div>
+											<span class="text-secondary">sessions per</span>
+											<div class="col">
+												<select class="form-control" data-required v-model="newSubscriptionForm.services[index].frequency_interval">
+													<option value="day">Day</option>
+													<option value="week">Week</option>
+													<option value="month">Month</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="form-label">Recurring Frequency</label>
+									<vue-select v-model="newSubscriptionForm.recurring_frequency" :options="recurringOptions" required placeholder="Choose interval"></vue-select>
+								</div>
+								<div class="form-group">
+									<label class="form-label">Start Date</label>
+									<v-date-picker v-model="newSubscriptionForm.date" :input-props='{class: "form-control cursor-pointer bg-white",placeholder: "Select start date", readonly: true, "data-required": true}' :popover="{ placement: 'bottom', visibility: 'click' }" :min-date="new Date()"></v-date-picker>
+								</div>
+
+								<label class="form-label d-block mt-2">Subscription Duration</label>
+								<div class="form-row align-items-center">
+									<div class="col">
+										<input type="number" min="1" class="form-control" v-model="newSubscriptionForm.duration" data-required>
+									</div>
+									<div class="col">
+										<select class="form-control" data-required v-model="newSubscriptionForm.duration_frequency">
+											<option value="month">Months</option>
+											<option value="year">Years</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group text-right mt-4">
+									<label class="form-label">Total:</label>
+									<strong>${{ subscriptionTotal }}</strong>/{{ newSubscriptionForm.recurring_frequency }}
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="form-label">Recurring Frequency</label>
-								<vue-select v-model="newSubscriptionForm.contact_id" :options="recurringOptions" searchable required placeholder="Choose interval"></vue-select>
-							</div>
-							<div class="form-group">
-								<label class="form-label">Start Date</label>
-								<input type="date" class="form-control mt-2" placeholder="Select start date" data-required>
-							</div>
-							<div class="form-group text-right">
-								<label class="form-label">Total:</label>
-								<strong>$250.00</strong>/{{  }}
-							</div>
-							<div class="mt-4 d-flex align-items-center justify-content-end">
+							<div class="d-flex align-items-center">
 								<button type="button" class="btn btn-white border mr-1" :disabled="newSubscriptionForm.loading" @click="openInfo = false">Cancel</button>
-								<vue-button type="submit" :loading="newSubscriptionForm.loading" button_class="btn btn-primary">Create</vue-button>
+								<vue-button type="submit" :loading="newSubscriptionForm.loading" button_class="ml-auto btn btn-primary">Create</vue-button>
 							</div>
 						</vue-form-validate>
 					</div>

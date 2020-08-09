@@ -25,6 +25,7 @@ export default {
 	props: {
 		value: {
 		},
+		
 		label: {
 			type: String
 		}

@@ -99,6 +99,7 @@ export default {
                     }
                     bookings.push(booking);
             });
+            bookings.sort((a,b) => b.date.localeCompare(a.date));
 
             return bookings;
         },

@@ -36,7 +36,7 @@
         <!-- File -->
         <div class="mb-0" v-else-if="message.type == 'file'">
             <img draggable="false" v-if="$root.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" />
-            <span class=" cursor-pointer" @click="if(click) $parent.downloadMedia(message)">
+            <span class=" cursor-pointer" @click="if(click) $root.downloadMedia(message)">
                 <span class="d-block text-center">
                     <component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)" :fill="outgoing ? 'white' : ''"></component>
                 </span>

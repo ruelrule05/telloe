@@ -19,12 +19,12 @@
 
             <div v-if="(conversation.member.role || {}).role != 'support' && !conversation.member.is_pending" id="info-items" class="mt-3 d-flex flex-column">
                 <!-- Overview -->
-                <div class="border-top border-top px-3 py-1">
+                <div class="border-top border-top px-4 py-2">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview" @click="toggleCollapse($event); editFields = false;">
                         {{ editFields ? 'Edit Fields' : 'Overview' }}
-                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
+                        <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
                     </h5>
-                    <div id="overview" class="collapse show" data-parent="#info-items">
+                    <div id="overview" class="collapse" data-parent="#info-items">
                         <!-- Fields -->
                         <div v-if="conversation.members.length == 1" class="form-group">
                             <div class="d-flex align-items-center">
@@ -41,17 +41,24 @@
                                     <strong class="w-50 ml-3">Label</strong>
                                     <strong class="w-50 ml-n1">Value</strong>
                                 </div>
-                                <sortable v-model="dragData"  v-for="(custom_field, index) in conversation.custom_fields" :key="index" :index="index" class="d-flex mb-2 align-items-center" drag-direction="vertical">
-                                    <button class="btn p-0 d-flex align-items-center" type="button">
+                                <draggable handle=".handle" :list="conversation.custom_fields" @end="updateConversation(conversation)">
+                                    <div v-for="(custom_field, index) in conversation.custom_fields" class="d-flex mb-2 align-items-center">
+                                        <button class="btn p-0 d-flex align-items-center handle cursor-move" type="button">
+                                            <more-v-icon width="10" height="10" transform="scale(2)" class="ml-n1"></more-v-icon>
+                                            <more-v-icon width="10" height="10" transform="scale(2)" class="ml-n1"></more-v-icon>
+                                        </button>
+                                        <input type="text" placeholder="Label" @blur="updateConversation(conversation)" v-model="custom_field.name" class="form-control form-control-sm w-50 mr-1 ml-1">
+                                        <input type="text" placeholder="Value" @blur="updateConversation(conversation)" v-model="custom_field.value" class="form-control form-control-sm w-50 ml-1">
+                                        <trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="conversation.custom_fields.splice(index, 1); updateConversation(conversation)"></trash-icon>
+                                    </div>
+                                </draggable>
+                                <div v-if="addField || conversation.custom_fields.length == 0" class="d-flex align-items-center">
+                                    <button class="btn p-0 d-flex align-items-center opacity-0 mr-1" disabled type="button">
                                         <more-v-icon width="10" height="10" transform="scale(2)" class="ml-n1"></more-v-icon>
                                         <more-v-icon width="10" height="10" transform="scale(2)" class="ml-n1"></more-v-icon>
                                     </button>
-                                    <input type="text" placeholder="Label" @blur="updateConversation(conversation)" v-model="custom_field.name" class="form-control form-control-sm w-50 mr-1 ml-1">
-                                    <input type="text" placeholder="Value" @blur="updateConversation(conversation)" v-model="custom_field.value" class="form-control form-control-sm w-50 ml-1">
-                                    <trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="conversation.custom_fields.splice(index, 1); updateConversation(conversation)"></trash-icon>
-                                </sortable>
-                                <div v-if="addField || conversation.custom_fields.length == 0" class="d-flex align-items-center">
-                                    <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1">
+                                    <vue-select v-model="new_field.name" :options="customFields" button_class="form-control-sm mr-1" :searchable="true" :suggestion="true" container_class="w-50" :caret="false" placeholder="Label"></vue-select>
+                                    <!-- <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1"> -->
                                     <input type="text" placeholder="Value" @blur="addNewField" v-model="new_field.value" class="form-control form-control-sm w-50 ml-1">
                                     <trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
                                 </div>
@@ -63,8 +70,10 @@
 
                             <template v-else>
                                 <div v-for="(custom_field, index) in conversation.custom_fields" v-if="custom_field.is_visible || $root.auth.id == conversation.user_id" class="d-flex align-items-center my-2 custom-field position-relative">
-                                    <div class="overflow-hidden">
-                                        <small class="d-block mb-n1 text-muted text-ellipsis">{{ custom_field.name }}</small>
+                                    <div class="overflow-hidden w-50">
+                                        <strong class="d-block text-ellipsis">{{ custom_field.name }}:</strong>
+                                    </div>
+                                    <div class="overflow-hidden w-50">
                                         <div class="text-ellipsis">{{ custom_field.value }}</div>
                                     </div>
                                     <div v-if="$root.auth.role.role == 'client'" class="ml-auto position-static d-flex align-items-center pl-1">
@@ -114,10 +123,10 @@
                 </div>
 
                 <!-- Bookings -->
-                <div v-if="conversation.members.length == 1" class="border-top px-3 py-1">
+                <div v-if="conversation.members.length == 1" class="border-top px-4 py-2">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#bookings" @click="toggleCollapse">
                         Bookings
-                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
+                        <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
                     </h5>
                     <div id="bookings" class="collapse pb-1" data-parent="#info-items">
                         <bookings v-if="conversation.ready" :conversation="conversation" :blacklisted_services="blacklisted_services" :membersLength="conversation.members.length"></bookings>
@@ -125,10 +134,10 @@
                 </div>
 
                 <!-- Files -->
-                <div class="border-top px-3 py-1">
+                <div class="border-top px-4 py-2">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#files" @click="toggleCollapse">
                         Files
-                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
+                        <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
                     </h5>
                     <div id="files" class="collapse pb-1" data-parent="#info-items">
                         <ul class="nav nav-pills nav-fill mb-2">
@@ -147,21 +156,42 @@
                         </ul>
                         <template v-if="files.length > 0">
                             <div class="d-flex flex-wrap mx-n1">
-                                <div v-for="file in files" class="position-relative file-thumbnail p-1 overflow-hidden">
-                                    <div class="position-relative rounded bg-light h-100 cursor-pointer" @click="$parent.openFile(file)" :style="{backgroundImage: 'url(' + file.preview + ')'}">
-                                        <div v-if="file.type == 'image' || file.type == 'video'">
-                                            <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
-                                                <play-icon height="15" width="15"></play-icon>
+                                <template v-if="fileType != 'file'">
+                                    <div v-for="file in files" class="position-relative file-thumbnail p-1 overflow-hidden">
+                                        <div class="position-relative rounded bg-light h-100 cursor-pointer" @click="$parent.openFile(file)" :style="{backgroundImage: 'url(' + file.preview + ')'}">
+                                            <div v-if="file.type == 'image' || file.type == 'video'">
+                                                <div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
+                                                    <play-icon height="15" width="15"></play-icon>
+                                                </div>
+                                            </div>
+                                            <div v-else-if="file.type == 'audio'">
+                                                <volume-mid-icon height="30" width="30" class="position-absolute-center"></volume-mid-icon>
+                                            </div>
+                                            <div v-else-if="file.type == 'file'" class="p-1">
+                                                <file-empty-icon height="30" width="30" class="position-absolute-center" :is="$root.fileIcon(file.metadata.extension)"></file-empty-icon>
                                             </div>
                                         </div>
-                                        <div v-else-if="file.type == 'audio'">
-                                            <volume-mid-icon height="30" width="30" class="position-absolute-center"></volume-mid-icon>
-                                        </div>
-                                        <div v-else-if="file.type == 'file'" class="p-1">
-                                            <file-empty-icon height="30" width="30" class="position-absolute-center" :is="$root.fileIcon(file.metadata.extension)"></file-empty-icon>
+                                        <small v-if="file.type == 'file'" class="file-filename position-absolute text-ellipsis text-secondary px-2 text-center w-100">{{ file.metadata.filename }}</small>
+                                    </div>
+                                </template>
+
+                                <div v-else v-for="file in files" class="flex-grow-1 p-2 mb-2 d-flex align-items-center border bg-white rounded position-relative cursor-pointer overflow-hidden" @click="$root.downloadMedia(file)">
+                                    <div class="flex-1">
+                                        <div class="doc-thumbnail position-relative rounded overflow-hidden bg-light file-thumbnail">
+                                            <component height="30" width="30" class="position-absolute-center" :is="$root.fileIcon(file.metadata.extension)"></component>
                                         </div>
                                     </div>
-                                    <small v-if="file.type == 'file'" class="file-filename position-absolute text-ellipsis text-secondary px-2 text-center w-100">{{ file.metadata.filename }}</small>
+                                    <div class="w-100 overflow-hidden pl-2 file-details">
+                                        <span class="font-weight-bold file-filename d-block text-nowrap text-ellipsis">{{ (file.metadata || {}).filename }}</span>
+                                         <div class="text-muted text-ellipsis">
+                                            <span class="mr-2">{{ ['audio', 'video'].find((x) => x == file.type) ? file.metadata.duration : file.metadata.size }}</span>
+                                            {{ file.created_diff }} ago
+                                        </div>
+                                        <div v-if="file.tags.length > 0" class="d-flex align-items-center">
+                                            <bookmark-icon width="18" height="18" fill="#999" class="ml-n1"></bookmark-icon>
+                                            <span>{{ file.tags.join(', ') }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div v-if="(conversation.files || {}).next_page_url && !conversation.filesLoading" class="text-center my-2">
@@ -176,10 +206,10 @@
                 </div>
 
                 <!-- Tags -->
-                <div class="border-top px-3 py-1">
+                <div class="border-top px-4 py-2">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
                         Tags
-                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
+                        <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
                     </h5>
                     <div id="tags" class="collapse" data-parent="#info-items">
                         <!-- Tags -->
@@ -233,83 +263,60 @@
                 </div>
 
                 <!-- Notes -->
-                <div class="border-top px-3 py-1">
+                <div class="border-top px-4 py-2">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes" @click="toggleCollapse">
                         Notes
-                        <chevron-down-icon class="ml-auto mr-n2"></chevron-down-icon>
+                        <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
                     </h5>
-                    <div id="notes" class="collapse pb-1" data-parent="#info-items">
-                            <div class="dropdown mb-2">
-                                <button class="btn btn-sm btn-white border d-flex align-items-center" data-toggle="dropdown" data-display="static"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Note</button>
-                                <div class="dropdown-menu w-100 p-2" @click.stop>
-                                    <vue-form-validate @submit="addNote()">
-                                        <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none border" placeholder="Add note.."></textarea>
-                                        <div class="d-flex justify-content-end align-items-center mt-2">
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-white border mr-1"
-                                                @click="
-                                                    newNote = '';
-                                                    $refs['profileImage'].click();
-                                                "
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button type="submit" class="btn btn-sm btn-primary">Add</button>
-                                        </div>
-                                    </vue-form-validate>
-                                </div>
-                            </div>
-                            <template v-if="(conversation.notes || []).length > 0">
-                                <div v-for="note in conversation.notes" class="position-relative note py-3">
-                                    <div class="note-actions position-absolute d-flex align-items-center dropleft w-25 justify-content-end">
-                                        <div class="action-content position-relative mr-1 line-height-1">
-                                            <div data-toggle="dropdown" data-offset="-140,0" class="action-button d-flex align-items-center">
-                                                <span v-if="note.tags.length > 0" class="action-label">{{ note.tags.length }}</span>
-                                                <bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
-                                            </div>
-                                            <div class="dropdown-menu p-1 bg-light" @click.stop>
-                                                <vue-form-validate class="input-group border rounded overflow-hidden" @submit="updateNoteTags(note)">
-                                                    <input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add tag" data-required v-model="note.newTag" />
-                                                    <div class="input-group-append">
-                                                        <button type="submit" class="btn btn-white border p-1 shadow-none btn-sm border-0 line-height-1">
-                                                            <plus-icon width="20" height="20" class="no-action"></plus-icon>
-                                                        </button>
-                                                    </div>
-                                                </vue-form-validate>
-
-                                                <div class="text-left tags-container" v-if="note.tags.length > 0">
-                                                    <div v-for="(tag, index) in note.tags" class="d-inline-block badge badge-primary py-1 px-2 mr-1 mt-1">
-                                                        {{ tag }}&nbsp;
-                                                        <close-icon
-                                                            height="8"
-                                                            width="8"
-                                                            fill="white"
-                                                            transform="scale(2.5)"
-                                                            class="cursor-pointer no-action"
-                                                            @click.native="
-                                                                note.tags.splice(index, 1);
-                                                                updateNoteTags(note);
-                                                            "
-                                                        ></close-icon>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="action-content">
-                                            <div class="action-button">
-                                                <trash-icon fill="red" class="cursor-pointer delete-note" height="18" width="18" @click.native="deleteNote(note)"></trash-icon>
-                                            </div>
-                                        </div>
-                                        <div class="position-absolute text-muted text-right small note-metalabel">{{ note.tags.join(', ') }}</div>
+                    <div id="notes" class="collapse pb-1 show" data-parent="#info-items">
+                            <button v-if="!addingNote && !selectedNote" class="btn btn-sm btn-white border d-flex align-items-center" @click="addingNote = true"><plus-icon height="13" width="13" transform="scale(1.6)" class="mr-1"></plus-icon>Add Note</button>
+                            <template v-if="addingNote">
+                                <vue-form-validate @submit="addNote()">
+                                    <textarea v-model="newNote" data-required rows="3" class="form-control form-control-sm resize-none shadow-none border" placeholder="Add note.."></textarea>
+                                    <div class="d-flex align-items-center mt-2">
+                                        <button type="button" class="btn btn-sm btn-white border mr-1" @click="addingNote = false; newNote = '';">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="ml-auto btn btn-sm btn-primary">Add</button>
                                     </div>
-
-                                    <p class="mb-0">{{ note.notes }}</p>
-                                    <small class="text-muted d-block">{{ note.created_at_format }}</small>
-                                </div>
+                                </vue-form-validate>
                             </template>
-                            <div v-else class="text-center text-secondary py-3">You don't have any notes yet.</div>
+                            <template v-else>
+                                <template v-if="(conversation.notes || []).length > 0">
+                                    <template v-if="selectedNote">
+                                        <vue-form-validate @submit="submitUpdateNote(selectedNote)" class="mt-2">
+                                            <textarea v-model="selectedNote.new_notes" data-required rows="3" class="form-control form-control-sm resize-none shadow-none border" placeholder="Add note.."></textarea>
+                                            <div class="d-flex align-items-center mt-2">
+                                                <button type="button" class="btn btn-sm btn-white border mr-1" @click="selectedNote = null">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" class="ml-auto btn btn-sm btn-primary">Update</button>
+                                            </div>
+                                        </vue-form-validate>
+                                    </template>
+                                    <template v-else>
+                                        <div v-for="note in conversation.notes" class="position-relative note py-3 cursor-pointer" @click="note.new_notes = note.notes; selectedNote = note">
+                                            <template v-if="note.edit">
+                                                <textarea rows="3" :value="note.notes" class="form-control form-control-sm resize-none"></textarea>
+                                            </template>
+                                            <template v-else>
+                                                <div class="note-actions position-absolute d-flex align-items-center dropleft w-25 justify-content-end">
+                                                    <div class="action-content">
+                                                        <div class="action-button">
+                                                            <trash-icon fill="red" class="cursor-pointer delete-note" height="18" width="18" @click.native="deleteNote(note)"></trash-icon>
+                                                        </div>
+                                                    </div>
+                                                    <div class="position-absolute text-muted text-right small note-metalabel">{{ note.tags.join(', ') }}</div>
+                                                </div>
+
+                                                <p class="mb-0">{{ note.notes }}</p>
+                                                <small class="text-muted d-block">{{ note.created_at_format }}</small>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </template>
+                                <div v-else class="text-center text-secondary py-3">You don't have any notes yet.</div>
+                            </template>
                     </div>
                 </div>
             </div>

@@ -59,13 +59,29 @@ export default {
             type: String,
             default: '',
         },
+
+        caret: {
+            type: Boolean,
+            default: true,
+        },
+
+        container_class: {
+            type: String,
+            default: '',
+        },
+
+        suggestion: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     data: () => ({
         selected_value: {},
         search: '',
         show_no_results: true,
-        show: false
+        show: false,
+        focused: false,
     }),
 
 
@@ -113,7 +129,14 @@ export default {
         value: function(value) {
             this.selected_value = value;
             if(!value) this.search = '';
-        }
+        },
+
+        search: function(value) {
+            if(this.suggestion) {
+                this.selected_value = value;
+                this.$emit('input', this.selected_value);
+            }
+        },
     },
 
     created() {
@@ -124,7 +147,7 @@ export default {
         $(this.$refs['dropdown']).on('show.bs.dropdown', () => {
             if(this.$refs['input-searchable']) this.$refs['input-searchable'].removeAttribute('readonly');
             this.show_no_results = true;
-            this.search = '';
+            if(!this.suggestion) this.search = '';
 
             if (this.searchable) {
                 setTimeout(() => {
@@ -143,8 +166,12 @@ export default {
         });
 
         $(this.$refs['dropdown']).on('hide.bs.dropdown', () => {
-            this.search = this.selected_value ? this.select_placeholder : '';
-            if(this.$refs['input-searchable']) this.$refs['input-searchable'].setAttribute('readonly', true);
+            if(this.suggestion) {
+                this.search = this.selected_value;
+            } else {
+                this.search = this.selected_value ? this.select_placeholder : '';
+            }
+            if(this.$refs['input-searchable'] && !this.suggestion) this.$refs['input-searchable'].setAttribute('readonly', true);
         });
 
         $(this.$refs['dropdown']).on('hidden.bs.dropdown', () => {
@@ -152,9 +179,22 @@ export default {
         });
     },
     methods: {
+        inputBlurred() {
+            if(this.suggestion) {
+                setTimeout(() => {
+                    this.focused = false;
+                }, 100);
+            }
+        },
+
         inputFocused(e) {
             if (e.relatedTarget && e.relatedTarget.type == 'submit') {
                 this.$refs['dropdown-toggle'].click();
+            }
+            if(this.suggestion) {
+                setTimeout(() => {
+                    this.focused = true;
+                }, 100);
             }
         },
 
@@ -167,7 +207,7 @@ export default {
                 this.search = this.placeholder;
             } else {
                 this.selected_value = option.value;
-                this.search = option.text;
+                if(!this.suggestion) this.search = option.text;
             }
             this.$emit('change', this.selected_value);
             this.$emit('input', this.selected_value);

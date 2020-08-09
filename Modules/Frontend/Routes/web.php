@@ -5,7 +5,20 @@
  *
  */
 Route::get('email', function() {
-    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::find(44));
+    $now = \Carbon\Carbon::now();
+    $bookings = App\Models\Booking::where('date', '>=', $now->format('Y-m-d'))->get();
+    foreach($bookings as $booking) :
+        $diffInMinutes = $now->diffInMinutes(\Carbon\Carbon::parse($booking->date . ' ' . $booking->start), false);
+        if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
+            //echo 'notify 2 hours';
+        elseif ($diffInMinutes <= 1440 && !$booking->notified_24) : // 24 hours notif
+            //echo 'notify 24 hours';
+        endif;
+    endforeach;
+
+    
+    $user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
+    $email = new Modules\Frontend\Mail\Welcome($user);
     //\Mail::send($email);
     return $email;
 });

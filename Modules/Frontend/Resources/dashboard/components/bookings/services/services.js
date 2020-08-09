@@ -4,6 +4,7 @@ import Modal from '../../../../components/modal/modal.vue';
 import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 import Timerangepicker from '../../../../components/timerangepicker/timerangepicker.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
 import PencilIcon from '../../../../icons/pencil';
 import ChevronDownIcon from '../../../../icons/chevron-down';
 import PlusIcon from '../../../../icons/plus';
@@ -14,7 +15,7 @@ import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
 export default {
-	components: {Modal, VueFormValidate, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker},
+	components: {Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker},
 	data: () => ({
 		newService: {},
 		selectedService: null,
@@ -124,6 +125,7 @@ export default {
 				this.selectedService.duration = this.newService.duration;
 				this.selectedService.interval = this.newService.interval;
 				this.selectedService.default_rate = this.newService.default_rate;
+				this.selectedService.in_widget = this.newService.in_widget;
 				this.updateService(this.selectedService);
 				this.$refs['editModal'].hide();
 			} else {

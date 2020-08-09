@@ -73,7 +73,7 @@
 												<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
 												{{ timeslot.label }}
 											</div>
-											<div class="rounded border p-2">
+											<div v-if="$root.auth.timezone != conversation.member.timezone" class="rounded border p-2">
 												<small class="d-block">Client's time: {{ conversation.member.timezone }}</small>
 												{{ timezoneTime($root.auth.timezone, conversation.member.timezone, timeslot.time) }}
 											</div>

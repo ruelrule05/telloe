@@ -2,6 +2,7 @@ import {mapState, mapActions} from 'vuex';
 
 import MessageType from '../message-type';
 import VueFormValidate from '../../../../../components/vue-form-validate';
+import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import Bookings from './bookings/bookings.vue';
 import FormSearch from '../../../../../components/form-search/form-search.vue';
@@ -14,19 +15,20 @@ import BookmarkIcon from '../../../../../icons/bookmark';
 import TrashIcon from '../../../../../icons/trash';
 import HistoryIcon from '../../../../../icons/history';
 import PencilIcon from '../../../../../icons/pencil';
-import ChevronDownIcon from '../../../../../icons/chevron-down';
+import ChevronRightIcon from '../../../../../icons/chevron-right';
 import ClockIcon from '../../../../../icons/clock';
 import PlannerIcon from '../../../../../icons/planner';
 import DocumentIcon from '../../../../../icons/document';
 import MoreVIcon from '../../../../../icons/more-v';
 import VueScrollTo from 'vue-scrollto';
 import Tooltip from '../../../../../js/directives/tooltip';
-import Sortable from 'vue-drag-sortable'
+import draggable from 'vuedraggable';
 
 export default {
 	components: {
         MessageType,
         VueFormValidate,
+        VueSelect,
         ToggleSwitch,
         Bookings,
         FormSearch,
@@ -39,12 +41,12 @@ export default {
         TrashIcon,
         HistoryIcon,
         PencilIcon,
-        ChevronDownIcon,
+        ChevronRightIcon,
         ClockIcon,
         PlannerIcon,
         DocumentIcon,
         MoreVIcon,
-        Sortable,
+        draggable,
 	},
 
     directives: {VueScrollTo, Tooltip},
@@ -66,17 +68,29 @@ export default {
             is_custom: false,
         },
         tagSearch: '',
-        editFields: true,
+        editFields: false,
         addField: false,
         new_field: {},
         fileType: 'image',
-        dragData: {},
+        addingNote: false,
+        selectedNote: null,
 	}),
 
 	computed: {
 		...mapState({
             user_blacklisted_services: (state) => state.user_blacklisted_services.index,
 		}),
+
+        customFields() {
+            let custom_fields = [];
+            (this.$root.auth.custom_fields || []).forEach(custom_field => {
+                custom_fields.push({
+                    text: custom_field,                    
+                    value: custom_field,                    
+                });
+            });
+            return custom_fields;
+        },
 
         blacklisted_services() {
             let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
@@ -175,6 +189,12 @@ export default {
             storeUserCustomFields: 'user_custom_fields/store',
 		}),
 
+        submitUpdateNote(note) {
+            note.notes = note.new_notes;
+            this.updateNote(note);
+            this.selectedNote = null;
+        },
+
         addNewField() {
             if(this.new_field.name && this.new_field.value) {
                 this.new_field.is_visible = false;
@@ -247,6 +267,7 @@ export default {
             };
             this.storeNote(note);
             this.newNote = '';
+            this.addingNote = false;
             this.$refs['profileImage'].click();
         },
 

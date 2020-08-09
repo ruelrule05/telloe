@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\StripeAPI;
 use Illuminate\Support\Facades\Validator;
 use App\Jobs\CreateStripeCustomer;
+use Modules\Frontend\Mail\Welcome;
 
 class AuthController extends Controller
 {
@@ -115,6 +116,8 @@ class AuthController extends Controller
         $this->createInitialConversations($user);
         $this->createPresetService($user);
         $this->createDefaultField($user);
+
+        Mail::queue(new Welcome($user));
         
 
         $response = [
@@ -278,6 +281,8 @@ class AuthController extends Controller
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
+
+                Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
             endif;
             Auth::login($user);
@@ -327,6 +332,7 @@ class AuthController extends Controller
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
+                Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
             endif;
             Auth::login($user);
@@ -529,7 +535,7 @@ class AuthController extends Controller
                 'user_id' => $user->id,
             ],
             [
-                'fields' => ['Mobile']
+                'fields' => ['First Name', 'Last Name', 'Email', 'Mobile', 'Address']
             ]
         );
     }

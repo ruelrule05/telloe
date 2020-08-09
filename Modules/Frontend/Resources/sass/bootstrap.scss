@@ -159,7 +159,7 @@
 	}
 }
 .opacity-0 {
-	opacity: 0;
+	opacity: 0 !important;
 }
 [v-cloak] {
 	opacity: 0;
@@ -179,6 +179,9 @@
 }
 .cursor-pointer {
 	cursor: pointer !important;
+}
+.cursor-move{
+	cursor: move !important;
 }
 .outline-0 {
 	outline: 0 !important;

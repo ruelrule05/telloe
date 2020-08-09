@@ -54,6 +54,7 @@ export default {
 		],
 		invoiceStatus: 'all',
 		hasInvoices: false,
+		openInfo: false,
 	}),
 
 	computed: {
@@ -80,10 +81,12 @@ export default {
 		servicesList() {
 			let services = [];
 			this.services.forEach(service => {
-				services.push({
-					text: service.name,
-					value: service.id,
-				});
+				if(service.is_available) {
+					services.push({
+						text: service.name,
+						value: service.id
+					});
+				}
 			});
 			return services;
 		},

@@ -1,1 +1,9 @@
-
+@import '../../../../sass/variables';
+.info{
+    transition: $transition-base;
+    width: 350px;
+    margin-right: -350px;
+    &.open{
+        margin-right: 0
+    }
+}

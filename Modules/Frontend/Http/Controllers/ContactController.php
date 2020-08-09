@@ -228,8 +228,18 @@ class ContactController extends Controller
     {
         $this->validate($request, [
             'services' => 'required|array',
-            'amount' => 'required|numeric',
+            'date' => 'required|date',
+            'recurring_frequency' => 'required|in:week,month,year',
+            'duration' => 'required|numeric',
+            'duration_frequency' => 'required|in:month,year',
         ]);
+
+        $total = 0;
+        foreach($request->services as $service) :
+            if($service['rate'] && $service['frequency'] && $service['frequency_interval']) :
+                $total += ($service['frequency'] * $service['rate']);
+            endif;
+        endforeach;
 
         // check if Auth::user has external accounts
         $external_account =  Auth::user()->stripe_account['external_accounts']['data'][0] ?? false;
@@ -238,22 +248,16 @@ class ContactController extends Controller
         $contact = Contact::findOrFail($id);
         $this->authorize('create_subscription', $contact);
 
-        $services = [];
         $servicesNames = [];
         foreach($request->services as $s) :
             $service = Service::findOrFail($s['id']);
             $this->authorize('create_subscription', $service);
-            $service->bookings_count = $s['bookings_count'];
-            $servicesNames[] = "$service->name[{$s['bookings_count']}/month]";
-            $services[] = [
-                'service_id' => $service->id,
-                'bookings_count' => $s['bookings_count']
-            ];
+            $servicesNames[] = "$service->name[{$s['frequency']}/{$s['frequency_interval']}]";
         endforeach;
 
 
         $stripe_api = new StripeAPI();
-        $amount = $request->amount * 100;
+        $amount = $total * 100;
 
         // Create product
         $data = [
@@ -269,7 +273,7 @@ class ContactController extends Controller
             'currency' => $currency,
             'product' => $product->id,
             'recurring' => [
-                'interval' => 'month',
+                'interval' => $request->recurring_frequency,
                 'interval_count' => 1,
             ],
             'unit_amount' => $amount
@@ -280,13 +284,21 @@ class ContactController extends Controller
         $subscriptionItem = [[
             'price' => $price->id,
         ]];
+
+        $now = Carbon::now();
+        $date = Carbon::parse($request->date);
+        $trial_period_days = $now->diffInDays($date);
+
         $data = [
             'customer' => $contact->stripe_customer_id,
             'items' => $subscriptionItem,
-            'trial_period_days' => 1,
+            'trial_period_days' => $trial_period_days,
         ];
         $subscription = $stripe_api->subscription('create', $data, ['stripe_account' => Auth::user()->stripe_account['id']]);
-
+        $subscription->date = $request->date;
+        $subscription->services = $request->services;
+        $subscription->duration = $request->duration;
+        $subscription->duration_frequency = $request->duration_frequency;
 
         $subscriptions = $contact->subscriptions;
         $subscriptions[] = $subscription;

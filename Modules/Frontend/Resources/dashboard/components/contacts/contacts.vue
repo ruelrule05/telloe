@@ -193,6 +193,9 @@
 			</template>
 		</modal>
 
+		
+       <gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
+
 	</div>
 </template>
 

@@ -107,7 +107,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function bookings()
     {
-        return $this->hasMany(Booking::class)->orderBy('created_at', 'DESC');
+        return $this->hasMany(Booking::class)->orderBy('date', 'DESC');
     }
 
 

@@ -70,7 +70,10 @@
 							<div>
 								<h6 class="font-heading d-inline-block mb-1">Interval: </h6> {{ selectedService.interval }} minutes
 							</div>
-							<h6 class="font-heading d-inline-block mb-3">Default Rate: </h6> ${{ selectedService.default_rate }}
+							<h6 class="font-heading d-inline-block mb-1">Default Rate: </h6> ${{ selectedService.default_rate }}
+							<div>
+								<h6 class="font-heading d-inline-block mb-3">Available in widget: </h6> {{ selectedService.in_widget ? 'Yes' : 'No' }}
+							</div>
 						</div>
 
 						<div class="d-flex mb-2">
@@ -162,6 +165,9 @@
 					<label class="form-label">Default Rate</label>
 					<input type="number" step="0.01" class="form-control" v-model="newService.default_rate" placeholder="$0.00">
 				</div>
+				<div class="form-group">
+					<vue-checkbox v-model="newService.in_widget" label="Available in widget"></vue-checkbox>
+				</div>
 				<div class="d-flex align-items-center">
 					<button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
 					<button class="ml-auto btn btn-primary" type="submit">{{ selectedService ? 'Update' : 'Add'}}</button>
@@ -192,6 +198,9 @@
 				<div class="form-group">
 					<label class="form-label">Default Rate</label>
 					<input type="number" step="0.01" class="form-control" v-model="newService.default_rate" placeholder="$0.00">
+				</div>
+				<div class="form-group">
+					<vue-checkbox v-model="newService.in_widget" label="Available in widget"></vue-checkbox>
 				</div>
 				<div class="d-flex align-items-center">
 					<button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
