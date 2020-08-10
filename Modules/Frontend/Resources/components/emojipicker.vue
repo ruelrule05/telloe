@@ -1,8 +1,8 @@
 <template>
-	<div>
+	<div class="">
 		<emoji-picker @emoji="insert">
 			<div class="emoji-invoker" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{events: {click: clickEvent}}" @click.stop="clickEvent">
-				<smile-icon height="22" width="20"></smile-icon>
+				<emoticon-icon height="20" width="20"></emoticon-icon>
 			</div>
 			<div class="emoji-picker" slot="emoji-picker" slot-scope="{emojis, insert, display}">
 				<div>
@@ -21,10 +21,10 @@
 </template>
 
 <script>
-import SmileIcon from '../icons/smile';
+import EmoticonIcon from '../icons/emoticon';
 import EmojiPicker from 'vue-emoji-picker';
 export default {
-	components: {EmojiPicker, SmileIcon},
+	components: {EmojiPicker, EmoticonIcon},
 
 	data: () => ({
 	}),
@@ -42,9 +42,11 @@ export default {
 @import '../sass/variables';
 .emoji-invoker svg {
 	transition: $transition-base;
+    opacity: 0.5;
 }
 .emoji-invoker svg:hover{
 	transform: scale(1.1);
+    opacity: 1;
 }
 .emoji-picker {
 	bottom: 80px;

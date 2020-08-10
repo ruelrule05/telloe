@@ -1,6 +1,6 @@
 <template>
     <div class="flex-grow-1 bg-white d-flex flex-column h-100 overflow-hidden" v-if="conversation">
-        <div class="p-3 bg-white border-bottom position-relative d-flex align-items-center">
+        <div class="px-4 py-4 bg-white border-bottom position-relative d-flex align-items-center">
             <div class="d-flex align-items-center">
                 <div class="user-profile-image" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
                     <span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
@@ -20,7 +20,8 @@
             </div>
             <div class="ml-auto btn-circle-actions">
                 <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
-                    <button class="btn border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><colored-phone-icon width="28" height="28"></colored-phone-icon></button>
+                    <button class="btn border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><videocam-icon width="26" height="26"></videocam-icon></button>
+                    <button class="btn border-0 py-0 px-1 mx-2" v-tooltip.bottom="'Audio call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><call-menu-icon width="20" height="20"></call-menu-icon></button>
                     <!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
                 </template>
                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 
@@ -185,8 +186,8 @@
                                    <emojipicker @select="selectEmoji"></emojipicker>
                                 </button>
                                 <!-- <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="24" height="24" class="mt-1"></video-camera-icon></button> -->
-                                <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-icon width="20" height="20"></microphone-icon></button>
-                                <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><add-note-icon width="20" height="20"></add-note-icon></button>
+                                <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-alt-icon width="20" height="20"></microphone-alt-icon></button>
+                                <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><document-alt-icon width="20" height="20"></document-alt-icon></button>
                                 <input type="file" hidden ref="fileMedia" @change="addFile" />
 
                                 <button class="line-height-sm ml-2 btn px-0 position-relative" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">

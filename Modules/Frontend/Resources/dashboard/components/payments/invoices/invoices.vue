@@ -1,9 +1,13 @@
 	<template>
-	<div class="overflow-hidden h-100 flex-grow-1 d-flex flex-column">
+	<div class="overflow-hidden h-100 flex-grow-1 d-flex flex-column" id="invoices">
 		<div class="d-flex flex-column h-100 overflow-hidden">
 			<div class="border-bottom bg-white p-3 d-flex align-items-center">
 				<h5 class="font-heading mb-0">Invoices</h5>
 				<div class="ml-auto d-flex align-items-center">
+					<paginate-links :key="invoices.length" :async="true" for="invoices" :show-step-links="true" :classes="{'ul': ['pagination', 'd-inline-flex', 'mb-0'], 'li': ['page-item', !hasInvoices ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
+					<div class="d-inline-flex align-items-center mx-2">
+						<vue-select :options="invoiceStatuses" button_class="border-0 bg-light shadow-none select-flex" v-model="invoiceStatus" label="Status"></vue-select>
+					</div>
                     <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="openInfo = true">
                         <plus-icon class="btn-icon"></plus-icon>
                         New Invoice
@@ -11,15 +15,9 @@
 				</div>
 			</div>
 
-			<div class="flex-grow-1 d-flex h-100 overflow-hidden">
+			<div class="flex-grow-1 d-flex h-100 overflow-hidden mt-2">
 				<div class="d-flex overflow-hidden h-100 w-100">
 					<div class="d-flex flex-column flex-grow-1 px-4">
-						<div class="mt-3 mb-2">
-							<paginate-links :key="invoices.length" :async="true" for="invoices" :show-step-links="true" :classes="{'ul': ['pagination', 'shadow-sm', 'd-inline-flex', 'mb-0', 'paginatxion-sm'], 'li': ['page-item', !hasInvoices ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
-							<div class="mx-2 d-inline-flex align-items-center">
-								<vue-select :options="invoiceStatuses" button_class="border-0 shadow-sm" v-model="invoiceStatus" label="Status"></vue-select>
-							</div>
-						</div>
 						<div class="overflow-auto h-100" v-if="invoices.length > 0" :class="{'d-none': !hasInvoices}">
 							<table class="table table-borderless table-fixed-header mb-0">
 								<thead>
@@ -34,7 +32,7 @@
 								</thead>
 								<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
 									<tr v-for="invoice in paginated('invoices')" v-if="!invoice.placeholder">
-										<td class="align-middle text-muted">
+										<td class="align-middle text-gray-500">
 											{{ invoice.is_pending ? 'Not available' : invoice.id }}
 											<router-link to="/dashboard/account?tab=payout" v-if="invoice.is_pending && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
 										</td>
@@ -51,8 +49,8 @@
 										<td class="align-middle text-muted">{{ formatDate(invoice.created) }}</td>
 										<td class="text-right align-middle">
 											<div class="dropleft">
-					                    		<button class="btn btn-white border p-1 line-height-0" data-toggle="dropdown" :disabled="invoice.statusLoading">
-													<more-h-icon width="20" height="20"></more-h-icon>
+					                    		<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="invoice.statusLoading">
+													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 					                    		</button>
 												<div class="dropdown-menu dropdown-menu-right">
 													<template v-if="invoice.is_pending">
@@ -145,4 +143,4 @@
 </template>
 
 <script src="./invoices.js"></script>
-<style scoped lang="scss" src="./invoices.scss"></style>
+<style lang="scss" src="./invoices.scss"></style>

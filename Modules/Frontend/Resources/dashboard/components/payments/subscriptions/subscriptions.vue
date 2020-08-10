@@ -1,9 +1,13 @@
 <template>
-	<div class="overflow-hidden h-100 flex-grow-1 d-flex flex-column">
+	<div class="overflow-hidden h-100 flex-grow-1 d-flex flex-column" id="subscriptions">
 		<div class="d-flex flex-column h-100">
 			<div class="border-bottom bg-white p-3 d-flex align-items-center">
 				<h5 class="font-heading mb-0">Subscriptions</h5>
 				<div class="ml-auto d-flex align-items-center">
+					<paginate-links :key="subscriptions.length" :async="true" for="subscriptions" :show-step-links="true" :classes="{'ul': ['pagination', 'd-inline-flex', 'mb-0'], 'li': ['page-item', !hasSubscriptions ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
+					<div class="d-inline-flex align-items-center mx-2">
+						<vue-select :options="subscriptionStatuses" button_class="border-0 bg-light shadow-none select-flex" v-model="subscriptionStatus" label="Status"></vue-select>
+					</div>
                     <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="openInfo = true">
                         <plus-icon class="btn-icon"></plus-icon>
                         New Subscription
@@ -11,15 +15,9 @@
 				</div>
 			</div>
 
-			<div class="flex-grow-1 d-flex h-100 overflow-hidden"> 
+			<div class="flex-grow-1 d-flex h-100 overflow-hidden mt-2"> 
 				<div class="d-flex overflow-hidden h-100 w-100">
 					<div class="d-flex flex-column flex-grow-1 px-4">
-						<div class="mt-3 mb-2">
-							<paginate-links :key="subscriptions.length" :async="true" for="subscriptions" :show-step-links="true" :classes="{'ul': ['pagination', 'shadow-sm', 'd-inline-flex', 'mb-0', 'paginatxion-sm'], 'li': ['page-item', !hasSubscriptions ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
-							<div class="mx-2 d-inline-flex align-items-center">
-								<vue-select :options="subscriptionStatuses" button_class="border-0 shadow-sm" v-model="subscriptionStatus" label="Status"></vue-select>
-							</div>
-						</div>
 						<div class="overflow-auto flex-grow-1 pb-4 h-100" v-if="subscriptions.length > 0" :class="{'d-none': !hasSubscriptions}">
 							<table class="table table-borderless table-fixed-header mb-0">
 								<thead>
@@ -34,8 +32,8 @@
 									</tr>
 								</thead>
 								<paginate tag="tbody" name="subscriptions" ref="paginate" :list="subscriptions" :per="15">
-									<tr v-for="subscription in subscriptions" v-if="!subscription.placeholder">
-										<td class="align-middle text-muted">
+									<tr v-for="subscription in paginated('subscriptions')" v-if="!subscription.placeholder">
+										<td class="align-middle text-gray-500">
 											{{ subscription.plan ? subscription.id : 'Not available' }}
 											<router-link to="/dashboard/account?tab=payout" v-if="!subscription.plan && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
 										</td>
@@ -60,8 +58,8 @@
 										<td class="align-middle">{{ subscription.contact.contact_user.full_name }}</td>
 										<td class="text-right align-middle">
 											<div v-if="subscription.status != 'canceled'" class="dropleft">
-					                    		<button class="btn btn-white border p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
-													<more-h-icon width="20" height="20"></more-h-icon>
+					                    		<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
+													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 					                    		</button>
 												<div class="dropdown-menu dropdown-menu-right">
 													<template v-if="subscription.plan">
@@ -195,4 +193,4 @@
 </template>
 
 <script src="./subscriptions.js"></script>
-<style scoped lang="scss" src="./subscriptions.scss"></style>
+<style lang="scss" src="./subscriptions.scss"></style>

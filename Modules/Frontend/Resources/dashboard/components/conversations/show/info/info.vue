@@ -1,6 +1,6 @@
 <template>
     <div class="h-100 overflow-hidden">
-
+        <button class="btn btn-close close position-absolute" type="button" @click="$root.detailsTab = ''"><close-icon width="36" height="36"></close-icon></button>
         <!-- Profile -->
         <div class="h-100 py-3 overflow-auto" ref="info-container">
             <div class="text-center info-profile">
@@ -219,7 +219,7 @@
                                     <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search for tags..." v-model="tagSearch" />
                                 </div>
                                 <div v-if="tagsData.tags.length > 0" class="my-2">
-                                    <small v-for="tag in tagsData.tags" class="badge badge-orange mr-1 line-height-1 mb-1">{{ tag }}</small>
+                                    <small v-for="tag in tagsData.tags" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
                                 </div>
 
                                 <div class="overflow-y-only mt-2">
@@ -242,9 +242,9 @@
                                                 <message-type :click="false" :square-thumbnail="true" :message="data.data" :outgoing="data.data.outgoing"></message-type>
                                                 
                                                 <div class="mb-1">
-                                                    <div v-for="(tag, index) in data.data.tags" class="d-inline-block badge badge-warning line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
+                                                    <div v-for="(tag, index) in data.data.tags" class="d-inline-block badge badge-orange line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
                                                     {{ tag }}&nbsp;
-                                                        <close-icon height="8" width="8" transform="scale(2.5)" class="cursor-pointer no-action" @click.native="data.data.tags.splice(index, 1); $parent.updateMessageTags(data.data)"></close-icon>
+                                                        <close-icon height="8" width="8" transform="scale(2.5)" class="cursor-pointer no-action fill-white" @click.native="data.data.tags.splice(index, 1); $parent.updateMessageTags(data.data)"></close-icon>
                                                     </div>
                                                 </div>
                                             </div>

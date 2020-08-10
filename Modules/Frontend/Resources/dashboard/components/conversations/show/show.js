@@ -29,6 +29,10 @@ import FilePdfIcon from '../../../../icons/file-pdf';
 import FileAudioIcon from '../../../../icons/file-audio';
 import VolumeMidIcon from '../../../../icons/volume-mid';
 import PlayIcon from '../../../../icons/play';
+import CallMenuIcon from '../../../../icons/call-menu';
+import VideocamIcon from '../../../../icons/videocam';
+import MicrophoneAltIcon from '../../../../icons/microphone-alt';
+import DocumentAltIcon from '../../../../icons/document-alt';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -59,6 +63,10 @@ export default {
         FileAudioIcon,
         VolumeMidIcon,
         PlayIcon,
+        CallMenuIcon,
+        VideocamIcon,
+        MicrophoneAltIcon,
+        DocumentAltIcon,
 
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),

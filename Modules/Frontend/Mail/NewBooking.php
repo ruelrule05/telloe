@@ -34,8 +34,6 @@ class NewBooking extends Mailer
      */
     public function build()
     {
-        $email = null;
-
         return $this->from(config('app.noreply_email'), config('app.name'))
             ->subject('New Booking')
             ->to($this->email)

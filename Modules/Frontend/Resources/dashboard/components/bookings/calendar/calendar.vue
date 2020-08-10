@@ -11,7 +11,7 @@
 		</div>
 
 		<div class="h-100 d-flex">
-			<div class="h-100 d-flex flex-column flex-grow-1 p-3">
+			<div class="h-100 d-flex flex-column flex-grow-1 p-4">
 				<div class="bg-white rounded shadow-sm h-100 p-1 flex-grow-1">
 					<div class="h-100 position-relative">
 						<div class="calendar-buttons position-absolute">
@@ -135,7 +135,7 @@
 
 				<!-- Settings -->
 	            <div v-else-if="infoTab == 'settings'" class="p-3">
-	            	<strong>Integrations</strong>
+	            	<strong>Sync Calendar</strong>
 					<div class="dropdown mt-2" ref="googleCalendarDropdown">
 						<button type="button" class="btn btn-white border d-inline-flex align-items-center" @click="googleCalendarDropdownToggle" data-toggle="dropdown" data-display="static">
 							<img src="/images/brands/google-calendar.svg" height="18" class="mr-2">

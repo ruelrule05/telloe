@@ -155,6 +155,7 @@ export default {
 				if (date != 'Invalid Date') {
 					this.$refs['v-calendar'].focusDate(date);
 					this.selectedDate = date;
+					this.infoTab = 'bookings';
 				}
 			}
 		},
@@ -204,6 +205,7 @@ export default {
 			if (date != 'Invalid Date') {
 				this.$refs['v-calendar'].focusDate(date);
 				this.selectedDate = date;
+				this.infoTab = 'bookings';
 			}
 		}
 	},

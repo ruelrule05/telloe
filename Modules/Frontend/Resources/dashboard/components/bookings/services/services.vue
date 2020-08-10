@@ -19,19 +19,16 @@
 			<div v-else class="d-flex flex-grow-1 overflow-hidden">
 				<div class="flex-grow-1 p-2 overflow-auto">
 					<div class="d-flex flex-wrap">
-						<div class="w-50 p-2" v-for="service in services">
-							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm']" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
-								<div class="d-flex">
-									<h5 class="font-heading mb-1">{{ service.name }}</h5>
-									<span class="ml-auto text-gray">{{ service.is_available ? 'Available' : 'Not Available' }}</span>
-								</div>
-								<p class="text-secondary mb-0 multiline-ellipsis small">{{ service.description }}</p>
+						<div class="w-50 p-3" v-for="service in services">
+							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm', {'unavailable': !service.is_available}]" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
+								<h5 class="font-heading mb-3">{{ service.name }}</h5>
+								<p class="text-secondary mb-0 multiline-ellipsis small service-description mb-5">{{ service.description }}</p>
 								<div class="d-flex align-items-center mt-3">
 									<clock-icon width="17" height="17" fill="#888"></clock-icon>
 									<span class="ml-1">{{ service.duration }} minutes</span>
 								</div>
 								<div class="d-flex mt-2">
-									<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-primary bg-gray-400' : 'text-gray-400 bg-gray-200']">
+									<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-white bg-primary' : 'text-gray-400 bg-gray-200']">
 										<span class="position-absolute-center line-height-1">{{ day.charAt(0) }}</span>
 									</div>
 								</div>
@@ -40,13 +37,13 @@
 					</div>
 				</div>
 
-				<div class="info bg-white border-left py-3 h-100 position-relative overflow-auto" :class="{'open': selectedService}">
+				<div class="info bg-white border-left py-4 h-100 position-relative overflow-auto" :class="{'open': selectedService}">
 					<div v-if="selectedService">
-						<div class="px-3">
+						<div class="px-4 mb-5">
 							<div class="d-flex align-items-center mb-1">
 								<h5 class="font-heading mb-0">{{ selectedService.name }}</h5>
 								<div class="ml-auto d-flex align-items-center">
-									<toggle-switch @input="updateService(selectedService)" v-model="selectedService.is_available"></toggle-switch>
+									<toggle-switch @input="updateService(selectedService)" active-class="bg-green" v-model="selectedService.is_available"></toggle-switch>
 									<div class="dropdown ml-2">
 										<button class="btn p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
 										<div class="dropdown-menu">
@@ -60,31 +57,29 @@
 									</div>
 								</div>
 							</div>
-							<p class="mb-0 small text-secondary">{{ selectedService.description }}</p>
+							<p class="mb-0 mt-2 small text-secondary">{{ selectedService.description }}</p>
 						</div>
-
-						<hr />
 						
-						<div class="px-3">
-							<h6 class="font-heading d-inline-block mb-1">Duration: </h6> {{ selectedService.duration }} minutes
+						<div class="px-4">
+							<h6 class="font-heading d-inline-block mb-2">Duration: </h6> {{ selectedService.duration }} minutes
 							<div>
-								<h6 class="font-heading d-inline-block mb-1">Interval: </h6> {{ selectedService.interval }} minutes
+								<h6 class="font-heading d-inline-block mb-2">Interval: </h6> {{ selectedService.interval }} minutes
 							</div>
-							<h6 class="font-heading d-inline-block mb-1">Default Rate: </h6> ${{ selectedService.default_rate }}
+							<h6 class="font-heading d-inline-block mb-2">Default Rate: </h6> ${{ selectedService.default_rate }}
 							<div>
-								<h6 class="font-heading d-inline-block mb-3">Available in widget: </h6> {{ selectedService.in_widget ? 'Yes' : 'No' }}
+								<h6 class="font-heading d-inline-block mb-4">Available in widget: </h6> {{ selectedService.in_widget ? 'Yes' : 'No' }}
 							</div>
 						</div>
 
 						<div class="d-flex mb-2">
-							<button class="btn pposition-relative w-50 rounded-0" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">Availability</button>
-							<button class="btn btn-tab position-relative w-50 rounded-0" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">Holidays</button>
+							<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">Availability</button>
+							<button class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">Holidays</button>
 						</div>
 
 						<div v-if="serviceDetailsTab == 'availability'" id="service-days">
 							<div v-for="day in days" class="service-day py-1 border-bottom">
 								<div class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer" data-toggle="collapse" :data-target="`#day-${day}`">
-									<toggle-switch class="mr-2" @click.native.stop @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
+									<toggle-switch class="mr-2" active-class="bg-green" @click.native.stop @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
 									<div class="h6 mb-0">{{ day.toUpperCase() }}</div>
 									<chevron-down-icon class="ml-auto chevron-down"></chevron-down-icon>
 								</div>

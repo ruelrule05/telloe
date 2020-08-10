@@ -87,6 +87,12 @@
 			fill: $value !important;
 		}
 	}
+	.stroke-#{$color} {
+		stroke: $value !important;
+		* {
+			stroke: $value !important;
+		}
+	}
 
 	.bg-#{$color}-light {
 		background-color: rgba($value, 12.5%);
@@ -239,7 +245,6 @@
 			position: sticky;
 			top: 0;
 			z-index: 2;
-			color: $secondary;
 			font-weight: $font-weight-base;
 		}
 	}

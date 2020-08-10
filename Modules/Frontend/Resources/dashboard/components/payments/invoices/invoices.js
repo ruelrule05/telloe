@@ -9,6 +9,7 @@ import ShortcutIcon from '../../../../icons/shortcut';
 import ArrowDownIcon from '../../../../icons/arrow-down';
 import TaskIcon from '../../../../icons/task';
 import TrashIcon from '../../../../icons/trash';
+import MoreIcon from '../../../../icons/more';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
@@ -27,6 +28,7 @@ export default {
 		ArrowDownIcon,
 		TaskIcon,
 		TrashIcon,
+		MoreIcon,
 	},
 
 	directives: {Tooltip},

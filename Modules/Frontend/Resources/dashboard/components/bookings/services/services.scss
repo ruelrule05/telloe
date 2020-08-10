@@ -14,6 +14,9 @@
 	&.active {
 		box-shadow: 0 0 0 0.1rem $primary;
 	}
+	&.unavailable{
+		opacity: 0.45;
+	}
 }
 .service-add {
 	background-color: $light;
@@ -54,4 +57,7 @@
 	&.open {
 		margin-right: 0;
 	}
+}
+.service-description {
+	height: 34px;
 }

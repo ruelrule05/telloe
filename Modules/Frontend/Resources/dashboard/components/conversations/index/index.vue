@@ -1,20 +1,21 @@
 <template>
 	<div class="bg-white text-left border-right">
 		<div class="conversation-list d-flex flex-column h-100 position-relative">
-			<div class="d-flex align-items-center border-bottom conversations-header">
-				<div class="py-3 px-2">
-					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'active'}" @click="conversationTab = 'active'">Chats</button>
-				</div>
-				<div class="py-3 btn-tab">
-					<button class="btn px-2 py-1 font-heading font-weight-bold" :class="{'text-gray-500': conversationTab != 'archive'}" @click="conversationTab = 'archive'">Archive</button>
-				</div>
-                <div v-if="$root.auth.role.role == 'client'" class="ml-auto pr-3">
-                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()">
-                        <plus-icon class="btn-icon"></plus-icon>
-                        New Chat
-                    </button>
+            <div class="conversations-header">
+                <div class="d-flex px-3 align-items-center">
+                    <h5 class="mb-0 font-heading">Messages</h5>
+                    <div v-if="$root.auth.role.role == 'client'" class="ml-auto">
+                        <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()">
+                            <plus-icon class="btn-icon fill-primary stroke-primary"></plus-icon>
+                            New Chat
+                        </button>
+                    </div>
                 </div>
-			</div>
+    			<div class="d-flex align-items-center border-bottom btn-tab mt-1">
+    				<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{'active': conversationTab == 'active'}" @click="conversationTab = 'active'">Chats</button>
+    				<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{'active': conversationTab == 'archive'}" @click="conversationTab = 'archive'">Archive</button>
+    			</div>
+            </div>
 
 			<div class="overflow-auto p-3 position-relative h-100" v-if="ready">
                 <div v-if="conversations.length == 0" class="position-absolute-center w-100 text-center text-muted">
@@ -27,7 +28,7 @@
                         </div>
                         
                         <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
-                            <button class="btn btn-sm btn-white p-1 border line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0" @click.prevent><more-h-icon width="20" height="20"></more-h-icon></button>
+                            <button class="btn btn-sm btn-light p-1 line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0" @click.prevent><more-icon width="20" height="20" class="fill-gray-500" transform="scale(0.75)"></more-icon></button>
                             <div class="dropdown-menu py-1">
                                 <small v-if="!conversation.archive" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
                                 <small v-else class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>

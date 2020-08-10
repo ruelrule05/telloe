@@ -1,9 +1,26 @@
 @import '../../../../sass/variables';
-.info{
-    transition: $transition-base;
-    width: 350px;
-    margin-right: -350px;
-    &.open{
-        margin-right: 0
+#invoices {
+	.info {
+		transition: $transition-base;
+		width: 350px;
+		margin-right: -350px;
+		&.open {
+			margin-right: 0;
+		}
+	}
+
+	.pagination .page-item {
+		.page-link {
+			background: $light;
+		}
+		&.active {
+			.page-link {
+				background: $gray-400 !important;
+			}
+		}
+	}
+	
+    .select-flex {
+        height: calc(1.5em + 0.7rem);
     }
 }

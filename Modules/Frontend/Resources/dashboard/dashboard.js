@@ -120,6 +120,10 @@ import ColoredBellIcon from '../icons/colored-bell';
 import FilePdfIcon from '../icons/file-pdf';
 import FileArchiveIcon from '../icons/file-archive';
 
+import ContactAltIcon from '../icons/contact-alt';
+import MonthviewIcon from '../icons/monthview';
+import PaymentsIcon from '../icons/payments';
+
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
 import Notification from '../components/notification/notification.vue';
@@ -154,6 +158,10 @@ window.app = new Vue({
         CreditCardIcon,
         BillIcon,
         ColoredBellIcon,
+
+        ContactAltIcon,
+        MonthviewIcon,
+        PaymentsIcon,
 
         VideoCall,
         ScreenRecorder,

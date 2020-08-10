@@ -4,6 +4,10 @@ export default{
 	      type: Boolean,
 	      default: false
 	    },
+      activeClass: {
+        type: String,
+        default: ''
+      },
 	},
 	data: () => ({
 	  	width: 100,
@@ -26,7 +30,7 @@ export default{
         },
         state_class() {
           if (this.state) {
-            return 'active'
+            return this.activeClass + ' active'
           }
         }
     },

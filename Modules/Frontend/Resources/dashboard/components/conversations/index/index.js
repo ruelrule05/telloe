@@ -16,6 +16,7 @@ import PasswordIcon from '../../../../icons/password';
 import HeadphoneIcon from '../../../../icons/headphone';
 import LockIcon from '../../../../icons/lock';
 import ListBulletIcon from '../../../../icons/list-bullet';
+import MoreIcon from '../../../../icons/more';
 
 export default {
     components: {
@@ -35,6 +36,7 @@ export default {
         HeadphoneIcon,
         LockIcon,
         ListBulletIcon,
+        MoreIcon,
     },
 
     data: () => ({

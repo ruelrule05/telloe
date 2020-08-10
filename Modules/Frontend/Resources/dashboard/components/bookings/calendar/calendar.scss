@@ -61,6 +61,7 @@ h2 {
 		font-size: 18px;
 		position: relative;
 		.day-label{
+			position: relative;
 			display: inline-block;
 			vertical-align: middle;
 			cursor: pointer;
@@ -69,9 +70,29 @@ h2 {
 			height: 50px;
 			transition: $transition-base;
 			border-radius: 50%;
-			&:hover,
-			&.active{
+			&:hover:after,
+			&.active:after{
+				opacity: 1;
+			}
+			&:after{
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 30px;
+				height: 30px;
+				border-radius: 50%;
 				background-color: rgba($primary, 0.1);
+				opacity: 0;
+			}
+			&.active{
+				&:after{
+					background-color: $primary;
+				}
+				span {
+					color: white !important;
+				}
 			}
 			&.is-today{
 				font-weight: bolder;
@@ -82,6 +103,7 @@ h2 {
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
+				z-index: 1;
 			}
 		}
 	
@@ -90,9 +112,11 @@ h2 {
 			left: 50%;
 			bottom: -5px;
 			transform: translateX(-50%);
+			z-index: 1;
 			.vc-badge{
+				color: white;
 				font-size: 10px;
-				border-radius: 3px;
+				border-radius: 50%;
 				font-weight: 400;
 				pointer-events: none;
 				padding: 2px 4px;

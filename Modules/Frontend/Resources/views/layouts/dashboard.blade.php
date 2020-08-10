@@ -26,7 +26,7 @@
 											</div>
 											<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
 												<h6 class="font-heading mb-0 text-ellipsis text-body ">@{{ auth.full_name }}</h6>
-												<small class="text-secondary d-block text-ellipsis">@{{ auth.role.role == 'client' ? '@' + auth.username : auth.email }}</small>
+												<!-- <small class="text-secondary d-block text-ellipsis">@{{ auth.role.role == 'client' ? '@' + auth.username : auth.email }}</small> -->
 											</div>
 										</div>
 									</div>
@@ -96,16 +96,16 @@
 								<template v-if="auth.role.role == 'client'">
 									<div class="list-group mt-3 font-heading sidebar-menu">
 										<router-link :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
-											<chat-icon height="22" width="22"></chat-icon>
+											<monthview-icon height="18" width="18"></monthview-icon>
 											<span class="ml-3">Messages</span>
-											<small class="badge badge-danger text-white ml-auto message-count">@{{ newMessagesCount }}</small>
+											<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
 										</router-link>
 										<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
 										<template>
 											<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 												<div class="d-flex align-items-center px-4">
-													<planner-icon height="22" width="22"></planner-icon>
+													<monthview-icon height="18" width="18"></monthview-icon>
 													<span class="ml-3">Bookings</span>
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>
@@ -121,13 +121,13 @@
 
 											
 											<router-link to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
-												<contact-icon height="22" width="22"></contact-icon>
+												<contact-alt-icon height="18" width="18"></contact-alt-icon>
 												<span class="pl-3">Contacts</span>
 											</router-link>
 
 											<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 												<div class="d-flex align-items-center px-4">
-													<colored-bill-icon height="22" width="22"></colored-bill-icon>
+													<payments-icon height="18" width="18"></payments-icon>
 													<span class="ml-3">Payments</span>
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>

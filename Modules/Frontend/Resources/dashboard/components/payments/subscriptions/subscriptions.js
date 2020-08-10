@@ -3,13 +3,14 @@ import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import VueButton from '../../../../components/vue-button.vue';
-import MoreHIcon from '../../../../icons/more-h';
+import MoreVIcon from '../../../../icons/more-v';
 import PlusIcon from '../../../../icons/plus';
 import ShortcutIcon from '../../../../icons/shortcut';
 import ArrowDownIcon from '../../../../icons/arrow-down';
 import TaskIcon from '../../../../icons/task';
 import BlockIcon from '../../../../icons/block';
 import TrashIcon from '../../../../icons/trash';
+import MoreIcon from '../../../../icons/more';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
@@ -25,13 +26,14 @@ export default {
 		VueSelect,
 		VueButton,
 
-		MoreHIcon,
+		MoreVIcon,
 		PlusIcon,
 		ShortcutIcon,
 		ArrowDownIcon,
 		TaskIcon,
 		BlockIcon,
 		TrashIcon,
+		MoreIcon,
 	},
 
 	directives: {Tooltip},

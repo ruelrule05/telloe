@@ -3,8 +3,7 @@
     width: 350px;
 }
 .conversations-header{
-    padding-top: 7px;
-    padding-bottom: 7px;
+    padding-top: 12px;
 }
 .str-limit {
     overflow: hidden;
@@ -38,7 +37,7 @@
     &:hover {
         background-color: $gray-100;
         .conversation-dropdown {
-            opacity: 1;
+            opacity: 1 !important;
         }
         .last-message-time{
             opacity: 0;

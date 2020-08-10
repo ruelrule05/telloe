@@ -13,12 +13,13 @@ $grid-gutter-width: 40px;
 // Colors
 $primary: #5A5ADF;
 $secondary: #818ca1;
-$orange: #FBBC1B;
+$orange: #FF5D47;
 $facebook: #4267b2;
 $google: #DC3E29;
 $light: #F0F2F5;
 $dark: #5c6570;
 $blue: #77B0EA;
+$green: #39CEB0;
 
 $border-color: rgba($secondary, 0.3);
 $body-color: $black;
@@ -41,6 +42,7 @@ $theme-colors: map-merge(
         'gray-400': $gray-400,
         'gray-500': $gray-500,
         'blue': $blue,
+        'green': $green,
     )
 );
 
@@ -138,10 +140,11 @@ $dropdown-header-padding: $dropdown-padding-y $dropdown-item-padding-x;
 $dropdown-header-color: $secondary;
 
 // Badge
-$badge-font-size:  100%;
+$badge-font-size:  90%;
 $badge-font-weight: $font-weight-base;
 $badge-padding-x: 0.5rem;
-$badge-padding-y: 0.25rem;
+$badge-padding-y: 0.15rem;
+$badge-border-radius: $border-radius;
 
 // Navbar
 $navbar-default-bg: #fff;
@@ -182,7 +185,7 @@ $list-group-active-bg: $white;
 $list-group-action-hover-color: $black;
 $list-group-active-color: $primary;
 $list-group-action-active-color: $black;
-$list-group-item-padding-y: 0.35rem;
+$list-group-item-padding-y: 0.5rem;
 $list-group-item-padding-x: 0.8rem;
 $list-group-color: rgba($black, 80%);
 
