@@ -92,12 +92,12 @@ export default {
             let now = dayjs();
             let bookings = [];
             this.bookings.forEach(booking => {
-                    let parts = booking.date.split('-');
-                    booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
-                    if (now.isAfter(dayjs(`${booking.date} ${booking.start}`))) {
-                        this.$set(booking, 'is_expired', true);
-                    }
-                    bookings.push(booking);
+                let parts = booking.date.split('-');
+                booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
+                if (now.isAfter(dayjs(`${booking.date} ${booking.start}`))) {
+                    this.$set(booking, 'is_expired', true);
+                }
+                bookings.push(booking);
             });
             bookings.sort((a,b) => b.date.localeCompare(a.date));
 

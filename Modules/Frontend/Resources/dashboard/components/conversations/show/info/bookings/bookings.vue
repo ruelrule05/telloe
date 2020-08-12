@@ -90,7 +90,7 @@
 					</div>
 	            </div>
 			</template>
-			<div v-else class="text-center text-secondary pb-2">You don't have any bookings yet.</div>
+			<div v-else class="text-center text-secondary pb-2">Select an available service below to create your first booking.</div>
 		</div>
 
 
@@ -104,7 +104,7 @@
 	                    <small class="d-block">{{ service.duration }} minutes</small>
 	                </div>
 	                <div class="ml-auto" v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1">
-	                    <toggle-switch :value="!isServiceBlacklisted(service)" @click.native.stop @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
+	                    <toggle-switch active-class="bg-green" :value="!isServiceBlacklisted(service)" @click.native.stop @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
 	                </div>
 	            </div>
             </template>
@@ -163,7 +163,7 @@
 											<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
 											{{ timeslot.label }}
 										</div>
-										<div class="rounded border p-2">
+										<div class="rounded border p-2" v-if="$root.auth.timezone != conversation.member.timezone">
 											<small class="d-block">Client's time: {{ conversation.member.timezone }}</small>
 											{{ timezoneTime($root.auth.timezone, conversation.member.timezone, timeslot.time) }}
 										</div>

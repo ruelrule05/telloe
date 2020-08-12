@@ -24,7 +24,7 @@
 					            </div>
 					            <h3 class="font-heading">{{ caller.full_name || $root.callConversation.name }}</h3>
 					            <h6 class="font-weight-light mb-5">is calling..</h6>
-					            <button type="button" class="btn btn-danger btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
+					            <button type="button" class="btn btn-green btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
 					                <phone-icon fill="white"></phone-icon>
 					            </button>
 					            <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="rejectCall()">
@@ -50,8 +50,11 @@
 
 						<!-- Ongoing -->
 			    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column overflow-hidden">
-			    			<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked" style="z-index: 1">
+			    			<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked">
 			    				<h5 class="font-heading mb-0 text-white">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h5>
+			    				<button @click="endCall()" class="btn btn-sm btn-close p-0 position-absolute">
+									<close-icon width="36" height="36"></close-icon>
+								</button>
 			    			</div>
 							<!-- <button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center">
 								<i :class="{'bg-gray': !isRecording}"></i>&nbsp;{{ isRecording ? 'Stop recording' : 'Record this call' }}</span>

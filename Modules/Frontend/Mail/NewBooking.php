@@ -23,7 +23,7 @@ class NewBooking extends Mailer
             $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar';
         elseif(Auth::user()->id == $booking->service->user_id) : // if client - send to contact
             $this->email = $booking->user->email;
-            $this->emailMessage = "A booking has made for your account with the following details:";
+            $this->emailMessage = "A booking has been made for your account with the following details:";
         endif;
     }
 

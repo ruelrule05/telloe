@@ -51,6 +51,7 @@ export default {
                     e => {
                         FB.api('/me', {fields: 'first_name, last_name, email'}, response => {
                             if (response && !response.error) {
+                                console.log(response);
                                 response.action = this.$root.action;
                                 let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                                 let invite_token = this.$root.invite_token;

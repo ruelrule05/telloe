@@ -49,7 +49,6 @@ class ContactController extends Controller
         $this->validate($request, [
             'email' => 'required|email',
             'invite_message' => 'nullable|string|max:100',
-            'conversation_message' => 'nullable|string|max:255',
         ]);
 
         if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as contact");
@@ -113,11 +112,11 @@ class ContactController extends Controller
             ]);
         endif;
 
-        if($conversation && $request->conversation_message && $createMessage) :
+        if($conversation && $request->invite_message && $createMessage) :
             Message::create([
                 'conversation_id' => $conversation->id,
                 'user_id' => Auth::user()->id,
-                'message' => $request->conversation_message,
+                'message' => $request->invite_message,
                 'type' => 'text'
             ]);
         endif;

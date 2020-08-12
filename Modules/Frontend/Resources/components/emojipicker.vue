@@ -42,7 +42,7 @@ export default {
 @import '../sass/variables';
 .emoji-invoker svg {
 	transition: $transition-base;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 .emoji-invoker svg:hover{
 	transform: scale(1.1);

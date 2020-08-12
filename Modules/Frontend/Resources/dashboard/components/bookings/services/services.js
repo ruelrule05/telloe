@@ -22,7 +22,8 @@ export default {
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		newBreaktime: null,
 		newHoliday: null,
-		serviceDetailsTab: 'availability'
+		serviceDetailsTab: 'availability',
+		selectedDay: '',
 	}),
 
 	computed: {
@@ -72,6 +73,19 @@ export default {
             updateService: 'services/update',
             deleteService: 'services/delete',
         }),
+
+        applyBreaktimeToAll() {
+        	if(this.selectedService && this.selectedDay) {
+        		this.$refs['applyBreaktimeToAllModal'].hide();
+        		this.$toasted.show('Breaktimes has been applied to all days successfully.');
+        		Object.keys(this.selectedService.days).forEach(key => {
+        			if(key != this.selectedDay) {
+        				this.selectedService.days[key].breaktimes = this.selectedService.days[this.selectedDay].breaktimes;
+        			}
+        		});
+				this.updateService(this.selectedService);
+        	}
+        },
 
 		removeHoliday(index) {
 			this.$delete(this.selectedService.holidays, index);

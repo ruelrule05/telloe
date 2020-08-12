@@ -99,10 +99,18 @@ export default {
             });
 			let response = await axios.post('/auth', bodyFormData, {toasted: true, headers: {'Content-Type': 'multipart/form-data'}});
 			this.$root.auth = response.data;
+			this.$toasted.show('Account has been updated successfully.');
 		},
 
 		password() {
-			axios.put('/auth/password', this.securityForm, {toasted: true});
+			axios.put('/auth/password', this.securityForm, {toasted: true}).then(() => {
+				this.$toasted.show('Password has been updated successfully.');
+			});
+			this.securityForm = {
+				current_password: '',
+				password: '',
+				password_confirmation: '',
+			};
 		},
 
 		nospace(e) {

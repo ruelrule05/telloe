@@ -35,7 +35,7 @@ class UpdateBooking extends Mailer
     public function build()
     {
         return $this->from(config('app.noreply_email'), config('app.name'))
-            ->subject('New Booking')
+            ->subject('Booking Updated')
             ->to($this->email)
             ->view('frontend::emails.update-booking');
     }

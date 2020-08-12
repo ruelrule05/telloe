@@ -13,6 +13,7 @@ import CogIcon from '../../../../icons/cog';
 import CloseIcon from '../../../../icons/close';
 import VCalendar from 'v-calendar';
 import utcPlugin from 'dayjs/plugin/utc';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 window.Vue.use(VCalendar);
 export default {
 	components: {
@@ -159,6 +160,16 @@ export default {
 				}
 			}
 		},
+		bookings: function(value) {
+			if(value.length > 0 && !this.selectedDate) {
+				let now = this.dayjs();
+				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
+				console.log(nextBooking);
+				let date = this.dayjs(value[0].date).toDate();
+				this.selectedDate = date;
+				this.infoTab = 'bookings';
+			}
+		}
 	},
 
 	created() {
@@ -167,6 +178,8 @@ export default {
 		this.$root.heading = 'Bookings';
 		this.dayjs = require('dayjs');
 		this.dayjs.extend(utcPlugin);
+		this.dayjs.extend(isSameOrAfter);
+		
 		let days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 		let business_hours = [];
 		days.forEach(day => {

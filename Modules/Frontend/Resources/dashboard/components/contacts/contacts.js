@@ -4,7 +4,7 @@ import VueFormValidate from '../../../components/vue-form-validate.vue';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 import Info from '../conversations/show/info/info.vue';
 
-import MoreHIcon from '../../../icons/more-h';
+import MoreIcon from '../../../icons/more';
 import PlusIcon from '../../../icons/plus';
 import TrashIcon from '../../../icons/trash';
 import PencilIcon from '../../../icons/pencil';
@@ -18,7 +18,7 @@ export default {
 		ToggleSwitch,
         Info,
 
-		MoreHIcon, 
+		MoreIcon, 
 		PlusIcon,
 		TrashIcon,
 		PencilIcon,
@@ -29,18 +29,19 @@ export default {
 	},
 
 	data: () => ({
-        openInfo: false,
+        infoTab: '',
 		selectedContact: null,
         manageContact: false,
         manageFields: false,
+        addContact: false,
 		newContact: {
 			custom_fields: {},
 			blacklisted_services: []
 		},
 		activeTab: 'custom_fields',
-		newCustomField: '',
-		editCustomField: '',
         selectedFile: null,
+        addField: false,
+        newField: '',
 	}),
 
 	computed: {
@@ -88,22 +89,18 @@ export default {
         ready: function(value) {
             this.$root.contentloading = !value;
         },
-        manageContact: function(value) {
-            if(value) this.openInfo = true;
-        },
-        manageFields: function(value) {
-            if(value) this.openInfo = true;
-        },
     },
 
 	created() {
         this.$root.contentloading = !this.ready;
+        this.getServices();
 		this.getContacts();
 		this.showUserCustomFields();
 	},
 
 	methods: {
         ...mapActions({
+            getServices: 'services/index',
             getContacts: 'contacts/index',
             storeContact: 'contacts/store',
             deleteContact: 'contacts/delete',
@@ -112,17 +109,18 @@ export default {
             showConversation: 'conversations/show',
         }),
 
+        toggleServiceBlacklist(service) {
+            let index = this.newContact.blacklisted_services.findIndex((x) => x == service.id);
+            if(index > -1) {
+                this.newContact.blacklisted_services.splice(index, 1);
+            } else {
+                this.newContact.blacklisted_services.push(service.id);
+            }
+        },
+
         openFile(file) {
             if (file.type == 'file') this.$root.downloadMedia(file);
             else this.selectedFile = file;
-        },
-
-        closeInfo() {
-            this.openInfo = false;
-            setTimeout(() => {
-                this.manageContact = false;
-                this.manageFields = false;
-            }, 150);
         },
 
         resetNewContact() {
@@ -131,6 +129,15 @@ export default {
                 blacklisted_services: []
             };
         },
+
+        addNewField() {
+            if(this.newField.trim().length > 0) {
+                this.$root.auth.custom_fields.push(this.newField);
+                this.storeUserCustomFields();
+                this.newField = '';
+                this.addField = false;
+            }
+        },
         
         updateCustomField(index) {
         	this.$root.auth.custom_fields[index] = this.editCustomField;
@@ -138,22 +145,10 @@ export default {
             this.$refs['customFieldsLabel'].click();
         },
 
-        addCustomField() {
-        	if(!this.$root.auth.custom_fields) Vue.set(this.$root.auth, 'custom_fields', []);
-            this.$root.auth.custom_fields.unshift(this.newCustomField);
-            this.storeUserCustomFields();
-            this.resetCustomField(); 
-        },
-
-        resetCustomField() {
-            this.newCustomField = '';
-            this.$refs['customFieldsLabel'].click();
-        },
-
 		store() {
 			if(this.newContact.email) {
-				this.$refs['addModal'].hide();
 				this.storeContact(this.newContact);
+                this.infoTab = '';
 			}
 		},
 	}

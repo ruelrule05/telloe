@@ -55,7 +55,11 @@ export default {
 	created() {
 		this.signupForm.invite_token = this.$root.invite_token;
 		this.contact = CONTACT;
-		if(this.contact && this.contact.email) this.signupForm.email = this.contact.email;
+		if (this.contact){
+ 			if (this.contact.email) this.signupForm.email = this.contact.email;
+ 			if (this.contact.first_name) this.signupForm.first_name = this.contact.first_name;
+ 			if (this.contact.last_name) this.signupForm.last_name = this.contact.last_name;
+		}
 		this.signupForm.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	},
 

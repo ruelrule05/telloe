@@ -17,6 +17,7 @@ use Modules\Frontend\Http\OutlookClient;
 use Mail;
 use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\UpdateBooking;
+use Modules\Frontend\Mail\DeleteBooking;
 
 class BookingController extends Controller
 {
@@ -41,7 +42,7 @@ class BookingController extends Controller
         if($request->conversation_id) :
             $conversation = Conversation::findOrFail($request->conversation_id);
             $this->authorize('show', $conversation);
-            $bookings = Booking::with('user', 'service')->whereIn('user_id', [$conversation->member->id, Auth::user()->id])->whereHas('service', function($service) use ($conversation){
+            $bookings = Booking::with('user', 'service')->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->whereHas('service', function($service) use ($conversation){
                 $service->where('user_id', $conversation->user_id);
             })->orderBy('created_at', 'DESC')->get();
         else:
@@ -191,8 +192,21 @@ class BookingController extends Controller
 
     public function destroy($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = Booking::with('user', 'service.user')->where('id', $id)->first();
         $this->authorize('delete', $booking);
+
+        Mail::queue(new DeleteBooking($booking->toArray()));
+        if(Auth::user()->id == $booking->user_id) : // if contact - notify client
+            $user_id = $booking->service->user->id;
+            $description = "<strong>{$booking->user->full_name}</strong> has deleted their booking.";
+        elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
+            $user_id = $booking->user->id;
+            $description = "A booking you made has been deleted.";
+        endif;
+        $notification = Notification::create([
+            'user_id' => $user_id,
+            'description' => $description,
+        ]);
         $booking->delete();
         return response()->json(['success' => true]);
     }

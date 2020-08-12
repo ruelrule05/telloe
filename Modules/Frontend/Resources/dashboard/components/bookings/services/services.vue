@@ -21,7 +21,10 @@
 					<div class="d-flex flex-wrap">
 						<div class="w-50 p-3" v-for="service in services">
 							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm', {'unavailable': !service.is_available}]" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
-								<h5 class="font-heading mb-3">{{ service.name }}</h5>
+								<div class="d-flex">
+									<h5 class="font-heading mb-3">{{ service.name }}</h5>
+									<toggle-switch class="ml-auto" @click.native.stop @input="updateService(service)" active-class="bg-green" v-model="service.is_available"></toggle-switch>
+								</div>
 								<p class="text-secondary mb-0 multiline-ellipsis small service-description mb-5">{{ service.description }}</p>
 								<div class="d-flex align-items-center mt-3">
 									<clock-icon width="17" height="17" fill="#888"></clock-icon>
@@ -77,7 +80,7 @@
 						</div>
 
 						<div v-if="serviceDetailsTab == 'availability'" id="service-days">
-							<div v-for="day in days" class="service-day py-1 border-bottom">
+							<div v-for="day in days" class="service-day p-2 border-bottom">
 								<div class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer" data-toggle="collapse" :data-target="`#day-${day}`">
 									<toggle-switch class="mr-2" active-class="bg-green" @click.native.stop @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
 									<div class="h6 mb-0">{{ day.toUpperCase() }}</div>
@@ -89,15 +92,18 @@
 											<label class="mb-1 text-gray">Available Time</label>
 											<timerangepicker @update="updateAvailableHours($event, day)" :start="selectedService.days[day].start" :end="selectedService.days[day].end"></timerangepicker>
 
-											<label class="mb-1 mt-3 text-gray d-block">Break Times</label>
-											<div class="d-flex align-items-center" v-for="(breaktime, index) in selectedService.days[day].breaktimes" :key="index">
-												<timerangepicker @update="updateBreaktime($event, index, day)" :start="breaktime.start" :end="breaktime.end" class="mt-1 flex-grow-1">
+											<label class="mb-1 mt-3 text-gray">Break Times</label>
+											<div class="d-flex align-items-center mb-1" v-for="(breaktime, index) in selectedService.days[day].breaktimes" :key="index">
+												<timerangepicker @update="updateBreaktime($event, index, day)" :start="breaktime.start" :end="breaktime.end" class="flex-grow-1">
 												</timerangepicker>
 												<trash-icon class="ml-auto cursor-pointer" width="20" height="20" fill="red" @click.native="removeBreaktime(index, day)"></trash-icon>
 											</div>
 
 											<timerangepicker v-if="newBreaktime" :start="newBreaktime.start" :end="newBreaktime.end" @update="updateNewBreaktime($event, day)" class="mt-1"></timerangepicker>
-											<button class="btn btn-link pl-0" :disabled="(newBreaktime && (!newBreaktime.start || !newBreaktime.end))" @click="newBreaktime = {}"><u>+ Add breaktime</u></button>
+											<div class="mt-2 d-flex align-items-center">
+												<button type="button" class="btn btn-primary btn-sm" :disabled="(newBreaktime && (!newBreaktime.start || !newBreaktime.end))" @click="newBreaktime = {}">+ Add breaktime</button>
+												<button v-if="(selectedService.days[day].breaktimes || []).length > 0" type="button" class="btn btn-white border btn-sm ml-auto" @click="selectedDay = day; $refs['applyBreaktimeToAllModal'].show()">Apply to all days</button>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -136,6 +142,21 @@
 				</div>
 			</div>
 		</div>
+
+
+		<modal ref="applyBreaktimeToAllModal" :close-button="false">
+			<template v-if="selectedService && selectedDay">
+				<h5 class="font-heading text-center">Apply to all days</h5>
+				<p class="mt-3">
+					This will override the breaktimes of all days for the selected booking type. <br />
+					Are you sure to apply the selected breaktimes to all days? <br />
+				</p>
+				<div class="d-flex">
+					<button class="btn btn-white border" type="button" data-dismiss="modal">Cancel</button>
+					<button class="btn btn-primary ml-auto" type="button" @click="applyBreaktimeToAll()">Apply</button>
+				</div>
+			</template>
+		</modal>
 
 		<modal ref="addModal" :close-button="false">
 			<h5 class="font-heading mb-3">Add Booking Type</h5>

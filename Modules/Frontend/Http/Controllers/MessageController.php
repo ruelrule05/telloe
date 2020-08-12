@@ -10,6 +10,8 @@ use File;
 use Auth;
 use Image;
 use Carbon\Carbon;
+use FFMpeg;
+use FFMpeg\Format\Video\X264;
 
 class MessageController extends Controller
 {
@@ -31,20 +33,29 @@ class MessageController extends Controller
         $sourceFile = null;
         $previewFile = null;
         if ($request->hasFile('source')) :
-
-            // get mime type
-            
             $filename = $time . '-source';
-            $srcDestination = 'storage/message-media/' . $filename;
+
             $request->file('source')->storeAs('public/message-media/', $filename);
+            $srcDestination = 'storage/message-media/' . $filename;
             $sourceFile = '/' . $srcDestination;
 
+            if($request->type == 'video') :
+                $sourceFile .= '.mp4';
+                FFMpeg::fromDisk('public')
+                    ->open("message-media/$filename")
+                    ->export()
+                    ->toDisk('public')
+                    ->inFormat(new X264('libmp3lame', 'libx264'))
+                    ->save("message-media/$filename.mp4");
+                File::delete(public_path($srcDestination));
+            endif;
+
             $originalName = $request->source->getClientOriginalName();
-            $extension = $request->source->getClientOriginalExtension();
+       /*     $extension = $request->source->getClientOriginalExtension();
             if(!$extension) :
                 $extension = '.' . mime2ext($request->source->getClientMimeType());
                 $originalName .= $extension;
-            endif;
+            endif;*/
             $metadata['filename'] = $originalName;
             $metadata['size'] =  formatBytes($request->source->getSize(), 0);
 

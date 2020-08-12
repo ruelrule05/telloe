@@ -19,7 +19,7 @@ import ChevronRightIcon from '../../../../../icons/chevron-right';
 import ClockIcon from '../../../../../icons/clock';
 import PlannerIcon from '../../../../../icons/planner';
 import DocumentIcon from '../../../../../icons/document';
-import MoreVIcon from '../../../../../icons/more-v';
+import MoveIcon from '../../../../../icons/move';
 import VueScrollTo from 'vue-scrollto';
 import Tooltip from '../../../../../js/directives/tooltip';
 import draggable from 'vuedraggable';
@@ -45,7 +45,7 @@ export default {
         ClockIcon,
         PlannerIcon,
         DocumentIcon,
-        MoreVIcon,
+        MoveIcon,
         draggable,
 	},
 
@@ -55,6 +55,10 @@ export default {
 		conversation: {
 			required: true,
 		},
+        closeButton: {
+            type: Boolean,
+            default: true,
+        },
 	},
 
 	data: () => ({

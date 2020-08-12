@@ -116,10 +116,12 @@ class AuthController extends Controller
         $this->createInitialConversations($user);
         $this->createPresetService($user);
         $this->createDefaultField($user);
-
-        Mail::queue(new Welcome($user));
         
-
+        $user = $user->refresh();
+        if($user->role->role == 'client') :
+            Mail::queue(new Welcome($user));
+        endif;
+        
         $response = [
             'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
         ];
@@ -487,6 +489,7 @@ class AuthController extends Controller
                 'duration' => 60,
                 'interval' => 10,
                 'is_preset' => 1,
+                'is_available' => 1,
                 'days' => json_decode('{
                     "Friday": {
                         "end": "17:00",

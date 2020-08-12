@@ -6,6 +6,7 @@ import CloseIcon from '../../icons/close.vue';
 import PauseAltIcon from '../../icons/pause-alt';
 import CommentIcon from '../../icons/comment';
 const loadImage = require('blueimp-load-image');
+const mime = require('mime-types');
 export default {
 	components: {CameraIcon, CloseIcon, PauseAltIcon, CommentIcon},
 
@@ -69,6 +70,10 @@ export default {
 				    let file = new File(this.blobs, timestamp, {
 				        type: this.blobs[0].type
 				    });
+				    let extension = mime.extension(file.type);
+				    file = new File([file], `${timestamp}.${extension}`, {
+				    	type: file.type
+				    });
 				    let duration = '';
 				    this.$refs['videoPreview'].play().then(() => {
 				    	this.$refs['videoPreview'].currentTime = 10e99;
@@ -81,7 +86,7 @@ export default {
 						    	source: file,
 						    	duration: this.secondsToDuration(duration, 14, 5),
 						    	type: 'video',
-						    	timestamp: timestamp,
+						    	timestamp: `${timestamp}.${extension}`,
 	               				created_at: dayjs(timestamp).format('hh:mm A'),
 						    };
 		                    setTimeout(() => {

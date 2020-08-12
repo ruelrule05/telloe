@@ -35,9 +35,10 @@ class Service extends BaseModel
         if(!array_search($dateString, $holidays)) :
             $date = Carbon::parse($dateString);
             $days = json_decode($this->attributes['days'], true);
+            $dayName = $date->format('l');
 
             
-            $day = $days[$date->format('l')];
+            $day = $days[$dayName];
             if($day['isOpen']) :
                 $timeStart = $date->copy();
                 $timeEnd = $date->copy();
@@ -108,8 +109,18 @@ class Service extends BaseModel
                         endif;
                     endforeach;
 
-
-                    if($bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0) $timeslots[] = $timeslot;
+                    $isBreaktime = false;
+                    foreach($this->days[$dayName]['breaktimes'] as $breaktime) :
+                        $start = str_replace(':', '', $breaktime['start']);
+                        $end = str_replace(':', '', $breaktime['end']);
+                        $time = str_replace(':', '', $timeslot['time']);
+                        if($time >= $start && $time <= $end) :
+                            $isBreaktime = true;
+                        endif;
+                    endforeach;
+                    if($bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && !$isBreaktime) :
+                        $timeslots[] = $timeslot;
+                    endif;
 
                     $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
                 endwhile;
