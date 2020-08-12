@@ -21,11 +21,11 @@
                     <div class="spinner-border spinner-border-sm text-primary"></div>
                 </div>
             </div>
-            <div v-if="squareThumbnail" class="image-square rounded" :style="{backgroundImage: 'url('+message.preview+')'}" @click="if(click) $parent.openFile(message)"></div>
-            <img v-else draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
-            <div class="position-absolute-center preview-video-play pointer-events-none">
+            <div v-else class="position-absolute-center preview-video-play pointer-events-none">
                 <play-icon height="20" width="20"></play-icon>
             </div>
+            <div v-if="squareThumbnail" class="image-square rounded" :style="{backgroundImage: 'url('+message.preview+')'}" @click="if(click) $parent.openFile(message)"></div>
+            <img v-else draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if(click) $parent.openFile(message)" />
         </div>
 
         <!-- Audio -->
