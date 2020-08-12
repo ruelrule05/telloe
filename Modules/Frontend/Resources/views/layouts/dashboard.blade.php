@@ -32,10 +32,6 @@
 									</div>
 									<div class="dropdown-menu overflow-hidden cursor-auto">
 										<span class="dropdown-header">Account</span>
-								    	<!-- <a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
-								    		<shortcut-icon height="17" width="17" class="mr-2"></shortcut-icon>
-								    		View Profile
-								    	</a> -->
 								    	<router-link exact to="/dashboard/account?tab=profile" class="dropdown-item d-flex align-items-center">
 								    		<user-circle-icon height="18" width="18" class="dropdown-item-icon"></user-circle-icon>
 								    		Profile
@@ -86,6 +82,10 @@
 
 	  									<div class="dropdown-divider mx-n2"></div>
 
+	  									<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+								    		<shortcut-icon height="18" width="18" class="dropdown-item-icon"></shortcut-icon>
+								    		Booking Page
+								    	</a>
 								    	<form action="/logout" method="POST">
 								    		@csrf
 								    		<button type="submit" class="dropdown-item outline-0">Log Out</button>
@@ -96,7 +96,7 @@
 								<template v-if="auth.role.role == 'client'">
 									<div class="list-group mt-3 font-heading sidebar-menu">
 										<router-link :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
-											<monthview-icon height="18" width="18"></monthview-icon>
+											<messages-icon height="18" width="18"></messages-icon>
 											<span class="ml-3">Messages</span>
 											<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
 										</router-link>

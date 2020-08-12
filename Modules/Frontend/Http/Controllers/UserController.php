@@ -29,19 +29,28 @@ class UserController extends Controller
 
     public function profile($username, Request $request)
     {
-    	$user = User::where('username', $username)->whereHas('role', function($role) {
+    	$profile = User::where('username', $username)->whereHas('role', function($role) {
             $role->where('role', 'client');
-        })->firstOrfail();
+        })->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
 
         if($request->ajax()) :
-            $user->load(['services' => function($service) {
-                $service->where('is_available', true);
+            $profile->load(['services' => function($service) {
+                $service->where('is_available', true)->where('in_widget', true);
             }]);
 
-            return response()->json($user->services);
+            return response()->json($profile->services);
         endif;
 
-    	return view('frontend::profile', compact('user'));
+    	return view('frontend::profile', compact('profile'));
+    }
+
+    public function showService($username, $service_id)
+    {
+        $user = User::where('username', $username)->whereHas('role', function($role) {
+            $role->where('role', 'client');
+        })->firstOrfail();
+        $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
+        return view('frontend::profile', compact('user'));
     }
 
     public function serviceTimeslots($username, $service_id, Request $request)

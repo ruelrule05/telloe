@@ -110,7 +110,7 @@ class Service extends BaseModel
                     endforeach;
 
                     $isBreaktime = false;
-                    foreach($this->days[$dayName]['breaktimes'] as $breaktime) :
+                    foreach($this->days[$dayName]['breaktimes'] ?? [] as $breaktime) :
                         $start = str_replace(':', '', $breaktime['start']);
                         $end = str_replace(':', '', $breaktime['end']);
                         $time = str_replace(':', '', $timeslot['time']);

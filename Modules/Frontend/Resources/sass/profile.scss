@@ -3,13 +3,13 @@
 [v-cloak] {
     opacity: 0;
 }
-body{
-    background-color: rgba($primary, 0.05);
+body {
+    background-color: rgba($gray-200, 0.5);
 }
-.font-heading{
+.font-heading {
     font-family: 'Avenir Next', sans-serif;
 }
-.profile-image{
+.profile-image {
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -25,27 +25,34 @@ body{
         color: $gray-500;
         font-size: 24px;
     }
+    &.profile-image-sm{
+        width: 60px;
+        height: 60px;
+        span{
+            font-size: 20px
+        }
+    }
 }
-.cursor-pointer{
+.cursor-pointer {
     cursor: pointer !important;
 }
-.service{
+.service {
     transition: $transition-base;
-    &:hover{
+    &:hover {
         margin-top: -5px;
     }
 }
 
-.v-calendar{
-    .vc-title{
-        font-family: "Avenir Next";
+.v-calendar {
+    .vc-title {
+        font-family: 'Avenir Next';
         font-size: 18px;
     }
-    .vc-day-content{
+    .vc-day-content {
         line-height: 1;
     }
 }
-.badge-day{
+.badge-day {
     width: 25px;
     height: 25px;
 }
@@ -55,28 +62,28 @@ body{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-#book-progress{
-    .book-step{
+#book-progress {
+    .book-step {
         width: 25px;
         height: 25px;
         border-radius: 50%;
         background-color: #ddd;
-        svg{
+        svg {
             fill: #aaa;
         }
-        &.step-current{
+        &.step-current {
             background-color: $primary;
             svg {
                 fill: #fff !important;
             }
         }
-        &.step-complete{
+        &.step-complete {
             svg {
                 fill: black;
             }
         }
     }
-    &:before{
+    &:before {
         position: absolute;
         content: '';
         width: 90%;
@@ -88,22 +95,57 @@ body{
         z-index: 0;
     }
 }
-#steps-container{
+#steps-container {
     height: 270px;
 }
-.w-20{
+.w-20 {
     width: 20% !important;
 }
-.btn-timeslot{
+.btn-timeslot {
     font-size: 14px;
 }
-.booking-loader{
+.booking-loader {
     z-index: 10;
 }
-.checkmark-container{
+.checkmark-container {
     width: 80px;
     height: 80px;
 }
-.opacity-0{
+.opacity-0 {
     opacity: 0 !important;
+}
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.35s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
+
+.weekday-slider {
+    transition: $transition-base;
+    > div {
+        flex: 0 0 86px;
+    }
+    .weekday-container {
+        background: $light;
+    }
+    .weekday-day.disabled{
+        opacity: 0.35;
+        pointer-events: none;
+    }
+}
+.back-to-services {
+    z-index: 1;
+    top: 10px;
+    left: 10px;
+}
+.selected-service {
+    min-height: 360px;
+}
+.timeslots-container{
+    height: 230px;
+}
+.booking-modal-progress{
+    height: 200px;
 }

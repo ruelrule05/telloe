@@ -123,6 +123,7 @@ import FileArchiveIcon from '../icons/file-archive';
 import ContactAltIcon from '../icons/contact-alt';
 import MonthviewIcon from '../icons/monthview';
 import PaymentsIcon from '../icons/payments';
+import MessagesIcon from '../icons/messages';
 
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
@@ -162,6 +163,7 @@ window.app = new Vue({
         ContactAltIcon,
         MonthviewIcon,
         PaymentsIcon,
+        MessagesIcon,
 
         VideoCall,
         ScreenRecorder,

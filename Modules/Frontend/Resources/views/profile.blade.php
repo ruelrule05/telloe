@@ -1,173 +1,213 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<title>{{ $user->full_name }} | {{ config('app.name')}}</title>
+	<title>{{ $profile->full_name }} | {{ config('app.name')}}</title>
 	@include('frontend::partials.meta_tags')
 	<link rel="stylesheet" href="{{ mix('css/profile.css') }}">
 </head>
 <body>
-	<div id="app" class="py-5">
-		<div class="container py-4 text-center">
-			<div class="profile-image d-inline-block bg-white mb-2" style="background-image: url('{{ $user->profile_image }}')">
-				@if(!$user->profile_image) <span>{{ $user->initials }}</span> @endif
-			</div>
-			<h1 class="font-heading h2">{{ $user->full_name }}</h1>
-			
-			<template v-cloak v-if="ready">
-				<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
-				<div v-else class="row text-left mt-5">
-					<div v-for="service in services" class="col-md-4">
-						<div class="card border service shadow-sm cursor-pointer" @click="setService(service)">
-							<div class="card-body">
-								<h3 class="font-heading h5 mb-1">@{{ service.name }}</h3>
-								<p class="mb-0">@{{ service.description }}</p>
+	<div id="app" class="py-5" v-cloak>
 
-								<div class="d-flex align-items-center mt-3">
-									<clock-icon width="17" height="17" fill="#888"></clock-icon>
-									<span class="ml-1 font-weight-light">@{{ service.duration }} minutes</span>
+		<div class="text-center" v-if="ready">
+			<transition-group name="fade" tag="div">
+				<div class="position-absolute-center w-100 container" v-if="!selectedService" key="services">
+					<div class="row justify-content-center">
+						<div class="col-md-10">
+							<div class="bg-white shadow-sm rounded p-4">
+								<div class="profile-image d-inline-block bg-white mb-2" style="background-image: url('{{ $profile->profile_image }}')">
+									@if(!$profile->profile_image) <span>{{ $profile->initials }}</span> @endif
 								</div>
-								<div class="d-flex mt-2">
-									<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-primary bg-gray-400' : 'text-gray-400 bg-gray-200']">
-										<span class="position-absolute-center font-weight-light line-height-1">@{{ day.charAt(0) }}</span>
+								<h1 class="font-heading h4">{{ $profile->full_name }}</h1>
+								
+								<template v-cloak>
+									<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
+									<div v-else class="row text-left mt-5 mx-0">
+										<div v-for="service in services" class="col-md-6">
+											<div class="card rounded service bg-light cursor-pointer mb-3" @click="selectedService = service">
+												<div class="card-body">
+													<h3 class="font-heading h5 mb-1">@{{ service.name }}</h3>
+													<p class="mb-0 text-secondary">@{{ service.description }}</p>
+
+													<div class="d-flex align-items-center mt-3">
+														<clock-icon width="17" height="17" fill="#888"></clock-icon>
+														<span class="ml-1">@{{ service.duration }} minutes</span>
+													</div>
+													<div class="d-flex mt-2">
+														<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
+															<span class="position-absolute-center font-weight-light line-height-1">@{{ day.charAt(0) }}</span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="position-absolute-center w-100 container" v-else key="service">
+					<div class="row justify-content-center">
+						<div class="col-md-9">
+							<div class="bg-white shadow-sm rounded d-flex selected-service h-100">
+								<div class="border-right p-4 w-50 position-relative text-left">
+									<button class="btn p-0 close posidtion-absolute ml-n2 mt-n3 back-to-sedrvices float-none" type="button" @click="selectedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
+									<!-- <div class="profile-image profile-image-sm d-inline-block bg-white mb-2" style="background-image: url('{{ $profile->profile_image }}')">
+										@if(!$profile->profile_image) <span>{{ $profile->initials }}</span> @endif
+									</div>
+									<h3 class="font-heading h5 mb-0">{{ $profile->full_name }}</h3> -->
+									<div class="text-left mt-2">
+										<h3 class="font-heading h5 mb-1">@{{ selectedService.name }}</h3>
+										<p class="mb-0">@{{ selectedService.description }}</p>
+									</div>
+									<div class="d-flex mt-3">
+										<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[selectedService.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
+											<span class="position-absolute-center font-weight-light line-height-1">@{{ day.charAt(0) }}</span>
+										</div>
+									</div>
+									<div class="d-flex align-items-center mt-3">
+										<clock-icon width="17" height="17" class="fill-secondary mr-2"></clock-icon>
+										<span class="text-secondary">@{{ selectedService.duration }} minutes</span>
+									</div>
+									<span class="text-secondary d-inline-flex align-items-center mt-1">
+										<earth-icon height="17" width="17" class="fill-secondary mr-2"></earth-icon>
+										{{ $profile->timezone }}
+									</span>
+
+									<div class="bg-light p-3 rounded mt-3" v-if="selectedDate && selectedTimeslot">
+										<h6 class="font-heading h5">Selected date & time</h6>
+										<p class="mb-0">
+											@{{ formatDate(selectedDate) }} <br />
+											@{{ selectedTimeslot.label }} - @{{ endTime }}
+										</p>
 									</div>
 								</div>
+		
+
+
+
+
+								<div class="w-50 h-100 p-4 text-left d-flex flex-column overflow-hidden position-relative">
+									<template v-if="!authForm">
+			            				<div class="d-flex align-items-center mb-3">
+											<h6 class="h5 font-heading">Select a date & time</h6>
+						            		<button v-if="selectedDate" class="ml-auto btn d-flex align-items-center pr-0 pt-0" type="button" @click="calendarView = (calendarView == 'month') ? 'week' : 'month'; calcSliderTranslate()">
+						            			<calendar-month-icon width="18" height="18" class="mr-1"></calendar-month-icon>
+						            			<small class="text-capitalize">@{{ calendarView }} view</small>
+						            		</button>
+						            	</div>
+										<div class="flex-grow-1 d-flex flex-column h-100">
+											<div>
+												<div class="align-items-center mt-2" :class="[calendarView == 'month' ? 'd-none' : 'd-flex']">
+													<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
+													<div class="flex-grow-1 overflow-hidden">
+														<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 86)}px, 0px)`}" ref="weekday-slider">
+															<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :class="{'disabled': disabledDate(date)}" :id="date.id">
+																<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-primary text-white': sliderActiveDate(date)}" @click="selectedDate = date.date">
+																	@{{ date.title }}
+																	<strong class="text-uppercase d-block">@{{ date.description }}</strong>
+																</div>
+															</div>
+														</div>
+													</div>
+													<button class="btn p-0 mr-n2" type="button" @click="adjustSlider(1)"><chevron-right-icon transform="scale(1.6)"></chevron-right-icon></button>
+												</div>
+
+												<div :class="{'d-none': calendarView == 'week'}">
+													<v-date-picker :first-day-of-week="2" :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required class="v-calendar h-100 border-0 bg-light" v-model="selectedDate" @input="dateSelected" is-expanded is-inline :min-date="new Date()" title-position="left">
+													</v-date-picker>
+												</div>
+											</div>
+
+											<div class="flex-grow-1 overflow-hidden h-100 mt-3 d-flex flex-column" v-if="selectedDate && calendarView == 'week'">
+												<div class="flex-grow-1 position-relative overflow-auto timeslots-container" :class="{'py-4': timeslotsLoading}">
+													<div v-if="timeslotsLoading" class="position-absolute-center">
+														<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+													</div>
+													<div :class="{'d-none': timeslotsLoading}">
+														<div v-if="timeslots.length == 0" class="text-gray text-center w-100 position-absolute-center">
+															<span>There are no timeslots available for the selected date.</span>
+														</div>
+														<div v-else>
+															<div class="d-flex flex-wrap">
+																<div v-for="timeslot in timeslots" class="mt-2 w-100">
+																	<div class="rounded cursor-pointer py-3 px-3" :class="[timeslot == selectedTimeslot ? 'bg-blue text-white' : 'bg-light']" @click="selectedTimeslot = timeslot;">
+																		<small class="d-block">@{{ profile.timezone }}</small>
+																		@{{ timeslot.label }}
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="d-flex align-items-center mt-2" :class="{'opacity-0': !selectedDate}">
+													<button v-if="auth" :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="submit()">Book Now</button>
+													<button v-else :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="authForm = true">Next</button>
+												</div>
+											</div>
+										</div>
+									</template>
+									<!-- Auth form -->
+									<template v-else>
+										<div class="d-flex flex-column h-100">
+											<div class="flex-grow-1 h-100 position-relative">
+												<vue-form-validate @submit="login" class="position-absolute-center w-100">
+													<h5 class="h4 font-heading mb-4">Log In</h5>
+													<div class="form-group mb-2">
+														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required>
+													</div>
+													<div class="form-group">
+														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required>
+													</div>
+													<div class="d-flex align-items-center mt-4">
+														<button class="btn btn-white border" type="button" @click="authForm = false">Previous</button>
+														<vue-button type="submit" :loading="loginForm.loading" button_class="ml-auto btn btn-primary">Log In & Book</vue-button>
+													</div>
+												</vue-form-validate>
+
+												<div class="text-center text-danger position-absolute w-100">&nbsp;@{{ authError }}&nbsp;</div>
+											</div>
+											<div>
+												
+											</div>
+										</div>
+									</template>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</template>
+			</transition-group>
 		</div>
 
-		<modal ref="serviceModal" @hidden="resetStep" v-cloak>
-			<template v-if="selectedService">
-				<h4 class="font-heading text-center mb-1">@{{ selectedService.name }}</h4>
-				<h6 class="text-center text-gray mb-3 font-weight-light">@{{ selectedService.duration }} minutes</h6>
+		<div v-else>
+			<div class="position-absolute-center">
+				<div class="spinner-border text-primary" role="status"></div>
+			</div>
+		</div>
 
-				<!-- Progress -->
-				<div class="rounded py-1 mb-2 d-flex align-items-stretch justify-content-between position-relative" id="book-progress">
-					<div class="book-step position-relative" :class="stepClass(1)">
-						<div class="position-absolute-center w-100 h-100">
-							<calendar-day-icon  width="16" height="16" class="position-absolute-center"></calendar-day-icon>
-						</div>
-					</div>
-					<div class="book-step position-relative" :class="stepClass(2)">
-						<div class="position-absolute-center w-100 h-100">
-							<clock-icon  :fill="[step >= 2 ? 'white' : '#aaa']" width="18" height="18" class="position-absolute-center"></clock-icon>
-						</div>
-					</div>
-					<div class="book-step position-relative" :class="stepClass(3)">
-						<div class="position-absolute-center w-100 h-100">
-							<info-circle-icon  :fill="[step >= 3 ? 'white' : '#aaa']" width="24" height="26" transform="scale(0.75)"></info-circle-icon>
-						</div>
-					</div>
-					<!-- <div class="book-step position-relative" :class="stepClass(5)">
-						<div class="position-absolute-center w-100 h-100">
-							<checkmark-icon  :fill="[step == 4 ? 'white' : '#aaa']" width="25" height="26"></checkmark-icon>
-						</div>
-					</div> -->
-				</div>
 
-				<div class="mb-2">
-					<div v-if="error" class="text-danger">@{{ error }}</div>
+
+
+		<modal ref="bookingModal" :close-button="false">
+			<div class="text-center booking-modal-progress position-relative">
+				<div class="position-absolute-center w-100">
+					<template v-if="bookingSuccess">
+						<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
+						<h6 class="h3 mb-4 mt-2 font-heading">Booking placed!</h6>
+						<button class="btn btn-white border" type="button" data-dismiss="modal">Close</button>
+					</template>
 					<template v-else>
-						<strong v-if="!selectedDate">Select Date</strong>
-						<template v-else>
-							<strong>@{{ formatDate(selectedDate) }}</strong>
-							<span v-if="selectedTimeslot">@@{{ selectedTimeslot.label }}</span>
-						</template>
+						<div class="spinner-border text-primary" role="status"></div>
+						<h6 class="h3 mt-4 mb-0 font-heading">Booking...</h6>
 					</template>
 				</div>
-				
-				<!-- Steps -->
-				<div id="steps-container" class="overflow-auto border rounded">
-					<!-- Step 1 -->
-					<div v-if="step == 1">
-						<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required class="v-calendar h-100 border-0" v-model="selectedDate" is-expanded is-inline :min-date="new Date()" title-position="left">
-						</v-date-picker>
-					</div>
-
-					<!-- Step 2 -->
-					<div v-else-if="step == 2" class="bg-light h-100 position-relative">
-						<div v-if="(selectedService.timeslots || []).length == 0" class="position-absolute-center text-gray text-center">
-							There are no timeslots available for the selected date
-						</div>
-						<div v-else class="d-flex flex-wrap pb-2 pr-2">
-							<div v-for="timeslot in selectedService.timeslots" class="pt-2 pl-2 w-20">
-								<div class="btn btn-white border btn-block btn-timeslot" :class="{'bg-primary text-white': timeslot == selectedTimeslot}" @click="selectedTimeslot = timeslot">@{{ timeslot.label }}</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Step 3 -->
-					<div v-else-if="step == 3" class="p-3 position-relative h-100">
-						<template v-if="reviewForm == 'details'">
-							<h5 class="font-heading">Review your booking details</h5>
-							<p class="mb-0">
-								<span class="text-gray">Service:</span> <strong>@{{ selectedService.name }}</strong> <br/ >
-								<span class="text-gray">Date:</span> <strong>@{{ formatDate(selectedDate) }}</strong> <br/ >
-								<span class="text-gray">Time:</span> <strong>@{{ selectedTimeslot.label }}</strong> <br/ >
-								<span class="text-gray">Duration:</span> <strong>@{{ selectedService.duration }} minutes</strong>
-							</p>
-							<div v-if="!auth" class="d-flex justify-content-between mt-5">
-								<button class="btn btn-light btn-block btn-sm border mr-1" @click="reviewForm = 'login'">Log In</button>
-								<button class="btn btn-light btn-block btn-sm border mt-0 ml-1" @click="reviewForm = 'register'">Register</button>
-							</div>
-						</template>
-
-						<div v-else class="position-absolute-center w-100">
-							<!-- Login -->
-							<vue-form-validate v-if="reviewForm == 'login'" class="px-5 mx-4" @submit="login">
-								<h5 class="font-heading">Log In</h5>
-								<div class="form-group">
-									<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required>
-								</div>
-								<div class="form-group">
-									<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required>
-								</div>
-								<vue-button type="submit" :loading="loginForm.loading" button_class="btn btn-primary btn-block">Log In</vue-button>
-								<div class="d-flex mt-1">
-									<button type="button" class="btn btn-link btn-sm text-body" @click="reviewForm = 'details'">Cancel</button>
-									<button type="button" class="btn btn-link btn-sm text-primary ml-auto" @click="reviewForm = 'register'"><u>Register</u></button>
-								</div>
-							</vue-form-validate>
-
-							<div class="text-center text-danger position-absolute w-100">&nbsp;@{{ authError }}&nbsp;</div>
-						</div>
-					</div>
-
-					<!-- Step 4 -->
-					<div v-else-if="step == 4" class="p-3 position-absolute-center w-100 h-100 bg-white booking-loader">
-						<div class="position-absolute-center text-center">
-							<div class="spinner-border text-primary" role="status"></div>
-							<div class="mt-3 h5">
-								Please wait...
-							</div>
-						</div>
-					</div>
-
-					<!-- Step 5 -->
-					<div v-else-if="step == 5" class="p-3 position-absolute-center w-100 h-100 bg-white booking-loader">
-						<div class="position-absolute-center text-center w-100">
-							<div class="mt-3">
-								<div class="rounded-circle bg-primary checkmark-container position-relative d-inline-block">
-									<checkmark-icon fill="white" class="position-absolute-center"></checkmark-icon>
-								</div>
-								<h3 class="mb-0 font-heading mt-3">Booked!</h3>
-								<span class="text-gray font-weight-light d-block">Your booking has been processed succesfully.</span>
-								<button class="btn btn-light border mt-5" data-dismiss="modal">Close</button>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="d-flex p-2 mx-n3 mb-n3 mt-3 border-top bg-light">
-					<button v-if="step > 1 && step < 4" class="btn btn-link text-body" @click="step--">Previous</button>
-					<button class="btn btn-primary ml-auto" :disabled="nextDisabled" @click="nextStep">@{{ buttonText }}</button>
-				</div>
-			</template>
+			</div>
 		</modal>
 	</div>
 	<script>
+		const PROFILE = {!! json_encode($profile) !!};
 		const AUTH = {!! json_encode(Auth::user()) !!};
 	</script>
 	<script src="{{ mix('js/profile.js') }}" async defer></script>

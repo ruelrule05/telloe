@@ -46,6 +46,7 @@ Route::group(
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
+        Route::get('/@{username}/{service_id}', 'UserController@showService');
 		Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');

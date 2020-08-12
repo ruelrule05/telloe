@@ -33,6 +33,7 @@ import CallMenuIcon from '../../../../icons/call-menu';
 import VideocamIcon from '../../../../icons/videocam';
 import MicrophoneAltIcon from '../../../../icons/microphone-alt';
 import DocumentAltIcon from '../../../../icons/document-alt';
+import ScreenRecordIcon from '../../../../icons/screen-record';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -67,6 +68,7 @@ export default {
         VideocamIcon,
         MicrophoneAltIcon,
         DocumentAltIcon,
+        ScreenRecordIcon,
 
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),

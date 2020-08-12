@@ -191,8 +191,7 @@
                                 <input type="file" hidden ref="fileMedia" @change="addFile" />
 
                                 <button class="line-height-sm ml-2 btn px-0 position-relative" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
-                                    <expand-wide-icon width="20" height="20"></expand-wide-icon>
-                                    <span class="position-absolute-center h3 mb-0 mt-n2 line-height-0">.</span>
+                                    <screen-record-icon width="20" height="20"></screen-record-icon>
                                 </button>
                             </div>
                         </div>
