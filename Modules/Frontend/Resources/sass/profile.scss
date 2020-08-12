@@ -39,7 +39,7 @@ body {
 .service {
     transition: $transition-base;
     &:hover {
-        margin-top: -5px;
+        background-color: $light;
     }
 }
 

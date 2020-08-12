@@ -23,7 +23,7 @@
 									<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
 									<div v-else class="row text-left mt-5 mx-0">
 										<div v-for="service in services" class="col-md-6">
-											<div class="card rounded service bg-light cursor-pointer mb-3" @click="selectedService = service">
+											<div class="card rounded service cursor-pointer mb-3" @click="selectedService = service">
 												<div class="card-body">
 													<h3 class="font-heading h5 mb-1">@{{ service.name }}</h3>
 													<p class="mb-0 text-secondary">@{{ service.description }}</p>
