@@ -152,10 +152,6 @@
                 <label class="form-label">Invitation Message (Optional)</label>
                 <textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
             </div>
-            <div class="form-group">
-                <label class="form-label">Initial Message (Optional)</label>
-                <textarea cols="10" class="form-control resize-none" v-model="newContact.conversation_message"></textarea>
-            </div>
             
             <template v-slot:footer>
                 <button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
