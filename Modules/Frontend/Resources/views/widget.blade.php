@@ -3,6 +3,6 @@
 <head>
 </head>
 <body>
-	<script src="https://telloe.com/js/widget.js?p=clydeescobidal"></script>
-</body>
+	<script src="https://telloe.com/js/widget.js?p={{ request('p') }}"></script>
+	</body>
 </html>
