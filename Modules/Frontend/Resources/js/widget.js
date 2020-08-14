@@ -235,6 +235,7 @@ new Vue({
         setTimeout(() => {
             this.bookingSuccess = true;
         }, 1000);*/
+        
     },
 
     methods: {
