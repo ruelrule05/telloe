@@ -13,6 +13,7 @@ if (argv.indexOf('--css') > -1) {
         .sass(__dirname + '/Resources/app/auth/auth.scss', 'css')
         .sass(__dirname + '/Resources/sass/page.scss', 'css')
         .sass(__dirname + '/Resources/sass/profile.scss', 'css')
+        .sass(__dirname + '/Resources/sass/widget.scss', 'css')
         .sass(__dirname + '/Resources/sass/call.scss', 'css');
 }
 else {
@@ -95,6 +96,26 @@ else {
                 },
             });
     }
+
+    else if (argv.indexOf('--widget') > -1) { 
+        console.log('Running widget...');
+        browserSync();
+        mix
+            .js(__dirname + '/Resources/js/widget.js', 'js')
+            .webpackConfig({
+                output: {
+                    chunkFilename: `js/chunks/[name].js`
+                },
+                optimization: {
+                    splitChunks: {
+                        chunks: 'all',
+                        cacheGroups: {
+                            vendors: false
+                        }
+                    }
+                },
+            });
+    }
 }
 
 
@@ -113,8 +134,8 @@ function browserSync(){
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
+            key: '/Users/admin/.config/valet/Certificates/telloe.app.key',
+            cert: '/Users/admin/.config/valet/Certificates/telloe.app.crt'
         }
     });
 }

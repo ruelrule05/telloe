@@ -4,6 +4,12 @@
  *
  *
  */
+
+Route::get('widget', function() {
+    return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
+});
+
+
 Route::get('email', function() {
     $now = \Carbon\Carbon::now();
     $bookings = App\Models\Booking::where('date', '>=', $now->format('Y-m-d'))->get();

@@ -164,7 +164,6 @@ export default {
 			if(value.length > 0 && !this.selectedDate) {
 				let now = this.dayjs();
 				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
-				console.log(nextBooking);
 				let date = this.dayjs(value[0].date).toDate();
 				this.selectedDate = date;
 				this.infoTab = 'bookings';

@@ -12,9 +12,9 @@
 					            </div>
 					            <h3 class="font-heading">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h3>
 					            <h6 class="font-weight-light mb-5">Calling..</h6>
-					            <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="endCall()">
+					            <!-- <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="endCall()">
 					                <close-icon></close-icon>
-					            </button>
+					            </button> -->
 				            </div>
 
 				            <!-- Incoming -->
@@ -24,12 +24,9 @@
 					            </div>
 					            <h3 class="font-heading">{{ caller.full_name || $root.callConversation.name }}</h3>
 					            <h6 class="font-weight-light mb-5">is calling..</h6>
-					            <button type="button" class="btn btn-green btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
+					            <!-- <button type="button" class="btn btn-success btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
 					                <phone-icon fill="white"></phone-icon>
-					            </button>
-					            <button type="button" class="btn btn-white btn-lg badge-pill line-height-1 px-2 border ml-1" @click="rejectCall()">
-					                <close-icon></close-icon>
-					            </button>
+					            </button> -->
 			    			</div>
 			        	</div>
 			        	<div v-else-if="status == 'limit'" class="caller position-absolute-center text-center bg-white w-100">
@@ -61,7 +58,7 @@
 							</button> -->
 
 							<!-- Local camera -->
-							<div class="preview-wrapper" :class="{'preview-thumb': status == 'ongoing', 'd-none': isShrinked, 'profile-image': isVideoStopped}">
+							<div class="preview-wrapper preview-thumb" :class="{'d-none': isShrinked || status != 'ongoing', 'profile-image': isVideoStopped}">
 								<div class="video-container h-100 w-100" :class="{'mirror': isScreenSharing, 'd-none': isVideoStopped}">
 									<video ref="cameraPreview" @onplaying="localCameraReady = true" class="w-100 h-auto" autoplay playsinline muted></video>
 								</div>
@@ -76,7 +73,7 @@
 							</div>
 							
 
-							<div id="recorderControls" class="text-center px-3 d-flex align-items-center call-bottombar" :class="{'py-2': !isShrinked}" v-if="status == 'ongoing'">
+							<div id="recorderControls" class="text-center px-3 d-flex align-items-center call-bottombar" :class="{'py-2': !isShrinked}">
 				        		<div class="w-25"></div>
 				        		<div class="text-center flex-grow-1">
 				        			<template v-if="!isShrinked">
@@ -84,35 +81,46 @@
 							                <microphone-icon :class="{'fill-danger': isMuted}"></microphone-icon>
 							                <span v-if="isMuted" class="disabled-line"></span>
 							            </button>
-							            <button type="button" class="btn btn-danger btn-lg badge-pill line-height-1" :class="[isShrinked ? 'p-1 mx-1' : 'px-2 mx-2']" @click="endCall()">
-							                <phone-icon fill="white"></phone-icon>
-							            </button>
-							            <button type="button" class="btn btn-white border btn-lg badge-pill line-height-1 position-relative" :class="[isShrinked ? 'p-1' : 'px-2']" @click="toggleVideo()">
+							            <button type="button" class="btn btn-white border btn-lg badge-pill line-height-1 position-relative" :class="[isShrinked ? 'p-1' : 'px-2 mx-2']" @click="toggleVideo()">
 							                <video-icon :class="{'fill-danger': isVideoStopped}"></video-icon>
 							                <span v-if="isVideoStopped" class="disabled-line"></span>
+							            </button>
+										
+										<template v-if="isIncoming">
+								            <button type="button" class="btn btn-success btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
+								                <phone-icon fill="white"></phone-icon>
+								            </button>
+								            <button type="button" class="btn btn-danger btn-lg badge-pill line-height-1 px-2 border ml-2" @click="rejectCall()">
+								                <close-icon class="fill-white"></close-icon>
+								            </button>
+										</template>
+							            <button v-else type="button" class="btn btn-danger btn-lg badge-pill line-height-1" :class="[isShrinked ? 'p-1 mx-1' : 'px-2']" @click="endCall()">
+							                <phone-icon fill="white"></phone-icon>
 							            </button>
 							        </template>
 					            </div>
 					            <div class="text-right w-25">
-				        			<template v-if="!isShrinked">
-								        <button type="button" v-if="!isScreenSharing" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
-								            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
-								        </button>
-								        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
-								            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
-								        </button>
-								        <button type="button" v-if="!isFullScreen" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
-								            <expand-icon width="20" height="20"></expand-icon>
-								        </button>
-								        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
-								            <collapse-icon width="20" height="20"></collapse-icon>
+				        			<template v-if="status == 'ongoing'">
+					        			<template v-if="!isShrinked">
+									        <button type="button" v-if="!isScreenSharing" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
+									            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
+									        </button>
+									        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
+									            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
+									        </button>
+									        <button type="button" v-if="!isFullScreen" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
+									            <expand-icon width="20" height="20"></expand-icon>
+									        </button>
+									        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
+									            <collapse-icon width="20" height="20"></collapse-icon>
+									        </button>
+									    </template>
+
+								        <button v-if="!isFullScreen" type="button" class="btn btn-shrink-toggle btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
+								            <arrow-top-right-icon v-if="isShrinked" width="20" height="20"></arrow-top-right-icon>
+									        <arrow-bottom-left-icon v-else width="20" height="20"></arrow-bottom-left-icon>
 								        </button>
 								    </template>
-
-							        <button v-if="!isFullScreen" type="button" class="btn btn-shrink-toggle btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
-							            <arrow-top-right-icon v-if="isShrinked" width="20" height="20"></arrow-top-right-icon>
-								        <arrow-bottom-left-icon v-else width="20" height="20"></arrow-bottom-left-icon>
-							        </button>
 					            </div>
 					        </div>
 				        </div>

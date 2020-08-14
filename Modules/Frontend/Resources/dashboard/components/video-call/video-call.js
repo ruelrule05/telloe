@@ -65,6 +65,7 @@ export default {
         draggable: null,
         rejectsCount: 0,
         callTimeout: null,
+        isIncoming: false,
 	}),
 
     watch: {
@@ -210,7 +211,7 @@ export default {
     		this.connections.forEach(connection => {
     			connection.audioSender.track.enabled = !this.isMuted;
     		});
-    		this.localStream.getAudioTracks()[0].enabled = !this.isMuted;
+    		if(this.localStream) this.localStream.getAudioTracks()[0].enabled = !this.isMuted;
     	},
 
     	toggleVideo() {
@@ -218,12 +219,14 @@ export default {
     		this.connections.forEach(connection => {
     			connection.videoSender.track.enabled = !this.isMuted;
     		});
-    		this.localStream.getVideoTracks()[0].enabled = !this.isVideoStopped;
+    		if(this.localStream) this.localStream.getVideoTracks()[0].enabled = !this.isVideoStopped;
     	},
 
-		outgoingCall(conversation) {
+		outgoingCall(conversation, camera = true) {
+            this.isVideoStopped = !camera;
+            this.isIncoming = false;
             clearTimeout(this.callTimeout);
-            this.notification_sound.play();
+            //this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
@@ -245,7 +248,8 @@ export default {
 		},
 
 		incomingCall() {
-	       	this.notification_sound.play();
+	       	//this.notification_sound.play();
+            this.isIncoming = true;
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
@@ -253,6 +257,7 @@ export default {
 		},
 
         answerCall() {
+            this.isIncoming = false;
 			this.$root.socket.emit('live_call_ready', {
 	            conversation_id: this.$root.callConversation.id,
 	            user_id: this.$root.auth.id,
@@ -451,6 +456,8 @@ export default {
                     connection.localStream = this.localStream;
                     let videoTrack = streams.getVideoTracks()[0];
                     let audioTrack = streams.getAudioTracks()[0];
+                    audioTrack.enabled = !this.isMuted;
+                    videoTrack.enabled = !this.isVideoStopped;
                     connection.videoSender = connection.addTrack(videoTrack, streams);
                     connection.audioSender = connection.addTrack(audioTrack, streams);
                 }

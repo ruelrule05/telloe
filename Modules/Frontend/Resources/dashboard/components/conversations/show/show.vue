@@ -21,7 +21,7 @@
             <div class="ml-auto btn-circle-actions">
                 <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
                     <button class="btn border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><videocam-icon width="26" height="26"></videocam-icon></button>
-                    <button class="btn border-0 py-0 px-1 mx-2" v-tooltip.bottom="'Audio call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><call-menu-icon width="20" height="20"></call-menu-icon></button>
+                    <button class="btn border-0 py-0 px-1 mx-2" v-tooltip.bottom="'Audio call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation, false);" :class="{'active disabled': $root.callConversation ? true : false}"><call-menu-icon width="20" height="20"></call-menu-icon></button>
                     <!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
                 </template>
                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 

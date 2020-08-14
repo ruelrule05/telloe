@@ -197,65 +197,65 @@
                     </div>
                 </div>
                 
-                
-                <template v-if="(conversation.member.role || {}).role != 'support'">
-                    <!-- Tags -->
-                    <div class="border-top px-4 py-2">
-                        <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
-                            Tags
-                            <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
-                        </h5>
-                        <div id="tags" class="collapse" data-parent="#info-items">
-                            <!-- Tags -->
-                            <div class="h-100 overflow-hidden d-flex flex-column">
-                                <template v-if="tagsData.tags.length">
-                                    <div>
-                                        <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search for tags..." v-model="tagSearch" />
-                                    </div>
-                                    <div v-if="tagsData.tags.length > 0" class="my-2">
-                                        <small v-for="tag in tagsData.tags" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
-                                    </div>
+                <!-- Tags -->
+                <div class="border-top px-4 py-2">
+                    <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
+                        Tags
+                        <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
+                    </h5>
+                    <div id="tags" class="collapse" data-parent="#info-items">
+                        <!-- Tags -->
+                        <div class="h-100 overflow-hidden d-flex flex-column">
+                            <template v-if="tagsData.tags.length">
+                                <div>
+                                    <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search for tags..." v-model="tagSearch" />
+                                </div>
+                                <div v-if="tagsData.tags.length > 0" class="my-2">
+                                    <small v-for="tag in tagsData.tags" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
+                                </div>
 
-                                    <div class="overflow-y-only mt-2">
-                                        <div v-if="tagsData.length == 0" class="text-center text-muted py-2">
-                                            No results found.
-                                        </div>
-                                        <div v-else v-for="data in tagsData.data" class="mb-3">
-                                            <div class="rounded bg-white border py-2 px-3">
-                                                <div v-if="data.type == 'message'" class="message-group mb-0">
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <div class="user-profile-image" :style="{backgroundImage: 'url(' + data.data.user.profile_image + ')'}">
-                                                            <span v-if="!data.data.user.profile_image">{{ data.data.user.initials }}</span>
-                                                        </div>
-                                                        <small class="pl-2 pr-0 font-heading font-weight-bold font-size-base line-height-1 message-sender d-block">{{ data.data.user.full_name }}</small>
-                                                        <small class="text-muted ml-auto px-0">{{ data.data.created_at_format }}</small>
-                                                        <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == data.data.type)}">
-                                                        </div>
+                                <div class="overflow-y-only mt-2">
+                                    <div v-if="tagsData.length == 0" class="text-center text-muted py-2">
+                                        No results found.
+                                    </div>
+                                    <div v-else v-for="data in tagsData.data" class="mb-3">
+                                        <div class="rounded bg-white border py-2 px-3">
+                                            <div v-if="data.type == 'message'" class="message-group mb-0">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="user-profile-image" :style="{backgroundImage: 'url(' + data.data.user.profile_image + ')'}">
+                                                        <span v-if="!data.data.user.profile_image">{{ data.data.user.initials }}</span>
                                                     </div>
-
-                                                    <message-type :click="false" :square-thumbnail="true" :message="data.data" :outgoing="data.data.outgoing"></message-type>
-                                                    
-                                                    <div class="mb-1">
-                                                        <div v-for="(tag, index) in data.data.tags" class="d-inline-block badge badge-orange line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
-                                                        {{ tag }}&nbsp;
-                                                            <close-icon height="8" width="8" transform="scale(2.5)" class="cursor-pointer no-action fill-white" @click.native="data.data.tags.splice(index, 1); $parent.updateMessageTags(data.data)"></close-icon>
-                                                        </div>
+                                                    <small class="pl-2 pr-0 font-heading font-weight-bold font-size-base line-height-1 message-sender d-block">{{ data.data.user.full_name }}</small>
+                                                    <small class="text-muted ml-auto px-0">{{ data.data.created_at_format }}</small>
+                                                    <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == data.data.type)}">
                                                     </div>
                                                 </div>
 
-                                                <div v-else-if="data.type == 'note'">
-                                                    <p class="mb-0">{{ data.data.notes }}</p>
-                                                    <small class="text-muted d-block">{{ data.data.created_at_format }}</small>
+                                                <message-type :click="false" :square-thumbnail="true" :message="data.data" :outgoing="data.data.outgoing"></message-type>
+                                                
+                                                <div class="mb-1">
+                                                    <div v-for="(tag, index) in data.data.tags" class="d-inline-block badge badge-orange line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
+                                                    {{ tag }}&nbsp;
+                                                        <close-icon height="8" width="8" transform="scale(2.5)" class="cursor-pointer no-action fill-white" @click.native="data.data.tags.splice(index, 1); $parent.updateMessageTags(data.data)"></close-icon>
+                                                    </div>
                                                 </div>
+                                            </div>
+
+                                            <div v-else-if="data.type == 'note'">
+                                                <p class="mb-0">{{ data.data.notes }}</p>
+                                                <small class="text-muted d-block">{{ data.data.created_at_format }}</small>
                                             </div>
                                         </div>
                                     </div>
-                                </template>
-                                <div v-else class="text-center text-secondary pb-3">You don't have any tagged messages yet.</div>
-                            </div>
+                                </div>
+                            </template>
+                            <div v-else class="text-center text-secondary pb-3">You don't have any tagged messages yet.</div>
                         </div>
                     </div>
+                </div>
 
+                
+                <template v-if="(conversation.member.role || {}).role != 'support'">
                     <!-- Notes -->
                     <div class="border-top px-4 py-2">
                         <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes" @click="toggleCollapse">
