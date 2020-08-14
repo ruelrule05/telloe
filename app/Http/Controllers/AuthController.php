@@ -73,6 +73,11 @@ class AuthController extends Controller
                 $this->createPresetService($user);
                 $this->createInitialConversations($user);
                 $this->createDefaultField($user);
+                if(!Widget::where('user_id', $user->id)->first()) :
+                    $widget = Widget::create([
+                        'user_id' => $user->id
+                    ]);
+                endif;
                 return response()->json($response);
             else:
                 return abort(403, 'Invalid password');
@@ -288,7 +293,14 @@ class AuthController extends Controller
 
                 Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
+            else:
+                if(!Widget::where('user_id', $user->id)->first()) :
+                    $widget = Widget::create([
+                        'user_id' => $user->id
+                    ]);
+                endif;
             endif;
+
             Auth::login($user);
             checkInviteToken($user, $request, $isNew);
             $this->createInitialConversations($user);
@@ -339,6 +351,12 @@ class AuthController extends Controller
                 ]);
                 Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
+            else:
+                if(!Widget::where('user_id', $user->id)->first()) :
+                    $widget = Widget::create([
+                        'user_id' => $user->id
+                    ]);
+                endif;
             endif;
             Auth::login($user);
             checkInviteToken($user, $request, $isNew);
