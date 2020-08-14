@@ -11,7 +11,7 @@ Route::get('widget', function() {
 
 
 Route::get('email', function() {
-    $now = \Carbon\Carbon::now();
+    /*$now = \Carbon\Carbon::now();
     $bookings = App\Models\Booking::where('date', '>=', $now->format('Y-m-d'))->get();
     foreach($bookings as $booking) :
         $diffInMinutes = $now->diffInMinutes(\Carbon\Carbon::parse($booking->date . ' ' . $booking->start), false);
@@ -20,11 +20,11 @@ Route::get('email', function() {
         elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes > 120) : // 24 hours notif
             echo 'notify 24 hours'.'<br />';
         endif;
-    endforeach;
+    endforeach;*/
 
     
     $user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
-    $email = new Modules\Frontend\Mail\Welcome($user);
+    $email = new Modules\Frontend\Mail\UpcomingBooking(App\Models\Booking::first());
     //\Mail::send($email);
     return $email;
 });
@@ -49,6 +49,8 @@ Route::group(
     ],
     function () {
         Route::get('/', 'PageController@homepage');
+
+        Route::get('/js/widget.js', 'UserController@widget');
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
@@ -80,7 +82,9 @@ Route::group(
             Route::apiResource('plans', 'PlanController')->only('index');
             Route::apiResource('pending_subscriptions', 'PendingSubscriptionController')->only(['index', 'store', 'destroy']);
             Route::apiResource('pending_invoices', 'PendingInvoiceController')->only(['index', 'store', 'destroy']);
+
             Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
+            Route::post('notifications/clear', 'NotificationController@clear');
 
             Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
             Route::post('contacts/{id}/finalize_invoice', 'ContactController@finalizeInvoice');
@@ -110,6 +114,7 @@ Route::group(
             Route::get('@{username}', 'UserController@profile');
             Route::get('@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots');
             Route::post('@{username}/{service_id}/book', 'UserController@book');
+            Route::post('@{username}/{service_id}/login_and_book', 'UserController@loginAndBook');
 
             //Dashboard
             Route::group([

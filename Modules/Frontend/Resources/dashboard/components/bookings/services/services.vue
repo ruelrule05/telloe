@@ -186,7 +186,7 @@
 				</div>
 				<div class="d-flex align-items-center">
 					<button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
-					<button class="ml-auto btn btn-primary" type="submit">{{ selectedService ? 'Update' : 'Add'}}</button>
+					<button class="ml-auto btn btn-primary" type="submit">Add</button>
 				</div>
 			</vue-form-validate>
 		</modal>

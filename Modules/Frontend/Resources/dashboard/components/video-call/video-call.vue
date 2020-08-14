@@ -25,7 +25,7 @@
 					            <h3 class="font-heading">{{ caller.full_name || $root.callConversation.name }}</h3>
 					            <h6 class="font-weight-light mb-5">is calling..</h6>
 					            <!-- <button type="button" class="btn btn-success btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
-					                <phone-icon fill="white"></phone-icon>
+					                <call-menu-icon fill="white"></call-menu-icon>
 					            </button> -->
 			    			</div>
 			        	</div>
@@ -75,27 +75,27 @@
 
 							<div id="recorderControls" class="text-center px-3 d-flex align-items-center call-bottombar" :class="{'py-2': !isShrinked}">
 				        		<div class="w-25"></div>
-				        		<div class="text-center flex-grow-1">
+				        		<div class="text-center flex-grow-1 mainControls">
 				        			<template v-if="!isShrinked">
-							            <button type="button" class="btn btn-white border btn-lg badge-pill line-height-1 position-relative" :class="[isShrinked ? 'p-1' : 'px-2']" @click="toogleMic()">
-							                <microphone-icon :class="{'fill-danger': isMuted}"></microphone-icon>
+							            <button type="button" class="btn btn-white border btn-lg badge-pill position-relative" :class="[isShrinked ? 'p-1' : 'px-2']" @click="toogleMic()">
+							                <microphone-alt-icon class="position-absolute-center"></microphone-alt-icon>
 							                <span v-if="isMuted" class="disabled-line"></span>
 							            </button>
-							            <button type="button" class="btn btn-white border btn-lg badge-pill line-height-1 position-relative" :class="[isShrinked ? 'p-1' : 'px-2 mx-2']" @click="toggleVideo()">
-							                <video-icon :class="{'fill-danger': isVideoStopped}"></video-icon>
+							            <button type="button" class="btn btn-white border btn-lg badge-pill position-relative" :class="[isShrinked ? 'p-1' : 'px-2 mx-2']" @click="toggleVideo()">
+							                <videocam-icon :class="{'fill-danger': isVideoStopped}" class="position-absolute-center"></videocam-icon>
 							                <span v-if="isVideoStopped" class="disabled-line"></span>
 							            </button>
 										
 										<template v-if="isIncoming">
-								            <button type="button" class="btn btn-success btn-lg badge-pill line-height-1 px-2" @click="answerCall()">
-								                <phone-icon fill="white"></phone-icon>
+								            <button type="button" class="btn btn-success btn-lg badge-pill px-2 position-relative" @click="answerCall()">
+								                <call-menu-icon fill="white" class="position-absolute-center"></call-menu-icon>
 								            </button>
-								            <button type="button" class="btn btn-danger btn-lg badge-pill line-height-1 px-2 border ml-2" @click="rejectCall()">
-								                <close-icon class="fill-white"></close-icon>
+								            <button type="button" class="btn btn-danger btn-lg badge-pill px-2 border ml-2 position-relative" @click="rejectCall()">
+								                <close-icon class="fill-white position-absolute-center"></close-icon>
 								            </button>
 										</template>
-							            <button v-else type="button" class="btn btn-danger btn-lg badge-pill line-height-1" :class="[isShrinked ? 'p-1 mx-1' : 'px-2']" @click="endCall()">
-							                <phone-icon fill="white"></phone-icon>
+							            <button v-else type="button" class="btn btn-danger btn-lg badge-pill position-relative" :class="[isShrinked ? 'p-1 mx-1' : 'px-2']" @click="endCall()">
+							                <call-menu-icon fill="white" class="position-absolute-center"></call-menu-icon>
 							            </button>
 							        </template>
 					            </div>

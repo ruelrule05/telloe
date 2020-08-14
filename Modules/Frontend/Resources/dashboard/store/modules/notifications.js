@@ -11,6 +11,10 @@ const mutations = {
         state.index.push.apply(state.index, data);
         state.ready = true;
     },
+
+    clear(state) {
+        state.index = [];
+    },
 };
 
 const actions = {
@@ -21,6 +25,11 @@ const actions = {
 
     update({ commit }, data) {
         axios.put(`/${name}/${data.id}`, data);
+    },
+
+    clear({ commit }) {
+        axios.post(`/${name}/clear`);
+        commit('clear');
     },
 };
 

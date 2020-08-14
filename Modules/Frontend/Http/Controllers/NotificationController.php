@@ -12,7 +12,7 @@ class NotificationController extends Controller
     //
     public function index(Request $request)
     {
-        $notifications = Notification::where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+        $notifications = Notification::where('is_read', false)->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
         return response()->json($notifications);
     }
 
@@ -31,6 +31,14 @@ class NotificationController extends Controller
         $this->authorize('update', $notification);
         $notification->update([
             'is_read' => true,
+        ]);
+        return response()->json(['success' => true]);
+    }
+
+    public function clear(Request $request)
+    {
+        Notification::where('user_id', Auth::user()->id)->update([
+            'is_read' => true
         ]);
         return response()->json(['success' => true]);
     }

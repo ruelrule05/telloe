@@ -119,6 +119,7 @@ import BillIcon from '../icons/bill';
 import ColoredBellIcon from '../icons/colored-bell';
 import FilePdfIcon from '../icons/file-pdf';
 import FileArchiveIcon from '../icons/file-archive';
+import CloseIcon from '../icons/close';
 
 import ContactAltIcon from '../icons/contact-alt';
 import MonthviewIcon from '../icons/monthview';
@@ -164,6 +165,7 @@ window.app = new Vue({
         MonthviewIcon,
         PaymentsIcon,
         MessagesIcon,
+        CloseIcon,
 
         VideoCall,
         ScreenRecorder,
@@ -193,6 +195,7 @@ window.app = new Vue({
             data: null,
             status: '',
         },
+        jQuery: $
     },
 
     computed: {
@@ -321,8 +324,9 @@ window.app = new Vue({
             getConversations: 'conversations/index',
             getNotifications: 'notifications/index',
             updateNotification: 'notifications/update',
+            clearNotifications: 'notifications/clear',
         }),
-        
+
         downloadMedia(message) {
             if (message.source) {
                 let link = document.createElement('a');

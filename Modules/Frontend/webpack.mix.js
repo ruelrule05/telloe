@@ -101,11 +101,11 @@ else {
         console.log('Running widget...');
         browserSync();
         mix
-            .js(__dirname + '/Resources/js/widget.js', 'js')
+            .js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js')
             .webpackConfig({
-                output: {
+                /*output: {
                     chunkFilename: `js/chunks/[name].js`
-                },
+                },*/
                 optimization: {
                     splitChunks: {
                         chunks: 'all',
@@ -134,8 +134,8 @@ function browserSync(){
         watch: true,
         notify: false,
         https: {
-            key: '/Users/admin/.config/valet/Certificates/telloe.app.key',
-            cert: '/Users/admin/.config/valet/Certificates/telloe.app.crt'
+            key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
+            cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
         }
     });
 }

@@ -90,7 +90,6 @@ class AuthController extends Controller
 			'email' => 'required|email|unique:users,email',
 			'password' => 'required',
 		]);
-        $widget = Widget::create([]);
 
         $username = $this->generateUsername($request);
 
@@ -99,11 +98,13 @@ class AuthController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'widget_id' => $widget->id,
             'last_online' => NULL,
         ]);
         $user->password = bcrypt($request->password);
         $user->save();
+        $widget = Widget::create([
+            'user_id' => $user->id
+        ]);
 
         if(isValidTimezone($request->timezone)) :
             $user->timezone = $request->timezone;
@@ -267,14 +268,12 @@ class AuthController extends Controller
                 $time = time();
                 $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
                 Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $widget = Widget::create([]);
                 $username = $this->generateUsername($request);
                 $user = User::create([
                     'username' => $username,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'widget_id' => $widget->id
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
@@ -283,6 +282,9 @@ class AuthController extends Controller
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
+                $widget = Widget::create([
+                    'user_id' => $user->id
+                ]);
 
                 Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
@@ -318,14 +320,12 @@ class AuthController extends Controller
                 $isNew = true;
                 $time = time();
                 Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $widget = Widget::create([]);
                 $username = $this->generateUsername($request);
                 $user = User::create([
                     'username' => $username,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'widget_id' => $widget->id,
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
@@ -334,6 +334,9 @@ class AuthController extends Controller
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
+                $widget = Widget::create([
+                    'user_id' => $user->id
+                ]);
                 Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
             endif;

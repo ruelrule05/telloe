@@ -326,6 +326,9 @@ new Vue({
                         this.selectedService = this.selectedDate = this.selectedTimeslot = null;
                     })
                     .catch((e) => {
+                        this.$refs['bookingModal'].hide();
+                        this.bookingSuccess = false;
+                        this.loginForm.loading = false;
                         this.$toasted.show(e.response.data.message, {
                             className: 'bg-danger rounded shadow-none'
                         });

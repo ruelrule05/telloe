@@ -18,6 +18,9 @@ import MicrophoneIcon from '../../../icons/microphone';
 import ArrowBottomLeftIcon from '../../../icons/arrow-bottom-left';
 import ArrowTopRightIcon from '../../../icons/arrow-top-right';
 const randomString = require('random-string');
+import MicrophoneAltIcon from '../../../icons/microphone-alt';
+import VideocamIcon from '../../../icons/videocam';
+import CallMenuIcon from '../../../icons/call-menu';
 
 export default {
 	components: {
@@ -33,6 +36,9 @@ export default {
 		MicrophoneIcon,
         ArrowBottomLeftIcon,
         ArrowTopRightIcon,
+        MicrophoneAltIcon,
+        VideocamIcon,
+        CallMenuIcon,
 	},
 	data: () => ({
 		notification_sound: null,

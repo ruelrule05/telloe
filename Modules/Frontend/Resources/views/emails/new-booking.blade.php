@@ -6,7 +6,8 @@
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
     {!! $emailMessage !!}
     <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 0.02rem 1rem; text-align-last: left; margin-top: 10px">
-        <ul style="list-style: none; padding: 0">
+        <h1 style="font-size: 26px; margin-bottom: 0">{{ $booking->service->user->full_name }}</h1>
+        <ul style="list-style: none; padding: 0; text-align: left">
             <li>
                 <span style="width: 100px; display: inline-block">Service</span> <strong>{{ $booking->service->name }}</strong>
             </li>
