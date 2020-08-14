@@ -86,7 +86,6 @@
 								</span>
 							</div>
 
-
 							<div class="h-100 text-left d-flex flex-column overflow-hidden position-relative mt-3">
 								<template v-if="!authForm">
 		            				<div class="d-flex align-items-center">
