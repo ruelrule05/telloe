@@ -92,21 +92,13 @@ export default {
     },
 
     watch: {
-        ready: function(value) {
-            this.$root.contentloading = !value;
-            if (value && !this.$route.params.id && this.conversations.length > 0) this.setConversation(this.orderedConversations[0]);
-            //
-        },
-        conversations: function(value) {
-            console.log(value.length, this.$route.params.id);
-            if(value.length > 0 && !this.$route.params.id) this.setConversation(this.orderedConversations[0]);
-        }
     },
 
     created() {
         this.$root.contentloading = !this.ready;
-        if (this.ready && !this.$route.params.id && this.conversations.length > 0 && this.$route.name == 'conversations') this.setConversation(this.orderedConversations[0]);
-        this.getConversations();
+        this.getConversations().then(() => {
+            if (!this.$route.params.id && this.conversations.length > 0 && this.$route.name == 'conversations') this.setConversation(this.orderedConversations[0]);
+        });
         this.getContacts();
         this.$root.socket.on('new_conversation', data => {
             if (data.member_ids.find(x => x == this.$root.auth.id)) {
@@ -193,7 +185,6 @@ export default {
         },
 
         setConversation(conversation) {
-            console.log('setConversation');
             if (conversation.id != this.$route.params.id) this.$router.replace(`/dashboard/conversations/${conversation.id}`);
         },
     },

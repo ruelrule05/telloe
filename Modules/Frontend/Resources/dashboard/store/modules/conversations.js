@@ -47,10 +47,9 @@ const mutations = {
 };
 
 const actions = {
-    index({ commit }) {
-        axios.get(`/${name}`).then((response) => {
-            commit('index', response.data);
-        });
+    async index({ commit }) {
+        let response = await axios.get(`/${name}`);
+        commit('index', response.data);
     },
 
     async show({ commit, state }, data) {
