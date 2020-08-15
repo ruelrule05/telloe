@@ -3,6 +3,7 @@ import Signup from './signup.vue';
 import Recover from './recover.vue';
 import Reset from './reset.vue';
 import CloseIcon from '../../icons/close.vue';
+import io from 'socket.io-client';
 export default {
     components: {
         Login,
@@ -23,6 +24,7 @@ export default {
     }),
 
     created() {
+        this.socket = io(WS_URL);
         if (typeof gapi != 'undefined') {
             gapi.load('auth2', () => {
                 this.GoogleAuth = gapi.auth2.init({client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com'});
@@ -51,7 +53,6 @@ export default {
                     e => {
                         FB.api('/me', {fields: 'first_name, last_name, email'}, response => {
                             if (response && !response.error) {
-                                console.log(response);
                                 response.action = this.$root.action;
                                 let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                                 let invite_token = this.$root.invite_token;
@@ -60,6 +61,7 @@ export default {
                                 axios
                                     .post('/login/facebook', response)
                                     .then(response => {
+                                        this.socket.emit('invite_token', invite_token);
                                         window.location.href = response.data.redirect_url;
                                     })
                                     .catch(e => {
@@ -98,6 +100,7 @@ export default {
                         axios
                             .post('/login/google', user)
                             .then(response => {
+                                this.socket.emit('invite_token', invite_token);
                                 window.location.href = response.data.redirect_url;
                             })
                             .catch(e => {

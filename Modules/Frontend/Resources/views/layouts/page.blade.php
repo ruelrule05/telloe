@@ -28,6 +28,7 @@
 	
 	<script>
 		const CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
+		const WS_URL = '{{ env('WS_URL') }}';
 	</script>
 	@yield('scripts')
 </body>

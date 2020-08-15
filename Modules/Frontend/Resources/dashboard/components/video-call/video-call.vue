@@ -1,9 +1,9 @@
 <template>
 	<div class="modal fade video-call-modal" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', {'is-fullscreen show': isFullScreen}]">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content overflow-hidden rounded h-100">
-                <div v-if="$root.callConversation" class="modal-body p-0 h-100">
-			    	<div class="video-call w-100 overflow-hidden position-relative" v-cloak>
+            <div class="modal-content rounded h-100">
+                <div v-if="$root.callConversation" class="modal-body p-0 h-100 rounded" :class="{'overflow-hidden': isShrinked}">
+			    	<div class="video-call w-100 position-relative rounded" v-cloak>
 			    		<div v-if="!status" class="caller position-absolute-center text-center bg-white">
 			    			<!-- Outgoing -->
 			    			<div v-if="action == 'outgoing'">
@@ -46,7 +46,7 @@
 				        </div>
 
 						<!-- Ongoing -->
-			    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column overflow-hidden">
+			    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column rounded">
 			    			<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked">
 			    				<h5 class="font-heading mb-0 text-white">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h5>
 			    				<button @click="endCall()" class="btn btn-sm btn-close p-0 position-absolute">
@@ -102,24 +102,32 @@
 					            <div class="text-right w-25">
 				        			<template v-if="status == 'ongoing'">
 					        			<template v-if="!isShrinked">
-									        <button type="button" v-if="!isScreenSharing" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
+									        <button v-tooltip.top="'Share Screen'" type="button" :class="{'d-none': isScreenSharing}" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
 									            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
 									        </button>
-									        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
+									        <button v-tooltip.top="'Exit Share Screen'" type="button" :class="{'d-none': !isScreenSharing}" class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">
 									            <duplicate-alt-icon fill="red" width="20" height="20"></duplicate-alt-icon>
 									        </button>
-									        <button type="button" v-if="!isFullScreen" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
+									        <button v-tooltip.top="'Full Screen'" type="button" :class="{'d-none': isFullScreen}" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(true)">
 									            <expand-icon width="20" height="20"></expand-icon>
 									        </button>
-									        <button type="button" v-else class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
+									        <button v-tooltip.top="'Exit Full Screen'" type="button" :class="{'d-none': !isFullScreen}" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
 									            <collapse-icon width="20" height="20"></collapse-icon>
 									        </button>
 									    </template>
-
-								        <button v-if="!isFullScreen" type="button" class="btn btn-shrink-toggle btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
-								            <arrow-top-right-icon v-if="isShrinked" width="20" height="20"></arrow-top-right-icon>
-									        <arrow-bottom-left-icon v-else width="20" height="20"></arrow-bottom-left-icon>
-								        </button>
+										
+										<template v-if="!isFullScreen">
+											<span :class="{'d-none': isShrinked}">
+										        <button v-tooltip.top="'Shrink'" type="button" class="btn btn-shrink-toggle btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
+											        <arrow-bottom-left-icon width="20" height="20"></arrow-bottom-left-icon>
+										        </button>
+											</span>
+											<span :class="{'d-none': !isShrinked}" class="btn-expand-wrapper">
+										        <button type="button" class="btn btn-shrink-toggle btn-white border badge-pill line-height-1 p-1 ml-1" @click="isShrinked = !isShrinked; toggleDraggable()">
+										            <arrow-top-right-icon width="20" height="20"></arrow-top-right-icon>
+										        </button>
+											</span>
+										</template>
 								    </template>
 					            </div>
 					        </div>

@@ -91,8 +91,8 @@ export default {
 						    };
 		                    setTimeout(() => {
 		                        let canvas = document.createElement("canvas");
-		                        canvas.width = this.$refs['videoPreview'].videoWidth / 2;
-		                        canvas.height = this.$refs['videoPreview'].videoHeight / 2;
+		                        canvas.width = this.$refs['videoPreview'].videoWidth;
+		                        canvas.height = this.$refs['videoPreview'].videoHeight;
 		                        canvas.getContext('2d').drawImage(this.$refs['videoPreview'], 0, 0, canvas.width, canvas.height);
 		                        canvas.toBlob((blob) => {
 					  				let reader = new FileReader();

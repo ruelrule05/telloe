@@ -196,6 +196,11 @@ export default {
             deleteBooking: 'bookings/delete',
             storeUserBlacklistedService: 'user_blacklisted_services/store',
         }),
+        
+        disabledDate(date) {
+            let dayName = dayjs(date.date).format('dddd');
+            return !this.selectedService.days[dayName].isOpen || this.selectedService.holidays.find(x => x == date.label);
+        },
 
         calcSliderTranslate() {
             if(this.$refs['weekday-slider'] && this.calendarView == 'week') {

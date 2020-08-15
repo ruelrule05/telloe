@@ -71,6 +71,7 @@ export default {
 				axios
 					.post(`/signup`, this.signupForm)
 					.then((response) => {
+                        this.$parent.socket.emit('invite_token', this.signupForm.invite_token);
 	                    window.location.href = '/dashboard/conversations';
 					})
 					.catch((e) => {

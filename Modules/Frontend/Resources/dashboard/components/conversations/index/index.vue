@@ -126,22 +126,26 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label d-block mb-n1">Available services</label>
-                <div v-for="service in services" class="d-inline-flex mt-2 border rounded shadow-sm py-2 px-3 mr-2">
-                    <div>
-                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                        <small class="text-gray d-block">{{ service.duration }} minutes</small>
-                    </div>
-                    <div class="ml-3">
-                        <toggle-switch :value="newContact.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>
+                <strong>Available services</strong>
+                <div class="d-flex flex-wrap mx-n1">
+                    <div v-for="service in services" v-if="service.is_available" class="mt-2 w-50 px-1">
+                        <div class="border rounded shadow-sm py-2 px-3 d-flex">
+                            <div>
+                                <h6 class="font-heading mb-0">{{ service.name }}</h6>
+                                <small class="text-gray d-block">{{ service.duration }} minutes</small>
+                            </div>
+                            <div class="ml-auto">
+                                <toggle-switch :value="newContact.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <div class="form-group" v-if="($root.auth.custom_fields || []).length > 0">
-                <label class="form-label">Fields (Optional)</label>
+                <strong>Fields (Optional)</strong>
                 <div class="form-row">
-                    <div class="col" v-for="field in $root.auth.custom_fields">
+                    <div class="col-6" v-for="field in $root.auth.custom_fields">
                         <label class="form-label">{{ field }}</label>
                         <input type="text" class="form-control" v-model="newContact.custom_fields[field]">
                     </div>
@@ -149,7 +153,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Invitation Message (Optional)</label>
+                <strong class="mb-1 d-block">Invitation Message (Optional)</strong>
                 <textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
             </div>
             

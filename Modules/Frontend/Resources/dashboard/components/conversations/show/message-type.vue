@@ -157,7 +157,8 @@ p {
     line-height: 1.3;
 }
 img{
-    max-width: 450px;
+    max-width: 100%;
+    width: 350px;
     height: auto;
 }
 .image-square {

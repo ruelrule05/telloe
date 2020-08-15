@@ -5,9 +5,11 @@
  *
  */
 
+
 Route::get('widget', function() {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
 });
+
 
 
 Route::get('email', function() {
@@ -90,6 +92,8 @@ Route::group(
             Route::post('contacts/{id}/finalize_invoice', 'ContactController@finalizeInvoice');
             Route::post('contacts/{id}/create_subscription', 'ContactController@createSubscription');
             Route::post('contacts/{id}/cancel_subscription', 'ContactController@cancelSubscription');
+            Route::post('contacts/get_contact_from_invite_token', 'ContactController@getContactFromInviteToken');
+            
 
             Route::get('tags/search', 'DashboardController@searchTags');
             Route::get('conversations/{id}/files', 'ConversationController@files');

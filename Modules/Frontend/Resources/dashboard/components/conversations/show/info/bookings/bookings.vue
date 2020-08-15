@@ -42,7 +42,7 @@
 						<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 						<div class="flex-grow-1 overflow-hidden">
 							<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-								<div v-for="(date, index) in weekDayOptions" class="px-1" :id="date.id">
+								<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 									<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-blue text-white': (selectedDate ? selectedDate.getTime() : '') === date.date.getTime()}" @click="selectedDate = date.date">
 										{{ date.title }}
 										<strong class="text-uppercase d-block">{{ date.description }}</strong>
@@ -132,7 +132,7 @@
 					<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 					<div class="flex-grow-1 overflow-hidden">
 						<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-							<div v-for="(date, index) in weekDayOptions" class="px-1" :id="date.id">
+							<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 								<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-blue text-white': (selectedDate ? selectedDate.getTime() : '') === date.date.getTime()}" @click="selectedDate = date.date">
 									{{ date.title }}
 									<strong class="text-uppercase d-block">{{ date.description }}</strong>

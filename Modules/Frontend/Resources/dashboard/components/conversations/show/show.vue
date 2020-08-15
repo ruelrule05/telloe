@@ -39,9 +39,11 @@
         			<div class="overflow-hidden flex-grow-1 bg-white position-relative">
                         
                         <div v-if="hasScreenRecording" class="position-absolute w-100 h-100 bg-white screen-recorder-data">
-                            <div class="position-absolute-center w-75 text-center">
+                            <div class="position-absolute-center w-75 text-center h-100 py-5 d-flex flex-column">
                                 <h6 class="font-heading h5">Screen recording</h6>
-                                <video src="" class="w-100 h-100 bg-black rounded d-block outline-0" controls ref="screenRecorderData"></video>
+                                <div class="flex-grow-1 position-relative bg-dark rounded overflow-hidden">
+                                    <video src="" class="w-100 h-100 bg-black position-absolute-center d-block outline-0" controls ref="screenRecorderData"></video>
+                                </div>
                                 <div class="mt-2">
                                     <button type="button" class="btn btn-light border" @click="downloadScreenRecording()">Download</button>
                                     <button type="button" class="btn  btn-light border" @click="sendScreenRecording">Send

@@ -21,6 +21,7 @@ const randomString = require('random-string');
 import MicrophoneAltIcon from '../../../icons/microphone-alt';
 import VideocamIcon from '../../../icons/videocam';
 import CallMenuIcon from '../../../icons/call-menu';
+import Tooltip from '../../../js/directives/tooltip.js';
 
 export default {
 	components: {
@@ -40,6 +41,11 @@ export default {
         VideocamIcon,
         CallMenuIcon,
 	},
+
+    directives: {
+        Tooltip
+    },
+
 	data: () => ({
 		notification_sound: null,
 		connections: [],
@@ -248,9 +254,9 @@ export default {
                 user_id: this.$root.auth.id,
             });
             this.$root.callConversation = conversation;
-            this.callTimeout = setTimeout(() => {
+            /*this.callTimeout = setTimeout(() => {
                 if(!this.status) this.endCall();
-            }, 15000);
+            }, 15000);*/
 		},
 
 		incomingCall() {

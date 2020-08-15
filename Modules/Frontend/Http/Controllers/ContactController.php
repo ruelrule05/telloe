@@ -340,5 +340,14 @@ class ContactController extends Controller
         $subscription->contact_id = $contact->id;
         return response()->json($subscription);
     }
+
+    public function getContactFromInviteToken(Request $request)
+    {
+        $this->validate($request, [
+            'invite_token' => 'required'
+        ]);
+        $contact = Contact::where('invite_token', $request->invite_token)->where('user_id', Auth::user()->id)->first();
+        return response()->json($contact);
+    }
     
 }

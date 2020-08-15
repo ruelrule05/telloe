@@ -96,6 +96,9 @@ export default {
         this.getServices();
 		this.getContacts();
 		this.showUserCustomFields();
+        this.$root.socket.on('invite_token', invite_token => {
+            this.getContactFromInviteToken(invite_token);
+        });
 	},
 
 	methods: {
@@ -104,6 +107,7 @@ export default {
             getContacts: 'contacts/index',
             storeContact: 'contacts/store',
             deleteContact: 'contacts/delete',
+            getContactFromInviteToken: 'contacts/get_contact_from_invite_token',
             showUserCustomFields: 'user_custom_fields/show',
             storeUserCustomFields: 'user_custom_fields/store',
             showConversation: 'conversations/show',

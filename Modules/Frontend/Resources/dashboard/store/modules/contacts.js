@@ -54,6 +54,13 @@ const mutations = {
             }
         }
     },
+
+    get_contact_from_invite_token(state, data) {
+        let contact = state.index.find(x => x.id == data.id);
+        if (contact) {
+            contact.is_pending = data.is_pending;
+        }
+    },
 };
 
 const actions = {
@@ -93,6 +100,12 @@ const actions = {
     async cancel_subscription({commit}, data) {
         let response = await axios.post(`/${name}/${data.contact.id}/cancel_subscription?subscription_id=${data.id}`, null, {toasted: true});
         commit('cancel_subscription', response.data);
+    },
+
+    get_contact_from_invite_token({commit}, invite_token) {
+        axios.post(`/${name}/get_contact_from_invite_token`, {invite_token: invite_token}).then(response => {
+            commit('get_contact_from_invite_token', response.data);
+        })
     },
 };
 

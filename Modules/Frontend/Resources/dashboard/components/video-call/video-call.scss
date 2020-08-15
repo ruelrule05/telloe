@@ -122,7 +122,7 @@
         .video-call {
             height: 100% !important;
         }
-        .btn-shrink-toggle {
+        .btn-expand-wrapper {
             position: absolute;
             z-index: 10;
             top: 10px;
@@ -169,5 +169,9 @@
             width: 40px;
             height: 40px;
         }
+    }
+    .call-bottombar{
+        border-bottom-left-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
     }
 }

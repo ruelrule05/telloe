@@ -72,6 +72,10 @@
 	.weekday-container {
 		background: $light;
 	}
+    .weekday-day.disabled{
+        opacity: 0.35;
+        pointer-events: none;
+    }
 }
 .timeslots-container{
 	height: 270px;

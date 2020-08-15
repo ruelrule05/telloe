@@ -52,6 +52,10 @@ io.on('connection', function(socket) {
     socket.on('is_typing', function(data) {
         socket.broadcast.emit('is_typing', data);
     });
+
+    socket.on('invite_token', function(data) {
+        socket.broadcast.emit('invite_token', data);
+    });
     
     socket.on('user_online', function(user_id) {
         let user_ids = Object.values(online_users);
