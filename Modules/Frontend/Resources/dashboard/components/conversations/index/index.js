@@ -95,7 +95,11 @@ export default {
         ready: function(value) {
             this.$root.contentloading = !value;
             if (value && !this.$route.params.id && this.conversations.length > 0) this.setConversation(this.orderedConversations[0]);
+            //
         },
+        conversations: function(value) {
+            if(value.length > 0 && !this.$route.params.id) this.setConversation(this.orderedConversations[0]);
+        }
     },
 
     created() {
