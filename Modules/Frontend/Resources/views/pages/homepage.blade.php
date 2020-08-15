@@ -300,7 +300,7 @@
 					<div class="col-md-4">
 						<div class="border rounded bg-white plan p-3 position-relative" @click="selectPlan(plan)">
 							<h5 class="mb-4 font-heading text-primary text-uppercase">{{ $plan->name }}</h5>
-							<h4 class="mb-0 font-weight-normal d-inline @if($plan->interval == 'year') text-warning @endif"><strong>${{ intval($plan->price) }}</strong></h4><span class="@if($plan->interval == 'year') text-warning @endif">{{ substr(strval($plan->price - intval($plan->price)), 1) }}</span> / {{ $plan->interval }}
+							<h4 class="mb-0 font-weight-normal d-inline @if($plan->name == 'Annual') text-warning @endif"><strong>${{ intval($plan->price) }}</strong></h4><span class="@if($plan->name == 'Annual') text-warning @endif">{{ substr(strval($plan->price - intval($plan->price)), 1) }}</span> / {{ $plan->interval }}
 
 							<div class="text-secondary">
 								@if($plan->every_months > 1)
