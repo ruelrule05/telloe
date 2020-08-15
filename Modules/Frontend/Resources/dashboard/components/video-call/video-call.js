@@ -238,7 +238,7 @@ export default {
             this.isVideoStopped = !camera;
             this.isIncoming = false;
             clearTimeout(this.callTimeout);
-            //this.notification_sound.play();
+            this.notification_sound.play();
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');
@@ -260,7 +260,7 @@ export default {
 		},
 
 		incomingCall() {
-	       	//this.notification_sound.play();
+	       	this.notification_sound.play();
             this.isIncoming = true;
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
