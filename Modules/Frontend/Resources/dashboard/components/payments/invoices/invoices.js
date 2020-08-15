@@ -35,6 +35,7 @@ export default {
 
 	data: () => ({
 		newInvoiceForm: {
+			contact_id: '',
 			loading: false,
 			service_ids: [],
 		},
@@ -157,9 +158,11 @@ export default {
 
 		resetInvoiceForm() {
 			this.newInvoiceForm = {
+				contact_id: '',
 				loading: false,
 				service_ids: [],
 			};
+			this.openInfo = false;
 		},
 
 		draftInvoice(invoice) {
@@ -196,14 +199,14 @@ export default {
         	if(this.$root.payoutComplete) {
 				this.createContactInvoice(this.newInvoiceForm)
 					.then(() => {
-						this.$refs['createInvoiceModal'].hide();
+						this.resetInvoiceForm();
 					})
 					.catch(() => {
 						this.newInvoiceForm.loading = false;
 					});
 			} else {
 	        	this.storePendingInvoice(this.newInvoiceForm).then(() => {
-	        		this.$refs['createInvoiceModal'].hide();
+	        		this.resetInvoiceForm();
 	        	}).catch(() => {
 	        		this.newInvoiceForm.loading = false;
 	        	});

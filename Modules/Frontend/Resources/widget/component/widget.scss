@@ -40,7 +40,7 @@
     .font-heading {
         font-family: 'Avenir Next';
     }
-    strong{
+    strong {
         font-weight: bold;
     }
     .line-height-sm {
@@ -59,10 +59,10 @@
     [v-cloak] {
         opacity: 0;
     }
-    .cursor-pointer{
+    .cursor-pointer {
         cursor: pointer;
     }
-    .opacity-0{
+    .opacity-0 {
         opacity: 0 !important;
     }
     @each $color, $value in $theme-colors {
@@ -81,9 +81,10 @@
         transform: translate(-50%, -50%);
     }
     #button {
-        position: absolute;
         bottom: 20px;
         left: 20px;
+        box-shadow: 0 0 0.5rem rgba(92, 101, 112, 0.75) !important;
+        z-index: 55555;
     }
     .widget {
         bottom: 20px;
@@ -91,6 +92,8 @@
         transition: $transition-base;
         width: 350px;
         height: 550px;
+        z-index: 55555;
+        box-shadow: 0 0 2rem rgba(92, 101, 112, 0.35) !important;
     }
     .btn-close {
         top: 10px;

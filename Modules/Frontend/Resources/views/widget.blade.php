@@ -3,6 +3,6 @@
 <head>
 </head>
 <body>
-	<script src="https://telloe.com/js/widget.js?p={{ request('p') }}"></script>
+	<script src="{{ config('app.url') }}/js/widget.js?p={{ request('p') }}"></script>
 	</body>
 </html>

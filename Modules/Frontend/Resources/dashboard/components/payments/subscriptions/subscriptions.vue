@@ -50,10 +50,10 @@
 											<!-- <span class="text-uppercase text-muted">{{ getCurrency(subscription) }}</span><span class="text-muted">/{{subscription.plan ? subscription.plan.interval : 'month'}}</span> -->
 										</td>
 										<td class="align-middle text-muted">
-											<p class="text-capitalize mb-0 font-weight-bold">{{ subscription.plan.interval }}ly</p>
+											<p class="text-capitalize mb-0 font-weight-bold">{{ subscription.plan ? subscription.plan.interval : subscription.recurring_frequency }}ly</p>
 										</td>
 										<td class="align-middle text-muted">
-											<p class="text-capitalize mb-0">{{ formatDate(subscription.current_period_end) }}</p>
+											<p class="text-capitalize mb-0">{{ subscription.current_period_end ? formatDate(subscription.current_period_end) : '-' }}</p>
 										</td>
 										<td class="align-middle">{{ subscription.contact.contact_user.full_name }}</td>
 										<td class="text-right align-middle">

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 class PendingSubscription extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_id', 'services', 'amount'];
+    protected $fillable = ['user_id', 'contact_id', 'services', 'date', 'recurring_frequency', 'duration', 'duration_frequency', 'amount'];
     protected $appends = ['created'];
     protected $casts = [
         'services' => 'array',

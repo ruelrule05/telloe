@@ -1,16 +1,16 @@
 <template>
 	<div v-if="ready" id="widget" v-cloak>
-		<button v-if="!open" id="button" class="btn btn-primary d-flex align-items-center" type="button" @click="open = !open">
+		<button id="button" class="position-fixed btn btn-primary d-flex align-items-center" :class="[open ? 'd-none' : 'd-flex']" type="button" @click="open = !open">
 			<calendar-icon class="mr-1" fill="white" width="18" height="18"></calendar-icon> {{ profile.widget.button_text }}
 		</button>
 
-		<div v-else class="widget position-absolute border rounded shadow-sm overflow-hidden d-flex flex-column">
+		<div class="widget bg-white position-fixed border rounded shadow-sm overflow-hidden flex-column" :class="[open ? 'd-flex' : 'd-none']">
 			<div v-if="!isBooking" class="top-buttons d-flex align-items-center py-2 pl-3 pr-2 bg-transparent">
 				<button :disabled="!selectedService" class="btn btn-white badge-pill p-0 shadow-none" :class="{'opacity-0': !selectedService}" type="button" @click="stebBack()"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
 				<button class="btn btn-white badge-pill p-0 shadow-none ml-auto" type="button" @click="reset(); open = false"><close-icon transform="scale(1.3)"></close-icon></button>
 			</div>
 
-			<div class="flex-grow-1 overflow-auto">
+			<div class="flex-grow-1 overflow-auto" :class="{'mt-n4': !selectedService}">
 				<!-- Loading -->
 				<div class="text-center position-relative h-100" v-if="isBooking">
 					<div class="position-absolute-center w-100">
@@ -85,7 +85,7 @@
 				            			<small class="text-capitalize">{{ calendarView }} view</small>
 				            		</button>
 				            	</div>
-								<div class="flex-grow-1 d-flex flex-column h-100">
+								<div class="flex-grow-1 d-flex flex-column">
 									<div>
 										<div class="align-items-center mt-2" :class="[calendarView == 'month' ? 'd-none' : 'd-flex']">
 											<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
@@ -129,9 +129,6 @@
 												</div>
 											</div>
 										</div>
-										<div class="d-flex align-items-center mt-2" :class="{'opacity-0': !selectedDate}">
-											<button :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="authForm = true">Next</button>
-										</div>
 									</div>
 								</div>
 							</div>
@@ -163,7 +160,12 @@
 						</div>
 					</div>
 				</div>
+			</div>
 
+
+
+			<div v-if="selectedDate && !authForm" class="d-flex align-items-center p-2 border-top">
+				<button :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="authForm = true">Next</button>
 			</div>
 		</div>
 	</div>

@@ -465,3 +465,7 @@
 	</div>
 </div>
 @stop
+
+@section('scripts')
+	<script src="{{ config('app.url') }}/js/widget.js?p=roowright"></script>
+@stop

@@ -153,8 +153,7 @@
 										<label class="form-label">Date of birth</label>
 										<v-date-picker is-required :popover="{visibility: 'click' }" v-model="stripeAccountForm.dob" :input-props='{
 											    class: "form-control bg-light",
-											    placeholder: "Date of birth",
-											    readonly: true,
+											    placeholder: "MM/DD/YYYY",
 											    "data-required": true,
 											}'>
 										</v-date-picker>

@@ -51,8 +51,8 @@ export default {
 
 		authError: '',
 		loginForm: {
-			email: 'clyde@telloe.com',
-			password: 'adminx',
+			email: '',
+			password: '',
 			loading: false,
 		},
 		timeslotsLoading: false,
@@ -217,7 +217,11 @@ export default {
 		this.getData();
 	},
 
+	mounted() {
+	},
+
 	methods: {
+
 		stebBack() {
 			if (this.authForm) {
 				this.authForm = false;

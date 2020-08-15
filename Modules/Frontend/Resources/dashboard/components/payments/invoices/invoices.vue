@@ -102,12 +102,12 @@
 									<vue-select v-model="newInvoiceForm.contact_id" :options="stripeContacts" searchable required placeholder="Find contact"></vue-select>
 								</div>
 								<div class="form-group">
-									<label class="form-label">Booking Types</label>
-									<vue-select v-model="newInvoiceForm.service_ids" :options="servicesList" multiple required placeholder="Select booking type"></vue-select>
-								</div>
-								<div class="form-group">
 									<label class="form-label">Amount</label>
 									<input type="number" step="0.01" class="form-control" data-required v-model="newInvoiceForm.amount" placeholder="Amount">
+								</div>
+								<div class="form-group">
+									<label class="form-label">Booking Types (Optional)</label>
+									<vue-select v-model="newInvoiceForm.service_ids" :options="servicesList" multiple placeholder="Select booking type"></vue-select>
 								</div>
 							</div>
 							<div class="d-flex align-items-center">

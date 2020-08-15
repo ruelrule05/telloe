@@ -145,7 +145,7 @@ class ContactController extends Controller
     public function createInvoice($id, Request $request)
     {
         $this->validate($request, [
-            'service_ids' => 'required|array',
+            'service_ids' => 'nullable|array',
             'amount' => 'required|numeric',
         ]);
 
@@ -159,7 +159,7 @@ class ContactController extends Controller
         $stripe_api = new StripeAPI();
 
         $servicesNames = [];
-        foreach($request->service_ids as $service_id) :
+        foreach(($request->service_ids ?? []) as $service_id) :
             $service = Service::findOrFail($service_id);
             $this->authorize('create_invoice', $service);
             $servicesNames[] = $service->name;
@@ -173,11 +173,12 @@ class ContactController extends Controller
         ], ['stripe_account' => Auth::user()->stripe_account['id']]); 
 
         $due_date = Carbon::now()->add(7, 'days');
+        $description = implode(', ', $servicesNames);
         $data = [
             'auto_advance' => false,
             'customer' => $contact->stripe_customer_id,
             'collection_method' => 'send_invoice',
-            'description' => implode(', ', $servicesNames),
+            'description' => $description,
             'application_fee_amount' => $amount * 0.025 * 100,
             /*'transfer_data' => [
                 'destination' => Auth::user()->stripe_account['id'],

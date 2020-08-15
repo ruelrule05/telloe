@@ -19,7 +19,7 @@ class PendingInvoiceController extends Controller
     {
     	$this->validate($request, [
     		'contact_id' => 'required|exists:contacts,id',
-    		'service_ids' => 'required|array',
+    		'service_ids' => 'nullable|array',
     		'amount' => 'required|numeric'
     	]);
     	$data = $request->all();

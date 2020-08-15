@@ -5,6 +5,7 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PendingSubscription;
+use App\Models\Contact;
 use Auth;
 
 class PendingSubscriptionController extends Controller
@@ -17,14 +18,27 @@ class PendingSubscriptionController extends Controller
 
     public function store(Request $request) 
     {
-    	$this->validate($request, [
-    		'contact_id' => 'required|exists:contacts,id',
-    		'services' => 'required|array',
-    		'amount' => 'required|numeric'
-    	]);
+        $this->validate($request, [
+            'contact_id' => 'required|exists:contacts,id',
+            'services' => 'required|array',
+            'date' => 'required|date',
+            'recurring_frequency' => 'required|in:week,month,year',
+            'duration' => 'required|numeric',
+            'duration_frequency' => 'required|in:month,year',
+        ]);
+
+        $contact = Contact::findOrFail($request->contact_id);
+        $this->authorize('create_subscription', $contact);
+
     	$data = $request->all();
     	$data['user_id'] = Auth::user()->id;
-    	$data['amount'] = $data['amount'] * 100;
+        $total = 0;
+        foreach($request->services as $service) :
+            if($service['rate'] && $service['frequency'] && $service['frequency_interval']) :
+                $total += ($service['frequency'] * $service['rate']);
+            endif;
+        endforeach;
+        $data['amount'] = $total * 100;
     	$pendingSubscription = PendingSubscription::create($data);
 
     	return response()->json($pendingSubscription->load('contact.contactUser'));

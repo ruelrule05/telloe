@@ -226,6 +226,7 @@ export default {
 				duration: 6,
 				duration_frequency: 'month',
 			};
+			this.openInfo = false;
         },
 
         createSubscription() {
@@ -240,8 +241,9 @@ export default {
 	        		this.newSubscriptionForm.loading = false;
 	        	});
         	} else {
+        		this.newSubscriptionForm.date = dayjs(this.newSubscriptionForm.date).format('YYYY-MM-DD')
 	        	this.storePendingSubscription(this.newSubscriptionForm).then(() => {
-	        		this.$refs['createSubscriptionModal'].hide();
+	        		this.resetSubscriptionForm();
 	        	}).catch(() => {
 	        		this.newSubscriptionForm.loading = false;
 	        	});

@@ -64,14 +64,17 @@ export default {
 		this.$root.heading = 'Account';
 		if (this.$root.auth.role.role == 'client' && Object.keys(this.user.stripe_account).length > 0) {
 			let stripe_account = this.user.stripe_account;
+			let dob = null;
 			this.stripeAccountForm.country = stripe_account.country;
-			this.stripeAccountForm.address = stripe_account.individual.address.line1;
-			this.stripeAccountForm.city = stripe_account.individual.address.city;
-			this.stripeAccountForm.state = stripe_account.individual.address.state;
-			this.stripeAccountForm.postal = stripe_account.individual.address.postal_code;
-			this.stripeAccountForm.website = stripe_account.business_profile.url;
-			this.stripeAccountForm.phone = stripe_account.individual.phone;
-			let dob = stripe_account.individual.dob;
+			if(stripe_account.individual) {
+				this.stripeAccountForm.address = stripe_account.individual.address.line1;
+				this.stripeAccountForm.city = stripe_account.individual.address.city;
+				this.stripeAccountForm.state = stripe_account.individual.address.state;
+				this.stripeAccountForm.postal = stripe_account.individual.address.postal_code;
+				this.stripeAccountForm.phone = stripe_account.individual.phone;
+				dob = stripe_account.individual.dob;
+			}
+			this.stripeAccountForm.website = (stripe_account.business_profile || {}).url;
 			if (dob) this.stripeAccountForm.dob = new Date(dob.year, dob.month, dob.day);
 			if (stripe_account.country) this.stripeAccountForm.countryDisabled = true;
 
