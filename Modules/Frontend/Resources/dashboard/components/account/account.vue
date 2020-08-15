@@ -174,11 +174,11 @@
 										</div>
 										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ'" class="col">
 											<label class="form-label">{{ routingNumber }}</label>
-											<input type="text" class="form-control" v-model="stripeAccountForm.routing_number">
+											<input type="text" class="form-control" v-model="stripeAccountForm.routing_number" data-required>
 										</div>
 										<div v-if="stripeAccountForm.country == 'CA'" class="col">
 											<label class="form-label">Transit number</label>
-											<input type="text" class="form-control" v-model="stripeAccountForm.transit_number">
+											<input type="text" class="form-control" v-model="stripeAccountForm.transit_number" data-required>
 										</div>
 									</div>
 								</fieldset>
