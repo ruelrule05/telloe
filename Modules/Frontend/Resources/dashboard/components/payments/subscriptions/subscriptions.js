@@ -105,7 +105,7 @@ export default {
 		stripeCustomers() {
 			let customers = [];
 			this.contacts.forEach((contact) => {
-				if(!contact.is_pending && contact.stripe_customer_id) {
+				if(!contact.is_pending) {
 					customers.push({
 						text: contact.contact_user.full_name,
 						value: contact.id
