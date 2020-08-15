@@ -10,7 +10,7 @@
 								<checkmark-icon width="20" height="20" transform="scale(1.8)" stroke-width="1"></checkmark-icon>
 							</div>
 							<h5 class="mb-4 font-heading text-primary text-uppercase">{{ plan.name }}</h5>
-							<h4 class="mb-0 font-weight-normal d-inline @if($plan->interval == 'year') text-warning @endif"><strong>${{ parseInt(plan.price) }}</strong></h4><span class="@if($plan->interval == 'year') text-warning @endif">.{{ plan.price.split('.')[1] }}</span> / {{ plan.interval }}
+							<h4 class="mb-0 font-weight-normal d-inline" :class="{'text-warning': plan.name == 'Annual'}"><strong>${{ parseInt(plan.price) }}</strong></h4><span :class="{'text-warning': plan.name == 'Annual'}">.{{ plan.price.split('.')[1] }}</span> / {{ plan.interval }}
 
 							<div class="text-secondary">
 								<template v-if="plan.every_months > 1">
