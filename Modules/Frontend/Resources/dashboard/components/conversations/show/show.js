@@ -225,7 +225,7 @@ export default {
             }
         });
         window.onbeforeunload = () => {
-            this.$root.socket.emit('is_typing', {typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
+            if(this.conversation) this.$root.socket.emit('is_typing', {typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
         };
     },
 
