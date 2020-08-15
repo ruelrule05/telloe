@@ -45,18 +45,40 @@ export default {
 		},
 
 		countries() {
+			let allowed_countries = ['AU', 'CA', 'NZ', 'UK', 'US'];
 			let countries = [];
 			Object.entries(getNameList()).forEach(([name, code]) => {
-				countries.push({
-					name: name,
-					code: code,
-				});
+				if(allowed_countries.find(x => x == code)) {
+					countries.push({
+						name: name,
+						code: code,
+					});
+				}
 			});
 			countries = countries.sort((a, b) => {
 				return a.name.localeCompare(b.name);
 			});
 			return countries;
 		},
+		routingNumber() {
+			switch(this.stripeAccountForm.country) {
+				case 'AU':
+					return 'BSB';
+					break;
+
+				case 'US':
+					return 'Routing Number';
+					break;
+
+				case 'UK':
+					return 'Sort Code';
+					break;
+
+				case 'CA':
+					return 'Institution Number';
+					break;
+			}
+		}
 	},
 
 	created() {

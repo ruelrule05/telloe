@@ -172,9 +172,13 @@
 											<label class="form-label">Account holder name</label>
 											<input type="text" class="form-control" v-model="stripeAccountForm.account_holder_name" data-required>
 										</div>
-										<div class="col">
-											<label class="form-label">Routing number</label>
-											<input type="text" class="form-control" v-model="stripeAccountForm.routing_number" data-required>
+										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ'" class="col">
+											<label class="form-label">{{ routingNumber }}</label>
+											<input type="text" class="form-control" v-model="stripeAccountForm.routing_number">
+										</div>
+										<div v-if="stripeAccountForm.country == 'CA'" class="col">
+											<label class="form-label">Transit number</label>
+											<input type="text" class="form-control" v-model="stripeAccountForm.transit_number">
 										</div>
 									</div>
 								</fieldset>
