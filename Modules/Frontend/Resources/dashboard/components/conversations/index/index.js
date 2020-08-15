@@ -98,6 +98,7 @@ export default {
             //
         },
         conversations: function(value) {
+            console.log(value.length, this.$route.params.id);
             if(value.length > 0 && !this.$route.params.id) this.setConversation(this.orderedConversations[0]);
         }
     },
@@ -192,6 +193,7 @@ export default {
         },
 
         setConversation(conversation) {
+            console.log('setConversation');
             if (conversation.id != this.$route.params.id) this.$router.replace(`/dashboard/conversations/${conversation.id}`);
         },
     },
