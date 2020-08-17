@@ -39,8 +39,8 @@ const actions = {
         axios.delete(`/${name}/${data.id}`, data);
         let conversation = rootState.conversations.index.find((x) => x.id == data.conversation_id);
         if(conversation) {
-            let index = conversation.messages.findIndex(x => x.id == data.id);
-            if(index > -1) conversation.messages.splice(index, 1);
+            let index = conversation.paginated_messages.data.findIndex(x => x.id == data.id);
+            if(index > -1) conversation.paginated_messages.data.splice(index, 1);
         }
     },
 };

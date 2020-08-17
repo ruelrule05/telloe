@@ -13,6 +13,7 @@ import EarthIcon from '../../icons/earth';
 import CheckmarkCircleIcon from '../../icons/checkmark-circle';
 import CloseIcon from '../../icons/close';
 import CalendarIcon from '../../icons/calendar';
+import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 export default {
 	components: {
 		VueFormValidate,
@@ -29,6 +30,7 @@ export default {
 		CheckmarkCircleIcon,
 		CloseIcon,
 		CalendarIcon,
+		VDatePicker,
 	},
 	data: () => ({
 		profile: PROFILE,

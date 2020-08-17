@@ -134,8 +134,8 @@ function browserSync(){
         watch: true,
         notify: false,
         https: {
-            key: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.key',
-            cert: '/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'
+            key: '/Users/admin/.config/valet/Certificates/telloe.app.key',
+            cert: '/Users/admin/.config/valet/Certificates/telloe.app.crt'
         }
     });
 }

@@ -12,8 +12,8 @@ if (process.argv.indexOf('--production') > -1) {
 } else if (process.argv.indexOf('--dev') > -1) {
     const fs = require('fs');
     const sslOptions = {
-        key: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/telloe.app.key'),
-        cert: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/telloe.app.crt'),
+        key: fs.readFileSync('/Users/admin/.config/valet/Certificates/telloe.app.key'),
+        cert: fs.readFileSync('/Users/admin/.config/valet/Certificates/telloe.app.crt'),
     };
     var server = require('https').Server(sslOptions, app);
 } else {

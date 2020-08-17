@@ -94,9 +94,9 @@ export default {
             this.bookings.forEach(booking => {
                 let parts = booking.date.split('-');
                 booking.new_date = new Date(parts[0], parts[1] - 1, parts[2]);
-                if (now.isAfter(dayjs(`${booking.date} ${booking.start}`))) {
+                /*if (now.isAfter(dayjs(`${booking.date} ${booking.start}`))) {
                     this.$set(booking, 'is_expired', true);
-                }
+                }*/
                 bookings.push(booking);
             });
             bookings.sort((a,b) => b.date.localeCompare(a.date));
@@ -144,19 +144,19 @@ export default {
             let options = [];
 
             let dateForWeekView = dayjs();
-            if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
+           // if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
             let daysBefore = [];
             let daysAfter = [];
             for (var i = 1; i <= 15; i++) {
                 let before = dateForWeekView.subtract(i, 'day');
                 let after = dateForWeekView.add(i, 'day');
-                daysBefore.unshift({
+                /*daysBefore.unshift({
                     date: before.toDate(),
                     title: before.format('ddd'),
                     description: before.format('D MMM'),
                     label: before.format('YYYY-MM-DD'),
                     id: before.format('MMMDYYYY'),
-                });
+                });*/
                 daysAfter.push({
                     date: after.toDate(),
                     title: after.format('ddd'),
@@ -172,7 +172,7 @@ export default {
                 label: dateForWeekView.format('YYYY-MM-DD'),
                 id: dateForWeekView.format('MMMDYYYY'),
             };
-            options = [...daysBefore, ...[dateForWeekView], ...daysAfter];
+            options = [...[dateForWeekView], ...daysAfter];
 
             return options;
         },
@@ -260,7 +260,7 @@ export default {
             this.selectedBooking = null;
             this.selectedService = null;
             this.selectedTimeslot = null;
-            this.selectedDate = null;
+            this.newDateSelected = null;
             this.timeslots = [];
             this.timeslotsLoading = false;
             this.loading = false;

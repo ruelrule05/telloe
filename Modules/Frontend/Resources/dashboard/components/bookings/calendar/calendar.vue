@@ -1,5 +1,5 @@
 <template>
-	<div class="h-100 d-flex flex-column" ref="calendar">
+	<div class="h-100 d-flex flex-column overflow-hidden" ref="calendar">
 		<div class="border-bottom bg-white p-3 d-flex align-items-center">
 			<h5 class="font-heading mb-0">Calendar</h5>
 			<div class="ml-auto d-flex align-items-center">
@@ -10,7 +10,7 @@
 			</div>
 		</div>
 
-		<div class="h-100 d-flex">
+		<div class="h-100 d-flex overflow-auto">
 			<div class="h-100 d-flex flex-column flex-grow-1 p-4">
 				<div class="bg-white rounded shadow-sm h-100 p-1 flex-grow-1">
 					<div class="h-100 position-relative">
@@ -42,7 +42,7 @@
 				</div>
 			</div>
 
-			<div class="info bg-white h-100 border-left" :class="{'open': infoTab}">
+			<div class="info bg-white h-100 border-left overflow-auto" :class="{'open': infoTab}">
 			    <div class="d-flex align-items-center border-bottom py-3 px-3">
 	                <strong class="text-capitalize">{{ infoTab }}</strong>
 	                <button class="btn btn-white p-0 ml-auto" @click="selectedDate = null; infoTab = ''"><close-icon height="30" width="30"></close-icon></button>
@@ -50,80 +50,153 @@
 
 
 				<!-- Bookings -->
-	            <div v-if="infoTab == 'bookings'" class="p-3 h-100">
-					<div class="h-100 position-relative">
+	            <div v-if="infoTab == 'bookings'" class="p-3">
+					<div class="h-100 position-relative overflow-auto">
 						<div v-if="selectedDate">
 							<div v-if="selectedDateBookingsEvents.length > 0">
-								<div class="h6 font-heading">{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</div>
-								<div v-for="item in selectedDateBookingsEvents" class="p-2 mt-3 rounded bg-light booking">
+								<template v-if="!selectedBooking">
+									<div class="h6 font-heading">{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</div>
+									<div v-for="item in selectedDateBookingsEvents" class="p-2 mt-3 rounded bg-light booking">
 
-									<!-- Booking -->
-									<template v-if="item.type == 'booking'">
-										<div class="d-flex">
-											<div class="user-profile-image user-profile-image-sm mr-2" :style="{backgroundImage: 'url(' + item.user.profile_image + ')'}">
-												<span v-if="!item.user.profile_image">{{ item.user.initials }}</span>
+										<!-- Booking -->
+										<template v-if="item.type == 'booking'">
+											<div class="d-flex position-relative booking" :class="{'expired': item.is_expired}">
+												<div class="user-profile-image user-profile-image-sm mr-2" :style="{backgroundImage: 'url(' + item.user.profile_image + ')'}">
+													<span v-if="!item.user.profile_image">{{ item.user.initials }}</span>
+												</div>
+
+												<div>
+													<div class="mb-1">{{ formatTime(item.start) }} - {{ formatTime(item.end) }}</div>
+													<strong class="d-block font-heading">{{ item.user.full_name }}</strong>
+													<div>{{ item.service.name }} ({{ item.service.duration }} minutes)</div>
+												</div>
+												<div v-if="!item.is_expired" class="position-absolute booking-actions" :class="{'opacity-0': !selectedBooking || selectedBooking.id != item.id}">
+									                <button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="edit(item)">
+									                	<pencil-icon width="15" height="15"></pencil-icon>
+									                </button>
+									                <button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="selectedBooking = item; $refs['deleteBooking'].show()">
+									                	<trash-icon width="15" height="15" fill="red"></trash-icon>
+									                </button>
+									            </div>
 											</div>
+										</template>
 
-											<div>
-												<div class="mb-1">{{ formatTime(item.start) }} - {{ formatTime(item.end) }}</div>
-												<strong class="d-block font-heading">{{ item.user.full_name }}</strong>
-												<div>{{ item.service.name }} ({{ item.service.duration }} minutes)</div>
+										<!-- Google event -->
+										<template v-else-if="item.type == 'google-event'">
+											<div class="d-flex">
+												<img src="/images/brands/google-calendar.svg" alt="" height="20" class="mt-1">
+												<div class="ml-3">
+													{{ item.summary }}
+													<div class="text-muted font-weight-light small">
+														{{ (item.start.dateTime && item.end.dateTime) ? `${dayjs(item.start.dateTime).format('hh:mmA')} - ${dayjs(item.end.dateTime).format('hh:mmA')}` : 'Whole day event' }}
+													</div>
+												</div>
+												<div class="ml-auto position-relative">
+													<div class="position-absolute-center pb-2 eye-icon">
+														<eye-slash-icon v-if="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`)" width="18" height="18" fill="red"></eye-slash-icon>
+													</div>
+													<div class="position-relative opacity-0">
+														<button type="button" v-if="item.start.date && item.end.date" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill" @click="toggleIgnoreEvent(item)">
+															<eye-slash-icon width="18" height="18" :fill="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`) ? 'red' : ''"></eye-slash-icon>
+														</button>
+														<a target="_blank" :href="item.htmlLink" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
+													</div>
+												</div>
 											</div>
+										</template>
 
-											<div class="ml-auto">
-												<router-link :to="`/dashboard/conversations/${getConversationIdByUserId(item.user_id)}?tab=bookings`" class="btn btn-sm border btn-white opacity-0 line-height-0 p-1 badge-pill"><pencil-icon width="18" height="18"></pencil-icon></router-link>
+										<!-- Outlook event -->
+										<template v-else-if="item.type == 'outlook-event'">
+											<div class="d-flex">
+												<img src="/images/brands/outlook.svg" alt="" height="20" class="mt-1">
+												<div class="ml-3">
+													{{ item.subject }}
+													<div class="text-muted font-weight-light small">
+														{{ (item.isAllDay) ? 'Whole day event' : `${parseTimezone(item.start)} - ${parseTimezone(item.end)}` }}
+													</div>
+												</div>
+												<div class="ml-auto position-relative">
+													<div class="position-absolute-center pb-2 eye-icon">
+														<eye-slash-icon v-if="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`)" width="18" height="18" fill="red"></eye-slash-icon>
+													</div>
+													<div class="position-relative opacity-0">
+														<button type="button" v-if="item.isAllDay" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill" @click="toggleIgnoreEvent(item)">
+															<eye-slash-icon width="18" height="18" :fill="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`) ? 'red' : ''"></eye-slash-icon>
+														</button>
+														<a target="_blank" :href="item.webLink" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
+													</div>
+												</div>
+											</div>
+										</template>
+									</div>
+								</template>
+
+								<!-- Edit booking -->
+					            <div v-else class="overflow-hidden">
+					            	<strong class="mb-2 d-block">Edit Booking</strong>
+						            <div class="d-flex align-items-center mb-2 rounded p-3 bg-blue text-white">
+						                <div>
+						                    <h6 class="font-heading mb-0">{{ selectedBooking.service.name }}</h6>
+						                    <small class="d-block">{{ selectedBooking.service.duration }} minutes</small>
+						                </div>
+						            </div>
+					            	<div class="d-flex align-items-center">
+					            		<strong class="mb-2 d-block">Choose a date</strong>
+					            		<button class="ml-auto btn d-flex align-items-center" type="button" @click="calendarView = (calendarView == 'month') ? 'week' : 'month'; calcSliderTranslate()">
+					            			<calendar-month-icon width="18" height="18" class="mr-1"></calendar-month-icon>
+					            			<small class="text-capitalize">{{ calendarView }} view</small>
+					            		</button>
+					            	</div>
+
+									<div class="align-items-center mt-2" :class="[calendarView == 'month' ? 'd-none' : 'd-flex']">
+										<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
+										<div class="flex-grow-1 overflow-hidden">
+											<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
+												<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
+													<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-primary text-white': sliderActiveDate(date)}" @click="newDateSelected = date.date">
+														{{ date.title }}
+														<strong class="text-uppercase d-block">{{ date.description }}</strong>
+													</div>
+												</div>
 											</div>
 										</div>
-									</template>
+										<button class="btn p-0 mr-n2" type="button" @click="adjustSlider(1)"><chevron-right-icon transform="scale(1.6)"></chevron-right-icon></button>
+									</div>
 
-									<!-- Google event -->
-									<template v-else-if="item.type == 'google-event'">
-										<div class="d-flex">
-											<img src="/images/brands/google-calendar.svg" alt="" height="20" class="mt-1">
-											<div class="ml-3">
-												{{ item.summary }}
-												<div class="text-muted font-weight-light small">
-													{{ (item.start.dateTime && item.end.dateTime) ? `${dayjs(item.start.dateTime).format('hh:mmA')} - ${dayjs(item.end.dateTime).format('hh:mmA')}` : 'Whole day event' }}
-												</div>
+									<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{'d-none': calendarView == 'week'}" class="v-calendar border" v-model="newDateSelected" is-expanded is-inline :min-date="new Date()" @input="dateSelected">
+									</v-date-picker>
+									
+									<strong class="my-2 d-block" :class="{'opacity-0': !newDateSelected}">Select a timeslot</strong>
+									<div v-if="newDateSelected" class="position-relative overflow-auto timeslots-container" :class="{'py-4': timeslotsLoading}">
+										<div v-if="timeslotsLoading" class="position-absolute-center">
+											<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+										</div>
+										<div :class="{'d-none': timeslotsLoading}">
+											<div v-if="timeslots.length == 0" class="text-gray text-center w-100 position-absolute-center">
+												<span>There are no timeslots available for the selected date.</span>
 											</div>
-											<div class="ml-auto position-relative">
-												<div class="position-absolute-center pb-2 eye-icon">
-													<eye-slash-icon v-if="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`)" width="18" height="18" fill="red"></eye-slash-icon>
-												</div>
-												<div class="position-relative opacity-0">
-													<button type="button" v-if="item.start.date && item.end.date" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill" @click="toggleIgnoreEvent(item)">
-														<eye-slash-icon width="18" height="18" :fill="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`) ? 'red' : ''"></eye-slash-icon>
-													</button>
-													<a target="_blank" :href="item.htmlLink" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
+											<div v-else>
+												<div class="d-flex flex-wrap pb-2 pr-2">
+													<div v-for="timeslot in timeslots" class="mb-2 w-100">
+														<div class="p-3 rounded cursor-pointer mb-1" :class="[timeslot == selectedTimeslot ? 'bg-primary text-white' : 'bg-light']" @click="selectedTimeslot = timeslot; timeslotDropdown = false;">
+															<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
+																{{ timeslot.label }}
+															<div v-if="$root.auth.timezone != selectedBooking.user.timezone" class="rounded border p-2">
+																<small class="d-block">Client's time: {{ selectedBooking.user.timezone }}</small>
+																{{ timezoneTime($root.auth.timezone, selectedBooking.user.timezone, timeslot.time) }}
+															</div>
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
-									</template>
+									</div>
 
-									<!-- Outlook event -->
-									<template v-else-if="item.type == 'outlook-event'">
-										<div class="d-flex">
-											<img src="/images/brands/outlook.svg" alt="" height="20" class="mt-1">
-											<div class="ml-3">
-												{{ item.subject }}
-												<div class="text-muted font-weight-light small">
-													{{ (item.isAllDay) ? 'Whole day event' : `${parseTimezone(item.start)} - ${parseTimezone(item.end)}` }}
-												</div>
-											</div>
-											<div class="ml-auto position-relative">
-												<div class="position-absolute-center pb-2 eye-icon">
-													<eye-slash-icon v-if="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`)" width="18" height="18" fill="red"></eye-slash-icon>
-												</div>
-												<div class="position-relative opacity-0">
-													<button type="button" v-if="item.isAllDay" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill" @click="toggleIgnoreEvent(item)">
-														<eye-slash-icon width="18" height="18" :fill="$root.auth.ignored_calendar_events.find((x) => x == `${item.type}-${item.id}`) ? 'red' : ''"></eye-slash-icon>
-													</button>
-													<a target="_blank" :href="item.webLink" class="btn btn-sm border btn-white line-height-0 p-1 badge-pill"><shortcut-icon width="18" height="18"></shortcut-icon></a>
-												</div>
-											</div>
-										</div>
-									</template>
-								</div>
+									<div class="d-flex">
+										<button type="button" class="btn btn-white border btn-sm" @click="resetBookingForm()">Cancel</button>
+										<button type="button" class="ml-auto btn btn-primary btn-sm" :disabled="!newDateSelected || !selectedTimeslot || !selectedBooking" @click="$refs['confirmBooking'].show()">Update Booking</button>
+									</div>
+					            </div>
 							</div>
 							<div v-else class="position-absolute-center text-center text-secondary w-100">
 								There are no bookings or events for this date
@@ -184,6 +257,45 @@
 	            </div>
 			</div>
 		</div>
+
+
+		<modal ref="confirmBooking" :close-button="false">
+			<template v-if="selectedBooking && newDateSelected && selectedTimeslot">
+				<div v-if="!bookingCreated">
+					<h4 class="font-heading text-center mb-3">Review Booking Details</h4>
+					<div class="bg-light rounded py-2 px-3">
+						<div class="d-flex">
+							<div class="w-25">Service</div>
+							<strong>{{ selectedBooking.service.name }}</strong>
+						</div>
+						<div class="d-flex">
+							<div class="w-25">Date</div>
+							<strong>{{ formatDate(newDateSelected) }}</strong>
+						</div>
+						<div class="d-flex">
+							<div class="w-25">Time</div>
+							<strong>{{ selectedTimeslot.label }}</strong>
+						</div>
+					</div>
+					<div class="text-danger text-center mt-2">
+						&nbsp; {{ error }} &nbsp;
+					</div>
+
+
+					<div class="d-flex mt-3">
+						<button type="button" :disabled="loading" class="btn btn-white border" @click="$refs['confirmBooking'].hide(); error = ''">Cancel</button>
+						<vue-button type="button" :loading="loading" button_class="ml-auto btn btn-primary" @click="submit()">Update</vue-button>
+					</div>
+				</div>
+
+
+				<div v-else class="py-5 text-center">
+					<checkmark-circle-icon class="fill-success" width="50" height="50"></checkmark-circle-icon>
+					<h5 class="font-heading text-center mb-4 mt-2">Booking has been successfully {{ selectedBooking ? 'updated' : 'placed' }}</h5>
+					<button type="button" class="btn btn-white border" @click="$refs['confirmBooking'].hide(); resetBookingForm()">Close</button>
+				</div>
+			</template>
+		</modal>
 
 
 		<modal ref="removeCalendar" :close-button="false">

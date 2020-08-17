@@ -154,3 +154,35 @@ h2 {
         margin-right: 0
     }
 }
+.booking{
+	&:hover{
+	    .opacity-0{
+	        opacity: 1 !important;
+	    }
+	}
+	&.expired{
+		pointer-events: none;
+		opacity: 0.5;
+	}
+}
+.booking-actions {
+	top: 5px;
+	right: 5px;
+}
+
+.weekday-slider {
+	transition: $transition-base;
+	> div {
+		flex: 0 0 95px;
+	}
+	.weekday-container {
+		background: $light;
+	}
+    .weekday-day.disabled{
+        opacity: 0.35;
+        pointer-events: none;
+    }
+}
+.timeslots-container{
+	height: 245px;
+}

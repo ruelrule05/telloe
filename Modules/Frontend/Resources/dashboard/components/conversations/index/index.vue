@@ -36,6 +36,7 @@
                         </div>
 
     	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
+                            <span v-if="!conversation.last_message.is_read" class="position-absolute badge-new-message">&nbsp;</span>
     						<div class="media align-items-center conversation-members">
     						  	<div class="user-profile-image position-relative" :class="{'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
     						  		<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
@@ -51,9 +52,9 @@
                                     </div>
     						  	</div> 
     						  	<div class="media-body pl-3 overflow-hidden">
-    	                            <div class="h6 mb-0 font-heading">{{ conversation.member.full_name || conversation.name }}</div>
+    	                            <div class="h6 mb-0 font-heading" :class="{'font-weight-normal': conversation.last_message.is_read}">{{ conversation.member.full_name || conversation.name }}</div>
                                     <div class="d-flex align-items-center text-nowrap conversation-message-preview">
-                                        <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-muted' : 'text-black font-weight-bold']"></div>    
+                                        <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-secondary' : 'text-black font-weight-bold']"></div>    
                                         <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
                                     </div>    
     						  	</div>
