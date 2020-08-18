@@ -14,6 +14,9 @@ const state = () => ({
 const mutations = {
     index(state, data) {
         state.index = [];
+        data.sort((a, b) => {
+            return (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0);
+        });
         state.index.push.apply(state.index, data);
         state.ready = true;
     },

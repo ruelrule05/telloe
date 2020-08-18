@@ -15,6 +15,7 @@ import TrashIcon from '../../../../icons/trash';
 import CalendarMonthIcon from '../../../../icons/calendar-month';
 import ChevronRightIcon from '../../../../icons/chevron-right';
 import ChevronLeftIcon from '../../../../icons/chevron-left';
+import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
 import VCalendar from 'v-calendar';
 import utcPlugin from 'dayjs/plugin/utc';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -37,6 +38,7 @@ export default {
 		CalendarMonthIcon,
 		ChevronRightIcon,
 		ChevronLeftIcon,
+		CheckmarkCircleIcon,
 	},
 
 	data: () => ({
@@ -90,9 +92,9 @@ export default {
         },
         days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         dateForWeekView: null,
-        newDateSelected: null,
         bookingCreated: false,
         loading: false,
+        error: '',
 	}),
 
 	computed: {
@@ -145,8 +147,8 @@ export default {
 
         formattedHolidays() {
             let formattedHolidays = [];
-            if (this.selectedService) {
-                let service = this.services.find(x => x.id == this.selectedService.id);
+            if (this.selectedBooking.service) {
+                let service = this.services.find(x => x.id == this.selectedBooking.service.id);
                 if (service) {
                     service.holidays.forEach(holiday => {
                         let parts = holiday.split('-');
@@ -255,7 +257,7 @@ export default {
 			if(value.length > 0 && !this.selectedDate) {
 				let now = this.dayjs();
 				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
-				let date = this.dayjs(value[0].date).toDate();
+				let date = this.dayjs(nextBooking.date).toDate();
 				this.selectedDate = date;
 				this.infoTab = 'bookings';
 			}
@@ -317,20 +319,52 @@ export default {
 	methods: {
 		...mapActions({
 			getBookings: 'bookings/index',
+			updateBooking: 'bookings/update',
 			getServices: 'services/index',
 			getConversations: 'conversations/index',
 			getGoogleCalendars: 'bookings/googleCalendars',
 			getOutlookCalendars: 'bookings/outlookCalendars',
 		}),
 
+		submit() {
+            if (this.selectedBooking && this.selectedTimeslot) {
+                this.loading = true;
+                let formatDate = dayjs(this.selectedBooking.date_object).format('YYYY-MM-DD');
+                let data = {
+                    id: this.selectedBooking.id,
+                    date: formatDate,
+                    start: this.selectedTimeslot.time,
+                };
+                this.updateBooking(data)
+                    .then(() => {
+                        this.bookingCreated = true;
+                    })
+                    .catch(e => {
+                        this.loading = false;
+                        this.error = e.response.data.message;
+                    });
+            }
+		},
+
+		resetBookingForm() {
+			this.selectedBooking = null;
+			this.selectedTimeslot = null;
+			this.timeslots = [];
+			this.loading = false;
+			this.bookingCreated = false;
+		},
+
+        formatDate(date) {
+            return dayjs(date).format('MMMM D, YYYY');
+        },
+
 		sliderActiveDate(date) {
-			return (this.newDateSelected ? dayjs(this.newDateSelected).format('MMMDYYYY') : '') === dayjs(date.date).format('MMMDYYYY');
+			return (this.selectedBooking.date_object ? dayjs(this.selectedBooking.date_object).format('MMMDYYYY') : '') === dayjs(date.date).format('MMMDYYYY');
 		},
 
         dateSelected(date) {
             if(date && this.selectedBooking) {
-                this.newDateSelected = date;
-                this.dateForWeekView = date;
+                this.selectedBooking.date_object = date;
                 this.calendarView = 'week';
                 this.sliderNavIndex = 0;
                 this.selectedTimeslot = null;
@@ -342,12 +376,12 @@ export default {
 
         disabledDate(date) {
             let dayName = dayjs(date.date).format('dddd');
-            return !this.selectedService.days[dayName].isOpen || this.selectedService.holidays.find(x => x == date.label);
+            return !this.selectedBooking.service.days[dayName].isOpen || this.selectedBooking.service.holidays.find(x => x == date.label);
         },
 
         calcSliderTranslate() {
             if(this.$refs['weekday-slider'] && this.calendarView == 'week') {
-                let date = this.newDateSelected || new Date();
+                let date = this.selectedBooking.date_object || new Date();
                 let dateID = dayjs(date).format('MMMDYYYY');
                 let sliderItem = this.$refs['weekday-slider'].querySelector(`#${dateID}`);
                 let sliderSize = 95;
@@ -372,7 +406,6 @@ export default {
         edit(booking) {
             if (booking && booking.id != (this.selectedBooking || {}).id) {
                 this.selectedBooking = booking;
-                this.selectedService = booking.service;
                 this.getTimeslots(booking.service_id, booking.date);
                 let parts = booking.date.split('-');
                 this.calendarView = 'month';
@@ -624,6 +657,7 @@ export default {
 
 		dayclick(date) {
 			this.selectedDate = date;
+			this.resetBookingForm();
 		},
 
 		updateBusinessHour(business_hours) {

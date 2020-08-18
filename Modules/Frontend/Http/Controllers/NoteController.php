@@ -34,6 +34,7 @@ class NoteController extends Controller
 
         $note = Note::create([
             'conversation_id' => $conversation->id,
+            'user_id' => Auth::user()->id,
             'notes' => $request->notes,
             'tags' => []
         ]);

@@ -47,6 +47,7 @@ export default {
     },
 
 	data: () => ({
+        open: false,
 		notification_sound: null,
 		connections: [],
 		caller: null,
@@ -235,13 +236,14 @@ export default {
     	},
 
 		outgoingCall(conversation, camera = true) {
+            this.open = true;
             this.isVideoStopped = !camera;
             this.isIncoming = false;
             clearTimeout(this.callTimeout);
             this.notification_sound.play();
-			$(this.$refs['modal'])
+			/*$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
-				.modal('show');
+				.modal('show');*/
 
 			this.$root.socket.emit('live_call_ready', {
 	            conversation_id: this.$root.callConversation.id,
@@ -260,6 +262,7 @@ export default {
 		},
 
 		incomingCall() {
+            this.open = true;
 	       	this.notification_sound.play();
             this.isIncoming = true;
 			$(this.$refs['modal'])
@@ -285,7 +288,13 @@ export default {
         },
 
         endCall(emit = true) {
+            this.open = false;
             this.notification_sound.pause();
+            this.isMuted = false;
+            this.isVideoStopped = false;
+            this.isScreenSharing = false;
+            this.isFullScreen = false;
+            this.isIncoming = false;
             if(emit && this.$root.callConversation) {
             	this.$root.socket.emit('live_call_end', {conversation_id: this.$root.callConversation.id});
             }

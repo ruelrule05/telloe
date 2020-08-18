@@ -153,7 +153,7 @@
 										<div class="flex-grow-1 overflow-hidden">
 											<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
 												<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
-													<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-primary text-white': sliderActiveDate(date)}" @click="newDateSelected = date.date">
+													<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-primary text-white': sliderActiveDate(date)}" @click="selectedBooking.date_object = date.date">
 														{{ date.title }}
 														<strong class="text-uppercase d-block">{{ date.description }}</strong>
 													</div>
@@ -163,11 +163,11 @@
 										<button class="btn p-0 mr-n2" type="button" @click="adjustSlider(1)"><chevron-right-icon transform="scale(1.6)"></chevron-right-icon></button>
 									</div>
 
-									<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{'d-none': calendarView == 'week'}" class="v-calendar border" v-model="newDateSelected" is-expanded is-inline :min-date="new Date()" @input="dateSelected">
+									<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{'d-none': calendarView == 'week'}" class="v-calendar border" v-model="selectedBooking.date_object" is-expanded is-inline :min-date="new Date()" @input="dateSelected">
 									</v-date-picker>
 									
-									<strong class="my-2 d-block" :class="{'opacity-0': !newDateSelected}">Select a timeslot</strong>
-									<div v-if="newDateSelected" class="position-relative overflow-auto timeslots-container" :class="{'py-4': timeslotsLoading}">
+									<strong class="my-2 d-block">Select a timeslot</strong>
+									<div class="position-relative overflow-auto timeslots-container" :class="{'py-4': timeslotsLoading}">
 										<div v-if="timeslotsLoading" class="position-absolute-center">
 											<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
 										</div>
@@ -194,7 +194,7 @@
 
 									<div class="d-flex">
 										<button type="button" class="btn btn-white border btn-sm" @click="resetBookingForm()">Cancel</button>
-										<button type="button" class="ml-auto btn btn-primary btn-sm" :disabled="!newDateSelected || !selectedTimeslot || !selectedBooking" @click="$refs['confirmBooking'].show()">Update Booking</button>
+										<button type="button" class="ml-auto btn btn-primary btn-sm" :disabled="!selectedTimeslot || !selectedBooking" @click="$refs['confirmBooking'].show()">Update Booking</button>
 									</div>
 					            </div>
 							</div>
@@ -260,7 +260,7 @@
 
 
 		<modal ref="confirmBooking" :close-button="false">
-			<template v-if="selectedBooking && newDateSelected && selectedTimeslot">
+			<template v-if="selectedBooking && selectedTimeslot">
 				<div v-if="!bookingCreated">
 					<h4 class="font-heading text-center mb-3">Review Booking Details</h4>
 					<div class="bg-light rounded py-2 px-3">
@@ -270,7 +270,7 @@
 						</div>
 						<div class="d-flex">
 							<div class="w-25">Date</div>
-							<strong>{{ formatDate(newDateSelected) }}</strong>
+							<strong>{{ formatDate(selectedBooking.date_object) }}</strong>
 						</div>
 						<div class="d-flex">
 							<div class="w-25">Time</div>

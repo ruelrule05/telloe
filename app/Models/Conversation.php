@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Auth;
+use App\Models\Note;
 
 class Conversation extends BaseModel
 {
@@ -12,7 +13,7 @@ class Conversation extends BaseModel
     use SoftDeletes;
     
     protected $fillable = ['user_id', 'contact_id', 'metadata', 'source', 'name', 'tags', 'custom_fields'];
-    public $appends = ['member', 'last_message', 'timestamp'];
+    public $appends = ['member', 'last_message', 'timestamp', 'notes'];
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
@@ -41,9 +42,9 @@ class Conversation extends BaseModel
     }
 
 
-    public function notes()
+    public function getNotesAttribute()
     {
-        return $this->hasMany(Note::class)->orderBy('created_at', 'DESC');
+        return Note::where('conversation_id', $this->attributes['id'])->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
     }
 
     public function getMemberAttribute()
