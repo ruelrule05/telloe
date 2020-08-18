@@ -49,7 +49,7 @@
 							        </div>
 
 									<!-- Ongoing -->
-						    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column rounded">
+						    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column rounded overflow-hidden">
 						    			<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked">
 						    				<h5 class="font-heading mb-0 text-white">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h5>
 						    				<button @click="endCall()" class="btn btn-sm btn-close p-0 position-absolute">
@@ -72,7 +72,7 @@
 										
 										<!-- Remote camera -->
 										<canvas ref="preview" class="position-absolute-center opacity-0 bg-black"></canvas>
-										<div ref="remoteStreams" id="remote-streams" class="d-flex flex-grow-1">
+										<div ref="remoteStreams" id="remote-streams" class="d-flex flex-grow-1 overflow-hidden" :class="{'opacity-0': !status}">
 										</div>
 										
 

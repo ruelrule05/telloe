@@ -230,7 +230,7 @@ export default {
     	toggleVideo() {
     		this.isVideoStopped = !this.isVideoStopped;
     		this.connections.forEach(connection => {
-    			connection.videoSender.track.enabled = !this.isMuted;
+    			connection.videoSender.track.enabled = !this.isVideoStopped;
     		});
     		if(this.localStream) this.localStream.getVideoTracks()[0].enabled = !this.isVideoStopped;
     	},
@@ -307,8 +307,7 @@ export default {
 
             if(this.isRecording) this.recordCall();
             else {
-                this.$refs['modal'].removeAttribute('style');
-                $(this.$refs['modal']).modal('hide');
+                if(this.$refs['modal']) this.$refs['modal'].removeAttribute('style');
                 if(this.draggable) this.draggable.remove();
                 this.draggable = null;
             }
@@ -430,7 +429,7 @@ export default {
                     videoEl.playsinline = true;
                     videoEl.controls = false;
                     videoEl.classList.add('w-100');
-                    videoEl.classList.add('h-100');
+                    videoEl.classList.add('h-auto');
                     videoEl.classList.add('position-absolute-center');
                     videoEl.srcObject = connection.remoteStream;
                     videoContainer.appendChild(videoEl);

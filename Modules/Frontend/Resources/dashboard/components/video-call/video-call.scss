@@ -154,10 +154,12 @@
             }
         }
         .call-topbar{
-            background-image: linear-gradient(#999, transparent);
+            background-image: linear-gradient(rgba(0,0,0,.25), transparent);
             z-index: 1;
             top: 0;
             left: 0;
+            border-top-left-radius: $border-radius;
+            border-top-right-radius: $border-radius;
         }
         .call-bottombar{
             background-color: #232324;
@@ -176,11 +178,14 @@
             border-bottom-left-radius: $border-radius;
             border-bottom-right-radius: $border-radius;
         }
+        #remote-streams{
+            background-color: #232324;
+        }
     }
-    .fade-enter-active, .fade-leave-active {
-      transition: opacity .12s;
-    }
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-      opacity: 0;
-    }
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .15s !important;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
