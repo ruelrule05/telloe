@@ -97,7 +97,7 @@ export default {
 		this.getContacts();
 		this.showUserCustomFields();
         this.$root.socket.on('invite_token', invite_token => {
-            this.getContactFromInviteToken(invite_token);
+            if(invite_token) this.getContactFromInviteToken(invite_token);
         });
 	},
 

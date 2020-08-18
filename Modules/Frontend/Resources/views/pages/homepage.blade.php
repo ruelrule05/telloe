@@ -467,5 +467,5 @@
 @stop
 
 @section('scripts')
-	<script src="{{ config('app.url') }}/js/widget.js?p=roowright"></script>
+	<script src="{{ config('app.url') }}/js/widget.js?p={{ env('HOME_WIDGET_USERNAME') }}"></script>
 @stop

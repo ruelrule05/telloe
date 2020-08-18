@@ -272,6 +272,14 @@ window.app = new Vue({
         this.message_sound = new Audio('/notifications/new_message.mp3');
         this.socket = io(WS_URL);
 
+        // https://telloe.app?invite_token=ry36DJxbh3EomBAWk151gizVmCT1MB
+        let location = JSON.parse(JSON.stringify(window.location));
+        if(location.search) {
+            let searchParams = new URLSearchParams(location.search);
+            let invite_token = searchParams.get('invite_token');
+            if(invite_token) this.socket.emit('invite_token', invite_token);
+        }
+
         this.socket.on('new_message', data => {
             let conversation = this.conversations.find(x => x.id == data.conversation_id);
             if (conversation) {

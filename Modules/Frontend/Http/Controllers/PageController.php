@@ -19,7 +19,8 @@ class PageController extends Controller
     {
     	if (Auth::check()) :
             checkInviteToken(Auth::user(), $request);
-    		return redirect('/dashboard/conversations');
+            $invite_token = $request->invite_token ? "?invite_token={$request->invite_token}" : '';
+    		return redirect('/dashboard/conversations' . $invite_token);
     	endif;
 
         if($request->auth == 'reset' && $request->token) :
