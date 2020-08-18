@@ -399,11 +399,11 @@ export default {
             let timestamp = dayjs().valueOf();
             let configuration = {
                 iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun.telloe.com:5349' },
                     {
-                        urls: 'turn:numb.viagenie.ca',
+                        urls: 'turn:turn.telloe.com:5349',
                         credential: 'moonfang',
-                        username: 'cleidoscope@gmail.com'
+                        username: 'cleidoscope'
                     }
                 ]
             };
