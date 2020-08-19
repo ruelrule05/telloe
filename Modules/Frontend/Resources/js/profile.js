@@ -27,6 +27,8 @@ import ChevronLeftIcon from '../icons/chevron-left';
 import ChevronRightIcon from '../icons/chevron-right';
 import EarthIcon from '../icons/earth';
 import CheckmarkCircleIcon from '../icons/checkmark-circle';
+import FacebookIcon from '../icons/facebook';
+import GoogleIcon from '../icons/google';
 
 const router = new VueRouter({
     linkActiveClass: 'active',
@@ -56,6 +58,8 @@ new Vue({
         ChevronRightIcon,
         EarthIcon,
         CheckmarkCircleIcon,
+        FacebookIcon,
+        GoogleIcon
     },
     data: {
         profile: PROFILE,
@@ -90,8 +94,10 @@ new Vue({
         sliderNavIndex: 0,
         sliderTranslate: 0,
         sliderItemSize: 86,
-        authForm: false,
+        authForm: true, // false
         bookingSuccess: false,
+        authAction: 'login',
+        GoogleAuth: null,
     },
 
     computed: {
@@ -236,6 +242,12 @@ new Vue({
 
     created() {
         this.getData();
+
+        if (typeof gapi != 'undefined') {
+            gapi.load('auth2', () => {
+                this.GoogleAuth = gapi.auth2.init({client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com'});
+            });
+        }
     },
 
     mounted() {
@@ -293,45 +305,154 @@ new Vue({
             }
         },
 
-        login() {
-            if (this.loginForm.email && this.loginForm.password) {
-                this.loginForm.loading = true;
-                axios
-                    .post('/login', this.loginForm)
-                    .then((response) => {
-                        this.auth = response.data;
-                        this.submit();
-                    })
-                    .catch((e) => {
-                        this.loginForm.loading = false;
-                        this.authError = e.response.data.message;
-                    });
+        submit() {
+            if(this.authAction == 'login') {
+                this.LoginAndBook();
+            } else if(this.authAction == 'signup') {
+                this.SignupAndBook();
             }
         },
 
-        submit() {
+        SignupAndBook() {
             if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
+                this.$refs['bookingModal'].show();
+                this.loginForm.loading = true;
+                this.isBooking = true;
                 let data = {
+                    first_name: this.loginForm.first_name,
+                    last_name: this.loginForm.last_name,
+                    email: this.loginForm.email,
+                    password: this.loginForm.password,
                     date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
                     time: this.selectedTimeslot.time,
-                    timex: '24:00',
                 };
-                this.$refs['bookingModal'].show();
                 axios
-                    .post(`${window.location.pathname}/${this.selectedService.id}/book`, data)
-                    .then((response) => {
+                    .post(`/@${this.profile.username}/${this.selectedService.id}/signup_and_book`, data)
+                    .then(response => {
                         this.bookingSuccess = true;
                         this.loginForm.loading = false;
                         this.authForm = false;
                         this.selectedService = this.selectedDate = this.selectedTimeslot = null;
                     })
-                    .catch((e) => {
-                        this.$refs['bookingModal'].hide();
-                        this.bookingSuccess = false;
+                    .catch(e => {
                         this.loginForm.loading = false;
-                        this.$toasted.show(e.response.data.message, {
-                            className: 'bg-danger rounded shadow-none'
+                        this.authError = e.response.data.message;
+                        this.isBooking = false;
+                    });
+            }
+        },
+
+        LoginAndBook() {
+            if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
+                this.$refs['bookingModal'].show();
+                this.loginForm.loading = true;
+                this.isBooking = true;
+                let data = {
+                    email: this.loginForm.email,
+                    password: this.loginForm.password,
+                    date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+                    time: this.selectedTimeslot.time,
+                };
+                axios
+                    .post(`/@${this.profile.username}/${this.selectedService.id}/login_and_book`, data)
+                    .then(response => {
+                        this.bookingSuccess = true;
+                        this.loginForm.loading = false;
+                        this.authForm = false;
+                        this.selectedService = this.selectedDate = this.selectedTimeslot = null;
+                    })
+                    .catch(e => {
+                        this.$refs['bookingModal'].hide();
+                        setTimeout(() => {
+                            this.loginForm.loading = false;
+                            this.authError = e.response.data.message;
+                            this.isBooking = false;
+                        }, 150);
+                    });
+            }
+        },
+
+        FacebookLoginAndBook() {
+            if (typeof FB != 'undefined' && this.selectedService && this.selectedDate && this.selectedTimeslot) {
+                this.$refs['bookingModal'].show();
+                this.loginForm.loading = true;
+                this.isBooking = true;
+                FB.login(
+                    e => {
+                        FB.api('/me', {fields: 'first_name, last_name, email'}, data => {
+                            if (data && !data.error) {
+                                let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                data.timezone = timezone;
+                                data.date = dayjs(this.selectedDate).format('YYYY-MM-DD');
+                                data.time = this.selectedTimeslot.time;
+
+                                axios
+                                    .post(`/@${this.profile.username}/${this.selectedService.id}/facebook_login_and_book`, data)
+                                    .then(response => {
+                                        this.bookingSuccess = true;
+                                        this.loginForm.loading = false;
+                                        this.authForm = false;
+                                        this.selectedService = this.selectedDate = this.selectedTimeslot = null;
+                                    })
+                                    .catch(e => {
+                                        this.loginForm.loading = false;
+                                        this.authError = e.response.data.message;
+                                        this.isBooking = false;
+                                    });
+                                
+                            } else {
+                                this.$refs['bookingModal'].hide();
+                                this.loginForm.loading = false;
+                                this.isBooking = false;
+                                this.bookingSuccess = false;
+                            }
                         });
+                    },
+                    {scope: 'email'},
+                );
+            }
+        },
+
+        GoogleLoginAndBook() {
+            if (this.GoogleAuth && this.selectedService && this.selectedDate && this.selectedTimeslot) {
+                this.$refs['bookingModal'].show();
+                this.loginForm.loading = true;
+                this.isBooking = true;
+                this.GoogleAuth.signIn()
+                    .then(googleUser => {
+                        let profile = googleUser.getBasicProfile();
+                        let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        let data = {
+                            id: profile.getId(),
+                            first_name: profile.getGivenName(),
+                            last_name: profile.getFamilyName(),
+                            email: profile.getEmail(),
+                            image_url: profile.getImageUrl(),
+                            timezone: timezone,
+                            date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+                            time: this.selectedTimeslot.time,
+                        };
+
+                        axios
+                            .post(`/@${this.profile.username}/${this.selectedService.id}/google_login_and_book`, data)
+                            .then(response => {
+                                this.bookingSuccess = true;
+                                this.loginForm.loading = false;
+                                this.authForm = false;
+                                this.selectedService = this.selectedDate = this.selectedTimeslot = null;
+                            })
+                            .catch(e => {
+                                this.$refs['bookingModal'].hide();
+                                this.loginForm.loading = false;
+                                this.authError = e.response.data.message;
+                                this.isBooking = false;
+                            });
+                    })
+                    .catch(() => {
+                        this.$refs['bookingModal'].hide();
+                        this.loginForm.loading = false;
+                        this.isBooking = false;
+                        this.bookingSuccess = false;
                     });
             }
         },
@@ -364,7 +485,7 @@ new Vue({
         getData() {
             axios.get(window.location.pathname).then((response) => {
                 this.services = response.data;
-                //this.selectedService = this.services[0];
+                this.selectedService = this.services[0];
 
                 // testing
                 /*let now = new Date();

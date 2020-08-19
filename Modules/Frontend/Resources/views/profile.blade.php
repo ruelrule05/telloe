@@ -10,7 +10,7 @@
 
 		<div class="text-center" v-if="ready">
 			<transition-group name="fade" tag="div">
-				<div class="position-absolute-center w-100 container" v-if="!selectedService" key="services">
+				<div class="container" v-if="!selectedService" key="services">
 					<div class="row justify-content-center">
 						<div class="col-md-10">
 							<div class="bg-white shadow-sm rounded p-4">
@@ -152,7 +152,7 @@
 									<template v-else>
 										<div class="d-flex flex-column h-100">
 											<div class="flex-grow-1 h-100 position-relative">
-												<vue-form-validate @submit="login" class="position-absolute-center w-100">
+												<vue-form-validate @submit="submit">
 													<h5 class="h4 font-heading mb-4">Log In</h5>
 													<div class="form-group mb-2">
 														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required>
@@ -160,10 +160,18 @@
 													<div class="form-group">
 														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required>
 													</div>
-													<div class="d-flex align-items-center mt-4">
-														<button class="btn btn-white border" type="button" @click="authForm = false">Previous</button>
-														<vue-button type="submit" :loading="loginForm.loading" button_class="ml-auto btn btn-primary">Log In & Book</vue-button>
+													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
+
+													<div class="d-flex mx-n1 mt-3">
+														<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
+														<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
 													</div>
+
+													<div class="mt-3">
+														<button type="button" v-if="authAction == 'login'" class="btn btn-link btn-sm text-body p-0" @click="authAction = 'signup'">Don't have an account?</button>
+														<button type="button" v-else class="btn btn-link btn-sm text-body p-0 d-flex align-items-center" @click="authAction = 'login'"><arrow-left-icon></arrow-left-icon>Login</button>
+													</div>
+													<button class="btn btn-white border mt-4" type="button" @click="authForm = false">Previous</button>
 												</vue-form-validate>
 
 												<div class="text-center text-danger position-absolute w-100">&nbsp;@{{ authError }}&nbsp;</div>
@@ -206,6 +214,7 @@
 			</div>
 		</modal>
 	</div>
+	@include('frontend::partials.social_scripts')
 	<script>
 		const PROFILE = {!! json_encode($profile) !!};
 		const AUTH = {!! json_encode(Auth::user()) !!};

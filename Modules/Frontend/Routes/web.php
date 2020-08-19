@@ -119,6 +119,7 @@ Route::group(
             Route::get('@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots');
             Route::post('@{username}/{service_id}/book', 'UserController@book');
             Route::post('@{username}/{service_id}/login_and_book', 'UserController@loginAndBook');
+            Route::post('@{username}/{service_id}/signup_and_book', 'UserController@signupAndBook');
             Route::post('@{username}/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook');
             Route::post('@{username}/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook');
 

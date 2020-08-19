@@ -87,13 +87,40 @@
         z-index: 55555;
     }
     .widget {
-        bottom: 20px;
+        bottom: 30px;
         left: 20px;
         transition: $transition-base;
         width: 350px;
         height: 550px;
         z-index: 55555;
-        box-shadow: 0 0 2rem rgba(92, 101, 112, 0.35) !important;
+        .widget-body {
+            box-shadow: 0 0 2rem rgba(92, 101, 112, 0.35) !important;
+        }
+        .widget-footer{
+            margin-top: 5px;
+            span{
+                font-size: 11px;
+            }
+            a {
+                text-decoration: none;
+                color: $secondary;
+                transition: $transition-base;
+                &:hover{
+                    color: $body-color;
+                    img {
+                        filter: none;
+                        opacity: 1;
+                    }
+                }
+
+                img {
+                    transition: $transition-base;
+                    transition: $transition-base;
+                    filter: grayscale(100%) brightness(70%);
+                    opacity: 0.75;
+                }
+            }
+        }
     }
     .btn-close {
         top: 10px;

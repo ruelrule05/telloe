@@ -145,6 +145,53 @@ class UserController extends Controller
     }
 
 
+    public function signupAndBook($username, $service_id, Request $request)
+    {
+        $exists = User::where('email', $request->email)->first();
+        if ($exists) return abort(403, 'Email is already registered to another account.');
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+            'date' => 'required|date',
+            'time' => 'required',
+        ]);
+
+        $authController = new AuthController();
+        $new_username = $authController->generateUsername($request);
+        $user = User::create([
+            'username' => $new_username,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'last_online' => NULL,
+        ]);
+        $user->password = bcrypt($request->password);
+        $user->save();
+        $widget = Widget::create([
+            'user_id' => $user->id
+        ]);
+
+        if(isValidTimezone($request->timezone)) :
+            $user->timezone = $request->timezone;
+            $user->save();
+        endif;
+
+
+        $authController->createDefaultField($user);
+        $authController->createInitialConversations($user);
+        $authController->createPresetService($user);
+        
+        $user = $user->refresh();
+        if($user->role->role == 'client') :
+            Mail::queue(new Welcome($user));
+        endif;
+        
+        return $this->book($username, $service_id, $request, $user);
+    }
+
+
     public function googleLoginAndBook($username, $service_id, Request $request)
     {
         $this->validate($request, [
@@ -155,11 +202,12 @@ class UserController extends Controller
             'image_url' => 'required'
         ]);
         $user = User::where('email', $request->email)->first();
+        $authController = new AuthController();
         if(!$user || $user->google_id == $request->id) :
             if(!$user) :
                 $time = time();
                 Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $new_username = (new AuthController())->generateUsername($request);
+                $new_username = $authController->generateUsername($request);
                 $user = User::create([
                     'username' => $new_username,
                     'first_name' => $request->first_name,
@@ -186,9 +234,9 @@ class UserController extends Controller
                 endif;
             endif;
 
-            (new AuthController)->createDefaultField($user);
-            (new AuthController)->createInitialConversations($user);
-            (new AuthController)->createPresetService($user);
+            $authController->createDefaultField($user);
+            $authController->createInitialConversations($user);
+            $authController->createPresetService($user);
 
 
             return $this->book($username, $service_id, $request, $user);
@@ -209,12 +257,13 @@ class UserController extends Controller
             'id' => 'required'
         ]);
         $user = User::where('email', $request->email)->first();
+        $authController = new AuthController();
         if(!$user || $user->facebook_id == $request->id) :
             if(!$user) :
                 $time = time();
                 $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
                 Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $new_username = (new AuthController())->generateUsername($request);
+                $new_username = $authController->generateUsername($request);
                 $user = User::create([
                     'username' => $new_username,
                     'first_name' => $request->first_name,
@@ -241,9 +290,9 @@ class UserController extends Controller
                 endif;
             endif;
 
-            (new AuthController)->createDefaultField($user);
-            (new AuthController)->createInitialConversations($user);
-            (new AuthController)->createPresetService($user);
+            $authController->createDefaultField($user);
+            $authController->createInitialConversations($user);
+            $authController->createPresetService($user);
 
             return $this->book($username, $service_id, $request, $user);
         endif;

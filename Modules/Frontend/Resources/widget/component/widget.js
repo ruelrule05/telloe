@@ -71,7 +71,7 @@ export default {
 		isBooking: false,
 		bookingSuccess: false,
 		open: true,
-		authAction: 'login'
+		authAction: 'signup' // login
 	}),
 
 	computed: {
@@ -291,6 +291,42 @@ export default {
 						this.sliderTranslate = sliderSize * index * -1;
 					}
 				}
+			}
+		},
+
+		submit() {
+			if(this.authAction == 'login') {
+				this.LoginAndBook();
+			} else if(this.authAction == 'signup') {
+				this.SignupAndBook();
+			}
+		},
+
+		SignupAndBook() {
+			if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
+				this.loginForm.loading = true;
+				this.isBooking = true;
+				let data = {
+					first_name: this.loginForm.first_name,
+					last_name: this.loginForm.last_name,
+					email: this.loginForm.email,
+					password: this.loginForm.password,
+					date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+					time: this.selectedTimeslot.time,
+				};
+				TelloeAxios
+					.post(`/@${this.$root.profile.username}/${this.selectedService.id}/signup_and_book`, data)
+					.then(response => {
+						this.bookingSuccess = true;
+						this.loginForm.loading = false;
+						this.authForm = false;
+						this.selectedService = this.selectedDate = this.selectedTimeslot = null;
+					})
+					.catch(e => {
+						this.loginForm.loading = false;
+						this.authError = e.response.data.message;
+						this.isBooking = false;
+					});
 			}
 		},
 
