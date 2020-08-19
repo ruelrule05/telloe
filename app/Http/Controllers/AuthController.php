@@ -554,14 +554,14 @@ class AuthController extends Controller
 
     public function createDefaultField(User $user)
     {
-        UserCustomField::firstOrCreate(
-            [
-                'user_id' => $user->id,
-            ],
-            [
-                'fields' => ['Mobile', 'Address']
-            ]
-        );
+        if(!UserCustomField::where('user_id', $user->id)) :
+            UserCustomField::create(
+                [
+                    'user_id' => $user->id,
+                    'fields' => ['Mobile', 'Address']
+                ]
+            );
+        endif;
     }
     
 }

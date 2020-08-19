@@ -3,6 +3,6 @@
 <head>
 </head>
 <body>
-	<script src="{{ config('app.url') }}/js/widget.js?p={{ request('p') }}"></script>
-	</body>
+	<script src="{{ config('app.url') }}/js/widget.js?p={{ env('HOME_WIDGET_USERNAME') }}"></script>
+</body>
 </html>

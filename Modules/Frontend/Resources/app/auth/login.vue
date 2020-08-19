@@ -16,16 +16,16 @@
 				</vue-form-validate>
 
 				<div class="d-flex mx-n1 mt-4">
-					<button class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.FacebookLogin" data-action="login"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
-					<button class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.Googlesignin"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
+					<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.FacebookLogin" data-action="login"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
+					<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.Googlesignin"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
 				</div>
 
 				<div class="mt-3 font-size-14">
 					<!-- <button class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button> -->
 					<div>
-						<button class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button>
+						<button type="button" class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button>
 						<div class="mt-1">
-							<button class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'signup'">Don't have an account?</button>
+							<button type="button" class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'signup'">Don't have an account?</button>
 						</div>
 					</div>
 				</div>

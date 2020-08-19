@@ -1,7 +1,7 @@
 <template>
 	<div v-if="ready" id="widget" v-cloak>
 		<button id="button" class="position-fixed btn btn-primary d-flex align-items-center" :class="[open ? 'd-none' : 'd-flex']" type="button" @click="open = !open">
-			<calendar-icon class="mr-1" fill="white" width="18" height="18"></calendar-icon> {{ profile.widget.button_text }}
+			<calendar-icon class="mr-1" fill="white" width="18" height="18"></calendar-icon> {{ $root.profile.widget.button_text }}
 		</button>
 
 		<div class="widget bg-white position-fixed border rounded shadow-sm overflow-hidden flex-column" :class="[open ? 'd-flex' : 'd-none']">
@@ -29,11 +29,11 @@
 				<template v-else-if="!authForm">
 					<div v-if="!selectedService" key="services">
 						<div class="text-center">
-							<div class="profile-image d-inline-block bg-white mb-1" :style="{'background-image': 'url('+profile.profile_image+')'}">
-								<span v-if="!profile.profile_image">{{ profile.initials }}</span>
+							<div class="profile-image d-inline-block bg-white mb-1" :style="{'background-image': 'url('+$root.profile.profile_image+')'}">
+								<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
 							</div>
-							<h1 class="font-heading h5 mb-0 mt-0">{{ profile.full_name }}</h1>
-							<span class="text-secondary">@{{ profile.username }}</span>
+							<h1 class="font-heading h5 mb-0 mt-0">{{ $root.profile.full_name }}</h1>
+							<span class="text-secondary">@{{ $root.profile.username }}</span>
 
 							<template v-cloak>
 								<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
@@ -73,7 +73,7 @@
 								</div>
 								<span class="text-secondary d-inline-flex align-items-center mt-1">
 									<earth-icon height="17" width="17" class="fill-secondary mr-2"></earth-icon>
-									{{ profile.timezone }}
+									{{ $root.profile.timezone }}
 								</span>
 							</div>
 
@@ -121,7 +121,7 @@
 													<div class="d-flex flex-wrap">
 														<div v-for="timeslot in timeslots" class="mt-2 w-100">
 															<div class="rounded cursor-pointer py-3 px-3" :class="[timeslot == selectedTimeslot ? 'bg-blue text-white' : 'bg-light']" @click="selectedTimeslot = timeslot;">
-																<small class="d-block">{{ profile.timezone }}</small>
+																<small class="d-block">{{ $root.profile.timezone }}</small>
 																{{ timeslot.label }}
 															</div>
 														</div>
@@ -141,8 +141,8 @@
 					<div class="d-flex flex-column h-100">
 						<div class="flex-grow-1 position-relative">
 							<div class="position-absolute-center w-100">
-								<vue-form-validate @submit="submit" class="w-100">
-									<h5 class="h4 font-heading mb-4">Log In</h5>
+								<vue-form-validate @submit="LoginAndBook()" class="w-100">
+									<h5 class="h4 font-heading mb-3">Log In</h5>
 									<div class="form-group mb-2">
 										<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control shadow-none border" data-required>
 									</div>
@@ -151,6 +151,13 @@
 									</div>
 									<div class="mt-4">
 										<vue-button type="submit" :loading="loginForm.loading" button_class="btn btn-block btn-primary">Log In & Book</vue-button>
+									</div>
+									<div class="d-flex mx-n1 mt-3">
+										<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
+										<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
+									</div>
+									<div class="mt-4">
+										<button type="button" class="btn btn-link btn-sm text-body p-0" @click="$root.authAction = 'signup'">Don't have an account?</button>
 									</div>
 								</vue-form-validate>
 							</div>

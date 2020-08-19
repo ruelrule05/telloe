@@ -13,6 +13,8 @@ import EarthIcon from '../../icons/earth';
 import CheckmarkCircleIcon from '../../icons/checkmark-circle';
 import CloseIcon from '../../icons/close';
 import CalendarIcon from '../../icons/calendar';
+import FacebookIcon from '../../icons/facebook';
+import GoogleIcon from '../../icons/google';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 export default {
 	components: {
@@ -30,10 +32,11 @@ export default {
 		CheckmarkCircleIcon,
 		CloseIcon,
 		CalendarIcon,
+		FacebookIcon,
+		GoogleIcon,
 		VDatePicker,
 	},
 	data: () => ({
-		profile: PROFILE,
 		ready: false,
 		services: [],
 		selectedService: null,
@@ -64,10 +67,11 @@ export default {
 		sliderNavIndex: 0,
 		sliderTranslate: 0,
 		sliderItemSize: 90,
-		authForm: false,
+		authForm: true, // false
 		isBooking: false,
 		bookingSuccess: false,
-		open: false,
+		open: true,
+		authAction: 'login'
 	}),
 
 	computed: {
@@ -239,6 +243,7 @@ export default {
 			this.isBooking = false;
 			this.bookingSuccess = false;
 			this.authForm = false;
+			this.authAction = 'login';
 			this.error = '';
 			this.calendarView = 'month';
 		},
@@ -289,7 +294,7 @@ export default {
 			}
 		},
 
-		submit() {
+		LoginAndBook() {
 			if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
 				this.loginForm.loading = true;
 				this.isBooking = true;
@@ -300,7 +305,7 @@ export default {
 					time: this.selectedTimeslot.time,
 				};
 				TelloeAxios
-					.post(`/@${this.profile.username}/${this.selectedService.id}/login_and_book`, data)
+					.post(`/@${this.$root.profile.username}/${this.selectedService.id}/login_and_book`, data)
 					.then(response => {
 						this.bookingSuccess = true;
 						this.loginForm.loading = false;
@@ -314,6 +319,87 @@ export default {
 					});
 			}
 		},
+
+
+        FacebookLoginAndBook() {
+            if (typeof FB != 'undefined' && this.selectedService && this.selectedDate && this.selectedTimeslot) {
+				this.loginForm.loading = true;
+				this.isBooking = true;
+                FB.login(
+                    e => {
+                        FB.api('/me', {fields: 'first_name, last_name, email'}, data => {
+                            if (data && !data.error) {
+                                let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                data.timezone = timezone;
+								data.date = dayjs(this.selectedDate).format('YYYY-MM-DD');
+								data.time = this.selectedTimeslot.time;
+
+		                        TelloeAxios
+		                            .post(`/@${this.$root.profile.username}/${this.selectedService.id}/facebook_login_and_book`, data)
+		                            .then(response => {
+		                                this.bookingSuccess = true;
+		                                this.loginForm.loading = false;
+		                                this.authForm = false;
+		                                this.selectedService = this.selectedDate = this.selectedTimeslot = null;
+		                            })
+		                            .catch(e => {
+		                                this.loginForm.loading = false;
+		                                this.authError = e.response.data.message;
+		                                this.isBooking = false;
+		                            });
+                       			
+                            } else {
+		                        this.loginForm.loading = false;
+		                        this.isBooking = false;
+		                        this.bookingSuccess = false;
+                            }
+                        });
+                    },
+                    {scope: 'email'},
+                );
+            }
+        },
+
+        GoogleLoginAndBook() {
+            if (this.$root.GoogleAuth && this.selectedService && this.selectedDate && this.selectedTimeslot) {
+				this.loginForm.loading = true;
+				this.isBooking = true;
+                this.$root.GoogleAuth.signIn()
+                    .then(googleUser => {
+                        let profile = googleUser.getBasicProfile();
+                        let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        let data = {
+                            id: profile.getId(),
+                            first_name: profile.getGivenName(),
+                            last_name: profile.getFamilyName(),
+                            email: profile.getEmail(),
+                            image_url: profile.getImageUrl(),
+                            timezone: timezone,
+							date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+							time: this.selectedTimeslot.time,
+                        };
+
+                        TelloeAxios
+                            .post(`/@${this.$root.profile.username}/${this.selectedService.id}/google_login_and_book`, data)
+                            .then(response => {
+                                this.bookingSuccess = true;
+                                this.loginForm.loading = false;
+                                this.authForm = false;
+                                this.selectedService = this.selectedDate = this.selectedTimeslot = null;
+                            })
+                            .catch(e => {
+                                this.loginForm.loading = false;
+                                this.authError = e.response.data.message;
+                                this.isBooking = false;
+                            });
+                    })
+                    .catch(() => {
+                        this.loginForm.loading = false;
+                        this.isBooking = false;
+                        this.bookingSuccess = false;
+                    });
+            }
+        },
 
 		formatDate(date) {
 			let formatDate = '';
@@ -329,7 +415,7 @@ export default {
 		getTimeslots() {
 			if (this.selectedService && this.selectedDate) {
 				this.selectedTimeslot = null;
-				TelloeAxios.get(`/@${this.profile.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
+				TelloeAxios.get(`/@${this.$root.profile.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
 					this.timeslots = response.data;
 					this.timeslotsLoading = false;
 				});
@@ -341,9 +427,9 @@ export default {
 		},
 
 		getData() {
-			TelloeAxios.get(`/@${this.profile.username}`).then(response => {
+			TelloeAxios.get(`/@${this.$root.profile.username}`).then(response => {
 				this.services = response.data;
-				//this.selectedService = this.services[0];
+				this.selectedService = this.services[0];
 				this.ready = true;
 			});
 		},

@@ -17,7 +17,7 @@
                     </div>
                     <v-lazy-image :src="file.source" class="position-absolute-center" :class="{'opacity-0': !file.loaded}" @load="imageLoaded(file)" />
                 </template>
-                <video controls v-else-if="file.type =='video'" :poster="file.preview" :src="file.source" class="position-absolute-center outline-0 mw-100 mh-100"></video>
+                <video controls controlsList="nodownload" disablePictureInPicture v-else-if="file.type =='video'" :poster="file.preview" :src="file.source" class="position-absolute-center outline-0 mw-100 mh-100"></video>
                 <waveplayer v-else-if="file.type =='audio'" :source="file.source" :duration="file.metadata.duration" class="position-absolute-center bg-white p-1 rounded"></waveplayer>
             </div>
             <div class="px-5 position-relative file-arrow cursor-pointer" :class="{'disabled': !hasNext}" @click="goToNext()">

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\Booking;
+use App\Models\Widget;
 use Carbon\Carbon;
 use Auth;
 use Hash;
@@ -14,6 +15,9 @@ use File;
 use Response;
 use Mail;
 use Modules\Frontend\Mail\NewBooking;
+use Modules\Frontend\Mail\Welcome;
+use Image;
+use App\Http\Controllers\AuthController;
 
 class UserController extends Controller
 {
@@ -79,10 +83,8 @@ class UserController extends Controller
             'time' => 'required',
         ]);
 
-        $user = User::where('username', $username)->whereHas('role', function($role) {
-            $role->where('role', 'client');
-        })->firstOrfail();
-        $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
+        $user = User::where('username', $username)->firstOrfail();
+        $service = Service::where('id', $service_id)->firstOrfail();
         $timeslots = $service->timeslots($request->date);
 
         $timeslotAvailable = false;
@@ -141,4 +143,114 @@ class UserController extends Controller
 
         return $this->book($username, $service_id, $request, $user);
     }
+
+
+    public function googleLoginAndBook($username, $service_id, Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'image_url' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user || $user->google_id == $request->id) :
+            if(!$user) :
+                $time = time();
+                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
+                $new_username = (new AuthController())->generateUsername($request);
+                $user = User::create([
+                    'username' => $new_username,
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                ]);
+                $user->role_id = 3;
+                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
+                $user->google_id = $request->id;
+                $user->save();
+                if(isValidTimezone($request->timezone)) :
+                    $user->timezone = $request->timezone;
+                    $user->save();
+                endif;
+                $widget = Widget::create([
+                    'user_id' => $user->id
+                ]);
+                Mail::queue(new Welcome($user));
+            else:
+                if(!Widget::where('user_id', $user->id)->first()) :
+                    $widget = Widget::create([
+                        'user_id' => $user->id
+                    ]);
+                endif;
+            endif;
+
+            (new AuthController)->createDefaultField($user);
+            (new AuthController)->createInitialConversations($user);
+            (new AuthController)->createPresetService($user);
+
+
+            return $this->book($username, $service_id, $request, $user);
+        endif;
+
+        $message = "There's no user associated with this Google account.";
+        if($user) $message = "Email is already registered to another account.";
+        return abort(403, $message);
+    }
+
+
+    public function facebookLoginAndBook($username, $service_id, Request $request)
+    {
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'id' => 'required'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user || $user->facebook_id == $request->id) :
+            if(!$user) :
+                $time = time();
+                $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
+                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
+                $new_username = (new AuthController())->generateUsername($request);
+                $user = User::create([
+                    'username' => $new_username,
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                ]);
+                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
+                $user->facebook_id = $request->id;
+                $user->save();
+                if(isValidTimezone($request->timezone)) :
+                    $user->timezone = $request->timezone;
+                    $user->save();
+                endif;
+                $widget = Widget::create([
+                    'user_id' => $user->id
+                ]);
+
+                Mail::queue(new Welcome($user));
+            else:
+                if(!Widget::where('user_id', $user->id)->first()) :
+                    $widget = Widget::create([
+                        'user_id' => $user->id
+                    ]);
+                endif;
+            endif;
+
+            (new AuthController)->createDefaultField($user);
+            (new AuthController)->createInitialConversations($user);
+            (new AuthController)->createPresetService($user);
+
+            return $this->book($username, $service_id, $request, $user);
+        endif;
+
+        $message = "There's no user associated with this Facebook account.";
+        if($user) $message = "Email is already registered to another account.";
+        return abort(403, $message);
+    }
+    
 }
