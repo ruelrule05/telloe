@@ -137,7 +137,7 @@ class MessageController extends Controller
 
     public function convertVideo(Request $request)
     {
-        $tmpPath = $_SERVER['DOCUMENT_ROOT'] . $request->video->getPathName();
+        $tmpPath = sys_get_temp_dir() . $request->video->getPathName();
         echo $tmpPath;
         compressVideo($tmpPath, $tmpPath . '.mp4');
         /*FFMpeg::fromDisk('root')
