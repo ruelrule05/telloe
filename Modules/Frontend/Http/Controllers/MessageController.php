@@ -41,7 +41,7 @@ class MessageController extends Controller
 
             if($request->type == 'video') :
                 $sourceFile .= '.mp4';
-                $relativePath = $_SERVER['DOCUMENT_ROOT'] . public_path()."/storage/message-media/$filename";
+                $relativePath = public_path()."/storage/message-media/$filename";
                 compressVideo($relativePath, $relativePath . '.mp4');
                /* FFMpeg::fromDisk('public')
                     ->open("message-media/$filename")
