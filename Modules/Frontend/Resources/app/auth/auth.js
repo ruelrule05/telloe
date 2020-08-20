@@ -62,7 +62,7 @@ export default {
                                     .post('/login/facebook', response)
                                     .then(response => {
                                         this.socket.emit('invite_token', invite_token);
-                                        window.location.href = response.data.redirect_url;
+                                        window.location.href = '/dashboard/conversations';
                                     })
                                     .catch(e => {
                                         this.pageloading = false;
@@ -101,7 +101,8 @@ export default {
                             .post('/login/google', user)
                             .then(response => {
                                 this.socket.emit('invite_token', invite_token);
-                                window.location.href = response.data.redirect_url;
+                                console.log(response.data);
+                                window.location.href = '/dashboard/conversations';
                             })
                             .catch(e => {
                                 this.pageloading = false;
