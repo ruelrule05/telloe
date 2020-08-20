@@ -67,11 +67,11 @@ export default {
 		sliderNavIndex: 0,
 		sliderTranslate: 0,
 		sliderItemSize: 90,
-		authForm: true, // false
+		authForm: false, // false
 		isBooking: false,
 		bookingSuccess: false,
-		open: true,
-		authAction: 'signup' // login
+		open: false,
+		authAction: 'login' // login
 	}),
 
 	computed: {
@@ -465,7 +465,7 @@ export default {
 		getData() {
 			TelloeAxios.get(`/@${this.$root.profile.username}`).then(response => {
 				this.services = response.data;
-				this.selectedService = this.services[0];
+				//this.selectedService = this.services[0];
 				this.ready = true;
 			});
 		},

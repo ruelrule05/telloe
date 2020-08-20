@@ -192,7 +192,8 @@ export default {
                     message_group.outgoing = true;
                     message_group.is_read = message.is_read;
                 }
-                message_group.created_at_format = message.created_at_format;
+                message_group.created_at = message.created_at;
+                message_group.timestamp = message.timestamp;
                 grouped_messages.push(message_group);
             }
 
@@ -242,6 +243,47 @@ export default {
             deleteMessage: 'messages/delete',
         }),
 
+        messageTimezoneTime(message) {
+            let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            let timezoneTime;
+            if(timezone != message.sender.timezone) {
+                let messageTZ = this.getTimeZoneOffset(new Date(), message.sender.timezone);
+                let localTZ = this.getTimeZoneOffset(new Date(), timezone);
+                timezoneTime = dayjs(parseFloat(message.timestamp)).add(messageTZ - localTZ, 'minute');
+            } else {
+                timezoneTime = dayjs(parseFloat(message.timestamp));
+            }
+
+            return timezoneTime.format('hh:mmA on ddd');
+        },
+
+        getTimeZoneOffset(date, timeZone) {
+            // Abuse the Intl API to get a local ISO 8601 string for a given time zone.
+            const options = {timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+            const parts = dateTimeFormat.formatToParts(date);
+            const map = new Map(parts.map(x => [x.type, x.value]));
+            const year = map.get('year');
+            const month = map.get('month');
+            const day = map.get('day');
+            let hour = map.get('hour');
+            const minute = map.get('minute');
+            const second = map.get('second');
+            const ms = date
+                .getMilliseconds()
+                .toString()
+                .padStart(3, '0');
+            if (hour == '24') hour = '00';
+            const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
+
+            // Lie to the Date object constructor that it's a UTC time.
+            const lie = new Date(iso + 'Z');
+
+            // Return the difference in timestamps, as minutes
+            // Positive values are West of GMT, opposite of ISO 8601
+            // this matches the output of `Date.getTimeZoneOffset`
+            return -(lie - date) / 60 / 1000;
+        },
 
         getFiles() {
             if(this.conversation) {

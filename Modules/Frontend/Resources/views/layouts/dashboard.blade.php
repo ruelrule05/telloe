@@ -144,41 +144,41 @@
 										</template>
 										<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
 									</div>
-
-									
-									<div class="mt-auto mb-2 sidebar-menu">
-										<div class="dropright">
-											<div class="cursor-pointer d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" data-toggle="dropdown" data-offset="10, 5" ref="notificationsDropdown">
-												<colored-bell-icon height="22" width="22"></colored-bell-icon>
-												<span class="pl-3">Notifications</span>
-												<small class="badge badge-danger text-white ml-auto message-count">@{{ notificationsCount }}</small>
-											</div>
-											<div class="dropdown-menu overflow-auto mh-100vh cursor-auto">
-												<template v-if="notifications.length > 0">
-													<div class="d-flex align-items-center pb-2 position-sticky">
-														<h6 class="mb-0 font-heading">New Notifications</h6>
-														<u class="text-link ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u>
-													</div>
-													<div v-for="(notification, index) in notifications" v-if="!notification.is_read" class="dropdown-item cursor-pointer" :class="{'bg-light': !notification.is_read}" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
-														<div class="d-flex">
-															<div>
-																<div v-html="notification.description"></div>
-																<small class="text-secondary">@{{ notification.created_at }}</small>
-															</div>
-															<div class="ml-auto">
-																<button class="btn btn-light shadow-none p-0 badge-pill line-height-0 close mr-n1 mt-n1 float-none" @click.stop="notification.is_read = true; updateNotification(notification); notifications.splice(index, 1); jQuery($refs['notificationsDropdown']).dropdown('update')"><close-icon width="18" height="18" transform="scale(1.2)"></close-icon></button>
-															</div>
-														</div>
-													</div>
-												</template>
-												<div v-else class="text-secondary dropdown-item disabled">No new notifications.</div>
-											</div>
-										</div>
-									</div>
 								</template>
 
 								<div v-else class="overflow-y-only">
 									<sidebar-conversations></sidebar-conversations>
+								</div>
+
+								<!-- Notifications -->
+								<div class="mt-auto mb-2 sidebar-menu">
+									<div class="dropright">
+										<div class="cursor-pointer d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" data-toggle="dropdown" data-offset="10, 5" ref="notificationsDropdown">
+											<colored-bell-icon height="22" width="22"></colored-bell-icon>
+											<span class="pl-3">Notifications</span>
+											<small class="badge badge-danger text-white ml-auto message-count">@{{ notificationsCount }}</small>
+										</div>
+										<div class="dropdown-menu overflow-auto mh-100vh cursor-auto">
+											<template v-if="notifications.length > 0">
+												<div class="d-flex align-items-center pb-2 position-sticky">
+													<h6 class="mb-0 font-heading">New Notifications</h6>
+													<u class="text-link ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u>
+												</div>
+												<div v-for="(notification, index) in notifications" v-if="!notification.is_read" class="dropdown-item cursor-pointer" :class="{'bg-light': !notification.is_read}" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
+													<div class="d-flex">
+														<div>
+															<div v-html="notification.description"></div>
+															<small class="text-secondary">@{{ notification.created_at }}</small>
+														</div>
+														<div class="ml-auto">
+															<button class="btn btn-light shadow-none p-0 badge-pill line-height-0 close mr-n1 mt-n1 float-none" @click.stop="notification.is_read = true; updateNotification(notification); notifications.splice(index, 1); jQuery($refs['notificationsDropdown']).dropdown('update')"><close-icon width="18" height="18" transform="scale(1.2)"></close-icon></button>
+														</div>
+													</div>
+												</div>
+											</template>
+											<div v-else class="text-secondary dropdown-item disabled">No new notifications.</div>
+										</div>
+									</div>
 								</div>
 
 							</div>

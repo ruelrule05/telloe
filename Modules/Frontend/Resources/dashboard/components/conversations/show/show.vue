@@ -133,7 +133,7 @@
                             	</div>
                                 <small v-if="index == grouped_messages.length - 1" class="text-secondary d-flex align-items-center" :class="{'justify-content-end': grouped_message.outgoing}">
                                     <template v-if="grouped_message.outgoing && grouped_message.is_read">Seen&nbsp;<eye-icon width="14" height="14" class="fill-primary"></eye-icon>&nbsp;•</template>
-                                    {{ grouped_message.created_at_format }}
+                                    {{ messageTimezoneTime(grouped_message) }}
                                 </small>
                             </div>
                             
