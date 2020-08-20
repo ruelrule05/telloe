@@ -35,14 +35,14 @@ class MessageController extends Controller
         if ($request->hasFile('source')) :
             $filename = $time . '-source';
 
-            $request->file('source')->storeAs('public/message-media/', $filename);
             $srcDestination = 'storage/message-media/' . $filename;
             $sourceFile = '/' . $srcDestination;
 
             if($request->type == 'video') :
                 $sourceFile .= '.mp4';
-                $relativePath = public_path()."/storage/message-media/$filename";
-                compressVideo($relativePath, $relativePath . '.mp4');
+
+                $tmpPath = sys_get_temp_dir() . '/' . $request->source->getFilename();
+                compressVideo($tmpPath, public_path()."/storage/message-media/$filename.mp4");
                /* FFMpeg::fromDisk('public')
                     ->open("message-media/$filename")
                     ->addFilter('-crf', 23)
@@ -54,8 +54,10 @@ class MessageController extends Controller
                     ->toDisk('public')
                     ->inFormat(new X264('libmp3lame', 'libx264'))
                     ->save("message-media/$filename.mp4");
-                */
                 File::delete(public_path($srcDestination));
+                */
+            else :
+                $request->file('source')->storeAs('public/message-media/', $filename);
             endif;
 
             $originalName = $request->source->getClientOriginalName();
