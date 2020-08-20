@@ -2,9 +2,10 @@
 
 function compressVideo($source, $ouput)
 {
-    $command = '/usr/local/bin/ffmpeg -y -i ' . $source . ' -crf 23 -preset medium -movflags +faststart -b:a 128k -threads 12 -vcodec libx264 -acodec libmp3lame -b:v 1000k -refs 6 -coder 1 -sc_threshold 40 -flags +loop -me_range 16 -subq 7 -i_qfactor 0.71 -qcomp 0.6 -qdiff 4 -trellis 1 -b:a 128k -vf [in]scale=-2:720,format=yuv420p[out] -pass 1 ' . $ouput;
+    $command = '/usr/local/bin/ffmpeg -y -i ' . $source . ' -crf 23 -preset medium -movflags +faststart -b:a 128k -threads 12 -vcodec libx264 -acodec libmp3lame -b:v 1000k -refs 6 -coder 1 -sc_threshold 40 -flags +loop -me_range 16 -subq 7 -i_qfactor 0.71 -qcomp 0.6 -qdiff 4 -trellis 1 -b:a 128k -vf [in]scale=-2:720,format=yuv420p[out] -pass 1 ' . $ouput . '  2>&1';
     echo $command;
-    exec($command);
+    exec($command, $output);
+    echo $output;
 }
 
 function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $request, $isNew = false)
