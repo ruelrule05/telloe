@@ -41,10 +41,12 @@ class MessageController extends Controller
 
             if($request->type == 'video') :
                 $sourceFile .= '.mp4';
-                FFMpeg::fromDisk('public')
+                $relativePath = public_path()."/storage/message-media/$filename";
+                compressVideo($relativePath, $relativePath . '.mp4');
+               /* FFMpeg::fromDisk('public')
                     ->open("message-media/$filename")
                     ->addFilter('-crf', 23)
-                    ->addFilter('-preset', 'ultrafast')
+                    ->addFilter('-preset', 'medium')
                     ->addFilter('-movflags', '+faststart')
                     ->addFilter('-vf', 'scale=-2:720,format=yuv420p')
                     ->addFilter('-b:a', '128k')
@@ -52,6 +54,7 @@ class MessageController extends Controller
                     ->toDisk('public')
                     ->inFormat(new X264('libmp3lame', 'libx264'))
                     ->save("message-media/$filename.mp4");
+                */
                 File::delete(public_path($srcDestination));
             endif;
 
@@ -134,8 +137,9 @@ class MessageController extends Controller
 
     public function convertVideo(Request $request)
     {
-        $tmpPath = substr($request->video->getPathName(), 1);
-        FFMpeg::fromDisk('root')
+        $tmpPath = $_SERVER['DOCUMENT_ROOT'] . $request->video->getPathName();
+        compressVideo($tmpPath, $tmpPath . '.mp4');
+        /*FFMpeg::fromDisk('root')
             ->open($tmpPath)
             ->addFilter('-crf', 23)
             ->addFilter('-preset', 'medium')
@@ -144,9 +148,10 @@ class MessageController extends Controller
             ->addFilter('-b:a', '128k')
             ->export()
             ->inFormat(new X264('libmp3lame', 'libx264'))
-            ->save($tmpPath . '.mp4');
+            ->save($tmpPath . '.mp4');*/
 
-        return response()->download('/' . $tmpPath . '.mp4');
+        //$file = file_get_contents($tmpPath . '.mp4');
+        return response()->download($tmpPath)->deleteFileAfterSend();
 
         
         // Delete tmp file MP4

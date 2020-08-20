@@ -82,7 +82,7 @@ export default {
         Googlesignin() {
             if (this.GoogleAuth) {
                 this.pageloading = true;
-                this.GoogleAuth.signIn()
+                this.GoogleAuth.signIn({scope: 'profile email'})
                     .then(googleUser => {
                         let profile = googleUser.getBasicProfile();
                         let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -109,7 +109,8 @@ export default {
                                 this.error = e.response.data.message;
                             });
                     })
-                    .catch(() => {
+                    .catch((e) => {
+                        console.log(e);
                         this.pageloading = false;
                         //this.error = 'Google API went wrong.';
                     });
