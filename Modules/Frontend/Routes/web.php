@@ -11,6 +11,11 @@ Route::get('widget', function() {
 });
 
 
+Route::get('phpinfo', function() {
+    return phpinfo();
+});
+
+
 
 Route::get('email', function() {
     /*$now = \Carbon\Carbon::now();
