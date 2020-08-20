@@ -64,6 +64,11 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        'root' => [
+            'driver' => 'local',
+            'root' => '/',
+        ],
+
     ],
 
 ];

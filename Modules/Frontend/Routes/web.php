@@ -98,6 +98,8 @@ Route::group(
             Route::post('contacts/{id}/create_subscription', 'ContactController@createSubscription');
             Route::post('contacts/{id}/cancel_subscription', 'ContactController@cancelSubscription');
             Route::post('contacts/get_contact_from_invite_token', 'ContactController@getContactFromInviteToken');
+
+            Route::post('convert_video', 'MessageController@convertVideo');
             
 
             Route::get('tags/search', 'DashboardController@searchTags');

@@ -50,6 +50,12 @@
                                     </button>
                                 </div>
                             </div>
+                            <div class="position-absolute-center w-100 h-100 bg-white" v-if="isScreenRecordDownloading">
+                                <div class="position-absolute-center w-75 text-center">
+                                    <div class="spinner-border text-primary"></div>
+                                    <h5 class="font-heading mb-0 mt-3">Converting your video...</h5>
+                                </div>
+                            </div>
                         </div>
 
                         <div v-if="pastedFile" class="position-absolute w-100 h-100 bg-white pasted-file">

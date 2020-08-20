@@ -168,6 +168,7 @@ class UserController extends Controller
             'last_online' => NULL,
         ]);
         $user->password = bcrypt($request->password);
+        $user->role_id = 3;
         $user->save();
         $widget = Widget::create([
             'user_id' => $user->id

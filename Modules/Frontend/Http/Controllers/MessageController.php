@@ -43,6 +43,11 @@ class MessageController extends Controller
                 $sourceFile .= '.mp4';
                 FFMpeg::fromDisk('public')
                     ->open("message-media/$filename")
+                    ->addFilter('-crf', 23)
+                    ->addFilter('-preset', 'medium')
+                    ->addFilter('-movflags', '+faststart')
+                    ->addFilter('-vf', 'scale=-2:720,format=yuv420p')
+                    ->addFilter('-b:a', '128k')
                     ->export()
                     ->toDisk('public')
                     ->inFormat(new X264('libmp3lame', 'libx264'))
@@ -125,5 +130,26 @@ class MessageController extends Controller
         $message->delete();
 
         return response()->json(['deleted' => true]);
+    }
+
+    public function convertVideo(Request $request)
+    {
+        $tmpPath = substr($request->video->getPathName(), 1);
+        FFMpeg::fromDisk('root')
+            ->open($tmpPath)
+            ->addFilter('-crf', 23)
+            ->addFilter('-preset', 'medium')
+            ->addFilter('-movflags', '+faststart')
+            ->addFilter('-vf', 'scale=-2:720,format=yuv420p')
+            ->addFilter('-b:a', '128k')
+            ->export()
+            ->inFormat(new X264('libmp3lame', 'libx264'))
+            ->save($tmpPath . '.mp4');
+
+        return response()->download('/' . $tmpPath . '.mp4');
+
+        
+        // Delete tmp file MP4
+        // File::delete($tmpPath . '.mp4');
     }
 }

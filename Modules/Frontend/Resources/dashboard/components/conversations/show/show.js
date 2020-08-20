@@ -70,7 +70,6 @@ export default {
         DocumentAltIcon,
         ScreenRecordIcon,
 
-
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
         gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
         //'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
@@ -96,11 +95,12 @@ export default {
         typingTimeout: null,
         pendingFiles: [],
         messagePaginateLoading: false,
+        isScreenRecordDownloading: false,
     }),
 
     watch: {
-        ready: function(value) {
-            if(value) {
+        ready: function (value) {
+            if (value) {
                 this.$root.contentloading = false;
                 this.$root.getFiles(this.conversation);
             }
@@ -108,42 +108,42 @@ export default {
                 this.scrollDown();
             }, 50);
         },
-        'conversation.id': function(value) {
+        'conversation.id': function (value) {
             this.ready = false;
             if (this.$refs['messageInput']) this.$refs['messageInput'].focus();
             this.scrollDown();
         },
-        'conversation.ready': function(value) {
+        'conversation.ready': function (value) {
             if (value) {
                 this.scrollDown();
                 this.$root.socket.emit('last_message_read', {conversation_id: this.conversation.id, message_id: this.conversation.last_message.id});
             }
         },
-        'conversation.last_message': function(value) {
+        'conversation.last_message': function (value) {
             if (this.conversation && this.conversation.paginated_messages && value.id) {
                 let message = this.conversation.paginated_messages.data.find(x => x.id == value.id);
                 if (!message) {
                     this.conversation.paginated_messages.data.push(value);
-                    if(!['text', 'emoji'].find(x => x == value.type)) {
+                    if (!['text', 'emoji'].find(x => x == value.type)) {
                         this.conversation.files.data.unshift(value);
                     }
                     this.scrollDown();
                 }
             }
         },
-        '$route.params.id': function(value) {
+        '$route.params.id': function (value) {
             if (value) {
                 this.showConversation({id: value});
                 this.checkScreenRecorder();
             }
         },
-        '$root.screenRecorder.status': function(value) {
+        '$root.screenRecorder.status': function (value) {
             if (value == 'paused') this.checkScreenRecorder();
             else this.hasScreenRecording = false;
         },
-        '$root.screenRecorder.conversation_id': function(value) {
+        '$root.screenRecorder.conversation_id': function (value) {
             if (value == this.conversation.id) this.checkScreenRecorder();
-            else this.hasScreenRecording = false;
+            //else this.hasScreenRecording = false;
         },
     },
 
@@ -204,29 +204,29 @@ export default {
     created() {
         this.checkConversation();
         this.$root.socket.on('last_message_read', data => {
-            if(this.conversation && this.conversation.id == data.conversation_id) {
+            if (this.conversation && this.conversation.id == data.conversation_id) {
                 let message = this.conversation.paginated_messages.data.find(x => x.id == data.message_id);
-                if(message) this.$set(message, 'is_read', true);
+                if (message) this.$set(message, 'is_read', true);
             }
         });
 
         this.$root.socket.on('is_typing', data => {
-            if(this.conversation && this.conversation.id == data.conversation_id) {
-                if(this.conversation.user.id == data.user_id) {
+            if (this.conversation && this.conversation.id == data.conversation_id) {
+                if (this.conversation.user.id == data.user_id) {
                     this.$set(this.conversation.user, 'is_typing', data.typing);
                 } else {
-                    for(let member of this.conversation.members) {
-                        if(member.user_id == data.user_id) {
+                    for (let member of this.conversation.members) {
+                        if (member.user_id == data.user_id) {
                             this.$set(member, 'is_typing', data.typing);
                             break;
                         }
                     }
                 }
-                if(data.typing) this.scrollDown();
+                if (data.typing) this.scrollDown();
             }
         });
         window.onbeforeunload = () => {
-            if(this.conversation) this.$root.socket.emit('is_typing', {typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
+            if (this.conversation) this.$root.socket.emit('is_typing', {typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
         };
     },
 
@@ -245,8 +245,9 @@ export default {
 
         messageTimezoneTime(message) {
             let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            timezone = this.$root.auth.timezone;
             let timezoneTime;
-            if(timezone != message.sender.timezone) {
+            if (timezone != message.sender.timezone) {
                 let messageTZ = this.getTimeZoneOffset(new Date(), message.sender.timezone);
                 let localTZ = this.getTimeZoneOffset(new Date(), timezone);
                 timezoneTime = dayjs(parseFloat(message.timestamp)).add(messageTZ - localTZ, 'minute');
@@ -269,10 +270,7 @@ export default {
             let hour = map.get('hour');
             const minute = map.get('minute');
             const second = map.get('second');
-            const ms = date
-                .getMilliseconds()
-                .toString()
-                .padStart(3, '0');
+            const ms = date.getMilliseconds().toString().padStart(3, '0');
             if (hour == '24') hour = '00';
             const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 
@@ -286,18 +284,18 @@ export default {
         },
 
         getFiles() {
-            if(this.conversation) {
+            if (this.conversation) {
                 let page = 0;
-                if(!this.conversation.files) {
+                if (!this.conversation.files) {
                     this.$set(this.conversation, 'files', {data: []});
                     page = 1;
                 }
-                if((this.conversation.files || {}).next_page_url) {
+                if ((this.conversation.files || {}).next_page_url) {
                     const url = new URL(window.location.origin + this.conversation.files.next_page_url);
                     const urlParams = new URLSearchParams(url.search);
                     page = urlParams.get('page');
                 }
-                if(page) {
+                if (page) {
                     this.$set(this.conversation, 'filesLoading', true);
                     axios.get(`/conversations/${this.conversation.id}/files?page=${page}`).then(response => {
                         this.conversation.files.data = this.conversation.files.data.concat(response.data.data);
@@ -309,30 +307,25 @@ export default {
         },
 
         async messageScroll(e) {
-            if (
-                e.target.scrollTop == 0 && 
-                !this.messagePaginateLoading && 
-                this.conversation && 
-                (this.conversation.paginated_messages || {}).next_page_url) {
-                    let initialHeight = this.$refs['message-group-container'].scrollHeight;
-                    this.messagePaginateLoading = true;
-                    this.$refs['message-group-container'].classList.add('overflow-hidden', 'pr-2');
-                    const url = new URL(window.location.origin + this.conversation.paginated_messages.next_page_url);
-                    const urlParams = new URLSearchParams(url.search);
-                    const page = urlParams.get('page') || 1;
+            if (e.target.scrollTop == 0 && !this.messagePaginateLoading && this.conversation && (this.conversation.paginated_messages || {}).next_page_url) {
+                let initialHeight = this.$refs['message-group-container'].scrollHeight;
+                this.messagePaginateLoading = true;
+                this.$refs['message-group-container'].classList.add('overflow-hidden', 'pr-2');
+                const url = new URL(window.location.origin + this.conversation.paginated_messages.next_page_url);
+                const urlParams = new URLSearchParams(url.search);
+                const page = urlParams.get('page') || 1;
 
-                    await this.showConversation({id: this.$route.params.id, page: page}).catch(e => {
-                    });
-                    this.messagePaginateLoading = false;
-                    this.$refs['message-group-container'].classList.remove('overflow-hidden', 'pr-2');
-                    this.$nextTick(() => {
-                        this.$refs['message-group-container'].scrollTop = this.$refs['message-group-container'].scrollHeight - initialHeight;
-                    });
+                await this.showConversation({id: this.$route.params.id, page: page}).catch(e => {});
+                this.messagePaginateLoading = false;
+                this.$refs['message-group-container'].classList.remove('overflow-hidden', 'pr-2');
+                this.$nextTick(() => {
+                    this.$refs['message-group-container'].scrollTop = this.$refs['message-group-container'].scrollHeight - initialHeight;
+                });
             }
         },
 
         typing() {
-            if(!this.isTyping) {
+            if (!this.isTyping) {
                 this.isTyping = true;
                 this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
             } else {
@@ -352,7 +345,7 @@ export default {
                 this.$refs['messageForm'].submit();
             }
             setTimeout(() => {
-                if(!isEnter && this.textMessage.trim().length) {
+                if (!isEnter && this.textMessage.trim().length) {
                     this.typing();
                 }
             }, 50);
@@ -369,6 +362,26 @@ export default {
         async downloadScreenRecording() {
             if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isDownloaded) {
                 let video = await this.$root.$refs['screenRecorder'].submit();
+                this.isScreenRecordDownloading = true;
+                let bodyFormData = new FormData();
+                bodyFormData.append('video', video.source);
+                axios({
+                    method: 'POST',
+                    url: '/convert_video',
+                    data: bodyFormData,
+                    responseType: 'blob',
+                }).then(response => {
+                    this.isScreenRecordDownloading = false;
+                    this.hasScreenRecording = false;
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    let filename = video.timestamp.split('.');
+                    link.setAttribute('download', `${filename[0]}.mp4`);
+                    document.body.appendChild(link);
+                    link.click();
+                });
+                /*
                 let filename = `${video.timestamp}.${mime.getExtension(video.source.type)}`;
                 let link = document.createElement('a');
                 link.href = URL.createObjectURL(video.source);
@@ -376,13 +389,14 @@ export default {
                 link.target = '_blank';
                 document.body.appendChild(link);
                 link.click();
-                link.remove();
+                link.remove();*/
             }
         },
 
         async sendScreenRecording() {
             if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isSent) {
                 let video = await this.$root.$refs['screenRecorder'].submit();
+                this.hasScreenRecording = false;
                 this.sendVideo(video);
             }
         },
@@ -477,22 +491,22 @@ export default {
         dropFile(e) {
             this.dragOver = false;
             this.typing();
-            for(let file of e.dataTransfer.files) {
+            for (let file of e.dataTransfer.files) {
                 let parts = file.type.split('/');
                 file.extension = file.name.split('.').pop();
-                if(this.$root.isImage(file.extension)) {
-                    file.dataType = 'image'; 
-                } else if(parts[0] == 'video') {
-                    file.dataType = 'video'; 
-                } else if(parts[0] == 'audio') {
-                    file.dataType = 'audio'; 
-                } else if(parts[1] == 'pdf') {
-                    file.dataType = 'pdf'; 
+                if (this.$root.isImage(file.extension)) {
+                    file.dataType = 'image';
+                } else if (parts[0] == 'video') {
+                    file.dataType = 'video';
+                } else if (parts[0] == 'audio') {
+                    file.dataType = 'audio';
+                } else if (parts[1] == 'pdf') {
+                    file.dataType = 'pdf';
                 } else {
-                    file.dataType = 'document'; 
+                    file.dataType = 'document';
                 }
 
-                if(file.dataType == 'image') {
+                if (file.dataType == 'image') {
                     loadImage(
                         file,
                         canvas => {
@@ -504,7 +518,6 @@ export default {
                 } else {
                     this.pendingFiles.push({file: file});
                 }
-
             }
         },
 
@@ -543,12 +556,11 @@ export default {
                     }
                 }
 
-
                 this.isTyping = false;
                 this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
                 let response = await this.storeMessage(message);
 
-                if(!['text', 'emoji'].find(x => x == response.type)) {
+                if (!['text', 'emoji'].find(x => x == response.type)) {
                     this.conversation.files.data.unshift(response);
                 }
                 this.scrollDown();
@@ -567,7 +579,6 @@ export default {
                     source: file,
                     created_diff: 'Just now',
                 };
-
 
                 let fileExtension = fileInput.value.split('.').pop();
 
@@ -637,7 +648,7 @@ export default {
         async sendText() {
             let textMessage = this.textMessage.trim();
             this.textMessage = '';
-            if(textMessage.length > 0) {
+            if (textMessage.length > 0) {
                 let message = {
                     user: this.$root.auth,
                     message: textMessage,
