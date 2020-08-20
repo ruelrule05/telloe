@@ -142,8 +142,8 @@
 													</div>
 												</div>
 												<div class="d-flex align-items-center mt-2" :class="{'opacity-0': !selectedDate}">
-													<button v-if="auth" :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="submit()">Book Now</button>
-													<button v-else :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="authForm = true">Next</button>
+													<!-- <button v-if="auth" :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="submit()">Book Now</button> -->
+													<button :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="authForm = true">Next</button>
 												</div>
 											</div>
 										</div>
