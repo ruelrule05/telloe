@@ -236,7 +236,7 @@
 	@include('frontend::partials.social_scripts')
 	<script>
 		const PROFILE = {!! json_encode($profile) !!};
-		const AUTH = {!! json_encode(Auth::user()) !!};
+		const AUTH = null;
 	</script>
 	<script src="{{ mix('js/profile.js') }}" async defer></script>
 </body>
