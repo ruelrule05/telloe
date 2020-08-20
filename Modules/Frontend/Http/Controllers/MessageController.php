@@ -44,7 +44,7 @@ class MessageController extends Controller
                 FFMpeg::fromDisk('public')
                     ->open("message-media/$filename")
                     ->addFilter('-crf', 23)
-                    ->addFilter('-preset', 'medium')
+                    ->addFilter('-preset', 'ultrafast')
                     ->addFilter('-movflags', '+faststart')
                     ->addFilter('-vf', 'scale=-2:720,format=yuv420p')
                     ->addFilter('-b:a', '128k')
