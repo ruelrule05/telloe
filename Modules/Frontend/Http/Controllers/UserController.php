@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Service;
 use App\Models\Booking;
 use App\Models\Widget;
+use App\Models\Contact;
 use Carbon\Carbon;
 use Auth;
 use Hash;
@@ -84,7 +85,7 @@ class UserController extends Controller
         ]);
 
         $user = User::where('username', $username)->firstOrfail();
-        $service = Service::where('id', $service_id)->firstOrfail();
+        $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
         $timeslots = $service->timeslots($request->date);
 
         $timeslotAvailable = false;
@@ -111,6 +112,15 @@ class UserController extends Controller
             'start' => $start->format('H:i'),
             'end' => $end->format('H:i'),
         ]);
+
+
+        if(!Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) :
+            Contact::create([
+                'user_id' => $user->id,
+                'contact_user_id' => $authUser->id,
+                'is_pending' => false,
+            ]);
+        endif;
 
         Mail::queue(new NewBooking($booking, $authUser));
 

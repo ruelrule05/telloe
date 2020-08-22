@@ -54,9 +54,9 @@
 					<div class="h-100 position-relative overflow-auto">
 						<div v-if="selectedDate">
 							<div v-if="selectedDateBookingsEvents.length > 0">
-								<template v-if="!selectedBooking">
+								<template v-if="!selectedBooking || !selectedBooking.edit">
 									<div class="h6 font-heading">{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</div>
-									<div v-for="item in selectedDateBookingsEvents" class="p-2 mt-3 rounded bg-light booking">
+									<div v-for="item in selectedDateBookingsEvents" :key="item.id" class="p-2 mt-3 rounded bg-light booking">
 
 										<!-- Booking -->
 										<template v-if="item.type == 'booking'">
@@ -152,7 +152,7 @@
 										<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 										<div class="flex-grow-1 overflow-hidden">
 											<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-												<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
+												<div v-for="(date, index) in weekDayOptions" :key="index" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 													<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-primary text-white': sliderActiveDate(date)}" @click="selectedBooking.date_object = date.date">
 														{{ date.title }}
 														<strong class="text-uppercase d-block">{{ date.description }}</strong>
@@ -177,7 +177,7 @@
 											</div>
 											<div v-else>
 												<div class="d-flex flex-wrap pb-2 pr-2">
-													<div v-for="timeslot in timeslots" class="mb-2 w-100">
+													<div v-for="(timeslot, index) in timeslots" :key="index" class="mb-2 w-100">
 														<div class="p-3 rounded cursor-pointer mb-1" :class="[timeslot == selectedTimeslot ? 'bg-primary text-white' : 'bg-light']" @click="selectedTimeslot = timeslot; timeslotDropdown = false;">
 															<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
 																{{ timeslot.label }}
@@ -257,6 +257,19 @@
 	            </div>
 			</div>
 		</div>
+
+
+		<modal ref="deleteBooking" :close-button="false" @hidden="resetBookingForm">
+			<div class="text-center">
+				<h5 class="font-heading">Delete Booking</h5>
+				<p class="mb-0">Are you sure to delete this booking?</p>
+			</div>
+			<div class="d-flex mt-4">
+				<button type="button" class="btn btn-white border" @click="$refs['deleteBooking'].hide()">Cancel</button>
+				<button type="button" class="ml-auto btn btn-danger" @click="deleteBooking(selectedBooking); $refs['deleteBooking'].hide()">Delete Booking</button>
+			</div>
+		</modal>
+
 
 
 		<modal ref="confirmBooking" :close-button="false">

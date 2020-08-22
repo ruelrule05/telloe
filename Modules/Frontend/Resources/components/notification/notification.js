@@ -34,10 +34,10 @@ export default {
 		goToNotifLink() {
 			if(this.notification && this.notification.link && this.$route.fullPath != this.notification.link) {
 				this.$router.push(this.notification.link);
+				this.notification.is_read = true;
 			}
+			if(this.notification.id) this.updateNotification(this.notification);
 			this.open = false;
-			this.notification.is_read = true;
-			this.updateNotification(this.notification);
 		}
 	}
 }

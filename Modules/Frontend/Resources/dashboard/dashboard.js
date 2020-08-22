@@ -91,6 +91,7 @@ const router = new VueRouter({
     ],
 });
 import io from 'socket.io-client';
+import dayjs from 'dayjs';
 import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
 
 import BellIcon from '../icons/bell';
@@ -202,6 +203,7 @@ window.app = new Vue({
         ...mapState({
             conversations: state => state.conversations.index,
             notifications: state => state.notifications.index,
+            bookings: state => state.bookings.index,
         }),
 
         ...mapGetters({
@@ -267,6 +269,7 @@ window.app = new Vue({
     },
 
     created() {
+        this.notifyIncomingBookings();
         if (this.$route.name != 'conversations') this.getConversations();
         this.call_sound = new Audio(`/notifications/call.mp3`);
         this.message_sound = new Audio('/notifications/new_message.mp3');
@@ -321,6 +324,7 @@ window.app = new Vue({
         })(document);
 
         this.getNotifications();
+        this.getBookings();
     },
 
     mounted() {
@@ -333,7 +337,45 @@ window.app = new Vue({
             getNotifications: 'notifications/index',
             updateNotification: 'notifications/update',
             clearNotifications: 'notifications/clear',
+            getBookings: 'bookings/index',
         }),
+
+        notifyIncomingBookings() {
+            let now = dayjs();
+            this.bookings.forEach(booking => {
+                let bookingDate = dayjs(`${booking.date} ${booking.start}`);
+                let hoursDiff = bookingDate.diff(now, 'hours');
+                if(hoursDiff > 0){
+                    let description = '';
+                    let link = false;
+                    if(booking.user_id == this.auth.id) {
+                        description = `You have an upcoming appointment in less than`;
+                    } else {
+                        description = `You have an upcoming appointment with <strong>${booking.user.full_name}</strong> in less than`;
+                        link = `/dashboard/bookings/calendar?date=${booking.date}`;
+                    }
+                    if(hoursDiff <= 1 && !booking.notified_1_app) { // 1 hour
+                        booking.notified_1_app = true;
+                        this.$refs['notification'].show({
+                            description: `${description} an hour.`,
+                            link: link
+                        });
+                    }
+                    if(hoursDiff > 1 && hoursDiff <= 3 && !booking.notified_3_app) { // 3 hours
+                        booking.notified_3_app = true;
+                        this.$refs['notification'].show({
+                            description: `${description} an hour.`,
+                            link: link
+                        });
+                    }
+                }
+
+
+            });
+            setTimeout(() => {
+                this.notifyIncomingBookings();
+            }, 1000);
+        },
 
         downloadMedia(message) {
             if (message.source) {

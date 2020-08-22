@@ -19,7 +19,7 @@ import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
 import VCalendar from 'v-calendar';
 import utcPlugin from 'dayjs/plugin/utc';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-window.Vue.use(VCalendar);
+Vue.use(VCalendar);
 import dayjs from 'dayjs';
 export default {
 	components: {
@@ -243,15 +243,7 @@ export default {
 
 	watch: {
 		'$route.query.date': function(value) {
-			let date = value;
-			if (date) {
-				date = this.dayjs(date).toDate();
-				if (date != 'Invalid Date') {
-					this.$refs['v-calendar'].focusDate(date);
-					this.selectedDate = date;
-					this.infoTab = 'bookings';
-				}
-			}
+			this.goToDate();
 		},
 		bookings: function(value) {
 			if(value.length > 0 && !this.selectedDate) {
@@ -265,6 +257,7 @@ export default {
 	},
 
 	created() {
+		this.goToDate();
 		this.getServices();
 		this.getBookings();
 		this.getConversations();
@@ -319,12 +312,65 @@ export default {
 	methods: {
 		...mapActions({
 			getBookings: 'bookings/index',
+            deleteBooking: 'bookings/delete',
 			updateBooking: 'bookings/update',
 			getServices: 'services/index',
 			getConversations: 'conversations/index',
 			getGoogleCalendars: 'bookings/googleCalendars',
 			getOutlookCalendars: 'bookings/outlookCalendars',
 		}),
+
+        getTimeZoneOffset(date, timeZone) {
+            // Abuse the Intl API to get a local ISO 8601 string for a given time zone.
+            const options = {timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+            const parts = dateTimeFormat.formatToParts(date);
+            const map = new Map(parts.map(x => [x.type, x.value]));
+            const year = map.get('year');
+            const month = map.get('month');
+            const day = map.get('day');
+            let hour = map.get('hour');
+            const minute = map.get('minute');
+            const second = map.get('second');
+            const ms = date
+                .getMilliseconds()
+                .toString()
+                .padStart(3, '0');
+            if (hour == '24') hour = '00';
+            const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
+
+            // Lie to the Date object constructor that it's a UTC time.
+            const lie = new Date(iso + 'Z');
+
+            // Return the difference in timestamps, as minutes
+            // Positive values are West of GMT, opposite of ISO 8601
+            // this matches the output of `Date.getTimeZoneOffset`
+            return -(lie - date) / 60 / 1000;
+        },
+
+        timezoneTime(timeZone, target_timeZone, time) {
+            let localTZ = this.getTimeZoneOffset(new Date(), timeZone);
+            let targetTZ = this.getTimeZoneOffset(new Date(), target_timeZone);
+            let parts = time.split(':');
+            let timezoneTime = dayjs()
+                .hour(parts[0])
+                .minute(parts[1])
+                .add(localTZ - targetTZ, 'minute');
+            return timezoneTime.format('hh:mmA');
+        },
+
+
+		goToDate() {
+			let date = this.$route.query.date;
+			if (date) {
+				date = this.dayjs(date).toDate();
+				if (date != 'Invalid Date') {
+					this.$refs['v-calendar'].focusDate(date);
+					this.selectedDate = date;
+					this.infoTab = 'bookings';
+				}
+			}
+		},
 
 		submit() {
             if (this.selectedBooking && this.selectedTimeslot) {
@@ -347,6 +393,7 @@ export default {
 		},
 
 		resetBookingForm() {
+			this.selectedBooking.edit = false;
 			this.selectedBooking = null;
 			this.selectedTimeslot = null;
 			this.timeslots = [];
@@ -405,7 +452,8 @@ export default {
 
         edit(booking) {
             if (booking && booking.id != (this.selectedBooking || {}).id) {
-                this.selectedBooking = booking;
+				this.selectedBooking = booking;
+				this.selectedBooking.edit = true;
                 this.getTimeslots(booking.service_id, booking.date);
                 let parts = booking.date.split('-');
                 this.calendarView = 'month';
