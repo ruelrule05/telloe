@@ -15,7 +15,7 @@
 				<h2 class="font-heading mb-4">Let {{ config('app.name') }} do the rest!</h2>
 				<p class="text-muted h5 font-weight-light mb-5">Fed up with clients missing their appointments, confused with managing multiple calendars, having issues tracking and accepting client payments, and keeping all your clients' communications and details together?</p>
 				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
-				<a class="btn btn-outline-primary btn-lg px-4 btn-sm-block" href="{{ url('/@johnwell') }}">View Demo</a>
+				<a class="btn btn-outline-primary btn-lg px-4 btn-sm-block" href="{{ url('/@johnwell') }}">Book a Demo</a>
 			</div>
 		</div>
 	</div>
@@ -272,7 +272,7 @@
 			<div class="col-md-6">
 				<h4 class="h1 font-heading mb-4">Take a free 2-minute tour <br /> of the product instantly</h4>
 				<p class="h5 text-muted font-weight-light mb-5">Our easy to use software is browser-based, so there is nothing to install, and you can start using it as soon as you sign up!</p>
-				<a class="btn btn-orange btn-lg btn-sm-block px-4" href="{{ url('/@johnwell') }}">View Demo</a>
+				<a class="btn btn-orange btn-lg btn-sm-block px-4" href="{{ url('/@johnwell') }}">Book a Demo</a>
 			</div>
 		</div>
 	</div>
