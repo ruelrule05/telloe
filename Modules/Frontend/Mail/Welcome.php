@@ -15,7 +15,7 @@ class Welcome extends Mailer
     public function __construct(User $user)
     {
         $this->user = $user;
-        $this->actionUrl = url("/?auth=login");
+        $this->actionUrl = url("/?auth=login&email=" . $user->email);
     }
 
     /**

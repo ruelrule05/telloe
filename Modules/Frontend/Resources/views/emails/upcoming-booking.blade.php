@@ -6,7 +6,7 @@
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
     {!! $emailMessage !!}
     <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 0.02rem 1rem; text-align-last: left; margin-top: 10px">
-        <h1 style="font-size: 26px; margin-bottom: 0">{{ $booking->service->user->full_name }}</h1>
+        <h1 style="font-size: 26px; margin-bottom: 0">{{ $full_name }}</h1>
         <ul style="list-style: none; padding: 0; text-align: left">
             <li>
                 <span style="width: 100px; display: inline-block">Service</span> <strong>{{ $booking->service->name }}</strong>
@@ -31,6 +31,8 @@
     target="_blank">
     {{ $actionText }}
 </a>
+
+<small style="color: #888">Please <a href="{{ config('app.url') }}?auth=login" target="_blank" style="color: blue"><u>login</u></a> to your account to manage this booking.</small>
 
 <div style="text-align: left; margin-top: 20px; border-top: solid 1px #ddd; padding-top: 20px;">
      <p style="{{ $style['paragraph-sub'] }} margin-bottom: 0">

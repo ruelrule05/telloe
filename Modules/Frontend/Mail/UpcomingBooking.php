@@ -12,11 +12,13 @@ class UpcomingBooking extends Mailer
     public $actionText = 'View Calendar';
     public $actionUrl;
     public $emailMessage;
+    public $full_name;
 
-    public function __construct(Booking $booking, $actionUrl = NULL)
+    public function __construct(Booking $booking, $full_name = '', $actionUrl = NULL)
     {
         $this->booking = $booking;
         $this->emailMessage = "You have an upcoming booking with the following details:";
+        $this->full_name = $full_name;
         $this->actionUrl = $actionUrl;
     }
 
@@ -27,8 +29,6 @@ class UpcomingBooking extends Mailer
      */
     public function build()
     {
-        $email = null;
-
         return $this->from(config('app.noreply_email'), config('app.name'))
             ->subject('Upcoming Booking')
             ->view('frontend::emails.upcoming-booking');

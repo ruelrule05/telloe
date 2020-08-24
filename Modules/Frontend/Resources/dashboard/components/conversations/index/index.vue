@@ -22,7 +22,7 @@
                     You don't have any conversations yet.
                 </div>
                 <template v-else>
-    				<div v-for="conversation in orderedConversations" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
+    				<div v-for="conversation in orderedConversations" :key="conversation.id" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
                         <div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
                             <video-icon width="24" height="24"></video-icon>
                         </div>
@@ -36,12 +36,13 @@
                         </div>
 
     	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
-                            <span v-if="!conversation.last_message.is_read" class="position-absolute badge-new-message">&nbsp;</span>
+                            <span v-if="conversation.last_message.user_id != $root.auth.id && !conversation.last_message.is_read" class="position-absolute badge-new-message">&nbsp;</span>
     						<div class="media align-items-center conversation-members">
     						  	<div class="user-profile-image position-relative" :class="{'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
     						  		<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
                                     <div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
-                                        <div class="w-50 position-relative conversation-members-container" v-for="(member, index) in conversation.members" v-if="index < 4">
+                                        <template v-for="(member, index) in conversation.members">
+                                        <div class="w-50 position-relative conversation-members-container" :key="member.id" v-if="index < 4">
                                             <div class="line-height-0 user-profile-image user-profile-image-xs overflow-hidden" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
                                                 <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
                                                 <span v-if="index == 3 && conversation.members.length > 4" class="line-height-0 conversation-members-more w-100 h-100">
@@ -49,6 +50,7 @@
                                                 </span>
                                             </div>
                                         </div>
+                                        </template>
                                     </div>
     						  	</div> 
     						  	<div class="media-body pl-3 overflow-hidden">

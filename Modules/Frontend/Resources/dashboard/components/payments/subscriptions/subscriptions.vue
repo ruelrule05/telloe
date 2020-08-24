@@ -32,56 +32,58 @@
 									</tr>
 								</thead>
 								<paginate tag="tbody" name="subscriptions" ref="paginate" :list="subscriptions" :per="15">
-									<tr v-for="subscription in paginated('subscriptions')" v-if="!subscription.placeholder">
-										<td class="align-middle text-gray-500">
-											{{ subscription.plan ? subscription.id : 'Not available' }}
-											<router-link to="/dashboard/account?tab=payout" v-if="!subscription.plan && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
-										</td>
-										<td class="align-middle">
-											<span class="badge bg-primary-light text-primary text-capitalize position-relative">
-												<span :class="{'opacity-0': subscription.statusLoading}">{{ subscription.plan ? subscription.status : 'Draft' }}</span>
-												<div v-if="subscription.statusLoading" class="position-absolute-center">
-													<div class="spinner-border spinner-border-sm text-primary"></div>
+									<template v-for="subscription in paginated('subscriptions')">
+										<tr v-if="!subscription.placeholder" :key="subscription.id" >
+											<td class="align-middle text-gray-500">
+												{{ subscription.plan ? subscription.id : 'Not available' }}
+												<router-link to="/dashboard/account?tab=payout" v-if="!subscription.plan && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
+											</td>
+											<td class="align-middle">
+												<span class="badge bg-primary-light text-primary text-capitalize position-relative">
+													<span :class="{'opacity-0': subscription.statusLoading}">{{ subscription.plan ? subscription.status : 'Draft' }}</span>
+													<div v-if="subscription.statusLoading" class="position-absolute-center">
+														<div class="spinner-border spinner-border-sm text-primary"></div>
+													</div>
+												</span>
+											</td>
+											<td class="align-middle">
+												${{ ((subscription.plan || subscription).amount / 100).toFixed(2) }} 
+												<!-- <span class="text-uppercase text-muted">{{ getCurrency(subscription) }}</span><span class="text-muted">/{{subscription.plan ? subscription.plan.interval : 'month'}}</span> -->
+											</td>
+											<td class="align-middle text-muted">
+												<p class="text-capitalize mb-0 font-weight-bold">{{ subscription.plan ? subscription.plan.interval : subscription.recurring_frequency }}ly</p>
+											</td>
+											<td class="align-middle text-muted">
+												<p class="text-capitalize mb-0">{{ subscription.current_period_end ? formatDate(subscription.current_period_end) : '-' }}</p>
+											</td>
+											<td class="align-middle">{{ subscription.contact.contact_user.full_name }}</td>
+											<td class="text-right align-middle">
+												<div v-if="subscription.status != 'canceled'" class="dropleft">
+													<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
+														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+													</button>
+													<div class="dropdown-menu dropdown-menu-right">
+														<template v-if="subscription.plan">
+															<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedSubscription = subscription; $refs['cancelModal'].show()">
+																<block-icon width="18" height="18" class="ml-n2 mr-1 fill-secondary"></block-icon>
+																Cancel Subscription
+															</span>
+														</template>
+														<template v-else>
+															<span v-if="$root.payoutComplete" class="dropdown-item d-flex align-items-center cursor-pointer" @click="startSubscription(subscription)">
+																<task-icon width="18" height="18" class="ml-n2 mr-1 fill-secondary"></task-icon>
+																Start Subscription
+															</span>
+															<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedSubscription = subscription; $refs['deleteModal'].show()">
+																<trash-icon width="18" height="18" class="ml-n2 mr-1 fill-secondary"></trash-icon>
+																Delete
+															</span>
+														</template>
+													</div>
 												</div>
-											</span>
-										</td>
-										<td class="align-middle">
-											${{ ((subscription.plan || subscription).amount / 100).toFixed(2) }} 
-											<!-- <span class="text-uppercase text-muted">{{ getCurrency(subscription) }}</span><span class="text-muted">/{{subscription.plan ? subscription.plan.interval : 'month'}}</span> -->
-										</td>
-										<td class="align-middle text-muted">
-											<p class="text-capitalize mb-0 font-weight-bold">{{ subscription.plan ? subscription.plan.interval : subscription.recurring_frequency }}ly</p>
-										</td>
-										<td class="align-middle text-muted">
-											<p class="text-capitalize mb-0">{{ subscription.current_period_end ? formatDate(subscription.current_period_end) : '-' }}</p>
-										</td>
-										<td class="align-middle">{{ subscription.contact.contact_user.full_name }}</td>
-										<td class="text-right align-middle">
-											<div v-if="subscription.status != 'canceled'" class="dropleft">
-					                    		<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
-													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-					                    		</button>
-												<div class="dropdown-menu dropdown-menu-right">
-													<template v-if="subscription.plan">
-														<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedSubscription = subscription; $refs['cancelModal'].show()">
-															<block-icon width="18" height="18" class="ml-n2 mr-1 fill-secondary"></block-icon>
-															Cancel Subscription
-														</span>
-													</template>
-													<template v-else>
-														<span v-if="$root.payoutComplete" class="dropdown-item d-flex align-items-center cursor-pointer" @click="startSubscription(subscription)">
-															<task-icon width="18" height="18" class="ml-n2 mr-1 fill-secondary"></task-icon>
-															Start Subscription
-														</span>
-														<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedSubscription = subscription; $refs['deleteModal'].show()">
-															<trash-icon width="18" height="18" class="ml-n2 mr-1 fill-secondary"></trash-icon>
-															Delete
-														</span>
-													</template>
-												</div>
-					                    	</div>
-										</td>
-									</tr>
+											</td>
+										</tr>
+									</template>
 								</paginate>
 							</table>
 						</div>
@@ -101,7 +103,8 @@
 								<div class="form-group">
 									<label class="form-label">Booking Types</label>
 									<vue-select v-model="newSubscriptionForm.services" :options="servicesList" multiple required placeholder="Select booking type"></vue-select>
-									<div v-for="(service, index) in newSubscriptionForm.services" class="my-2 bg-light rounded p-2">
+									<div v-for="(service, index) in newSubscriptionForm.services" :key="service.id" class="my-2 bg-light rounded p-2 position-relative">
+										<button type="button" class="btn close p-0 line-height-0 mr-n1" @click="newSubscriptionForm.services.splice(index, 1)"><close-icon></close-icon></button>
 										<strong class="d-block mb-1">{{ service.name }}</strong>
 										<label class="form-label">Rate per session (Default pricing: ${{ newSubscriptionForm.services[index].default_rate }})</label>
 										<input type="number" min="1" step="0.01" v-model="newSubscriptionForm.services[index].rate" class="form-control" placeholder="Rate per session" data-required>

@@ -60,6 +60,14 @@ export default {
 		this.loginForm.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	},
 
+	mounted() {
+		if(this.$root.email) {
+			setTimeout(() => {
+				this.$el.querySelector('[type="password"]').focus();
+			}, 500);
+		}
+	},
+
 	methods: {
 		login() {
 			if (!this.loading) {

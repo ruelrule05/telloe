@@ -11,6 +11,7 @@ import TaskIcon from '../../../../icons/task';
 import BlockIcon from '../../../../icons/block';
 import TrashIcon from '../../../../icons/trash';
 import MoreIcon from '../../../../icons/more';
+import CloseIcon from '../../../../icons/close';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
@@ -34,6 +35,7 @@ export default {
 		BlockIcon,
 		TrashIcon,
 		MoreIcon,
+		CloseIcon,
 	},
 
 	directives: {Tooltip},
@@ -190,6 +192,10 @@ export default {
         	this.$set(subscription, 'statusLoading', true);
         	let data = {
         		'id': subscription.contact_id,
+        		'date': subscription.date,
+        		'duration': subscription.duration,
+        		'duration_frequency': subscription.duration_frequency,
+        		'recurring_frequency': subscription.recurring_frequency,
         		'services': subscription.services,
         		'amount': subscription.amount / 100,
         	};

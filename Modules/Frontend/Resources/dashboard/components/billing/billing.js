@@ -5,6 +5,7 @@ import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Stripe from 'stripe-client';
 import CheckmarkIcon from '../../../icons/checkmark';
+import { times } from 'lodash';
 export default {
 	components: { 
 		VueButton,
@@ -32,6 +33,7 @@ export default {
 		stripe: null,
 		publishableKey: '',
 		seats: 0,
+		loading: false,
 	}),
 
 	computed: {
@@ -71,8 +73,11 @@ export default {
     	},
 
 		unsubscribe() {
+			this.loading = true;
 			axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then((response) => {
 				this.$root.auth.subscription = null;
+				this.$refs['cancelSubscription'].hide();
+				this.loading = false;
 			});
 		},
 

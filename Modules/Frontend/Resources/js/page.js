@@ -45,6 +45,9 @@ new Vue({
                 this.invite_token = invite_token;
                 this.auth = true;
             }
+
+            const email = urlParams.get('email');
+            if(email) this.email = email;
         }
     },
 

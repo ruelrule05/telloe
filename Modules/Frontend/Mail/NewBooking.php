@@ -22,11 +22,12 @@ class NewBooking extends Mailer
         if($authUser->id == $booking->user_id) : // if contact - send to client
             $this->email = $booking->service->user->email;
             $this->emailMessage = "<strong>{$booking->user->full_name}</strong> has made a booking with the following details:";
-            $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar';
+            $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
         elseif($authUser->id == $booking->service->user_id) : // if client - send to contact
             $this->email = $booking->user->email;
             $this->emailMessage = "A booking has been made for your account with the following details:";
         endif;
+
     }
 
     /**
