@@ -12,6 +12,8 @@ use Image;
 use Carbon\Carbon;
 use FFMpeg;
 use FFMpeg\Format\Video\X264;
+use Mail;
+use Modules\Frontend\Mail\NewMessage;
 
 class MessageController extends Controller
 {
@@ -103,6 +105,10 @@ class MessageController extends Controller
             'metadata' => $metadata,
             'timestamp' => $timestamp
         ]);
+            
+        if(!$request->is_online) :
+            Mail::to($conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user->email)->queue(new NewMessage($message));
+        endif;
 
         return response()->json($message);
     }

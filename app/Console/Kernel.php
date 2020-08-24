@@ -36,14 +36,14 @@ class Kernel extends ConsoleKernel
                 $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
                 if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
                     //echo 'notify 2 hours';
-                    Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $actionUrl));
-                    Mail::to($booking->user->email)->queue(new UpcomingBooking($booking));
+                    Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $booking->user->full_name, $actionUrl));
+                    Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
                     $booking->notified_2 = true;
                     $booking->save();
                 elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) : // 24 hours notif
                     //echo 'notify 24 hours';
-                    Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $actionUrl));
-                    Mail::to($booking->user->email)->queue(new UpcomingBooking($booking));
+                    Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $booking->user->full_name, $actionUrl));
+                    Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
                     $booking->notified_24 = true;
                     $booking->save();
                 endif;

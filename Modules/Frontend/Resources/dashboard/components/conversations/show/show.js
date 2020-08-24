@@ -163,7 +163,7 @@ export default {
                     this.$set(this.conversation.member, 'last_online_format', response.data.member.last_online_format);
                 });*/
             }
-            return is_online;
+            return is_online || 0;
         },
 
         grouped_messages() {
@@ -558,6 +558,7 @@ export default {
 
                 this.isTyping = false;
                 this.$root.socket.emit('is_typing', {typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id});
+                message.is_online = this.isOnline;
                 let response = await this.storeMessage(message);
 
                 if (!['text', 'emoji'].find(x => x == response.type)) {
