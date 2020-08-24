@@ -107,7 +107,14 @@ class MessageController extends Controller
         ]);
             
         if(!$request->is_online) :
-            Mail::to($conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user->email)->queue(new NewMessage($message));
+            $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user;
+            if($targetUser) :
+                if($targetUser->role->role == 'support') :
+                    Mail::to(config('app.support_email'))->queue(new NewMessage($message));
+                else:
+                    Mail::to($targetUser->email)->queue(new NewMessage($message));
+                endif;
+            endif;
         endif;
 
         return response()->json($message);
