@@ -19,6 +19,7 @@ import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
 import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
+const dateFormat = require('dateformat');
 
 export default {
 	components: {
@@ -140,7 +141,11 @@ export default {
 				contact.subscriptions.forEach((subscription) => {
 					subscription.contact = contact;
 					this.$set(subscription, 'statusLoading', false);
-					if(this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) subscriptions.push(subscription);
+					if(this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) {
+						if(subscription.status == 'trialing') subscription.status = 'pending';
+						subscriptions.push(subscription);
+						console.log(subscription);
+					}
 				})
 			});
 			subscriptions = subscriptions.concat(this.pending_subscriptions);
@@ -182,8 +187,13 @@ export default {
             getPendingSubscriptions: 'pending_subscriptions/index',
             storePendingSubscription: 'pending_subscriptions/store',
             deletePendingSubscription: 'pending_subscriptions/delete',
-        }),
+		}),
 
+		viewSubscription(subscription) {
+			this.selectedSubscription = subscription; 
+			this.$refs['detailsModal'].show()
+		},
+		
         getCurrency(subscription) {
         	return subscription.plan ? subscription.plan.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
         },
@@ -254,8 +264,15 @@ export default {
 	        		this.newSubscriptionForm.loading = false;
 	        	});
         	}
-        },
-
+		},
+		
+		timestampToDate(timestamp, time = true) {
+			let date = new Date(timestamp * 1000);
+			let format = 'mmm d, yyyy';
+			if(time) format += ' h:MM TT';
+			return dateFormat(date, format);
+		},
+ 
         formatDate(date) {
         	return dayjs.unix(date).format('MMM d, YYYY');
         }

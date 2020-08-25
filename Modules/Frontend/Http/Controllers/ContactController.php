@@ -234,13 +234,6 @@ class ContactController extends Controller
             'duration_frequency' => 'required|in:month,year',
         ]);
 
-        $total = 0;
-        foreach($request->services as $service) :
-            if($service['rate'] && $service['frequency'] && $service['frequency_interval']) :
-                $total += ($service['frequency'] * $service['rate']);
-            endif;
-        endforeach;
-
         // check if Auth::user has external accounts
         $external_account =  Auth::user()->stripe_account['external_accounts']['data'][0] ?? false;
         if(!$external_account) return abort(403, 'Please complete your payout information.');
@@ -249,19 +242,23 @@ class ContactController extends Controller
         $this->authorize('create_subscription', $contact);
 
         $servicesNames = [];
+        $total = 0;
         foreach($request->services as $s) :
             $service = Service::findOrFail($s['id']);
             $this->authorize('create_subscription', $service);
-            $servicesNames[] = "$service->name[{$s['frequency']}/{$s['frequency_interval']}]";
+            $servicesNames[] = "$service->name ({$s['frequency']}/{$s['frequency_interval']})";
+            if($s['rate'] && $s['frequency'] && $s['frequency_interval']) :
+                $total += ($s['frequency'] * $s['rate']);
+            endif;
         endforeach;
-
 
         $stripe_api = new StripeAPI();
         $amount = $total * 100;
 
         // Create product
+        $servicesNames = implode(', ', $servicesNames);
         $data = [
-            'name' => implode(', ', $servicesNames),
+            'name' => $servicesNames,
             'description' => "Subscription for {$contact->contactUser->full_name}",
             'active' => true,
         ];
@@ -286,19 +283,19 @@ class ContactController extends Controller
         ]];
 
         $now = Carbon::now();
-        $date = Carbon::parse($request->date);
-        $trial_period_days = $now->diffInDays($date);
+        $startDateTimestamp = Carbon::parse($request->date)->timestamp;
 
         $data = [
             'customer' => $contact->stripe_customer_id,
             'items' => $subscriptionItem,
-            'trial_period_days' => $trial_period_days,
+            'trial_end' => $startDateTimestamp, // trial_end => timestamp
         ];
         $subscription = $stripe_api->subscription('create', $data, ['stripe_account' => Auth::user()->stripe_account['id']]);
         $subscription->date = $request->date;
         $subscription->services = $request->services;
         $subscription->duration = $request->duration;
         $subscription->duration_frequency = $request->duration_frequency;
+        $subscription->services = $servicesNames;
 
         $subscriptions = $contact->subscriptions;
         $subscriptions[] = $subscription;

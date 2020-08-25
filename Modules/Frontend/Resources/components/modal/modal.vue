@@ -7,8 +7,8 @@
         </div>
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document" :class="[{'opacity-0': loading}, size]">
             <component :is="contentComponent" class="modal-content" @submit="submit">
-                <button v-if="closeButton" type="button" class="close position-absolute" aria-label="Close" data-dismiss="modal">
-                    <close-icon width="30" height="30"></close-icon>
+                <button v-if="closeButton" type="button" class="btn p-0 btn-white badge-pill close position-absolute line-height-0" aria-label="Close" data-dismiss="modal">
+                    <close-icon width="28" height="28"></close-icon>
                 </button>
                 <div v-if="title" class="modal-header bg-light">
                     <h5 class="modal-title font-heading">{{ title }}</h5>

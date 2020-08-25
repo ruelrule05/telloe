@@ -452,7 +452,7 @@ class AuthController extends Controller
         endif;
 
         // create Stripe customer for contacts
-        foreach(Auth::user()->contacts as $contact) :
+        foreach(Auth::user()->contacts()->whereNull('stripe_customer_id')->get() as $contact) :
             CreateStripeCustomer::dispatch($user, $contact);
         endforeach;
 

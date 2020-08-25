@@ -28,4 +28,27 @@
     .select-flex {
         height: calc(1.5em + 0.7rem);
     }
+    .subscription{
+        .subscription-id{
+            color: $gray-500;
+            transition: $transition-base;
+        }
+        &:hover{
+            .subscription-id{
+                color: $body-color;
+            }
+        }
+    }
+    .badge-pending{
+        background-color: rgba($warning, 12.5%);
+        color: $warning;
+    }
+    .badge-canceled{
+        background-color: rgba($dark, 12.5%);
+        color: $gray-500;
+    }
+    .badge-active{
+        background-color: rgba($primary, 12.5%);
+        color: $primary;
+    }
 }

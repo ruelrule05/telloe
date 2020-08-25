@@ -42,6 +42,7 @@
         "css-loader": "^3.5.3",
         "data-uri-to-blob": "0.0.4",
         "datauri": "^2.0.0",
+        "dateformat": "^3.0.3",
         "dayjs": "^1.8.27",
         "dayjs-ext": "^2.2.0",
         "detectrtc": "^1.4.0",

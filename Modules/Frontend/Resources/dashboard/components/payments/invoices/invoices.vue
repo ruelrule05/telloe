@@ -33,7 +33,7 @@
 								<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
 									<tr v-for="invoice in paginated('invoices')" v-if="!invoice.placeholder">
 										<td class="align-middle text-gray-500">
-											{{ invoice.is_pending ? 'Not available' : invoice.id }}
+											{{ invoice.is_pending ? 'Not available' : invoice.number || '-' }}
 											<router-link to="/dashboard/account?tab=payout" v-if="invoice.is_pending && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
 										</td>
 										<td class="align-middle">{{ ((invoice.amount_due || invoice.amount) / 100).toFixed(2) }} <span class="text-uppercase text-muted">{{ getCurrency(invoice) }}</span></td>

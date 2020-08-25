@@ -19,47 +19,55 @@
 				<div class="d-flex overflow-hidden h-100 w-100">
 					<div class="d-flex flex-column flex-grow-1 px-4 mt-2">
 						<div class="overflow-auto flex-grow-1 pb-4 h-100" v-if="subscriptions.length > 0" :class="{'d-none': !hasSubscriptions}">
-							<table class="table table-borderless table-fixed-header mb-0">
+							<table class="table table-borderless table-hover table-fixed-header mb-0">
 								<thead>
 									<tr>
-										<th>Subscription ID</th>
+										<th>Contact</th>
+										<!-- <th>Subscription ID</th> -->
 										<th>Status</th>
-										<th>Amount</th>
-										<th>Recurring</th>
-										<th>Ends At</th>
-										<th>Client</th>
+										<th>Created</th>
+										<th>Next Invoice</th>
 										<th></th>
 									</tr>
 								</thead>
 								<paginate tag="tbody" name="subscriptions" ref="paginate" :list="subscriptions" :per="15">
 									<template v-for="subscription in paginated('subscriptions')">
-										<tr v-if="!subscription.placeholder" :key="subscription.id" >
-											<td class="align-middle text-gray-500">
-												{{ subscription.plan ? subscription.id : 'Not available' }}
-												<router-link to="/dashboard/account?tab=payout" v-if="!subscription.plan && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
-											</td>
+										<tr v-if="!subscription.placeholder" :key="subscription.id" class="cursor-pointer"  @click="viewSubscription(subscription)">
 											<td class="align-middle">
-												<span class="badge bg-primary-light text-primary text-capitalize position-relative">
+												<div class="d-flex align-items-center">
+													<div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+subscription.contact.contact_user.profile_image+')'}">
+															<span v-if="!subscription.contact.contact_user.profile_image">{{ subscription.contact.contact_user.initials }}</span>
+													</div>
+													<div class="ml-2 overflow-hidden flex-1">
+														<h6 class="font-heading mb-0 text-ellipsis">{{ subscription.contact.contact_user.full_name }}</h6>
+														<small class="d-block text-muted">{{ subscription.contact.contact_user.email }}</small>
+													</div>
+												</div>
+											</td>
+											<!-- <td class="align-middle">
+												<span class="subscription-id" v-if="subscription.plan">{{ subscription.id }}</span>
+												<template v-else>
+													Not available
+													<router-link to="/dashboard/account?tab=payout" v-if="!subscription.plan && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
+												</template>
+											</td> -->
+											<td class="align-middle">
+												<span class="badge text-capitalize position-relative" :class="'badge-' + subscription.status">
 													<span :class="{'opacity-0': subscription.statusLoading}">{{ subscription.plan ? subscription.status : 'Draft' }}</span>
 													<div v-if="subscription.statusLoading" class="position-absolute-center">
 														<div class="spinner-border spinner-border-sm text-primary"></div>
 													</div>
 												</span>
 											</td>
-											<td class="align-middle">
-												${{ ((subscription.plan || subscription).amount / 100).toFixed(2) }} 
-												<!-- <span class="text-uppercase text-muted">{{ getCurrency(subscription) }}</span><span class="text-muted">/{{subscription.plan ? subscription.plan.interval : 'month'}}</span> -->
+											<td class="align-middle text-muted">
+												<p class="text-capitalize mb-0">{{ subscription.created ? timestampToDate(subscription.created) : '-' }}</p>
 											</td>
 											<td class="align-middle text-muted">
-												<p class="text-capitalize mb-0 font-weight-bold">{{ subscription.plan ? subscription.plan.interval : subscription.recurring_frequency }}ly</p>
+												<p class="text-capitalize mb-0" v-if="subscription.status == 'active'">{{ subscription.current_period_end ? timestampToDate(subscription.current_period_end, false) : '-' }}</p>
 											</td>
-											<td class="align-middle text-muted">
-												<p class="text-capitalize mb-0">{{ subscription.current_period_end ? formatDate(subscription.current_period_end) : '-' }}</p>
-											</td>
-											<td class="align-middle">{{ subscription.contact.contact_user.full_name }}</td>
 											<td class="text-right align-middle">
 												<div v-if="subscription.status != 'canceled'" class="dropleft">
-													<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
+													<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading" @click.stop>
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">
@@ -160,6 +168,28 @@
 				</div>
 			</div>
 		</div>
+
+
+		<modal ref="detailsModal">
+			<template v-if="selectedSubscription">
+				<span class="badge text-capitalize position-relative" :class="'badge-' + selectedSubscription.status">
+					<span :class="{'opacity-0': selectedSubscription.statusLoading}">{{ selectedSubscription.plan ? selectedSubscription.status : 'Draft' }}</span>
+					<div v-if="selectedSubscription.statusLoading" class="position-absolute-center">
+						<div class="spinner-border spinner-border-sm text-primary"></div>
+					</div>
+				</span>
+				<h6 class="font-heading mt-1 mb-3">{{ selectedSubscription.id }}</h6>
+				
+				<label class="d-block mb-0">Client</label>
+				<strong>{{ selectedSubscription.contact.contact_user.full_name }}</strong>
+				<label class="d-block mb-0 mt-3">Services</label>
+				<strong>{{ selectedSubscription.services }}</strong>
+				<label class="d-block mb-0 mt-3">Amount</label>
+				<strong>${{ ((selectedSubscription.plan || selectedSubscription).amount / 100).toFixed(2) }}</strong>
+				<label class="d-block mb-0 mt-3">Starts At</label>
+				<strong>{{ selectedSubscription.current_period_start ? formatDate(selectedSubscription.current_period_start) : '-' }}</strong>
+			</template>
+		</modal>
 
 		<modal :close-button="false" ref="createSubscriptionModal" @hidden="resetSubscriptionForm()">
 		</modal>

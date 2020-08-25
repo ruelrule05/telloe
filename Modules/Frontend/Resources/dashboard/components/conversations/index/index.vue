@@ -28,7 +28,7 @@
                         </div>
                         
                         <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
-                            <button class="btn btn-sm btn-light p-1 line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0" @click.prevent><more-icon width="20" height="20" class="fill-gray-500" transform="scale(0.75)"></more-icon></button>
+                            <button class="btn btn-sm btn-light p-1 line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0"><more-icon width="20" height="20" class="fill-gray-500" transform="scale(0.75)"></more-icon></button>
                             <div class="dropdown-menu py-1">
                                 <small v-if="!conversation.archive" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
                                 <small v-else class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
@@ -74,7 +74,7 @@
             <div class="h-100 overflow-hidden d-flex flex-column" :default="contacts" ref="addNewConversationMembersForm">
                <input type="text" placeholder="Search contacts..." class="form-control shadow-none border" v-model="userSearch">
                 <div v-if="newConversation.members.length > 0" class="mt-1">
-                    <div v-for="(member, index) in newConversation.members" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.contact_user.profile_image+')'}">
+                    <div v-for="(member, index) in newConversation.members" :key="member.id" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{backgroundImage: 'url('+member.contact_user.profile_image+')'}">
                         <span v-if="!member.contact_user.profile_image">{{ member.contact_user.initials }}</span>
                         <button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
                             <close-icon height="16" width="16" class="cursor-pointer"></close-icon>

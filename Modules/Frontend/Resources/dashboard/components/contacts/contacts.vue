@@ -30,7 +30,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="contact in contacts">
+									<tr v-for="contact in contacts" :key="contact.id">
 										<td class="align-middle">
 											<div class="d-flex align-items-center">
 						                        <div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+contact.contact_user.profile_image+')'}">
