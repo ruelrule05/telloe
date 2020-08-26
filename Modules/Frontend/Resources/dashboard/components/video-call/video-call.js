@@ -418,6 +418,7 @@ export default {
             let connection  = new RTCPeerConnection(configuration);
             connection.id = `${timestamp}-${randomString({length: 15})}`;
             connection.ontrack = (event) => {
+                console.log(event.streams[0]);
                 if(!connection.remoteStream) {
                     connection.remoteStream = event.streams[0];
                 }
