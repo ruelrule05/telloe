@@ -300,6 +300,7 @@ export default {
 
         endCall(emit = true) {
             this.status = '';
+            this.connections = [];
             this.open = false;
             this.notification_sound.pause();
             this.isMuted = false;
@@ -323,18 +324,16 @@ export default {
                 if(this.draggable) this.draggable.remove();
                 this.draggable = null;
             }
-            setTimeout(() => {
-            	this.isMuted = this.isVideoStopped = false;
+            //setTimeout(() => {
             	$(this.$refs['remoteStreams']).empty();
             	if(this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
-            	this.connections.forEach(connection => {
-	            	connection.localStream.getTracks().forEach(function(track) {
-	                   track.stop();
-	                });
-            		connection.close();
-            	});
-            	this.connections = [];
-            }, 150);
+            	// this.connections.forEach(connection => {
+	            // 	connection.localStream.getTracks().forEach(function(track) {
+	            //        track.stop();
+	            //     });
+            	// 	connection.close();
+            	// });
+            //}, 150);
         },
 
         fullScreen(state) {
