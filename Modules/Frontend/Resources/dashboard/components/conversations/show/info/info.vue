@@ -206,11 +206,11 @@
                     <div id="tags" class="collapse" data-parent="#info-items">
                         <!-- Tags -->
                         <div class="h-100 overflow-hidden d-flex flex-column">
-                            <template v-if="tagsData.tags.length">
+                            <template v-if="(tagsData.tags || []).length">
                                 <div>
                                     <input type="text" class="form-control form-control-sm shadow-none" placeholder="Search for tags..." v-model="tagSearch" />
                                 </div>
-                                <div v-if="tagsData.tags.length > 0" class="my-2">
+                                <div v-if="(tagsData.tags || []).length > 0" class="my-2">
                                     <small v-for="tag in tagsData.tags" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
                                 </div>
 

@@ -296,6 +296,7 @@ export default {
         },
 
         endCall(emit = true) {
+            this.status = '';
             this.open = false;
             this.notification_sound.pause();
             this.isMuted = false;
@@ -320,7 +321,6 @@ export default {
                 this.draggable = null;
             }
             setTimeout(() => {
-            	this.status = '';
             	this.isMuted = this.isVideoStopped = false;
             	$(this.$refs['remoteStreams']).empty();
             	if(this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
