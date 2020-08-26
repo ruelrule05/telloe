@@ -117,6 +117,9 @@
 												        <button v-tooltip.top="'Exit Full Screen'" type="button" :class="{'d-none': !isFullScreen}" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="fullScreen(false)">
 												            <collapse-icon width="20" height="20"></collapse-icon>
 												        </button>
+												        <button v-tooltip.top="'Go to conversation'" type="button" class="btn btn-white border badge-pill line-height-1 p-1 ml-1" @click="goToConversation">
+												            <comment-icon width="20" height="20"></comment-icon>
+												        </button>
 												    </template>
 													
 													<template v-if="!isFullScreen">
@@ -143,7 +146,7 @@
 							        		<button class="btn close position-static float-none p-0 m-0" @click="close"><close-icon width="30" height="30"></close-icon></button>
 							        	</div>
 							        	<div class="d-flex px-2 py-3 flex-wrap">
-								        	<div class="w-50 px-2 mb-3 recorded position-relative" v-for="recorded in recordedData">
+								        	<div class="w-50 px-2 mb-3 recorded position-relative" v-for="recorded in recordedData" :key="recorded.timestamp">
 							        			<div class="rounded recorded-preview" :style="{backgroundImage: 'url('+recorded.preview+')'}"></div>
 							        			<div>{{ recorded.duration }}</div>
 							        			<div class="position-absolute-center w-100 text-center">

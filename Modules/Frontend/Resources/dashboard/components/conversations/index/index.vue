@@ -14,6 +14,10 @@
     			<div class="d-flex align-items-center border-bottom btn-tab mt-1">
     				<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{'active': conversationTab == 'active'}" @click="conversationTab = 'active'">Chats</button>
     				<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{'active': conversationTab == 'archive'}" @click="conversationTab = 'archive'">Archive</button>
+                    <button class="ml-auto btn badge-pill line-height-0 p-0 mr-2 shadow-none" type="button" @click="$root.muted = !$root.muted">
+                        <bell-icon width="22" height="22" v-if="!$root.muted"></bell-icon>
+                        <bell-slash-icon width="22" height="22" v-else class="fill-gray-500"></bell-slash-icon>
+                    </button>
     			</div>
             </div>
 

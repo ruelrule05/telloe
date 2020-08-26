@@ -96,7 +96,7 @@ window.app = new Vue({
         sliderItemSize: 86,
         authForm: false, // false
         bookingSuccess: false,
-        authAction: 'login',
+        authAction: 'signup',
         GoogleAuth: null,
     },
 
@@ -231,13 +231,13 @@ window.app = new Vue({
         selectedService: function(value) {
             this.error = null;
             this.authError = ''; 
-            if(!value) {
-                this.timeslots = [];
-                this.selectedTimeslot = null;
-                this.selectedDate = null;
-                this.calendarView = 'month';
-            }
-        }
+            this.timeslots = [];
+            this.selectedTimeslot = null;
+            this.selectedDate = null;
+            this.calendarView = 'month';
+            this.authAction = 'signup';
+            this.authForm = false;
+    }
     },
 
     created() {
@@ -267,7 +267,7 @@ window.app = new Vue({
                 this.isBooking = false;
                 this.bookingSuccess = false;
                 this.authForm = false;
-                this.authAction = 'login';
+                this.authAction = 'signup';
             }, 150);
         },
 

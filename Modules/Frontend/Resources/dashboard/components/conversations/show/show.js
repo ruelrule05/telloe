@@ -34,6 +34,7 @@ import VideocamIcon from '../../../../icons/videocam';
 import MicrophoneAltIcon from '../../../../icons/microphone-alt';
 import DocumentAltIcon from '../../../../icons/document-alt';
 import ScreenRecordIcon from '../../../../icons/screen-record';
+import DownloadIcon from '../../../../icons/download';
 
 import Tooltip from '../../../../js/directives/tooltip';
 
@@ -69,6 +70,7 @@ export default {
         MicrophoneAltIcon,
         DocumentAltIcon,
         ScreenRecordIcon,
+        DownloadIcon,
 
         info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
         gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
@@ -242,6 +244,12 @@ export default {
             updateMessage: 'messages/update',
             deleteMessage: 'messages/delete',
         }),
+
+        messageFormMounted() {
+            if(this.$refs['messageInput'] && this.$route.query.focus == 'message_input') {
+                this.$refs['messageInput'].focus();
+            }
+        },
 
         messageTimezoneTime(message) {
             let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;

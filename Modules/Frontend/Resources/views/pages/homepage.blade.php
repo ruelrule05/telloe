@@ -149,7 +149,7 @@
 
 <div class="home-content home-content-6 position-relative bg-gray-100">
 	<div class="container">
-		<div class="row flex-row-reverse align-items-center">
+		<div class="row flex-row-reverse align-items-center" id="features">
 			<div class="col-md-4 mt-n4 mt-md-0">
 				<img src="{{ asset('images/home/home_6.svg') }}" alt="" class="">
 			</div>

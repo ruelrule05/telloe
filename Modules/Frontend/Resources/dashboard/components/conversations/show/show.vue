@@ -107,7 +107,7 @@
                                                             </vue-form-validate>
 
                                                             <div class="text-left tags-container" v-if="message.tags.length > 0">
-                                                                <div v-for="(tag, index) in message.tags" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
+                                                                <div v-for="(tag, index) in message.tags" :key="tag.id" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
                                                                 {{ tag }}&nbsp;
                                                                     <close-icon height="8" width="8" transform="scale(2.5)" class="cursor-pointer no-action" @click.native="message.tags.splice(index, 1); updateMessageTags(message)"></close-icon>
                                                                 </div>
@@ -130,6 +130,12 @@
                                                             <history-icon height="16" width="16" class="no-action"></history-icon>
                                                         </div>
                                                         <div>{{ message.tags.join(', ') }}</div>
+                                                    </div>
+
+                                                    <div v-if="['image', 'video', 'audio', 'file'].find(x => x == message.type)" v-tooltip.top="'Download'" class="action-content cursor-pointer line-height-1">
+                                                        <div class="action-button">
+                                                            <download-icon height="20" width="20" @click.native="$root.downloadMedia(message)"></download-icon>
+                                                        </div>
                                                     </div>
                                                 </div>
             	                            	<message-type :message="message" :outgoing="grouped_message.outgoing"></message-type>
@@ -185,7 +191,7 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center message-form-inputs">
-                            <vue-form-validate @submit="sendText" class="flex-grow-1" ref="messageForm">
+                            <vue-form-validate @submit="sendText" class="flex-grow-1" ref="messageForm" @mounted="messageFormMounted">
                                 <input type="text" @paste="inputPaste" @keydown="messageInput" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" rows="1" placeholder="Write a message.." />
                             </vue-form-validate>
 

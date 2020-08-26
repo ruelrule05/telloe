@@ -21,6 +21,8 @@ const randomString = require('random-string');
 import MicrophoneAltIcon from '../../../icons/microphone-alt';
 import VideocamIcon from '../../../icons/videocam';
 import CallMenuIcon from '../../../icons/call-menu';
+import CommentIcon from '../../../icons/comment';
+
 import Tooltip from '../../../js/directives/tooltip.js';
 
 export default {
@@ -40,6 +42,7 @@ export default {
         MicrophoneAltIcon,
         VideocamIcon,
         CallMenuIcon,
+        CommentIcon,
 	},
 
     directives: {
@@ -200,6 +203,11 @@ export default {
     },
 
     methods: {
+        goToConversation() {
+            this.isShrinked = true;
+            this.$router.push(`/dashboard/conversations/${this.$root.callConversation.id}?focus=message_input`);
+        },
+
         toggleDraggable() {
             if(this.isShrinked) {
                 if(this.draggable) this.draggable.remove();
@@ -240,7 +248,7 @@ export default {
             this.isVideoStopped = !camera;
             this.isIncoming = false;
             clearTimeout(this.callTimeout);
-            this.notification_sound.play();
+            if(!this.$root.muted) this.notification_sound.play();
 			/*$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})
 				.modal('show');*/
@@ -263,7 +271,7 @@ export default {
 
 		incomingCall() {
             this.open = true;
-	       	this.notification_sound.play();
+            if(!this.$root.muted) this.notification_sound.play();
             this.isIncoming = true;
 			$(this.$refs['modal'])
 				.modal({keyboard: false, backdrop: 'static'})

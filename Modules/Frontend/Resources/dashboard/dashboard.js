@@ -14,6 +14,7 @@ Vue.use(Toasted, {
     position: 'bottom-center',
     duration: 3000,
     className: 'bg-primary rounded shadow-none',
+    singleton: true,
 });
 //Vue.component('vue-button', require('../components/vue-button.vue').default);
 const router = new VueRouter({
@@ -86,6 +87,11 @@ const router = new VueRouter({
                     path: 'billing',
                     component: () => import(/* webpackChunkName: "dashboard-billing" */ './components/billing/billing.vue'),
                 },
+                {
+                    name: 'widget',
+                    path: 'widget',
+                    component: () => import(/* webpackChunkName: "dashboard-widget" */ './components/widget/widget.vue'),
+                },
             ],
         },
     ],
@@ -121,6 +127,7 @@ import ColoredBellIcon from '../icons/colored-bell';
 import FilePdfIcon from '../icons/file-pdf';
 import FileArchiveIcon from '../icons/file-archive';
 import CloseIcon from '../icons/close';
+import TrayIcon from '../icons/tray';
 
 import ContactAltIcon from '../icons/contact-alt';
 import MonthviewIcon from '../icons/monthview';
@@ -167,6 +174,7 @@ window.app = new Vue({
         PaymentsIcon,
         MessagesIcon,
         CloseIcon,
+        TrayIcon,
 
         VideoCall,
         ScreenRecorder,
@@ -196,7 +204,8 @@ window.app = new Vue({
             data: null,
             status: '',
         },
-        jQuery: $
+        jQuery: $,
+        muted: false,
     },
 
     computed: {
@@ -266,6 +275,11 @@ window.app = new Vue({
             this.contentloading = true;
             $('.leader-line').remove();
         },
+        muted: function(value) {
+            this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
+                className: value ? 'bg-secondary rounded' : 'bg-primary rounded'
+            });
+        }
     },
 
     created() {
@@ -290,7 +304,7 @@ window.app = new Vue({
                 this.getMessageByID(data).then(message => {
                     if (message && message.conversation_id == conversation.id) {
                         conversation.last_message = message;
-                        this.message_sound.play();
+                        if(!this.muted) this.message_sound.play();
                     }
                 });
             }

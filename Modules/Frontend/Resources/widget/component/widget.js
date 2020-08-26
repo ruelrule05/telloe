@@ -71,7 +71,7 @@ export default {
 		isBooking: false,
 		bookingSuccess: false,
 		open: false,
-		authAction: 'login' // login
+		authAction: 'signup' // login
 	}),
 
 	computed: {
@@ -243,7 +243,7 @@ export default {
 			this.isBooking = false;
 			this.bookingSuccess = false;
 			this.authForm = false;
-			this.authAction = 'login';
+			this.authAction = 'signup';
 			this.error = '';
 			this.calendarView = 'month';
 		},

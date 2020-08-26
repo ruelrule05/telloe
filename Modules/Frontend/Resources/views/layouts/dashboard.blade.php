@@ -50,6 +50,10 @@
 									    		<bill-icon height="18" width="18" class="dropdown-item-icon"></bill-icon>
 									    		Billing
 									    	</router-link>
+									    	<router-link to="/dashboard/widget" class="dropdown-item d-flex align-items-center">
+									    		<tray-icon height="18" width="18" class="dropdown-item-icon"></tray-icon>
+									    		Widget
+									    	</router-link>
 								    	</template>
 
 	  									<div class="dropdown-divider mx-n2"></div>

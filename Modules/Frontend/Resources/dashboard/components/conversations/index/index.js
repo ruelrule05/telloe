@@ -17,6 +17,8 @@ import HeadphoneIcon from '../../../../icons/headphone';
 import LockIcon from '../../../../icons/lock';
 import ListBulletIcon from '../../../../icons/list-bullet';
 import MoreIcon from '../../../../icons/more';
+import BellIcon from '../../../../icons/bell';
+import BellSlashIcon from '../../../../icons/bell-slash';
 
 export default {
     components: {
@@ -37,6 +39,8 @@ export default {
         LockIcon,
         ListBulletIcon,
         MoreIcon,
+        BellIcon,
+        BellSlashIcon,
     },
 
     data: () => ({
@@ -50,6 +54,7 @@ export default {
             blacklisted_services: []
         },
     }),
+    
 
     computed: {
         ...mapState({

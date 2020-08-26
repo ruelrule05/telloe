@@ -29,11 +29,11 @@
                             <!-- Fields -->
                             <div v-if="conversation.members.length == 1" class="form-group">
                                 <div class="d-flex align-items-center">
-                                    <template v-if="$root.auth.role.role == 'client' && !editFields && conversation.custom_fields.length > 0">
+                                    <template v-if="$root.auth.role.role == 'client' && !editFields && (conversation.custom_fields || []).length > 0">
                                         <label class="text-muted mb-0" ref="customFieldsLabel">Information</label>
                                         <button v-if="!editFields" class="ml-auto btn btn-sm btn-white border d-flex align-items-center" type="button" @click="editFields = true"><pencil-icon height="10" width="10" transform="scale(1.4)" class="mr-2"></pencil-icon> Edit Fields</button>
                                     </template>
-                                    <div v-else-if="conversation.custom_fields.length == 0" class="text-center w-100">
+                                    <div v-else-if="(conversation.custom_fields || []).length == 0" class="text-center w-100">
                                         <button v-if="!editFields" class="btn btn-sm btn-white border d-inline-flex align-items-center" type="button" @click="editFields = true"><plus-icon height="10" width="10" transform="scale(2)" class="mr-2"></plus-icon> Add Fields</button>
                                     </div>
                                 </div>
@@ -43,7 +43,7 @@
                                         <strong class="w-50 ml-n1">Value</strong>
                                     </div>
                                     <draggable handle=".handle" :list="conversation.custom_fields" @end="updateConversation(conversation)">
-                                        <div v-for="(custom_field, index) in conversation.custom_fields" class="d-flex mb-2 align-items-center">
+                                        <div v-for="(custom_field, index) in conversation.custom_fields" :key="custom_field.id" class="d-flex mb-2 align-items-center">
                                             <button class="btn p-0 d-flex align-items-center handle cursor-move" type="button">
                                                 <move-icon width="10" height="10" transform="scale(1.5)"></move-icon>
                                             </button>
@@ -52,7 +52,7 @@
                                             <trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="conversation.custom_fields.splice(index, 1); updateConversation(conversation)"></trash-icon>
                                         </div>
                                     </draggable>
-                                    <div v-if="addField || conversation.custom_fields.length == 0" class="d-flex align-items-center">
+                                    <div v-if="addField || (conversation.custom_fields || []).length == 0" class="d-flex align-items-center">
                                         <button class="btn p-0 d-flex align-items-center mr-1" disabled type="button">
                                             <move-icon width="10" height="10" transform="scale(1.5)" class="fill-gray-400"></move-icon>
                                         </button>
@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="d-flex align-items-center mt-4">
                                         <button type="button" class="btn btn-sm btn-white border mr-1" @click="editFields = false">Close</button>
-                                        <button type="button" :disabled="addField || conversation.custom_fields.length == 0" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
+                                        <button type="button" :disabled="addField || (conversation.custom_fields || []).length == 0" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
                                     </div>
                                 </div>
 

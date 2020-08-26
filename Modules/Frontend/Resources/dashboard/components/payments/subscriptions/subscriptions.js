@@ -144,7 +144,6 @@ export default {
 					if(this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) {
 						if(subscription.status == 'trialing') subscription.status = 'pending';
 						subscriptions.push(subscription);
-						console.log(subscription);
 					}
 				})
 			});

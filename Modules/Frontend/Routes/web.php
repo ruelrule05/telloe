@@ -5,6 +5,11 @@
  *
  */
 
+Route::get('test', function() {
+    $date = \Carbon\Carbon::parse('2020-09-23');
+    echo $date->timestamp;
+});
+
 
 Route::get('widget', function() {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
@@ -31,7 +36,8 @@ Route::get('email', function() {
 
     
     $user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
-    $email = new Modules\Frontend\Mail\UpcomingBooking(App\Models\Booking::first());
+    $booking = App\Models\Booking::find(112);
+    $email = new Modules\Frontend\Mail\NewMessage(App\Models\Message::findOrFail(615));
     //\Mail::send($email);
     return $email;
 });

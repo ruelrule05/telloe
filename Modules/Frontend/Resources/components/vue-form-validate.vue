@@ -8,6 +8,10 @@ export default {
         valid: true,
     }),
 
+    mounted() {
+        this.$emit('mounted');
+    },
+
     methods: {
         submit(e) {
             this.valid = true;
