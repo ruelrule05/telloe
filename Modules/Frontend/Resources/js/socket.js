@@ -115,7 +115,7 @@ io.on('connection', function(socket) {
                 call_users[userData.conversation_id].splice(userIndex, 1);
             }
             if(call_users[userData.conversation_id].length == 1) call_users[userData.conversation_id] = [];
-            socket.broadcast.emit('live_call_end', userData);
+            if(data.broadcast) socket.broadcast.emit('live_call_end', userData);
             userData = null;
         }
     });

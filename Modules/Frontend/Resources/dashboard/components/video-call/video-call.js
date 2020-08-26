@@ -308,8 +308,8 @@ export default {
             this.isScreenSharing = false;
             this.isFullScreen = false;
             this.isIncoming = false;
-            if(emit && this.$root.callConversation) {
-            	this.$root.socket.emit('live_call_end', {conversation_id: this.$root.callConversation.id});
+            if(this.$root.callConversation) {
+            	this.$root.socket.emit('live_call_end', { conversation_id: this.$root.callConversation.id, broadcast: emit });
             }
 
             this.stopLocalStream();
