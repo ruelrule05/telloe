@@ -291,10 +291,10 @@ export default {
         },
 
         rejectCall() {
-            this.endCall(false);
             this.$root.socket.emit('live_call_reject', {
                 conversation_id: this.$root.callConversation.id,
             });
+            this.endCall(false);
         },
 
         endCall(emit = true) {
