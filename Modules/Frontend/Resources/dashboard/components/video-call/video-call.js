@@ -133,7 +133,9 @@ export default {
                         this.outgoing = false;
                         users.forEach((user_id) => {
                             if(user_id != this.$root.auth.id) {
-                                this.createConnectionRequest(user_id);
+                                setTimeout(() => {
+                                    this.createConnectionRequest(user_id);
+                                }, 150);
                             }
                         });
                     }
@@ -289,10 +291,10 @@ export default {
         },
 
         rejectCall() {
+            this.endCall(false);
             this.$root.socket.emit('live_call_reject', {
                 conversation_id: this.$root.callConversation.id,
             });
-            this.endCall(false);
         },
 
         endCall(emit = true) {
