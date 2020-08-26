@@ -282,6 +282,7 @@ export default {
 		},
 
         answerCall() {
+            console.log('answerCall');
             this.isIncoming = false;
 			this.$root.socket.emit('live_call_ready', {
 	            conversation_id: this.$root.callConversation.id,
