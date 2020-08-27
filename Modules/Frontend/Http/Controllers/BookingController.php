@@ -103,7 +103,7 @@ class BookingController extends Controller
         Mail::queue(new NewBooking($booking));
 
         // SMS
-        SendSMS::dispatch($user->mobile, 'A new booking is created for your account');
+       // SendSMS::dispatch($user->phone, 'A new booking is created for your account');
 
         $user_id = null;
         $description = '';
