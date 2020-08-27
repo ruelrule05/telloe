@@ -4,6 +4,9 @@ import Recover from './recover.vue';
 import Reset from './reset.vue';
 import CloseIcon from '../../icons/close.vue';
 import io from 'socket.io-client';
+import jstz from 'jstz';
+const timezone = jstz.determine();
+
 export default {
     components: {
         Login,
@@ -21,10 +24,12 @@ export default {
         error: '',
 
         GoogleAuth: null,
+        timezone: ''
     }),
 
     created() {
         this.socket = io(WS_URL);
+        this.timezone = timezone.name();
         if (typeof gapi != 'undefined') {
             gapi.load('auth2', () => {
                 this.GoogleAuth = gapi.auth2.init({client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com'});
@@ -54,9 +59,8 @@ export default {
                         FB.api('/me', {fields: 'first_name, last_name, email'}, response => {
                             if (response && !response.error) {
                                 response.action = this.$root.action;
-                                let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                                 let invite_token = this.$root.invite_token;
-                                response.timezone = timezone;
+                                response.timezone = this.timezone;
                                 response.invite_token = invite_token;
                                 axios
                                     .post('/login/facebook', response)
@@ -85,7 +89,6 @@ export default {
                 this.GoogleAuth.signIn({scope: 'profile email'})
                     .then(googleUser => {
                         let profile = googleUser.getBasicProfile();
-                        let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                         let invite_token = this.$root.invite_token;
                         let user = {
                             id: profile.getId(),
@@ -94,7 +97,7 @@ export default {
                             email: profile.getEmail(),
                             image_url: profile.getImageUrl(),
                             action: this.$root.action,
-                            timezone: timezone,
+                            timezone: this.timezone,
                             invite_token: invite_token
                         };
                         axios

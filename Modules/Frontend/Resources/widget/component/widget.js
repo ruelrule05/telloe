@@ -16,6 +16,8 @@ import CalendarIcon from '../../icons/calendar';
 import FacebookIcon from '../../icons/facebook';
 import GoogleIcon from '../../icons/google';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
+import jstz from 'jstz';
+const timezone = jstz.determine();
 export default {
 	components: {
 		VueFormValidate,
@@ -70,8 +72,9 @@ export default {
 		authForm: false, // false
 		isBooking: false,
 		bookingSuccess: false,
-		open: false,
-		authAction: 'signup' // login
+		open: false, // false
+		authAction: 'signup', // login
+		timezone: '',
 	}),
 
 	computed: {
@@ -221,12 +224,52 @@ export default {
 
 	created() {
 		this.getData();
+		this.timezone = timezone.name();
 	},
 
 	mounted() {
 	},
 
 	methods: {
+
+		timezoneTime(time) {
+            let profileTimezone = this.$root.profile.timezone;
+            let timezoneTime;
+            if (profileTimezone != this.timezone) {
+                let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
+				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
+				let timeslotDate = `${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`;
+                timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
+            } else {
+				timezoneTime = dayjs(time);
+			}
+            return timezoneTime.format('hh:mmA');
+        },
+
+        getTimeZoneOffset(date, timeZone) {
+            // Abuse the Intl API to get a local ISO 8601 string for a given time zone.
+            const options = {timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+            const parts = dateTimeFormat.formatToParts(date);
+            const map = new Map(parts.map(x => [x.type, x.value]));
+            const year = map.get('year');
+            const month = map.get('month');
+            const day = map.get('day');
+            let hour = map.get('hour');
+            const minute = map.get('minute');
+            const second = map.get('second');
+            const ms = date.getMilliseconds().toString().padStart(3, '0');
+            if (hour == '24') hour = '00';
+            const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
+
+            // Lie to the Date object constructor that it's a UTC time.
+            const lie = new Date(iso + 'Z');
+
+            // Return the difference in timestamps, as minutes
+            // Positive values are West of GMT, opposite of ISO 8601
+            // this matches the output of `Date.getTimeZoneOffset`
+            return -(lie - date) / 60 / 1000;
+        },
 
 		stebBack() {
 			if (this.authForm) {
@@ -365,8 +408,7 @@ export default {
                     e => {
                         FB.api('/me', {fields: 'first_name, last_name, email'}, data => {
                             if (data && !data.error) {
-                                let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                                data.timezone = timezone;
+                                data.timezone = this.timezone;
 								data.date = dayjs(this.selectedDate).format('YYYY-MM-DD');
 								data.time = this.selectedTimeslot.time;
 
@@ -403,14 +445,13 @@ export default {
                 this.$root.GoogleAuth.signIn()
                     .then(googleUser => {
                         let profile = googleUser.getBasicProfile();
-                        let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                         let data = {
                             id: profile.getId(),
                             first_name: profile.getGivenName(),
                             last_name: profile.getFamilyName(),
                             email: profile.getEmail(),
                             image_url: profile.getImageUrl(),
-                            timezone: timezone,
+                            timezone: this.timezone,
 							date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
 							time: this.selectedTimeslot.time,
                         };
@@ -465,7 +506,7 @@ export default {
 		getData() {
 			TelloeAxios.get(`/@${this.$root.profile.username}`).then(response => {
 				this.services = response.data;
-				//this.selectedService = this.services[0];
+				//this.selectedService = this.services[0]; // testing
 				this.ready = true;
 			});
 		},

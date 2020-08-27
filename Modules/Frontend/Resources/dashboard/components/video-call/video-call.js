@@ -207,7 +207,11 @@ export default {
     methods: {
         goToConversation() {
             this.isShrinked = true;
-            this.$router.push(`/dashboard/conversations/${this.$root.callConversation.id}?focus=message_input`);
+            let conversationUrl = `/dashboard/conversations/${this.$root.callConversation.id}`;
+            if(this.$route.path != conversationUrl) {
+                conversationUrl = `${conversationUrl}?focus=message_input`;
+                this.$router.push(conversationUrl);
+            }
         },
 
         toggleDraggable() {
@@ -299,7 +303,14 @@ export default {
         },
 
         endCall(emit = true) {
+            this.caller = null;
+            this.localCameraReady = false;
+            this.remoteCameraReady = false;
+            this.isAnswered = false;
+            this.videoAnswer = null;
+            this.callRecorder = null;
             this.status = '';
+            this.action = '';
             this.connections = [];
             this.open = false;
             this.notification_sound.pause();
@@ -308,6 +319,7 @@ export default {
             this.isScreenSharing = false;
             this.isFullScreen = false;
             this.isIncoming = false;
+            this.isShrinked = false;
             if(this.$root.callConversation) {
             	this.$root.socket.emit('live_call_end', { conversation_id: this.$root.callConversation.id, broadcast: emit });
             }

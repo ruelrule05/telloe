@@ -29,6 +29,8 @@ import EarthIcon from '../icons/earth';
 import CheckmarkCircleIcon from '../icons/checkmark-circle';
 import FacebookIcon from '../icons/facebook';
 import GoogleIcon from '../icons/google';
+import jstz from 'jstz';
+const timezone = jstz.determine();
 
 const router = new VueRouter({
     linkActiveClass: 'active',
@@ -98,6 +100,7 @@ window.app = new Vue({
         bookingSuccess: false,
         authAction: 'signup',
         GoogleAuth: null,
+        timezone: '',
     },
 
     computed: {
@@ -242,6 +245,7 @@ window.app = new Vue({
 
     created() {
         this.getData();
+        this.timezone = timezone.name();
 
         if (typeof gapi != 'undefined') {
             gapi.load('auth2', () => {
@@ -258,6 +262,45 @@ window.app = new Vue({
     },
 
     methods: {
+        timezoneTime(time) {
+            let profileTimezone = this.$root.profile.timezone;
+            let timezoneTime;
+            if (profileTimezone != this.timezone) {
+                let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
+				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
+				let timeslotDate = `${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`;
+                timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
+            } else {
+				timezoneTime = dayjs(time);
+			}
+            return timezoneTime.format('hh:mmA');
+        },
+
+        getTimeZoneOffset(date, timeZone) {
+            // Abuse the Intl API to get a local ISO 8601 string for a given time zone.
+            const options = {timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
+            const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+            const parts = dateTimeFormat.formatToParts(date);
+            const map = new Map(parts.map(x => [x.type, x.value]));
+            const year = map.get('year');
+            const month = map.get('month');
+            const day = map.get('day');
+            let hour = map.get('hour');
+            const minute = map.get('minute');
+            const second = map.get('second');
+            const ms = date.getMilliseconds().toString().padStart(3, '0');
+            if (hour == '24') hour = '00';
+            const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
+
+            // Lie to the Date object constructor that it's a UTC time.
+            const lie = new Date(iso + 'Z');
+
+            // Return the difference in timestamps, as minutes
+            // Positive values are West of GMT, opposite of ISO 8601
+            // this matches the output of `Date.getTimeZoneOffset`
+            return -(lie - date) / 60 / 1000;
+        },
+        
         reset() {
             this.$refs['bookingModal'].hide();
             setTimeout(() => {
@@ -399,8 +442,7 @@ window.app = new Vue({
                         e => {
                             FB.api('/me', {fields: 'first_name, last_name, email'}, data => {
                                 if (data && !data.error) {
-                                    let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                                    data.timezone = timezone;
+                                    data.timezone = this.timezone;
                                     data.date = dayjs(this.selectedDate).format('YYYY-MM-DD');
                                     data.time = this.selectedTimeslot.time;
 
@@ -445,7 +487,7 @@ window.app = new Vue({
                     this.GoogleAuth.signIn()
                         .then(googleUser => {
                             let profile = googleUser.getBasicProfile();
-                            let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                            let timezone = this.timezone;
                             let data = {
                                 id: profile.getId(),
                                 first_name: profile.getGivenName(),

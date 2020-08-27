@@ -57,7 +57,7 @@ export default {
 		this.loginForm.invite_token = this.$root.invite_token;
 		this.contact = CONTACT;
 		if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
-		this.loginForm.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		this.loginForm.timezone = this.$parent.timezone;
 	},
 
 	mounted() {

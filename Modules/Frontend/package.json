@@ -61,6 +61,7 @@
         "html2canvas": "^1.0.0-rc.5",
         "image-data-uri": "^2.0.1",
         "jquery": "^3.5.1",
+        "jstz": "^2.1.1",
         "leader-line": "^1.0.5",
         "magicli": "^0.2.1",
         "mime": "^2.4.5",

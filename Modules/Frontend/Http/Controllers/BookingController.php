@@ -18,6 +18,7 @@ use Mail;
 use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\UpdateBooking;
 use Modules\Frontend\Mail\DeleteBooking;
+use App\Jobs\SendSMS;
 
 class BookingController extends Controller
 {
@@ -100,6 +101,9 @@ class BookingController extends Controller
         
         $booking = Booking::create($data);
         Mail::queue(new NewBooking($booking));
+
+        // SMS
+        SendSMS::dispatch($user->mobile, 'A new booking is created for your account');
 
         $user_id = null;
         $description = '';

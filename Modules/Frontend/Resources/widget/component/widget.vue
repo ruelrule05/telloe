@@ -39,13 +39,13 @@
 								<template v-cloak>
 									<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
 									<div v-else class="text-left mt-4">
-										<div v-for="service in services" class="service cursor-pointer px-4 pt-4" @click="selectedService = service">
+										<div v-for="service in services" :key="service.id" class="service cursor-pointer px-4 pt-4" @click="selectedService = service">
 											<div class="border-bottom pb-4">
 												<h3 class="font-heading h6 mb-1 mt-0">{{ service.name }} ({{ service.duration }} minutes)</h3>
 												<p class="mt-0 mb-0">{{ service.description }}</p>
 
 												<div class="d-flex mt-2">
-													<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
+													<div v-for="day in days" :key="day" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
 														<span class="position-absolute-center font-weight-light line-height-1">{{ day.charAt(0) }}</span>
 													</div>
 												</div>
@@ -64,7 +64,7 @@
 										<p class="mt-0 mb-0">{{ selectedService.description }}</p>
 									</div>
 									<div class="d-flex my-3">
-										<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[selectedService.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
+										<div v-for="day in days" :key="day" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[selectedService.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
 											<span class="position-absolute-center font-weight-light line-height-1">{{ day.charAt(0) }}</span>
 										</div>
 									</div>
@@ -92,7 +92,7 @@
 												<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 												<div class="flex-grow-1 overflow-hidden">
 													<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * sliderItemSize)}px, 0px)`}" ref="weekday-slider">
-														<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :class="{'disabled': disabledDate(date)}" :id="date.id">
+														<div v-for="(date, index) in weekDayOptions" :key="index" class="px-1 weekday-day" :class="{'disabled': disabledDate(date)}" :id="date.id">
 															<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-primary text-white': sliderActiveDate(date)}" @click="selectedDate = date.date">
 																{{ date.title }}
 																<strong class="text-uppercase d-block">{{ date.description }}</strong>
@@ -120,10 +120,10 @@
 													</div>
 													<div v-else>
 														<div class="d-flex flex-wrap">
-															<div v-for="timeslot in timeslots" class="mt-2 w-100">
+															<div v-for="timeslot in timeslots" :key="timeslot.value" class="mt-2 w-100">
 																<div class="rounded cursor-pointer py-3 px-3" :class="[timeslot == selectedTimeslot ? 'bg-blue text-white' : 'bg-light']" @click="selectedTimeslot = timeslot;">
-																	<small class="d-block">{{ $root.profile.timezone }}</small>
-																	{{ timeslot.label }}
+																	<small class="d-block">{{ timezone }}</small>
+																	{{ timezoneTime(timeslot.time) }}
 																</div>
 															</div>
 														</div>

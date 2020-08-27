@@ -52,6 +52,10 @@
 									<label class="form-label">Email</label>
 									<input type="email" class="form-control" data-required placeholder="Email" v-model="user.email">
 								</div>
+								<div class="form-group">
+									<label class="form-label">Mobile No.</label>
+									<input type="tel" class="form-control" data-required placeholder="Mobile No." v-model="user.phone">
+								</div>
 								<div class="text-right">
 									<button type="submit" class="btn btn-primary">Update</button>
 								</div>

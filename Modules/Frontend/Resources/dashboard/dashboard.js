@@ -138,6 +138,7 @@ import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
 import Notification from '../components/notification/notification.vue';
 
+
 import store from './store';
 window.app = new Vue({
     router: router,

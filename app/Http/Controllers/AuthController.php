@@ -40,7 +40,8 @@ class AuthController extends Controller
             'outlook_calendar_events',
             'stripe_account',
             'ignored_calendar_events',
-            'id_documents'
+            'id_documents',
+            'phone'
         ]) : false;
 
         if($user && $last_online) :
@@ -64,7 +65,7 @@ class AuthController extends Controller
                     'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
                 ];
 
-                if(isValidTimezone($request->timezone)) :
+                if(isValidTimezone($request->timezone) && !$user->timezone) :
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
@@ -111,7 +112,7 @@ class AuthController extends Controller
             'user_id' => $user->id
         ]);
 
-        if(isValidTimezone($request->timezone)) :
+        if(isValidTimezone($request->timezone) && !$user->timezone) :
             $user->timezone = $request->timezone;
             $user->save();
         endif;
@@ -204,6 +205,7 @@ class AuthController extends Controller
             'last_name' => 'required',
             'email' => 'required|email',
             'profile_image_file' => 'nullable|mimes:jpeg,png',
+            'phone' => 'nullable|numeric',
         ]);
         $emailExists = User::where('email', $request->email)->where('id', '<>', Auth::user()->id)->first();
         if($emailExists) return abort(403, 'Email already exists.');
@@ -283,7 +285,7 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
-                if(isValidTimezone($request->timezone)) :
+                if(isValidTimezone($request->timezone) && !$user->timezone) :
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;
@@ -342,7 +344,7 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
-                if(isValidTimezone($request->timezone)) :
+                if(isValidTimezone($request->timezone) && !$user->timezone) :
                     $user->timezone = $request->timezone;
                     $user->save();
                 endif;

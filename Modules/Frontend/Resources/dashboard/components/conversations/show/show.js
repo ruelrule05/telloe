@@ -252,8 +252,7 @@ export default {
         },
 
         messageTimezoneTime(message) {
-            let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            timezone = this.$root.auth.timezone;
+            let timezone = this.$root.auth.timezone;
             let timezoneTime;
             if (timezone != message.sender.timezone) {
                 let messageTZ = this.getTimeZoneOffset(new Date(), message.sender.timezone);

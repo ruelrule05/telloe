@@ -133,8 +133,8 @@
 															<div class="d-flex flex-wrap">
 																<div v-for="timeslot in timeslots" class="mt-2 w-100">
 																	<div class="rounded cursor-pointer py-3 px-3" :class="[timeslot == selectedTimeslot ? 'bg-blue text-white' : 'bg-light']" @click="selectedTimeslot = timeslot;">
-																		<small class="d-block">@{{ profile.timezone }}</small>
-																		@{{ timeslot.label }}
+																		<small class="d-block">@{{ timezone }}</small>
+																		@{{ timezoneTime(timeslot.time) }}
 																	</div>
 																</div>
 															</div>

@@ -60,7 +60,7 @@ export default {
  			if (this.contact.first_name) this.signupForm.first_name = this.contact.first_name;
  			if (this.contact.last_name) this.signupForm.last_name = this.contact.last_name;
 		}
-		this.signupForm.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		this.signupForm.timezone = this.$parent.timezone;
 	},
 
 	methods: {

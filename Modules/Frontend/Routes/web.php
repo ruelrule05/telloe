@@ -6,8 +6,8 @@
  */
 
 Route::get('test', function() {
-    $date = \Carbon\Carbon::parse('2020-09-23');
-    echo $date->timestamp;
+    /* $nexmo = new \App\Http\NexmoClient;
+    $nexmo->sms('+61424315480', 'Test message'); */
 });
 
 
