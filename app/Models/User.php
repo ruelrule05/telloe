@@ -24,7 +24,9 @@ class User extends Authenticatable implements JWTSubject
         'username', 
         'phone', 
         'ignored_calendar_events',
-        'id_documents'
+        'id_documents',
+        'notify_email',
+        'notify_sms',
     ];
 
     /**

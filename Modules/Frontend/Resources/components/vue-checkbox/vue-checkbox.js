@@ -10,7 +10,7 @@ export default {
 
 	watch: {
 		value: function(value) {
-			this.state = value;
+			this.state = value ? 1 : 0;
 		},
 
 		state: function(value) {

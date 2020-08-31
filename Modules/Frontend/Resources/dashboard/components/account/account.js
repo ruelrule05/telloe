@@ -1,15 +1,19 @@
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import VueButton from '../../../components/vue-button.vue';
+import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 import ExclamationCircleIcon from '../../../icons/exclamation-circle';
 import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
 const {getNameList} = require('country-list');
 const toBlob = require('data-uri-to-blob');
+const countryCodes = require('country-codes-list');
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 export default {
 	components: {
 		VueFormValidate,
 		VueButton,
+		VueCheckbox,
 		VCalendar,
 
 		ExclamationCircleIcon,
@@ -17,8 +21,9 @@ export default {
 	},
 
 	data: () => ({
+		loading: false,
 		user: null,
-		tab: 'profile',
+		tab: 'notifications', // profile
 		securityForm: {
 			current_password: '',
 			password: '',
@@ -29,6 +34,9 @@ export default {
 			countryDisabled: false,
 			loading: false,
 		},
+		allowed_countries: ['AU', 'CA', 'NZ', 'UK', 'US'],
+		selectedAreaCode: {text: 'AU', value: '+61'},
+		getUnicodeFlagIcon: null,
 	}),
 
 	watch: {
@@ -41,14 +49,20 @@ export default {
 		tabs() {
 			let tabs = ['profile', 'security'];
 			if(this.$root.auth.role.role == 'client') tabs.push('payout');
+			tabs.push('notifications')
 			return tabs;
 		},
 
+		countryAreaCodes() {
+			return countryCodes.customArray({ text: '{countryCode}', value: '+{countryCallingCode}'}, {filter: (data) => {
+				return ['AU', 'CA', 'NZ', 'UK', 'US'].find(x => x == data.countryCode);
+			}});
+		},
+
 		countries() {
-			let allowed_countries = ['AU', 'CA', 'NZ', 'UK', 'US'];
 			let countries = [];
 			Object.entries(getNameList()).forEach(([name, code]) => {
-				if(allowed_countries.find(x => x == code)) {
+				if(this.allowed_countries.find(x => x == code)) {
 					countries.push({
 						name: name,
 						code: code,
@@ -82,6 +96,7 @@ export default {
 	},
 
 	created() {
+		this.getUnicodeFlagIcon = getUnicodeFlagIcon;
 		this.user = Object.assign({}, this.$root.auth);
 		this.$root.heading = 'Account';
 		if (this.$root.auth.role.role == 'client' && Object.keys(this.user.stripe_account).length > 0) {
@@ -118,12 +133,14 @@ export default {
 	methods: {
 
 		async save() {
+			this.loading = true;
             let bodyFormData = new FormData();
             Object.keys(this.user).map((k) => {
                 bodyFormData.append(k, this.user[k]);
             });
 			let response = await axios.post('/auth', bodyFormData, {toasted: true, headers: {'Content-Type': 'multipart/form-data'}});
 			this.$root.auth = response.data;
+			this.loading = false;
 			this.$toasted.show('Account has been updated successfully.');
 		},
 

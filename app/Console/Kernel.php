@@ -8,6 +8,7 @@ use App\Models\Booking;
 use Carbon\Carbon;
 use Mail;
 use Modules\Frontend\Mail\UpcomingBooking;
+use App\Jobs\SendSMS;
 
 class Kernel extends ConsoleKernel
 {
@@ -35,15 +36,29 @@ class Kernel extends ConsoleKernel
                 $diffInMinutes = $now->diffInMinutes(Carbon::parse($booking->date . ' ' . $booking->start), false);
                 $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
                 if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
-                    //echo 'notify 2 hours';
-                    Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $booking->user->full_name, $actionUrl));
-                    Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
+                    if($booking->service->user->notify_email) :
+                        Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $booking->user->full_name, $actionUrl));
+                    endif;
+                    if($booking->user->notify_email) :
+                        Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
+                    endif;
                     $booking->notified_2 = true;
                     $booking->save();
+
+                    // SendSMS
+                    if($booking->service->user->notify_sms && $booking->service->user->phone) :
+                        SendSMS::dispatch($booking->service->user->phone, 'You have an upcoming booking in less than 2 hours.');
+                    endif;
+                    if($booking->user->notify_sms && $booking->user->phone) :
+                        SendSMS::dispatch($booking->user->phone, 'You have an upcoming booking in less than 2 hours.');
+                    endif;
                 elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) : // 24 hours notif
-                    //echo 'notify 24 hours';
-                    Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $booking->user->full_name, $actionUrl));
-                    Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
+                    if($booking->service->user->notify_email) :
+                        Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $booking->user->full_name, $actionUrl));
+                    endif;
+                    if($booking->user->notify_email) :
+                        Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
+                    endif;
                     $booking->notified_24 = true;
                     $booking->save();
                 endif;

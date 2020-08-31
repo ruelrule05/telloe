@@ -38,6 +38,8 @@
         "concatenateblobs": "^1.0.2",
         "connection-line": "^1.1.6",
         "convert-time": "^0.3.0",
+        "country-codes-list": "^1.6.8",
+        "country-flag-icons": "^1.2.3",
         "country-list": "^2.2.0",
         "css-loader": "^3.5.3",
         "data-uri-to-blob": "0.0.4",

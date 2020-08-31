@@ -2,7 +2,7 @@
 	<div class="overflow-hidden h-100 d-flex flex-column" v-if="user">
 		<div class="p-4">
 			<ul class="nav nav-tabs">
-			  	<li v-for="t in tabs" class="nav-item">
+			  	<li v-for="t in tabs" :key="t" class="nav-item">
 			    	<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer d-flex align-items-center text-capitalize text-body" @click.native="tab = t">
 			    		<exclamation-circle-icon v-if="t == 'payout' && $root.auth.role.role == 'client' && !$root.payoutComplete" class="fill-warning rounded-circle mr-2" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>{{ t }}
 			    	</router-link>
@@ -54,10 +54,18 @@
 								</div>
 								<div class="form-group">
 									<label class="form-label">Mobile No.</label>
-									<input type="tel" class="form-control" data-required placeholder="Mobile No." v-model="user.phone">
+									<div class="input-group mb-3">
+										<div class="input-group-prepend dropdown">
+											<button class="btn btn-outline-light text-body border dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ getUnicodeFlagIcon(selectedAreaCode.text) }} {{ selectedAreaCode.value }}</button>
+											<div class="dropdown-menu w-100">
+												<span class="dropdown-item cursor-pointer" :class="{'active': selectedAreaCode.text == areaCode.text}" v-for="(areaCode, index) in countryAreaCodes" :key="index" @click="selectedAreaCode = areaCode">{{ getUnicodeFlagIcon(areaCode.text) }} {{ areaCode.value }}</span>
+											</div>
+										</div>
+										<input type="tel" class="form-control" data-required placeholder="Mobile No." v-model="user.phone">
+										</div>
 								</div>
 								<div class="text-right">
-									<button type="submit" class="btn btn-primary">Update</button>
+									<vue-button :loading="loading" type="submit" button_class="btn btn-primary">Update</vue-button>
 								</div>
 							</vue-form-validate>
 						</div>
@@ -85,7 +93,7 @@
 									<input type="password" v-model="securityForm.password_confirmation" class="form-control" data-required placeholder="Confirm Password">
 								</div>
 								<div class="text-right">
-									<button type="submit" class="btn btn-primary">Update</button>
+									<vue-button :loading="loading" type="submit" button_class="btn btn-primary">Update</vue-button>
 								</div>
 							</vue-form-validate>
 						</div>
@@ -116,7 +124,7 @@
 										<label class="form-label">Country</label>
 										<select v-model="stripeAccountForm.country" class="form-control text-capitalize" :class="{'text-gray': !stripeAccountForm.country}" data-required :disabled="stripeAccountForm.countryDisabled">
 											<option value="" disabled selected>- Choose a country -</option>
-											<option :value="country.code" v-for="country in countries">{{ country.name }}</option>
+											<option :value="country.code" v-for="country in countries" :key="country.name">{{ country.name }}</option>
 										</select>
 										<div class="d-flex align-items-center mt-1">
 											<exclamation-circle-icon class="fill-danger" height="16" width="16"></exclamation-circle-icon>
@@ -205,6 +213,28 @@
 
 								<div class="text-right mt-3">
 									<vue-button :loading="stripeAccountForm.loading" type="submit" button_class="btn btn-primary">Update</vue-button>
+								</div>
+							</vue-form-validate>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Notifications -->
+			<div v-else-if="tab == 'notifications'" class="row">
+				<div class="col-md-6">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="font-heading h3 mb-5">Notifications</h5>
+							<vue-form-validate @submit="save">
+								<div class="form-group mb-2">
+									<vue-checkbox v-model="user.notify_email" label="Notify me by email for each booking activity."></vue-checkbox>
+								</div>
+								<div class="form-group">
+									<vue-checkbox v-model="user.notify_sms" label="Notify me by SMS 2 hours before booking."></vue-checkbox>
+								</div>
+								<div class="text-right mt-5">
+									<vue-button :loading="loading" type="submit" button_class="btn btn-primary">Update Settings</vue-button>
 								</div>
 							</vue-form-validate>
 						</div>

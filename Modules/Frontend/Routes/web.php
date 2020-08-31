@@ -6,8 +6,8 @@
  */
 
 Route::get('test', function() {
-    /* $nexmo = new \App\Http\NexmoClient;
-    $nexmo->sms('+61424315480', 'Test message'); */
+    // $nexmo = new \App\Http\NexmoClient;
+    // $nexmo->sms('09162792651', 'You an upcoming booking in less than 2 hours');
 });
 
 
