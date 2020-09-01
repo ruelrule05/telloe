@@ -62,7 +62,7 @@
 										<div class="input-group-prepend dropdown">
 											<button class="btn btn-outline-light d-flex align-items-center text-body border" type="button" disabled><span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(timezoneAreaCode.country) }}</span> {{ user.dial_code }}</button>
 										</div>
-										<input type="tel" class="form-control" data-required placeholder="Mobile No." v-model="user.phone">
+										<input type="tel" class="form-control" placeholder="Mobile No." v-model="user.phone">
 										</div>
 								</div>
 								<div class="text-right">
