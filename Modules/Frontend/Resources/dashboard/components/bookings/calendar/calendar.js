@@ -249,9 +249,11 @@ export default {
 			if(value.length > 0 && !this.selectedDate) {
 				let now = this.dayjs();
 				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
-				let date = this.dayjs(nextBooking.date).toDate();
-				this.selectedDate = date;
-				this.infoTab = 'bookings';
+				if(nextBooking) {
+					let date = this.dayjs(nextBooking.date).toDate();
+					this.selectedDate = date;
+					this.infoTab = 'bookings';
+				}
 			}
 		}
 	},
