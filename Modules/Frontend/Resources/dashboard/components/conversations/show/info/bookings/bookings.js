@@ -48,6 +48,7 @@ export default {
     },
 
     data: () => ({
+        ready: false,
         user: null,
         selectedService: null,
         selectedBooking: null,
@@ -81,7 +82,10 @@ export default {
             if(value && this.selectedService) this.getTimeslots(this.selectedService.id, value);
         },
         conversation: function(value) {
-            this.getBookings(value);
+            this.ready = false;
+            this.getBookings(value).then(() => {
+                this.ready = true;
+            });
         }
     },
 
@@ -182,7 +186,9 @@ export default {
     },
 
     created() {
-        this.getBookings(this.conversation);
+        this.getBookings(this.conversation).then(() => {
+            this.ready = true;
+        });
     },
 
     mounted() {
