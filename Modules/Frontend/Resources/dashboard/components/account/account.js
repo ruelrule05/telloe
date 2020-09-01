@@ -1,6 +1,7 @@
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import VueButton from '../../../components/vue-button.vue';
 import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
+import VueSelect from '../../../components/vue-select/vue-select.vue';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 import ExclamationCircleIcon from '../../../icons/exclamation-circle';
@@ -9,11 +10,14 @@ const {getNameList} = require('country-list');
 const toBlob = require('data-uri-to-blob');
 const countryCodes = require('country-codes-list');
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
+const ct = require('countries-and-timezones');
+
 export default {
 	components: {
 		VueFormValidate,
 		VueButton,
 		VueCheckbox,
+		VueSelect,
 		VCalendar,
 
 		ExclamationCircleIcon,
@@ -34,7 +38,7 @@ export default {
 			countryDisabled: false,
 			loading: false,
 		},
-		allowed_countries: ['AU', 'CA', 'NZ', 'UK', 'US'],
+		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US'],
 		selectedAreaCode: {text: 'AU', value: '+61'},
 		getUnicodeFlagIcon: null,
 	}),
@@ -42,10 +46,42 @@ export default {
 	watch: {
 		'$route.query.tab': function(value) {
 			this.tab = value;
+		},
+
+		'user.timezone': function(value) {
+			this.user.dial_code = countryCodes.customArray({ text: '{countryCode}', value: '+{countryCallingCode}'}, {filter: (data) => {
+				return this.timezoneAreaCode.country == data.countryCode;
+			}})[0].value;
 		}
 	},
 
 	computed: {
+		timezoneAreaCode() {
+			let userTimezone = ct.getTimezone(this.user.timezone);
+			return userTimezone;
+			/* const countryCode = countryCodes.customArray({ text: '{countryCode}', value: '+{countryCallingCode}'}, {filter: (data) => {
+				return this.$root.auth..find(x => x == data.countryCode);
+			}}); */
+		},
+
+		availableTimezones() {
+			let timezones = [];
+			this.allowed_countries.forEach(code => {
+				let countryTimezones = ct.getTimezonesForCountry(code);
+				if(countryTimezones) {
+					countryTimezones.forEach(timezone => {
+						timezones.push({
+							text: timezone.name,
+							value: timezone.name
+						});
+					});
+				}
+			});
+			return timezones.sort((a, b) => {
+				return a.text > b.text ? 1 : -1;
+			});
+		},
+
 		tabs() {
 			let tabs = ['profile', 'security'];
 			if(this.$root.auth.role.role == 'client') tabs.push('payout');
@@ -55,7 +91,7 @@ export default {
 
 		countryAreaCodes() {
 			return countryCodes.customArray({ text: '{countryCode}', value: '+{countryCallingCode}'}, {filter: (data) => {
-				return ['AU', 'CA', 'NZ', 'UK', 'US'].find(x => x == data.countryCode);
+				return this.allowed_countries.find(x => x == data.countryCode);
 			}});
 		},
 
@@ -74,6 +110,7 @@ export default {
 			});
 			return countries;
 		},
+
 		routingNumber() {
 			switch(this.stripeAccountForm.country) {
 				case 'AU':
@@ -134,9 +171,9 @@ export default {
 
 		async save() {
 			this.loading = true;
-            let bodyFormData = new FormData();
+			let bodyFormData = new FormData();
             Object.keys(this.user).map((k) => {
-                bodyFormData.append(k, this.user[k]);
+				bodyFormData.append(k, this.user[k]);
             });
 			let response = await axios.post('/auth', bodyFormData, {toasted: true, headers: {'Content-Type': 'multipart/form-data'}});
 			this.$root.auth = response.data;

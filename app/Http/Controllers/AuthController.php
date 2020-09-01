@@ -205,7 +205,7 @@ class AuthController extends Controller
             'last_name' => 'required',
             'email' => 'required|email',
             'profile_image_file' => 'nullable|mimes:jpeg,png',
-            'phone' => 'nullable|numeric',
+            'timezone' => 'required',
         ]);
         $emailExists = User::where('email', $request->email)->where('id', '<>', Auth::user()->id)->first();
         if($emailExists) return abort(403, 'Email already exists.');
@@ -213,9 +213,15 @@ class AuthController extends Controller
         $usernameExists = User::where('id', '<>', Auth::user()->id)->where('username', $request->username)->first();
         if($usernameExists) return abort(403, 'Username is already taken.');
 
+
+
         $data = $request->all();
         $data['username'] = str_replace(' ', '', $request->username);
         $user = Auth::user();
+
+        if(isValidTimezone($request->timezone)) :
+            $data['timezone'] = $request->timezone;
+        endif;
 
         if($request->hasFile('profile_image_file') && $request->file('profile_image_file')->isValid()) :
             $destinationPath = 'storage/profile-images/';

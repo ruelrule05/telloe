@@ -17,10 +17,10 @@
                 </div> -->
             </div>
 
-            <div v-if="!conversation.member.is_pending" id="info-items" class="mt-3 d-flex flex-column">
+            <div id="info-items" class="mt-3 d-flex flex-column">
                 <template v-if="(conversation.member.role || {}).role != 'support'">
                     <!-- Overview -->
-                    <div class="border-top border-top px-4 py-2">
+                    <div class="border-top border-top px-4 py-2" v-if="!conversation.member.is_pending">
                         <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview" @click="toggleCollapse($event); editFields = false;">
                             {{ editFields ? 'Edit Fields' : 'Overview' }}
                             <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
@@ -134,7 +134,7 @@
                 </template>
 
                 <!-- Files -->
-                <div class="border-top px-4 py-2">
+                <div class="border-top px-4 py-2" v-if="!conversation.member.is_pending">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#files" @click="toggleCollapse">
                         Files
                         <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
@@ -198,7 +198,7 @@
                 </div>
                 
                 <!-- Tags -->
-                <div class="border-top px-4 py-2">
+                <div class="border-top px-4 py-2" v-if="!conversation.member.is_pending">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
                         Tags
                         <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
@@ -255,7 +255,7 @@
                 </div>
 
                 
-                <template v-if="(conversation.member.role || {}).role != 'support'">
+                <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
                     <!-- Notes -->
                     <div class="border-top px-4 py-2">
                         <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes" @click="toggleCollapse">

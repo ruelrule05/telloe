@@ -23,10 +23,12 @@ class User extends Authenticatable implements JWTSubject
         'email', 
         'username', 
         'phone', 
+        'timezone',
         'ignored_calendar_events',
         'id_documents',
         'notify_email',
         'notify_sms',
+        'dial_code'
     ];
 
     /**

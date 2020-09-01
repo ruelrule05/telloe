@@ -175,7 +175,7 @@ export default {
 	created() {
         if(this.conversation.members.length == 1) {
             let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
-            this.getUserBlacklistedServices(user_id);
+            if(user_id) this.getUserBlacklistedServices(user_id);
         }
         if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
         this.showUserCustomFields();

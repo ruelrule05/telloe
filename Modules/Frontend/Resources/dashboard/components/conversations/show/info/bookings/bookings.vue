@@ -1,5 +1,5 @@
 <template>
-	<div v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support' && membersLength == 1" class="position-relative h-100 pb-2" ref="addBookingTitle">
+	<div v-if="(conversation.member.role || {}).role != 'support' && membersLength == 1" class="position-relative h-100 pb-2" ref="addBookingTitle">
 
         <!-- Bookings -->
 		<div v-if="!ready" class="text-center py-4">
@@ -48,7 +48,7 @@
 							<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 							<div class="flex-grow-1 overflow-hidden">
 								<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-									<div v-for="(date, index) in weekDayOptions" :key="date" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
+									<div v-for="(date, index) in weekDayOptions" :key="index" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 										<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-blue text-white': (selectedDate ? selectedDate.getTime() : '') === date.date.getTime()}" @click="selectedDate = date.date">
 											{{ date.title }}
 											<strong class="text-uppercase d-block">{{ date.description }}</strong>
@@ -110,7 +110,7 @@
 	                    <h6 class="font-heading mb-0">{{ service.name }}</h6>
 	                    <small class="d-block">{{ service.duration }} minutes</small>
 	                </div>
-	                <div class="ml-auto" v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1">
+	                <div class="ml-auto" v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1 && !conversation.member.is_pending">
 	                    <toggle-switch active-class="bg-green" :value="!isServiceBlacklisted(service)" @click.native.stop @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
 	                </div>
 	            </div>
@@ -139,7 +139,7 @@
 					<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 					<div class="flex-grow-1 overflow-hidden">
 						<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-							<div v-for="(date, index) in weekDayOptions" :key="date" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
+							<div v-for="(date, index) in weekDayOptions" :key="index" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 								<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-blue text-white': (selectedDate ? selectedDate.getTime() : '') === date.date.getTime()}" @click="selectedDate = date.date">
 									{{ date.title }}
 									<strong class="text-uppercase d-block">{{ date.description }}</strong>
@@ -164,7 +164,7 @@
 						</div>
 						<div v-else>
 							<div class="d-flex flex-wrap pb-2 pr-2">
-								<div v-for="timeslot in timeslots" class="mb-2 w-100">
+								<div v-for="timeslot in timeslots" class="mb-2 w-100" :key="timeslot.label">
 									<div class="bg-light btn-timeslot p-2 rounded cursor-pointer" :class="{'bg-primary text-white': timeslot == selectedTimeslot}" @click="selectedTimeslot = timeslot; timeslotDropdown = false;">
 										<div class="rounded border p-2 mb-1">
 											<small class="d-block">Your time: {{ $root.auth.timezone }}</small>

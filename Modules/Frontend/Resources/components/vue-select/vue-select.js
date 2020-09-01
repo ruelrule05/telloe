@@ -111,7 +111,7 @@ export default {
 
                 if (!this.multiple && this.searchable && typeof this.search != 'undefined' && this.search.trim().length > 0) {
                     const pos = option.text.toLowerCase().indexOf(this.search.trim().toLowerCase());
-                    if (pos != 0) show = false;
+                    if (pos < 0) show = false;
                 }
 
                 return show;
@@ -136,6 +136,9 @@ export default {
                 this.selected_value = value;
                 this.$emit('input', this.selected_value);
             }
+            this.$nextTick(() => {
+                $(this.$refs['dropdown-toggle']).dropdown('update');
+            });
         },
     },
 

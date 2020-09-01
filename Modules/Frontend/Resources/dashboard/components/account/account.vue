@@ -53,13 +53,14 @@
 									<input type="email" class="form-control" data-required placeholder="Email" v-model="user.email">
 								</div>
 								<div class="form-group">
+									<label class="form-label">Timezone</label>
+									<vue-select :options="availableTimezones" searchable v-model="user.timezone"></vue-select>
+								</div>
+								<div class="form-group">
 									<label class="form-label">Mobile No.</label>
 									<div class="input-group mb-3">
 										<div class="input-group-prepend dropdown">
-											<button class="btn btn-outline-light text-body border dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ getUnicodeFlagIcon(selectedAreaCode.text) }} {{ selectedAreaCode.value }}</button>
-											<div class="dropdown-menu w-100">
-												<span class="dropdown-item cursor-pointer" :class="{'active': selectedAreaCode.text == areaCode.text}" v-for="(areaCode, index) in countryAreaCodes" :key="index" @click="selectedAreaCode = areaCode">{{ getUnicodeFlagIcon(areaCode.text) }} {{ areaCode.value }}</span>
-											</div>
+											<button class="btn btn-outline-light d-flex align-items-center text-body border" type="button" disabled><span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(timezoneAreaCode.country) }}</span> {{ user.dial_code }}</button>
 										</div>
 										<input type="tel" class="form-control" data-required placeholder="Mobile No." v-model="user.phone">
 										</div>

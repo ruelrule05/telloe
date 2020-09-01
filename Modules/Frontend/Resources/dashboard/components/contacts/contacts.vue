@@ -61,7 +61,7 @@
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 						                    		</button>
 													<div class="dropdown-menu dropdown-menu-right">
-													    <span class="dropdown-item cursor-pointer" :class="{'disabled': contact.is_pending}" @click="selectedContact = contact; infoTab = 'manage_contact'; selectedContact.ready = false;">Manage</span>
+													    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; infoTab = 'manage_contact'; selectedContact.ready = false;">Manage</span>
 													    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; $refs['deleteModal'].show()">Delete</span>
 													</div>
 						                    	</div>
@@ -129,7 +129,7 @@
 							</div>
 							<div class="form-group">
 								<strong class="d-block mb-2 font-weight-bold">Available services</strong>
-				                <div v-for="service in services" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
+				                <div v-for="service in services" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
 				                    <div>
 				                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
 				                        <small class="text-gray d-block">{{ service.duration }} minutes</small>
@@ -143,7 +143,7 @@
 							<div class="form-group" v-if="($root.auth.custom_fields || []).length > 0">
 								<strong class="d-block mb-2">Fields (Optional)</strong>
 								<div class="form-row">
-									<div class="col-6 mb-2" v-for="field in $root.auth.custom_fields">
+									<div class="col-6 mb-2" v-for="field in $root.auth.custom_fields" :key="field">
 										<label class="form-label">{{ field }}</label>
 										<input type="text" class="form-control" v-model="newContact.custom_fields[field]">
 									</div>
@@ -153,6 +153,10 @@
 							<div class="form-group">
 								<strong class="d-block mb-2">Invitation Message (Optional)</strong>
 								<textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
+							</div>
+
+							<div class="form-group">
+								<vue-checkbox v-model="newContact.sendToEmail" label="Send invitation link to email"></vue-checkbox>
 							</div>
 						
 							<div class="d-flex">

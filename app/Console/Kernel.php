@@ -46,11 +46,11 @@ class Kernel extends ConsoleKernel
                     $booking->save();
 
                     // SendSMS
-                    if($booking->service->user->notify_sms && $booking->service->user->phone) :
-                        SendSMS::dispatch($booking->service->user->phone, 'You have an upcoming booking in less than 2 hours.');
+                    if($booking->service->user->notify_sms && $booking->service->user->phone && $booking->service->user->dial_code) :
+                        SendSMS::dispatch($booking->service->user->dial_code . $booking->service->user->phone, 'You have an upcoming booking in less than 2 hours.');
                     endif;
-                    if($booking->user->notify_sms && $booking->user->phone) :
-                        SendSMS::dispatch($booking->user->phone, 'You have an upcoming booking in less than 2 hours.');
+                    if($booking->user->notify_sms && $booking->user->phone && $booking->user->dial_code) :
+                        SendSMS::dispatch($booking->user->dial_code . $booking->user->phone, 'You have an upcoming booking in less than 2 hours.');
                     endif;
                 elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) : // 24 hours notif
                     if($booking->service->user->notify_email) :

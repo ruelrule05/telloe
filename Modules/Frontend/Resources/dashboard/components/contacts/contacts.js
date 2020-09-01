@@ -1,6 +1,7 @@
 import {mapState, mapActions} from 'vuex';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
+import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 import Info from '../conversations/show/info/info.vue';
 
@@ -14,7 +15,8 @@ import CloseIcon from '../../../icons/close';
 export default {
 	components: {
 		Modal, 
-		VueFormValidate, 
+        VueFormValidate, 
+        VueCheckbox,
 		ToggleSwitch,
         Info,
 
@@ -36,7 +38,8 @@ export default {
         addContact: false,
 		newContact: {
 			custom_fields: {},
-			blacklisted_services: []
+            blacklisted_services: [],
+            sendToEmail: 1,
 		},
 		activeTab: 'custom_fields',
         selectedFile: null,
@@ -74,7 +77,9 @@ export default {
                     member: this.selectedContact.contact_user,
                     members: [this.selectedContact.contact_user],
                     user: this.$root.auth,
+                    user_id: this.$root.auth.id
                 };
+                conversation.member.is_pending = this.selectedContact.is_pending;
             } else {
                 if(!this.selectedContact.ready) {
                     this.showConversation({id: conversation.id}).then(() => {
@@ -156,7 +161,13 @@ export default {
 
 		store() {
 			if(this.newContact.email) {
-				this.storeContact(this.newContact);
+				this.storeContact(this.newContact).then(() => {
+                    this.newContact = {
+                        custom_fields: {},
+                        blacklisted_services: [],
+                        sendToEmail: 1,
+                    };
+                });
                 this.infoTab = '';
 			}
 		},

@@ -121,7 +121,7 @@ class ContactController extends Controller
             ]);
         endif;
 
-        Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->invite_message));
+        if($request->sendToEmail) Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->invite_message));
         $contact->conversation = $conversation;
         if($createMessage) :
             $conversation->delete();
