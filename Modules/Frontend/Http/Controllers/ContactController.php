@@ -48,7 +48,7 @@ class ContactController extends Controller
     {
         $this->validate($request, [
             'email' => 'required|email',
-            'invite_message' => 'nullable|string|max:100',
+            'invite_message' => 'nullable|string',
         ]);
 
         if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as contact");
