@@ -181,11 +181,11 @@ class BookingController extends Controller
 
         $booking->update($data);
 
+        Mail::queue(new UpdateBooking($booking));
         $user_id = null;
         $description = '';
         $link = '';
         if($booking->user) :
-            Mail::queue(new UpdateBooking($booking));
             if(Auth::user()->id == $booking->user_id) : // if contact - notify client
                 $user_id = $booking->service->user->id;
                 $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
@@ -209,11 +209,12 @@ class BookingController extends Controller
 
     public function destroy($id)
     {
-        $booking = Booking::with('user', 'service.user')->where('id', $id)->first();
+        $booking = Booking::with('user', 'contact', 'service.user')->where('id', $id)->first();
         $this->authorize('delete', $booking);
 
+        Mail::queue(new DeleteBooking($booking->toArray()));
+
         if($booking->user) :
-            Mail::queue(new DeleteBooking($booking->toArray()));
             if(Auth::user()->id == $booking->user_id) : // if contact - notify client
                 $user_id = $booking->service->user->id;
                 $description = "<strong>{$booking->user->full_name}</strong> has deleted their booking.";
