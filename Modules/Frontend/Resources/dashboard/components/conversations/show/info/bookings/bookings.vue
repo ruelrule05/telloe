@@ -6,18 +6,20 @@
 			<template v-if="userBookings.length > 0">
 				<template v-if="!selectedBooking">
 					<vue-checkbox v-if="userBookings.length > 0" :value="showExpiredBookings" @input="value => {showExpiredBookings = value}" label="Show expired" class="mb-2"></vue-checkbox> 
-			        <div v-for="booking in userBookings" :key="booking.id" v-if="showExpiredBookings || (!showExpiredBookings && !booking.is_expired)" class="p-3 booking mb-2 dropdown shadow-sm rounded border position-relative" :class="{'expired': booking.is_expired}">
-		                <strong class="font-heading d-block">{{ booking.service.name }}</strong>
-		                <small class="d-block text-muted-600">{{ formatDate(booking.date) }} @ {{ formatTime(booking.start) }}-{{ formatTime(booking.end) }}</small>
-			            <div v-if="!booking.is_expired" class="position-absolute booking-actions" :class="{'opacity-0': !selectedBooking || selectedBooking.id != booking.id}">
-			                <button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="edit(booking)">
-			                	<pencil-icon width="15" height="15"></pencil-icon>
-			                </button>
-			                <button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="selectedBooking = booking; $refs['deleteBooking'].show()">
-			                	<trash-icon width="15" height="15" fill="red"></trash-icon>
-			                </button>
-			            </div>
-			        </div>
+					<template v-for="booking in userBookings">
+						<div :key="booking.id" v-if="showExpiredBookings || (!showExpiredBookings && !booking.is_expired)" class="p-3 booking mb-2 dropdown shadow-sm rounded border position-relative" :class="{'expired': booking.is_expired}">
+							<strong class="font-heading d-block">{{ booking.service.name }}</strong>
+							<small class="d-block text-muted-600">{{ formatDate(booking.date) }} @ {{ formatTime(booking.start) }}-{{ formatTime(booking.end) }}</small>
+							<div v-if="!booking.is_expired" class="position-absolute booking-actions" :class="{'opacity-0': !selectedBooking || selectedBooking.id != booking.id}">
+								<button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="edit(booking)">
+									<pencil-icon width="15" height="15"></pencil-icon>
+								</button>
+								<button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="selectedBooking = booking; $refs['deleteBooking'].show()">
+									<trash-icon width="15" height="15" fill="red"></trash-icon>
+								</button>
+							</div>
+						</div>
+					</template>
 				</template>
 
 				
@@ -42,7 +44,7 @@
 						<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 						<div class="flex-grow-1 overflow-hidden">
 							<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-								<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
+								<div v-for="(date, index) in weekDayOptions" :key="date" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 									<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-blue text-white': (selectedDate ? selectedDate.getTime() : '') === date.date.getTime()}" @click="selectedDate = date.date">
 										{{ date.title }}
 										<strong class="text-uppercase d-block">{{ date.description }}</strong>
@@ -67,7 +69,7 @@
 							</div>
 							<div v-else>
 								<div class="d-flex flex-wrap pb-2 pr-2">
-									<div v-for="timeslot in timeslots" class="mb-2 w-100">
+									<div v-for="timeslot in timeslots" :key="timeslot.label" class="mb-2 w-100">
 										<div class="bg-light btn-timeslot p-2 rounded cursor-pointer" :class="{'bg-primary text-white': timeslot == selectedTimeslot}" @click="selectedTimeslot = timeslot; timeslotDropdown = false;">
 											<div class="rounded border p-2 mb-1">
 												<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
@@ -98,7 +100,7 @@
         <div v-if="!selectedBooking">
         	<template v-if="!selectedService">
 	            <strong class="mb-2 d-block">Available Services</strong>
-	            <div v-for="service in availableServices"class="d-flex align-items-center mb-2 rounded p-3 service" :class="{'available': !isServiceBlacklisted(service)}" @click="selectService(service)">
+	            <div v-for="service in availableServices" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 service" :class="{'available': !isServiceBlacklisted(service)}" @click="selectService(service)">
 	                <div>
 	                    <h6 class="font-heading mb-0">{{ service.name }}</h6>
 	                    <small class="d-block">{{ service.duration }} minutes</small>
@@ -111,7 +113,7 @@
 			
 
 			<!-- New booking -->
-            <div v-else="selectedService" class="overflow-hidden">
+            <div v-else class="overflow-hidden">
             	<strong class="mb-2 d-block">New Booking</strong>
 	            <div class="d-flex align-items-center mb-2 rounded p-3 service active available">
 	                <div>
@@ -132,7 +134,7 @@
 					<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
 					<div class="flex-grow-1 overflow-hidden">
 						<div class="weekday-slider d-flex align-items-center position-relative" :style="{'transform': `translate(${sliderTranslate - (sliderNavIndex * 95)}px, 0px)`}" ref="weekday-slider">
-							<div v-for="(date, index) in weekDayOptions" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
+							<div v-for="(date, index) in weekDayOptions" :key="date" class="px-1 weekday-day" :id="date.id" :class="{'disabled': disabledDate(date)}">
 								<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{'bg-blue text-white': (selectedDate ? selectedDate.getTime() : '') === date.date.getTime()}" @click="selectedDate = date.date">
 									{{ date.title }}
 									<strong class="text-uppercase d-block">{{ date.description }}</strong>

@@ -63,22 +63,27 @@ export default {
 
         conversation() {
             if(!this.selectedContact) return {};
-            
+
             let conversation = this.conversations.find(x => 
                 x.members.length == 1 && x.member.id == this.selectedContact.contact_user.id
             );
             if(!conversation) {
-                return {
+                this.$root.auth.services = this.services;
+                conversation = {
+                    ready: true,
                     member: this.selectedContact.contact_user,
                     members: [this.selectedContact.contact_user],
+                    user: this.$root.auth,
                 };
+            } else {
+                if(!this.selectedContact.ready) {
+                    this.showConversation({id: conversation.id}).then(() => {
+                        conversation.files = null;
+                        this.$root.getFiles(conversation);
+                    });
+                }
             }
-            if(!this.selectedContact.ready) {
-                this.showConversation({id: conversation.id}).then(() => {
-                    conversation.files = null;
-                    this.$root.getFiles(conversation);
-                });
-            }
+            
             this.selectedContact.ready = true;
 
             return conversation;

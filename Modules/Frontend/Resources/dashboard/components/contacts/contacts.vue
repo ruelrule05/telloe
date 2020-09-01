@@ -93,7 +93,7 @@
 		                <strong class="d-block my-2">Manage Fields</strong>
 		            </div>
 					<div  class="p-3" ref="customFieldsLabel">
-		                <div v-for="(custom_field, index) in $root.auth.custom_fields" class="d-flex align-items-center custom-field position-relative">
+		                <div v-for="(custom_field, index) in $root.auth.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
 		                	<div class="mb-1 d-flex align-items-center w-100">
 		                		<input type="text" :value="custom_field" class="form-control flex-grow-1">
 		                		<trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="$root.auth.custom_fields.splice(index, 1); storeUserCustomFields()"></trash-icon>

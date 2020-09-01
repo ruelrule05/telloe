@@ -51,7 +51,16 @@ const mutations = {
 const actions = {
     async index({commit}, conversation) {
         let queryString = '';
-        if(conversation) queryString = `?conversation_id=${conversation.id}`;
+        if(conversation) {
+            if(conversation.id) {
+                queryString = `?conversation_id=${conversation.id}`;
+            } else if(conversation.members.length > 0) {
+                let membersID = conversation.members.map(m => {
+                    return m.id;
+                });
+                queryString = `?conversation_members=${JSON.stringify(membersID)}`;
+            }
+        }
         let response = await axios.get(`/${name}${queryString}`);
         commit('index', response.data);
         return response;

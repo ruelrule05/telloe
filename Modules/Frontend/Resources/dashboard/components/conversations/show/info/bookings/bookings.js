@@ -79,6 +79,9 @@ export default {
     watch: {
         selectedDate: function(value) {
             if(value && this.selectedService) this.getTimeslots(this.selectedService.id, value);
+        },
+        conversation: function(value) {
+            this.getBookings(value);
         }
     },
 

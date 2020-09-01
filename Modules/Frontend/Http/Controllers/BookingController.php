@@ -38,12 +38,17 @@ class BookingController extends Controller
         $this->validate($request, [
             'conversation_id' => 'nullable|exists:conversations,id'
         ]);
-        $role = Auth::user()->role->role;
+        $user = Auth::user();
+        $role = $user->role->role;
         if($request->conversation_id) :
             $conversation = Conversation::findOrFail($request->conversation_id);
             $this->authorize('show', $conversation);
             $bookings = Booking::with('user', 'service')->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->whereHas('service', function($service) use ($conversation){
                 $service->where('user_id', $conversation->user_id);
+            })->orderBy('created_at', 'DESC')->get();
+        elseif($request->conversation_members) :
+            $bookings = Booking::with('user', 'service')->whereIn('user_id', json_decode($request->conversation_members))->whereHas('service', function($service) use ($user){
+                $service->where('user_id', $user->id);
             })->orderBy('created_at', 'DESC')->get();
         else:
             if($role == 'client') :
