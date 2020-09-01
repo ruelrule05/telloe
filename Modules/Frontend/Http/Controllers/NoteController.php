@@ -17,7 +17,7 @@ class NoteController extends Controller
         $this->validate($request, [
             'conversation_id' => 'required|exists:conversations,id'
         ]);
-        $conversation = Conversation::findOrFail($request->conversation_id);
+        $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
         $this->authorize('getNotes', $conversation);
 
         return response()->json($conversation->notes);

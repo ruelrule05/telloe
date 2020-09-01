@@ -110,7 +110,7 @@
 	                    <h6 class="font-heading mb-0">{{ service.name }}</h6>
 	                    <small class="d-block">{{ service.duration }} minutes</small>
 	                </div>
-	                <div class="ml-auto" v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1 && !conversation.member.is_pending">
+	                <div class="ml-auto" v-if="$root.auth.id == conversation.user_id && conversation.members.length == 1 && !(conversation.member.contact || {}).is_pending">
 	                    <toggle-switch active-class="bg-green" :value="!isServiceBlacklisted(service)" @click.native.stop @input="storeUserBlacklistedService({user_id: conversation.member.id, service_id: service.id, is_blacklisted: !$event})"></toggle-switch>
 	                </div>
 	            </div>

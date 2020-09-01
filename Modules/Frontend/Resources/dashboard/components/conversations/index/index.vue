@@ -26,47 +26,49 @@
                     You don't have any conversations yet.
                 </div>
                 <template v-else>
-    				<div v-for="conversation in orderedConversations" :key="conversation.id" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
-                        <div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
-                            <video-icon width="24" height="24"></video-icon>
-                        </div>
-                        
-                        <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
-                            <button class="btn btn-sm btn-light p-1 line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0"><more-icon width="20" height="20" class="fill-gray-500" transform="scale(0.75)"></more-icon></button>
-                            <div class="dropdown-menu py-1">
-                                <small v-if="!conversation.archive" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
-                                <small v-else class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                    <template v-for="conversation in orderedConversations">
+                        <div v-if="!conversation.deleted_at" :key="conversation.id" class="conversation-preview mb-1 position-relative rounded-lg" :class="{'active': conversation.id ==  $route.params.id}">
+                            <div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
+                                <video-icon width="24" height="24"></video-icon>
+                            </div>
+                            
+                            <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
+                                <button class="btn btn-sm btn-light p-1 line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0"><more-icon width="20" height="20" class="fill-gray-500" transform="scale(0.75)"></more-icon></button>
+                                <div class="dropdown-menu py-1">
+                                    <small v-if="!conversation.archive" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
+                                    <small v-else class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                                </div>
+                            </div>
+
+                            <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
+                                <span v-if="conversation.last_message.user_id != $root.auth.id && !conversation.last_message.is_read" class="position-absolute badge-new-message">&nbsp;</span>
+                                <div class="media align-items-center conversation-members">
+                                    <div class="user-profile-image position-relative" :class="{'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
+                                        <span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
+                                        <div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
+                                            <template v-for="(member, index) in conversation.members">
+                                            <div class="w-50 position-relative conversation-members-container" :key="member.id" v-if="index < 4">
+                                                <div class="line-height-0 user-profile-image user-profile-image-xs overflow-hidden" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
+                                                    <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
+                                                    <span v-if="index == 3 && conversation.members.length > 4" class="line-height-0 conversation-members-more w-100 h-100">
+                                                        <span class="position-absolute-center">+{{ conversation.members.length - 4 }}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            </template>
+                                        </div>
+                                    </div> 
+                                    <div class="media-body pl-3 overflow-hidden">
+                                        <div class="h6 mb-0 font-heading" :class="{'font-weight-normal': conversation.last_message.is_read}">{{ conversation.member.full_name || conversation.name }}</div>
+                                        <div class="d-flex align-items-center text-nowrap conversation-message-preview">
+                                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-secondary' : 'text-black font-weight-bold']"></div>    
+                                            <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
+                                        </div>    
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-    	                <div class="p-2 cursor-pointer" @click="setConversation(conversation)">
-                            <span v-if="conversation.last_message.user_id != $root.auth.id && !conversation.last_message.is_read" class="position-absolute badge-new-message">&nbsp;</span>
-    						<div class="media align-items-center conversation-members">
-    						  	<div class="user-profile-image position-relative" :class="{'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1}" :style="{backgroundImage: 'url('+conversation.member.profile_image+')'}">
-    						  		<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
-                                    <div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
-                                        <template v-for="(member, index) in conversation.members">
-                                        <div class="w-50 position-relative conversation-members-container" :key="member.id" v-if="index < 4">
-                                            <div class="line-height-0 user-profile-image user-profile-image-xs overflow-hidden" :style="{backgroundImage: 'url('+member.user.profile_image+')'}">
-                                                <span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
-                                                <span v-if="index == 3 && conversation.members.length > 4" class="line-height-0 conversation-members-more w-100 h-100">
-                                                    <span class="position-absolute-center">+{{ conversation.members.length - 4 }}</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        </template>
-                                    </div>
-    						  	</div> 
-    						  	<div class="media-body pl-3 overflow-hidden">
-    	                            <div class="h6 mb-0 font-heading" :class="{'font-weight-normal': conversation.last_message.is_read}">{{ conversation.member.full_name || conversation.name }}</div>
-                                    <div class="d-flex align-items-center text-nowrap conversation-message-preview">
-                                        <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-secondary' : 'text-black font-weight-bold']"></div>    
-                                        <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
-                                    </div>    
-    						  	</div>
-    						</div>
-    					</div>
-    				</div>
+                    </template>
                 </template>
 			</div>
 		</div>
@@ -94,7 +96,7 @@
                         No results found.
                     </div>
                     <div v-else-if="filteredContacts.length > 0">
-                        <div v-for="result in filteredContacts" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id), 'disabled': result.is_pending}">
+                        <div v-for="result in filteredContacts" :key="result.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{'active': newConversation.members.find((x) => x.id == result.id), 'disabled': result.is_pending}">
                             <div class="user-profile-image user-profile-image-md align-self-center" :style="{backgroundImage: 'url('+result.contact_user.profile_image+')'}">
                                 <span v-if="!result.contact_user.profile_image">{{ result.contact_user.initials }}</span>
                             </div>
@@ -135,24 +137,26 @@
             <div class="form-group">
                 <strong>Available services</strong>
                 <div class="d-flex flex-wrap mx-n1">
-                    <div v-for="service in services" v-if="service.is_available" class="mt-2 w-50 px-1">
-                        <div class="border rounded shadow-sm py-2 px-3 d-flex">
-                            <div>
-                                <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                                <small class="text-gray d-block">{{ service.duration }} minutes</small>
-                            </div>
-                            <div class="ml-auto">
-                                <toggle-switch :value="newContact.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>
+                    <template v-for="service in services" >
+                        <div :key="service.id" v-if="service.is_available" class="mt-2 w-50 px-1">
+                            <div class="border rounded shadow-sm py-2 px-3 d-flex">
+                                <div>
+                                    <h6 class="font-heading mb-0">{{ service.name }}</h6>
+                                    <small class="text-gray d-block">{{ service.duration }} minutes</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <toggle-switch :value="newContact.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </div>
             
             <div class="form-group" v-if="($root.auth.custom_fields || []).length > 0">
                 <strong>Fields (Optional)</strong>
                 <div class="form-row">
-                    <div class="col-6" v-for="field in $root.auth.custom_fields">
+                    <div class="col-6" v-for="field in $root.auth.custom_fields" :key="field">
                         <label class="form-label">{{ field }}</label>
                         <input type="text" class="form-control" v-model="newContact.custom_fields[field]">
                     </div>

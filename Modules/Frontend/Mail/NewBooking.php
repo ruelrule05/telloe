@@ -24,8 +24,13 @@ class NewBooking extends Mailer
             $this->emailMessage = "<strong>{$booking->user->full_name}</strong> has made a booking with the following details:";
             $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
         elseif($authUser->id == $booking->service->user_id) : // if client - send to contact
-            $this->email = $booking->user->email;
+            $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
             $this->emailMessage = "A booking has been made for your account with the following details:";
+            if(!$booking->user && $booking->contact && $booking->contact->is_pending) :
+                $this->emailMessage = "A booking has been made for your email with the following details:";
+                $this->actionUrl = url("/?invite_token={$booking->contact->invite_token}&auth=signup");
+                $this->actionText = 'Create an account';
+            endif;
         endif;
 
     }

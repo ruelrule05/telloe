@@ -16,7 +16,7 @@ class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-        $conversations = Conversation::with('user', 'members.user')
+        $conversations = Conversation::withTrashed()->with('user', 'members.user')
             ->where(function($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->orWhereHas('members', function($members) {
@@ -32,7 +32,7 @@ class ConversationController extends Controller
 
     public function show($id, Request $request)
     {
-        $conversation = Conversation::where(function($query){
+        $conversation = Conversation::withTrashed()->where(function($query){
             $query->has('members.user')->orHas('contact');
         })->with('user.services', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
@@ -146,7 +146,7 @@ class ConversationController extends Controller
 
     public function files($id, Request $request)
     {
-        $conversation = Conversation::findOrFail($id);
+        $conversation = Conversation::withTrashed()->findOrFail($id);
         $this->authorize('show', $conversation);
         $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/conversations/' . $conversation->id);
         return response()->json($files);

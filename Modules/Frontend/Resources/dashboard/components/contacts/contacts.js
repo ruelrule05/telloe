@@ -79,7 +79,6 @@ export default {
                     user: this.$root.auth,
                     user_id: this.$root.auth.id
                 };
-                conversation.member.is_pending = this.selectedContact.is_pending;
             } else {
                 if(!this.selectedContact.ready) {
                     this.showConversation({id: conversation.id}).then(() => {
@@ -89,7 +88,10 @@ export default {
                 }
             }
             
+            conversation.member.contact = this.selectedContact;
             this.selectedContact.ready = true;
+
+            console.log(conversation);
 
             return conversation;
         },

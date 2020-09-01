@@ -8,6 +8,8 @@
 Route::get('test', function() {
     // $nexmo = new \App\Http\NexmoClient;
     // $nexmo->sms('09162792651', 'You an upcoming booking in
+    //$conversation = App\Models\Conversation::withTrashed()->find(273);
+    //print_r(json_encode($conversation));
 });
 
 
@@ -36,8 +38,8 @@ Route::get('email', function() {
 
     
     $user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
-    $booking = App\Models\Booking::find(112);
-    $email = new Modules\Frontend\Mail\NewMessage(App\Models\Message::findOrFail(615));
+    $booking = App\Models\Booking::find(108);
+    $email = new Modules\Frontend\Mail\NewBooking($booking);
     //\Mail::send($email);
     return $email;
 });

@@ -41,18 +41,22 @@ class BookingController extends Controller
         $user = Auth::user();
         $role = $user->role->role;
         if($request->conversation_id) :
-            $conversation = Conversation::findOrFail($request->conversation_id);
+            $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
             $this->authorize('show', $conversation);
-            $bookings = Booking::with('user', 'service')->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->whereHas('service', function($service) use ($conversation){
+            $bookings = Booking::with('user', 'contact', 'service')->where(function($query) use ($conversation) {
+                $query->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->orWhere('contact_id', $conversation->contact_id);
+            })->whereHas('service', function($service) use ($conversation){
                 $service->where('user_id', $conversation->user_id);
             })->orderBy('created_at', 'DESC')->get();
-        elseif($request->conversation_members) :
-            $bookings = Booking::with('user', 'service')->whereIn('user_id', json_decode($request->conversation_members))->whereHas('service', function($service) use ($user){
+        elseif($request->contact_id) :
+            $bookings = Booking::with('user', 'contact', 'service')->whereHas('contact', function($query) use ($user, $request) {
+                $query->where('id', $request->contact_id)->where('user_id', $user->id);
+            })->whereHas('service', function($service) use ($user){
                 $service->where('user_id', $user->id);
             })->orderBy('created_at', 'DESC')->get();
         else:
             if($role == 'client') :
-                $bookings = Booking::with('user', 'service')->whereHas('service', function($service) {
+                $bookings = Booking::with('user', 'contact', 'service')->whereHas('service', function($service) {
                         $service->where('user_id', Auth::user()->id);
                     })->orderBy('created_at', 'DESC');
                 if($request->user_id) :
@@ -60,7 +64,7 @@ class BookingController extends Controller
                 endif;
                 $bookings = $bookings->get();
             elseif($role == 'customer') :
-                $bookings = Booking::with('service.user')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+                $bookings = Booking::with('service.user', 'contact')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
             endif;
         endif;
         
@@ -72,10 +76,13 @@ class BookingController extends Controller
     {
         $this->validate($request, [
             'service_id' => 'required|exists:services,id',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'nullable|exists:users,id',
+            'contact_id' => 'nullable|exists:contacts,id',
             'date' => 'required|date',
             'start' => 'required',
         ]);
+
+        if(!$request->user_id && !$request->contact_id) return abort(403, 'User ID or Contact ID is required.');
         if(Carbon::now()->gt(Carbon::parse($request->date . ' ' . $request->start))) return abort(403, 'Invalid date.');
         if($request->user_id == Auth::user()->id) return abort(403, 'Action is not allowed.');
 
@@ -101,7 +108,7 @@ class BookingController extends Controller
         $endTime->set('minute', $parts[1]);
         $endTime->add('minute', $service->duration);
         $data['end'] = $endTime->format('H:i');
-        $data['user_id'] = ($service->user_id == $request->user_id) ? Auth::user()->id : $data['user_id'];
+        if(isset($data['user_id'])) $data['user_id'] = ($service->user_id == $request->user_id) ? Auth::user()->id : $data['user_id'];
         
         $booking = Booking::create($data);
         Mail::queue(new NewBooking($booking));
@@ -110,22 +117,24 @@ class BookingController extends Controller
         $user_id = null;
         $description = '';
         $link = '';
-        if(Auth::user()->id == $booking->user_id) : // if contact - notify client
-            $user_id = $booking->service->user->id;
-            $description = "<strong>{$booking->user->full_name}</strong> has placed a booking.";
-            $link = "/dashboard/bookings/calendar?date={$booking->date}";
-        elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
-            $user_id = $booking->user->id;
-            $description = "A booking has been placed for your account.";
+        if($booking->user) :
+            if(Auth::user()->id == $booking->user_id) : // if contact - notify client
+                $user_id = $booking->service->user->id;
+                $description = "<strong>{$booking->user->full_name}</strong> has placed a booking.";
+                $link = "/dashboard/bookings/calendar?date={$booking->date}";
+            elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
+                $user_id = $booking->user->id;
+                $description = "A booking has been placed for your account.";
+            endif;
+
+            $notification = Notification::create([
+                'user_id' => $user_id,
+                'description' => $description,
+                'link' => $link
+            ]);
+            $booking->notification_id = $notification->id;
         endif;
 
-        $notification = Notification::create([
-            'user_id' => $user_id,
-            'description' => $description,
-            'link' => $link
-        ]);
-
-        $booking->notification_id = $notification->id;
 
         return response()->json($booking->load('service'));
     }
@@ -171,26 +180,28 @@ class BookingController extends Controller
         $data['end'] = $endTime->format('H:i');
 
         $booking->update($data);
-        Mail::queue(new UpdateBooking($booking));
 
         $user_id = null;
         $description = '';
         $link = '';
-        if(Auth::user()->id == $booking->user_id) : // if contact - notify client
-            $user_id = $booking->service->user->id;
-            $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
-            $link = "/dashboard/bookings/calendar?date={$booking->date}";
-        elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
-            $user_id = $booking->user->id;
-            $description = "A booking you made has been modified.";
-        endif;
+        if($booking->user) :
+            Mail::queue(new UpdateBooking($booking));
+            if(Auth::user()->id == $booking->user_id) : // if contact - notify client
+                $user_id = $booking->service->user->id;
+                $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
+                $link = "/dashboard/bookings/calendar?date={$booking->date}";
+            elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
+                $user_id = $booking->user->id;
+                $description = "A booking you made has been modified.";
+            endif;
 
-        $notification = Notification::create([
-            'user_id' => $user_id,
-            'description' => $description,
-            'link' => $link
-        ]);
-        $booking->notification_id = $notification->id;
+            $notification = Notification::create([
+                'user_id' => $user_id,
+                'description' => $description,
+                'link' => $link
+            ]);
+            $booking->notification_id = $notification->id;
+        endif;
 
         return response()->json($booking->load('service.user'));
     }
@@ -201,18 +212,20 @@ class BookingController extends Controller
         $booking = Booking::with('user', 'service.user')->where('id', $id)->first();
         $this->authorize('delete', $booking);
 
-        Mail::queue(new DeleteBooking($booking->toArray()));
-        if(Auth::user()->id == $booking->user_id) : // if contact - notify client
-            $user_id = $booking->service->user->id;
-            $description = "<strong>{$booking->user->full_name}</strong> has deleted their booking.";
-        elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
-            $user_id = $booking->user->id;
-            $description = "A booking you made has been deleted.";
+        if($booking->user) :
+            Mail::queue(new DeleteBooking($booking->toArray()));
+            if(Auth::user()->id == $booking->user_id) : // if contact - notify client
+                $user_id = $booking->service->user->id;
+                $description = "<strong>{$booking->user->full_name}</strong> has deleted their booking.";
+            elseif(Auth::user()->id == $booking->service->user_id) : // if client - notify contact
+                $user_id = $booking->user->id;
+                $description = "A booking you made has been deleted.";
+            endif;
+            $notification = Notification::create([
+                'user_id' => $user_id,
+                'description' => $description,
+            ]);
         endif;
-        $notification = Notification::create([
-            'user_id' => $user_id,
-            'description' => $description,
-        ]);
         $booking->delete();
         return response()->json(['success' => true]);
     }

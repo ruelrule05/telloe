@@ -6,7 +6,7 @@ use Carbon\Carbon;
 class Booking extends BaseModel
 {
     //
-    protected $fillable = ['service_id', 'user_id', 'date', 'start', 'end', 'metadata'];
+    protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'link'];
     protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
@@ -17,6 +17,11 @@ class Booking extends BaseModel
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class);
     }
 
     public function service()

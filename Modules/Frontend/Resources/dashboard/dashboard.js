@@ -363,10 +363,10 @@ window.app = new Vue({
                 if(hoursDiff > 0){
                     let description = '';
                     let link = false;
-                    if(booking.user_id == this.auth.id) {
+                    if(booking.user_id == this.auth.id || booking.contact_id == this.auth.id) {
                         description = `You have an upcoming appointment in less than`;
                     } else {
-                        description = `You have an upcoming appointment with <strong>${booking.user.full_name}</strong> in less than`;
+                        description = `You have an upcoming appointment with <strong>${(booking.user || booking.contact).full_name}</strong> in less than`;
                         link = `/dashboard/bookings/calendar?date=${booking.date}`;
                     }
                     if(hoursDiff <= 1 && !booking.notified_1_app) { // 1 hour

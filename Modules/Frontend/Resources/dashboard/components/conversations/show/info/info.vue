@@ -9,7 +9,7 @@
                 </div>
                 <h4 class="h5 font-heading conversation-title mb-0 rounded" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="conversation.members.length > 1">{{ conversation.member.full_name || conversation.name }}</h4>
                 <div class="text-muted">{{ conversation.member.email || `${conversation.members.length} members` }}</div>
-                <div v-if="conversation.member.is_pending" class="mt-1 badge badge-icon d-inline-flex align-items-center bg-warning-light text-warning"><clock-icon class="fill-warning" height="12" width="12"></clock-icon>&nbsp;Pending</div>
+                <div v-if="(conversation.member.contact || {}).is_pending" class="mt-1 badge badge-icon d-inline-flex align-items-center bg-warning-light text-warning"><clock-icon class="fill-warning" height="12" width="12"></clock-icon>&nbsp;Pending</div>
                 <!-- <div v-else-if="(conversation.member.role || {}).role != 'support' && conversation.members.length == 1" class="mt-1">
                     <button v-if="$root.auth.role.role == 'client'" v-tooltip.bottom="'Bookings'" class="btn btn-white badge-pill p-1" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}">
                         <planner-icon width="24" height="24"></planner-icon>
@@ -20,7 +20,7 @@
             <div id="info-items" class="mt-3 d-flex flex-column">
                 <template v-if="(conversation.member.role || {}).role != 'support'">
                     <!-- Overview -->
-                    <div class="border-top border-top px-4 py-2" v-if="!conversation.member.is_pending">
+                    <div class="border-top border-top px-4 py-2" v-if="!(conversation.member.contact || {}).is_pending">
                         <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#overview" @click="toggleCollapse($event); editFields = false;">
                             {{ editFields ? 'Edit Fields' : 'Overview' }}
                             <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
@@ -134,7 +134,7 @@
                 </template>
 
                 <!-- Files -->
-                <div class="border-top px-4 py-2" v-if="!conversation.member.is_pending">
+                <div class="border-top px-4 py-2" v-if="!(conversation.member.contact || {}).is_pending">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#files" @click="toggleCollapse">
                         Files
                         <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
@@ -198,7 +198,7 @@
                 </div>
                 
                 <!-- Tags -->
-                <div class="border-top px-4 py-2" v-if="!conversation.member.is_pending">
+                <div class="border-top px-4 py-2" v-if="!(conversation.member.contact || {}).is_pending">
                     <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#tags" @click="toggleCollapse">
                         Tags
                         <chevron-right-icon class="ml-auto mr-n2"></chevron-right-icon>
@@ -255,7 +255,7 @@
                 </div>
 
                 
-                <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
+                <template v-if="!(conversation.member.contact || {}).is_pending && (conversation.member.role || {}).role != 'support'">
                     <!-- Notes -->
                     <div class="border-top px-4 py-2">
                         <h5 class="h6 cursor-pointer mb-0 d-flex align-items-center py-2" data-toggle="collapse" data-target="#notes" @click="toggleCollapse">

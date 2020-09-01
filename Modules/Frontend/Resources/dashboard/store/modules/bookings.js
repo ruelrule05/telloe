@@ -54,11 +54,8 @@ const actions = {
         if(conversation) {
             if(conversation.id) {
                 queryString = `?conversation_id=${conversation.id}`;
-            } else if(conversation.members.length > 0) {
-                let membersID = conversation.members.map(m => {
-                    return m.id;
-                });
-                queryString = `?conversation_members=${JSON.stringify(membersID)}`;
+            } else if(conversation.members.length > 0 && conversation.member.contact) {
+                queryString = `?contact_id=${conversation.member.contact.id}`;
             }
         }
         let response = await axios.get(`/${name}${queryString}`);
