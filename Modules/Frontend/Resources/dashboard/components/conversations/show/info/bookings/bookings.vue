@@ -18,7 +18,7 @@
 									<button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="edit(booking)">
 										<pencil-icon width="15" height="15"></pencil-icon>
 									</button>
-									<button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="selectedBooking = booking; $refs['deleteBooking'].show()">
+									<button type="button" class="btn btn-sm btn-white p-1 line-height-0 border badge-pill" @click="bookingToDelete = booking; $refs['deleteBooking'].show()">
 										<trash-icon width="15" height="15" fill="red"></trash-icon>
 									</button>
 								</div>
@@ -196,7 +196,7 @@
 			</div>
 			<div class="d-flex mt-4">
 				<button type="button" class="btn btn-white border" @click="$refs['deleteBooking'].hide()">Cancel</button>
-				<button type="button" class="ml-auto btn btn-danger" @click="deleteBooking(selectedBooking); $refs['deleteBooking'].hide()">Delete Booking</button>
+				<button type="button" class="ml-auto btn btn-danger" @click="deleteBooking(bookingToDelete); $refs['deleteBooking'].hide()">Delete Booking</button>
 			</div>
 		</modal>
 

@@ -207,6 +207,7 @@ export default {
         }),
         
         disabledDate(date) {
+            if(!this.selectedService) return false;
             let dayName = dayjs(date.date).format('dddd');
             return !this.selectedService.days[dayName].isOpen || this.selectedService.holidays.find(x => x == date.label);
         },
