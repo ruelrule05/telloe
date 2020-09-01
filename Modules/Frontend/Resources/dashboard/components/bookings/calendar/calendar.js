@@ -395,7 +395,6 @@ export default {
 		},
 
 		resetBookingForm() {
-			this.selectedBooking.edit = false;
 			this.selectedBooking = null;
 			this.selectedTimeslot = null;
 			this.timeslots = [];
