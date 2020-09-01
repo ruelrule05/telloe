@@ -24,6 +24,8 @@ class UpdateBooking extends Mailer
             $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar';
         elseif(Auth::user()->id == $booking->service->user_id) : // if client - send to contact
             $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
+            echo $booking->user->email;
+            echo $booking->contact->email;
             $this->emailMessage = "A booking you made has been modified with the following details:";
         endif;
     }
