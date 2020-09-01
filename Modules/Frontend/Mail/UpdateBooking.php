@@ -18,6 +18,7 @@ class UpdateBooking extends Mailer
     {
         $this->booking = $booking;
         if(Auth::user()->id == $booking->user_id) : // if contact - send to client
+            echo $booking->service->user->id;
             if($booking->service->user->notify_email) :
                 $this->email = $booking->service->user->email;
                 $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
