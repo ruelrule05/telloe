@@ -91,7 +91,6 @@ export default {
             conversation.member.contact = this.selectedContact;
             this.selectedContact.ready = true;
 
-            console.log(conversation);
 
             return conversation;
         },
