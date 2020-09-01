@@ -18,15 +18,17 @@ class UpdateBooking extends Mailer
     {
         $this->booking = $booking;
         if(Auth::user()->id == $booking->user_id) : // if contact - send to client
-            $this->email = $booking->service->user->email;
-            $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
-            $this->emailMessage = "<strong>{$full_name}</strong> has modified their booking with the following details:";
-            $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar';
+            if($booking->service->user->notify_email) :
+                $this->email = $booking->service->user->email;
+                $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
+                $this->emailMessage = "<strong>{$full_name}</strong> has modified their booking with the following details:";
+                $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar';
+            endif;
         elseif(Auth::user()->id == $booking->service->user_id) : // if client - send to contact
-            $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
-            echo $booking->user->email;
-            echo $booking->contact->email;
-            $this->emailMessage = "A booking you made has been modified with the following details:";
+            if($booking->user->notify_email) :
+                $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
+                $this->emailMessage = "A booking you made has been modified with the following details:";
+            endif;
         endif;
     }
 
