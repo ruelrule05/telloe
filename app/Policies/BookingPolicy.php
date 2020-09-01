@@ -22,6 +22,7 @@ class BookingPolicy
 
     public function update(User $user, Booking $booking)
     {
+        echo $user->id .'=='. $booking->contact_user_id;
         return $user->id == $booking->service->user_id || $user->id == $booking->user_id || ($booking->contact && $user->id == $booking->contact_user_id);
     }
 
