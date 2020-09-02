@@ -61,13 +61,13 @@
 										<!-- Booking -->
 										<template v-if="item.type == 'booking'">
 											<div class="d-flex position-relative booking" :class="{'expired': item.is_expired}">
-												<div class="user-profile-image user-profile-image-sm mr-2" :style="{backgroundImage: 'url(' + item.user.profile_image + ')'}">
-													<span v-if="!item.user.profile_image">{{ item.user.initials }}</span>
+												<div class="user-profile-image user-profile-image-sm mr-2" :style="{backgroundImage: 'url(' + (item.user || item.contact).profile_image + ')'}">
+													<span v-if="!(item.user || item.contact).profile_image">{{ (item.user || item.contact).initials }}</span>
 												</div>
 
 												<div>
 													<div class="mb-1">{{ formatTime(item.start) }} - {{ formatTime(item.end) }}</div>
-													<strong class="d-block font-heading">{{ item.user.full_name }}</strong>
+													<strong class="d-block font-heading">{{ (item.user ||item.contact).full_name }}</strong>
 													<div>{{ item.service.name }} ({{ item.service.duration }} minutes)</div>
 												</div>
 												<div v-if="!item.is_expired" class="position-absolute booking-actions" :class="{'opacity-0': !selectedBooking || selectedBooking.id != item.id}">
@@ -179,11 +179,13 @@
 												<div class="d-flex flex-wrap pb-2 pr-2">
 													<div v-for="(timeslot, index) in timeslots" :key="index" class="mb-2 w-100">
 														<div class="p-3 rounded cursor-pointer mb-1" :class="[timeslot == selectedTimeslot ? 'bg-primary text-white' : 'bg-light']" @click="selectedTimeslot = timeslot; timeslotDropdown = false;">
-															<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
+															<div class="rounded border p-2">
+																<small class="d-block">Your time: {{ $root.auth.timezone }}</small>
 																{{ timeslot.label }}
-															<div v-if="$root.auth.timezone != selectedBooking.user.timezone" class="rounded border p-2">
-																<small class="d-block">Client's time: {{ selectedBooking.user.timezone }}</small>
-																{{ timezoneTime($root.auth.timezone, selectedBooking.user.timezone, timeslot.time) }}
+															</div>
+															<div v-if="$root.auth.timezone != (selectedBooking.user || selectedBooking.contact).timezone && (selectedBooking.user || selectedBooking.contact).timezone" class="rounded border p-2 mt-2">
+																<small class="d-block">Client's time: {{ (selectedBooking.user || selectedBooking.contact).timezone }}</small>
+																{{ timezoneTime($root.auth.timezone, (selectedBooking.user || selectedBooking.contact).timezone, timeslot.time) }}
 															</div>
 														</div>
 													</div>
