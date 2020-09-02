@@ -31,60 +31,62 @@
 									</tr>
 								</thead>
 								<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
-									<tr v-for="invoice in paginated('invoices')" v-if="!invoice.placeholder">
-										<td class="align-middle text-gray-500">
-											{{ invoice.is_pending ? 'Not available' : invoice.number || '-' }}
-											<router-link to="/dashboard/account?tab=payout" v-if="invoice.is_pending && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
-										</td>
-										<td class="align-middle">{{ ((invoice.amount_due || invoice.amount) / 100).toFixed(2) }} <span class="text-uppercase text-muted">{{ getCurrency(invoice) }}</span></td>
-										<td class="align-middle">{{ invoice.contact.contact_user.full_name }}</td>
-										<td class="align-middle">
-											<span class="badge bg-primary-light text-primary text-capitalize position-relative">
-												<span :class="{'opacity-0': invoice.statusLoading}">{{ invoice.status || 'Pending' }}</span>
-												<div v-if="invoice.statusLoading" class="position-absolute-center">
-													<div class="spinner-border spinner-border-sm text-primary"></div>
-												</div>
-											</span>
-										</td>
-										<td class="align-middle text-muted">{{ formatDate(invoice.created) }}</td>
-										<td class="text-right align-middle">
-											<div class="dropleft">
-					                    		<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="invoice.statusLoading">
-													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-					                    		</button>
-												<div class="dropdown-menu dropdown-menu-right">
-													<template v-if="invoice.is_pending">
-														<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="draftInvoice(invoice)">
-															<task-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></task-icon>
-															Create draft
-														</span>
-														<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedInvoice = invoice; $refs['deleteModal'].show()">
-															<trash-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></trash-icon>
-															Delete
-														</span>
-													</template>
-													<template v-else>
-														<template v-if="invoice.status == 'draft'">
-															<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="finalizeInvoice(invoice)">
+									<template v-for="invoice in paginated('invoices')">
+										<tr :key="invoice.id" v-if="!invoice.placeholder">
+											<td class="align-middle text-gray-500">
+												{{ invoice.is_pending ? 'Not available' : invoice.number || '-' }}
+												<router-link to="/dashboard/account?tab=payout" v-if="invoice.is_pending && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
+											</td>
+											<td class="align-middle">{{ ((invoice.amount_due || invoice.amount) / 100).toFixed(2) }} <span class="text-uppercase text-muted">{{ getCurrency(invoice) }}</span></td>
+											<td class="align-middle">{{ invoice.contact.contact_user.full_name }}</td>
+											<td class="align-middle">
+												<span class="badge text-capitalize position-relative" :class="'badge-' + invoice.status">
+													<span :class="{'opacity-0': invoice.statusLoading}">{{ invoice.status || 'Pending' }}</span>
+													<div v-if="invoice.statusLoading" class="position-absolute-center">
+														<div class="spinner-border spinner-border-sm text-primary"></div>
+													</div>
+												</span>
+											</td>
+											<td class="align-middle text-muted">{{ formatDate(invoice.created) }}</td>
+											<td class="text-right align-middle">
+												<div class="dropleft">
+													<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="invoice.statusLoading">
+														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+													</button>
+													<div class="dropdown-menu dropdown-menu-right">
+														<template v-if="invoice.is_pending">
+															<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="draftInvoice(invoice)">
 																<task-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></task-icon>
-																Finalize Invoice
+																Create draft
+															</span>
+															<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedInvoice = invoice; $refs['deleteModal'].show()">
+																<trash-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></trash-icon>
+																Delete
 															</span>
 														</template>
 														<template v-else>
-															<a target="_blank" :href="invoice.hosted_invoice_url" class="dropdown-item d-flex align-items-center">
-																<shortcut-icon transform="scale(0.75)" class="ml-n2 mr-2 fill-secondary"></shortcut-icon>
-																Payment page
-															</a>
-															<a :href="invoice.invoice_pdf" download class="dropdown-item d-flex align-items-center">
-																<arrow-down-icon class="ml-n2 mr-2 fill-secondary"></arrow-down-icon>
-																Download PDF
-															</a>
+															<template v-if="invoice.status == 'draft'">
+																<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="finalizeInvoice(invoice)">
+																	<task-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></task-icon>
+																	Finalize Invoice
+																</span>
+															</template>
+															<template v-else>
+																<a target="_blank" :href="invoice.hosted_invoice_url" class="dropdown-item d-flex align-items-center">
+																	<shortcut-icon transform="scale(0.75)" class="ml-n2 mr-2 fill-secondary"></shortcut-icon>
+																	Payment page
+																</a>
+																<a :href="invoice.invoice_pdf" download class="dropdown-item d-flex align-items-center">
+																	<arrow-down-icon class="ml-n2 mr-2 fill-secondary"></arrow-down-icon>
+																	Download PDF
+																</a>
+															</template>
 														</template>
-													</template>
+													</div>
 												</div>
-					                    	</div>
-										</td>
-									</tr>
+											</td>
+										</tr>
+									</template>
 								</paginate>
 							</table>
 						</div>

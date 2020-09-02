@@ -23,4 +23,12 @@
     .select-flex {
         height: calc(1.5em + 0.7rem);
     }
+    .badge-draft{
+        background-color: rgba($warning, 12.5%);
+        color: $warning;
+    }
+    .badge-open{
+        background-color: rgba($primary, 12.5%);
+        color: $primary;
+    }
 }

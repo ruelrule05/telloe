@@ -26,7 +26,7 @@
 											</div>
 											<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
 												<h6 class="font-heading mb-0 text-ellipsis text-body ">@{{ auth.full_name }}</h6>
-												<!-- <small class="text-secondary d-block text-ellipsis">@{{ auth.role.role == 'client' ? '@' + auth.username : auth.email }}</small> -->
+												<small class="text-secondary d-block text-ellipsis">@{{ auth.role.role == 'client' ? '@' + auth.username : auth.email }}</small>
 											</div>
 										</div>
 									</div>

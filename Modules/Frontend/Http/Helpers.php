@@ -262,6 +262,12 @@ function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $reques
                 'contact_user_id' => $user->id,
                 'is_pending' => false
             ]);
+            App\Models\Contact::create([
+                'user_id' => $user->id, 
+                'contact_user_id' => $contact->user_id,
+                'email' => $contact->user->email,
+                'is_pending' => false
+            ]);
             $conversation = App\Models\Conversation::withTrashed()->where('contact_id', $contact->id)->first();
             if($conversation) :
                 $conversation->restore();

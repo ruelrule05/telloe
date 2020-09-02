@@ -180,7 +180,7 @@
 				</span>
 				<h6 class="font-heading mt-1 mb-3">{{ selectedSubscription.id }}</h6>
 				
-				<label class="d-block mb-0">Client</label>
+				<label class="d-block mb-0">Contact</label>
 				<strong>{{ selectedSubscription.contact.contact_user.full_name }}</strong>
 				<label class="d-block mb-0 mt-3">Services</label>
 				<strong>{{ selectedSubscription.services }}</strong>
@@ -188,6 +188,8 @@
 				<strong>${{ ((selectedSubscription.plan || selectedSubscription).amount / 100).toFixed(2) }}</strong>
 				<label class="d-block mb-0 mt-3">Starts At</label>
 				<strong>{{ selectedSubscription.current_period_start ? formatDate(selectedSubscription.current_period_start) : '-' }}</strong>
+				<label class="d-block mb-0 mt-3">Next Invoice</label>
+				<strong>{{ selectedSubscription.status == 'active' ? selectedSubscription.current_period_end ? timestampToDate(selectedSubscription.current_period_end, false) : '-' : '-' }}</strong>
 			</template>
 		</modal>
 
