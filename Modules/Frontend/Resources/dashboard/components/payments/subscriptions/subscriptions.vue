@@ -32,8 +32,8 @@
 								</thead>
 								<paginate tag="tbody" name="subscriptions" ref="paginate" :list="subscriptions" :per="15">
 									<template v-for="subscription in paginated('subscriptions')">
-										<tr v-if="!subscription.placeholder" :key="subscription.id" class="cursor-pointer"  @click="viewSubscription(subscription)">
-											<td class="align-middle">
+										<tr v-if="!subscription.placeholder" :key="subscription.id" class="cursor-pointer"  >
+											<td class="align-middle" @click="viewSubscription(subscription)">
 												<div class="d-flex align-items-center">
 													<div class="user-profile-image user-profile-image-sm" :style="{backgroundImage: 'url('+subscription.contact.contact_user.profile_image+')'}">
 															<span v-if="!subscription.contact.contact_user.profile_image">{{ subscription.contact.contact_user.initials }}</span>
@@ -51,7 +51,7 @@
 													<router-link to="/dashboard/account?tab=payout" v-if="!subscription.plan && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
 												</template>
 											</td> -->
-											<td class="align-middle">
+											<td class="align-middle" @click="viewSubscription(subscription)">
 												<span class="badge text-capitalize position-relative" :class="'badge-' + subscription.status">
 													<span :class="{'opacity-0': subscription.statusLoading}">{{ subscription.plan ? subscription.status : 'Draft' }}</span>
 													<div v-if="subscription.statusLoading" class="position-absolute-center">
@@ -59,15 +59,15 @@
 													</div>
 												</span>
 											</td>
-											<td class="align-middle text-muted">
+											<td class="align-middle text-muted" @click="viewSubscription(subscription)">
 												<p class="text-capitalize mb-0">{{ subscription.created ? timestampToDate(subscription.created) : '-' }}</p>
 											</td>
-											<td class="align-middle text-muted">
+											<td class="align-middle text-muted" @click="viewSubscription(subscription)">
 												<p class="text-capitalize mb-0" v-if="subscription.status == 'active'">{{ subscription.current_period_end ? timestampToDate(subscription.current_period_end, false) : '-' }}</p>
 											</td>
 											<td class="text-right align-middle">
 												<div v-if="subscription.status != 'canceled'" class="dropleft">
-													<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading" @click.stop>
+													<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="subscription.statusLoading">
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">
