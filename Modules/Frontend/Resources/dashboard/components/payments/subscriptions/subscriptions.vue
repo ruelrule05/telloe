@@ -15,7 +15,7 @@
 				</div>
 			</div>
 
-			<div class="flex-grow-1 d-flex h-100 overflow-hidden"> 
+			<div class="flex-grow-1 d-flex h-100 overflow-hidden pb-4"> 
 				<div class="d-flex overflow-hidden h-100 w-100">
 					<div class="d-flex flex-column flex-grow-1 px-4 mt-2">
 						<div class="overflow-auto flex-grow-1 pb-4 h-100" v-if="subscriptions.length > 0" :class="{'d-none': !hasSubscriptions}">

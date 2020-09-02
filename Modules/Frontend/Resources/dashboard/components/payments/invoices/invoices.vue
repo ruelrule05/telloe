@@ -15,7 +15,7 @@
 				</div>
 			</div>
 
-			<div class="flex-grow-1 d-flex h-100 overflow-hidden">
+			<div class="flex-grow-1 d-flex h-100 pb-4 overflow-hidden">
 				<div class="d-flex overflow-hidden h-100 w-100">
 					<div class="d-flex flex-column flex-grow-1 px-4 mt-2">
 						<div class="overflow-auto h-100" v-if="invoices.length > 0" :class="{'d-none': !hasInvoices}">
