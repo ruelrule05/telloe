@@ -83,7 +83,7 @@ class BookingController extends Controller
         ]);
 
         if(!$request->user_id && !$request->contact_id) return abort(403, 'User ID or Contact ID is required.');
-        if(Carbon::now()->gt(Carbon::parse($request->date . ' ' . $request->start))) return abort(403, 'Invalid date.');
+        //if(Carbon::now()->gt(Carbon::parse($request->date . ' ' . $request->start))) return abort(403, 'Invalid date.');
         if($request->user_id == Auth::user()->id) return abort(403, 'Action is not allowed.');
 
         $service = Service::findOrfail($request->service_id);
