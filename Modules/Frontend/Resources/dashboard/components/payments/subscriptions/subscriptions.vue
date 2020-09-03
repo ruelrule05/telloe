@@ -170,7 +170,7 @@
 		</div>
 
 
-		<modal ref="detailsModal">
+		<modal ref="detailsModal" size="modal-lg">
 			<template v-if="selectedSubscription">
 				<span class="badge text-capitalize position-relative" :class="'badge-' + selectedSubscription.status">
 					<span :class="{'opacity-0': selectedSubscription.statusLoading}">{{ selectedSubscription.plan ? selectedSubscription.status : 'Draft' }}</span>
@@ -178,18 +178,56 @@
 						<div class="spinner-border spinner-border-sm text-primary"></div>
 					</div>
 				</span>
-				<h6 class="font-heading mt-1 mb-3">{{ selectedSubscription.id }}</h6>
-				
-				<label class="d-block mb-0">Contact</label>
-				<strong>{{ selectedSubscription.contact.contact_user.full_name }}</strong>
-				<label class="d-block mb-0 mt-3">Services</label>
-				<strong>{{ selectedSubscription.services }}</strong>
-				<label class="d-block mb-0 mt-3">Amount</label>
-				<strong>${{ ((selectedSubscription.plan || selectedSubscription).amount / 100).toFixed(2) }}</strong>
-				<label class="d-block mb-0 mt-3">Starts At</label>
-				<strong>{{ selectedSubscription.current_period_start ? formatDate(selectedSubscription.current_period_start) : '-' }}</strong>
-				<label class="d-block mb-0 mt-3">Next Invoice</label>
-				<strong>{{ selectedSubscription.status == 'active' ? selectedSubscription.current_period_end ? timestampToDate(selectedSubscription.current_period_end, false) : '-' : '-' }}</strong>
+				<h6 class="font-heading mt-1 mb-3 h4">{{ selectedSubscription.id }}</h6>
+
+				<div class="d-flex">
+					<div class="w-50">
+						<label class="d-block mb-0">Contact</label>
+						<strong>{{ selectedSubscription.contact.contact_user.full_name }}</strong>
+						<label class="d-block mb-0 mt-3">Services</label>
+						<strong>{{ selectedSubscription.services }}</strong>
+						<label class="d-block mb-0 mt-3">Amount</label>
+						<strong>${{ ((selectedSubscription.plan || selectedSubscription).amount / 100).toFixed(2) }}</strong>
+					</div>
+					<div class="w-50">
+						<label class="d-block mb-0 mt-3">Starts At</label>
+						<strong>{{ selectedSubscription.current_period_start ? formatDate(selectedSubscription.current_period_start) : '-' }}</strong>
+						<label class="d-block mb-0 mt-3">Next Invoice</label>
+						<strong>{{ selectedSubscription.status == 'active' ? selectedSubscription.current_period_end ? timestampToDate(selectedSubscription.current_period_end, false) : '-' : '-' }}</strong>
+					</div>
+				</div>
+
+				<label class="d-block mb-0 mt-3">Invoices</label>
+				<div v-if="invoiceLoading" class="text-center py-3">
+					<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+				</div>
+				<div class="border p-1 rounded mt-2" v-else-if="selectedSubscription.latest_invoice">
+					<table class="table table-sm table-borderless mb-0 p-0">
+						<thead>
+							<tr>
+								<th class="pb-2">Amount</th>
+								<th class="pb-2">Currency</th>
+								<th class="pb-2">Status</th>
+								<th class="pb-2">Invoice Number</th>
+								<th class="pb-2">Created</th>
+							</tr>
+						</thead>
+						<tbody class="shadow-none border-top">
+							<tr>
+								<td class="pt-2"><strong>${{ ((selectedSubscription.latest_invoice.amount || 0) / 100).toFixed(2) }}</strong></td>
+								<td class="pt-2 text-uppercase">{{ selectedSubscription.latest_invoice.currency }}</td>
+								<td class="pt-2 text-capitalize">
+									<span class="badge text-capitalize" :class="'badge-' + selectedSubscription.latest_invoice.status">
+										{{ selectedSubscription.latest_invoice.status }}
+									</span>
+								</td>
+								<td class="pt-2 text-uppercase">{{ selectedSubscription.latest_invoice.number }}</td>
+								<td class="pt-2 text-uppercase">{{ timestampToDate(selectedSubscription.latest_invoice.created) }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<span v-else>-</span>
 			</template>
 		</modal>
 

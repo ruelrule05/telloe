@@ -127,6 +127,7 @@ Route::group(
 
 
             Route::post('remove_calendar', 'BookingController@removeCalendar');
+            Route::get('get_invoice', 'UserController@getInvoice');
         });
 
             // Profile page

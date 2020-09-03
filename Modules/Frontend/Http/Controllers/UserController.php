@@ -19,6 +19,7 @@ use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\Welcome;
 use Image;
 use App\Http\Controllers\AuthController;
+use App\Http\StripeAPI;
 
 class UserController extends Controller
 {
@@ -311,6 +312,17 @@ class UserController extends Controller
         $message = "There's no user associated with this Facebook account.";
         if($user) $message = "Email is already registered to another account.";
         return abort(403, $message);
+    }
+
+
+    public function getInvoice(Request $request)
+    {
+        if(!$request->invoice_id) return abort(403);
+        
+        $stripe_api = new StripeAPI();
+        $invoice = $stripe_api->invoice('retrieve', $request->invoice_id, ['stripe_account' => Auth::user()->stripe_account['id']]);
+
+        return response()->json($invoice);
     }
     
 }

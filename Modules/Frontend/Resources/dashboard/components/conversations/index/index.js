@@ -102,7 +102,10 @@ export default {
     created() {
         this.$root.contentloading = !this.ready;
         this.getConversations().then(() => {
-            if (!this.$route.params.id && this.conversations.length > 0 && this.$route.name == 'conversations') this.setConversation(this.orderedConversations[0]);
+            if (!this.$route.params.id && this.conversations.length > 0 && this.$route.name == 'conversations') {
+                let firstConversation = this.orderedConversations.find(c => !c.deleted_at);
+                if(firstConversation) this.setConversation(firstConversation);
+            }
         });
         this.getContacts();
         this.$root.socket.on('new_conversation', data => {

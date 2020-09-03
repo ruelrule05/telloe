@@ -69,11 +69,15 @@ export default {
 	                const timestamp = dayjs().valueOf();
 				    let file = new File(this.blobs, timestamp, {
 				        type: this.blobs[0].type
-				    });
-				    let extension = mime.extension(file.type);
+					});
+
+				    //let extension = mime.extension(file.type);
+				    let extension = 'mp4';
 				    file = new File([file], `${timestamp}.${extension}`, {
 				    	type: file.type
 				    });
+	
+
 				    let duration = '';
 				    this.$refs['videoPreview'].play().then(() => {
 				    	this.$refs['videoPreview'].currentTime = 10e99;
@@ -186,7 +190,7 @@ export default {
 			this.cameraReady = true;
 			this.screenCapture = true;
 			this.streams = finalStream;
-			this.videoRecorder = new MediaRecorder(finalStream);
+			this.videoRecorder = new MediaRecorder(finalStream, {mimeType: 'video/webm'});
 			this.videoRecorder.ondataavailable = e => this.blobs.push(e.data);
 			this.videoRecorder.camera = finalStream;
 			this.$refs['videoFile'].muted = true;

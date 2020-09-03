@@ -369,7 +369,12 @@ export default {
         async downloadScreenRecording() {
             if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isDownloaded) {
                 let video = await this.$root.$refs['screenRecorder'].submit();
-                this.isScreenRecordDownloading = true;
+                let link = document.createElement("a");
+                link.download = video.source.name;
+                link.href = URL.createObjectURL(video.source);
+                link.click();
+                
+           /*      this.isScreenRecordDownloading = true;
                 let bodyFormData = new FormData();
                 bodyFormData.append('video', video.source);
                 axios({
@@ -387,7 +392,7 @@ export default {
                     link.setAttribute('download', `${filename[0]}.mp4`);
                     document.body.appendChild(link);
                     link.click();
-                });
+                }); */
                 /*
                 let filename = `${video.timestamp}.${mime.getExtension(video.source.type)}`;
                 let link = document.createElement('a');
@@ -555,6 +560,7 @@ export default {
                 message.tags = [];
                 message.conversation_id = this.conversation.id;
                 message.timestamp = dayjs().valueOf();
+                this.scrollDown();
 
                 if (message.type == 'text' && message.message.trim().length == 2) {
                     let regex = emojiRegex();
@@ -571,7 +577,6 @@ export default {
                 if (!['text', 'emoji'].find(x => x == response.type)) {
                     this.conversation.files.data.unshift(response);
                 }
-                this.scrollDown();
                 this.$root.socket.emit('message_sent', {id: response.id, conversation_id: this.conversation.id});
             }
         },

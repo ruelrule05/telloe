@@ -87,6 +87,7 @@ export default {
 		],
 		subscriptionStatus: 'all',
 		hasSubscriptions: false,
+		invoiceLoading: false,
 	}),
 
 	computed: {
@@ -164,7 +165,11 @@ export default {
     watch: {
         ready: function(value) {
             this.$root.contentloading = !value;
-        }
+		},
+
+		selectedSubscription: function(value) {
+			if(value.latest_invoice) this.getInvoice(value.latest_invoice);
+		}
     },
 	
 	created() {
@@ -187,6 +192,17 @@ export default {
             storePendingSubscription: 'pending_subscriptions/store',
             deletePendingSubscription: 'pending_subscriptions/delete',
 		}),
+
+		getInvoice(invoice_id) {
+			this.invoiceLoading = true;
+			axios.get(`/get_invoice?invoice_id=${invoice_id}`).then(response => {
+				this.invoiceLoading = false;
+				if(this.selectedSubscription) {
+					console.log(response.data);
+					this.selectedSubscription.latest_invoice = response.data;
+				}
+			})
+		},
 
 		viewSubscription(subscription) {
 			this.selectedSubscription = subscription; 
