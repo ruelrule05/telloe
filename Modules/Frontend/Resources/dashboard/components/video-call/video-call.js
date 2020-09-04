@@ -176,7 +176,7 @@ export default {
             if(connection && data.conversation_id == this.$root.callConversation.id) {
                 //console.log('received: candidate');
                 await connection.addIceCandidate(data.candidate).catch((e) => {
-                    console.error('live_call_candidate: ', e, connection.remoteDescription.type);
+                    console.error('live_call_candidate: ', e);
                     /*if(!connection.pendingCandidates) connection.pendingCandidates = [];
                     connection.pendingCandidates.push(data.candidate);
                     console.log('addToPending');*/
