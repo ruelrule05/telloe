@@ -65,6 +65,7 @@ class Kernel extends HttpKernel
         'ajax' => \App\Http\Middleware\Ajax::class,
         'admin' => \Modules\Admin\Http\Middleware\Admin::class,
         'widget' => \Modules\Frontend\Http\Middleware\ApiWidget::class,
+        'widget_cors' => \Modules\Frontend\Http\Middleware\WidgetCors::class,
     ];
 
     /**

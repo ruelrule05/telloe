@@ -133,7 +133,9 @@ class UserController extends Controller
     {
         $profile = User::with('widget')->where('username', $request->p)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
         $profile->profile_image = config('app.url') . $profile->profile_image;
-        echo 'const PROFILE = ' . json_encode($profile) .";\n\n";
+        echo "const PROFILE = " . json_encode($profile) .";\n\n";
+        echo "const ENDPOINT = '" . config('app.url') ."';\n\n";
+
         $script = File::get(public_path().'/js/widget/widget.js');
         $response = Response::make($script);
         $response->header('Content-Type', "text/js");

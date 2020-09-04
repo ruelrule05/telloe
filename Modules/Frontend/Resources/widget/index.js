@@ -6,7 +6,7 @@ window.TelloeAxios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest
 window.TelloeAxios.interceptors.request.use(
     function (config) {
         config.headers['Cache-Control'] = 'no-cache';
-        config.url = `/ajax${config.url}`;
+        config.url = `${ENDPOINT}/ajax${config.url}`;
         return config;
     },
     function (error) {
