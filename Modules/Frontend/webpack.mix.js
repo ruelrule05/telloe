@@ -2,6 +2,7 @@ const mix = require('laravel-mix');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const argv = JSON.parse(process.env.npm_config_argv).original;
+const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 mix.setPublicPath('../../public').mergeManifest();
 
@@ -17,12 +18,12 @@ if (argv.indexOf('--css') > -1) {
         .sass(__dirname + '/Resources/sass/call.scss', 'css');
 }
 else {
-    browserSync();
 
     if (argv.indexOf('--dashboard') > -1) { 
         console.log('Running dashboard...');
         mix
             .js(__dirname + '/Resources/dashboard/dashboard.js', 'js')
+            
             .webpackConfig({
                 output: {
                     chunkFilename: `js/chunks/[name].js`
@@ -59,7 +60,6 @@ else {
 
     else if (argv.indexOf('--call') > -1) { 
         console.log('Running call...');
-        browserSync();
         mix
             .js(__dirname + '/Resources/js/call.js', 'js')
             .webpackConfig({
@@ -79,7 +79,6 @@ else {
 
     else if (argv.indexOf('--profile') > -1) { 
         console.log('Running profile...');
-        browserSync();
         mix
             .js(__dirname + '/Resources/js/profile.js', 'js')
             .webpackConfig({
@@ -99,7 +98,6 @@ else {
 
     else if (argv.indexOf('--widget') > -1) { 
         console.log('Running widget...');
-        browserSync();
         mix
             .js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js')
             .webpackConfig({
@@ -119,10 +117,19 @@ else {
 }
 
 
-
 if(mix.config.production) {
     console.log('Running in production...');
     mix.version();
+} else {
+    mix.webpackConfig({
+        plugins: [
+            new LiveReloadPlugin({
+                protocol: 'http',
+                hostname: 'localhost',
+                appendScriptTag: true,
+            })
+        ]
+    });
 }
 
 function browserSync(){

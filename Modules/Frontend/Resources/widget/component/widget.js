@@ -72,7 +72,7 @@ export default {
 		authForm: false, // false
 		isBooking: false,
 		bookingSuccess: false,
-		open: true, // false
+		open: false, // false
 		authAction: 'signup', // login
 		timezone: '',
 	}),

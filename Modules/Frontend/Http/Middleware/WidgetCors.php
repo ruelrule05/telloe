@@ -16,12 +16,17 @@ class WidgetCors
      */
     public function handle($request, Closure $next)
     {   
+        $widgetRouteNames = ['profile', 'profile.service.timeslots'];
+        
         $next = $next($request);
-        // if ($request->getSchemeAndHttpHost() == config('app.api_url')) :
+        $routeName = $request->route()->getName();
+        $inRoute = in_array($routeName, $widgetRouteNames);
+
+        if ($request->isMethod('OPTIONS') || $inRoute) :
             $next->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Allow-Headers', '*')
-            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        // endif;
+            ->header('Access-Control-Allow-Methods', 'GET, POST');
+        endif;
         
         return $next;
     }

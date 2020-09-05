@@ -211,6 +211,7 @@
 		<!-- <script src="/js/leader-line.min.js"></script> -->
 		<script>
 			const APP_NAME = '{{ config('app.name') }}';
+			const APP_URL = '{{ config('app.url') }}';
 			const WS_URL = '{{ env('WS_URL') }}';
 		</script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>

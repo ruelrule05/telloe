@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Modules\Frontend\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Modules\Frontend\Http\Middleware\ApiCors::class,
+        \Modules\Frontend\Http\Middleware\WidgetCors::class,
     ];
 
     /**
@@ -65,7 +66,6 @@ class Kernel extends HttpKernel
         'ajax' => \App\Http\Middleware\Ajax::class,
         'admin' => \Modules\Admin\Http\Middleware\Admin::class,
         'widget' => \Modules\Frontend\Http\Middleware\ApiWidget::class,
-        'widget_cors' => \Modules\Frontend\Http\Middleware\WidgetCors::class,
     ];
 
     /**

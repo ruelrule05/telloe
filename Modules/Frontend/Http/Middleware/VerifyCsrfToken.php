@@ -25,6 +25,6 @@ class VerifyCsrfToken extends Middleware
         'facebook_page_tab',
         'fb_messenger_webhook',
         'ajax/botman',
-        'ajax/@roowright'
+        'ajax/@*/*/login_and_book'
     ];
 }

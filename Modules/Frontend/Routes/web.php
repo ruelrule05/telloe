@@ -131,8 +131,8 @@ Route::group(
             });
 
             // Booking page 
-            Route::get('@{username}', 'UserController@profile')->middleware('widget_cors');
-            Route::get('@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots');
+            Route::get('@{username}', 'UserController@profile')->name('profile');
+            Route::get('@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots')->name('profile.service.timeslots');
             Route::post('@{username}/{service_id}/book', 'UserController@book');
             Route::post('@{username}/{service_id}/login_and_book', 'UserController@loginAndBook');
             Route::post('@{username}/{service_id}/signup_and_book', 'UserController@signupAndBook');

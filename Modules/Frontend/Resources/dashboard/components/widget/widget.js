@@ -4,7 +4,7 @@ export default {
     }),
 
     created() {
-        this.script = `<script src="https://telloe.app/js/widget.js?p=${this.$root.auth.username}"></script>`;
+        this.script = `<script src="${APP_URL}/js/widget.js?p=${this.$root.auth.username}"></script>`;
         this.$root.contentloading = false;
     },
 
