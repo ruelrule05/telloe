@@ -59,7 +59,18 @@
     .text-white * {
         color: white !important;
     }
-
+    .px-4{
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+    }
+    .py-4{
+        padding-top: 24px !important;
+        padding-bottom: 24px !important;
+    }
+    .my-3{
+        margin-top: 16px !important;
+        margin-bottom: 16px !important;
+    }
     [v-cloak] {
         opacity: 0;
     }
@@ -173,6 +184,10 @@
         }
     }
     .top-buttons {
+        padding-left: 16px !important;
+        padding-right: 8px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
         .btn {
             line-height: 0;
             svg {
