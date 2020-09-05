@@ -16,7 +16,16 @@ class WidgetCors
      */
     public function handle($request, Closure $next)
     {   
-        $widgetRouteNames = ['profile', 'profile.service.timeslots'];
+        $widgetRouteNames = [
+            'profile', 
+            'profile.service.timeslots',
+            'profile.book',
+            'profile.login_and_book',
+            'profile.login_and_book',
+            'profile.signup_and_book',
+            'profile.google_login_and_book',
+            'profile.facebook_login_and_book',
+        ];
         
         $next = $next($request);
         $routeName = $request->route()->getName();
