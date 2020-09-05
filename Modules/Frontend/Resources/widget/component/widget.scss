@@ -207,6 +207,10 @@
         .weekday-container {
             background: $light;
         }
+        .weekday-day{
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
         .weekday-day.disabled {
             opacity: 0.35;
             pointer-events: none;
