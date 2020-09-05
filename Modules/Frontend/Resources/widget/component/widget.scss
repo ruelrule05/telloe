@@ -56,6 +56,9 @@
     .line-height-base {
         line-height: $line-height-base !important;
     }
+    .text-white * {
+        color: white !important;
+    }
 
     [v-cloak] {
         opacity: 0;
