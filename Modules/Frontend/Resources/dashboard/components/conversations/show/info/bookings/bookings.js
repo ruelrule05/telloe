@@ -403,7 +403,7 @@ export default {
                     date: formatDate,
                     start: this.selectedTimeslot.time,
                     user_id: this.conversation.member.id,
-                    contact_id: this.conversation.member.contact.id,
+                    contact_id: (this.conversation.member.contact || {}).id,
                     service_id: this.selectedService.id,
                 };
                 this.storeBooking(data)
