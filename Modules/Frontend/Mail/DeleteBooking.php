@@ -17,7 +17,7 @@ class DeleteBooking extends Mailer
     {
         $this->booking = $booking;
         $user = Auth::user();
-        if($user->id == $booking->user_id || ($booking->contact && $user->id == $booking->contact->contact_user_id)) : // if contact - send to client
+        if($user->id == $booking['user_id'] || ($booking['contact'] && $user->id == $booking['contact']['contact_user_id'])) : // if contact - send to client
             $this->email = $booking['service']['user']['email'];
             $this->emailMessage = "A booking with the following details has been deleted:";
         elseif(Auth::user()->id == $booking['service']['user_id']) : // if client - send to contact
