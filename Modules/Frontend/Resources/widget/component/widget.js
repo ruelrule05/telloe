@@ -241,7 +241,7 @@ export default {
 				let timeslotDate = `${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`;
                 timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
             } else {
-				timezoneTime = dayjs(time);
+				timezoneTime = dayjs(`${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`);
 			}
             return timezoneTime.format('hh:mmA');
         },
