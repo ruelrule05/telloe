@@ -167,16 +167,17 @@ export default {
             let connection = this.connections.find((x) => x.id == data.target_connection);
             if(connection && data.conversation_id == this.$root.callConversation.id) {
                 await connection.setRemoteDescription(data.desc);
+                connection.hasAnswer = true;
                 this.notification_sound.pause();
             }
         });
 
         this.$root.socket.on('live_call_candidate', async (data) => {
             let connection = this.connections.find((x) => x.id == data.target_connection);
-            if(connection && data.conversation_id == this.$root.callConversation.id) {
+            if(connection && connection.hasAnswer && data.conversation_id == this.$root.callConversation.id) {
                 //console.log('received: candidate');
                 await connection.addIceCandidate(data.candidate).catch((e) => {
-                    console.error('live_call_candidate: ', e);
+                    console.error('live_call_candidate: ', e, connection.connectionState);
                     /*if(!connection.pendingCandidates) connection.pendingCandidates = [];
                     connection.pendingCandidates.push(data.candidate);
                     console.log('addToPending');*/
