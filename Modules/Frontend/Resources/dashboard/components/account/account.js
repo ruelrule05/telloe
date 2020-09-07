@@ -219,8 +219,8 @@ export default {
             if (file) {
                 if (file.type.match('image/jpeg') || file.type.match('image/png')) {
                     let photosize = file.size / 1000;
-                    if (photosize > 200) {
-                        alert('Error: Image file too big. Please choose image file not bigger than 200KB.');
+                    if (photosize > 5000) {
+                        alert('Error: Image file too big. Please choose image file not bigger than 5MB.');
                     } else {
                         this.user.profile_image = file;
 

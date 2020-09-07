@@ -311,7 +311,6 @@ export default {
             this.callRecorder = null;
             this.status = '';
             this.action = '';
-            this.connections = [];
             this.open = false;
             this.notification_sound.pause();
             this.isMuted = false;
@@ -339,12 +338,14 @@ export default {
             //setTimeout(() => {
             	$(this.$refs['remoteStreams']).empty();
             	if(this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
-            	// this.connections.forEach(connection => {
-	            // 	connection.localStream.getTracks().forEach(function(track) {
-	            //        track.stop();
-	            //     });
-            	// 	connection.close();
-            	// });
+            	this.connections.forEach(connection => {
+	            	connection.localStream.getTracks().forEach(function(track) {
+	                   track.stop();
+	                });
+            		connection.close();
+                });
+                
+                this.connections = [];
             //}, 150);
         },
 

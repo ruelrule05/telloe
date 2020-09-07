@@ -25,8 +25,8 @@
 									</div>
 									<div class="pl-2">
 										<label class="d-block">Upload new profile picture</label>
-										<button type="button" class="btn btn-sm btn-white border" @click="$refs['profileImageInput'].click()">Choose file</button>
-										<label class="d-block">Only JPEG and PNG files are accepted with maximum size of 200KB</label>
+										<button type="button" class="btn btn-sm btn-white border my-1" @click="$refs['profileImageInput'].click()">Choose file</button>
+										<label class="d-block">Only JPEG and PNG files are accepted with maximum size of 5MB</label>
 										<input ref="profileImageInput" type="file" accept="image/x-png,image/jpeg" @change="updateImage" hidden>
 									</div>
 								</div>
