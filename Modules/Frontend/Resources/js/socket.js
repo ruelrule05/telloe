@@ -84,7 +84,9 @@ io.on('connection', function(socket) {
                 is_limit = true;
             }
         }
-        socket.emit('live_call_connections', {socket_id: socket.id, data: call_users, is_limit: is_limit});
+        setTimeout(() => {
+            socket.emit('live_call_connections', {socket_id: socket.id, data: call_users, is_limit: is_limit});
+        }, 500);
     });
 
     socket.on('live_call_connection_request', function(data) {
