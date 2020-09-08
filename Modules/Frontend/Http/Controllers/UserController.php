@@ -118,6 +118,7 @@ class UserController extends Controller
         if(!Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) :
             Contact::create([
                 'user_id' => $user->id,
+                'email' => $authUser->email,
                 'contact_user_id' => $authUser->id,
                 'is_pending' => false,
             ]);
