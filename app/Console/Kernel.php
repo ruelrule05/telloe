@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Mail;
 use Modules\Frontend\Mail\UpcomingBooking;
 use App\Jobs\SendSMS;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -70,7 +71,9 @@ class Kernel extends ConsoleKernel
                     endif;
                 endif;
             endforeach;
-        })->everyMinute();
+
+            Log::info('CRON job executed every 3 minutes.');
+        })->everyThreeMinutes();
     }
 
     /**
