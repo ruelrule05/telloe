@@ -39,6 +39,7 @@ class Kernel extends ConsoleKernel
                 ->get();
             foreach($bookings as $booking) :
                 $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
+                $bookingUser = $booking->user ? $booking->user : $booking->contact;
                 $diffInMinutes = $now->diffInMinutes(Carbon::parse($booking->date . ' ' . $booking->start), false);
                 $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
                 if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
@@ -47,16 +48,16 @@ class Kernel extends ConsoleKernel
                     if($booking->service->user->notify_email) :
                         Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
                     endif;
-                    if($booking->user->notify_email) :
-                        Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
+                    if($bookingUser && $bookingUser->notify_email) :
+                        Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
                     endif;
 
                     // SendSMS
                     if($booking->service->user->notify_sms && $booking->service->user->phone && $booking->service->user->dial_code) :
                         SendSMS::dispatch($booking->service->user->dial_code . $booking->service->user->phone, 'You have an upcoming booking in less than 2 hours.');
                     endif;
-                    if($booking->user->notify_sms && $booking->user->phone && $booking->user->dial_code) :
-                        SendSMS::dispatch($booking->user->dial_code . $booking->user->phone, 'You have an upcoming booking in less than 2 hours.');
+                    if($bookingUser && $bookingUser->notify_sms && $bookingUser->phone && $bookingUser->dial_code) :
+                        SendSMS::dispatch($bookingUser->dial_code . $bookingUser->phone, 'You have an upcoming booking in less than 2 hours.');
                     endif;
                 elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) : // 24 hours notif
                     $booking->notified_24 = true;
@@ -64,8 +65,8 @@ class Kernel extends ConsoleKernel
                     if($booking->service->user->notify_email) :
                         Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
                     endif;
-                    if($booking->user->notify_email) :
-                        Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
+                    if($bookingUser->notify_email) :
+                        Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
                     endif;
                 endif;
             endforeach;
