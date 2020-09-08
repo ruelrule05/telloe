@@ -42,14 +42,14 @@ class Kernel extends ConsoleKernel
                 $diffInMinutes = $now->diffInMinutes(Carbon::parse($booking->date . ' ' . $booking->start), false);
                 $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
                 if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
+                    $booking->notified_2 = true;
+                    $booking->save();
                     if($booking->service->user->notify_email) :
                         Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
                     endif;
                     if($booking->user->notify_email) :
                         Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
                     endif;
-                    $booking->notified_2 = true;
-                    $booking->save();
 
                     // SendSMS
                     if($booking->service->user->notify_sms && $booking->service->user->phone && $booking->service->user->dial_code) :
@@ -59,14 +59,14 @@ class Kernel extends ConsoleKernel
                         SendSMS::dispatch($booking->user->dial_code . $booking->user->phone, 'You have an upcoming booking in less than 2 hours.');
                     endif;
                 elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) : // 24 hours notif
+                    $booking->notified_24 = true;
+                    $booking->save();
                     if($booking->service->user->notify_email) :
                         Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
                     endif;
                     if($booking->user->notify_email) :
                         Mail::to($booking->user->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
                     endif;
-                    $booking->notified_24 = true;
-                    $booking->save();
                 endif;
             endforeach;
         })->everyMinute();
