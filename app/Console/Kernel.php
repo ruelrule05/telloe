@@ -70,7 +70,7 @@ class Kernel extends ConsoleKernel
                     endif;
                 endif;
             endforeach;
-        })->everyFiveMinutes();
+        })->everyMinute();
     }
 
     /**
