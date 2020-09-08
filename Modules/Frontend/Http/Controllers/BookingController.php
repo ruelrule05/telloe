@@ -43,20 +43,26 @@ class BookingController extends Controller
         if($request->conversation_id) :
             $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
             $this->authorize('show', $conversation);
-            $bookings = Booking::with('user', 'contact', 'service')->where(function($query) use ($conversation) {
+            $bookings = Booking::where(function($query) {
+                $query->has('user')->orHas('contact');
+            })->with('user', 'contact', 'service')->where(function($query) use ($conversation) {
                 $query->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->orWhere('contact_id', $conversation->contact_id);
             })->whereHas('service', function($service) use ($conversation){
                 $service->where('user_id', $conversation->user_id);
             })->orderBy('created_at', 'DESC')->get();
         elseif($request->contact_id) :
-            $bookings = Booking::with('user', 'contact', 'service')->whereHas('contact', function($query) use ($user, $request) {
+            $bookings = Booking::where(function($query) {
+                $query->has('user')->orHas('contact');
+            })->with('user', 'contact', 'service')->whereHas('contact', function($query) use ($user, $request) {
                 $query->where('id', $request->contact_id)->where('user_id', $user->id);
             })->whereHas('service', function($service) use ($user){
                 $service->where('user_id', $user->id);
             })->orderBy('created_at', 'DESC')->get();
         else:
             if($role == 'client') :
-                $bookings = Booking::with('user', 'contact', 'service')->whereHas('service', function($service) {
+                $bookings = Booking::where(function($query) {
+                        $query->has('user')->orHas('contact');
+                    })->with('user', 'contact', 'service')->whereHas('service', function($service) {
                         $service->where('user_id', Auth::user()->id);
                     })->orderBy('created_at', 'DESC');
                 if($request->user_id) :
@@ -64,7 +70,9 @@ class BookingController extends Controller
                 endif;
                 $bookings = $bookings->get();
             elseif($role == 'customer') :
-                $bookings = Booking::with('service.user', 'user', 'contact')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+                $bookings = Booking::where(function($query) {
+                    $query->has('user')->orHas('contact');
+                })->with('service.user', 'user', 'contact')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
             endif;
         endif;
         
