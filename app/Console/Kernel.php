@@ -31,7 +31,12 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             $now = \Carbon\Carbon::now();
-            $bookings = Booking::where('date', '>=', $now->format('Y-m-d'))->get();
+            $bookings = Booking::where(function($query) {
+                    $query->has('user')->orHas('contact');
+                })
+                ->with('service.user', 'user', 'contact')
+                ->where('date', '>=', $now->format('Y-m-d'))
+                ->get();
             foreach($bookings as $booking) :
                 $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
                 $diffInMinutes = $now->diffInMinutes(Carbon::parse($booking->date . ' ' . $booking->start), false);
