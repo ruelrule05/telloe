@@ -72,8 +72,8 @@ class Kernel extends ConsoleKernel
                 endif;
             endforeach;
 
-            Log::info('CRON job executed every 3 minutes.');
-        })->everyThreeMinutes();
+            Log::info('CRON job executed every 5 minutes.');
+        })->everyFiveMinutes();
     }
 
     /**
