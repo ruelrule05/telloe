@@ -31,6 +31,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
+            Log::info('CRON job started.');
             $now = \Carbon\Carbon::now();
             $bookings = Booking::where(function($query) {
                     $query->has('user')->orHas('contact');
@@ -72,7 +73,7 @@ class Kernel extends ConsoleKernel
                 endif;
             endforeach;
 
-            Log::info('CRON job executed every minute.');
+            Log::info('CRON job ended.');
         })->everyMinute();
     }
 
