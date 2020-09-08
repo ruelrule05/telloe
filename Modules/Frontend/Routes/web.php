@@ -57,6 +57,13 @@ Route::get('events', function() {
 //Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@updateOutlookCalendarEvents');
 
 
+
+
+
+
+
+
+
 Route::group(
     [
         'domain' => config('app.url'),

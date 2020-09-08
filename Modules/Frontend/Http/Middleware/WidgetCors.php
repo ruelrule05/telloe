@@ -28,7 +28,8 @@ class WidgetCors
         ];
         
         $next = $next($request);
-        $routeName = $request->route()->getName();
+        $route = $request->route();
+        $routeName = $route ? $route->getName() : '';
         $inRoute = in_array($routeName, $widgetRouteNames);
 
         if ($request->isMethod('OPTIONS') || $inRoute) :

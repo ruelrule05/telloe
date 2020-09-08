@@ -2,6 +2,7 @@
 
 // Authentication
 Route::group([
+    'domain' => config('app.url'),
     'prefix' => 'ajax',
     'middleware' => 'ajax'
 ], function() {
