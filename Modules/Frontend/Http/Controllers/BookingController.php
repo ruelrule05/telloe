@@ -64,7 +64,7 @@ class BookingController extends Controller
                 endif;
                 $bookings = $bookings->get();
             elseif($role == 'customer') :
-                $bookings = Booking::with('service.user', 'contact')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+                $bookings = Booking::with('service.user', 'user', 'contact')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
             endif;
         endif;
         
