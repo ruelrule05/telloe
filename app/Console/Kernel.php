@@ -73,7 +73,7 @@ class Kernel extends ConsoleKernel
                 endif;
             endforeach;
 
-            Log::info('CRON job ended.');
+            Log::info('CRON job completed.');
         })->everyMinute();
     }
 
