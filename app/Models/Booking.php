@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Booking extends BaseModel
 {
     //
+    use SoftDeletes;
+    
     protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'link'];
     protected $appends = ['is_expired'];
     protected $casts = [
