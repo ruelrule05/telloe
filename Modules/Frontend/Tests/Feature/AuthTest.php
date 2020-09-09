@@ -195,6 +195,34 @@ class AuthTest extends TestCase
 
     public function testUpdateStripeAccount()
     {
-        echo 'sds';
+        $data = [
+            'email' => 'sds',
+            'password' => 'admin',
+        ];
+        $response = $this->put($this->app_url . '/auth/update_stripe_account', $data, $this->headers);
+        $response->assertStatus(422);
+
+        $data = [
+            'country' => 'AU',
+            'address' => 'Lodlod',
+            'city' => 'Lipa City',
+            'state' => 'Queensland',
+            'postal' => '4217',
+            'website' => 'https://telloe.com',
+            'phone' => '+61298765432',
+            'dob' => '1990-09-23',
+            'account_number' => '000123456',
+            'account_holder_name' => 'Clyde Escobidal',
+            'routing_number' => '110000',
+        ];
+        $response = $this->actingAs($this->user)->put($this->app_url . '/auth/update_stripe_account', $data, $this->headers);
+        $response->assertStatus(200);
+    }
+
+
+    public function testLogout()
+    {
+        $response = $this->actingAs($this->user)->post(str_replace('/ajax', '', $this->app_url) . '/logout', [], $this->headers);
+        $response->assertStatus(302);
     }
 }
