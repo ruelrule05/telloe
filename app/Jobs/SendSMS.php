@@ -14,14 +14,18 @@ class SendSMS implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private $to;
+    private $message;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($to, $message)
     {
         //
+        $this->to = $to;
+        $this->message = $message;
     }
 
     /**
@@ -29,10 +33,10 @@ class SendSMS implements ShouldQueue
      *
      * @return void
      */
-    public function handle($to, $message)
+    public function handle()
     {
         //
         $nexmo = new NexmoClient;
-        $nexmo->sms($to, $message);
+        $nexmo->sms($this->to, $this->message);
     }
 }
