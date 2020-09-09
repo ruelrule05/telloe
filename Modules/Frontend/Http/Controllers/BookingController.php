@@ -46,7 +46,9 @@ class BookingController extends Controller
             $bookings = Booking::where(function($query) {
                 $query->has('user')->orHas('contact');
             })->with('user', 'contact', 'service')->where(function($query) use ($conversation) {
-                $query->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->orWhere('contact_id', $conversation->contact_id);
+                $query->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->orWhere(function($query) use ($conversation) {
+                    $query->whereNotNull('contact_id')->where('contact_id', $conversation->contact_id);
+                });
             })->whereHas('service', function($service) use ($conversation){
                 $service->where('user_id', $conversation->user_id);
             })->orderBy('created_at', 'DESC')->get();

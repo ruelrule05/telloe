@@ -11,7 +11,7 @@
 					<template v-if="!selectedBooking">
 						<vue-checkbox v-if="userBookings.length > 0" :value="showExpiredBookings" @input="value => {showExpiredBookings = value}" label="Show expired" class="mb-2"></vue-checkbox> 
 						<template v-for="booking in userBookings">
-							<div :key="booking.id" v-if="showExpiredBookings || (!showExpiredBookings && !booking.is_expired)" class="p-3 booking mb-2 dropdown shadow-sm rounded border position-relative" :class="{'expired': booking.is_expired}">
+							<div :key="booking.id" :id="booking.id" v-if="showExpiredBookings || (!showExpiredBookings && !booking.is_expired)" class="p-3 booking mb-2 dropdown shadow-sm rounded border position-relative" :class="{'expired': booking.is_expired}">
 								<strong class="font-heading d-block">{{ booking.service.name }}</strong>
 								<small class="d-block text-muted-600">{{ formatDate(booking.date) }} @ {{ formatTime(booking.start) }}-{{ formatTime(booking.end) }}</small>
 								<div v-if="!booking.is_expired" class="position-absolute booking-actions" :class="{'opacity-0': !selectedBooking || selectedBooking.id != booking.id}">
