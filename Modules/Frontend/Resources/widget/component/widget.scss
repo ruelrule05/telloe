@@ -110,6 +110,9 @@
             }
         }
     }
+    h1, h2, h3, h4, h5, h6{
+        text-transform: none;
+    }
     h5, .h5,
     h6, .h6{
         font-size: 20px;
@@ -121,6 +124,8 @@
         border-radius: 7.5px !important;
     }
     .btn{
+        min-width: auto;
+        text-transform: none;
         font-size: 15px;
         &:not([class*="badge-pill"]):not([class*=" badge-pill"]) {
             border-radius: 7.2px;
