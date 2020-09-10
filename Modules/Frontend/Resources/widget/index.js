@@ -1,3 +1,7 @@
+import Vue from 'vue';
+import VCalendar from 'v-calendar';
+Vue.use(VCalendar);
+import Widget from './component/widget.vue';
 try {
     window.$ = window.jQuery = require('jquery');
 } catch (e) {}
@@ -34,81 +38,80 @@ window.TelloeAxios.interceptors.response.use(
     },
 );
 
-import Vue from 'vue';
-import VCalendar from 'v-calendar';
-Vue.use(VCalendar);
 
-import Widget from './component/widget.vue';
-
-let container = document.createElement('div');
-container.id = 'telloe-widget';
-container.innerHTML = '<widget ref="widget" />';
-document.body.appendChild(container);
-
-window.telloe = new Vue({
-    el: '#telloe-widget',
-    components: {
-        Widget,
-    },
-    data: {
-        profile: PROFILE,
-        GoogleAuth: null,
-    },
-
-    created() {
-        this.loadFacebook();
-    },
-
-    methods: {
-        loadFacebook() {
-            window.fbAsyncInit = function () {
-                FB.init({
-                    appId: '1187408638266444',
-                    cookie: true,
-                    xfbml: true,
-                    version: 'v2.10',
-                });
-            };
-
-            (function (d, s, id) {
-                var js,
-                    fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) {
-                    return;
-                }
-                js = d.createElement(s);
-                js.id = id;
-                js.src = '//connect.facebook.net/en_US/sdk.js';
-                fjs.parentNode.insertBefore(js, fjs);
-            })(document, 'script', 'facebook-jssdk');
-            (function (d, s, id) {
-                let js;
-                const fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) {
-                    return;
-                }
-                js = d.createElement(s);
-                js.id = id;
-                js.src = '//connect.facebook.net/en_US/sdk.js';
-                fjs.parentNode.insertBefore(js, fjs);
-            })(document, 'script', 'facebook-jssdk');
+window.onload = () => {
+    alert('sds');
+    let container = document.createElement('div');
+    container.id = 'telloe-widget';
+    container.innerHTML = '<widget ref="widget" />';
+    document.body.appendChild(container);
+    
+    window.telloe = new Vue({
+        el: '#telloe-widget',
+        components: {
+            Widget,
         },
-
-        loadGoogle() {
-            if (typeof gapi != 'undefined') {
-                gapi.load('auth2', () => {
-                    this.GoogleAuth = gapi.auth2.init({client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com'});
-                });
-            }
+        data: {
+            profile: PROFILE,
+            GoogleAuth: null,
         },
-    },
-});
-
-// Google
-let googleScript = document.createElement('script');
-googleScript.type = 'text/javascript';
-googleScript.src = 'https://apis.google.com/js/platform.js';
-document.head.appendChild(googleScript);
-googleScript.onload = () => {
-    window.telloe.loadGoogle();
+    
+        created() {
+            this.loadFacebook();
+        },
+    
+        methods: {
+            loadFacebook() {
+                window.fbAsyncInit = function () {
+                    FB.init({
+                        appId: '1187408638266444',
+                        cookie: true,
+                        xfbml: true,
+                        version: 'v2.10',
+                    });
+                };
+    
+                (function (d, s, id) {
+                    var js,
+                        fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {
+                        return;
+                    }
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.src = '//connect.facebook.net/en_US/sdk.js';
+                    fjs.parentNode.insertBefore(js, fjs);
+                })(document, 'script', 'facebook-jssdk');
+                (function (d, s, id) {
+                    let js;
+                    const fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {
+                        return;
+                    }
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.src = '//connect.facebook.net/en_US/sdk.js';
+                    fjs.parentNode.insertBefore(js, fjs);
+                })(document, 'script', 'facebook-jssdk');
+            },
+    
+            loadGoogle() {
+                if (typeof gapi != 'undefined') {
+                    gapi.load('auth2', () => {
+                        this.GoogleAuth = gapi.auth2.init({client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com'});
+                    });
+                }
+            },
+        },
+    });
+    
+    // Google
+    let googleScript = document.createElement('script');
+    googleScript.type = 'text/javascript';
+    googleScript.src = 'https://apis.google.com/js/platform.js';
+    document.head.appendChild(googleScript);
+    googleScript.onload = () => {
+        window.telloe.loadGoogle();
+    };
+    
 };
