@@ -40,7 +40,6 @@ window.TelloeAxios.interceptors.response.use(
 
 
 window.onload = () => {
-    alert('sds');
     let container = document.createElement('div');
     container.id = 'telloe-widget';
     container.innerHTML = '<widget ref="widget" />';
