@@ -7,6 +7,7 @@
       xfbml      : true,
       version    : 'v2.10'
     });
+    FB.AppEvents.logPageView();
   };
 
   (function(d, s, id){
