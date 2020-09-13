@@ -484,6 +484,9 @@ window.app = new Vue({
                 this.introJS.start();
             };
         } else {
+            window.onload = () => {
+                this.windowLoaded = true;
+            };
             Object.values(this.intros).map(intro => {
                 intro.enabled = false;
             });
