@@ -479,7 +479,9 @@ window.app = new Vue({
         if(window.localStorage.getItem('telloe_has_logged_in')) {
             window.localStorage.setItem('telloe_has_logged_in', true);
             window.onload = () => {
-                this.introJS.start();
+                setTimeout(() => {
+                    this.introJS.start();
+                }, 300);
             };
         } else {
             Object.values(this.intros).map(intro => {
