@@ -108,6 +108,9 @@ export default {
             }
             setTimeout(() => {
                 this.scrollDown();
+                this.$nextTick(() => {
+                    this.$emit('ready');
+                });
             }, 50);
         },
         'conversation.id': function (value) {

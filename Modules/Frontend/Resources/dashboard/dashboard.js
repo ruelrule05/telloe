@@ -323,6 +323,7 @@ window.app = new Vue({
                 enabled: true,
             },
         },
+        windowLoaded: false,
     },
 
     computed: {
@@ -476,12 +477,11 @@ window.app = new Vue({
 
     mounted() {
         this.FBInit();
-        if(window.localStorage.getItem('telloe_has_logged_in')) {
+        if(!window.localStorage.getItem('telloe_has_logged_in')) {
             window.localStorage.setItem('telloe_has_logged_in', true);
             window.onload = () => {
-                setTimeout(() => {
-                    this.introJS.start();
-                }, 300);
+                this.windowLoaded = true;
+                this.introJS.start();
             };
         } else {
             Object.values(this.intros).map(intro => {
