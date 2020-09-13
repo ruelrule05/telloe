@@ -99,7 +99,7 @@
 
 								<template v-if="auth.role.role == 'client'">
 									<div class="list-group mt-3 font-heading sidebar-menu">
-										<router-link :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
+										<router-link :data-intro='intros.messages.intro' :data-step="intros.messages.step" data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
 											<messages-icon height="18" width="18"></messages-icon>
 											<span class="ml-3">Messages</span>
 											<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
@@ -107,7 +107,7 @@
 										<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
 										<template>
-											<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
+											<button :data-intro='intros.bookings.intro' :data-step="intros.bookings.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 												<div class="d-flex align-items-center px-4">
 													<monthview-icon height="18" width="18"></monthview-icon>
 													<span class="ml-3">Bookings</span>
@@ -124,12 +124,12 @@
 											</div>
 
 											
-											<router-link to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
+											<router-link :data-intro='intros.contacts.intro' :data-step="intros.contacts.step" to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
 												<contact-alt-icon height="18" width="18"></contact-alt-icon>
 												<span class="pl-3">Contacts</span>
 											</router-link>
 
-											<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
+											<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 												<div class="d-flex align-items-center px-4">
 													<payments-icon height="18" width="18"></payments-icon>
 													<span class="ml-3">Payments</span>
@@ -156,6 +156,11 @@
 
 								<!-- Notifications -->
 								<div class="mt-auto mb-2 sidebar-menu">
+									<div class="cursor-pointer d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" @click="toggleIntros()">
+										<lighthouse-icon stroke="black" stroke-width="8" height="22" width="22"></lighthouse-icon>
+										<span class="pl-3">Help Tool</span>
+									</div>
+
 									<div class="dropright">
 										<div class="cursor-pointer d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" data-toggle="dropdown" data-offset="10, 5" ref="notificationsDropdown">
 											<colored-bell-icon height="22" width="22"></colored-bell-icon>

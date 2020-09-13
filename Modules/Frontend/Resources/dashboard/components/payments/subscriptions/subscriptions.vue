@@ -5,10 +5,10 @@
 				<h5 class="font-heading mb-0">Subscriptions</h5>
 				<div class="ml-auto d-flex align-items-center">
 					<paginate-links :key="subscriptions.length" :async="true" for="subscriptions" :show-step-links="true" :classes="{'ul': ['pagination', 'd-inline-flex', 'mb-0'], 'li': ['page-item', !hasSubscriptions ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
-					<div class="d-inline-flex align-items-center mx-2">
+					<div class="d-inline-flex align-items-center mx-2" :data-intro='$root.intros.subscriptions_filter.intro' :data-step="$root.intros.subscriptions_filter.step">
 						<vue-select :options="subscriptionStatuses" button_class="border-0 bg-light shadow-none select-flex" v-model="subscriptionStatus" label="Status"></vue-select>
 					</div>
-                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="openInfo = true">
+                    <button :data-intro='$root.intros.add_subscription.intro' :data-step="$root.intros.add_subscription.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="openInfo = true">
                         <plus-icon class="btn-icon"></plus-icon>
                         New Subscription
                     </button>

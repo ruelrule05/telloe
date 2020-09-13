@@ -7,7 +7,9 @@
 
 Route::get('test', function() {
     // $nexmo = new \App\Http\NexmoClient;
-    // $nexmo->sms('09162792651', 'You an upcoming booking in
+    // $nexmo->sms('+639162792651', 'You an upcoming booking in');
+
+    \App\Jobs\SendSMS::dispatch('+639162792651', 'You have an upcoming booking in less than 2 hours.');
     //$conversation = App\Models\Conversation::withTrashed()->find(273);
     //print_r(json_encode($conversation));
 });
@@ -76,8 +78,8 @@ Route::group(
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
-        Route::get('/@{username}/{service_id}', 'UserController@showService');
-		Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
+        //Route::get('/@{username}/{service_id}', 'UserController@showService');
+		//Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');
         

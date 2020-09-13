@@ -178,9 +178,16 @@ export default {
 		this.getServices();
 		this.getPendingSubscriptions();
 	},
-
-	mounted() {
-	},
+	
+    mounted() {
+        if(this.$root.intros.subscriptions_filter.enabled) {
+            setTimeout(() => {
+                if(!document.querySelector('.introjs-overlay')) {
+                    this.$root.introJS.start().goToStepNumber(this.$root.intros.subscriptions_filter.step);
+                }
+            }, 500);
+        }
+    },
 
 	methods: {
         ...mapActions({

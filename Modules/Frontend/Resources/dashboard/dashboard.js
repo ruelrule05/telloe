@@ -8,6 +8,7 @@ import 'bootstrap/js/dist/modal';
 import 'bootstrap/js/dist/tooltip';
 import 'bootstrap/js/dist/collapse';
 import Toasted from 'vue-toasted';
+const introJS = require('intro.js');
 
 Vue.use(VueRouter);
 Vue.use(Toasted, {
@@ -128,6 +129,7 @@ import FilePdfIcon from '../icons/file-pdf';
 import FileArchiveIcon from '../icons/file-archive';
 import CloseIcon from '../icons/close';
 import TrayIcon from '../icons/tray';
+import LighthouseIcon from '../icons/lighthouse';
 
 import ContactAltIcon from '../icons/contact-alt';
 import MonthviewIcon from '../icons/monthview';
@@ -176,6 +178,7 @@ window.app = new Vue({
         MessagesIcon,
         CloseIcon,
         TrayIcon,
+        LighthouseIcon,
 
         VideoCall,
         ScreenRecorder,
@@ -207,6 +210,119 @@ window.app = new Vue({
         },
         jQuery: $,
         muted: false,
+        introJS: null,
+        intros: {
+            messages: {
+                step: 1,
+                intro: 'All of your conversations are here. Send a message to your contacts or do a video call!',
+                enabled: true,
+            },
+            bookings: {
+                step: 2,
+                intro: 'View your appointments in the calendar and manage your booking types.',
+                enabled: true,
+            },
+            contacts: {
+                step: 3,
+                intro: 'Add and manage all of your contacts here.',
+                enabled: true,
+            },
+            payments: {
+                step: 4,
+                intro: 'Create invoices for your contacts or subscribe them to your services.',
+                enabled: true,
+            },
+            new_chat: {
+                step: 5,
+                intro: 'Start a new conversation or create a group chat.',
+                enabled: true,
+            },
+            emoji: {
+                step: 6,
+                intro: 'Send an emoji message.',
+                enabled: true,
+            },
+            audio: {
+                step: 7,
+                intro: 'Send an audio message.',
+                enabled: true,
+            },
+            file: {
+                step: 8,
+                intro: 'Attach a file and send as a message.',
+                enabled: true,
+            },
+            screen: {
+                step: 9,
+                intro: 'Record your screen and send as a message, or download the recording.',
+                enabled: true,
+            },
+            video_call: {
+                step: 10,
+                intro: 'Star a video call with the current conversation.',
+                enabled: true,
+            },
+            audio_call: {
+                step: 11,
+                intro: 'Star an audio call with the current conversation.',
+                enabled: true,
+            },
+            calendar_settings: {
+                step: 12,
+                intro: 'Sync your Google and Outlook calendars.',
+                enabled: true,
+            },
+            add_service: {
+                step: 13,
+                intro: 'Add a new booking type.',
+                enabled: true,
+            },
+            edit_service: {
+                step: 14,
+                intro: 'Edit or delete the selected booking type.',
+                enabled: true,
+            },
+            service_availability: {
+                step: 15,
+                intro: 'Manage availability by day of the week, time and breaktime.',
+                enabled: true,
+            },
+            service_holidays: {
+                step: 16,
+                intro: 'Set holidays for the selected booking type.',
+                enabled: true,
+            },
+            add_contact: {
+                step: 17,
+                intro: 'Add a new contact.',
+                enabled: true,
+            },
+            manage_fields: {
+                step: 18,
+                intro: 'Manage default fields for your contacts.',
+                enabled: true,
+            },
+            subscriptions_filter: {
+                step: 19,
+                intro: 'Filter subscriptions by status.',
+                enabled: true,
+            },
+            add_subscription: {
+                step: 20,
+                intro: 'Create a subscription for a contact.',
+                enabled: true,
+            },
+            invoices_filter: {
+                step: 21,
+                intro: 'Filter invoices by status.',
+                enabled: true,
+            },
+            add_invoice: {
+                step: 22,
+                intro: 'Create an invoice for a contact.',
+                enabled: true,
+            },
+        },
     },
 
     computed: {
@@ -340,10 +456,36 @@ window.app = new Vue({
 
         this.getNotifications();
         this.getBookings();
+        this.introJS = introJS.introJs()
+            .setOptions({
+                'showStepNumbers': false,
+                'showBullets': false,
+                'hidePrev': true,
+                'hideNext': true,
+                'tooltipClass': 'rounded',
+                'highlightClass': 'rounded bg-white',
+                'tooltipPosition': 'right',
+                'disableInteraction': true,
+            }).onchange(targetElement => {
+                if(targetElement) {
+                    let intro = Object.keys(this.intros).find(key => this.intros[key].step == targetElement.getAttribute('data-step'));
+                    if(intro) this.intros[intro].enabled = false;
+                }
+            });
     },
 
     mounted() {
         this.FBInit();
+        if(!window.localStorage.getItem('telloe_has_logged_in')) {
+            window.localStorage.setItem('telloe_has_logged_in', true);
+            window.onload = () => {
+                this.introJS.start();
+            };
+        } else {
+            Object.values(this.intros).map(intro => {
+                intro.enabled = false;
+            });
+        }
     },
 
     methods: {
@@ -354,6 +496,13 @@ window.app = new Vue({
             clearNotifications: 'notifications/clear',
             getBookings: 'bookings/index',
         }),
+
+        toggleIntros() {
+            Object.values(this.intros).map(intro => {
+                intro.enabled = true;
+            });
+            this.introJS.start();
+        },
 
         notifyIncomingBookings() {
             let now = dayjs();

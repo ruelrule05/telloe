@@ -20,8 +20,8 @@
             </div>
             <div class="ml-auto btn-circle-actions">
                 <template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
-                    <button class="btn border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><videocam-icon width="26" height="26"></videocam-icon></button>
-                    <button class="btn border-0 py-0 px-1 mx-2" v-tooltip.bottom="'Audio call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation, false);" :class="{'active disabled': $root.callConversation ? true : false}"><call-menu-icon width="20" height="20"></call-menu-icon></button>
+                    <button :data-intro='$root.intros.video_call.intro' :data-step="$root.intros.video_call.step"  class="btn border-0 py-0 px-1" v-tooltip.bottom="'Video call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation);" :class="{'active disabled': $root.callConversation ? true : false}"><videocam-icon width="26" height="26"></videocam-icon></button>
+                    <button :data-intro='$root.intros.audio_call.intro' :data-step="$root.intros.audio_call.step" class="btn border-0 py-0 px-1 mx-2" v-tooltip.bottom="'Audio call'" @click="$root.callConversation = conversation; $root.$refs['videoCall'].outgoingCall(conversation, false);" :class="{'active disabled': $root.callConversation ? true : false}"><call-menu-icon width="20" height="20"></call-menu-icon></button>
                     <!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
                 </template>
                 <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 
@@ -79,7 +79,7 @@
                             <div class="text-center mb-3" :class="{'opacity-0': !messagePaginateLoading}">
                                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
                             </div>
-                            <div v-for="(grouped_message, index) in grouped_messages" class="w-100 message-group">
+                            <div v-for="(grouped_message, index) in grouped_messages" :key="index" class="w-100 message-group">
                                 <small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{'text-right': grouped_message.outgoing}">{{ grouped_message.sender.full_name }}</small>
                             	<div class="d-flex align-items-end message-body" :class="{'outgoing-message text-right flex-row-reverse': grouped_message.outgoing}">
                                     <div>
@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
                             		<div class="px-1 flex-1">
-                                    	<div v-for="message in grouped_message.messages" v-cloak :id="'message-' + message.id" class="message-item">
+                                    	<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item">
             	                            <div class="text-wrap position-relative message-content" :class="{'p-0 bg-transparent': ['emoji', 'image', 'video'].find((x) => x == message.type)}">
                                                 <div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
                                                     <div class="action-content position-relative line-height-1">
@@ -158,7 +158,7 @@
                                     </div>
                                     <small>{{ conversation.user.first_name }} is typing</small>
                                 </div>
-                                <div v-for="member in conversation.members">
+                                <div v-for="member in conversation.members" :key="member.id">
                                     <div class="d-flex align-items-center text-secondary" v-if="member.is_typing">
                                         <div class="typing-indicator mr-1">
                                             <span></span>
@@ -174,7 +174,7 @@
 
                     <div v-if="!conversation.member.is_pending" class="border-top shadow-sm p-2 bg-white message-form">
                         <div class="d-flex mb-1">
-                            <div v-for="(file, index) in pendingFiles" class="bg-light rounded overflow-hidden pending-file-preview mr-1 position-relative">
+                            <div v-for="(file, index) in pendingFiles" :key="index" class="bg-light rounded overflow-hidden pending-file-preview mr-1 position-relative">
                                 <button type="button" class="position-absolute btn badge-pill line-height-0 p-0 btn-white btn-sm remove-file" @click="pendingFiles.splice(index, 1)"><close-icon></close-icon></button>
                                 <div v-if="file.file.dataType == 'image' || file.file.dataType == 'video'" :style="{backgroundImage: 'url(' + file.preview + ')'}" class="file-thumbnail">
                                     <div class="position-absolute-center preview-video-play" v-if="file.file.dataType == 'video'">
@@ -196,15 +196,15 @@
                             </vue-form-validate>
 
                             <div class="px-1 text-nowrap overflow-hidden" :class="{'expand': moreActions}">
-                                <button type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
+                                <button :data-intro='$root.intros.emoji.intro' :data-step="$root.intros.emoji.step" data-position="top" type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{'emojipicker-open': emojipicker}">
                                    <emojipicker @select="selectEmoji"></emojipicker>
                                 </button>
                                 <!-- <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="24" height="24" class="mt-1"></video-camera-icon></button> -->
-                                <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-alt-icon width="20" height="20"></microphone-alt-icon></button>
-                                <button class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><document-alt-icon width="20" height="20"></document-alt-icon></button>
+                                <button :data-intro='$root.intros.audio.intro' :data-step="$root.intros.audio.step" data-position="top" class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-alt-icon width="20" height="20"></microphone-alt-icon></button>
+                                <button :data-intro='$root.intros.file.intro' :data-step="$root.intros.file.step" data-position="top" class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><document-alt-icon width="20" height="20"></document-alt-icon></button>
                                 <input type="file" hidden ref="fileMedia" @change="addFile" />
 
-                                <button class="line-height-sm ml-2 btn px-0 position-relative" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
+                                <button :data-intro='$root.intros.screen.intro' :data-step="$root.intros.screen.step" data-position="top" class="line-height-sm ml-2 btn px-0 position-relative" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
                                     <screen-record-icon width="20" height="20"></screen-record-icon>
                                 </button>
                             </div>

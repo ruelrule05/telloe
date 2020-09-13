@@ -6,9 +6,9 @@
 				<div class="ml-auto d-flex align-items-center">
 					<paginate-links :key="invoices.length" :async="true" for="invoices" :show-step-links="true" :classes="{'ul': ['pagination', 'd-inline-flex', 'mb-0'], 'li': ['page-item', !hasInvoices ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
 					<div class="d-inline-flex align-items-center mx-2">
-						<vue-select :options="invoiceStatuses" button_class="border-0 bg-light shadow-none select-flex" v-model="invoiceStatus" label="Status"></vue-select>
+						<vue-select :data-intro='$root.intros.invoices_filter.intro' :data-step="$root.intros.invoices_filter.step" :options="invoiceStatuses" button_class="border-0 bg-light shadow-none select-flex" v-model="invoiceStatus" label="Status"></vue-select>
 					</div>
-                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="openInfo = true">
+                    <button :data-intro='$root.intros.add_invoice.intro' :data-step="$root.intros.add_invoice.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="openInfo = true">
                         <plus-icon class="btn-icon"></plus-icon>
                         New Invoice
                     </button>

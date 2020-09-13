@@ -110,7 +110,17 @@ export default {
         this.$root.socket.on('invite_token', invite_token => {
             if(invite_token) this.getContactFromInviteToken(invite_token);
         });
-	},
+    },
+    
+    mounted() {
+        if(this.$root.intros.add_contact.enabled) {
+            setTimeout(() => {
+                if(!document.querySelector('.introjs-overlay')) {
+                    this.$root.introJS.start().goToStepNumber(this.$root.intros.add_contact.step);
+                }
+            }, 500);
+        }
+    },
 
 	methods: {
         ...mapActions({
@@ -148,10 +158,11 @@ export default {
         addNewField() {
             if(this.newField.trim().length > 0) {
                 this.$root.auth.custom_fields.push(this.newField);
-                this.storeUserCustomFields();
                 this.newField = '';
                 this.addField = false;
             }
+            this.storeUserCustomFields();
+            this.$toasted.show('Fields saved successfully.');
         },
         
         updateCustomField(index) {

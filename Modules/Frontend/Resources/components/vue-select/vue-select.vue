@@ -7,7 +7,7 @@
                     <input type="text" spellcheck="false" @focus="inputFocused" @blur="inputBlurred" v-model="search" class="p-0 form-control shadow-none border-0 outline-0 input-searchable w-100 bg-transparent line-height-1 font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :data-required="required" />
                 </template>
                 <template v-else>
-                    <input type="text" class="select_hidden_value" @focus="inputFocused" v-model="selected_value" :data-required="required">
+                    <input type="text" class="select_hidden_value d-none" @focus="inputFocused" v-model="selected_value" :data-required="required">
                     <div class="text-ellipsis" :class="{'text-muted': !selected_value || selected_value.length == 0}">{{ select_placeholder }}</div>
                 </template>
                 <div v-if="caret" class="ml-auto line-height-0">

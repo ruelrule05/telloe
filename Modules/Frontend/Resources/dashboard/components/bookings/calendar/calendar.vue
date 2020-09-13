@@ -3,7 +3,7 @@
 		<div class="border-bottom bg-white p-3 d-flex align-items-center">
 			<h5 class="font-heading mb-0">Calendar</h5>
 			<div class="ml-auto d-flex align-items-center">
-                <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="selectedDate = null; infoTab = 'settings'">
+                <button :data-intro='$root.intros.calendar_settings.intro' :data-step="$root.intros.calendar_settings.step"  class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="selectedDate = null; infoTab = 'settings'">
                     <cog-icon class="btn-icon"></cog-icon>
                     Settings
                 </button>

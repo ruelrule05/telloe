@@ -25,6 +25,7 @@ class MessageController extends Controller
         $this->validate($request, [
             'conversation_id' => 'required|exists:conversations,id',
             'type' => 'required|in:text,emoji,image,audio,video,file',
+            'message' => 'required',
         ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addMessage', $conversation);
@@ -72,10 +73,10 @@ class MessageController extends Controller
             $metadata['size'] =  formatBytes($request->source->getSize(), 0);
 
             if($request->type == 'image' || $request->type == 'video') :
+                $filename = $time . '-preview';
+                $previewDestination = 'storage/message-media/' . $filename;
                 if ($request->preview) :
                     $source = $request->preview;
-                    $filename = $time . '-preview';
-                    $previewDestination = 'storage/message-media/' . $filename;
                     $preview = base64_decode(substr($source, strpos($source, ',') + 1));
                     File::put($previewDestination, $preview);
                 else :

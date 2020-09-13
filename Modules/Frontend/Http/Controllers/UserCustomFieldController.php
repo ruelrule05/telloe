@@ -11,7 +11,7 @@ class UserCustomFieldController extends Controller
 {
     public function index(Request $request)
     {
-        return response()->json(Auth::user()->customFields);
+        return response()->json(Auth::user()->customFields ?? ['fields' => []]);
     }
 
     public function store(Request $request)

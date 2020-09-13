@@ -5,8 +5,6 @@ namespace Modules\Frontend\Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Faker\Factory as Faker;
-use App\Models\User;
 use App\Models\PasswordReset;
 
 class AuthTest extends TestCase
@@ -16,27 +14,11 @@ class AuthTest extends TestCase
      *
      * @return void
      */
-    public $app_url;
-    public $headers;
-    public $user;
-    public $faker;
-
-    public function setUp() : void
-    {
-        parent::setUp();
-        $this->app_url = env('APP_URL') . '/ajax';
-        $this->headers = [
-            'HTTP_X-Requested-With' => 'XMLHttpRequest',
-            'HTTP_Accept' => 'application/json'
-        ];
-        $this->user = User::first();
-        $this->faker = Faker::create();
-    }
     
     
     public function testGet() // vendor/bin/phpunit --filter AuthTest::testGet
     {
-        $response = $this->actingAs($this->user)->get($this->app_url . '/auth', $this->headers);
+        $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/auth', $this->headers);
         $response->assertStatus(200);
     }
 
@@ -44,7 +26,7 @@ class AuthTest extends TestCase
     public function testUpdate()
     {
         $data = $this->user->toArray();
-        $response = $this->actingAs($this->user)->post($this->app_url . '/auth', $data, $this->headers);
+        $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/auth', $data, $this->headers);
         $response->assertStatus(200);
     }
 
@@ -57,7 +39,7 @@ class AuthTest extends TestCase
             'password' => 'admin',
             'password_confirmation' => 'admin',
         ];
-        $response = $this->actingAs($this->user)->put($this->app_url . '/auth/password', $data, $this->headers);
+        $response = $this->actingAs($this->user)->put($this->app_url . '/ajax/auth/password', $data, $this->headers);
         $response->assertStatus(200);
 
     }
@@ -72,7 +54,7 @@ class AuthTest extends TestCase
             'email' => $this->user->email,
             'password' => 'admin',
         ];
-        $response = $this->post($this->app_url . '/login', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/login', $data, $this->headers);
         $response->assertStatus(200);
 
 
@@ -81,7 +63,7 @@ class AuthTest extends TestCase
             'email' => $this->user->email,
             'password' => 'adminx',
         ];
-        $response = $this->post($this->app_url . '/login', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/login', $data, $this->headers);
         $response->assertStatus(403);
 
 
@@ -95,12 +77,12 @@ class AuthTest extends TestCase
             'email' => $this->faker->unique()->safeEmail,
             'id' => '1234556789',
         ];
-        $response = $this->post($this->app_url . '/login/facebook', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/login/facebook', $data, $this->headers);
         $response->assertStatus(200);
 
         $this->refreshApplication();
         $data['id'] = '123456';
-        $response = $this->post($this->app_url . '/login/facebook', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/login/facebook', $data, $this->headers);
         $response->assertStatus(403);
 
 
@@ -115,12 +97,12 @@ class AuthTest extends TestCase
             'id' => '109221873481693229502',
             'image_url' => 'https://avatars3.githubusercontent.com/u/27495917?s=460&u=200cc229a0f1ece9b1e6f685f9a4e4c7e9c0da0d&v=4'
         ];
-        $response = $this->post($this->app_url . '/login/google', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/login/google', $data, $this->headers);
         $response->assertStatus(200);
         
         $this->refreshApplication();
         $data['id'] = '123456';
-        $response = $this->post($this->app_url . '/login/google', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/login/google', $data, $this->headers);
         $response->assertStatus(403);
 
     }
@@ -137,12 +119,12 @@ class AuthTest extends TestCase
             'email' => $this->faker->unique()->safeEmail,
             'password' => $this->faker->password,
         ];
-        $response = $this->post($this->app_url . '/signup', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/signup', $data, $this->headers);
         $response->assertStatus(200);
 
 
         $this->refreshApplication();
-        $response = $this->post($this->app_url . '/signup', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/signup', $data, $this->headers);
         $response->assertStatus(403); 
     }
 
@@ -152,14 +134,14 @@ class AuthTest extends TestCase
         $data = [
             'email' => $this->user->email,
         ];
-        $response = $this->post($this->app_url . '/recover', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/recover', $data, $this->headers);
         $response->assertStatus(200);
 
 
         $data = [
             'email' => 'gaa@dsd.comx',
         ];
-        $response = $this->post($this->app_url . '/recover', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/recover', $data, $this->headers);
         $response->assertStatus(404);
     }
 
@@ -175,7 +157,7 @@ class AuthTest extends TestCase
             'password' => 'admin',
             'password_confirmation' => 'admin',
         ];
-        $response = $this->post($this->app_url . '/reset', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/reset', $data, $this->headers);
         $response->assertStatus(200);
 
         $passwordReset = PasswordReset::first();
@@ -185,11 +167,11 @@ class AuthTest extends TestCase
             'password' => 'admin',
             'password_confirmation' => 'adminx',
         ];
-        $response = $this->post($this->app_url . '/reset', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/reset', $data, $this->headers);
         $response->assertStatus(422);
 
         $data['token'] = 'non_existent';
-        $response = $this->post($this->app_url . '/reset', $data, $this->headers);
+        $response = $this->post($this->app_url . '/ajax/reset', $data, $this->headers);
         $response->assertStatus(404);
     }
 
@@ -199,7 +181,7 @@ class AuthTest extends TestCase
             'email' => 'sds',
             'password' => 'admin',
         ];
-        $response = $this->put($this->app_url . '/auth/update_stripe_account', $data, $this->headers);
+        $response = $this->put($this->app_url . '/ajax/auth/update_stripe_account', $data, $this->headers);
         $response->assertStatus(422);
 
         $data = [
@@ -215,14 +197,14 @@ class AuthTest extends TestCase
             'account_holder_name' => 'Clyde Escobidal',
             'routing_number' => '110000',
         ];
-        $response = $this->actingAs($this->user)->put($this->app_url . '/auth/update_stripe_account', $data, $this->headers);
+        $response = $this->actingAs($this->user)->put($this->app_url . '/ajax/auth/update_stripe_account', $data, $this->headers);
         $response->assertStatus(200);
     }
 
 
     public function testLogout()
     {
-        $response = $this->actingAs($this->user)->post(str_replace('/ajax', '', $this->app_url) . '/logout', [], $this->headers);
+        $response = $this->actingAs($this->user)->post($this->app_url . '/logout', [], $this->headers);
         $response->assertStatus(302);
     }
 }

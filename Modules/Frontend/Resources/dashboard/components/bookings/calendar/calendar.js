@@ -309,6 +309,13 @@ export default {
 				this.infoTab = 'bookings';
 			}
 		}
+        if(this.$root.intros.calendar_settings.enabled) {
+            setTimeout(() => {
+                if(!document.querySelector('.introjs-overlay')) {
+                    this.$root.introJS.start().goToStepNumber(this.$root.intros.calendar_settings.step);
+                }
+            }, 500);
+        }
 	},
 
 	methods: {

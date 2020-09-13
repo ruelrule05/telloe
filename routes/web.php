@@ -21,8 +21,6 @@ Route::group([
 });
 
 Route::post('logout', 'AuthController@logout')->middleware('auth');
-Route::get('reset', 'AuthController@reset')->middleware('guest');
-
 
 
 Route::get('laravel.log', function() {

@@ -4,7 +4,7 @@
 			<div class="border-bottom bg-white p-3 d-flex align-items-center">
 				<h5 class="font-heading mb-0">Booking Types</h5>
 				<div class="ml-auto d-flex align-items-center">
-                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="newService = {}; $refs['addModal'].show()">
+                    <button :data-intro='$root.intros.add_service.intro' :data-step="$root.intros.add_service.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="newService = {}; $refs['addModal'].show()">
                         <plus-icon class="btn-icon"></plus-icon>
                         Add Booking Type
                     </button>
@@ -19,7 +19,7 @@
 			<div v-else class="d-flex flex-grow-1 overflow-hidden">
 				<div class="flex-grow-1 p-2 overflow-auto">
 					<div class="d-flex flex-wrap">
-						<div class="w-50 p-3" v-for="service in services">
+						<div class="w-50 p-3" v-for="service in services" :key="service.id">
 							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm', {'unavailable': !service.is_available}]" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
 								<div class="d-flex">
 									<h5 class="font-heading mb-3">{{ service.name }}</h5>
@@ -31,7 +31,7 @@
 									<span class="ml-1">{{ service.duration }} minutes</span>
 								</div>
 								<div class="d-flex mt-2">
-									<div v-for="day in days" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-white bg-primary' : 'text-gray-400 bg-gray-200']">
+									<div v-for="(day, index) in days" :key="index" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'text-white bg-primary' : 'text-gray-400 bg-gray-200']">
 										<span class="position-absolute-center line-height-1">{{ day.charAt(0) }}</span>
 									</div>
 								</div>
@@ -48,7 +48,7 @@
 								<div class="ml-auto d-flex align-items-center">
 									<toggle-switch @input="updateService(selectedService)" active-class="bg-green" v-model="selectedService.is_available"></toggle-switch>
 									<div class="dropdown ml-2">
-										<button class="btn p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
+										<button :data-intro='$root.intros.edit_service.intro' :data-step="$root.intros.edit_service.step" class="btn p-0 line-height-0" data-toggle="dropdown" data-offset="-130, 0"><cog-icon></cog-icon></button>
 										<div class="dropdown-menu">
 											<span class="dropdown-item cursor-pointer d-flex align-items-center" @click="newService = JSON.parse(JSON.stringify(selectedService));$refs['editModal'].show()">
 												<pencil-icon width="16" height="16" class="mr-2"></pencil-icon>Edit
@@ -75,12 +75,12 @@
 						</div>
 
 						<div class="d-flex mb-2">
-							<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">Availability</button>
-							<button class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">Holidays</button>
+							<button :data-intro='$root.intros.service_availability.intro' :data-step="$root.intros.service_availability.step" class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">Availability</button>
+							<button :data-intro='$root.intros.service_holidays.intro' :data-step="$root.intros.service_holidays.step" class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">Holidays</button>
 						</div>
 
 						<div v-if="serviceDetailsTab == 'availability'" id="service-days">
-							<div v-for="day in days" class="service-day p-2 border-bottom">
+							<div v-for="(day, index) in days" :key="index" class="service-day p-2 border-bottom">
 								<div class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer" data-toggle="collapse" :data-target="`#day-${day}`">
 									<toggle-switch class="mr-2" active-class="bg-green" @click.native.stop @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
 									<div class="h6 mb-0">{{ day.toUpperCase() }}</div>

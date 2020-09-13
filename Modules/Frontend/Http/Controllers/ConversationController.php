@@ -84,7 +84,7 @@ class ConversationController extends Controller
             endif;
         endforeach;
 
-        if($error) return abort(403, 'Failed creating a conversation.');
+        if($error) return abort(403, 'Failed creating a conversation. One of the member IDs is invalid.');
 
         if (count($members) > 0) :
             $conversation = Conversation::create([

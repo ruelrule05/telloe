@@ -6,11 +6,11 @@
 					<div class="border-bottom bg-white p-3 d-flex align-items-center">
 						<h5 class="font-heading mb-0">Contacts</h5>
 						<div class="ml-auto d-flex align-items-center">
-		                    <button class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="infoTab = 'add_contact';">
+		                    <button :data-intro='$root.intros.add_contact.intro' :data-step="$root.intros.add_contact.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="infoTab = 'add_contact';">
 		                        <plus-icon class="btn-icon"></plus-icon>
 		                        Add Contact
 		                    </button>
-							<button type="button" class="btn btn-light ml-1 shadow-none" @click="infoTab = 'manage_fields'">Manage Fields</button>
+							<button :data-intro='$root.intros.manage_fields.intro' :data-step="$root.intros.manage_fields.step" type="button" class="btn btn-light ml-1 shadow-none" @click="infoTab = 'manage_fields'">Manage Fields</button>
 						</div>
 					</div>
 
@@ -96,14 +96,16 @@
 		                <div v-for="(custom_field, index) in $root.auth.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
 		                	<div class="mb-1 d-flex align-items-center w-100">
 		                		<input type="text" :value="custom_field" class="form-control flex-grow-1">
-		                		<trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="$root.auth.custom_fields.splice(index, 1); storeUserCustomFields()"></trash-icon>
+		                		<trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="$root.auth.custom_fields.splice(index, 1)"></trash-icon>
 		                	</div>
 		                </div>
-		                <div v-if="addField" class="mb-1 d-flex align-items-center w-100">
-		                	<input type="text" v-model="newField" class="form-control flex-grow-1" placeholder="New Field" @blur="addNewField">
+		                <div class="mb-1 d-flex align-items-center w-100">
+		                	<input type="text" v-model="newField" class="form-control flex-grow-1" placeholder="New Field">
 		                	<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
 		                </div>
-		                <button class="btn btn-sm btn-primary d-flex align-items-center mt-2" :disabled="addField" @click="addField = true"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1 fill-white"></plus-icon> Add Field</button>
+		                <div class="d-flex mt-1">
+							<button type="button" class="btn btn-primary" :disabled="addField" @click="addNewField()">Save</button>
+						</div>
 					</div>
 				</template>
 

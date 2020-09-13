@@ -118,6 +118,13 @@ export default {
     },
 
     mounted() {
+        if(this.$root.intros.new_chat.enabled) {
+            setTimeout(() => {
+                if(!document.querySelector('.introjs-overlay')) {
+                    this.$root.introJS.start().goToStep(this.$root.intros.new_chat.step);
+                }
+            }, 500);
+        }
     },
 
     methods: {

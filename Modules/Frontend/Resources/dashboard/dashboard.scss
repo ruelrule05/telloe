@@ -632,3 +632,21 @@ hr.hr-text::before {
         }
     }
 }
+
+@import '~intro.js/minified/introjs.min.css';
+.introjs-tooltipbuttons{
+    display: flex;
+    justify-content: flex-end;
+}
+.introjs-skipbutton{
+    margin-right: auto;
+}
+.introjs-prevbutton{
+    margin-right: 5px;
+}
+.introjs-button:not(.introjs-hidden){
+    @extend .btn;
+    @extend .btn-light;
+    @extend .btn-sm;
+    box-shadow: none !important;
+}

@@ -64,6 +64,7 @@
         "get-urls": "^9.2.0",
         "html2canvas": "^1.0.0-rc.5",
         "image-data-uri": "^2.0.1",
+        "intro.js": "^2.9.3",
         "jquery": "^3.5.1",
         "jstz": "^2.1.1",
         "leader-line": "^1.0.5",
