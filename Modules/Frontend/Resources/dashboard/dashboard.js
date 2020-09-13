@@ -476,7 +476,7 @@ window.app = new Vue({
 
     mounted() {
         this.FBInit();
-        if(!window.localStorage.getItem('telloe_has_logged_in')) {
+        if(window.localStorage.getItem('telloe_has_logged_in')) {
             window.localStorage.setItem('telloe_has_logged_in', true);
             window.onload = () => {
                 this.introJS.start();
