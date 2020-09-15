@@ -467,6 +467,7 @@ window.app = new Vue({
                 'highlightClass': 'rounded bg-white',
                 'tooltipPosition': 'right',
                 'disableInteraction': true,
+                'overlayOpacity': 0.65,
             }).onchange(targetElement => {
                 if(targetElement) {
                     let intro = Object.keys(this.intros).find(key => this.intros[key].step == targetElement.getAttribute('data-step'));

@@ -356,6 +356,7 @@ export default {
 					password: this.loginForm.password,
 					date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
 					time: this.selectedTimeslot.time,
+					timezone: this.timezone,
 				};
 				TelloeAxios
 					.post(`/@${this.$root.profile.username}/${this.selectedService.id}/signup_and_book`, data)

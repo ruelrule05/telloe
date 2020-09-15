@@ -381,6 +381,7 @@ window.app = new Vue({
                         password: this.loginForm.password,
                         date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
                         time: this.selectedTimeslot.time,
+                        timezone: this.timezone,
                     };
                     axios
                         .post(`/@${this.profile.username}/${this.selectedService.id}/signup_and_book`, data, {toasted: true})
