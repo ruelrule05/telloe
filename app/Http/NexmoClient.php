@@ -13,9 +13,9 @@ class NexmoClient {
 
     public function __construct()
     {
-        $this->key = env('NEXMO_API_KEY');
-        $this->secret = env('NEXMO_API_SECRET');
-        $this->brand = env('NEXMO_BRAND');
+        $this->key = config('nexmo.api_key');
+        $this->secret = config('nexmo.api_secret');
+        $this->brand = config('nexmo.brand');
         $basic = new Basic($this->key, $this->secret);
         $this->client = new Client($basic);;
     }
