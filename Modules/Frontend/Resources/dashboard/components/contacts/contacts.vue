@@ -61,6 +61,7 @@
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 						                    		</button>
 													<div class="dropdown-menu dropdown-menu-right">
+													    <span v-if="contact.is_pending" class="dropdown-item cursor-pointer" @click="selectedContact = contact; $refs['resendModal'].show()">Resend invitation</span>
 													    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; infoTab = 'manage_contact'; selectedContact.ready = false;">Manage</span>
 													    <span class="dropdown-item cursor-pointer" @click="selectedContact = contact; $refs['deleteModal'].show()">Delete</span>
 													</div>
@@ -171,6 +172,20 @@
 
 			</div>
 		</div>
+
+
+		<modal ref="resendModal" :close-button="false">
+			<template v-if="selectedContact">
+				<h5 class="font-heading text-center">Resend Invitation</h5>
+				<p class="text-center mt-3">
+					Are you sure to resend the invitation email to contact <strong>{{ selectedContact.contact_user.full_name.trim() || selectedContact.contact_user.email }}</strong>? <br />
+				</p>
+				<div class="d-flex justify-content-end">
+					<button class="btn btn-white border text-body" type="button" data-dismiss="modal">Cancel</button>
+					<vue-button button_class="btn btn-primary ml-auto" :loading="resendLoading" type="button" @click="resendEmail(selectedContact);">Resend Invitation</vue-button>
+				</div>
+			</template>
+		</modal>
 
 		<modal ref="deleteModal" :close-button="false">
 			<template v-if="selectedContact">

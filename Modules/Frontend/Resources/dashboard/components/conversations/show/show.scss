@@ -63,6 +63,9 @@
         text-align: left;
         border-radius: 2px;
         max-width: 80%;
+        ::v-deep a {
+            text-decoration: underline;
+        }
         &:after{
             content: '';
             position: absolute;
@@ -161,6 +164,9 @@
             border-top-left-radius: 15px;
             border-bottom-left-radius: 15px;
             text-align: right;
+            ::v-deep a {
+                color: white;
+            }
         }
         .message-item:only-child,
         .message-item:first-child {
@@ -190,6 +196,9 @@
             background-color: #F2F4F9;
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
+            ::v-deep a {
+                color: $body-color;
+            }
         }
         .message-item:only-child,
         .message-item:first-child {

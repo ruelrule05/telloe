@@ -9,9 +9,12 @@ Route::get('test', function() {
     // $nexmo = new \App\Http\NexmoClient;
     // $nexmo->sms('+639162792651', 'You an upcoming booking in');
 
-    \App\Jobs\SendSMS::dispatch('+639162792651', 'You have an upcoming booking in less than 2 hours.');
+    //\App\Jobs\SendSMS::dispatch('+639162792651', 'You have an upcoming booking in less than 2 hours.');
     //$conversation = App\Models\Conversation::withTrashed()->find(273);
     //print_r(json_encode($conversation));
+   // print_r(config('app.admin_emails'));
+   
+
 });
 
 
@@ -39,11 +42,12 @@ Route::get('email', function() {
     endforeach;*/
 
     
-    $user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
-    $booking = App\Models\Booking::find(40);
-    $email = new Modules\Frontend\Mail\UpdateBooking($booking);
+    //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
+    //$booking = App\Models\Booking::find(40);
+    //$email = new Modules\Frontend\Mail\NewUser(App\Models\User::first());
     //\Mail::send($email);
-    return $email;
+   
+    //return $email;
 });
 
 Route::get('events', function() {
@@ -57,7 +61,6 @@ Route::get('events', function() {
 
 //Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@outlookCalendarEvents');
 //Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@updateOutlookCalendarEvents');
-
 
 
 
@@ -101,6 +104,7 @@ Route::group(
                 Route::apiResource('bookings', 'BookingController');
                 Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
                 Route::apiResource('contacts', 'ContactController');
+                Route::post('contacts/{id}/resend', 'ContactController@resend');
                 Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
                 Route::apiResource('users', 'UserController')->only('index');
                 Route::apiResource('plans', 'PlanController')->only('index');

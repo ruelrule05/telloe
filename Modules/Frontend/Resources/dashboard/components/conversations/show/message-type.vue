@@ -49,7 +49,7 @@
 
         <!-- Text -->
         <div class="mb-0" v-else>
-            <p class="mb-0 text-left message-text">{{ message.message }}</p>
+            <p class="mb-0 text-left message-text" v-html="urlify(message.message)"></p>
             <div v-if="message.preview">
             	{{ message.preview }}
                 <div v-if="typeof message.preview == 'boolean'" class="text-center">
@@ -142,6 +142,13 @@ export default {
 
             return iconComponent;
         },
+
+        urlify(text) {
+            var urlRegex = /(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/g;
+            return text.replaceAll(urlRegex, function(url) {
+                return '<a target="_blank" href="' + url + '">' + url + '</a>';
+            })  
+        }
 	}
 }
 </script>
@@ -152,6 +159,7 @@ export default {
 }
 .message-text{
     white-space: pre-wrap;
+    word-break: break-all;
 }
 p {
     line-height: 1.3;

@@ -347,5 +347,18 @@ class ContactController extends Controller
         $contact = Contact::where('invite_token', $request->invite_token)->where('user_id', Auth::user()->id)->first();
         return response()->json($contact);
     }
+
+    public function resend($id)
+    {
+        $contact = Contact::findOrFail($id);
+        $this->authorize('show', $contact);
+
+        $authTab = 'login';
+        $contactUser = User::where('email', $contact->email)->first();
+        if(!$contactUser) $authTab = 'signup';
+
+        Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab));
+        return response(['success' => true]);
+    }
     
 }

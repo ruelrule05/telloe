@@ -128,6 +128,8 @@ class AuthController extends Controller
         if($user->role->role == 'client') :
             Mail::queue(new Welcome($user));
         endif;
+
+
         
         $response = [
             'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),

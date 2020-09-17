@@ -7,10 +7,14 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Carbon\Carbon;
+use Mail;
+use Modules\Frontend\Mail\NewUser;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+
+
 
     /**
      * The attributes that are mass assignable.
@@ -186,4 +190,18 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+
+
+
+
+    
+    public static function boot() {
+	    parent::boot();
+	    static::created(function($user) {
+            foreach(config('app.admin_emails') as $email) :
+                Mail::to($email)->queue(new NewUser($user));
+            endforeach;
+	    });
+	}
 }

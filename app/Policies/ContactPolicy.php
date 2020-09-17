@@ -40,6 +40,11 @@ class ContactPolicy
         return $user->id == $contact->user_id;
     }
 
+    public function show(User $user, Contact $contact)
+    {
+        return $user->id == $contact->user_id;
+    }
+
     public function delete(User $user, Contact $contact)
     {
         return $user->id == $contact->user_id;

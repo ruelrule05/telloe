@@ -2,6 +2,7 @@ import {mapState, mapActions} from 'vuex';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
+import VueButton from '../../../components/vue-button.vue';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 import Info from '../conversations/show/info/info.vue';
 
@@ -17,6 +18,7 @@ export default {
 		Modal, 
         VueFormValidate, 
         VueCheckbox,
+        VueButton,
 		ToggleSwitch,
         Info,
 
@@ -45,6 +47,7 @@ export default {
         selectedFile: null,
         addField: false,
         newField: '',
+        resendLoading: false,
 	}),
 
 	computed: {
@@ -133,6 +136,15 @@ export default {
             storeUserCustomFields: 'user_custom_fields/store',
             showConversation: 'conversations/show',
         }),
+
+        resendEmail(contact) {
+            this.resendLoading = true;
+            axios.post(`/contacts/${contact.id}/resend`).then(() => {
+                this.resendLoading = false;
+                this.$refs['resendModal'].hide();
+                this.$toasted.show('Invitation email has been sent successfully.');
+            });
+        },
 
         toggleServiceBlacklist(service) {
             let index = this.newContact.blacklisted_services.findIndex((x) => x == service.id);
