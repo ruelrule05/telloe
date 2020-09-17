@@ -16,3 +16,4 @@ yarn-error.log
 public/mix-manifest.json
 /Modules/Frontend/node_modules
 /Modules/Admin/node_modules
+composer.lock
