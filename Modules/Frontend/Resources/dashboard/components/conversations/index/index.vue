@@ -61,7 +61,7 @@
                                     <div class="media-body pl-3 overflow-hidden">
                                         <div class="h6 mb-0 font-heading" :class="{'font-weight-normal': conversation.last_message.is_read}">{{ conversation.member.full_name || conversation.name }}</div>
                                         <div class="d-flex align-items-center text-nowrap conversation-message-preview">
-                                            <div class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-secondary' : 'text-black font-weight-bold']">{{ (conversation.last_message.prefix || '') + conversation.last_message.message }}</div>    
+                                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-secondary' : 'text-black font-weight-bold']"></div>    
                                             <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
                                         </div>    
                                     </div>

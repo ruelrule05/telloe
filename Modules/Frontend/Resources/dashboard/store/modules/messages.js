@@ -11,11 +11,11 @@ const actions = {
     async store({ commit, rootState }, data) {
         let conversation = rootState.conversations.index.find((x) => x.id == data.conversation_id);
         if(conversation) {
-            Vue.set(conversation, 'last_message', data);
-
             let newMessage = Object.assign({}, data);
             newMessage.message = escapeHTML(newMessage.message);
             conversation.paginated_messages.data.push(newMessage);
+
+            Vue.set(conversation, 'last_message', newMessage);
 
             data.metadata = JSON.stringify(data.metadata);
             let bodyFormData = new FormData();
