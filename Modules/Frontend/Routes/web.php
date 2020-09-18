@@ -13,7 +13,9 @@ Route::get('test', function() {
     //$conversation = App\Models\Conversation::withTrashed()->find(273);
     //print_r(json_encode($conversation));
    // print_r(config('app.admin_emails'));
-   
+   preg_match_all('!https?://\S+!', 'dsds sdsd s https://google.com and http://clyde.com', $links, false);
+   echo '<pre>';
+   print_r($links);
 
 });
 
@@ -99,6 +101,7 @@ Route::group(
                 // Resource
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
                 Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
+                Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
                 Route::apiResource('services', 'ServiceController');
                 Route::apiResource('notes', 'NoteController');
                 Route::apiResource('bookings', 'BookingController');
@@ -141,6 +144,9 @@ Route::group(
 
                 Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');
+
+
+		        Route::get('get_page_preview', 'MessageController@getPagePreview');
             });
 
             // Booking page 

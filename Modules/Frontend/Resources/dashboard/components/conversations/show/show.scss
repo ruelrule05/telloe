@@ -5,7 +5,8 @@
 .message-input {
     border-radius: 10px;
     font-size: 14px;
-    resize: none !important;
+    max-height: 120px;
+    word-break: break-all;
 }
 .message-form-inputs {
     svg {
@@ -63,7 +64,7 @@
         text-align: left;
         border-radius: 2px;
         max-width: 80%;
-        ::v-deep a {
+        ::v-deep a:not(.message-preview) {
             text-decoration: underline;
         }
         &:after{
@@ -164,7 +165,7 @@
             border-top-left-radius: 15px;
             border-bottom-left-radius: 15px;
             text-align: right;
-            ::v-deep a {
+            ::v-deep a:not(.message-preview) {
                 color: white;
             }
         }
@@ -196,7 +197,7 @@
             background-color: #F2F4F9;
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
-            ::v-deep a {
+            ::v-deep a:not(.message-preview) {
                 color: $body-color;
             }
         }

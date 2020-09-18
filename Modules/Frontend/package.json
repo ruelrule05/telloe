@@ -61,7 +61,7 @@
         "format-number": "^3.0.0",
         "fs": "0.0.1-security",
         "fs-extra": "^8.1.0",
-        "get-urls": "^9.2.0",
+        "get-urls": "^9.2.1",
         "html2canvas": "^1.0.0-rc.5",
         "image-data-uri": "^2.0.1",
         "intro.js": "^2.9.3",

@@ -50,13 +50,7 @@
         <!-- Text -->
         <div class="mb-0" v-else>
             <p class="mb-0 text-left message-text" v-html="urlify(message.message)"></p>
-            <div v-if="message.preview">
-            	{{ message.preview }}
-                <div v-if="typeof message.preview == 'boolean'" class="text-center">
-                    <div class="spinner-border spinner-border-sm" role="status"></div>
-                </div>
-                <div v-else v-html="message.preview"></div>
-            </div>
+            <div class="message-preview-container" v-if="message.link_preview" v-html="message.link_preview"></div>
         </div>
 	</div>
 </template>
@@ -154,6 +148,30 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.message-preview-container{
+    ::v-deep .message-preview{
+        background: white !important;
+        text-decoration: none;
+        min-width: 350px;
+        .preview-image {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 180px;
+        }
+        p {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        &:hover{
+            h6 {
+                text-decoration: underline;
+            }
+        }
+    }
+}
 .message-sending{
     background-color: rgba(255, 255, 255, 0.65);
 }

@@ -10,7 +10,7 @@ class Message extends BaseModel
     //
     use SoftDeletes;
     
-    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
+    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'link_preview', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
     protected $appends = ['created_diff'];
    
     protected $casts = [

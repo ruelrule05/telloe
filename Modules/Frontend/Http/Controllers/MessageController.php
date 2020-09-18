@@ -14,6 +14,7 @@ use FFMpeg;
 use FFMpeg\Format\Video\X264;
 use Mail;
 use Modules\Frontend\Mail\NewMessage;
+use Illuminate\Support\Facades\Http;
 
 class MessageController extends Controller
 {
@@ -35,6 +36,7 @@ class MessageController extends Controller
         $time = time();
         $sourceFile = null;
         $previewFile = null;
+        $linkPreview = null;
         if ($request->hasFile('source')) :
             $filename = $time . '-source';
 
@@ -93,14 +95,13 @@ class MessageController extends Controller
                 $previewDestination = 'storage/message-media/' . $filename;
                 $previewFile = '/' . $previewDestination;
             endif;
-
         endif;
 
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'user_id' => Auth::user()->id,
             'type' => $request->type,
-            'message' => $request->message,
+            'message' => htmlspecialchars($request->message),
             'source' => $sourceFile,
             'preview' => $previewFile,
             'metadata' => $metadata,
@@ -170,5 +171,47 @@ class MessageController extends Controller
         
         // Delete tmp file MP4
         // File::delete($tmpPath . '.mp4');
+    }
+
+    public function getPagePreview(Request $request)
+    {
+        $this->validate($request, [
+            'url' => 'required'
+        ]);
+        $preview = Http::get('http://api.linkpreview.net/?key=' . config('app.link_preview_key').'&q=' . $request->url);
+
+        return response($response);
+    }
+
+    public function generateLinkPreview($id, Request $request)
+    {
+        $message = Message::findOrFail($id);
+        $this->authorize('show', $message);
+
+        $linkPreview = null;
+        preg_match_all('!https?://\S+!', $message->message, $links);
+        if(count($links) > 0 && $links[0] > 0) :
+            $preview = Http::get('https://api.linkpreview.net/?key=' . config('app.link_preview_key').'&q=' . $links[0][0]);
+            $preview = $preview->json();
+            $host = parse_url($preview['url'])['host'];
+            if(!isset($preview['error'])) :
+                $linkPreview = '<a class="message-preview d-block rounded mt-2 mb-1 overflow-hidden text-left" target="_blank" href="' . $preview['url'] . '">';
+                if($preview['image']) :
+                    $linkPreview .= '<div class="preview-image" style="background-image: url(\'' . $preview['image'] . '\')"></div>';
+                endif;
+                $linkPreview .= '<div class="p-2">';
+                $linkPreview .= '<h6 class="text-body mb-1 font-weight-bolder">' . htmlspecialchars($preview['title']) . '</h6>';
+                $linkPreview .= '<p class="text-body mb-1 p">' . htmlspecialchars($preview['description']) . '</p>';
+                $linkPreview .= '<span class="text-gray">' . $host . '</span>';
+                $linkPreview .= '</div>';
+                $linkPreview .= '</a>';
+
+                $message->update([
+                    'link_preview' => $linkPreview
+                ]);
+            endif;
+        endif;
+        
+        return response($linkPreview);
     }
 }

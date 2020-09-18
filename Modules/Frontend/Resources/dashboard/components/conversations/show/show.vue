@@ -191,8 +191,9 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center message-form-inputs">
-                            <vue-form-validate @submit="sendText" class="flex-grow-1" ref="messageForm" @mounted="messageFormMounted">
-                                <input type="text" @paste="inputPaste" @keydown="messageInput" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" rows="1" placeholder="Write a message.." />
+                            <vue-form-validate @submit="sendText" class="flex-1" ref="messageForm" @mounted="messageFormMounted">
+                                <div class="form-control border-0 shadow-none message-input bg-gray-200 text-wrap h-auto overflow-auto" contenteditable spellcheck="false" ref="messageInput" @keydown="messageInput" @paste.prevent="getText"></div>
+                                <!-- <input type="text" @paste="inputPaste" @keydown="messageInput" ref="messageInput" v-model="textMessage" class="form-control border-0 shadow-none message-input bg-gray-200" rows="1" placeholder="Write a message.." /> -->
                             </vue-form-validate>
 
                             <div class="px-1 text-nowrap overflow-hidden" :class="{'expand': moreActions}">

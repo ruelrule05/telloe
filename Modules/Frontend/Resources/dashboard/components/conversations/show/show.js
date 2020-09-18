@@ -248,6 +248,11 @@ export default {
             deleteMessage: 'messages/delete',
         }),
 
+        getText(e) {
+            let clearText = e.clipboardData.getData('text/plain');
+            document.execCommand('inserttext', false, clearText);
+        },
+
         messageFormMounted() {
             if(this.$refs['messageInput'] && this.$route.query.focus == 'message_input') {
                 this.$refs['messageInput'].focus();
@@ -351,8 +356,11 @@ export default {
         messageInput(e) {
             let isEnter = false;
             if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                e.preventDefault();
                 isEnter = true;
+                this.textMessage = e.target.innerText;
                 this.$refs['messageForm'].submit();
+                this.$refs['messageInput'].innerHTML = '';
             }
             setTimeout(() => {
                 if (!isEnter && this.textMessage.trim().length) {

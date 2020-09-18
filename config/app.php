@@ -3,6 +3,7 @@ $admin_emails = env('ADMIN_EMAILS');
 return [
     'admin_emails' => $admin_emails ? explode(',', $admin_emails) : [],
     'conversation_cache_time' => 40,
+    'link_preview_key' => env('LINK_PREVIEW_KEY'),
   
     'user_cache_time' => 30,
     /*
