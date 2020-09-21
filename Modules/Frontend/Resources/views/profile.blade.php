@@ -6,18 +6,18 @@
 	<link rel="stylesheet" href="{{ mix('css/profile.css') }}">
 </head>
 <body>
-	<div id="app" class="py-5" v-cloak>
+	<div id="app" class="py-md-5" v-cloak>
 
-		<div class="text-center" v-if="ready">
+		<div class="text-center h-100 w-100 overflow-auto" v-if="ready">
 			<transition-group name="fade" tag="div">
 				<div class="container" v-if="!selectedService" key="services">
 					<div class="row justify-content-center">
-						<div class="col-md-10">
-							<div class="bg-white shadow-sm rounded p-4">
+						<div class="col-md-10 col-container">
+							<div class="bg-white shadow-sm rounded p-md-4 py-5 h-100 w-100">
 								<div class="profile-image d-inline-block bg-white mb-2" style="background-image: url('{{ $profile->profile_image }}')">
 									@if(!$profile->profile_image) <span>{{ $profile->initials }}</span> @endif
 								</div>
-								<h1 class="font-heading h4">{{ $profile->full_name }}</h1>
+								<h1 class="font-heading h3">{{ $profile->full_name }}</h1>
 								
 								<template v-cloak>
 									<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
@@ -47,16 +47,12 @@
 					</div>
 				</div>
 
-				<div class="position-absolute-center w-100 container" v-else key="service">
-					<div class="row justify-content-center">
-						<div class="col-md-9">
-							<div class="bg-white shadow-sm rounded d-flex selected-service h-100">
+				<div class="position-absolute-center container selected-service-container" v-else key="service">
+					<div class="row justify-content-center h-100">
+						<div class="col-md-9 col-container  h-100">
+							<div class="bg-white shadow-sm rounded d-md-flex selected-service">
 								<div class="border-right p-4 w-50 position-relative text-left">
 									<button class="btn p-0 close posidtion-absolute ml-n2 mt-n3 back-to-sedrvices float-none" type="button" @click="selectedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
-									<!-- <div class="profile-image profile-image-sm d-inline-block bg-white mb-2" style="background-image: url('{{ $profile->profile_image }}')">
-										@if(!$profile->profile_image) <span>{{ $profile->initials }}</span> @endif
-									</div>
-									<h3 class="font-heading h5 mb-0">{{ $profile->full_name }}</h3> -->
 									<div class="text-left mt-2">
 										<h3 class="font-heading h5 mb-1">@{{ selectedService.name }}</h3>
 										<p class="mb-0">@{{ selectedService.description }}</p>
@@ -84,10 +80,6 @@
 									</div>
 								</div>
 		
-
-
-
-
 								<div class="w-50 h-100 p-4 text-left d-flex flex-column overflow-hidden position-relative">
 									<template v-if="!authForm">
 			            				<div class="d-flex align-items-center mb-3">

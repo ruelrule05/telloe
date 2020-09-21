@@ -149,3 +149,34 @@ body {
 .booking-modal-progress{
     height: 200px;
 }
+
+@media only screen and (max-width: 991px) {
+    #app {
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+    }
+    .selected-service-container{
+        overflow: auto;
+        height: 100vh;
+        width: 100%;
+        background-color: white;
+        .shadow-sm{
+            box-shadow: none !important;
+        }
+    }
+    .col-container{
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+    }
+    .profile-image{
+        width: 100px;
+        height: 100px;
+    }
+    .selected-service{
+        .w-50{
+            width: 100% !important;
+        }
+    }
+}

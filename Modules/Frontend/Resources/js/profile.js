@@ -240,7 +240,7 @@ window.app = new Vue({
             this.calendarView = 'month';
             this.authAction = 'signup';
             this.authForm = false;
-    }
+        }
     },
 
     created() {
@@ -557,7 +557,7 @@ window.app = new Vue({
         getData() {
             axios.get(window.location.pathname).then((response) => {
                 this.services = response.data;
-                //this.selectedService = this.services[0];
+                this.selectedService = this.services[0];
 
                 // testing
                 /*let now = new Date();
