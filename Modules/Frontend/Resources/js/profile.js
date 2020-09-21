@@ -557,7 +557,7 @@ window.app = new Vue({
         getData() {
             axios.get(window.location.pathname).then((response) => {
                 this.services = response.data;
-                this.selectedService = this.services[0];
+                //this.selectedService = this.services[0];
 
                 // testing
                 /*let now = new Date();
