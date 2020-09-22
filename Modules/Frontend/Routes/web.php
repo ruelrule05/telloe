@@ -46,8 +46,8 @@ Route::get('email', function() {
     
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    //$email = new Modules\Frontend\Mail\NewUser(App\Models\User::first());
-    //\Mail::send($email);
+    $email = new Modules\Frontend\Mail\NewUser(App\Models\User::first());
+    \Mail::to('cleidoscope@gmail.com')->send($email);
    
     //return $email;
 });
