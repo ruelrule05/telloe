@@ -7,6 +7,10 @@
     font-size: 14px;
     max-height: 120px;
     word-break: break-all;
+    &[data-placeholder]:empty:before {
+        content: attr(data-placeholder);
+        color: #888;
+   }
 }
 .message-form-inputs {
     svg {
