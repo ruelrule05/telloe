@@ -6,6 +6,12 @@ const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 mix.setPublicPath('../../public').mergeManifest();
 
+let timestamp = '';
+
+if(mix.config.production) {
+    timestamp = '-' + new Date().valueOf(); 
+}
+
 // CSS
 if (argv.indexOf('--css') > -1) { 
     console.log('Running css...');
@@ -26,7 +32,7 @@ else {
             
             .webpackConfig({
                 output: {
-                    chunkFilename: `js/chunks/[name].js`
+                    chunkFilename: `js/chunks/[name]${timestamp}.js`
                 },
                 optimization: {
                     splitChunks: {
@@ -45,7 +51,7 @@ else {
             .js(__dirname + '/Resources/js/page.js', 'js')
             .webpackConfig({
                 output: {
-                    chunkFilename: `js/chunks/[name].js`
+                    chunkFilename: `js/chunks/[name]${timestamp}.js`
                 },
                 optimization: {
                     splitChunks: {
@@ -64,7 +70,7 @@ else {
             .js(__dirname + '/Resources/js/call.js', 'js')
             .webpackConfig({
                 output: {
-                    chunkFilename: `js/chunks/[name].js`
+                    chunkFilename: `js/chunks/[name]${timestamp}.js`
                 },
                 optimization: {
                     splitChunks: {
@@ -83,7 +89,7 @@ else {
             .js(__dirname + '/Resources/js/profile.js', 'js')
             .webpackConfig({
                 output: {
-                    chunkFilename: `js/chunks/[name].js`
+                    chunkFilename: `js/chunks/[name]${timestamp}.js`
                 },
                 optimization: {
                     splitChunks: {
