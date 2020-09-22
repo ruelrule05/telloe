@@ -152,7 +152,9 @@ export default {
     ::v-deep .message-preview{
         background: white !important;
         text-decoration: none;
-        min-width: 350px;
+        width: 350px;
+        min-width: 100%;
+        max-width: 100%;
         .preview-image {
             background-size: cover;
             background-repeat: no-repeat;
