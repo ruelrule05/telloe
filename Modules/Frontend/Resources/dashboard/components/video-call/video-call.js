@@ -429,9 +429,9 @@ export default {
             let timestamp = dayjs().valueOf();
             let configuration = {
                 iceServers: [
-                    { urls: 'stun:stun.telloe.com:5349' },
+                    { urls: 'stun:stun.cocoach.com:5349' },
                     {
-                        urls: 'turn:turn.telloe.com:5349',
+                        urls: 'turn:turn.cocoach.com:5349',
                         credential: 'moonfang',
                         username: 'cleidoscope'
                     }
