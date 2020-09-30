@@ -58,6 +58,11 @@ const router = new VueRouter({
                     component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/contacts.vue'),
                 },
                 {
+                    path: 'members',
+                    name: 'members',
+                    component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/members.vue'),
+                },
+                {
                     name: 'payments',
                     path: 'payments',
                     component: {
@@ -135,6 +140,7 @@ import ContactAltIcon from '../icons/contact-alt';
 import MonthviewIcon from '../icons/monthview';
 import PaymentsIcon from '../icons/payments';
 import MessagesIcon from '../icons/messages';
+import MemberIcon from '../icons/member';
 
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
@@ -179,6 +185,7 @@ window.app = new Vue({
         CloseIcon,
         TrayIcon,
         LighthouseIcon,
+        MemberIcon,
 
         VideoCall,
         ScreenRecorder,
@@ -227,99 +234,109 @@ window.app = new Vue({
                 intro: 'Add and manage all of your contacts here.',
                 enabled: true,
             },
-            payments: {
+            members: {
                 step: 4,
+                intro: 'Add and manage all of your members here.',
+                enabled: true,
+            },
+            payments: {
+                step: 5,
                 intro: 'Create invoices for your contacts or subscribe them to your services.',
                 enabled: true,
             },
             new_chat: {
-                step: 5,
+                step: 6,
                 intro: 'Start a new conversation or create a group chat.',
                 enabled: true,
             },
             emoji: {
-                step: 6,
+                step: 7,
                 intro: 'Send an emoji message.',
                 enabled: true,
             },
             audio: {
-                step: 7,
+                step: 8,
                 intro: 'Send an audio message.',
                 enabled: true,
             },
             file: {
-                step: 8,
+                step: 9,
                 intro: 'Attach a file and send as a message.',
                 enabled: true,
             },
             screen: {
-                step: 9,
+                step: 10,
                 intro: 'Record your screen and send as a message, or download the recording.',
                 enabled: true,
             },
             video_call: {
-                step: 10,
+                step: 11,
                 intro: 'Star a video call with the current conversation.',
                 enabled: true,
             },
             audio_call: {
-                step: 11,
+                step: 12,
                 intro: 'Star an audio call with the current conversation.',
                 enabled: true,
             },
             calendar_settings: {
-                step: 12,
+                step: 13,
                 intro: 'Sync your Google and Outlook calendars.',
                 enabled: true,
             },
             add_service: {
-                step: 13,
+                step: 14,
                 intro: 'Add a new booking type.',
                 enabled: true,
             },
             edit_service: {
-                step: 14,
+                step: 15,
                 intro: 'Edit or delete the selected booking type.',
                 enabled: true,
             },
             service_availability: {
-                step: 15,
+                step: 16,
                 intro: 'Manage availability by day of the week, time and breaktime.',
                 enabled: true,
             },
             service_holidays: {
-                step: 16,
+                step: 17,
                 intro: 'Set holidays for the selected booking type.',
                 enabled: true,
             },
             add_contact: {
-                step: 17,
+                step: 18,
                 intro: 'Add a new contact.',
                 enabled: true,
             },
             manage_fields: {
-                step: 18,
+                step: 19,
                 intro: 'Manage default fields for your contacts.',
                 enabled: true,
             },
             subscriptions_filter: {
-                step: 19,
+                step: 20,
                 intro: 'Filter subscriptions by status.',
                 enabled: true,
             },
             add_subscription: {
-                step: 20,
+                step: 21,
                 intro: 'Create a subscription for a contact.',
                 enabled: true,
             },
             invoices_filter: {
-                step: 21,
+                step: 22,
                 intro: 'Filter invoices by status.',
                 enabled: true,
             },
             add_invoice: {
-                step: 22,
+                step: 23,
                 intro: 'Create an invoice for a contact.',
+                enabled: true,
+            },
+            add_member: {
+                step: 24,
+                intro: 'Add a new contact.',
                 enabled: true,
             },
         },
@@ -504,10 +521,27 @@ window.app = new Vue({
         }),
 
         toggleIntros() {
-            Object.values(this.intros).map(intro => {
-                intro.enabled = true;
-            });
-            this.introJS.start();
+            // Object.values(this.intros).map(intro => {
+            //     intro.enabled = true;
+            // });
+
+            let step = 0;
+            console.log(this.$route.name);
+            switch(this.$route.name) {
+                case 'conversations':
+                    this.intros.new_chat.enabled = true;
+                    step = this.intros.new_chat.step;
+                    break;
+                case 'calendar':
+                    this.intros.calendar_settings.enabled = true;
+                    step = this.intros.calendar_settings.step;
+                    break;
+                case 'services':
+                    this.intros.add_service.enabled = true;
+                    step = this.intros.add_service.step;
+                    break;
+            }
+            if(step) this.introJS.start().goToStepNumber(step);
         },
 
         notifyIncomingBookings() {

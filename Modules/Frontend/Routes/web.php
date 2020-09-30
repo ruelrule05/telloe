@@ -108,6 +108,7 @@ Route::group(
                 Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
                 Route::apiResource('contacts', 'ContactController');
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
+                Route::apiResource('members', 'MemberController');
                 Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
                 Route::apiResource('users', 'UserController')->only('index');
                 Route::apiResource('plans', 'PlanController')->only('index');
