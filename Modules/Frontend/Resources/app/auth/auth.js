@@ -60,13 +60,18 @@ export default {
                             if (response && !response.error) {
                                 response.action = this.$root.action;
                                 let invite_token = this.$root.invite_token;
+                                let member_invite_token = this.$root.member_invite_token;
                                 response.timezone = this.timezone;
                                 response.invite_token = invite_token;
+                                response.member_invite_token = member_invite_token;
                                 axios
                                     .post('/login/facebook', response)
                                     .then(response => {
                                         this.socket.emit('invite_token', invite_token);
-                                        window.location.href = '/dashboard/conversations';
+                                        this.socket.emit('member_invite_token', member_invite_token);
+                                        setTimeout(() => {
+                                            window.location.href = '/dashboard/conversations';
+                                        }, 150);
                                     })
                                     .catch(e => {
                                         this.pageloading = false;
@@ -90,6 +95,7 @@ export default {
                     .then(googleUser => {
                         let profile = googleUser.getBasicProfile();
                         let invite_token = this.$root.invite_token;
+                        let member_invite_token = this.$root.member_invite_token;
                         let user = {
                             id: profile.getId(),
                             first_name: profile.getGivenName(),
@@ -98,14 +104,17 @@ export default {
                             image_url: profile.getImageUrl(),
                             action: this.$root.action,
                             timezone: this.timezone,
-                            invite_token: invite_token
+                            invite_token: invite_token,
+                            member_invite_token: member_invite_token,
                         };
                         axios
                             .post('/login/google', user)
                             .then(response => {
                                 this.socket.emit('invite_token', invite_token);
-                                console.log(response.data);
-                                window.location.href = '/dashboard/conversations';
+                                this.socket.emit('member_invite_token', member_invite_token);
+                                setTimeout(() => {
+                                    window.location.href = '/dashboard/conversations';
+                                }, 150);
                             })
                             .catch(e => {
                                 this.pageloading = false;

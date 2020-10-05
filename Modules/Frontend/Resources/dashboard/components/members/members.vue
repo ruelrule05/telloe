@@ -130,21 +130,21 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<strong class="d-block mb-2 font-weight-bold">Assigned Services</strong>
+								<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
 				                <div v-for="service in services" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
 				                    <div>
 				                        <h6 class="font-heading mb-0">{{ service.name }}</h6>
 				                        <small class="text-gray d-block">{{ service.duration }} minutes</small>
 				                    </div>
 				                    <div class="ml-auto">
-				                        <toggle-switch active-class="bg-green" :value="newMember.blacklisted_services.find((x) => x == service.id) ? false : true" @input="toggleServiceBlacklist(service)"></toggle-switch>
+				                        <toggle-switch active-class="bg-green" :value="newMember.assigned_services.find((x) => x == service.id) ? true : false" @input="toggleAssignedService(service)"></toggle-switch>
 				                    </div>
 				                </div>
 							</div>
 
 							<div class="form-group">
 								<strong class="d-block mb-2">Invitation Message (Optional)</strong>
-								<textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newMember.invite_message"></textarea>
+								<textarea rows="3" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newMember.invite_message"></textarea>
 							</div>
 
 							<div class="form-group">
@@ -152,7 +152,7 @@
 							</div>
 						
 							<div class="d-flex">
-								<button class="btn btn-white border" type="button" data-dismiss="modal">Cancel</button>
+								<button class="btn btn-white border" type="button" @click="infoTab = ''">Cancel</button>
 								<button class="ml-auto btn btn-primary" type="submit">Add</button>
 							</div>
 						</vue-form-validate>

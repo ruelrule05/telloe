@@ -179,7 +179,7 @@ export default {
 }
 .message-text{
     white-space: pre-wrap;
-    word-break: break-all;
+    word-break: break-word;
 }
 p {
     line-height: 1.3;
