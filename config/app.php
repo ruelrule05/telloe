@@ -4,7 +4,7 @@ return [
     'admin_emails' => $admin_emails ? explode(',', $admin_emails) : [],
     'conversation_cache_time' => 40,
     'link_preview_key' => env('LINK_PREVIEW_KEY'),
-  
+
     'user_cache_time' => 30,
     /*
     |--------------------------------------------------------------------------
@@ -64,6 +64,8 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
     'api_url' => env('API_URL', 'http://api.localhost'),
     'admin_url' => env('ADMIN_URL', 'http://api.localhost'),
+    'admin_password' => env('ADMIN_PASSWORD', 'http://api.localhost'),
+    'websocket_url' => env('WEBSOCKET_URL'),
 
     'asset_url' => env('ASSET_URL', null),
 
@@ -146,7 +148,6 @@ return [
     */
 
     'providers' => [
-
         /*
          * Laravel Framework Service Providers...
          */
@@ -187,7 +188,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
-
     ],
 
     /*
@@ -202,7 +202,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
@@ -240,7 +239,5 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class,
-
     ],
-
 ];
