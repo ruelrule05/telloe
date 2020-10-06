@@ -42,17 +42,10 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-<<<<<<< HEAD
     $email = new Modules\Frontend\Mail\SendMemberInvitation(App\Models\Member::first(), 'signup');
     //\Mail::to('cleidoscope@gmail.com')->send($email);
 
     return $email;
-=======
-    $email = new Modules\Frontend\Mail\NewUser(App\Models\User::first());
-    \Mail::to('cleidoscope@gmail.com')->send($email);
-   
-    //return $email;
->>>>>>> parent of 77d04b50... update
 });
 
 Route::get('events', function () {
@@ -102,6 +95,8 @@ Route::group(
                 Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
                 Route::apiResource('contacts', 'ContactController');
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
+                Route::apiResource('members', 'MemberController');
+                Route::post('members/{id}/resend', 'MemberController@resend');
                 Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
                 Route::apiResource('users', 'UserController')->only('index');
                 Route::apiResource('plans', 'PlanController')->only('index');
@@ -116,6 +111,8 @@ Route::group(
                 Route::post('contacts/{id}/create_subscription', 'ContactController@createSubscription');
                 Route::post('contacts/{id}/cancel_subscription', 'ContactController@cancelSubscription');
                 Route::post('contacts/get_contact_from_invite_token', 'ContactController@getContactFromInviteToken');
+
+                Route::post('members/get_member_from_invite_token', 'MemberController@getMemberFromInviteToken');
 
                 Route::post('convert_video', 'MessageController@convertVideo');
 
