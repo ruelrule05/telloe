@@ -76,7 +76,7 @@ class MessageController extends Controller
 
             if($request->type == 'image' || $request->type == 'video') :
                 $filename = $time . '-preview';
-                $previewDestination = storage_path('app/public/message-media/' . $filename);
+                $previewDestination = 'storage/message-media/' . $filename;
                 if ($request->preview) :
                     $source = $request->preview;
                     $preview = base64_decode(substr($source, strpos($source, ',') + 1));
@@ -92,7 +92,8 @@ class MessageController extends Controller
                     $img->save($previewDestination);
                 endif;
                 $filename = $time . '-preview';
-                $previewFile = '/storage/message-media/' . $filename;
+                $previewDestination = 'storage/message-media/' . $filename;
+                $previewFile = '/' . $previewDestination;
             endif;
         endif;
 

@@ -12,8 +12,8 @@ if (process.argv.indexOf('--production') > -1) {
 } else if (process.argv.indexOf('--dev') > -1) {
     const fs = require('fs');
     const sslOptions = {
-        key: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/telloe.test.key'),
-        cert: fs.readFileSync('/Users/cleidoscope/.config/valet/Certificates/telloe.test.crt'),
+        key: fs.readFileSync('/Users/admin/.config/valet/Certificates/telloe.app.key'),
+        cert: fs.readFileSync('/Users/admin/.config/valet/Certificates/telloe.app.crt'),
     };
     var server = require('https').Server(sslOptions, app);
 } else {
@@ -56,11 +56,6 @@ io.on('connection', function(socket) {
     socket.on('invite_token', function(data) {
         socket.broadcast.emit('invite_token', data);
     });
-
-    socket.on('member_invite_token', function(data) {
-        socket.broadcast.emit('member_invite_token', data);
-    });
-    
     
     socket.on('user_online', function(user_id) {
         let user_ids = Object.values(online_users);

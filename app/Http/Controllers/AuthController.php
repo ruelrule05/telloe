@@ -70,9 +70,7 @@ class AuthController extends Controller
                     $user->save();
                 endif;
 
-                if($request->invite_token) checkInviteToken($user, $request);
-                elseif($request->member_invite_token) checkMemberInviteToken($user, $request);
-
+                checkInviteToken($user, $request);
                 $this->createPresetService($user);
                 $this->createInitialConversations($user);
                 $this->createDefaultField($user);
@@ -121,10 +119,7 @@ class AuthController extends Controller
 
 
 		Auth::login($user);
-
-        if($request->invite_token) checkInviteToken($user, $request, true);
-        elseif($request->member_invite_token) checkMemberInviteToken($user, $request);
-
+        checkInviteToken($user, $request, true);
         $this->createInitialConversations($user);
         $this->createPresetService($user);
         $this->createDefaultField($user);
@@ -317,10 +312,7 @@ class AuthController extends Controller
             endif;
 
             Auth::login($user);
-
-            if($request->invite_token) checkInviteToken($user, $request, $isNew);
-            elseif($request->member_invite_token) checkMemberInviteToken($user, $request);
-
+            checkInviteToken($user, $request, $isNew);
             $this->createInitialConversations($user);
             $this->createPresetService($user);
             $response = [
@@ -377,10 +369,7 @@ class AuthController extends Controller
                 endif;
             endif;
             Auth::login($user);
-
-            if($request->invite_token) checkInviteToken($user, $request, $isNew);
-            elseif($request->member_invite_token) checkMemberInviteToken($user, $request);
-
+            checkInviteToken($user, $request, $isNew);
             $this->createInitialConversations($user);
             $this->createPresetService($user);
             $response = [

@@ -53,66 +53,7 @@ class MessageTest extends TestCase
             'source' => $file,
         ];
         $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/messages', $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-
-    public function testStoreAudio()
-    {
-        $conversation = \App\Models\Conversation::where('user_id', $this->user->id)->first();
-        $file = UploadedFile::fake()->image(public_path('storage/message-media/1600853149-source'));
-        $data = [
-            'conversation_id' => $conversation->id,
-            'type' => 'audio',
-            'message' => 'audio',
-            'source' => $file,
-        ];
-        $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/messages', $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-
-    public function testStoreVideo()
-    {
-        $conversation = \App\Models\Conversation::where('user_id', $this->user->id)->first();
-        $file = UploadedFile::fake()->image(public_path('storage/message-media/1597902259-source.mp4'));
-        $data = [
-            'conversation_id' => $conversation->id,
-            'type' => 'video',
-            'message' => 'video',
-            'source' => $file,
-        ];
-        $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/messages', $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-
-    public function testStoreFile()
-    {
-        $conversation = \App\Models\Conversation::where('user_id', $this->user->id)->first();
-        $file = UploadedFile::fake()->image(public_path('storage/message-media/1600853014-source'));
-        $data = [
-            'conversation_id' => $conversation->id,
-            'type' => 'file',
-            'message' => 'file',
-            'source' => $file,
-        ];
-        $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/messages', $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testGenerateLinkPreview()
-    {
-        $conversation = \App\Models\Conversation::where('user_id', $this->user->id)->first();
-        $data = [
-            'conversation_id' => $conversation->id,
-            'type' => 'text',
-            'message' => 'https://google.com'
-        ];
-        $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/messages', $data, $this->headers);
-        $id = $response->getData()->id;
-
-        $response = $this->actingAs($this->user)->get($this->app_url . "/ajax/messages/$id/generate_link_preview", $this->headers);
+        $response->dump();
         $response->assertStatus(200);
     }
 }

@@ -22,7 +22,6 @@ new Vue({
         action: 'login', // login
     	seats: 10,
         invite_token: null,
-        member_invite_token: null,
         email: '',
     },
 
@@ -37,7 +36,6 @@ new Vue({
         if(queryString) {
             const urlParams = new URLSearchParams(queryString);
             const invite_token = urlParams.get('invite_token');
-            const member_invite_token = urlParams.get('member_invite_token');
             const authTab = urlParams.get('auth');
             if(authTab) {
                 this.action = authTab;
@@ -45,9 +43,6 @@ new Vue({
             }
             if(invite_token) {
                 this.invite_token = invite_token;
-                this.auth = true;
-            } else if(member_invite_token) {
-                this.member_invite_token = member_invite_token;
                 this.auth = true;
             }
 

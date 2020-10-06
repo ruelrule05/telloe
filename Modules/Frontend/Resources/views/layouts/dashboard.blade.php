@@ -129,11 +129,6 @@
 												<span class="pl-3">Contacts</span>
 											</router-link>
 
-											<router-link :data-intro='intros.members.intro' :data-step="intros.members.step" to="/dashboard/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
-												<member-icon height="18" width="18" stroke="black" stroke-width="13"></member-icon>
-												<span class="pl-3">Members</span>
-											</router-link>
-
 											<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 												<div class="d-flex align-items-center px-4">
 													<payments-icon height="18" width="18"></payments-icon>

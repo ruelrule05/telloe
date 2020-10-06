@@ -22,6 +22,12 @@ class ContactController extends Controller
 {
     public function index(Request $request)
     {
+        $contacts = Contact::with('contactUser')
+            ->where('user_id', Auth::user()->id)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        $contacts = [];
         $query = $request->get('query');
         $contacts = Contact::with('contactUser')
             ->where('user_id', Auth::user()->id)
