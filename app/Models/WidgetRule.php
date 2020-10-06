@@ -6,7 +6,7 @@ class WidgetRule extends BaseModel
 {
     //
     protected $fillable = ['widget_id', 'page', 'state'];
-    
+
     public function widget()
     {
         return $this->belongsTo(Widget::class);
@@ -14,6 +14,6 @@ class WidgetRule extends BaseModel
 
     public function getStateAttribute($value)
     {
-    	return ucfirst($value);
+        return ucfirst($value);
     }
 }

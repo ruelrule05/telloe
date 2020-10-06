@@ -23,32 +23,32 @@ class ServicePolicy
 
     public function update(User $user, Service $service)
     {
-        return $user->id == $service->user_id;
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);
     }
 
     public function delete(User $user, Service $service)
     {
-        return $user->id == $service->user_id;
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);
     }
 
     public function addBooking(User $user, Service $service)
     {
-        return $user->id == $service->user_id || Contact::where('user_id', $service->user->id)->where('contact_user_id', $user->id)->first();
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null) || Contact::where('user_id', $service->user->id)->where('contact_user_id', $user->id)->first();
     }
 
     public function blacklist(User $user, Service $service)
     {
-        return $user->id == $service->user_id;
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);
     }
 
     public function create_invoice(User $user, Service $service)
     {
-        return $user->id == $service->user_id;
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);
     }
     
     public function create_subscription(User $user, Service $service)
     {
-        return $user->id == $service->user_id;
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);
     }
 
 }
