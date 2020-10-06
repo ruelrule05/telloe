@@ -240,7 +240,7 @@ function countryDialCode($country)
 
 function compressVideo($source, $ouput)
 {
-    $command = env('FFMPEG').' -y -i '.$source.' -crf 23 -preset medium -movflags +faststart -b:a 128k -threads 12 -vcodec libx264 -acodec libmp3lame -b:v 1000k -refs 6 -coder 1 -sc_threshold 40 -flags +loop -me_range 16 -subq 7 -i_qfactor 0.71 -qcomp 0.6 -qdiff 4 -trellis 1 -b:a 128k -vf [in]scale=-2:720,format=yuv420p[out] -pass 1 -strict -2 -passlogfile /tmp/passlogfile '.$ouput;
+    $command = env('FFMPEG') . ' -y -i ' . $source . ' -crf 23 -preset medium -movflags +faststart -b:a 128k -threads 12 -vcodec libx264 -acodec libmp3lame -b:v 1000k -refs 6 -coder 1 -sc_threshold 40 -flags +loop -me_range 16 -subq 7 -i_qfactor 0.71 -qcomp 0.6 -qdiff 4 -trellis 1 -b:a 128k -vf [in]scale=-2:720,format=yuv420p[out] -pass 1 -strict -2 -passlogfile /tmp/passlogfile ' . $ouput;
     //echo $command;
     // $command .= ' 2>&1';
     exec($command);
@@ -263,7 +263,7 @@ function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $reques
             ]);
 
             // Create contact of the other person if not existing
-            if (! App\Models\Contact::where('user_id', $user->id)->where('contact_user_id', $contact->user_id)->first()) {
+            if (!App\Models\Contact::where('user_id', $user->id)->where('contact_user_id', $contact->user_id)->first()) {
                 App\Models\Contact::create([
                     'user_id' => $user->id,
                     'contact_user_id' => $contact->user_id,
@@ -275,7 +275,7 @@ function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $reques
             $conversation = App\Models\Conversation::withTrashed()->where('contact_id', $contact->id)->first();
             if ($conversation) {
                 $conversation->restore();
-                if (! in_array($user->id, $conversation->members()->pluck('user_id')->toArray())) {
+                if (!in_array($user->id, $conversation->members()->pluck('user_id')->toArray())) {
                     App\Models\ConversationMember::create([
                         'conversation_id' => $conversation->id,
                         'user_id' => $user->id
@@ -283,7 +283,7 @@ function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $reques
                 }
             }
 
-            if (! $contact->stripe_customer_id) {
+            if (!$contact->stripe_customer_id) {
                 App\Jobs\CreateStripeCustomer::dispatch($user, $contact);
             }
 
@@ -514,7 +514,7 @@ function formatBytes($size, $precision = 2)
         $base = log($size) / log(1024);
         $suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
 
-        return round(pow(1024, $base - floor($base)), $precision).$suffixes[floor($base)];
+        return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
     } else {
         return $size;
     }
@@ -559,7 +559,7 @@ function isValidTimezone($tzid)
     }
     unset($valid['']);
     try {
-        return ! ! $valid[$tzid];
+        return !!$valid[$tzid];
     } catch (Exception $e) {
         return false;
     }
@@ -572,7 +572,7 @@ function timeslots($service, $dateString)
 
     $holidays = json_decode($service->holidays, true);
 
-    if (! array_search($dateString, $holidays)) {
+    if (!array_search($dateString, $holidays)) {
         $date = Carbon::parse($dateString);
         $days = json_decode($service->days, true);
 
@@ -600,10 +600,10 @@ function timeslots($service, $dateString)
                         $user->where('id', Auth::user()->id);
                     });
                 })
-                        ->where('date', $dateString)
-                        ->where('start', '<=', $timeslot['time'])
-                        ->where('end', '>=', $timeslot['time'])
-                        ->get();
+                    ->where('date', $dateString)
+                    ->where('start', '<=', $timeslot['time'])
+                    ->where('end', '>=', $timeslot['time'])
+                    ->get();
 
                 if ($bookings->count() == 0) {
                     $timeslots[] = $timeslot;

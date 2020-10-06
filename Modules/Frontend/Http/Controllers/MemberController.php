@@ -3,39 +3,32 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Member;
-use App\Models\Conversation;
-use App\Models\Message;
-use App\Models\ConversationMember;
 use App\Models\Service;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Mail;
 use Modules\Frontend\Mail\SendMemberInvitation;
-use App\Http\StripeAPI;
-use Carbon\Carbon;
-use Illuminate\Support\Arr;
 
 class MemberController extends Controller
 {
     public function index(Request $request)
     {
         $query = $request->get('query');
-        $members = Member::with('memberUser')
+        $members = Member::with('memberUser', 'services.assignedService')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC');
-        if($query):
-            $members = $members->whereHas('memberUser', function($memberUser) use ($query) {
-                $memberUser->where('LIKE', '%' . $query. '%');
+        if ($query) {
+            $members = $members->whereHas('memberUser', function ($memberUser) use ($query) {
+                $memberUser->where('LIKE', '%' . $query . '%');
             });
-        endif;
+        }
         $members = $members->get();
 
         return response()->json($members);
     }
-
 
     public function store(Request $request)
     {
@@ -43,26 +36,35 @@ class MemberController extends Controller
             'email' => 'required|email',
             'invite_message' => 'nullable|string',
         ]);
-
-        if($request->email == Auth::user()->email) return abort(403, "Can't add your own email as member");
-
         $authUser = Auth::user();
+
+        if ($request->email == $authUser->email) {
+            return abort(403, "Can't add your own email as member");
+        }
 
         $authTab = 'login';
         $memberUser = User::where('email', $request->email)->first();
-        if(!$memberUser) $authTab = 'signup';
+        if (! $memberUser) {
+            $authTab = 'signup';
+        }
 
-        if($memberUser && Member::where('user_id', Auth::user()->id)->where('member_user_id', $memberUser->id)->first()) return abort(403, "This member already exists.");
+        if ($memberUser && Member::where('user_id', $authUser->id)->where('member_user_id', $memberUser->id)->first()) {
+            return abort(403, 'This member already exists.');
+        }
 
         $invite_token = '';
-        while(true) :
+        while (true) {
             $invite_token = Str::random(30);
             $exists = Member::where('invite_token', $invite_token)->first();
-            if(!$exists) break;
-        endwhile;
-        if(Member::where('user_id', Auth::user()->id)->where('email', $request->email)->first()) return abort(403, 'This member already exists.');
+            if (! $exists) {
+                break;
+            }
+        }
+        if (Member::where('user_id', $authUser->id)->where('email', $request->email)->first()) {
+            return abort(403, 'This member already exists.');
+        }
         $member = Member::create([
-            'user_id' => Auth::user()->id,
+            'user_id' => $authUser->id,
             'member_user_id' => $memberUser->id ?? null,
             'email' => $request->email,
             'first_name' => $request->first_name,
@@ -70,37 +72,34 @@ class MemberController extends Controller
             'is_pending' => true,
             'invite_token' => $invite_token,
         ]);
-        $member->load('memberUser');
-        
-        foreach($request->assigned_services as $assigned_service) :
+
+        foreach ($request->assigned_services as $assigned_service) {
             $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
-            if($service) :
+            if ($service) {
                 $assignedService = $service->replicate();
                 $assignedService->user_id = null;
                 $assignedService->member_id = $member->id;
                 $assignedService->assigned_service_id = $service->id;
                 $assignedService->save();
-            endif;
-        endforeach;
+            }
+        }
+        $member->load('memberUser', 'services');
 
-
-        if($request->sendToEmail) Mail::to($member->email)->queue(new SendMemberInvitation($member, $authTab, $request->invite_message));
+        if ($request->sendToEmail) {
+            Mail::to($member->email)->queue(new SendMemberInvitation($member, $authTab, $request->invite_message));
+        }
         return response()->json($member);
-
     }
-
 
     public function update(Request $request, Member $member)
     {
     }
-
 
     public function destroy(Member $member)
     {
         $this->authorize('delete', $member);
         return response()->json(['deleted' => $member->delete()]);
     }
-
 
     public function getMemberFromInviteToken(Request $request)
     {
@@ -118,10 +117,34 @@ class MemberController extends Controller
 
         $authTab = 'login';
         $memberUser = User::where('email', $member->email)->first();
-        if(!$memberUser) $authTab = 'signup';
+        if (! $memberUser) {
+            $authTab = 'signup';
+        }
 
         Mail::to($member->email)->queue(new SendMemberInvitation($member, $authTab));
         return response(['success' => true]);
     }
-    
+
+    public function assignService($id, Request $request)
+    {
+        $this->validate($request, [
+            'service_id' => 'required|exists:services,id'
+        ]);
+        $member = Member::findOrFail($id);
+        $this->authorize('assignService', $member);
+        $service = Service::where('id', $request->service_id)->where('user_id', Auth::user()->id)->firstOrFail();
+
+        $assignedService = Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('assigned_service_id', $service->id)->first();
+        if ($assignedService) {
+            $assignedService->restore();
+        } else {
+            $assignedService = $service->replicate();
+            $assignedService->user_id = null;
+            $assignedService->member_id = $member->id;
+            $assignedService->assigned_service_id = $service->id;
+            $assignedService->save();
+        }
+
+        return response()->json($assignedService);
+    }
 }

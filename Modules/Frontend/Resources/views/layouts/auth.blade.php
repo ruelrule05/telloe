@@ -8,12 +8,12 @@
 <link rel="stylesheet" href="{{ mix('css/auth.css') }}">
 </head>
 <body>
-	<div id="app">
-		<pageloader v-if="pageloading"></pageloader>
-		<router-view></router-view>
-	</div>
+<div id="app">
+	<pageloader v-if="pageloading"></pageloader>
+	<router-view></router-view>
+</div>
 
-	@include('frontend.partials.social_scripts')
-	<script src="{{ mix('js/auth.js') }}"></script>
+@include('frontend.partials.social_scripts')
+<script src="{{ mix('js/auth.js') }}"></script>
 </body>
 </html>

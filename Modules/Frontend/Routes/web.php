@@ -5,33 +5,31 @@
  *
  */
 
-Route::get('test', function() {
+Route::get('test', function () {
     // $nexmo = new \App\Http\NexmoClient;
     // $nexmo->sms('+639162792651', 'You an upcoming booking in');
 
     //\App\Jobs\SendSMS::dispatch('+639162792651', 'You have an upcoming booking in less than 2 hours.');
     //$conversation = App\Models\Conversation::withTrashed()->find(273);
     //print_r(json_encode($conversation));
-   // print_r(config('app.admin_emails'));
-   preg_match_all('!https?://\S+!', 'dsds sdsd s https://google.com and http://clyde.com', $links, false);
-   echo '<pre>';
-   print_r($links);
-
+    // print_r(config('app.admin_emails'));
+    // preg_match_all('!https?://\S+!', 'dsds sdsd s https://google.com and http://clyde.com', $links, false);
+    // echo '<pre>';
+    // print_r($links);
+    $assignedServices = App\Models\Service::with('assignedService')->whereNotNull('assigned_service_id')->first()->toArray();
+    echo '<pre>';
+    print_r($assignedServices);
 });
 
-
-Route::get('widget', function() {
+Route::get('widget', function () {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
 });
 
-
-Route::get('phpinfo', function() {
+Route::get('phpinfo', function () {
     return phpinfo();
 });
 
-
-
-Route::get('email', function() {
+Route::get('email', function () {
     /*$now = \Carbon\Carbon::now();
     $bookings = App\Models\Booking::where('date', '>=', $now->format('Y-m-d'))->get();
     foreach($bookings as $booking) :
@@ -43,16 +41,15 @@ Route::get('email', function() {
         endif;
     endforeach;*/
 
-    
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
     $email = new Modules\Frontend\Mail\SendMemberInvitation(App\Models\Member::first(), 'signup');
     //\Mail::to('cleidoscope@gmail.com')->send($email);
-   
+
     return $email;
 });
 
-Route::get('events', function() {
+Route::get('events', function () {
     /*echo '<pre>';
     $service = App\Models\Service::find(23);
     $timeslots = $service->timeslots('2020-06-30');
@@ -63,13 +60,6 @@ Route::get('events', function() {
 
 //Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@outlookCalendarEvents');
 //Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@updateOutlookCalendarEvents');
-
-
-
-
-
-
-
 
 Route::group(
     [
@@ -84,20 +74,18 @@ Route::group(
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
         //Route::get('/@{username}/{service_id}', 'UserController@showService');
-		//Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
+        //Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');
-        
+
         // AJAX
         Route::group([
             'prefix' => 'ajax',
             'middleware' => 'ajax'
-        ], function() {
-
+        ], function () {
             Route::group([
                 'middleware' => 'auth'
-            ], function() {
-                
+            ], function () {
                 // Resource
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
                 Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
@@ -110,6 +98,7 @@ Route::group(
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
                 Route::apiResource('members', 'MemberController');
                 Route::post('members/{id}/resend', 'MemberController@resend');
+                Route::post('members/{id}/assign_service', 'MemberController@assignService');
                 Route::apiResource('user_custom_fields', 'UserCustomFieldController')->only(['index', 'store']);
                 Route::apiResource('users', 'UserController')->only('index');
                 Route::apiResource('plans', 'PlanController')->only('index');
@@ -127,9 +116,6 @@ Route::group(
 
                 Route::post('members/get_member_from_invite_token', 'MemberController@getMemberFromInviteToken');
 
-                Route::post('convert_video', 'MessageController@convertVideo');
-                
-
                 Route::get('tags/search', 'DashboardController@searchTags');
                 Route::get('conversations/{id}/files', 'ConversationController@files');
 
@@ -145,15 +131,13 @@ Route::group(
                 Route::get('outlook_calendar_events', 'BookingController@outlookCalendarEvents');
                 Route::post('update_outlook_calendar_events', 'BookingController@updateOutlookCalendarEvents');
 
-
                 Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');
 
-
-		        Route::get('get_page_preview', 'MessageController@getPagePreview');
+                Route::get('get_page_preview', 'MessageController@getPagePreview');
             });
 
-            // Booking page 
+            // Booking page
             Route::get('@{username}', 'UserController@profile')->name('profile');
             Route::get('@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots')->name('profile.service.timeslots');
             Route::post('@{username}/{service_id}/book', 'UserController@book')->name('profile.book');
@@ -162,12 +146,11 @@ Route::group(
             Route::post('@{username}/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook')->name('profile.google_login_and_book');
             Route::post('@{username}/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook')->name('profile.facebook_login_and_book');
 
-
             //Dashboard
             Route::group([
                 'prefix' => 'dashboard',
                 'middleware' => 'auth'
-            ], function() {
+            ], function () {
                 Route::resource('conversation_members', 'ConversationMemberController');
                 Route::get('widget', 'WidgetController@show');
                 Route::put('widget', 'WidgetController@update');
@@ -183,12 +166,11 @@ Route::group(
                 Route::post('upload_file', 'ChatboxController@uploadFile');
             });
         });
-        
+
         // Dashboard wildcard
         Route::get('/dashboard{any}', function () {
             return view('frontend::layouts.dashboard');
         })->where('any', '.*')->middleware('auth');
-
 
         Route::any('/facebook_page_tab', 'WidgetController@facebookPageTab');
         Route::get('/{slug}', 'WidgetController@showPublic');
@@ -197,9 +179,3 @@ Route::group(
         Route::post('/fb_messenger_webhook', 'AuthController@FBMessengerWebhook');
     }
 );
-
-
-
-
-
-

@@ -2,11 +2,12 @@
 	<div class="overflow-hidden h-100 d-flex flex-column" v-if="user">
 		<div class="p-4">
 			<ul class="nav nav-tabs">
-			  	<li v-for="t in tabs" :key="t" class="nav-item">
-			    	<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer d-flex align-items-center text-capitalize text-body" @click.native="tab = t">
-			    		<exclamation-circle-icon v-if="t == 'payout' && $root.auth.role.role == 'client' && !$root.payoutComplete" class="fill-warning rounded-circle mr-2" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>{{ t }}
-			    	</router-link>
-			  	</li>
+				<li v-for="t in tabs" :key="t" class="nav-item">
+					<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer d-flex align-items-center text-capitalize text-body" @click.native="tab = t">
+						<exclamation-circle-icon v-if="t == 'payout' && $root.auth.role.role == 'client' && !$root.payoutComplete" class="fill-warning rounded-circle mr-2" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
+						{{ t }}
+					</router-link>
+				</li>
 			</ul>
 		</div>
 
@@ -18,23 +19,22 @@
 						<div class="card-body">
 							<h5 class="font-heading h3">Profile</h5>
 							<vue-form-validate @submit="save">
-
 								<div class="d-flex align-items-center my-3">
 									<div>
-										<div class="user-profile-image user-profile-image-lg" :style="{backgroundImage: 'url('+user.profile_image+')'}"></div>
+										<div class="user-profile-image user-profile-image-lg" :style="{ backgroundImage: 'url(' + user.profile_image + ')' }"></div>
 									</div>
 									<div class="pl-2">
 										<label class="d-block">Upload new profile picture</label>
 										<button type="button" class="btn btn-sm btn-white border my-1" @click="$refs['profileImageInput'].click()">Choose file</button>
 										<label class="d-block">Only JPEG and PNG files are accepted with maximum size of 5MB</label>
-										<input ref="profileImageInput" type="file" accept="image/x-png,image/jpeg" @change="updateImage" hidden>
+										<input ref="profileImageInput" type="file" accept="image/x-png,image/jpeg" @change="updateImage" hidden />
 									</div>
 								</div>
 
 								<template v-if="$root.auth.role.role == 'client'">
 									<div class="form-group">
 										<label class="form-label">Username</label>
-										<input type="text" class="form-control" data-required placeholder="Username" v-model="user.username" @keydown="nospace">
+										<input type="text" class="form-control" data-required placeholder="Username" v-model="user.username" @keydown="nospace" />
 										<small class="text-gray font-weight-light d-block line-height-sm mt-1">This is your unique username for your profile page URL. Spaces and special characters are not allowed</small>
 									</div>
 									<hr />
@@ -42,15 +42,15 @@
 
 								<div class="form-group">
 									<label class="form-label">First Name</label>
-									<input type="text" class="form-control" data-required placeholder="First Name" v-model="user.first_name">
+									<input type="text" class="form-control" data-required placeholder="First Name" v-model="user.first_name" />
 								</div>
 								<div class="form-group">
 									<label class="form-label">Last Name</label>
-									<input type="text" class="form-control" data-required placeholder="Last Name" v-model="user.last_name">
+									<input type="text" class="form-control" data-required placeholder="Last Name" v-model="user.last_name" />
 								</div>
 								<div class="form-group">
 									<label class="form-label">Email</label>
-									<input type="email" class="form-control" data-required placeholder="Email" v-model="user.email">
+									<input type="email" class="form-control" data-required placeholder="Email" v-model="user.email" />
 								</div>
 								<div class="form-group">
 									<label class="form-label">Timezone</label>
@@ -60,10 +60,13 @@
 									<label class="form-label">Mobile No.</label>
 									<div class="input-group mb-3">
 										<div class="input-group-prepend dropdown">
-											<button class="btn btn-outline-light d-flex align-items-center text-body border" type="button" disabled><span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(timezoneAreaCode.country) }}</span> {{ user.dial_code }}</button>
+											<button class="btn btn-outline-light d-flex align-items-center text-body border" type="button" disabled>
+												<span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(timezoneAreaCode.country) }}</span>
+												{{ user.dial_code }}
+											</button>
 										</div>
-										<input type="tel" class="form-control" placeholder="Mobile No." v-model="user.phone">
-										</div>
+										<input type="tel" class="form-control" placeholder="Mobile No." v-model="user.phone" />
+									</div>
 								</div>
 								<div class="text-right">
 									<vue-button :loading="loading" type="submit" button_class="btn btn-primary">Update</vue-button>
@@ -83,15 +86,15 @@
 							<vue-form-validate @submit="password">
 								<div class="form-group">
 									<label class="form-label">Current Password</label>
-									<input type="password" v-model="securityForm.current_password" class="form-control" data-required placeholder="Current Password">
+									<input type="password" v-model="securityForm.current_password" class="form-control" data-required placeholder="Current Password" />
 								</div>
 								<div class="form-group">
 									<label class="form-label">New Password</label>
-									<input type="password" v-model="securityForm.password" class="form-control" data-required placeholder="New Password">
+									<input type="password" v-model="securityForm.password" class="form-control" data-required placeholder="New Password" />
 								</div>
 								<div class="form-group">
 									<label class="form-label">Confirm Password</label>
-									<input type="password" v-model="securityForm.password_confirmation" class="form-control" data-required placeholder="Confirm Password">
+									<input type="password" v-model="securityForm.password_confirmation" class="form-control" data-required placeholder="Confirm Password" />
 								</div>
 								<div class="text-right">
 									<vue-button :loading="loading" type="submit" button_class="btn btn-primary">Update</vue-button>
@@ -123,7 +126,7 @@
 								<div class="form-group form-row">
 									<div class="col">
 										<label class="form-label">Country</label>
-										<select v-model="stripeAccountForm.country" class="form-control text-capitalize" :class="{'text-gray': !stripeAccountForm.country}" data-required :disabled="stripeAccountForm.countryDisabled">
+										<select v-model="stripeAccountForm.country" class="form-control text-capitalize" :class="{ 'text-gray': !stripeAccountForm.country }" data-required :disabled="stripeAccountForm.countryDisabled">
 											<option value="" disabled selected>- Choose a country -</option>
 											<option :value="country.code" v-for="country in countries" :key="country.name">{{ country.name }}</option>
 										</select>
@@ -134,42 +137,46 @@
 									</div>
 									<div class="col">
 										<label class="form-label">Address</label>
-										<input type="text" class="form-control" v-model="stripeAccountForm.address" placeholder="Address" data-required>
+										<input type="text" class="form-control" v-model="stripeAccountForm.address" placeholder="Address" data-required />
 									</div>
 								</div>
 								<div class="form-group form-row">
 									<div class="col">
 										<label class="form-label">City</label>
-										<input type="text" class="form-control" v-model="stripeAccountForm.city" placeholder="City" data-required>
+										<input type="text" class="form-control" v-model="stripeAccountForm.city" placeholder="City" data-required />
 									</div>
 									<div class="col">
 										<label class="form-label">State</label>
-										<input type="text" class="form-control" v-model="stripeAccountForm.state" placeholder="State" data-required>
+										<input type="text" class="form-control" v-model="stripeAccountForm.state" placeholder="State" data-required />
 									</div>
 								</div>
 								<div class="form-group form-row">
 									<div class="col">
 										<label class="form-label">Postal code</label>
-										<input type="text" class="form-control" v-model="stripeAccountForm.postal" placeholder="Postal code" data-required>
+										<input type="text" class="form-control" v-model="stripeAccountForm.postal" placeholder="Postal code" data-required />
 									</div>
 									<div class="col">
 										<label class="form-label">Business website</label>
-										<input type="url" class="form-control" v-model="stripeAccountForm.website" placeholder="Business website" data-required>
+										<input type="url" class="form-control" v-model="stripeAccountForm.website" placeholder="Business website" data-required />
 									</div>
 								</div>
 								<div class="form-group form-row">
 									<div class="col">
 										<label class="form-label">Phone number</label>
-										<input type="tel" class="form-control" v-model="stripeAccountForm.phone" placeholder="Phone number" data-required>
+										<input type="tel" class="form-control" v-model="stripeAccountForm.phone" placeholder="Phone number" data-required />
 									</div>
 									<div class="col">
 										<label class="form-label">Date of birth</label>
-										<v-date-picker is-required :popover="{visibility: 'click' }" v-model="stripeAccountForm.dob" :input-props='{
-											    class: "form-control bg-light",
-											    placeholder: "MM/DD/YYYY",
-											    "data-required": true,
-											}'>
-										</v-date-picker>
+										<v-date-picker
+											is-required
+											:popover="{ visibility: 'click' }"
+											v-model="stripeAccountForm.dob"
+											:input-props="{
+												class: 'form-control bg-light',
+												placeholder: 'MM/DD/YYYY',
+												'data-required': true
+											}"
+										></v-date-picker>
 									</div>
 								</div>
 
@@ -178,24 +185,23 @@
 								<fieldset :disabled="$root.auth.stripe_account.external_accounts && $root.auth.stripe_account.external_accounts.data.length > 0">
 									<div class="form-group">
 										<label class="form-label">Account number</label>
-										<input type="text" class="form-control" v-model="stripeAccountForm.account_number" data-required>
+										<input type="text" class="form-control" v-model="stripeAccountForm.account_number" data-required />
 									</div>
 									<div class="form-group form-row">
 										<div class="col">
 											<label class="form-label">Account holder name</label>
-											<input type="text" class="form-control" v-model="stripeAccountForm.account_holder_name" data-required>
+											<input type="text" class="form-control" v-model="stripeAccountForm.account_holder_name" data-required />
 										</div>
 										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ'" class="col">
 											<label class="form-label">{{ routingNumber }}</label>
-											<input type="text" class="form-control" v-model="stripeAccountForm.routing_number" data-required>
+											<input type="text" class="form-control" v-model="stripeAccountForm.routing_number" data-required />
 										</div>
 										<div v-if="stripeAccountForm.country == 'CA'" class="col">
 											<label class="form-label">Transit number</label>
-											<input type="text" class="form-control" v-model="stripeAccountForm.transit_number" data-required>
+											<input type="text" class="form-control" v-model="stripeAccountForm.transit_number" data-required />
 										</div>
 									</div>
 								</fieldset>
-
 
 								<!-- <hr />
 								<h5>Documents</h5>
@@ -231,8 +237,11 @@
 								<div class="form-group mb-2">
 									<vue-checkbox v-model="user.notify_email" label="Notify me by email for each booking activity."></vue-checkbox>
 								</div>
-								<div class="form-group">
+								<div class="form-group mb-2">
 									<vue-checkbox v-model="user.notify_sms" label="Notify me by SMS 2 hours before booking."></vue-checkbox>
+								</div>
+								<div class="form-group">
+									<vue-checkbox v-model="user.notify_message" label="Notify me by email for each new message when I'm offline."></vue-checkbox>
 								</div>
 								<div class="text-right mt-5">
 									<vue-button :loading="loading" type="submit" button_class="btn btn-primary">Update Settings</vue-button>

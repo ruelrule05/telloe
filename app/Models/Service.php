@@ -10,8 +10,6 @@ class Service extends BaseModel
     //
     use SoftDeletes;
 
-    public $assignedServiceModel;
-
     protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'assigned_service_id'];
     protected $casts = [
         'days' => 'array',
@@ -28,7 +26,6 @@ class Service extends BaseModel
     {
         parent::boot();
         static::retrieved(function ($model) {
-            //self::$assignedServiceModel = self::assignedService();
             if ($model->assigned_service_id) {
                 $assignedService = Service::find($model->assigned_service_id);
                 if ($assignedService) {
@@ -59,7 +56,7 @@ class Service extends BaseModel
 
     public function assignedService()
     {
-        return $this->belongsTo(Service::class, 'id', 'assigned_service_id');
+        return $this->hasOne(Service::class, 'id', 'assigned_service_id');
     }
 
     public function timeslots($dateString)
@@ -110,7 +107,7 @@ class Service extends BaseModel
                     foreach ($googleEventsList as $event) {
                         $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
                         if ($eventDate == $dateString) {
-                            if (! $event['start']['dateTime'] && ! $event['end']['dateTime'] && ! in_array('google-event-'.$event['id'], $ignoredCalendarEvents)) {
+                            if (! $event['start']['dateTime'] && ! $event['end']['dateTime'] && ! in_array('google-event-' . $event['id'], $ignoredCalendarEvents)) {
                                 $googleEvents[] = $event;
                             } elseif ($event['start']['dateTime'] && $event['end']['dateTime']) {
                                 $start = Carbon::parse($event['start']['dateTime'])->format('H:i');
@@ -127,7 +124,7 @@ class Service extends BaseModel
                     foreach ($outlookEventsList as $event) {
                         $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
                         if ($eventDate == $dateString) {
-                            if ($event['isAllDay'] && ! in_array('outlook-event-'.$event['id'], $ignoredCalendarEvents)) {
+                            if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
                                 $outlookEvents[] = $event;
                             } elseif (! $event['isAllDay']) {
                                 $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
