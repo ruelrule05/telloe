@@ -1,7 +1,7 @@
 require('../js/bootstrap');
 window.Vue = require('vue');
 
-import {mapState, mapGetters, mapActions} from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/dropdown';
 import 'bootstrap/js/dist/modal';
@@ -12,95 +12,95 @@ const introJS = require('intro.js');
 
 Vue.use(VueRouter);
 Vue.use(Toasted, {
-    position: 'bottom-center',
-    duration: 3000,
-    className: 'bg-primary rounded shadow-none',
-    singleton: true,
+	position: 'bottom-center',
+	duration: 3000,
+	className: 'bg-primary rounded shadow-none',
+	singleton: true
 });
 //Vue.component('vue-button', require('../components/vue-button.vue').default);
 const router = new VueRouter({
-    linkActiveClass: 'active',
-    mode: 'history',
-    routes: [
-        {
-            path: '/dashboard',
-            component: {
-                render(c) {
-                    return c('router-view');
-                },
-            },
-            children: [
-                {
-                    name: 'conversations',
-                    path: 'conversations/:id?',
-                    component: () => import(/* webpackChunkName: "dashboard-conversations" */ './components/conversations/conversations.vue'),
-                },
-                {
-                    name: 'bookings',
-                    path: 'bookings',
-                    component: () => import(/* webpackChunkName: "dashboard-bookings" */ './components/bookings/bookings.vue'),
-                    children: [
-                        {
-                            path: 'calendar',
-                            name: 'calendar',
-                            component: () => import(/* webpackChunkName: "dashboard-bookings-calendar" */ './components/bookings/calendar/calendar.vue'),
-                        },
-                        {
-                            path: 'services',
-                            name: 'services',
-                            component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/services.vue'),
-                        },
-                    ],
-                },
-                {
-                    path: 'contacts',
-                    name: 'contacts',
-                    component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/contacts.vue'),
-                },
-                {
-                    path: 'members',
-                    name: 'members',
-                    component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/members.vue'),
-                },
-                {
-                    name: 'payments',
-                    path: 'payments',
-                    component: {
-                        render(c) {
-                            return c('router-view');
-                        },
-                    },
-                    children: [
-                        {
-                            path: 'subscriptions',
-                            name: 'subscriptions',
-                            component: () => import(/* webpackChunkName: "dashboard-payments-subscriptions" */ './components/payments/subscriptions/subscriptions.vue'),
-                        },
-                        {
-                            path: 'Invoices',
-                            name: 'invoices',
-                            component: () => import(/* webpackChunkName: "dashboard-payments-invoices" */ './components/payments/invoices/invoices.vue'),
-                        },
-                    ],
-                },
-                {
-                    name: 'account',
-                    path: 'account',
-                    component: () => import(/* webpackChunkName: "dashboard-account" */ './components/account/account.vue'),
-                },
-                {
-                    name: 'billing',
-                    path: 'billing',
-                    component: () => import(/* webpackChunkName: "dashboard-billing" */ './components/billing/billing.vue'),
-                },
-                {
-                    name: 'widget',
-                    path: 'widget',
-                    component: () => import(/* webpackChunkName: "dashboard-widget" */ './components/widget/widget.vue'),
-                },
-            ],
-        },
-    ],
+	linkActiveClass: 'active',
+	mode: 'history',
+	routes: [
+		{
+			path: '/dashboard',
+			component: {
+				render(c) {
+					return c('router-view');
+				}
+			},
+			children: [
+				{
+					name: 'conversations',
+					path: 'conversations/:id?',
+					component: () => import(/* webpackChunkName: "dashboard-conversations" */ './components/conversations/conversations.vue')
+				},
+				{
+					name: 'bookings',
+					path: 'bookings',
+					component: () => import(/* webpackChunkName: "dashboard-bookings" */ './components/bookings/bookings.vue'),
+					children: [
+						{
+							path: 'calendar',
+							name: 'calendar',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-calendar" */ './components/bookings/calendar/calendar.vue')
+						},
+						{
+							path: 'services',
+							name: 'services',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/services.vue')
+						}
+					]
+				},
+				{
+					path: 'contacts',
+					name: 'contacts',
+					component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/contacts.vue')
+				},
+				{
+					path: 'members',
+					name: 'members',
+					component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/members.vue')
+				},
+				{
+					name: 'payments',
+					path: 'payments',
+					component: {
+						render(c) {
+							return c('router-view');
+						}
+					},
+					children: [
+						{
+							path: 'subscriptions',
+							name: 'subscriptions',
+							component: () => import(/* webpackChunkName: "dashboard-payments-subscriptions" */ './components/payments/subscriptions/subscriptions.vue')
+						},
+						{
+							path: 'Invoices',
+							name: 'invoices',
+							component: () => import(/* webpackChunkName: "dashboard-payments-invoices" */ './components/payments/invoices/invoices.vue')
+						}
+					]
+				},
+				{
+					name: 'account',
+					path: 'account',
+					component: () => import(/* webpackChunkName: "dashboard-account" */ './components/account/account.vue')
+				},
+				{
+					name: 'billing',
+					path: 'billing',
+					component: () => import(/* webpackChunkName: "dashboard-billing" */ './components/billing/billing.vue')
+				},
+				{
+					name: 'widget',
+					path: 'widget',
+					component: () => import(/* webpackChunkName: "dashboard-widget" */ './components/widget/widget.vue')
+				}
+			]
+		}
+	]
 });
 import io from 'socket.io-client';
 import dayjs from 'dayjs';
@@ -146,655 +146,656 @@ import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
 import Notification from '../components/notification/notification.vue';
 
-
 import store from './store';
 window.app = new Vue({
-    router: router,
-    store: store,
-    el: '#app',
-    components: {
-        BellIcon,
-        GridIcon,
-        ChatIcon,
-        NotebookIcon,
-        CogIcon,
-        VirtualRealityIcon,
-        UsersIcon,
-        UserCircleIcon,
-        ShortcutIcon,
-        PlannerIcon,
-        ChevronDownIcon,
-        ColoredBillIcon,
-        ContactIcon,
-        WalletIcon,
-        LockIcon,
-        ExclamationCircleIcon,
-        PlayAltIcon,
-        InfoCircleIcon,
-        HeadphoneIcon,
-        PasswordIcon,
-        ListBulletIcon,
-        CreditCardIcon,
-        BillIcon,
-        ColoredBellIcon,
+	router: router,
+	store: store,
+	el: '#app',
+	components: {
+		BellIcon,
+		GridIcon,
+		ChatIcon,
+		NotebookIcon,
+		CogIcon,
+		VirtualRealityIcon,
+		UsersIcon,
+		UserCircleIcon,
+		ShortcutIcon,
+		PlannerIcon,
+		ChevronDownIcon,
+		ColoredBillIcon,
+		ContactIcon,
+		WalletIcon,
+		LockIcon,
+		ExclamationCircleIcon,
+		PlayAltIcon,
+		InfoCircleIcon,
+		HeadphoneIcon,
+		PasswordIcon,
+		ListBulletIcon,
+		CreditCardIcon,
+		BillIcon,
+		ColoredBellIcon,
 
-        ContactAltIcon,
-        MonthviewIcon,
-        PaymentsIcon,
-        MessagesIcon,
-        CloseIcon,
-        TrayIcon,
-        LighthouseIcon,
-        MemberIcon,
+		ContactAltIcon,
+		MonthviewIcon,
+		PaymentsIcon,
+		MessagesIcon,
+		CloseIcon,
+		TrayIcon,
+		LighthouseIcon,
+		MemberIcon,
 
-        VideoCall,
-        ScreenRecorder,
-        Notification,
+		VideoCall,
+		ScreenRecorder,
+		Notification,
 
-        'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue'),
-    },
-    data: {
-        auth: null,
-        pageloading: false,
-        heading: '',
-        contentloading: true,
-        socket: null,
-        online_users: [],
-        detailsTab: 'profile',
-        profileTab: 'overview', //overview
+		'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue')
+	},
+	data: {
+		auth: null,
+		pageloading: false,
+		heading: '',
+		contentloading: true,
+		socket: null,
+		online_users: [],
+		detailsTab: 'profile',
+		profileTab: 'overview', //overview
 
-        call_sound: null,
-        message_sound: null,
+		call_sound: null,
+		message_sound: null,
 
-        callWindow: null,
-        caller: null,
-        callConversation: null,
-        callUser: null,
-        screenRecorder: {
-            conversation_id: null,
-            data: null,
-            status: '',
-        },
-        jQuery: $,
-        muted: false,
-        introJS: null,
-        intros: {
-            messages: {
-                step: 1,
-                intro: 'All of your conversations are here. Send a message to your contacts or do a video call!',
-                enabled: true,
-            },
-            bookings: {
-                step: 2,
-                intro: 'View your appointments in the calendar and manage your booking types.',
-                enabled: true,
-            },
-            contacts: {
-                step: 3,
-                intro: 'Add and manage all of your contacts here.',
-                enabled: true,
-            },
-            members: {
-                step: 4,
-                intro: 'Add and manage all of your members here.',
-                enabled: true,
-            },
-            payments: {
-                step: 5,
-                intro: 'Create invoices for your contacts or subscribe them to your services.',
-                enabled: true,
-            },
-            new_chat: {
-                step: 6,
-                intro: 'Start a new conversation or create a group chat.',
-                enabled: true,
-            },
-            emoji: {
-                step: 7,
-                intro: 'Send an emoji message.',
-                enabled: true,
-            },
-            audio: {
-                step: 8,
-                intro: 'Send an audio message.',
-                enabled: true,
-            },
-            file: {
-                step: 9,
-                intro: 'Attach a file and send as a message.',
-                enabled: true,
-            },
-            screen: {
-                step: 10,
-                intro: 'Record your screen and send as a message, or download the recording.',
-                enabled: true,
-            },
-            video_call: {
-                step: 11,
-                intro: 'Star a video call with the current conversation.',
-                enabled: true,
-            },
-            audio_call: {
-                step: 12,
-                intro: 'Star an audio call with the current conversation.',
-                enabled: true,
-            },
-            calendar_settings: {
-                step: 13,
-                intro: 'Sync your Google and Outlook calendars.',
-                enabled: true,
-            },
-            add_service: {
-                step: 14,
-                intro: 'Add a new booking type.',
-                enabled: true,
-            },
-            edit_service: {
-                step: 15,
-                intro: 'Edit or delete the selected booking type.',
-                enabled: true,
-            },
-            service_availability: {
-                step: 16,
-                intro: 'Manage availability by day of the week, time and breaktime.',
-                enabled: true,
-            },
-            service_holidays: {
-                step: 17,
-                intro: 'Set holidays for the selected booking type.',
-                enabled: true,
-            },
-            add_contact: {
-                step: 18,
-                intro: 'Add a new contact.',
-                enabled: true,
-            },
-            manage_fields: {
-                step: 19,
-                intro: 'Manage default fields for your contacts.',
-                enabled: true,
-            },
-            subscriptions_filter: {
-                step: 20,
-                intro: 'Filter subscriptions by status.',
-                enabled: true,
-            },
-            add_subscription: {
-                step: 21,
-                intro: 'Create a subscription for a contact.',
-                enabled: true,
-            },
-            invoices_filter: {
-                step: 22,
-                intro: 'Filter invoices by status.',
-                enabled: true,
-            },
-            add_invoice: {
-                step: 23,
-                intro: 'Create an invoice for a contact.',
-                enabled: true,
-            },
-            add_member: {
-                step: 24,
-                intro: 'Add a new contact.',
-                enabled: true,
-            },
-        },
-        windowLoaded: false,
-    },
+		callWindow: null,
+		caller: null,
+		callConversation: null,
+		callUser: null,
+		screenRecorder: {
+			conversation_id: null,
+			data: null,
+			status: ''
+		},
+		jQuery: $,
+		muted: false,
+		introJS: null,
+		intros: {
+			messages: {
+				step: 1,
+				intro: 'All of your conversations are here. Send a message to your contacts or do a video call!',
+				enabled: true
+			},
+			bookings: {
+				step: 2,
+				intro: 'View your appointments in the calendar and manage your booking types.',
+				enabled: true
+			},
+			contacts: {
+				step: 3,
+				intro: 'Add and manage all of your contacts here.',
+				enabled: true
+			},
+			members: {
+				step: 4,
+				intro: 'Add and manage all of your members here.',
+				enabled: true
+			},
+			payments: {
+				step: 5,
+				intro: 'Create invoices for your contacts or subscribe them to your services.',
+				enabled: true
+			},
+			new_chat: {
+				step: 6,
+				intro: 'Start a new conversation or create a group chat.',
+				enabled: true
+			},
+			emoji: {
+				step: 7,
+				intro: 'Send an emoji message.',
+				enabled: true
+			},
+			audio: {
+				step: 8,
+				intro: 'Send an audio message.',
+				enabled: true
+			},
+			file: {
+				step: 9,
+				intro: 'Attach a file and send as a message.',
+				enabled: true
+			},
+			screen: {
+				step: 10,
+				intro: 'Record your screen and send as a message, or download the recording.',
+				enabled: true
+			},
+			video_call: {
+				step: 11,
+				intro: 'Star a video call with the current conversation.',
+				enabled: true
+			},
+			audio_call: {
+				step: 12,
+				intro: 'Star an audio call with the current conversation.',
+				enabled: true
+			},
+			calendar_settings: {
+				step: 13,
+				intro: 'Sync your Google and Outlook calendars.',
+				enabled: true
+			},
+			add_service: {
+				step: 14,
+				intro: 'Add a new booking type.',
+				enabled: true
+			},
+			edit_service: {
+				step: 15,
+				intro: 'Edit or delete the selected booking type.',
+				enabled: true
+			},
+			service_availability: {
+				step: 16,
+				intro: 'Manage availability by day of the week, time and breaktime.',
+				enabled: true
+			},
+			service_holidays: {
+				step: 17,
+				intro: 'Set holidays for the selected booking type.',
+				enabled: true
+			},
+			add_contact: {
+				step: 18,
+				intro: 'Add a new contact.',
+				enabled: true
+			},
+			manage_fields: {
+				step: 19,
+				intro: 'Manage default fields for your contacts.',
+				enabled: true
+			},
+			subscriptions_filter: {
+				step: 20,
+				intro: 'Filter subscriptions by status.',
+				enabled: true
+			},
+			add_subscription: {
+				step: 21,
+				intro: 'Create a subscription for a contact.',
+				enabled: true
+			},
+			invoices_filter: {
+				step: 22,
+				intro: 'Filter invoices by status.',
+				enabled: true
+			},
+			add_invoice: {
+				step: 23,
+				intro: 'Create an invoice for a contact.',
+				enabled: true
+			},
+			add_member: {
+				step: 24,
+				intro: 'Add a new contact.',
+				enabled: true
+			}
+		},
+		windowLoaded: false
+	},
 
-    computed: {
-        ...mapState({
-            conversations: state => state.conversations.index,
-            notifications: state => state.notifications.index,
-            bookings: state => state.bookings.index,
-        }),
+	computed: {
+		...mapState({
+			conversations: state => state.conversations.index,
+			notifications: state => state.notifications.index,
+			bookings: state => state.bookings.index
+		}),
 
-        ...mapGetters({
-            getConversation: 'conversations/show',
-        }),
+		...mapGetters({
+			getConversation: 'conversations/show'
+		}),
 
-        conversation() {
-            return this.getConversation(this.$route.params.id);
-        },
+		conversation() {
+			return this.getConversation(this.$route.params.id);
+		},
 
-        payoutComplete() {
-            return !this.auth.stripe_account.individual || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
-        },
+		payoutComplete() {
+			return !this.auth.stripe_account.individual || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
+		},
 
-        newMessagesCount() {
-            let count;
-            this.conversations.forEach(conversation => {
-                if (conversation.last_message.user_id != this.auth.id && !conversation.last_message.is_read) {
-                    if (!count) count = 0;
-                    count++;
-                }
-            });
-            return count;
-        },
+		newMessagesCount() {
+			let count;
+			this.conversations.forEach(conversation => {
+				if (conversation.last_message.user_id != this.auth.id && !conversation.last_message.is_read) {
+					if (!count) count = 0;
+					count++;
+				}
+			});
+			return count;
+		},
 
-        supportLink() {
-            let supportLink = '#';
-            for (let conversation of this.conversations) {
-                let role = (conversation.member.role || {}).role;
-                if (role == 'support') {
-                    supportLink = `/dashboard/conversations/${conversation.id}`;
-                    break;
-                }
-            }
-            return supportLink;
-        },
+		supportLink() {
+			let supportLink = '#';
+			for (let conversation of this.conversations) {
+				let role = (conversation.member.role || {}).role;
+				if (role == 'support') {
+					supportLink = `/dashboard/conversations/${conversation.id}`;
+					break;
+				}
+			}
+			return supportLink;
+		},
 
-        profileLink() {
-            let profileLink = '/dashboard/account?tab=profile';
-            if (this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
+		profileLink() {
+			let profileLink = '/dashboard/account?tab=profile';
+			if (this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
 
-            return profileLink;
-        },
+			return profileLink;
+		},
 
-        notificationsCount() {
-            let count;
-            this.notifications.forEach(notification => {
-                if (!notification.is_read) {
-                    if (!count) count = 0;
-                    count++;
-                }
-            });
+		notificationsCount() {
+			let count;
+			this.notifications.forEach(notification => {
+				if (!notification.is_read) {
+					if (!count) count = 0;
+					count++;
+				}
+			});
 
-            return count;
-        },
-    },
+			return count;
+		}
+	},
 
-    watch: {
-        '$route.name': function(value) {
-            this.contentloading = true;
-            $('.leader-line').remove();
-        },
-        muted: function(value) {
-            this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
-                className: value ? 'bg-secondary rounded' : 'bg-primary rounded'
-            });
-        }
-    },
+	watch: {
+		'$route.name': function(value) {
+			this.contentloading = true;
+			$('.leader-line').remove();
+		},
+		muted: function(value) {
+			this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
+				className: value ? 'bg-secondary rounded' : 'bg-primary rounded'
+			});
+		}
+	},
 
-    created() {
-        this.notifyIncomingBookings();
-        if (this.$route.name != 'conversations') this.getConversations();
-        this.call_sound = new Audio(`/notifications/call.mp3`);
-        this.message_sound = new Audio('/notifications/new_message.mp3');
-        this.socket = io(WS_URL);
+	created() {
+		this.notifyIncomingBookings();
+		if (this.$route.name != 'conversations') this.getConversations();
+		this.call_sound = new Audio(`/notifications/call.mp3`);
+		this.message_sound = new Audio('/notifications/new_message.mp3');
+		this.socket = io(WS_URL);
 
-        // https://telloe.app?invite_token=ry36DJxbh3EomBAWk151gizVmCT1MB
-        let location = JSON.parse(JSON.stringify(window.location));
-        if(location.search) {
-            let searchParams = new URLSearchParams(location.search);
-            let invite_token = searchParams.get('invite_token');
-            if(invite_token) this.socket.emit('invite_token', invite_token);
-        }
+		// https://telloe.app?invite_token=ry36DJxbh3EomBAWk151gizVmCT1MB
+		let location = JSON.parse(JSON.stringify(window.location));
+		if (location.search) {
+			let searchParams = new URLSearchParams(location.search);
+			let invite_token = searchParams.get('invite_token');
+			if (invite_token) this.socket.emit('invite_token', invite_token);
+		}
 
-        this.socket.on('new_message', data => {
-            let conversation = this.conversations.find(x => x.id == data.conversation_id);
-            if (conversation) {
-                // check if message does not exists by ID
-                this.getMessageByID(data).then(message => {
-                    if (message && message.conversation_id == conversation.id) {
-                        conversation.last_message = message;
-                        if(!this.muted) this.message_sound.play();
-                    }
-                });
-            }
-        });
+		this.socket.on('new_message', data => {
+			let conversation = this.conversations.find(x => x.id == data.conversation_id);
+			if (conversation) {
+				// check if message does not exists by ID
+				this.getMessageByID(data).then(message => {
+					if (message && message.conversation_id == conversation.id) {
+						conversation.last_message = message;
+						if (!this.muted) this.message_sound.play();
+					}
+				});
+			}
+		});
 
-        this.socket.on('new_notification', data => {
-            this.getNotificationByID(data);
-        });
+		this.socket.on('new_notification', data => {
+			this.getNotificationByID(data);
+		});
 
-        this.socket.on('online_users', data => {
-            this.online_users = data;
-        });
+		this.socket.on('online_users', data => {
+			this.online_users = data;
+		});
 
-        axios.get('/auth').then(response => {
-            this.auth = response.data;
-            this.socket.emit('user_online', this.auth.id);
-        });
+		axios.get('/auth').then(response => {
+			this.auth = response.data;
+			this.socket.emit('user_online', this.auth.id);
+		});
 
-        (function(d) {
-            var js,
-                id = 'facebook-jssdk',
-                ref = d.getElementsByTagName('script')[0];
-            if (d.getElementById(id)) {
-                return;
-            }
-            js = d.createElement('script');
-            js.id = id;
-            js.async = true;
-            js.src = '//connect.facebook.net/en_US/all.js';
-            ref.parentNode.insertBefore(js, ref);
-        })(document);
+		(function(d) {
+			var js,
+				id = 'facebook-jssdk',
+				ref = d.getElementsByTagName('script')[0];
+			if (d.getElementById(id)) {
+				return;
+			}
+			js = d.createElement('script');
+			js.id = id;
+			js.async = true;
+			js.src = '//connect.facebook.net/en_US/all.js';
+			ref.parentNode.insertBefore(js, ref);
+		})(document);
 
-        this.getNotifications();
-        this.getBookings();
-        this.introJS = introJS.introJs()
-            .setOptions({
-                'showStepNumbers': false,
-                'showBullets': false,
-                'hidePrev': true,
-                'hideNext': true,
-                'tooltipClass': 'rounded',
-                'highlightClass': 'rounded bg-white',
-                'tooltipPosition': 'right',
-                'disableInteraction': true,
-                'overlayOpacity': 0.35,
-            }).onchange(targetElement => {
-                if(targetElement) {
-                    let intro = Object.keys(this.intros).find(key => this.intros[key].step == targetElement.getAttribute('data-step'));
-                    if(intro) this.intros[intro].enabled = false;
-                }
-            });
-    },
+		this.getNotifications();
+		this.getBookings();
+		this.introJS = introJS
+			.introJs()
+			.setOptions({
+				showStepNumbers: false,
+				showBullets: false,
+				hidePrev: true,
+				hideNext: true,
+				tooltipClass: 'rounded',
+				highlightClass: 'rounded bg-white',
+				tooltipPosition: 'right',
+				disableInteraction: true,
+				overlayOpacity: 0.35
+			})
+			.onchange(targetElement => {
+				if (targetElement) {
+					let intro = Object.keys(this.intros).find(key => this.intros[key].step == targetElement.getAttribute('data-step'));
+					if (intro) this.intros[intro].enabled = false;
+				}
+			});
+	},
 
-    mounted() {
-        this.FBInit();
-        if(!window.localStorage.getItem('telloe_has_logged_in')) {
-            window.localStorage.setItem('telloe_has_logged_in', true);
-            window.onload = () => {
-                this.windowLoaded = true;
-                this.introJS.start();
-            };
-        } else {
-            window.onload = () => {
-                this.windowLoaded = true;
-            };
-            Object.values(this.intros).map(intro => {
-                intro.enabled = false;
-            });
-        }
-    },
+	mounted() {
+		this.FBInit();
+		if (!window.localStorage.getItem('telloe_has_logged_in')) {
+			window.localStorage.setItem('telloe_has_logged_in', true);
+			window.onload = () => {
+				this.windowLoaded = true;
+				this.introJS.start();
+			};
+		} else {
+			window.onload = () => {
+				this.windowLoaded = true;
+			};
+			Object.values(this.intros).map(intro => {
+				intro.enabled = false;
+			});
+		}
+	},
 
-    methods: {
-        ...mapActions({
-            getConversations: 'conversations/index',
-            getNotifications: 'notifications/index',
-            updateNotification: 'notifications/update',
-            clearNotifications: 'notifications/clear',
-            getBookings: 'bookings/index',
-        }),
+	methods: {
+		...mapActions({
+			getConversations: 'conversations/index',
+			getNotifications: 'notifications/index',
+			updateNotification: 'notifications/update',
+			clearNotifications: 'notifications/clear',
+			getBookings: 'bookings/index'
+		}),
 
-        toggleIntros() {
-            // Object.values(this.intros).map(intro => {
-            //     intro.enabled = true;
-            // });
+		toggleIntros() {
+			// Object.values(this.intros).map(intro => {
+			//     intro.enabled = true;
+			// });
 
-            let step = 0;
-            console.log(this.$route.name);
-            switch(this.$route.name) {
-                case 'conversations':
-                    this.intros.new_chat.enabled = true;
-                    step = this.intros.new_chat.step;
-                    break;
-                case 'calendar':
-                    this.intros.calendar_settings.enabled = true;
-                    step = this.intros.calendar_settings.step;
-                    break;
-                case 'services':
-                    this.intros.add_service.enabled = true;
-                    step = this.intros.add_service.step;
-                    break;
-            }
-            if(step) this.introJS.start().goToStepNumber(step);
-        },
+			let step = 0;
+			console.log(this.$route.name);
+			switch (this.$route.name) {
+				case 'conversations':
+					this.intros.new_chat.enabled = true;
+					step = this.intros.new_chat.step;
+					break;
+				case 'calendar':
+					this.intros.calendar_settings.enabled = true;
+					step = this.intros.calendar_settings.step;
+					break;
+				case 'services':
+					this.intros.add_service.enabled = true;
+					step = this.intros.add_service.step;
+					break;
+			}
+			if (step) this.introJS.start().goToStepNumber(step);
+		},
 
-        notifyIncomingBookings() {
-            let now = dayjs();
-            this.bookings.forEach(booking => {
-                let bookingDate = dayjs(`${booking.date} ${booking.start}`);
-                let hoursDiff = bookingDate.diff(now, 'hours');
-                if(hoursDiff > 0){
-                    let description = '';
-                    let link = false;
-                    if(booking.user_id == this.auth.id || booking.contact_id == this.auth.id) {
-                        description = `You have an upcoming appointment in less than`;
-                    } else {
-                        description = `You have an upcoming appointment with <strong>${(booking.user || booking.contact).full_name}</strong> in less than`;
-                        link = `/dashboard/bookings/calendar?date=${booking.date}`;
-                    }
-                    if(hoursDiff <= 1 && !booking.notified_1_app) { // 1 hour
-                        booking.notified_1_app = true;
-                        this.$refs['notification'].show({
-                            description: `${description} an hour.`,
-                            link: link
-                        });
-                    }
-                    if(hoursDiff > 1 && hoursDiff <= 3 && !booking.notified_3_app) { // 3 hours
-                        booking.notified_3_app = true;
-                        this.$refs['notification'].show({
-                            description: `${description} an hour.`,
-                            link: link
-                        });
-                    }
-                }
+		notifyIncomingBookings() {
+			let now = dayjs();
+			this.bookings.forEach(booking => {
+				let bookingDate = dayjs(`${booking.date} ${booking.start}`);
+				let hoursDiff = bookingDate.diff(now, 'hours');
+				if (hoursDiff > 0) {
+					let description = '';
+					let link = false;
+					if (booking.user_id == this.auth.id || booking.contact_id == this.auth.id) {
+						description = `You have an upcoming appointment in less than`;
+					} else {
+						description = `You have an upcoming appointment with <strong>${(booking.user || booking.contact).full_name}</strong> in less than`;
+						link = `/dashboard/bookings/calendar?date=${booking.date}`;
+					}
+					if (hoursDiff <= 1 && !booking.notified_1_app) {
+						// 1 hour
+						booking.notified_1_app = true;
+						this.$refs['notification'].show({
+							description: `${description} an hour.`,
+							link: link
+						});
+					}
+					if (hoursDiff > 1 && hoursDiff <= 3 && !booking.notified_3_app) {
+						// 3 hours
+						booking.notified_3_app = true;
+						this.$refs['notification'].show({
+							description: `${description} an hour.`,
+							link: link
+						});
+					}
+				}
+			});
+			setTimeout(() => {
+				this.notifyIncomingBookings();
+			}, 1000);
+		},
 
+		downloadMedia(message) {
+			if (message.source) {
+				let link = document.createElement('a');
+				link.href = message.source;
+				link.download = message.metadata.filename;
+				link.target = '_blank';
+				document.body.appendChild(link);
+				link.click();
+				link.remove();
+			}
+		},
 
-            });
-            setTimeout(() => {
-                this.notifyIncomingBookings();
-            }, 1000);
-        },
+		getFiles(conversation) {
+			if (conversation) {
+				let page = 0;
+				if (!conversation.files) {
+					this.$set(conversation, 'files', { data: [] });
+					page = 1;
+				}
+				if ((conversation.files || {}).next_page_url) {
+					const url = new URL(window.location.origin + conversation.files.next_page_url);
+					const urlParams = new URLSearchParams(url.search);
+					page = urlParams.get('page');
+				}
+				if (page) {
+					this.$set(conversation, 'filesLoading', true);
+					axios.get(`/conversations/${conversation.id}/files?page=${page}`).then(response => {
+						conversation.files.data = conversation.files.data.concat(response.data.data);
+						conversation.files.next_page_url = response.data.next_page_url;
+						conversation.filesLoading = false;
+					});
+				}
+			}
+		},
 
-        downloadMedia(message) {
-            if (message.source) {
-                let link = document.createElement('a');
-                link.href = message.source;
-                link.download = message.metadata.filename;
-                link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-            }
-        },
+		fileIcon(extension) {
+			let iconComponent = 'document-icon';
+			let videoExtensions = ['mp4', 'webm'];
+			let audioExtensions = ['mp3', 'wav'];
+			if (videoExtensions.indexOf(extension) > -1) {
+				iconComponent = 'file-video-icon';
+			} else if (audioExtensions.indexOf(extension) > -1) {
+				iconComponent = 'file-audio-icon';
+			} else {
+				switch (extension) {
+					case 'pdf':
+						iconComponent = FilePdfIcon;
+						break;
 
-        getFiles(conversation) {
-            if(conversation) {
-                let page = 0;
-                if(!conversation.files) {
-                    this.$set(conversation, 'files', {data: []});
-                    page = 1;
-                }
-                if((conversation.files || {}).next_page_url) {
-                    const url = new URL(window.location.origin + conversation.files.next_page_url);
-                    const urlParams = new URLSearchParams(url.search);
-                    page = urlParams.get('page');
-                }
-                if(page) {
-                    this.$set(conversation, 'filesLoading', true);
-                    axios.get(`/conversations/${conversation.id}/files?page=${page}`).then(response => {
-                        conversation.files.data = conversation.files.data.concat(response.data.data);
-                        conversation.files.next_page_url = response.data.next_page_url;
-                        conversation.filesLoading = false;
-                    });
-                }
-            }
-        },
+					case 'zip':
+						iconComponent = FileArchiveIcon;
+						break;
 
-        fileIcon(extension) {
-            let iconComponent = 'document-icon';
-            let videoExtensions = ['mp4', 'webm'];
-            let audioExtensions = ['mp3', 'wav'];
-            if (videoExtensions.indexOf(extension) > -1) {
-                iconComponent = 'file-video-icon';
-            } else if (audioExtensions.indexOf(extension) > -1) {
-                iconComponent = 'file-audio-icon';
-            } else {
-                switch (extension) {
-                    case 'pdf':
-                        iconComponent = FilePdfIcon;
-                        break;
+					case 'rar':
+						iconComponent = FileArchiveIcon;
+						break;
 
-                    case 'zip':
-                        iconComponent = FileArchiveIcon;
-                        break;
+					case 'docx':
+						iconComponent = DocumentIcon;
+						break;
 
-                    case 'rar':
-                        iconComponent = FileArchiveIcon;
-                        break;
+					case 'doc':
+						iconComponent = DocumentIcon;
+						break;
 
-                    case 'docx':
-                        iconComponent = DocumentIcon;
-                        break;
+					case 'txt':
+						iconComponent = DocumentIcon;
+						break;
 
-                    case 'doc':
-                        iconComponent = DocumentIcon;
-                        break;
+					case 'xls':
+						break;
 
-                    case 'txt':
-                        iconComponent = DocumentIcon;
-                        break;
+					case 'xlsx':
+						break;
+				}
+			}
 
-                    case 'xls':
-                        break;
+			return iconComponent;
+		},
 
-                    case 'xlsx':
-                        break;
-                }
-            }
+		number_format(number, decimals, dec_point, thousands_sep) {
+			// Strip all characters but numerical ones.
+			number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+			var n = !isFinite(+number) ? 0 : +number,
+				prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+				sep = typeof thousands_sep === 'undefined' ? ',' : thousands_sep,
+				dec = typeof dec_point === 'undefined' ? '.' : dec_point,
+				s = '',
+				toFixedFix = function(n, prec) {
+					var k = Math.pow(10, prec);
+					return '' + Math.round(n * k) / k;
+				};
+			// Fix for IE parseFloat(0.55).toFixed(0) = 0;
+			s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+			if (s[0].length > 3) {
+				s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+			}
+			if ((s[1] || '').length < prec) {
+				s[1] = s[1] || '';
+				s[1] += new Array(prec - s[1].length + 1).join('0');
+			}
+			return s.join(dec);
+		},
 
-            return iconComponent;
-        },
+		async getNotificationByID(data) {
+			let notification = await axios.get(`/notifications/${data.id}`).catch(e => {});
+			if (notification) {
+				this.$refs['notification'].show(notification.data);
+				this.notifications.unshift(notification.data);
+			}
+		},
 
-        number_format(number, decimals, dec_point, thousands_sep) {
-            // Strip all characters but numerical ones.
-            number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
-            var n = !isFinite(+number) ? 0 : +number,
-                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-                sep = typeof thousands_sep === 'undefined' ? ',' : thousands_sep,
-                dec = typeof dec_point === 'undefined' ? '.' : dec_point,
-                s = '',
-                toFixedFix = function(n, prec) {
-                    var k = Math.pow(10, prec);
-                    return '' + Math.round(n * k) / k;
-                };
-            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-            s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
-            if (s[0].length > 3) {
-                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-            }
-            if ((s[1] || '').length < prec) {
-                s[1] = s[1] || '';
-                s[1] += new Array(prec - s[1].length + 1).join('0');
-            }
-            return s.join(dec);
-        },
+		goToNotifLink(notification) {
+			if (notification.link && this.$route.fullPath != notification.link) {
+				this.$router.push(notification.link);
+			}
+		},
 
-        async getNotificationByID(data) {
-            let notification = await axios.get(`/notifications/${data.id}`).catch(e => {});
-            if (notification) {
-                this.$refs['notification'].show(notification.data);
-                this.notifications.unshift(notification.data);
-            }
-        },
+		isImage(extension) {
+			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
+			return imageExtensions.indexOf(extension) > -1;
+		},
 
-        goToNotifLink(notification) {
-            if (notification.link && this.$route.fullPath != notification.link) {
-                this.$router.push(notification.link);
-            }
-        },
+		async getMessageByID(data) {
+			let message = await axios.get(`/messages/${data.id}`).catch(e => {});
+			if (message) return message.data;
+		},
 
-        isImage(extension) {
-            let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
-            return imageExtensions.indexOf(extension) > -1;
-        },
+		focusCallWindow() {
+			if (this.callWindow) {
+				this.callWindow.focus();
+			}
+		},
 
-        async getMessageByID(data) {
-            let message = await axios.get(`/messages/${data.id}`).catch(e => {});
-            if (message) return message.data;
-        },
+		rejectCall() {
+			this.call_sound.pause();
+			this.call_sound.currentTime = 0;
+			this.socket.emit('live_call_reject', {
+				conversation_id: this.callConversation.id
+			});
+			this.$refs['videoCall'].endCall();
+			this.callWindow = this.caller = this.callConversation = null;
+		},
 
-        focusCallWindow() {
-            if (this.callWindow) {
-                this.callWindow.focus();
-            }
-        },
+		initCall(conversation_id, action) {
+			if (!this.callWindow) {
+				let conversation = this.conversations.find(x => x.id == conversation_id);
+				if (conversation) {
+					if (action == 'incoming') {
+						this.$refs['videoCall'].endCall();
+						this.callUser = this.caller;
+						this.call_sound.pause();
+						this.call_sound.currentTime = 0;
+					} else if (action == 'outgoing') this.callUser = conversation.member;
 
-        rejectCall() {
-            this.call_sound.pause();
-            this.call_sound.currentTime = 0;
-            this.socket.emit('live_call_reject', {
-                conversation_id: this.callConversation.id,
-            });
-            this.$refs['videoCall'].endCall();
-            this.callWindow = this.caller = this.callConversation = null;
-        },
+					let url = `${window.location.origin}/conversations/${conversation_id}/call`;
+					const width = 800; // 4:3
+					const height = 600;
+					const left = screen.width / 2 - width / 2;
+					const top = screen.height / 2 - height / 2;
+					this.callConversation = conversation;
+					this.callWindow = window.open(url, 'telloe_call_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
 
-        initCall(conversation_id, action) {
-            if (!this.callWindow) {
-                let conversation = this.conversations.find(x => x.id == conversation_id);
-                if (conversation) {
-                    if (action == 'incoming') {
-                        this.$refs['videoCall'].endCall();
-                        this.callUser = this.caller;
-                        this.call_sound.pause();
-                        this.call_sound.currentTime = 0;
-                    } else if (action == 'outgoing') this.callUser = conversation.member;
+					this.callWindow.onload = () => {
+						this.callWindow.onunload = e => {
+							this.callWindow = this.caller = this.callUser = this.callConversation = null;
+						};
+					};
+					this.callWindow.onended = () => {
+						this.callUser = null;
+					};
+				}
+			}
+		},
 
-                    let url = `${window.location.origin}/conversations/${conversation_id}/call`;
-                    const width = 800; // 4:3
-                    const height = 600;
-                    const left = screen.width / 2 - width / 2;
-                    const top = screen.height / 2 - height / 2;
-                    this.callConversation = conversation;
-                    this.callWindow = window.open(url, 'telloe_call_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
+		sendVideo(video) {
+			if (this.conversation) {
+				const timestamp = dayjs().valueOf();
+				let message = {
+					user: this.auth,
+					source: video.source,
+					preview: video.preview,
+					timestamp: dayjs().valueOf(),
+					type: 'video',
+					created_at: dayjs(timestamp).format('hh:mm A'),
+					is_read: 1,
+					created_diff: 'Just now',
+					metadata: { duration: video.duration }
+				};
+				this.sendMessage(message);
+				this.closeRecorder('video');
+			}
+		},
 
-                    this.callWindow.onload = () => {
-                        this.callWindow.onunload = e => {
-                            this.callWindow = this.caller = this.callUser = this.callConversation = null;
-                        };
-                    };
-                    this.callWindow.onended = () => {
-                        this.callUser = null;
-                    };
-                }
-            }
-        },
+		FBInit() {
+			let params = {
+				appId: '1187408638266444',
+				cookie: true,
+				autoLogAppEvents: true,
+				xfbml: true,
+				version: 'v5.0'
+			};
+			window.fbAsyncInit = () => {
+				FB.init(params);
+				this.$emit('FBInit');
+			};
+		},
 
-        sendVideo(video) {
-            if (this.conversation) {
-                const timestamp = dayjs().valueOf();
-                let message = {
-                    user: this.auth,
-                    source: video.source,
-                    preview: video.preview,
-                    timestamp: dayjs().valueOf(),
-                    type: 'video',
-                    created_at: dayjs(timestamp).format('hh:mm A'),
-                    is_read: 1,
-                    created_diff: 'Just now',
-                    metadata: {duration: video.duration},
-                };
-                this.sendMessage(message);
-                this.closeRecorder('video');
-            }
-        },
-
-        FBInit() {
-            let params = {
-                appId: '1187408638266444',
-                cookie: true,
-                autoLogAppEvents: true,
-                xfbml: true,
-                version: 'v5.0',
-            };
-            window.fbAsyncInit = () => {
-                FB.init(params);
-                this.$emit('FBInit');
-            };
-        },
-
-        FBParse() {
-            return new Promise((resolve, reject) => {
-                FB.XFBML.parse(null, () => {
-                    resolve();
-                });
-            });
-        },
-    },
+		FBParse() {
+			return new Promise((resolve, reject) => {
+				FB.XFBML.parse(null, () => {
+					resolve();
+				});
+			});
+		}
+	}
 });

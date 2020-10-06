@@ -28,7 +28,7 @@
 	
 	<script>
 		const CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
-		const WS_URL = '{{ env('WS_URL') }}';
+		const WS_URL = '{{ config("app.websocket_url") }}';
 	</script>
 	@yield('scripts')
 </body>
