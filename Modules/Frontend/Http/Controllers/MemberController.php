@@ -5,6 +5,7 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Contact;
+use App\Models\Member;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\ConversationMember;
@@ -18,23 +19,22 @@ use App\Http\StripeAPI;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
-class ContactController extends Controller
+class MemberController extends Controller
 {
     public function index(Request $request)
     {
         $query = $request->get('query');
-        $contacts = Contact::with('contactUser')
+        $members = Member::with('memberUser')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC');
         if($query):
-            $contacts = $contacts->whereHas('contactUser', function($contactUser) use ($query) {
-                $contactuser->where('LIKE', '%' . $query. '%');
+            $members = $members->whereHas('memberUser', function($memberUser) use ($query) {
+                $memberUser->where('LIKE', '%' . $query. '%');
             });
         endif;
-        $contacts = $contacts->get();
+        $members = $members->get();
 
-
-        return response()->json($contacts);
+        return response()->json($members);
     }
 
 

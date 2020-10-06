@@ -7,6 +7,7 @@ import notes from './modules/notes';
 import bookings from './modules/bookings';
 import user_blacklisted_services from './modules/user_blacklisted_services';
 import contacts from './modules/contacts';
+import members from './modules/members';
 import users from './modules/users';
 import user_custom_fields from './modules/user_custom_fields';
 import plans from './modules/plans';
@@ -27,6 +28,7 @@ export default new Vuex.Store({
 		bookings,
 		user_blacklisted_services,
 		contacts,
+		members,
 		users,
 		user_custom_fields,
 		plans,
