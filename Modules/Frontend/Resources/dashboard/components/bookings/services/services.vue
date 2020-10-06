@@ -12,7 +12,7 @@
 			</div>
 
 			<div v-if="services.length == 0" class="py-5 text-center p-2 position-absolute-center">
-				<h6 class="text-grayer mb-3">You don't have any services added yet</h6>
+				<h6 class="text-grayer mb-3 font-weight-light h5 text-secondary">You don't have any services added yet</h6>
 				<button class="btn btn-primary" @click="newService = {}; $refs['addModal'].show()">Add Booking Type</button>
 			</div>
 
@@ -22,7 +22,10 @@
 						<div class="w-50 p-3" v-for="service in services" :key="service.id">
 							<div class="bg-white service rounded p-3 cursor-pointer" :class="[service == selectedService ? 'active' : 'shadow-sm', {'unavailable': !service.is_available}]" @click="selectedService = service;newService = JSON.parse(JSON.stringify(selectedService));">
 								<div class="d-flex">
-									<h5 class="font-heading mb-3">{{ service.name }}</h5>
+									<h5 class="font-heading mb-3">
+										{{ service.name }}
+										<span v-if="service.assigned_service_id" class="d-block text-secondary font-size-base font-weight-normal">ASSIGNED</span>
+									</h5>
 									<toggle-switch class="ml-auto" @click.native.stop @input="updateService(service)" active-class="bg-green" v-model="service.is_available"></toggle-switch>
 								</div>
 								<p class="text-secondary mb-0 multiline-ellipsis small service-description mb-5">{{ service.description }}</p>
@@ -161,26 +164,28 @@
 		<modal ref="addModal" :close-button="false">
 			<h5 class="font-heading mb-3">Add Booking Type</h5>
 			<vue-form-validate @submit="submit">
-				<div class="form-group">
-					<label class="form-label">Service name</label>
-					<input type="text" class="form-control" v-model="newService.name" data-required>
-				</div>
-				<div class="form-group">
-					<label class="form-label">Description</label>
-					<textarea class="form-control resize-none" v-model="newService.description" data-required rows="3"></textarea>
-				</div>
-				<div class="form-group">
-					<label class="form-label">Duration (in minutes)</label>
-					<input type="number" class="form-control" v-model="newService.duration" data-required>
-				</div>
-				<div class="form-group">
-					<label class="form-label">Interval (in minutes)</label>
-					<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.interval" placeholder="Defaults to 15 mins">
-				</div>
-				<div class="form-group">
-					<label class="form-label">Default Rate</label>
-					<input type="number" step="0.01" class="form-control" v-model="newService.default_rate" placeholder="$0.00">
-				</div>
+				<fieldset :disabled="newService.assigned_service_id">
+					<div class="form-group">
+						<label class="form-label">Service name</label>
+						<input type="text" class="form-control" v-model="newService.name" data-required>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Description</label>
+						<textarea class="form-control resize-none" v-model="newService.description" data-required rows="3"></textarea>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Duration (in minutes)</label>
+						<input type="number" class="form-control" v-model="newService.duration" data-required>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Interval (in minutes)</label>
+						<input type="number" onkeydown="if(event.key==='.'){event.preventDefault();}" class="form-control" v-model="newService.interval" placeholder="Defaults to 15 mins">
+					</div>
+					<div class="form-group">
+						<label class="form-label">Default Rate</label>
+						<input type="number" step="0.01" class="form-control" v-model="newService.default_rate" placeholder="$0.00">
+					</div>
+				</fieldset>
 				<div class="form-group">
 					<vue-checkbox v-model="newService.in_widget" label="Available in widget"></vue-checkbox>
 				</div>

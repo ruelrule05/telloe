@@ -10,7 +10,7 @@
 					<input type="text" v-model="signupForm.last_name" class="form-control form-control-lg" data-required placeholder="Last Name" />
 				</div>
 				<div class="form-group">
-					<input type="email" v-model="signupForm.email" :disabled="contact && contact.email" class="form-control form-control-lg" data-required placeholder="Email" />
+					<input type="email" v-model="signupForm.email" :disabled="(contact && contact.email) || (member && member.email)" class="form-control form-control-lg" data-required placeholder="Email" />
 				</div>
 				<div class="form-group">
 					<input type="password" v-model="signupForm.password" class="form-control form-control-lg" data-required placeholder="Password" />
@@ -41,12 +41,14 @@ export default {
 	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon, ArrowLeftIcon},
 	data: () => ({
 		contact: null,
+		member: null,
 		signupForm: {
 			first_name: '',
 			last_name: '',
 			email: '',
 			password: '',
 			invite_token: null,
+			member_invite_token: null,
 	        timezone: null,
 		},
 		loading: false,
@@ -54,11 +56,17 @@ export default {
 	
 	created() {
 		this.signupForm.invite_token = this.$root.invite_token;
+		this.signupForm.member_invite_token = this.$root.member_invite_token;
 		this.contact = CONTACT;
+		this.member = MEMBER;
 		if (this.contact){
  			if (this.contact.email) this.signupForm.email = this.contact.email;
  			if (this.contact.first_name) this.signupForm.first_name = this.contact.first_name;
  			if (this.contact.last_name) this.signupForm.last_name = this.contact.last_name;
+		} else if(this.member) {
+ 			if (this.member.email) this.signupForm.email = this.member.email;
+ 			if (this.member.first_name) this.signupForm.first_name = this.member.first_name;
+ 			if (this.member.last_name) this.signupForm.last_name = this.member.last_name;
 		}
 		this.signupForm.timezone = this.$parent.timezone;
 	},
@@ -68,11 +76,15 @@ export default {
 			if (!this.loading) {
 				this.loading = true;
 				if(this.contact && this.contact.email) this.signupForm.email = this.contact.email;
+				else if(this.member && this.member.email) this.signupForm.email = this.member.email;
 				axios
 					.post(`/signup`, this.signupForm)
 					.then((response) => {
                         this.$parent.socket.emit('invite_token', this.signupForm.invite_token);
-	                    window.location.href = '/dashboard/conversations';
+                        this.$parent.socket.emit('member_invite_token', this.signupForm.member_invite_token);
+						setTimeout(() => {
+							window.location.href = '/dashboard/conversations';
+						}, 150);
 					})
 					.catch((e) => {
 						this.loading = false;

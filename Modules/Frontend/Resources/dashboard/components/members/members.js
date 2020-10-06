@@ -40,7 +40,7 @@ export default {
         addMember: false,
 		newMember: {
 			custom_fields: {},
-            blacklisted_services: [],
+            assigned_services: [],
             sendToEmail: 1,
 		},
 		activeTab: 'custom_fields',
@@ -56,15 +56,15 @@ export default {
             members: (state) => state.members.index,
             ready: (state) => state.members.ready,
             services: (state) => state.services.index,
-            user_blacklisted_services: (state) => state.user_blacklisted_services.index,
+            user_assigned_services: (state) => state.user_assigned_services.index,
 		}),
 
         defaultEmailMessage() {
-            return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;
+            return `${this.$root.auth.full_name} has invited you as a member in ${APP_NAME}`;
         },
 
-        blacklisted_services() {
-            return this.user_blacklisted_services[(this.selectedMember.member_user || {}).id] || [];
+        assigned_services() {
+            return this.user_assigned_services[(this.selectedMember.member_user || {}).id] || [];
         },
 
         conversation() {
@@ -110,7 +110,7 @@ export default {
         this.getServices();
 		this.getMembers();
 		this.showUserCustomFields();
-        this.$root.socket.on('invite_token', invite_token => {
+        this.$root.socket.on('member_invite_token', invite_token => {
             if(invite_token) this.getMemberFromInviteToken(invite_token);
         });
     },
@@ -146,12 +146,12 @@ export default {
             });
         },
 
-        toggleServiceBlacklist(service) {
-            let index = this.newMember.blacklisted_services.findIndex((x) => x == service.id);
+        toggleAssignedService(service) {
+            let index = this.newMember.assigned_services.findIndex((x) => x == service.id);
             if(index > -1) {
-                this.newMember.blacklisted_services.splice(index, 1);
+                this.newMember.assigned_services.splice(index, 1);
             } else {
-                this.newMember.blacklisted_services.push(service.id);
+                this.newMember.assigned_services.push(service.id);
             }
         },
 
@@ -163,7 +163,7 @@ export default {
         resetNewMember() {
             this.newMember = {
                 custom_fields: {},
-                blacklisted_services: []
+                assigned_services: []
             };
         },
 
@@ -188,7 +188,7 @@ export default {
 				this.storeMember(this.newMember).then(() => {
                     this.newMember = {
                         custom_fields: {},
-                        blacklisted_services: [],
+                        assigned_services: [],
                         sendToEmail: 1,
                     };
                 });

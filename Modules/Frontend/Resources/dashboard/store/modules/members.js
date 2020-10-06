@@ -22,6 +22,13 @@ const mutations = {
             1,
         );
     },
+
+    get_member_from_invite_token(state, data) {
+        let member = state.index.find(x => x.id == data.id);
+        if (member) {
+            member.is_pending = data.is_pending;
+        }
+    },
 };
 
 const actions = {
@@ -41,6 +48,12 @@ const actions = {
     delete({commit}, data) {
         axios.delete(`/${name}/${data.id}`, data);
         commit('delete', data);
+    },
+
+    get_member_from_invite_token({commit}, invite_token) {
+        axios.post(`/${name}/get_member_from_invite_token`, {invite_token: invite_token}).then(response => {
+            commit('get_member_from_invite_token', response.data);
+        })
     },
 };
 

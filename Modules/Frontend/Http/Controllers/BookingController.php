@@ -142,7 +142,7 @@ class BookingController extends Controller
                 'description' => $description,
                 'link' => $link
             ]);
-            $booking->notification_id = $notification->id;
+            $booking->notification = $notification;
         endif;
 
 
@@ -210,7 +210,7 @@ class BookingController extends Controller
                 'description' => $description,
                 'link' => $link
             ]);
-            $booking->notification_id = $notification->id;
+            $booking->notification = $notification;
         endif;
 
         return response()->json($booking->load('service.user'));

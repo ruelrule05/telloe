@@ -6,13 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\Service;
+use App\Models\Member;
 
 class ServiceController extends Controller
 {
     //
 
     public function index() {
-    	$services = Service::with('user')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+        $auth_user = Auth::user();
+        $member_ids = Member::where('member_user_id', $auth_user->id)->get()->pluck('id')->toArray();
+    	$services = Service::with('user')->where(function($query) use ($auth_user, $member_ids){
+            $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
+        })->orderBy('created_at', 'DESC')->get();
     	return response()->json($services);
     }
 

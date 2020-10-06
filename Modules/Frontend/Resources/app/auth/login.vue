@@ -6,7 +6,7 @@
 					<h1 class="h2 mb-1 font-heading">Log In</h1>
 					<div class="mb-3 text-muted">Continue to your account</div>
 					<div class="form-group">
-						<input type="email" v-model="loginForm.email" :disabled="contact && contact.email" class="form-control form-control-lg" data-required placeholder="Email" />
+						<input type="email" v-model="loginForm.email"  :disabled="(contact && contact.email) || (member && member.email)" class="form-control form-control-lg" data-required placeholder="Email" />
 					</div>
 					<div class="form-group">
 						<input type="password" v-model="loginForm.password" class="form-control form-control-lg" data-required placeholder="Password" />
@@ -43,10 +43,12 @@ export default {
 	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon},
 	data: () => ({
 		contact: null,
+		member: null,
 		loginForm: {
 			email: '',
 			password: '',
 			invite_token: null,
+			member_invite_token: null,
 			timezone: null,
 		},
 		loading: false,
@@ -55,8 +57,11 @@ export default {
 	created() {
 		if(this.$root.email) this.loginForm.email = this.$root.email;
 		this.loginForm.invite_token = this.$root.invite_token;
+		this.loginForm.member_invite_token = this.$root.member_invite_token;
 		this.contact = CONTACT;
+		this.member = MEMBER;
 		if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
+		 else if(this.member && this.member.email) this.loginForm.email = this.member.email;
 		this.loginForm.timezone = this.$parent.timezone;
 	},
 
@@ -77,7 +82,10 @@ export default {
 					.post('/login', this.loginForm)
 					.then(response => {
                         this.$parent.socket.emit('invite_token', this.loginForm.invite_token);
-						window.location.href = '/dashboard/conversations';
+						this.$parent.socket.emit('member_invite_token', this.loginForm.member_invite_token);
+						setTimeout(() => {
+							window.location.href = '/dashboard/conversations';
+						}, 150);
 					})
 					.catch(e => {
 						this.loading = false;
