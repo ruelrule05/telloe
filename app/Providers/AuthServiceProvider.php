@@ -25,7 +25,6 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Booking' => 'App\Policies\BookingPolicy',
         'App\Models\Service' => 'App\Policies\ServicePolicy',
         'App\Models\Contact' => 'App\Policies\ContactPolicy',
-        'App\Models\Member' => 'App\Policies\MemberPolicy',
         'App\Models\PendingSubscription' => 'App\Policies\PendingSubscriptionPolicy',
         'App\Models\PendingInvoice' => 'App\Policies\PendingInvoicePolicy',
         'App\Models\Notification' => 'App\Policies\NotificationPolicy',
