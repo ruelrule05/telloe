@@ -66,13 +66,13 @@ const actions = {
     async store({commit}, data) {
         let response = await axios.post(`/${name}`, data);
         commit('store', response.data);
-        if(response.data.notification) window.app.socket.emit('new_notification', {user_id: response.data.notification.user_id, id: response.data.notification.id});
+        if(response.data.notification_id) window.app.socket.emit('new_notification', {id: response.data.notification_id});
     },
 
     async update({commit}, data) {
         let response = await axios.put(`/${name}/${data.id}`, data);
         commit('update', response.data);
-        if(response.data.notification) window.app.socket.emit('new_notification', {user_id: response.data.notification.user_id, id: response.data.notification.id});
+        if(response.data.notification_id) window.app.socket.emit('new_notification', {id: response.data.notification_id});
 
         return response;
     },

@@ -5,7 +5,6 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
-use App\Models\Member;
 use App\Models\Plan;
 use App\Models\PasswordReset;
 use App\Models\Conversation;
@@ -19,16 +18,9 @@ class PageController extends Controller
     public function homepage(Request $request)
     {
     	if (Auth::check()) :
-            $params = '';
-            $authUser = Auth::user();
-            if($request->invite_token) :
-                $params = $request->invite_token ? "?invite_token={$request->invite_token}" : '';
-                checkInviteToken($authUser, $request);
-            elseif($request->member_invite_token) :
-                $params = $request->member_invite_token ? "?member_invite_token={$request->member_invite_token}" : '';
-                checkMemberInviteToken($authUser, $request);
-            endif;
-    		return redirect('/dashboard/conversations' . $params);
+            checkInviteToken(Auth::user(), $request);
+            $invite_token = $request->invite_token ? "?invite_token={$request->invite_token}" : '';
+    		return redirect('/dashboard/conversations' . $invite_token);
     	endif;
 
         if($request->auth == 'reset' && $request->token) :
@@ -38,11 +30,7 @@ class PageController extends Controller
 
         $plans = Plan::orderBy('id', 'ASC')->get();
 
-    	return view('frontend::pages.homepage', [
-            'contact' => $this->getContact($request),  
-            'member' => $this->getMember($request),  
-            'plans' => $plans
-        ]);
+    	return view('frontend::pages.homepage', ['contact' => $this->getContact($request), 'plans' => $plans]);
     }
 
     public function privacyPolicy(Request $request)
@@ -63,15 +51,5 @@ class PageController extends Controller
         endif;
 
         return $contact;
-    }
-
-    public function getMember(Request $request)
-    {
-        $member = null;
-        if($request->member_invite_token) :
-            $member = Member::where('invite_token', $request->member_invite_token)->where('is_pending', true)->first();
-        endif;
-
-        return $member;
     }
 }

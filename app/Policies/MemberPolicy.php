@@ -19,6 +19,11 @@ class MemberPolicy
     {
         //
     }
+
+    public function create_invoice(User $user, Member $member)
+    {
+        return $user->id == $member->user_id;
+    }
     
     public function show(User $user, Member $member)
     {

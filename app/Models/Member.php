@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Member extends BaseModel
 {
     //
-    use SoftDeletes;
-    
     protected $fillable = ['user_id', 'member_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token'];
     protected $appends = ['full_name', 'initials', 'created_at_format'];
 

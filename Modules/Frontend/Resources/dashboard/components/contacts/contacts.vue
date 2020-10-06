@@ -163,7 +163,7 @@
 							</div>
 						
 							<div class="d-flex">
-								<button class="btn btn-white border" type="button" @click="infoTab = ''">Cancel</button>
+								<button class="btn btn-white border" type="button" data-dismiss="modal">Cancel</button>
 								<button class="ml-auto btn btn-primary" type="submit">Add</button>
 							</div>
 						</vue-form-validate>

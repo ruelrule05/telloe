@@ -429,9 +429,7 @@ window.app = new Vue({
         if(location.search) {
             let searchParams = new URLSearchParams(location.search);
             let invite_token = searchParams.get('invite_token');
-            let member_invite_token = searchParams.get('member_invite_token');
             if(invite_token) this.socket.emit('invite_token', invite_token);
-            if(member_invite_token) this.socket.emit('member_invite_token', member_invite_token);
         }
 
         this.socket.on('new_message', data => {
@@ -448,7 +446,7 @@ window.app = new Vue({
         });
 
         this.socket.on('new_notification', data => {
-            if(data.user_id == this.auth.id) this.getNotificationByID(data.id);
+            this.getNotificationByID(data);
         });
 
         this.socket.on('online_users', data => {

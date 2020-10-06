@@ -9,7 +9,7 @@ class WidgetMember extends BaseModel
 
     public function widget()
     {
-        return $this->belongsTo(Widget::class);
+    	return $this->belongsTo(Widget::class);
     }
 
     public function user()
