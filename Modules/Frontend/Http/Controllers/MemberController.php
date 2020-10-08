@@ -18,6 +18,7 @@ class MemberController extends Controller
     {
         $query = $request->get('query');
         $members = Member::with('memberUser', 'services.assignedService')
+            ->withCount('services')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC');
         if ($query) {
@@ -89,6 +90,11 @@ class MemberController extends Controller
             Mail::to($member->email)->queue(new SendMemberInvitation($member, $authTab, $request->invite_message));
         }
         return response()->json($member);
+    }
+
+    public function show(Member $member) {
+        $this->authorize('show', $member);
+        return response($member->load('memberUser', 'services'));
     }
 
     public function update(Request $request, Member $member)

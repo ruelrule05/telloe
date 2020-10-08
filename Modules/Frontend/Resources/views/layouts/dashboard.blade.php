@@ -118,8 +118,8 @@
 												<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 													<span class="pl-3">Calendar</span>
 												</router-link>
-												<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-													<span class="pl-3">Booking Types</span>
+												<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+													<span class="pl-3">Services</span>
 												</router-link>
 											</div>
 
@@ -129,7 +129,7 @@
 												<span class="pl-3">Contacts</span>
 											</router-link>
 
-											<router-link :data-intro='intros.members.intro' :data-step="intros.members.step" to="/dashboard/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
+											<router-link :data-intro='intros.members.intro' :data-step="intros.members.step" to="/dashboard/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4">
 												<member-icon height="18" width="18" stroke="black" stroke-width="13"></member-icon>
 												<span class="pl-3">Members</span>
 											</router-link>

@@ -47,8 +47,13 @@ const router = new VueRouter({
 						},
 						{
 							path: 'services',
-							name: 'services',
-							component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/services.vue')
+							name: 'services_index',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/index/index.vue')
+						},
+						{
+							path: 'services/:id',
+							name: 'services_show',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/show/show.vue')
 						}
 					]
 				},
@@ -59,8 +64,13 @@ const router = new VueRouter({
 				},
 				{
 					path: 'members',
-					name: 'members',
-					component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/members.vue')
+					name: 'members_index',
+					component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/index/index.vue')
+				},
+				{
+					path: 'members/:id',
+					name: 'members_show',
+					component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/show/show.vue')
 				},
 				{
 					name: 'payments',

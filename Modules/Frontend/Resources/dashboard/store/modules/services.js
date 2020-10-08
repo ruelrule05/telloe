@@ -16,6 +16,11 @@ const mutations = {
 		state.index.unshift(data);
 	},
 
+	show(state, data) {
+		let service = state.index.find(x => x.id == data.id);
+		if (service) Object.assign(service, data);
+	},
+
 	update(state, data) {
 		let service = state.index.find(x => x.id == data.id);
 		if (service) Object.assign(service, data);
@@ -39,6 +44,12 @@ const actions = {
 		axios.post(`/${name}`, data).then(response => {
 			commit('store', response.data);
 		});
+	},
+
+	async show({ commit }, service_id) {
+		let response = await axios.get(`/${name}/${service_id}`);
+		commit('show', response.data);
+		return response.data;
 	},
 
 	update({ commit }, data) {

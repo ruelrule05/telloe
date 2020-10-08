@@ -1,17 +1,17 @@
 import { mapState, mapActions } from 'vuex';
-import Modal from '../../../components/modal/modal.vue';
-import VueFormValidate from '../../../components/vue-form-validate.vue';
-import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
-import VueButton from '../../../components/vue-button.vue';
-import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
+import Modal from '../../../../components/modal/modal.vue';
+import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
+import VueButton from '../../../../components/vue-button.vue';
+import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 
-import MoreIcon from '../../../icons/more';
-import PlusIcon from '../../../icons/plus';
-import TrashIcon from '../../../icons/trash';
-import PencilIcon from '../../../icons/pencil';
-import ClockIcon from '../../../icons/clock';
-import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
-import CloseIcon from '../../../icons/close';
+import MoreIcon from '../../../../icons/more';
+import PlusIcon from '../../../../icons/plus';
+import TrashIcon from '../../../../icons/trash';
+import PencilIcon from '../../../../icons/pencil';
+import ClockIcon from '../../../../icons/clock';
+import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
+import CloseIcon from '../../../../icons/close';
 export default {
 	components: {
 		Modal,
@@ -89,29 +89,12 @@ export default {
 			getServices: 'services/index',
 			getMembers: 'members/index',
 			storeMember: 'members/store',
-			storeMemberService: 'members/store_service',
 			deleteMember: 'members/delete',
-			deleteService: 'services/delete',
 			getMemberFromInviteToken: 'members/get_member_from_invite_token'
 		}),
 
-		async memberToggleAssignedService(value, service) {
-			this.$set(service, 'is_loading', true);
-			let assigned_service = this.selectedMember.services.find(x => x.assigned_service_id == service.id);
-			if (assigned_service) {
-				await this.deleteService(assigned_service);
-				this.selectedMember.services.splice(
-					this.selectedMember.services.findIndex(x => x.assigned_service_id == service.id),
-					1
-				);
-			} else {
-				let data = {
-					id: this.selectedMember.id,
-					service_id: service.id
-				};
-				await this.storeMemberService(data);
-			}
-			this.$set(service, 'is_loading', false);
+		goToMember(member_id) {
+			this.$router.push(`/dashboard/members/${member_id}`);
 		},
 
 		resendEmail(member) {

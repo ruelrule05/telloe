@@ -39,9 +39,8 @@ class ServiceController extends Controller
     }
 
     public function show(Request $request, Service $service) {
-        if($request->date) :
-        endif;
-        return response()->json($service);
+        $this->authorize('show', $service);
+        return response($service);
     }
 
     public function update($id, Request $request)

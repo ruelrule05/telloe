@@ -40,6 +40,8 @@ class BookingController extends Controller
         ]);
         $user = Auth::user();
         $role = $user->role->role;
+        $bookings = [];
+        
         if($request->conversation_id) :
             $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
             $this->authorize('show', $conversation);

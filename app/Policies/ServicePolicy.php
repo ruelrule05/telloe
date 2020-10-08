@@ -21,6 +21,11 @@ class ServicePolicy
         //
     }
 
+    public function show(User $user, Service $service)
+    {
+        return $user->id == $service->user_id;
+    }
+
     public function update(User $user, Service $service)
     {
         return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);

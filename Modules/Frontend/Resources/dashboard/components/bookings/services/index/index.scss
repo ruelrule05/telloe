@@ -1,9 +1,12 @@
-@import '../../../../sass/variables';
+@import '../../../../../sass/variables';
 .multiline-ellipsis {
 	overflow: hidden;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
+}
+.service-container {
+	width: 33.333%;
 }
 .service {
 	border: solid 1px transparent;
@@ -14,7 +17,7 @@
 	&.active {
 		box-shadow: 0 0 0 0.1rem $primary;
 	}
-	&.unavailable{
+	&.unavailable {
 		opacity: 0.45;
 	}
 }
@@ -48,14 +51,6 @@
 				fill: black;
 			}
 		}
-	}
-}
-.info {
-	transition: $transition-base;
-		flex: 0 0 350px;
-		margin-right: -350px;
-	&.open {
-		margin-right: 0;
 	}
 }
 .service-description {
