@@ -75,5 +75,6 @@
     "/js/chunks/dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-contacts~dashboard-conver~34000a1d.js": "/js/chunks/dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-contacts~dashboard-conver~34000a1d.js",
     "/js/chunks/dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-contacts~dashboard-conver~041cc6ba.js": "/js/chunks/dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-contacts~dashboard-conver~041cc6ba.js",
     "/js/chunks/dashboard-contacts~dashboard-conversations~dashboard-members~sidebar-conversations.js": "/js/chunks/dashboard-contacts~dashboard-conversations~dashboard-members~sidebar-conversations.js",
-    "/js/chunks/dashboard-bookings-services~dashboard-members.js": "/js/chunks/dashboard-bookings-services~dashboard-members.js"
+    "/js/chunks/dashboard-bookings-services~dashboard-members.js": "/js/chunks/dashboard-bookings-services~dashboard-members.js",
+    "/js/chunks/dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions.js": "/js/chunks/dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions.js"
 }

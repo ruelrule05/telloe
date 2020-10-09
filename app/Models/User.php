@@ -55,7 +55,9 @@ class User extends Authenticatable implements JWTSubject
         'outlook_calendar_id',
         'outlook_calendar_events',
         'ignored_calendar_events',
-        'id_documents'
+        'id_documents',
+        'google_calendar_token',
+        'outlook_token'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];

@@ -120,46 +120,6 @@
                     active-class="bg-green"
                     v-model="selectedService.is_available"
                   ></toggle-switch>
-                  <div class="dropdown ml-2">
-                    <button
-                      :data-intro="$root.intros.edit_service.intro"
-                      :data-step="$root.intros.edit_service.step"
-                      class="btn p-0 line-height-0"
-                      data-toggle="dropdown"
-                      data-offset="-130, 0"
-                    >
-                      <cog-icon></cog-icon>
-                    </button>
-                    <div class="dropdown-menu">
-                      <span
-                        class="dropdown-item cursor-pointer d-flex align-items-center"
-                        @click="
-                          newService = JSON.parse(
-                            JSON.stringify(selectedService)
-                          );
-                          $refs['editModal'].show();
-                        "
-                      >
-                        <pencil-icon
-                          width="16"
-                          height="16"
-                          class="mr-2"
-                        ></pencil-icon>
-                        Edit
-                      </span>
-                      <span
-                        class="dropdown-item cursor-pointer d-flex align-items-center"
-                        @click="$refs['deleteModal'].show()"
-                      >
-                        <trash-icon
-                          width="16"
-                          height="16"
-                          class="mr-2"
-                        ></trash-icon>
-                        Delete
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
               <p class="mb-0 mt-2 small text-secondary">
@@ -393,35 +353,6 @@
       </div>
     </div>
 
-    <modal ref="applyBreaktimeToAllModal" :close-button="false">
-      <template v-if="selectedService && selectedDay">
-        <h5 class="font-heading text-center">Apply to all days</h5>
-        <p class="mt-3">
-          This will override the breaktimes of all days for the selected
-          service.
-          <br />
-          Are you sure to apply the selected breaktimes to all days?
-          <br />
-        </p>
-        <div class="d-flex">
-          <button
-            class="btn btn-white border"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button
-            class="btn btn-primary ml-auto"
-            type="button"
-            @click="applyBreaktimeToAll()"
-          >
-            Apply
-          </button>
-        </div>
-      </template>
-    </modal>
-
     <modal ref="addModal" :close-button="false">
       <h5 class="font-heading mb-3">Add Service</h5>
       <vue-form-validate @submit="submit">
@@ -489,111 +420,6 @@
           <button class="ml-auto btn btn-primary" type="submit">Add</button>
         </div>
       </vue-form-validate>
-    </modal>
-
-    <modal ref="editModal" :close-button="false">
-      <h5 class="font-heading mb-3">Edit Service</h5>
-      <vue-form-validate @submit="submit">
-        <fieldset :disabled="newService.assigned_service_id">
-          <div class="form-group">
-            <label class="form-label">Service name</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="newService.name"
-              data-required
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea
-              class="form-control resize-none"
-              v-model="newService.description"
-              data-required
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Duration (in minutes)</label>
-            <input
-              type="number"
-              class="form-control"
-              v-model="newService.duration"
-              data-required
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Interval (in minutes)</label>
-            <input
-              type="number"
-              onkeydown="if(event.key==='.'){event.preventDefault();}"
-              class="form-control"
-              v-model="newService.interval"
-              placeholder="Defaults to 15 mins"
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Default Rate</label>
-            <input
-              type="number"
-              step="0.01"
-              class="form-control"
-              v-model="newService.default_rate"
-              placeholder="$0.00"
-            />
-          </div>
-        </fieldset>
-        <div class="form-group">
-          <vue-checkbox
-            v-model="newService.in_widget"
-            label="Available in widget"
-          ></vue-checkbox>
-        </div>
-        <div class="d-flex align-items-center">
-          <button
-            class="btn btn-white border mr-1"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button class="ml-auto btn btn-primary" type="submit">
-            {{ selectedService ? "Update" : "Add" }}
-          </button>
-        </div>
-      </vue-form-validate>
-    </modal>
-
-    <modal ref="deleteModal" :close-button="false">
-      <template v-if="selectedService">
-        <h5 class="font-heading text-center">Delete Service</h5>
-        <p class="text-center mt-3">
-          Are you sure to delete the service
-          <strong>{{ selectedService.name }}</strong>
-          ?
-          <br />
-          <span class="text-danger">This action cannot be undone</span>
-        </p>
-        <div class="d-flex">
-          <button
-            class="btn btn-white border"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button
-            class="btn btn-danger ml-auto"
-            type="button"
-            @click="
-              deleteService(selectedService);
-              $refs['deleteModal'].hide();
-            "
-          >
-            Delete
-          </button>
-        </div>
-      </template>
     </modal>
   </div>
 </template>

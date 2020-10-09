@@ -11,19 +11,22 @@ import PlusIcon from '../../../../../icons/plus';
 import CogIcon from '../../../../../icons/cog';
 import TrashIcon from '../../../../../icons/trash';
 import ClockIcon from '../../../../../icons/clock';
-import VCalendar from 'v-calendar';
 import ArrowLeftIcon from '../../../../../icons/arrow-left';
 import dayjs from 'dayjs';
-Vue.use(VCalendar);
+import VuePaginate from 'vue-paginate';
+Vue.use(VuePaginate);
+
 export default {
 	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon },
 	data: () => ({
 		service: null,
+		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		newBreaktime: null,
 		newHoliday: null,
 		serviceDetailsTab: 'availability',
-		selectedDay: ''
+		selectedDay: '',
+		paginate: ['bookings']
 	}),
 
 	computed: {
@@ -59,6 +62,7 @@ export default {
 		this.getService(this.$route.params.id).then(service => {
 			this.$root.contentloading = false;
 			this.service = service;
+			this.clonedService = Object.assign({}, service);
 		});
 	},
 
@@ -130,18 +134,12 @@ export default {
 		},
 
 		submit() {
-			if (this.newService.id) {
-				this.service.name = this.newService.name;
-				this.service.description = this.newService.description;
-				this.service.duration = this.newService.duration;
-				this.service.interval = this.newService.interval;
-				this.service.default_rate = this.newService.default_rate;
-				this.service.in_widget = this.newService.in_widget;
-				this.updateService(this.service);
-				this.$refs['editModal'].hide();
-			} else {
-				this.store();
-			}
+			this.updateService(this.clonedService).then(service => {
+				Object.keys(service).map(key => {
+					this.service[key] = service[key];
+				});
+			});
+			this.$refs['editModal'].hide();
 		},
 
 		formatDate(date) {

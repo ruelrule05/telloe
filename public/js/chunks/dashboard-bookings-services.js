@@ -261,144 +261,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./Resources/icons/plus.vue":
-/*!**********************************!*\
-  !*** ./Resources/icons/plus.vue ***!
-  \**********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _plus_vue_vue_type_template_id_bac2dc72___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plus.vue?vue&type=template&id=bac2dc72& */ "./Resources/icons/plus.vue?vue&type=template&id=bac2dc72&");
-/* harmony import */ var _plus_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./plus.vue?vue&type=script&lang=js& */ "./Resources/icons/plus.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _plus_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _plus_vue_vue_type_template_id_bac2dc72___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _plus_vue_vue_type_template_id_bac2dc72___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "Resources/icons/plus.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./Resources/icons/plus.vue?vue&type=script&lang=js&":
-/*!***********************************************************!*\
-  !*** ./Resources/icons/plus.vue?vue&type=script&lang=js& ***!
-  \***********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_plus_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib??ref--4-0!../../node_modules/vue-loader/lib??vue-loader-options!./plus.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/plus.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_plus_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./Resources/icons/plus.vue?vue&type=template&id=bac2dc72&":
-/*!*****************************************************************!*\
-  !*** ./Resources/icons/plus.vue?vue&type=template&id=bac2dc72& ***!
-  \*****************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_plus_vue_vue_type_template_id_bac2dc72___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/vue-loader/lib??vue-loader-options!./plus.vue?vue&type=template&id=bac2dc72& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/plus.vue?vue&type=template&id=bac2dc72&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_plus_vue_vue_type_template_id_bac2dc72___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_plus_vue_vue_type_template_id_bac2dc72___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./Resources/icons/trash.vue":
-/*!***********************************!*\
-  !*** ./Resources/icons/trash.vue ***!
-  \***********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _trash_vue_vue_type_template_id_52a06ddb___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./trash.vue?vue&type=template&id=52a06ddb& */ "./Resources/icons/trash.vue?vue&type=template&id=52a06ddb&");
-/* harmony import */ var _trash_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./trash.vue?vue&type=script&lang=js& */ "./Resources/icons/trash.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _trash_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _trash_vue_vue_type_template_id_52a06ddb___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _trash_vue_vue_type_template_id_52a06ddb___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "Resources/icons/trash.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./Resources/icons/trash.vue?vue&type=script&lang=js&":
-/*!************************************************************!*\
-  !*** ./Resources/icons/trash.vue?vue&type=script&lang=js& ***!
-  \************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_trash_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib??ref--4-0!../../node_modules/vue-loader/lib??vue-loader-options!./trash.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/trash.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_trash_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./Resources/icons/trash.vue?vue&type=template&id=52a06ddb&":
-/*!******************************************************************!*\
-  !*** ./Resources/icons/trash.vue?vue&type=template&id=52a06ddb& ***!
-  \******************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_trash_vue_vue_type_template_id_52a06ddb___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/vue-loader/lib??vue-loader-options!./trash.vue?vue&type=template&id=52a06ddb& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/trash.vue?vue&type=template&id=52a06ddb&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_trash_vue_vue_type_template_id_52a06ddb___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_trash_vue_vue_type_template_id_52a06ddb___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js?!./Resources/components/timerangepicker/timerangepicker.js?vue&type=script&lang=js&":
 /*!************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./Resources/components/timerangepicker/timerangepicker.js?vue&type=script&lang=js& ***!
@@ -788,11 +650,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _icons_cog__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../../icons/cog */ "./Resources/icons/cog.vue");
 /* harmony import */ var _icons_trash__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../../../../icons/trash */ "./Resources/icons/trash.vue");
 /* harmony import */ var _icons_clock__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../../../icons/clock */ "./Resources/icons/clock.vue");
-/* harmony import */ var v_calendar__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! v-calendar */ "./node_modules/v-calendar/lib/v-calendar.umd.min.js");
-/* harmony import */ var v_calendar__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(v_calendar__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var _icons_arrow_left__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../../../../icons/arrow-left */ "./Resources/icons/arrow-left.vue");
-/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
-/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var _icons_arrow_left__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../../../../icons/arrow-left */ "./Resources/icons/arrow-left.vue");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var vue_paginate__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! vue-paginate */ "./node_modules/vue-paginate/dist/vue-paginate.js");
+/* harmony import */ var vue_paginate__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(vue_paginate__WEBPACK_IMPORTED_MODULE_15__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -815,7 +677,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(v_calendar__WEBPACK_IMPORTED_MODULE_13___default.a);
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_paginate__WEBPACK_IMPORTED_MODULE_15___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     Modal: _components_modal_modal_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -829,16 +691,18 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(v_calendar__WEBPACK_IMPORTED_MODU
     ClockIcon: _icons_clock__WEBPACK_IMPORTED_MODULE_12__["default"],
     ToggleSwitch: _components_toggle_switch_toggle_switch_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
     Timerangepicker: _components_timerangepicker_timerangepicker_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    ArrowLeftIcon: _icons_arrow_left__WEBPACK_IMPORTED_MODULE_14__["default"]
+    ArrowLeftIcon: _icons_arrow_left__WEBPACK_IMPORTED_MODULE_13__["default"]
   },
   data: function data() {
     return {
       service: null,
+      clonedService: null,
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       newBreaktime: null,
       newHoliday: null,
       serviceDetailsTab: 'availability',
-      selectedDay: ''
+      selectedDay: '',
+      paginate: ['bookings']
     };
   },
   computed: {
@@ -878,6 +742,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(v_calendar__WEBPACK_IMPORTED_MODU
     this.getService(this.$route.params.id).then(function (service) {
       _this2.$root.contentloading = false;
       _this2.service = service;
+      _this2.clonedService = Object.assign({}, service);
     });
   },
   mounted: function mounted() {},
@@ -907,7 +772,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(v_calendar__WEBPACK_IMPORTED_MODU
     addHoliday: function addHoliday() {
       if (this.newHoliday && this.newHoliday.date) {
         if (!this.service.holidays) this.$set(this.service, 'holidays', []);
-        var formattedDate = dayjs__WEBPACK_IMPORTED_MODULE_15___default()(this.newHoliday.date).format('YYYY-MM-DD');
+        var formattedDate = dayjs__WEBPACK_IMPORTED_MODULE_14___default()(this.newHoliday.date).format('YYYY-MM-DD');
         this.service.holidays.push(formattedDate);
         this.newHoliday = null;
         this.updateService(this.service);
@@ -941,65 +806,19 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(v_calendar__WEBPACK_IMPORTED_MODU
       }
     },
     submit: function submit() {
-      if (this.newService.id) {
-        this.service.name = this.newService.name;
-        this.service.description = this.newService.description;
-        this.service.duration = this.newService.duration;
-        this.service.interval = this.newService.interval;
-        this.service.default_rate = this.newService.default_rate;
-        this.service.in_widget = this.newService.in_widget;
-        this.updateService(this.service);
-        this.$refs['editModal'].hide();
-      } else {
-        this.store();
-      }
+      var _this4 = this;
+
+      this.updateService(this.clonedService).then(function (service) {
+        Object.keys(service).map(function (key) {
+          _this4.service[key] = service[key];
+        });
+      });
+      this.$refs['editModal'].hide();
     },
     formatDate: function formatDate(date) {
-      return dayjs__WEBPACK_IMPORTED_MODULE_15___default()(date).format('MMMM D, YYYY');
+      return dayjs__WEBPACK_IMPORTED_MODULE_14___default()(date).format('MMMM D, YYYY');
     }
   })
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/plus.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./Resources/icons/plus.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'plus'
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/trash.vue?vue&type=script&lang=js&":
-/*!********************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./Resources/icons/trash.vue?vue&type=script&lang=js& ***!
-  \********************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'trash'
 });
 
 /***/ }),
@@ -1667,100 +1486,7 @@ var render = function() {
                                             expression:
                                               "selectedService.is_available"
                                           }
-                                        }),
-                                        _vm._v(" "),
-                                        _c(
-                                          "div",
-                                          { staticClass: "dropdown ml-2" },
-                                          [
-                                            _c(
-                                              "button",
-                                              {
-                                                staticClass:
-                                                  "btn p-0 line-height-0",
-                                                attrs: {
-                                                  "data-intro":
-                                                    _vm.$root.intros
-                                                      .edit_service.intro,
-                                                  "data-step":
-                                                    _vm.$root.intros
-                                                      .edit_service.step,
-                                                  "data-toggle": "dropdown",
-                                                  "data-offset": "-130, 0"
-                                                }
-                                              },
-                                              [_c("cog-icon")],
-                                              1
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "div",
-                                              { staticClass: "dropdown-menu" },
-                                              [
-                                                _c(
-                                                  "span",
-                                                  {
-                                                    staticClass:
-                                                      "dropdown-item cursor-pointer d-flex align-items-center",
-                                                    on: {
-                                                      click: function($event) {
-                                                        _vm.newService = JSON.parse(
-                                                          JSON.stringify(
-                                                            _vm.selectedService
-                                                          )
-                                                        )
-                                                        _vm.$refs[
-                                                          "editModal"
-                                                        ].show()
-                                                      }
-                                                    }
-                                                  },
-                                                  [
-                                                    _c("pencil-icon", {
-                                                      staticClass: "mr-2",
-                                                      attrs: {
-                                                        width: "16",
-                                                        height: "16"
-                                                      }
-                                                    }),
-                                                    _vm._v(
-                                                      "\n                      Edit\n                    "
-                                                    )
-                                                  ],
-                                                  1
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "span",
-                                                  {
-                                                    staticClass:
-                                                      "dropdown-item cursor-pointer d-flex align-items-center",
-                                                    on: {
-                                                      click: function($event) {
-                                                        return _vm.$refs[
-                                                          "deleteModal"
-                                                        ].show()
-                                                      }
-                                                    }
-                                                  },
-                                                  [
-                                                    _c("trash-icon", {
-                                                      staticClass: "mr-2",
-                                                      attrs: {
-                                                        width: "16",
-                                                        height: "16"
-                                                      }
-                                                    }),
-                                                    _vm._v(
-                                                      "\n                      Delete\n                    "
-                                                    )
-                                                  ],
-                                                  1
-                                                )
-                                              ]
-                                            )
-                                          ]
-                                        )
+                                        })
                                       ],
                                       1
                                     )
@@ -2470,57 +2196,6 @@ var render = function() {
       _vm._v(" "),
       _c(
         "modal",
-        { ref: "applyBreaktimeToAllModal", attrs: { "close-button": false } },
-        [
-          _vm.selectedService && _vm.selectedDay
-            ? [
-                _c("h5", { staticClass: "font-heading text-center" }, [
-                  _vm._v("Apply to all days")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "mt-3" }, [
-                  _vm._v(
-                    "\n        This will override the breaktimes of all days for the selected\n        service.\n        "
-                  ),
-                  _c("br"),
-                  _vm._v(
-                    "\n        Are you sure to apply the selected breaktimes to all days?\n        "
-                  ),
-                  _c("br")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-white border",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("\n          Cancel\n        ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary ml-auto",
-                      attrs: { type: "button" },
-                      on: {
-                        click: function($event) {
-                          return _vm.applyBreaktimeToAll()
-                        }
-                      }
-                    },
-                    [_vm._v("\n          Apply\n        ")]
-                  )
-                ])
-              ]
-            : _vm._e()
-        ],
-        2
-      ),
-      _vm._v(" "),
-      _c(
-        "modal",
         { ref: "addModal", attrs: { "close-button": false } },
         [
           _c("h5", { staticClass: "font-heading mb-3" }, [
@@ -2716,287 +2391,6 @@ var render = function() {
           ])
         ],
         1
-      ),
-      _vm._v(" "),
-      _c(
-        "modal",
-        { ref: "editModal", attrs: { "close-button": false } },
-        [
-          _c("h5", { staticClass: "font-heading mb-3" }, [
-            _vm._v("Edit Service")
-          ]),
-          _vm._v(" "),
-          _c("vue-form-validate", { on: { submit: _vm.submit } }, [
-            _c(
-              "fieldset",
-              { attrs: { disabled: _vm.newService.assigned_service_id } },
-              [
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { staticClass: "form-label" }, [
-                    _vm._v("Service name")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.newService.name,
-                        expression: "newService.name"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", "data-required": "" },
-                    domProps: { value: _vm.newService.name },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.newService, "name", $event.target.value)
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { staticClass: "form-label" }, [
-                    _vm._v("Description")
-                  ]),
-                  _vm._v(" "),
-                  _c("textarea", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.newService.description,
-                        expression: "newService.description"
-                      }
-                    ],
-                    staticClass: "form-control resize-none",
-                    attrs: { "data-required": "", rows: "3" },
-                    domProps: { value: _vm.newService.description },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.newService,
-                          "description",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { staticClass: "form-label" }, [
-                    _vm._v("Duration (in minutes)")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.newService.duration,
-                        expression: "newService.duration"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "number", "data-required": "" },
-                    domProps: { value: _vm.newService.duration },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.newService,
-                          "duration",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { staticClass: "form-label" }, [
-                    _vm._v("Interval (in minutes)")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.newService.interval,
-                        expression: "newService.interval"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "number",
-                      onkeydown: "if(event.key==='.'){event.preventDefault();}",
-                      placeholder: "Defaults to 15 mins"
-                    },
-                    domProps: { value: _vm.newService.interval },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.newService,
-                          "interval",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group" }, [
-                  _c("label", { staticClass: "form-label" }, [
-                    _vm._v("Default Rate")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.newService.default_rate,
-                        expression: "newService.default_rate"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "number",
-                      step: "0.01",
-                      placeholder: "$0.00"
-                    },
-                    domProps: { value: _vm.newService.default_rate },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.newService,
-                          "default_rate",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ])
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "form-group" },
-              [
-                _c("vue-checkbox", {
-                  attrs: { label: "Available in widget" },
-                  model: {
-                    value: _vm.newService.in_widget,
-                    callback: function($$v) {
-                      _vm.$set(_vm.newService, "in_widget", $$v)
-                    },
-                    expression: "newService.in_widget"
-                  }
-                })
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "d-flex align-items-center" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-white border mr-1",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("\n          Cancel\n        ")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "ml-auto btn btn-primary",
-                  attrs: { type: "submit" }
-                },
-                [
-                  _vm._v(
-                    "\n          " +
-                      _vm._s(_vm.selectedService ? "Update" : "Add") +
-                      "\n        "
-                  )
-                ]
-              )
-            ])
-          ])
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "modal",
-        { ref: "deleteModal", attrs: { "close-button": false } },
-        [
-          _vm.selectedService
-            ? [
-                _c("h5", { staticClass: "font-heading text-center" }, [
-                  _vm._v("Delete Service")
-                ]),
-                _vm._v(" "),
-                _c("p", { staticClass: "text-center mt-3" }, [
-                  _vm._v(
-                    "\n        Are you sure to delete the service\n        "
-                  ),
-                  _c("strong", [_vm._v(_vm._s(_vm.selectedService.name))]),
-                  _vm._v("\n        ?\n        "),
-                  _c("br"),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "text-danger" }, [
-                    _vm._v("This action cannot be undone")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-white border",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("\n          Cancel\n        ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger ml-auto",
-                      attrs: { type: "button" },
-                      on: {
-                        click: function($event) {
-                          _vm.deleteService(_vm.selectedService)
-                          _vm.$refs["deleteModal"].hide()
-                        }
-                      }
-                    },
-                    [_vm._v("\n          Delete\n        ")]
-                  )
-                ])
-              ]
-            : _vm._e()
-        ],
-        2
       )
     ],
     1
@@ -3031,21 +2425,87 @@ var render = function() {
         [
           _c("div", { staticClass: "d-flex h-100 overflow-hidden" }, [
             _c("div", { staticClass: "p-3 flex-grow-1" }, [
-              _c("div", { staticClass: "align-items-center" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn p-2 btn-white badge-pill",
-                    attrs: { type: "button" },
-                    on: {
-                      click: function($event) {
-                        return _vm.$router.push("/dashboard/bookings/services")
+              _c("div", { staticClass: "d-flex" }, [
+                _c("div", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn p-2 btn-white badge-pill",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.$router.push(
+                            "/dashboard/bookings/services"
+                          )
+                        }
                       }
-                    }
-                  },
-                  [_c("arrow-left-icon")],
-                  1
-                )
+                    },
+                    [_c("arrow-left-icon")],
+                    1
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "dropdown ml-auto" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn p-2 btn-white badge-pill",
+                      attrs: {
+                        "data-intro": _vm.$root.intros.edit_service.intro,
+                        "data-step": _vm.$root.intros.edit_service.step,
+                        "data-toggle": "dropdown",
+                        "data-offset": "-130, 10"
+                      }
+                    },
+                    [_c("cog-icon")],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "dropdown-menu" }, [
+                    _c(
+                      "span",
+                      {
+                        staticClass:
+                          "dropdown-item cursor-pointer d-flex align-items-center",
+                        on: {
+                          click: function($event) {
+                            _vm.clonedService = Object.assign({}, _vm.service)
+                            _vm.$refs["editModal"].show()
+                          }
+                        }
+                      },
+                      [
+                        _c("pencil-icon", {
+                          staticClass: "mr-2",
+                          attrs: { width: "16", height: "16" }
+                        }),
+                        _vm._v("\n              Edit\n            ")
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      {
+                        staticClass:
+                          "dropdown-item cursor-pointer d-flex align-items-center",
+                        on: {
+                          click: function($event) {
+                            return _vm.$refs["deleteModal"].show()
+                          }
+                        }
+                      },
+                      [
+                        _c("trash-icon", {
+                          staticClass: "mr-2",
+                          attrs: { width: "16", height: "16" }
+                        }),
+                        _vm._v("\n              Delete\n            ")
+                      ],
+                      1
+                    )
+                  ])
+                ])
               ]),
               _vm._v(" "),
               _c("h1", { staticClass: "font-heading h3 mt-4" }, [
@@ -3054,461 +2514,117 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "service-description" }, [
                 _vm._v(_vm._s(_vm.service.description))
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "info bg-white h-100 overflow-auto" }, [
-              _c("div", { staticClass: "d-flex mb-2" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn position-relative w-50 rounded-0 py-3",
-                    class: [
-                      _vm.serviceDetailsTab == "availability"
-                        ? "btn-primary"
-                        : "btn-light"
-                    ],
-                    attrs: {
-                      "data-intro": _vm.$root.intros.service_availability.intro,
-                      "data-step": _vm.$root.intros.service_availability.step
-                    },
-                    on: {
-                      click: function($event) {
-                        _vm.serviceDetailsTab = "availability"
-                      }
-                    }
-                  },
-                  [_vm._v("\n          Availability\n        ")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass:
-                      "btn btn-tab position-relative w-50 rounded-0 py-3",
-                    class: [
-                      _vm.serviceDetailsTab == "holidays"
-                        ? "btn-primary"
-                        : "btn-light"
-                    ],
-                    attrs: {
-                      "data-intro": _vm.$root.intros.service_holidays.intro,
-                      "data-step": _vm.$root.intros.service_holidays.step
-                    },
-                    on: {
-                      click: function($event) {
-                        _vm.serviceDetailsTab = "holidays"
-                      }
-                    }
-                  },
-                  [_vm._v("\n          Holidays\n        ")]
+              ]),
+              _vm._v(" "),
+              _c("h6", { staticClass: "font-heading d-inline-block mb-2" }, [
+                _vm._v("Duration:")
+              ]),
+              _vm._v(
+                "\n      " + _vm._s(_vm.service.duration) + " minutes\n      "
+              ),
+              _c("div", [
+                _c("h6", { staticClass: "font-heading d-inline-block mb-2" }, [
+                  _vm._v("Interval:")
+                ]),
+                _vm._v(
+                  "\n        " +
+                    _vm._s(_vm.service.interval) +
+                    " minutes\n      "
                 )
               ]),
               _vm._v(" "),
-              _vm.serviceDetailsTab == "availability"
-                ? _c(
-                    "div",
-                    { attrs: { id: "service-days" } },
-                    _vm._l(_vm.days, function(day, index) {
-                      return _c(
-                        "div",
-                        {
-                          key: index,
-                          staticClass: "service-day p-2 border-bottom"
-                        },
-                        [
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer",
-                              attrs: {
-                                "data-toggle": "collapse",
-                                "data-target": "#day-" + day
-                              }
-                            },
-                            [
-                              _c("toggle-switch", {
-                                staticClass: "mr-2",
-                                attrs: { "active-class": "bg-green" },
-                                on: {
-                                  input: function($event) {
-                                    return _vm.updateService(_vm.service)
-                                  }
-                                },
-                                nativeOn: {
-                                  click: function($event) {
-                                    $event.stopPropagation()
-                                  }
-                                },
-                                model: {
-                                  value: _vm.service.days[day].isOpen,
-                                  callback: function($$v) {
-                                    _vm.$set(
-                                      _vm.service.days[day],
-                                      "isOpen",
-                                      $$v
-                                    )
-                                  },
-                                  expression: "service.days[day].isOpen"
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("div", { staticClass: "h6 mb-0" }, [
-                                _vm._v(_vm._s(day.toUpperCase()))
-                              ]),
-                              _vm._v(" "),
-                              _c("chevron-down-icon", {
-                                staticClass: "ml-auto chevron-down"
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass: "collapse",
-                              attrs: {
-                                "data-parent": "#service-days",
-                                id: "day-" + day
-                              }
-                            },
-                            [
-                              _c("div", { staticClass: "py-2 px-3" }, [
-                                _c(
-                                  "div",
-                                  {},
-                                  [
-                                    _c(
-                                      "label",
-                                      { staticClass: "mb-1 text-gray" },
-                                      [_vm._v("Available Time")]
-                                    ),
-                                    _vm._v(" "),
-                                    _c("timerangepicker", {
-                                      attrs: {
-                                        start: _vm.service.days[day].start,
-                                        end: _vm.service.days[day].end
-                                      },
-                                      on: {
-                                        update: function($event) {
-                                          return _vm.updateAvailableHours(
-                                            $event,
-                                            day
-                                          )
-                                        }
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c(
-                                      "label",
-                                      { staticClass: "mb-1 mt-3 text-gray" },
-                                      [_vm._v("Break Times")]
-                                    ),
-                                    _vm._v(" "),
-                                    _vm._l(
-                                      _vm.service.days[day].breaktimes,
-                                      function(breaktime, index) {
-                                        return _c(
-                                          "div",
-                                          {
-                                            key: index,
-                                            staticClass:
-                                              "d-flex align-items-center mb-1"
-                                          },
-                                          [
-                                            _c("timerangepicker", {
-                                              staticClass: "flex-grow-1",
-                                              attrs: {
-                                                start: breaktime.start,
-                                                end: breaktime.end
-                                              },
-                                              on: {
-                                                update: function($event) {
-                                                  return _vm.updateBreaktime(
-                                                    $event,
-                                                    index,
-                                                    day
-                                                  )
-                                                }
-                                              }
-                                            }),
-                                            _vm._v(" "),
-                                            _c("trash-icon", {
-                                              staticClass:
-                                                "ml-auto cursor-pointer",
-                                              attrs: {
-                                                width: "20",
-                                                height: "20",
-                                                fill: "red"
-                                              },
-                                              nativeOn: {
-                                                click: function($event) {
-                                                  return _vm.removeBreaktime(
-                                                    index,
-                                                    day
-                                                  )
-                                                }
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      }
-                                    ),
-                                    _vm._v(" "),
-                                    _vm.newBreaktime
-                                      ? _c("timerangepicker", {
-                                          staticClass: "mt-1",
-                                          attrs: {
-                                            start: _vm.newBreaktime.start,
-                                            end: _vm.newBreaktime.end
-                                          },
-                                          on: {
-                                            update: function($event) {
-                                              return _vm.updateNewBreaktime(
-                                                $event,
-                                                day
-                                              )
-                                            }
-                                          }
-                                        })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "mt-2 d-flex align-items-center"
-                                      },
-                                      [
-                                        _c(
-                                          "button",
-                                          {
-                                            staticClass:
-                                              "btn btn-primary btn-sm",
-                                            attrs: {
-                                              type: "button",
-                                              disabled:
-                                                _vm.newBreaktime &&
-                                                (!_vm.newBreaktime.start ||
-                                                  !_vm.newBreaktime.end)
-                                            },
-                                            on: {
-                                              click: function($event) {
-                                                _vm.newBreaktime = {}
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                    + Add breaktime\n                  "
-                                            )
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        (_vm.service.days[day].breaktimes || [])
-                                          .length > 0
-                                          ? _c(
-                                              "button",
-                                              {
-                                                staticClass:
-                                                  "btn btn-white border btn-sm ml-auto",
-                                                attrs: { type: "button" },
-                                                on: {
-                                                  click: function($event) {
-                                                    _vm.selectedDay = day
-                                                    _vm.$refs[
-                                                      "applyBreaktimeToAllModal"
-                                                    ].show()
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                    Apply to all days\n                  "
-                                                )
-                                              ]
-                                            )
-                                          : _vm._e()
-                                      ]
-                                    )
-                                  ],
-                                  2
-                                )
-                              ])
-                            ]
-                          )
-                        ]
-                      )
-                    }),
-                    0
-                  )
-                : _vm.serviceDetailsTab == "holidays"
-                ? _c("div", { staticClass: "mt-3 px-3" }, [
+              _c("h6", { staticClass: "font-heading d-inline-block mb-2" }, [
+                _vm._v("Default Rate:")
+              ]),
+              _vm._v(
+                "\n      $" + _vm._s(_vm.service.default_rate) + "\n      "
+              ),
+              _c("div", [
+                _c("h6", { staticClass: "font-heading d-inline-block mb-4" }, [
+                  _vm._v("Available in widget:")
+                ]),
+                _vm._v(
+                  "\n        " +
+                    _vm._s(_vm.service.in_widget ? "Yes" : "No") +
+                    "\n      "
+                )
+              ]),
+              _vm._v(" "),
+              _c("h5", { staticClass: "mt-3 font-heading" }, [
+                _vm._v("Bookings")
+              ]),
+              _vm._v(" "),
+              _vm.service.bookings.length > 0
+                ? _c("div", { staticClass: "overflow-auto h-100" }, [
                     _c(
-                      "button",
+                      "table",
                       {
-                        staticClass: "btn btn-sm btn-outline-primary mb-2",
-                        on: {
-                          click: function($event) {
-                            _vm.newHoliday = {}
-                          }
-                        }
+                        staticClass:
+                          "table table-borderless table-fixed-header mb-0"
                       },
-                      [_vm._v("\n          + Add Holiday\n        ")]
-                    ),
-                    _vm._v(" "),
-                    _vm.newHoliday
-                      ? _c("div", [
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "d-flex border rounded align-items-stretch mb-2 overflow-hidden"
-                            },
-                            [
-                              _c(
-                                "div",
-                                { staticClass: "text-gray bg-gray-300 p-2" },
-                                [_vm._v("Date")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                { staticClass: "flex-grow-1" },
-                                [
-                                  _c(
-                                    "v-date-picker",
-                                    {
-                                      staticClass: "d-block h-100",
-                                      attrs: {
-                                        "is-required": "",
-                                        "disabled-dates": _vm.formattedHolidays,
-                                        "min-date": new Date(),
-                                        popover: { visibility: "click" }
-                                      },
-                                      model: {
-                                        value: _vm.newHoliday.date,
-                                        callback: function($$v) {
-                                          _vm.$set(_vm.newHoliday, "date", $$v)
-                                        },
-                                        expression: "newHoliday.date"
-                                      }
-                                    },
-                                    [
-                                      _c(
-                                        "button",
-                                        {
-                                          staticClass:
-                                            "btn btn-white rounded-0 btn-block shadow-none border-0 h-100",
-                                          class: {
-                                            "text-gray": !_vm.newHoliday.date
-                                          },
-                                          attrs: { type: "button" }
-                                        },
-                                        [
-                                          _vm._v(
-                                            "\n                  " +
-                                              _vm._s(
-                                                _vm.newHoliday.date
-                                                  ? _vm.formatDate(
-                                                      _vm.newHoliday.date
-                                                    )
-                                                  : "Set date"
-                                              ) +
-                                              "\n                "
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ],
-                                1
-                              )
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "d-flex align-items-center mt-1" },
-                            [
-                              _c("div", { staticClass: "ml-auto" }, [
-                                _c(
-                                  "button",
-                                  {
-                                    staticClass:
-                                      "btn btn-sm btn-link text-body pl-0",
-                                    attrs: { type: "button" },
-                                    on: {
-                                      click: function($event) {
-                                        _vm.newHoliday = null
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n                Cancel\n              "
-                                    )
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "button",
-                                  {
-                                    staticClass:
-                                      "btn btn-sm btn-primary ml-auto",
-                                    attrs: {
-                                      type: "button",
-                                      disabled: !_vm.newHoliday.date
-                                    },
-                                    on: { click: _vm.addHoliday }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n                Add\n              "
-                                    )
-                                  ]
-                                )
-                              ])
-                            ]
-                          )
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      _vm._l(_vm.service.holidays, function(holiday, index) {
-                        return _c(
-                          "div",
+                      [
+                        _vm._m(0),
+                        _vm._v(" "),
+                        _c(
+                          "paginate",
                           {
-                            key: index,
-                            staticClass: "border-bottom py-2 d-flex"
+                            ref: "paginate",
+                            attrs: {
+                              tag: "tbody",
+                              name: "bookings",
+                              list: _vm.service.bookings,
+                              per: 15
+                            }
                           },
                           [
-                            _vm._v(
-                              "\n            " +
-                                _vm._s(_vm.formatDate(holiday)) +
-                                "\n            "
-                            ),
-                            _c("trash-icon", {
-                              staticClass: "ml-auto cursor-pointer",
-                              attrs: { width: "20", height: "20", fill: "red" },
-                              nativeOn: {
-                                click: function($event) {
-                                  return _vm.removeHoliday(index)
-                                }
-                              }
+                            _vm._l(_vm.paginated("bookings"), function(
+                              booking
+                            ) {
+                              return [
+                                _c("tr", { key: booking.id }, [
+                                  _c("td", { staticClass: "align-middle" }, [
+                                    _vm._v(_vm._s(booking.user.full_name))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "align-middle" }, [
+                                    _vm._v(
+                                      "\n                  " +
+                                        _vm._s(
+                                          _vm.formatDate(booking.created_at)
+                                        ) +
+                                        "\n                "
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "align-middle" }, [
+                                    _vm._v(
+                                      "\n                  " +
+                                        _vm._s(booking.start) +
+                                        "\n                "
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", { staticClass: "align-middle" })
+                                ])
+                              ]
                             })
                           ],
-                          1
+                          2
                         )
-                      }),
-                      0
+                      ],
+                      1
                     )
                   ])
-                : _vm._e()
+                : _c("div", [
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "rounded bg-white text-center py-3 text-muted"
+                      },
+                      [_vm._v("\n          No bookings.\n        ")]
+                    )
+                  ])
             ])
           ]),
           _vm._v(" "),
@@ -3577,7 +2693,9 @@ var render = function() {
               _c("vue-form-validate", { on: { submit: _vm.submit } }, [
                 _c(
                   "fieldset",
-                  { attrs: { disabled: _vm.service.assigned_service_id } },
+                  {
+                    attrs: { disabled: _vm.clonedService.assigned_service_id }
+                  },
                   [
                     _c("div", { staticClass: "form-group" }, [
                       _c("label", { staticClass: "form-label" }, [
@@ -3589,19 +2707,23 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.service.name,
-                            expression: "service.name"
+                            value: _vm.clonedService.name,
+                            expression: "clonedService.name"
                           }
                         ],
                         staticClass: "form-control",
                         attrs: { type: "text", "data-required": "" },
-                        domProps: { value: _vm.service.name },
+                        domProps: { value: _vm.clonedService.name },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
-                            _vm.$set(_vm.service, "name", $event.target.value)
+                            _vm.$set(
+                              _vm.clonedService,
+                              "name",
+                              $event.target.value
+                            )
                           }
                         }
                       })
@@ -3617,20 +2739,20 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.service.description,
-                            expression: "service.description"
+                            value: _vm.clonedService.description,
+                            expression: "clonedService.description"
                           }
                         ],
                         staticClass: "form-control resize-none",
                         attrs: { "data-required": "", rows: "3" },
-                        domProps: { value: _vm.service.description },
+                        domProps: { value: _vm.clonedService.description },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
                             _vm.$set(
-                              _vm.service,
+                              _vm.clonedService,
                               "description",
                               $event.target.value
                             )
@@ -3649,20 +2771,20 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.service.duration,
-                            expression: "service.duration"
+                            value: _vm.clonedService.duration,
+                            expression: "clonedService.duration"
                           }
                         ],
                         staticClass: "form-control",
                         attrs: { type: "number", "data-required": "" },
-                        domProps: { value: _vm.service.duration },
+                        domProps: { value: _vm.clonedService.duration },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
                             _vm.$set(
-                              _vm.service,
+                              _vm.clonedService,
                               "duration",
                               $event.target.value
                             )
@@ -3681,8 +2803,8 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.service.interval,
-                            expression: "service.interval"
+                            value: _vm.clonedService.interval,
+                            expression: "clonedService.interval"
                           }
                         ],
                         staticClass: "form-control",
@@ -3692,14 +2814,14 @@ var render = function() {
                             "if(event.key==='.'){event.preventDefault();}",
                           placeholder: "Defaults to 15 mins"
                         },
-                        domProps: { value: _vm.service.interval },
+                        domProps: { value: _vm.clonedService.interval },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
                             _vm.$set(
-                              _vm.service,
+                              _vm.clonedService,
                               "interval",
                               $event.target.value
                             )
@@ -3718,8 +2840,8 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.service.default_rate,
-                            expression: "service.default_rate"
+                            value: _vm.clonedService.default_rate,
+                            expression: "clonedService.default_rate"
                           }
                         ],
                         staticClass: "form-control",
@@ -3728,14 +2850,14 @@ var render = function() {
                           step: "0.01",
                           placeholder: "$0.00"
                         },
-                        domProps: { value: _vm.service.default_rate },
+                        domProps: { value: _vm.clonedService.default_rate },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
                             _vm.$set(
-                              _vm.service,
+                              _vm.clonedService,
                               "default_rate",
                               $event.target.value
                             )
@@ -3753,11 +2875,11 @@ var render = function() {
                     _c("vue-checkbox", {
                       attrs: { label: "Available in widget" },
                       model: {
-                        value: _vm.service.in_widget,
+                        value: _vm.clonedService.in_widget,
                         callback: function($$v) {
-                          _vm.$set(_vm.service, "in_widget", $$v)
+                          _vm.$set(_vm.clonedService, "in_widget", $$v)
                         },
-                        expression: "service.in_widget"
+                        expression: "clonedService.in_widget"
                       }
                     })
                   ],
@@ -3780,13 +2902,7 @@ var render = function() {
                       staticClass: "ml-auto btn btn-primary",
                       attrs: { type: "submit" }
                     },
-                    [
-                      _vm._v(
-                        "\n          " +
-                          _vm._s(_vm.service ? "Update" : "Add") +
-                          "\n        "
-                      )
-                    ]
+                    [_vm._v("Update")]
                   )
                 ])
               ])
@@ -3834,7 +2950,11 @@ var render = function() {
                           attrs: { type: "button" },
                           on: {
                             click: function($event) {
-                              _vm.deleteService(_vm.service)
+                              _vm.deleteService(_vm.service).then(function() {
+                                return _vm.$router.push(
+                                  "/dashboard/bookings/services"
+                                )
+                              })
                               _vm.$refs["deleteModal"].hide()
                             }
                           }
@@ -3852,91 +2972,24 @@ var render = function() {
       )
     : _vm._e()
 }
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/plus.vue?vue&type=template&id=bac2dc72&":
-/*!***********************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./Resources/icons/plus.vue?vue&type=template&id=bac2dc72& ***!
-  \***********************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "svg",
-    {
-      attrs: {
-        xmlns: "http://www.w3.org/2000/svg",
-        width: "24",
-        height: "24",
-        viewBox: "0 0 24 24"
-      }
-    },
-    [
-      _c("path", {
-        attrs: {
-          d:
-            "M13,12 L18.5,12 C18.7761424,12 19,12.2238576 19,12.5 C19,12.7761424 18.7761424,13 18.5,13 L13,13 L13,18.5 C13,18.7761424 12.7761424,19 12.5,19 C12.2238576,19 12,18.7761424 12,18.5 L12,13 L6.5,13 C6.22385763,13 6,12.7761424 6,12.5 C6,12.2238576 6.22385763,12 6.5,12 L12,12 L12,6.5 C12,6.22385763 12.2238576,6 12.5,6 C12.7761424,6 13,6.22385763 13,6.5 L13,12 Z"
-        }
-      })
-    ]
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./Resources/icons/trash.vue?vue&type=template&id=52a06ddb&":
-/*!************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./Resources/icons/trash.vue?vue&type=template&id=52a06ddb& ***!
-  \************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "svg",
-    {
-      attrs: {
-        xmlns: "http://www.w3.org/2000/svg",
-        width: "24",
-        height: "24",
-        viewBox: "0 0 24 24"
-      }
-    },
-    [
-      _c("path", {
-        attrs: {
-          d:
-            "M19,6 L19,18.5 C19,19.8807119 17.8807119,21 16.5,21 L7.5,21 C6.11928813,21 5,19.8807119 5,18.5 L5,6 L4.5,6 C4.22385763,6 4,5.77614237 4,5.5 C4,5.22385763 4.22385763,5 4.5,5 L9,5 L9,4.5 C9,3.67157288 9.67157288,3 10.5,3 L13.5,3 C14.3284271,3 15,3.67157288 15,4.5 L15,5 L19.5,5 C19.7761424,5 20,5.22385763 20,5.5 C20,5.77614237 19.7761424,6 19.5,6 L19,6 Z M6,6 L6,18.5 C6,19.3284271 6.67157288,20 7.5,20 L16.5,20 C17.3284271,20 18,19.3284271 18,18.5 L18,6 L6,6 Z M14,5 L14,4.5 C14,4.22385763 13.7761424,4 13.5,4 L10.5,4 C10.2238576,4 10,4.22385763 10,4.5 L10,5 L14,5 Z M14,9.5 C14,9.22385763 14.2238576,9 14.5,9 C14.7761424,9 15,9.22385763 15,9.5 L15,16.5 C15,16.7761424 14.7761424,17 14.5,17 C14.2238576,17 14,16.7761424 14,16.5 L14,9.5 Z M9,9.5 C9,9.22385763 9.22385763,9 9.5,9 C9.77614237,9 10,9.22385763 10,9.5 L10,16.5 C10,16.7761424 9.77614237,17 9.5,17 C9.22385763,17 9,16.7761424 9,16.5 L9,9.5 Z"
-        }
-      })
-    ]
-  )
-}
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "text-muted" }, [
+      _c("tr", [
+        _c("th", [_vm._v("User")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Date")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Time")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Date Created")])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 

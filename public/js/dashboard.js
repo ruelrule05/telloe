@@ -43,7 +43,7 @@
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "js/chunks/" + ({"dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00":"dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00","dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4":"dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4","dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29":"dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29","dashboard-account":"dashboard-account","dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a":"dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a","dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions":"dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions","dashboard-payments-invoices":"dashboard-payments-invoices","dashboard-bookings-services~dashboard-members":"dashboard-bookings-services~dashboard-members","dashboard-members":"dashboard-members","dashboard-bookings-calendar~dashboard-contacts~dashboard-conversations-show-info":"dashboard-bookings-calendar~dashboard-contacts~dashboard-conversations-show-info","dashboard-conversations-show-info":"dashboard-conversations-show-info","dashboard-contacts~dashboard-conversations":"dashboard-contacts~dashboard-conversations","dashboard-contacts":"dashboard-contacts","dashboard-payments-subscriptions":"dashboard-payments-subscriptions","dashboard-bookings-services":"dashboard-bookings-services","dashboard-bookings":"dashboard-bookings","dashboard-bookings-calendar":"dashboard-bookings-calendar","dashboard-billing":"dashboard-billing","dashboard-conversations~sidebar-conversations":"dashboard-conversations~sidebar-conversations","dashboard-conversations":"dashboard-conversations","sidebar-conversations":"sidebar-conversations","dashboard-widget":"dashboard-widget","gallery":"gallery","modals-audiorecorder":"modals-audiorecorder"}[chunkId]||chunkId) + ".js"
+/******/ 		return __webpack_require__.p + "js/chunks/" + ({"dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00":"dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00","dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4":"dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4","dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29":"dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29","dashboard-account":"dashboard-account","dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a":"dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a","dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions":"dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions","dashboard-payments-invoices":"dashboard-payments-invoices","dashboard-bookings-services~dashboard-members":"dashboard-bookings-services~dashboard-members","dashboard-members":"dashboard-members","dashboard-bookings-calendar~dashboard-contacts~dashboard-conversations-show-info":"dashboard-bookings-calendar~dashboard-contacts~dashboard-conversations-show-info","dashboard-conversations-show-info":"dashboard-conversations-show-info","dashboard-contacts~dashboard-conversations":"dashboard-contacts~dashboard-conversations","dashboard-contacts":"dashboard-contacts","dashboard-payments-subscriptions":"dashboard-payments-subscriptions","dashboard-bookings-services":"dashboard-bookings-services","dashboard-bookings":"dashboard-bookings","dashboard-bookings-calendar":"dashboard-bookings-calendar","dashboard-billing":"dashboard-billing","dashboard-conversations~sidebar-conversations":"dashboard-conversations~sidebar-conversations","dashboard-conversations":"dashboard-conversations","sidebar-conversations":"sidebar-conversations","dashboard-widget":"dashboard-widget","gallery":"gallery","modals-audiorecorder":"modals-audiorecorder"}[chunkId]||chunkId) + ".js"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -610,13 +610,13 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_2__["default"]({
         path: 'services',
         name: 'services_index',
         component: function component() {
-          return Promise.all(/*! import() | dashboard-bookings-services */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-bookings-services")]).then(__webpack_require__.bind(null, /*! ./components/bookings/services/index/index.vue */ "./Resources/dashboard/components/bookings/services/index/index.vue"));
+          return Promise.all(/*! import() | dashboard-bookings-services */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-bookings-services")]).then(__webpack_require__.bind(null, /*! ./components/bookings/services/index/index.vue */ "./Resources/dashboard/components/bookings/services/index/index.vue"));
         }
       }, {
         path: 'services/:id',
         name: 'services_show',
         component: function component() {
-          return Promise.all(/*! import() | dashboard-bookings-services */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-bookings-services")]).then(__webpack_require__.bind(null, /*! ./components/bookings/services/show/show.vue */ "./Resources/dashboard/components/bookings/services/show/show.vue"));
+          return Promise.all(/*! import() | dashboard-bookings-services */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-bookings-services")]).then(__webpack_require__.bind(null, /*! ./components/bookings/services/show/show.vue */ "./Resources/dashboard/components/bookings/services/show/show.vue"));
         }
       }]
     }, {
@@ -629,13 +629,13 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_2__["default"]({
       path: 'members',
       name: 'members_index',
       component: function component() {
-        return Promise.all(/*! import() | dashboard-members */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-members")]).then(__webpack_require__.bind(null, /*! ./components/members/index/index.vue */ "./Resources/dashboard/components/members/index/index.vue"));
+        return Promise.all(/*! import() | dashboard-members */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-members")]).then(__webpack_require__.bind(null, /*! ./components/members/index/index.vue */ "./Resources/dashboard/components/members/index/index.vue"));
       }
     }, {
       path: 'members/:id',
       name: 'members_show',
       component: function component() {
-        return Promise.all(/*! import() | dashboard-members */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-members")]).then(__webpack_require__.bind(null, /*! ./components/members/show/show.vue */ "./Resources/dashboard/components/members/show/show.vue"));
+        return Promise.all(/*! import() | dashboard-members */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-bookings-services~dashboard-members"), __webpack_require__.e("dashboard-members")]).then(__webpack_require__.bind(null, /*! ./components/members/show/show.vue */ "./Resources/dashboard/components/members/show/show.vue"));
       }
     }, {
       name: 'payments',
@@ -649,13 +649,13 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_2__["default"]({
         path: 'subscriptions',
         name: 'subscriptions',
         component: function component() {
-          return Promise.all(/*! import() | dashboard-payments-subscriptions */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29"), __webpack_require__.e("dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-payments-subscriptions")]).then(__webpack_require__.bind(null, /*! ./components/payments/subscriptions/subscriptions.vue */ "./Resources/dashboard/components/payments/subscriptions/subscriptions.vue"));
+          return Promise.all(/*! import() | dashboard-payments-subscriptions */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~2f828b00"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29"), __webpack_require__.e("dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-payments-subscriptions")]).then(__webpack_require__.bind(null, /*! ./components/payments/subscriptions/subscriptions.vue */ "./Resources/dashboard/components/payments/subscriptions/subscriptions.vue"));
         }
       }, {
         path: 'Invoices',
         name: 'invoices',
         component: function component() {
-          return Promise.all(/*! import() | dashboard-payments-invoices */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29"), __webpack_require__.e("dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-payments-invoices")]).then(__webpack_require__.bind(null, /*! ./components/payments/invoices/invoices.vue */ "./Resources/dashboard/components/payments/invoices/invoices.vue"));
+          return Promise.all(/*! import() | dashboard-payments-invoices */[__webpack_require__.e("dashboard-billing~dashboard-bookings~dashboard-bookings-calendar~dashboard-bookings-services~dashboa~69dfd70a"), __webpack_require__.e("dashboard-account~dashboard-bookings-services~dashboard-contacts~dashboard-conversations-show-info~d~e0730da4"), __webpack_require__.e("dashboard-account~dashboard-contacts~dashboard-conversations-show-info~dashboard-payments-invoices~d~0b42cc29"), __webpack_require__.e("dashboard-bookings-services~dashboard-members~dashboard-payments-invoices~dashboard-payments-subscriptions"), __webpack_require__.e("dashboard-payments-invoices")]).then(__webpack_require__.bind(null, /*! ./components/payments/invoices/invoices.vue */ "./Resources/dashboard/components/payments/invoices/invoices.vue"));
         }
       }]
     }, {
@@ -2954,20 +2954,38 @@ var actions = {
     }))();
   },
   update: function update(_ref4, data) {
-    var commit = _ref4.commit;
-    axios.put("/".concat(name, "/").concat(data.id), data).then(function (response) {
-      commit('update', response.data);
-    });
-  },
-  "delete": function _delete(_ref5, data) {
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
-      var commit;
+      var commit, response;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              commit = _ref5.commit;
+              commit = _ref4.commit;
               _context3.next = 3;
+              return axios.put("/".concat(name, "/").concat(data.id), data);
+
+            case 3:
+              response = _context3.sent;
+              commit('update', data);
+              return _context3.abrupt("return", response.data);
+
+            case 6:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }))();
+  },
+  "delete": function _delete(_ref5, data) {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+      var commit;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              commit = _ref5.commit;
+              _context4.next = 3;
               return axios["delete"]("/".concat(name, "/").concat(data.id), data);
 
             case 3:
@@ -2975,10 +2993,10 @@ var actions = {
 
             case 4:
             case "end":
-              return _context3.stop();
+              return _context4.stop();
           }
         }
-      }, _callee3);
+      }, _callee4);
     }))();
   }
 };

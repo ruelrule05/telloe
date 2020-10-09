@@ -88,7 +88,7 @@
     </template>
 
     <!-- Bookings -->
-    <strong class="d-block mb-2 font-weight-bold mt-3 px-3">Bookings</strong>
+    <h5 class="mt-3 font-heading px-3">Bookings</h5>
     <div class="overflow-auto h-100 px-3" v-if="bookings.length > 0">
       <table class="table table-borderless table-fixed-header mb-0">
         <thead>
