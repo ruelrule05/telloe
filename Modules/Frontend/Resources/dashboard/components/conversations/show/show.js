@@ -37,6 +37,7 @@ import ScreenRecordIcon from '../../../../icons/screen-record';
 import DownloadIcon from '../../../../icons/download';
 
 import Tooltip from '../../../../js/directives/tooltip';
+import toggleFullscreen from 'toggle-fullscreen';
 
 const emojiRegex = require('emoji-regex');
 export default {
@@ -209,11 +210,13 @@ export default {
 	created() {
 		this.checkConversation();
 		this.$root.socket.on('last_message_read', data => {
-			if (this.conversation && this.conversation.id == data.conversation_id) {
+			if (this.conversation && this.conversation.id == data.conversation_id && this.conversation.paginated_messages) {
+				console.log('read');
 				let message = this.conversation.paginated_messages.data.find(x => x.id == data.message_id);
 				if (message) this.$set(message, 'is_read', true);
 			}
 		});
+		``;
 
 		this.$root.socket.on('is_typing', data => {
 			if (this.conversation && this.conversation.id == data.conversation_id) {

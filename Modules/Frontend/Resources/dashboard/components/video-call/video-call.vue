@@ -2,7 +2,7 @@
 	<div>
 		<transition name="fade">
 			<div v-if="open" class="video-call-modal-container position-fixed w-100 h-100">
-				<div class="modal video-call-modal show d-block" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', {'is-fullscreen show': isFullScreen}]">
+				<div class="modal video-call-modal show d-block" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', {'is-fullscreen show': status == 'ongoing'}]">
 			        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 			            <div class="modal-content rounded h-100">
 			                <div v-if="$root.callConversation" class="modal-body p-0 h-100 rounded" :class="{'overflow-hidden': isShrinked}">
@@ -65,8 +65,8 @@
 											<div class="video-container h-100 w-100" :class="{'mirror': isScreenSharing, 'd-none': isVideoStopped}">
 												<video ref="cameraPreview" @onplaying="localCameraReady = true" class="w-100 h-auto" autoplay playsinline muted></video>
 											</div>
-											<span v-if="isVideoStopped" class="position-absolute-center w-100 h-100 rounded-circle bg-light" :style="{backgroundImage: 'url('+$root.callConversation.member.profile_image+')'}">
-												<span v-if="!$root.callConversation.member.profile_image" class="text-secondary position-absolute-center">{{ $root.callConversation.member.initials }}</span>
+											<span v-if="isVideoStopped" class="position-absolute-center w-100 h-100 rounded-circle bg-light" :style="{backgroundImage: 'url('+$root.auth.profile_image+')'}">
+												<span v-if="!$root.auth.profile_image" class="text-secondary position-absolute-center">{{ $root.auth.initials }}</span>
 											</span>
 										</div>
 										

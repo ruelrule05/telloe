@@ -1021,6 +1021,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _icons_screen_record__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ../../../../icons/screen-record */ "./Resources/icons/screen-record.vue");
 /* harmony import */ var _icons_download__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ../../../../icons/download */ "./Resources/icons/download.vue");
 /* harmony import */ var _js_directives_tooltip__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ../../../../js/directives/tooltip */ "./Resources/js/directives/tooltip.js");
+/* harmony import */ var toggle_fullscreen__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! toggle-fullscreen */ "./node_modules/toggle-fullscreen/lib/index.js");
+/* harmony import */ var toggle_fullscreen__WEBPACK_IMPORTED_MODULE_35___default = /*#__PURE__*/__webpack_require__.n(toggle_fullscreen__WEBPACK_IMPORTED_MODULE_35__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1046,6 +1048,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var mime = __webpack_require__(/*! mime */ "./node_modules/mime/index.js");
 
 var loadImage = __webpack_require__(/*! blueimp-load-image */ "./node_modules/blueimp-load-image/js/index.js");
+
 
 
 
@@ -1283,7 +1286,9 @@ var emojiRegex = __webpack_require__(/*! emoji-regex */ "./node_modules/emoji-re
 
     this.checkConversation();
     this.$root.socket.on('last_message_read', function (data) {
-      if (_this4.conversation && _this4.conversation.id == data.conversation_id) {
+      if (_this4.conversation && _this4.conversation.id == data.conversation_id && _this4.conversation.paginated_messages) {
+        console.log('read');
+
         var message = _this4.conversation.paginated_messages.data.find(function (x) {
           return x.id == data.message_id;
         });
@@ -1291,6 +1296,7 @@ var emojiRegex = __webpack_require__(/*! emoji-regex */ "./node_modules/emoji-re
         if (message) _this4.$set(message, 'is_read', true);
       }
     });
+    "";
     this.$root.socket.on('is_typing', function (data) {
       if (_this4.conversation && _this4.conversation.id == data.conversation_id) {
         if (_this4.conversation.user.id == data.user_id) {
