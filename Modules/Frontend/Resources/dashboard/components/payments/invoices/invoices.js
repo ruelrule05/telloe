@@ -60,6 +60,7 @@ export default {
 		openInfo: false,
 		chooseIntegration: false,
 		xeroTenants: [],
+		invoices: [],
 		chooseXeroTenant: false
 	}),
 
@@ -97,7 +98,7 @@ export default {
 			return services;
 		},
 
-		invoices() {
+		invoicesx() {
 			let invoices = [];
 			this.contacts.forEach(contact => {
 				contact.invoices.forEach(invoice => {
@@ -176,6 +177,7 @@ export default {
 				} else {
 					let response = await axios.get('/xero_invoices', { toasted: true }).catch(e => {});
 					if (response) {
+						this.invoices = response.data;
 					}
 
 					this.$root.contentloading = false;

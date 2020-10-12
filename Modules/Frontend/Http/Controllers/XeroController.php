@@ -68,6 +68,6 @@ class XeroController extends Controller
             $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)->execute();
         }
 
-        return response($invoices);
+        return response(json_decode(json_encode($invoices), true));
     }
 }

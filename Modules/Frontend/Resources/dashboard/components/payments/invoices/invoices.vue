@@ -4,7 +4,7 @@
 			<div class="border-bottom bg-white p-3 d-flex align-items-center">
 				<h5 class="font-heading mb-0">Invoices</h5>
 				<div class="ml-auto d-flex align-items-center">
-					<paginate-links :key="invoices.length" :async="true" for="invoices" :show-step-links="true" :classes="{'ul': ['pagination', 'd-inline-flex', 'mb-0'], 'li': ['page-item', !hasInvoices ? 'disabled': 'page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
+					<paginate-links :key="invoices.length" :async="true" for="invoices" :show-step-links="true" :classes="{'ul': ['pagination', 'd-inline-flex', 'mb-0'], 'li': ['page-item'], 'li > a': ['page-link', 'cursor-pointer']}"></paginate-links>
 					<div class="d-inline-flex align-items-center mx-2">
 						<vue-select :data-intro='$root.intros.invoices_filter.intro' :data-step="$root.intros.invoices_filter.step" :options="invoiceStatuses" button_class="border-0 bg-light shadow-none select-flex" v-model="invoiceStatus" label="Status"></vue-select>
 					</div>
@@ -24,86 +24,44 @@
 						<template v-else>
 							<div v-if="chooseXeroTenant" class="position-absolute-center text-center">
 								<h4>Choose a Xero Organization</h4>
-								<button type="button" class="btn btn-white" @click="saveXeroTenant(tenant.id)" v-for="tenant in xeroTenants" :key="tenant.id">
+								<button type="button" class="btn btn-white" @click="saveXeroTenant(tenant.tenantId)" v-for="tenant in xeroTenants" :key="tenant.tenantId">
 									{{ tenant.tenantName }}
 								</button>
 							</div>
 
 							<template v-else>
-								<div class="overflow-auto h-100" v-if="invoices.length > 0" :class="{'d-none': !hasInvoices}">
+								<div class="overflow-auto h-100" v-if="invoices.length > 0">
 									<table class="table table-borderless table-fixed-header mb-0">
 										<thead>
 											<tr>
-												<th>Invoice ID</th>
-												<th>Amount</th>
-												<th>Contact</th>
+												<th>Invoice #</th>
+												<th>To</th>
+												<th>Date</th>
+												<th>Due Date</th>
+												<th>Paid</th>
+												<th>Due</th>
 												<th>Status</th>
-												<th>Date Created</th>
-												<th></th>
+												<th>Sent</th>
 											</tr>
 										</thead>
 										<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
 											<template v-for="invoice in paginated('invoices')">
-												<tr :key="invoice.id" v-if="!invoice.placeholder">
-													<td class="align-middle text-gray-500">
-														{{ invoice.is_pending ? 'Not available' : invoice.number || '-' }}
-														<router-link to="/dashboard/account?tab=payout" v-if="invoice.is_pending && !$root.payoutComplete" v-tooltip.right="'Please complete your payout account <br /> to create active subscriptions.'" class="badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer"><small>?</small></router-link>
-													</td>
-													<td class="align-middle">{{ ((invoice.amount_due || invoice.amount) / 100).toFixed(2) }} <span class="text-uppercase text-muted">{{ getCurrency(invoice) }}</span></td>
-													<td class="align-middle">{{ invoice.contact.contact_user.full_name }}</td>
-													<td class="align-middle">
-														<span class="badge text-capitalize position-relative" :class="'badge-' + invoice.status">
-															<span :class="{'opacity-0': invoice.statusLoading}">{{ invoice.status || 'Pending' }}</span>
-															<div v-if="invoice.statusLoading" class="position-absolute-center">
-																<div class="spinner-border spinner-border-sm text-primary"></div>
-															</div>
-														</span>
-													</td>
-													<td class="align-middle text-muted">{{ formatDate(invoice.created) }}</td>
-													<td class="text-right align-middle">
-														<div class="dropleft">
-															<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="invoice.statusLoading">
-																<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-															</button>
-															<div class="dropdown-menu dropdown-menu-right">
-																<template v-if="invoice.is_pending">
-																	<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="draftInvoice(invoice)">
-																		<task-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></task-icon>
-																		Create draft
-																	</span>
-																	<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedInvoice = invoice; $refs['deleteModal'].show()">
-																		<trash-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></trash-icon>
-																		Delete
-																	</span>
-																</template>
-																<template v-else>
-																	<template v-if="invoice.status == 'draft'">
-																		<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="finalizeInvoice(invoice)">
-																			<task-icon transform="scale(0.85)" class="ml-n2 mr-2 fill-secondary"></task-icon>
-																			Finalize Invoice
-																		</span>
-																	</template>
-																	<template v-else>
-																		<a target="_blank" :href="invoice.hosted_invoice_url" class="dropdown-item d-flex align-items-center">
-																			<shortcut-icon transform="scale(0.75)" class="ml-n2 mr-2 fill-secondary"></shortcut-icon>
-																			Payment page
-																		</a>
-																		<a :href="invoice.invoice_pdf" download class="dropdown-item d-flex align-items-center">
-																			<arrow-down-icon class="ml-n2 mr-2 fill-secondary"></arrow-down-icon>
-																			Download PDF
-																		</a>
-																	</template>
-																</template>
-															</div>
-														</div>
-													</td>
+												<tr :key="invoice.id">
+													<td>{{ invoice.InvoiceNumber }}</td>
+													<td>{{ invoice.Contact.Name }}</td>
+													<td>{{ invoice.Date }}</td>
+													<td>{{ invoice.DueDate }}</td>
+													<td>{{ invoice.AmountPaid }}</td>
+													<td>{{ invoice.AmountDue }}</td>
+													<td>{{ invoice.Status }}</td>
+													<td>{{ invoice.SentToContact }}</td>
 												</tr>
 											</template>
 										</paginate>
 									</table>
 								</div>
 								
-								<div v-if="invoices.length == 0 || !hasInvoices" class="text-muted text-center position-absolute-center w-100">
+								<div v-else class="text-muted text-center position-absolute-center w-100">
 									<div class="h6 text-secondary font-weight-normal mb-0">No invoices found.</div>
 								</div>
 							</template>
