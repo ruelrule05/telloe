@@ -714,7 +714,7 @@ export default {
 		async shareScreen() {
 			if (this.presenter) return;
 
-			let screenStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {});
+			let screenStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {console.log(e)});
 			if (screenStreams) {
 				this.localStream.getVideoTracks().forEach(function(track) {
 					track.stop();
