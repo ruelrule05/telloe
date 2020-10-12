@@ -81,7 +81,9 @@ export default {
 		draggable: null,
 		rejectsCount: 0,
 		callTimeout: null,
-		isIncoming: false
+		isIncoming: false,
+		presenter: null,
+		presenterUser: {}
 	}),
 
 	watch: {
@@ -200,6 +202,38 @@ export default {
 				if (this.rejectsCount >= conversation.members.length) {
 					this.endCall(false);
 					this.rejectsCount = 0;
+				}
+			}
+		});
+
+		this.$root.socket.on('live_call_presenter', data => {
+			if (data.conversation_id == this.$root.callConversation.id) {
+				if (data.presenter) {
+					let connection = this.connections.find(x => x.remote_user_id == data.presenter);
+					if (connection) {
+						let remoteVideo = document.querySelector(`#remote-${connection.id}`);
+						if (remoteVideo) {
+							this.presenter = data.presenter;
+							document.querySelector('#presenter-container').append(remoteVideo);
+							let member;
+							if (data.presenter == this.$root.conversation.user_id) {
+								member = this.$root.conversation.user;
+							} else {
+								member = this.$root.conversation.members.find(x => x.user_id == data.presenter).user;
+							}
+							if (member) {
+								this.presenterUser = member;
+							}
+						}
+					}
+				} else {
+					this.presenterUser = {};
+					this.presenter = null;
+					let remoteStreams = document.querySelector('#remote-streams');
+					let presenterContainerNodes = [...document.querySelectorAll('#presenter-container > .remote-video')];
+					presenterContainerNodes.forEach(el => {
+						remoteStreams.append(el);
+					});
 				}
 			}
 		});
@@ -386,7 +420,7 @@ export default {
 		createOffer(connection) {
 			setTimeout(() => {
 				if (connection.signalingState != 'stable') return;
-				connection.createOffer().then(
+				connection.createOffer(this.offerOptions).then(
 					desc => {
 						connection
 							.setLocalDescription(desc)
@@ -462,6 +496,7 @@ export default {
 					videoContainer.classList.add('flex-grow-1');
 					videoContainer.classList.add('video-container');
 					videoContainer.classList.add('position-relative');
+					videoContainer.classList.add('remote-video');
 					videoContainer.id = `remote-${connection.id}`;
 					let videoEl = document.createElement('video');
 					videoEl.autoplay = true;
@@ -667,10 +702,18 @@ export default {
 				this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
 				this.$refs['cameraPreview'].play();
 				this.isScreenSharing = false;
+				this.presenter = null;
+
+				this.$root.socket.emit('live_call_presenter', {
+					conversation_id: this.$root.callConversation.id,
+					presenter: this.presenter
+				});
 			}
 		},
 
 		async shareScreen() {
+			if (this.presenter) return;
+
 			let screenStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {});
 			if (screenStreams) {
 				this.localStream.getVideoTracks().forEach(function(track) {
@@ -689,6 +732,12 @@ export default {
 				this.isScreenSharing = true;
 				this.localStream.getTracks()[0].addEventListener('ended', () => {
 					this.stopShareScreen();
+				});
+				this.presenter = this.$root.auth.id;
+
+				this.$root.socket.emit('live_call_presenter', {
+					conversation_id: this.$root.callConversation.id,
+					presenter: this.presenter
 				});
 			}
 		},

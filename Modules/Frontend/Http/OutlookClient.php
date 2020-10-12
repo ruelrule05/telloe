@@ -18,8 +18,8 @@ class OutlookClient
             'clientId' => env('OAUTH_APP_ID'),
             'clientSecret' => env('OAUTH_APP_PASSWORD'),
             'redirectUri' => env('OAUTH_REDIRECT_URI'),
-            'urlAuthorize' => env('OAUTH_AUTHORITY').env('OAUTH_AUTHORIZE_ENDPOINT'),
-            'urlAccessToken' => env('OAUTH_AUTHORITY').env('OAUTH_TOKEN_ENDPOINT'),
+            'urlAuthorize' => env('OAUTH_AUTHORITY') . env('OAUTH_AUTHORIZE_ENDPOINT'),
+            'urlAccessToken' => env('OAUTH_AUTHORITY') . env('OAUTH_TOKEN_ENDPOINT'),
             'urlResourceOwnerDetails' => '',
             'scopes' => env('OAUTH_SCOPES')
         ]);
@@ -119,7 +119,7 @@ class OutlookClient
                     ->execute();
                 return $user;
             } catch (League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-                echo 'Error requesting token: '.$e->getMessage();
+                echo 'Error requesting token: ' . $e->getMessage();
                 return;
             }
         }

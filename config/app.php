@@ -66,6 +66,9 @@ return [
     'admin_url' => env('ADMIN_URL', 'http://api.localhost'),
     'admin_password' => env('ADMIN_PASSWORD', 'http://api.localhost'),
     'websocket_url' => env('WEBSOCKET_URL'),
+    'xero_client_id' => env('XERO_CLIENT_ID'),
+    'xero_client_secret' => env('XERO_CLIENT_SECRET'),
+    'xero_redirect_uri' => env('XERO_REDIRECT_URI'),
 
     'asset_url' => env('ASSET_URL', null),
 

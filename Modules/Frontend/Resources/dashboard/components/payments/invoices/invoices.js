@@ -1,4 +1,4 @@
-import {mapState, mapActions} from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
@@ -28,36 +28,39 @@ export default {
 		ArrowDownIcon,
 		TaskIcon,
 		TrashIcon,
-		MoreIcon,
+		MoreIcon
 	},
 
-	directives: {Tooltip},
+	directives: { Tooltip },
 
 	data: () => ({
 		newInvoiceForm: {
 			contact_id: '',
 			loading: false,
-			service_ids: [],
+			service_ids: []
 		},
 		selectedInvoice: null,
 		paginate: ['invoices'],
 		invoiceStatuses: [
-			{ 
-				'text': 'All', 
-				'value': 'all' 
+			{
+				text: 'All',
+				value: 'all'
 			},
-			{ 
-				'text': 'Draft', 
-				'value': 'draft' 
+			{
+				text: 'Draft',
+				value: 'draft'
 			},
-			{ 
-				'text': 'Open', 
-				'value': 'open' 
-			},
+			{
+				text: 'Open',
+				value: 'open'
+			}
 		],
 		invoiceStatus: 'all',
 		hasInvoices: false,
 		openInfo: false,
+		chooseIntegration: false,
+		xeroTenants: [],
+		chooseXeroTenant: false
 	}),
 
 	computed: {
@@ -65,7 +68,7 @@ export default {
 			ready: state => state.contacts.ready,
 			contacts: state => state.contacts.index,
 			services: state => state.services.index,
-            pending_invoices: (state) => state.pending_invoices.index,
+			pending_invoices: state => state.pending_invoices.index
 		}),
 
 		stripeContacts() {
@@ -74,7 +77,7 @@ export default {
 				if (!contact.is_pending) {
 					contacts.push({
 						text: contact.contact_user.full_name,
-						value: contact.id,
+						value: contact.id
 					});
 				}
 			});
@@ -84,7 +87,7 @@ export default {
 		servicesList() {
 			let services = [];
 			this.services.forEach(service => {
-				if(service.is_available) {
+				if (service.is_available) {
 					services.push({
 						text: service.name,
 						value: service.id
@@ -100,48 +103,48 @@ export default {
 				contact.invoices.forEach(invoice => {
 					invoice.contact = contact;
 					this.$set(invoice, 'statusLoading', false);
-					if(this.invoiceStatus == 'all' || this.invoiceStatus == invoice.status) invoices.push(invoice);
+					if (this.invoiceStatus == 'all' || this.invoiceStatus == invoice.status) invoices.push(invoice);
 				});
 			});
 			invoices = invoices.concat(this.pending_invoices);
 			invoices.sort((a, b) => {
 				return a.created > b.created ? -1 : 1;
 			});
-			if(invoices.length > 0) {
+			if (invoices.length > 0) {
 				this.hasInvoices = true;
 			} else {
-				invoices.push({ 'placeholder': true });
+				invoices.push({ placeholder: true });
 				this.hasInvoices = false;
 			}
 			return invoices;
-		},
+		}
 	},
 
 	watch: {
 		ready: function(value) {
-			this.$root.contentloading = !value;
+			//this.$root.contentloading = !value;
 		},
 		invoiceStatus: function(value) {
-			if(this.$refs['paginate']) this.$refs['paginate'].goToPage(1);
+			if (this.$refs['paginate']) this.$refs['paginate'].goToPage(1);
 		}
 	},
 
 	created() {
-		this.$root.contentloading = !this.ready;
+		//this.$root.contentloading = !this.ready;
 		this.getUserContacts();
 		this.getServices();
 		this.getPendingInvoices();
+		this.getXeroInvoices();
 	},
 
 	mounted() {
-
-        if(this.$root.intros.invoices_filter.enabled) {
-            setTimeout(() => {
-                if(!document.querySelector('.introjs-overlay')) {
-                    this.$root.introJS.start().goToStepNumber(this.$root.intros.invoices_filter.step);
-                }
-            }, 500);
-        }
+		if (this.$root.intros.invoices_filter.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.introJS.start().goToStepNumber(this.$root.intros.invoices_filter.step);
+				}
+			}, 500);
+		}
 	},
 
 	methods: {
@@ -150,14 +153,64 @@ export default {
 			createContactInvoice: 'contacts/create_invoice',
 			finalizeContactInvoice: 'contacts/finalize_invoice',
 			getServices: 'services/index',
-            getPendingInvoices: 'pending_invoices/index',
-            storePendingInvoice: 'pending_invoices/store',
-            deletePendingInvoice: 'pending_invoices/delete',
+			getPendingInvoices: 'pending_invoices/index',
+			storePendingInvoice: 'pending_invoices/store',
+			deletePendingInvoice: 'pending_invoices/delete'
 		}),
 
-        getCurrency(invoice) {
-        	return !invoice.is_pending ? invoice.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
-        },
+		async saveXeroTenant(tenantId) {
+			this.$root.contentloading = true;
+			let response = await axios.post('/xero_tenants_save', { tenant_id: tenantId });
+			this.$root.auth.xero_tenant_id = response.data;
+			this.chooseXeroTenant = false;
+			this.getXeroInvoices();
+		},
+
+		async getXeroInvoices() {
+			if (Object.keys(this.$root.auth.xero_token).length > 0) {
+				if (!this.$root.auth.xero_tenant_id) {
+					let response = await axios.get('/xero_tenants');
+					this.xeroTenants = response.data;
+					this.chooseXeroTenant = true;
+					this.$root.contentloading = false;
+				} else {
+					let response = await axios.get('/xero_invoices', { toasted: true }).catch(e => {});
+					if (response) {
+					}
+
+					this.$root.contentloading = false;
+				}
+			} else {
+				this.chooseIntegration = true;
+				this.$root.contentloading = false;
+			}
+		},
+
+		async authenticateXero() {
+			let response = await axios.get('/xero_authenticate');
+			this.goToXeroAuthUrl(response.data.authUrl);
+		},
+
+		goToXeroAuthUrl(url) {
+			if (url) {
+				const width = 450;
+				const height = 650;
+				const left = screen.width / 2 - width / 2;
+				const top = screen.height / 2 - height / 2;
+				let xeroAuthWindow = window.open(url, 'xero_auth_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
+				let callbackInterval = setInterval(() => {
+					if (xeroAuthWindow.closed) {
+						this.chooseIntegration = false;
+						this.getXeroInvoices();
+						clearInterval(callbackInterval);
+					}
+				}, 500);
+			}
+		},
+
+		getCurrency(invoice) {
+			return !invoice.is_pending ? invoice.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
+		},
 
 		async finalizeInvoice(invoice) {
 			invoice.statusLoading = true;
@@ -169,43 +222,42 @@ export default {
 			this.newInvoiceForm = {
 				contact_id: '',
 				loading: false,
-				service_ids: [],
+				service_ids: []
 			};
 			this.openInfo = false;
 		},
 
 		draftInvoice(invoice) {
-			if(invoice.is_pending) {
-	        	this.$set(invoice, 'statusLoading', true);
-	        	let data = {
-	        		'id': invoice.contact_id,
-	        		'service_ids': invoice.service_ids,
-	        		'amount': invoice.amount / 100,
-	        	};
+			if (invoice.is_pending) {
+				this.$set(invoice, 'statusLoading', true);
+				let data = {
+					id: invoice.contact_id,
+					service_ids: invoice.service_ids,
+					amount: invoice.amount / 100
+				};
 
 				this.createContactInvoice(data)
 					.then(() => {
-	        			this.$set(invoice, 'statusLoading', false);
-        				this.deleteInvoice(invoice);
+						this.$set(invoice, 'statusLoading', false);
+						this.deleteInvoice(invoice);
 					})
 					.catch(() => {
-	        			this.$set(invoice, 'statusLoading', false);
+						this.$set(invoice, 'statusLoading', false);
 					});
 			}
 		},
 
-
-        deleteInvoice(invoice) {
-        	if(invoice.is_pending) {
-        		this.deletePendingInvoice(invoice);
-        	}
-        },
+		deleteInvoice(invoice) {
+			if (invoice.is_pending) {
+				this.deletePendingInvoice(invoice);
+			}
+		},
 
 		createInvoice() {
 			this.newInvoiceForm.loading = true;
 			this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
 
-        	if(this.$root.payoutComplete) {
+			if (this.$root.payoutComplete) {
 				this.createContactInvoice(this.newInvoiceForm)
 					.then(() => {
 						this.resetInvoiceForm();
@@ -214,16 +266,18 @@ export default {
 						this.newInvoiceForm.loading = false;
 					});
 			} else {
-	        	this.storePendingInvoice(this.newInvoiceForm).then(() => {
-	        		this.resetInvoiceForm();
-	        	}).catch(() => {
-	        		this.newInvoiceForm.loading = false;
-	        	});
+				this.storePendingInvoice(this.newInvoiceForm)
+					.then(() => {
+						this.resetInvoiceForm();
+					})
+					.catch(() => {
+						this.newInvoiceForm.loading = false;
+					});
 			}
 		},
 
 		formatDate(date) {
 			return dayjs.unix(date).format('MMM d, YYYY h:mmA');
-		},
-	},
+		}
+	}
 };

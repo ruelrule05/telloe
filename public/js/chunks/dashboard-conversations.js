@@ -1287,8 +1287,6 @@ var emojiRegex = __webpack_require__(/*! emoji-regex */ "./node_modules/emoji-re
     this.checkConversation();
     this.$root.socket.on('last_message_read', function (data) {
       if (_this4.conversation && _this4.conversation.id == data.conversation_id && _this4.conversation.paginated_messages) {
-        console.log('read');
-
         var message = _this4.conversation.paginated_messages.data.find(function (x) {
           return x.id == data.message_id;
         });

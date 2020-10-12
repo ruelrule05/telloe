@@ -211,7 +211,6 @@ export default {
 		this.checkConversation();
 		this.$root.socket.on('last_message_read', data => {
 			if (this.conversation && this.conversation.id == data.conversation_id && this.conversation.paginated_messages) {
-				console.log('read');
 				let message = this.conversation.paginated_messages.data.find(x => x.id == data.message_id);
 				if (message) this.$set(message, 'is_read', true);
 			}

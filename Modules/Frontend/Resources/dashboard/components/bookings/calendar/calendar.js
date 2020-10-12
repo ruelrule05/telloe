@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {mapState, mapActions} from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueButton from '../../../../components/vue-button';
 import ChevronLeft from '../../../../icons/chevron-left';
@@ -38,29 +38,29 @@ export default {
 		CalendarMonthIcon,
 		ChevronRightIcon,
 		ChevronLeftIcon,
-		CheckmarkCircleIcon,
+		CheckmarkCircleIcon
 	},
 
 	data: () => ({
 		buttonText: {
-			today: 'Today',
+			today: 'Today'
 		},
 		customButtons: {
 			previous: {
 				icon: 'fc-icon fc-icon-chevron-left',
-				click: () => {},
-			},
+				click: () => {}
+			}
 		},
 		header: {
 			left: 'title',
-			right: '',
+			right: ''
 		},
 		dayjs: null,
 		selectedBooking: null,
 		selectedService: null,
 		selectConstraint: {
 			start: '00:01',
-			end: '23:59',
+			end: '23:59'
 		},
 		selectedDate: null,
 		fullCalendar: null,
@@ -78,23 +78,23 @@ export default {
 		calendarToRemove: '',
 		removeCalendarLoading: false,
 		selectedTimeslot: null,
-        infoTab: '',
-        timeslots: [],
-        timeslotsLoading: false,
-        calendarView: 'month',
-        sliderNavIndex: 0,
-        sliderTranslate: 0,
-        selectAttribute: {
-            highlight: {
-                fillMode: 'solid',
-                contentClass: 'bg-blue',
-            },
-        },
-        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-        dateForWeekView: null,
-        bookingCreated: false,
-        loading: false,
-        error: '',
+		infoTab: '',
+		timeslots: [],
+		timeslotsLoading: false,
+		calendarView: 'month',
+		sliderNavIndex: 0,
+		sliderTranslate: 0,
+		selectAttribute: {
+			highlight: {
+				fillMode: 'solid',
+				contentClass: 'bg-blue'
+			}
+		},
+		days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+		dateForWeekView: null,
+		bookingCreated: false,
+		loading: false,
+		error: ''
 	}),
 
 	computed: {
@@ -105,71 +105,71 @@ export default {
 			googleCalendarsReady: state => state.bookings.googleCalendarsReady,
 			outlookClient: state => state.bookings.outlookClient,
 			outlookCalendarsReady: state => state.bookings.outlookCalendarsReady,
-			outlookCalendarEvents: state => state.bookings.outlookCalendarEvents,
+			outlookCalendarEvents: state => state.bookings.outlookCalendarEvents
 		}),
 
-        weekDayOptions() {
-            let options = [];
+		weekDayOptions() {
+			let options = [];
 
-            let dateForWeekView = dayjs();
-            //if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
-            let daysBefore = [];
-            let daysAfter = [];
-            for (var i = 1; i <= 15; i++) {
-                let before = dateForWeekView.subtract(i, 'day');
-                let after = dateForWeekView.add(i, 'day');
-                /*daysBefore.unshift({
+			let dateForWeekView = dayjs();
+			//if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
+			let daysBefore = [];
+			let daysAfter = [];
+			for (var i = 1; i <= 15; i++) {
+				let before = dateForWeekView.subtract(i, 'day');
+				let after = dateForWeekView.add(i, 'day');
+				/*daysBefore.unshift({
                     date: before.toDate(),
                     title: before.format('ddd'),
                     description: before.format('D MMM'),
                     label: before.format('YYYY-MM-DD'),
                     id: before.format('MMMDYYYY'),
                 });*/
-                daysAfter.push({
-                    date: after.toDate(),
-                    title: after.format('ddd'),
-                    description: after.format('D MMM'),
-                    label: after.format('YYYY-MM-DD'),
-                    id: after.format('MMMDYYYY'),
-                });
-            }
-            dateForWeekView = {
-                date: dateForWeekView.toDate(),
-                title: dateForWeekView.format('ddd'),
-                description: dateForWeekView.format('D MMM'),
-                label: dateForWeekView.format('YYYY-MM-DD'),
-                id: dateForWeekView.format('MMMDYYYY'),
-            };
-            options = [...[dateForWeekView], ...daysAfter];
+				daysAfter.push({
+					date: after.toDate(),
+					title: after.format('ddd'),
+					description: after.format('D MMM'),
+					label: after.format('YYYY-MM-DD'),
+					id: after.format('MMMDYYYY')
+				});
+			}
+			dateForWeekView = {
+				date: dateForWeekView.toDate(),
+				title: dateForWeekView.format('ddd'),
+				description: dateForWeekView.format('D MMM'),
+				label: dateForWeekView.format('YYYY-MM-DD'),
+				id: dateForWeekView.format('MMMDYYYY')
+			};
+			options = [...[dateForWeekView], ...daysAfter];
 
-            return options;
-        },
+			return options;
+		},
 
-        formattedHolidays() {
-            let formattedHolidays = [];
-            if (this.selectedBooking.service) {
-                let service = this.services.find(x => x.id == this.selectedBooking.service.id);
-                if (service) {
-                    service.holidays.forEach(holiday => {
-                        let parts = holiday.split('-');
-                        const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                        formattedHolidays.push(holidayDate);
-                    });
+		formattedHolidays() {
+			let formattedHolidays = [];
+			if (this.selectedBooking.service) {
+				let service = this.services.find(x => x.id == this.selectedBooking.service.id);
+				if (service) {
+					service.holidays.forEach(holiday => {
+						let parts = holiday.split('-');
+						const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
+						formattedHolidays.push(holidayDate);
+					});
 
-                    let disabledDays = [];
-                    this.days.forEach((day, index) => {
-                        index++;
-                        if (!service.days[day].isOpen) disabledDays.push(index);
-                    });
-                    if (disabledDays.length > 0) {
-                        formattedHolidays.push({
-                            weekdays: disabledDays,
-                        });
-                    }
-                }
-            }
-            return formattedHolidays;
-        },
+					let disabledDays = [];
+					this.days.forEach((day, index) => {
+						index++;
+						if (!service.days[day].isOpen) disabledDays.push(index);
+					});
+					if (disabledDays.length > 0) {
+						formattedHolidays.push({
+							weekdays: disabledDays
+						});
+					}
+				}
+			}
+			return formattedHolidays;
+		},
 
 		selectedDateBookingsEvents() {
 			let items = [];
@@ -207,10 +207,10 @@ export default {
 				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
-						color: 'red',
+						color: 'red'
 					},
 					customData: 'booking',
-					dates: bookingDate,
+					dates: bookingDate
 				});
 			});
 
@@ -218,11 +218,11 @@ export default {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
-						color: 'red',
+						color: 'red'
 					},
 					customData: 'event',
 					customData: 'google-event',
-					dates: eventDate,
+					dates: eventDate
 				});
 			});
 
@@ -230,15 +230,15 @@ export default {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
-						color: 'red',
+						color: 'red'
 					},
 					customData: 'outlook-event',
-					dates: eventDate,
+					dates: eventDate
 				});
 			});
 
 			return attributes;
-		},
+		}
 	},
 
 	watch: {
@@ -246,10 +246,10 @@ export default {
 			this.goToDate();
 		},
 		bookings: function(value) {
-			if(value.length > 0 && !this.selectedDate) {
+			if (value.length > 0 && !this.selectedDate) {
 				let now = this.dayjs();
 				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
-				if(nextBooking) {
+				if (nextBooking) {
 					let date = this.dayjs(nextBooking.date).toDate();
 					this.selectedDate = date;
 					this.infoTab = 'bookings';
@@ -267,7 +267,7 @@ export default {
 		this.dayjs = require('dayjs');
 		this.dayjs.extend(utcPlugin);
 		this.dayjs.extend(isSameOrAfter);
-		
+
 		let days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 		let business_hours = [];
 		days.forEach(day => {
@@ -276,9 +276,9 @@ export default {
 				hours: [
 					{
 						open: '',
-						close: '',
-					},
-				],
+						close: ''
+					}
+				]
 			};
 		});
 
@@ -309,65 +309,64 @@ export default {
 				this.infoTab = 'bookings';
 			}
 		}
-        if(this.$root.intros.calendar_settings.enabled) {
-            setTimeout(() => {
-                if(!document.querySelector('.introjs-overlay')) {
-                    this.$root.introJS.start().goToStepNumber(this.$root.intros.calendar_settings.step);
-                }
-            }, 500);
-        }
+		if (this.$root.intros.calendar_settings.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.introJS.start().goToStepNumber(this.$root.intros.calendar_settings.step);
+				}
+			}, 500);
+		}
 	},
 
 	methods: {
 		...mapActions({
 			getBookings: 'bookings/index',
-            deleteBooking: 'bookings/delete',
+			deleteBooking: 'bookings/delete',
 			updateBooking: 'bookings/update',
 			getServices: 'services/index',
 			getConversations: 'conversations/index',
 			getGoogleCalendars: 'bookings/googleCalendars',
-			getOutlookCalendars: 'bookings/outlookCalendars',
+			getOutlookCalendars: 'bookings/outlookCalendars'
 		}),
 
-        getTimeZoneOffset(date, timeZone) {
-            // Abuse the Intl API to get a local ISO 8601 string for a given time zone.
-            const options = {timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false};
-            const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
-            const parts = dateTimeFormat.formatToParts(date);
-            const map = new Map(parts.map(x => [x.type, x.value]));
-            const year = map.get('year');
-            const month = map.get('month');
-            const day = map.get('day');
-            let hour = map.get('hour');
-            const minute = map.get('minute');
-            const second = map.get('second');
-            const ms = date
-                .getMilliseconds()
-                .toString()
-                .padStart(3, '0');
-            if (hour == '24') hour = '00';
-            const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
+		getTimeZoneOffset(date, timeZone) {
+			// Abuse the Intl API to get a local ISO 8601 string for a given time zone.
+			const options = { timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+			const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+			const parts = dateTimeFormat.formatToParts(date);
+			const map = new Map(parts.map(x => [x.type, x.value]));
+			const year = map.get('year');
+			const month = map.get('month');
+			const day = map.get('day');
+			let hour = map.get('hour');
+			const minute = map.get('minute');
+			const second = map.get('second');
+			const ms = date
+				.getMilliseconds()
+				.toString()
+				.padStart(3, '0');
+			if (hour == '24') hour = '00';
+			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 
-            // Lie to the Date object constructor that it's a UTC time.
-            const lie = new Date(iso + 'Z');
+			// Lie to the Date object constructor that it's a UTC time.
+			const lie = new Date(iso + 'Z');
 
-            // Return the difference in timestamps, as minutes
-            // Positive values are West of GMT, opposite of ISO 8601
-            // this matches the output of `Date.getTimeZoneOffset`
-            return -(lie - date) / 60 / 1000;
-        },
+			// Return the difference in timestamps, as minutes
+			// Positive values are West of GMT, opposite of ISO 8601
+			// this matches the output of `Date.getTimeZoneOffset`
+			return -(lie - date) / 60 / 1000;
+		},
 
-        timezoneTime(timeZone, target_timeZone, time) {
-            let localTZ = this.getTimeZoneOffset(new Date(), timeZone);
-            let targetTZ = this.getTimeZoneOffset(new Date(), target_timeZone);
-            let parts = time.split(':');
-            let timezoneTime = dayjs()
-                .hour(parts[0])
-                .minute(parts[1])
-                .add(localTZ - targetTZ, 'minute');
-            return timezoneTime.format('hh:mmA');
-        },
-
+		timezoneTime(timeZone, target_timeZone, time) {
+			let localTZ = this.getTimeZoneOffset(new Date(), timeZone);
+			let targetTZ = this.getTimeZoneOffset(new Date(), target_timeZone);
+			let parts = time.split(':');
+			let timezoneTime = dayjs()
+				.hour(parts[0])
+				.minute(parts[1])
+				.add(localTZ - targetTZ, 'minute');
+			return timezoneTime.format('hh:mmA');
+		},
 
 		goToDate() {
 			let date = this.$route.query.date;
@@ -382,23 +381,23 @@ export default {
 		},
 
 		submit() {
-            if (this.selectedBooking && this.selectedTimeslot) {
-                this.loading = true;
-                let formatDate = dayjs(this.selectedBooking.date_object).format('YYYY-MM-DD');
-                let data = {
-                    id: this.selectedBooking.id,
-                    date: formatDate,
-                    start: this.selectedTimeslot.time,
-                };
-                this.updateBooking(data)
-                    .then(() => {
-                        this.bookingCreated = true;
-                    })
-                    .catch(e => {
-                        this.loading = false;
-                        this.error = e.response.data.message;
-                    });
-            }
+			if (this.selectedBooking && this.selectedTimeslot) {
+				this.loading = true;
+				let formatDate = dayjs(this.selectedBooking.date_object).format('YYYY-MM-DD');
+				let data = {
+					id: this.selectedBooking.id,
+					date: formatDate,
+					start: this.selectedTimeslot.time
+				};
+				this.updateBooking(data)
+					.then(() => {
+						this.bookingCreated = true;
+					})
+					.catch(e => {
+						this.loading = false;
+						this.error = e.response.data.message;
+					});
+			}
 		},
 
 		resetBookingForm() {
@@ -409,100 +408,99 @@ export default {
 			this.bookingCreated = false;
 		},
 
-        formatDate(date) {
-            return dayjs(date).format('MMMM D, YYYY');
-        },
+		formatDate(date) {
+			return dayjs(date).format('MMMM D, YYYY');
+		},
 
 		sliderActiveDate(date) {
 			return (this.selectedBooking.date_object ? dayjs(this.selectedBooking.date_object).format('MMMDYYYY') : '') === dayjs(date.date).format('MMMDYYYY');
 		},
 
-        dateSelected(date) {
-            if(date && this.selectedBooking) {
-                this.selectedBooking.date_object = date;
-                this.calendarView = 'week';
-                this.sliderNavIndex = 0;
-                this.selectedTimeslot = null;
-                this.$nextTick(() => {
-                    this.calcSliderTranslate();
-                });
-            }
-        },
+		dateSelected(date) {
+			if (date && this.selectedBooking) {
+				this.selectedBooking.date_object = date;
+				this.calendarView = 'week';
+				this.sliderNavIndex = 0;
+				this.selectedTimeslot = null;
+				this.$nextTick(() => {
+					this.calcSliderTranslate();
+				});
+			}
+		},
 
-        disabledDate(date) {
-            let dayName = dayjs(date.date).format('dddd');
-            return !this.selectedBooking.service.days[dayName].isOpen || this.selectedBooking.service.holidays.find(x => x == date.label);
-        },
+		disabledDate(date) {
+			let dayName = dayjs(date.date).format('dddd');
+			return !this.selectedBooking.service.days[dayName].isOpen || this.selectedBooking.service.holidays.find(x => x == date.label);
+		},
 
-        calcSliderTranslate() {
-            if(this.$refs['weekday-slider'] && this.calendarView == 'week') {
-                let date = this.selectedBooking.date_object || new Date();
-                let dateID = dayjs(date).format('MMMDYYYY');
-                let sliderItem = this.$refs['weekday-slider'].querySelector(`#${dateID}`);
-                let sliderSize = 95;
-                if(sliderItem) {
-                    let index = Array.from(this.$refs['weekday-slider'].children).indexOf(sliderItem);
-                    if(index > -1) {
-                        this.sliderTranslate = (sliderSize * index) * -1;
-                    }
-                }
-            }
-        },
+		calcSliderTranslate() {
+			if (this.$refs['weekday-slider'] && this.calendarView == 'week') {
+				let date = this.selectedBooking.date_object || new Date();
+				let dateID = dayjs(date).format('MMMDYYYY');
+				let sliderItem = this.$refs['weekday-slider'].querySelector(`#${dateID}`);
+				let sliderSize = 95;
+				if (sliderItem) {
+					let index = Array.from(this.$refs['weekday-slider'].children).indexOf(sliderItem);
+					if (index > -1) {
+						this.sliderTranslate = sliderSize * index * -1;
+					}
+				}
+			}
+		},
 
-        adjustSlider(step) {
-            let weekdaySlider = this.$refs['weekday-slider'];
+		adjustSlider(step) {
+			let weekdaySlider = this.$refs['weekday-slider'];
 
-            let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - 95;
-            if((step == -1 && translateX < -95) || (step == 1 && translateX > ((95 * 29) * -1))) {
-                this.sliderNavIndex += step;
-            }
-        },
+			let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - 95;
+			if ((step == -1 && translateX < -95) || (step == 1 && translateX > 95 * 29 * -1)) {
+				this.sliderNavIndex += step;
+			}
+		},
 
-        edit(booking) {
-            if (booking && booking.id != (this.selectedBooking || {}).id) {
+		edit(booking) {
+			if (booking && booking.id != (this.selectedBooking || {}).id) {
 				this.selectedBooking = booking;
 				this.selectedBooking.edit = true;
-                this.getTimeslots(booking.service_id, booking.date);
-                let parts = booking.date.split('-');
-                this.calendarView = 'month';
-                this.$set(this.selectedBooking, 'date_object', new Date(parts[0], parts[1] - 1, parts[2]));
-            }
-        },
+				this.getTimeslots(booking.service_id, booking.date);
+				let parts = booking.date.split('-');
+				this.calendarView = 'month';
+				this.$set(this.selectedBooking, 'date_object', new Date(parts[0], parts[1] - 1, parts[2]));
+			}
+		},
 
-        getTimeslots(service_id = '', date = '') {
-            if (service_id && date) {
-                this.timeslotsLoading = true;
-                let service = this.services.find(x => x.id == service_id);
-                if (service) {
-                    this.timeslots = [];
-                    this.selectedTimeslot = null;
-                    let dateFormat = dayjs(date).format('YYYY-MM-DD');
-                    axios.get(`/@${this.$root.auth.username}/${service_id}/timeslots?date=${dateFormat}`).then(response => {
-                        let timeslots = response.data;
-                        if (this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
-                            let parts = this.selectedBooking.start.split(':');
-                            let label = dayjs()
-                                .hour(parts[0])
-                                .minute(parts[1])
-                                .format('hh:mmA');
-                            let timeslot = {
-                                label: label,
-                                time: this.selectedBooking.start,
-                            };
-                            if (timeslot.label.length == 6) timeslot.label = `0${timeslot.label}`;
-                            this.selectedTimeslot = timeslot;
-                            timeslots.push(timeslot);
-                        }
-                        timeslots = timeslots.sort((a, b) => {
-                            return a.time > b.time ? 1 : -1;
-                        });
-                        this.timeslots = timeslots;
-                        this.timeslotsLoading = false;
-                    });
-                }
-            }
-        },
-
+		getTimeslots(service_id = '', date = '') {
+			if (service_id && date) {
+				this.timeslotsLoading = true;
+				let service = this.services.find(x => x.id == service_id);
+				if (service) {
+					this.timeslots = [];
+					this.selectedTimeslot = null;
+					let dateFormat = dayjs(date).format('YYYY-MM-DD');
+					axios.get(`/@${this.$root.auth.username}/${service_id}/timeslots?date=${dateFormat}`).then(response => {
+						let timeslots = response.data;
+						if (this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
+							let parts = this.selectedBooking.start.split(':');
+							let label = dayjs()
+								.hour(parts[0])
+								.minute(parts[1])
+								.format('hh:mmA');
+							let timeslot = {
+								label: label,
+								time: this.selectedBooking.start
+							};
+							if (timeslot.label.length == 6) timeslot.label = `0${timeslot.label}`;
+							this.selectedTimeslot = timeslot;
+							timeslots.push(timeslot);
+						}
+						timeslots = timeslots.sort((a, b) => {
+							return a.time > b.time ? 1 : -1;
+						});
+						this.timeslots = timeslots;
+						this.timeslotsLoading = false;
+					});
+				}
+			}
+		},
 
 		parseTimezone(data) {
 			let date = new Date(data.dateTime + 'Z');
@@ -512,7 +510,7 @@ export default {
 		async removeCalendar() {
 			if (this.calendarToRemove) {
 				this.removeCalendarLoading = true;
-				await axios.post('/remove_calendar', {calendar: this.calendarToRemove.toLowerCase()});
+				await axios.post('/remove_calendar', { calendar: this.calendarToRemove.toLowerCase() });
 				await this.$refs['removeCalendar'].hide();
 				this.removeCalendarLoading = false;
 				switch (this.calendarToRemove.toLowerCase()) {
@@ -567,7 +565,7 @@ export default {
 				.find('select')
 				.val(this.newGoogleCalendarId);
 			this.$root.auth.google_calendar_id = this.newGoogleCalendarId;
-			await axios.post('/update_google_calendar_events', {google_calendar_id: this.newGoogleCalendarId});
+			await axios.post('/update_google_calendar_events', { google_calendar_id: this.newGoogleCalendarId });
 			await this.getGoogleCalendarEvents();
 			this.confirmCalendarLoading = false;
 			this.$refs['changeGoogleCalendar'].hide();
@@ -588,7 +586,7 @@ export default {
 			} else {
 				auth_outlook_calendars.splice(
 					auth_outlook_calendars.findIndex(x => x == calendar.id),
-					1,
+					1
 				);
 			}
 
@@ -634,7 +632,7 @@ export default {
 				.find('select')
 				.val(this.newOutlookCalendarId);
 			this.$root.auth.outlook_calendar_id = this.newOutlookCalendarId;
-			await axios.post('/update_outlook_calendar_events', {outlook_calendar_id: this.newOutlookCalendarId});
+			await axios.post('/update_outlook_calendar_events', { outlook_calendar_id: this.newOutlookCalendarId });
 			await this.getOutlookEvents();
 			this.confirmCalendarLoading = false;
 			this.$refs['changeOutlookCalendar'].hide();
@@ -742,6 +740,6 @@ export default {
 					this.fullCalendar.prev();
 					break;
 			}
-		},
-	},
+		}
+	}
 };

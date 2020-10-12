@@ -390,7 +390,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************************************************************!*\
   !*** ./Resources/dashboard/components/video-call/video-call.js?vue&type=script&lang=js& ***!
   \******************************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -420,14 +420,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************************************!*\
   !*** ./Resources/dashboard/components/video-call/video-call.vue ***!
   \******************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _video_call_vue_vue_type_template_id_075602ae___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./video-call.vue?vue&type=template&id=075602ae& */ "./Resources/dashboard/components/video-call/video-call.vue?vue&type=template&id=075602ae&");
 /* harmony import */ var _video_call_js_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./video-call.js?vue&type=script&lang=js& */ "./Resources/dashboard/components/video-call/video-call.js?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _video_call_scss_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./video-call.scss?vue&type=style&index=0&lang=scss& */ "./Resources/dashboard/components/video-call/video-call.scss?vue&type=style&index=0&lang=scss&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _video_call_js_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _video_call_js_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _video_call_scss_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./video-call.scss?vue&type=style&index=0&lang=scss& */ "./Resources/dashboard/components/video-call/video-call.scss?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -6788,8 +6789,8 @@ window.axios.interceptors.response.use(function (response) {
     });
   }
   /*if (error.response && error.response.status == 401) {
-      window.location.href = '/login';
-  }*/
+            window.location.href = '/login';
+        }*/
 
 
   return Promise.reject(error);
@@ -10749,6 +10750,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _js_directives_tooltip_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../../js/directives/tooltip.js */ "./Resources/js/directives/tooltip.js");
 
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -10837,7 +10850,9 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
       draggable: null,
       rejectsCount: 0,
       callTimeout: null,
-      isIncoming: false
+      isIncoming: false,
+      presenter: null,
+      presenterUser: {}
     };
   },
   watch: {
@@ -11066,6 +11081,47 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
         return _ref4.apply(this, arguments);
       };
     }());
+    this.$root.socket.on('live_call_presenter', function (data) {
+      if (data.conversation_id == _this.$root.callConversation.id) {
+        if (data.presenter) {
+          var connection = _this.connections.find(function (x) {
+            return x.remote_user_id == data.presenter;
+          });
+
+          if (connection) {
+            var remoteVideo = document.querySelector("#remote-".concat(connection.id));
+
+            if (remoteVideo) {
+              _this.presenter = data.presenter;
+              document.querySelector('#presenter-container').append(remoteVideo);
+              var member;
+
+              if (data.presenter == _this.$root.conversation.user_id) {
+                member = _this.$root.conversation.user;
+              } else {
+                member = _this.$root.conversation.members.find(function (x) {
+                  return x.user_id == data.presenter;
+                }).user;
+              }
+
+              if (member) {
+                _this.presenterUser = member;
+              }
+            }
+          }
+        } else {
+          _this.presenterUser = {};
+          _this.presenter = null;
+          var remoteStreams = document.querySelector('#remote-streams');
+
+          var presenterContainerNodes = _toConsumableArray(document.querySelectorAll('#presenter-container > .remote-video'));
+
+          presenterContainerNodes.forEach(function (el) {
+            remoteStreams.append(el);
+          });
+        }
+      }
+    });
 
     window.onbeforeunload = function (e) {
       e = e || window.event;
@@ -11252,7 +11308,7 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
 
       setTimeout(function () {
         if (connection.signalingState != 'stable') return;
-        connection.createOffer().then(function (desc) {
+        connection.createOffer(_this6.offerOptions).then(function (desc) {
           connection.setLocalDescription(desc).then(function () {
             _this6.$root.socket.emit('live_call_offer', {
               desc: desc,
@@ -11380,6 +11436,7 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
           videoContainer.classList.add('flex-grow-1');
           videoContainer.classList.add('video-container');
           videoContainer.classList.add('position-relative');
+          videoContainer.classList.add('remote-video');
           videoContainer.id = "remote-".concat(connection.id);
 
           var _videoEl = document.createElement('video');
@@ -11658,6 +11715,12 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
                   _this12.$refs['cameraPreview'].play();
 
                   _this12.isScreenSharing = false;
+                  _this12.presenter = null;
+
+                  _this12.$root.socket.emit('live_call_presenter', {
+                    conversation_id: _this12.$root.callConversation.id,
+                    presenter: _this12.presenter
+                  });
                 }
 
               case 5:
@@ -11677,12 +11740,20 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
-                _context9.next = 2;
+                if (!_this13.presenter) {
+                  _context9.next = 2;
+                  break;
+                }
+
+                return _context9.abrupt("return");
+
+              case 2:
+                _context9.next = 4;
                 return navigator.mediaDevices.getDisplayMedia({
                   video: true
                 })["catch"](function (e) {});
 
-              case 2:
+              case 4:
                 screenStreams = _context9.sent;
 
                 if (screenStreams) {
@@ -11709,9 +11780,16 @@ var randomString = __webpack_require__(/*! random-string */ "./node_modules/rand
                   _this13.localStream.getTracks()[0].addEventListener('ended', function () {
                     _this13.stopShareScreen();
                   });
+
+                  _this13.presenter = _this13.$root.auth.id;
+
+                  _this13.$root.socket.emit('live_call_presenter', {
+                    conversation_id: _this13.$root.callConversation.id,
+                    presenter: _this13.presenter
+                  });
                 }
 
-              case 4:
+              case 6:
               case "end":
                 return _context9.stop();
             }
@@ -21187,7 +21265,7 @@ module.exports = exports;
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".video-call-modal-container {\n  z-index: 10000;\n}\n.video-call-modal-container .video-call-modal .video-call {\n  height: 500px;\n}\n.video-call-modal-container .video-call-modal .caller {\n  z-index: 100;\n}\n.video-call-modal-container .video-call-modal .user-profile-image {\n  width: 120px;\n  height: 120px;\n  border-radius: 50%;\n  background-position: center;\n  background-size: cover;\n  background-repeat: no-repeat;\n  background-color: #ced4da !important;\n}\n.video-call-modal-container .video-call-modal .user-profile-image span {\n  font-size: 42px;\n  font-weight: lighter;\n}\n.video-call-modal-container .video-call-modal .btn-record {\n  top: 10px;\n  left: 10px;\n  z-index: 10;\n}\n.video-call-modal-container .video-call-modal .btn-record i {\n  width: 15px;\n  height: 15px;\n  border-radius: 50%;\n  background: red;\n  display: inline-block;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.preview-thumb {\n  position: absolute;\n  bottom: 20px;\n  left: 20px;\n  width: 178px;\n  height: 100px;\n  overflow: hidden;\n  z-index: 10;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.preview-thumb video {\n  height: 100%;\n  width: auto;\n  position: absolute;\n  left: 50%;\n  bottom: 0;\n  transform: translateX(-50%);\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.profile-image {\n  width: 100px;\n  height: 100px;\n  border-radius: 50%;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.profile-image > span {\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.profile-image > span span {\n  font-size: 30px;\n}\n.video-call-modal-container .video-call-modal video,\n.video-call-modal-container .video-call-modal canvas {\n  pointer-events: none !important;\n}\n.video-call-modal-container .video-call-modal .recorded .recorded-preview {\n  height: 180px;\n  background-color: #333;\n  background-size: contain;\n  background-position: center;\n  background-repeat: no-repeat;\n}\n.video-call-modal-container .video-call-modal .recorded .recorded-details {\n  bottom: 0;\n}\n.video-call-modal-container .video-call-modal .recorded-data {\n  z-index: 100;\n  top: 0;\n  left: 0;\n}\n.video-call-modal-container .video-call-modal .opacity-0 {\n  opacity: 0 !important;\n}\n.video-call-modal-container .video-call-modal .video-container.mirror {\n  transform: rotateY(180deg);\n}\n.video-call-modal-container .video-call-modal .disabled-line {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: 1px;\n  height: 80%;\n  background: red;\n  transform: translate(-50%, -50%) rotate(45deg);\n}\n.video-call-modal-container .video-call-modal.show {\n  display: block;\n}\n.video-call-modal-container .video-call-modal #recorderControls {\n  z-index: 1;\n}\n.video-call-modal-container .video-call-modal.is-shrinked {\n  width: 250px;\n  height: 140px;\n}\n.video-call-modal-container .video-call-modal.is-shrinked .modal-dialog {\n  margin: 0;\n  transform: scale(1);\n}\n.video-call-modal-container .video-call-modal.is-shrinked .modal-dialog,\n.video-call-modal-container .video-call-modal.is-shrinked .video-call {\n  height: 100% !important;\n}\n.video-call-modal-container .video-call-modal.is-shrinked .btn-expand-wrapper {\n  position: absolute;\n  z-index: 10;\n  top: 10px;\n  right: 10px;\n}\n.video-call-modal-container .video-call-modal.is-shrinked #recorderControls svg {\n  width: 20px;\n  height: 20px;\n}\n.video-call-modal-container .video-call-modal.is-shrinked .remote-streams {\n  border-radius: 0.5rem;\n  border: solid 1px rgba(129, 140, 161, 0.3);\n}\n.video-call-modal-container .video-call-modal.is-fullscreen .modal-dialog {\n  height: 100vh;\n  max-height: 100vh !important;\n  width: 100vw;\n  max-width: 100vw !important;\n  margin: 0;\n}\n.video-call-modal-container .video-call-modal.is-fullscreen .video-call {\n  height: 100% !important;\n}\n.video-call-modal-container .video-call-modal.is-fullscreen .ongoing-body {\n  border-radius: 0 !important;\n}\n.video-call-modal-container .video-call-modal .call-topbar {\n  background-image: linear-gradient(rgba(0, 0, 0, 0.25), transparent);\n  z-index: 1;\n  top: 0;\n  left: 0;\n  border-top-left-radius: 0.5rem;\n  border-top-right-radius: 0.5rem;\n}\n.video-call-modal-container .video-call-modal .call-bottombar {\n  background-color: #232324;\n}\n.video-call-modal-container .video-call-modal .btn-close {\n  top: 5px;\n  right: 5px;\n}\n.video-call-modal-container .video-call-modal .mainControls .btn {\n  width: 40px;\n  height: 40px;\n}\n.video-call-modal-container .video-call-modal .call-bottombar {\n  border-bottom-left-radius: 0.5rem;\n  border-bottom-right-radius: 0.5rem;\n}\n.video-call-modal-container .video-call-modal #remote-streams {\n  background-color: #232324;\n}\n.fade-enter-active,\n.fade-leave-active {\n  transition: opacity 0.15s !important;\n}\n.fade-enter, .fade-leave-to {\n  opacity: 0;\n}", ""]);
+exports.push([module.i, ".video-call-modal-container {\n  z-index: 10000;\n}\n.video-call-modal-container .video-call-modal .video-call {\n  height: 500px;\n}\n.video-call-modal-container .video-call-modal .caller {\n  z-index: 100;\n}\n.video-call-modal-container .video-call-modal #remote-streams-container.has-presenter #presenter-container .remote-video {\n  height: 100% !important;\n}\n.video-call-modal-container .video-call-modal #remote-streams:not(.shrink-right) {\n  display: flex;\n  flex-grow: 1 !important;\n}\n.video-call-modal-container .video-call-modal #remote-streams.shrink-right {\n  width: 250px;\n  padding: 1em;\n}\n.video-call-modal-container .video-call-modal #remote-streams.shrink-right .remote-video {\n  height: 130px;\n  overflow: hidden;\n}\n.video-call-modal-container .video-call-modal #remote-streams.shrink-right .presenter-thumbnail {\n  height: 130px;\n}\n.video-call-modal-container .video-call-modal #remote-streams.shrink-right .presenter-thumbnail .presenter-profile-image {\n  width: 60px;\n  height: 60px;\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n}\n.video-call-modal-container .video-call-modal .user-profile-image {\n  width: 120px;\n  height: 120px;\n  border-radius: 50%;\n  background-position: center;\n  background-size: cover;\n  background-repeat: no-repeat;\n  background-color: #ced4da !important;\n}\n.video-call-modal-container .video-call-modal .user-profile-image span {\n  font-size: 42px;\n  font-weight: lighter;\n}\n.video-call-modal-container .video-call-modal .btn-record {\n  top: 10px;\n  left: 10px;\n  z-index: 10;\n}\n.video-call-modal-container .video-call-modal .btn-record i {\n  width: 15px;\n  height: 15px;\n  border-radius: 50%;\n  background: red;\n  display: inline-block;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.preview-thumb {\n  position: absolute;\n  bottom: 20px;\n  left: 20px;\n  width: 178px;\n  height: 100px;\n  overflow: hidden;\n  z-index: 10;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.preview-thumb video {\n  height: 100%;\n  width: auto;\n  position: absolute;\n  left: 50%;\n  bottom: 0;\n  transform: translateX(-50%);\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.profile-image {\n  width: 100px;\n  height: 100px;\n  border-radius: 50%;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.profile-image > span {\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n}\n.video-call-modal-container .video-call-modal .preview-wrapper.profile-image > span span {\n  font-size: 30px;\n}\n.video-call-modal-container .video-call-modal video,\n.video-call-modal-container .video-call-modal canvas {\n  pointer-events: none !important;\n}\n.video-call-modal-container .video-call-modal .recorded .recorded-preview {\n  height: 180px;\n  background-color: #333;\n  background-size: contain;\n  background-position: center;\n  background-repeat: no-repeat;\n}\n.video-call-modal-container .video-call-modal .recorded .recorded-details {\n  bottom: 0;\n}\n.video-call-modal-container .video-call-modal .recorded-data {\n  z-index: 100;\n  top: 0;\n  left: 0;\n}\n.video-call-modal-container .video-call-modal .opacity-0 {\n  opacity: 0 !important;\n}\n.video-call-modal-container .video-call-modal .video-container.mirror {\n  transform: rotateY(180deg);\n}\n.video-call-modal-container .video-call-modal .disabled-line {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: 1px;\n  height: 80%;\n  background: red;\n  transform: translate(-50%, -50%) rotate(45deg);\n}\n.video-call-modal-container .video-call-modal.show {\n  display: block;\n}\n.video-call-modal-container .video-call-modal #recorderControls {\n  z-index: 1;\n}\n.video-call-modal-container .video-call-modal.is-shrinked {\n  width: 250px;\n  height: 140px;\n}\n.video-call-modal-container .video-call-modal.is-shrinked .modal-dialog {\n  margin: 0;\n  transform: scale(1);\n}\n.video-call-modal-container .video-call-modal.is-shrinked .modal-dialog,\n.video-call-modal-container .video-call-modal.is-shrinked .video-call {\n  height: 100% !important;\n}\n.video-call-modal-container .video-call-modal.is-shrinked .btn-expand-wrapper {\n  position: absolute;\n  z-index: 10;\n  top: 10px;\n  right: 10px;\n}\n.video-call-modal-container .video-call-modal.is-shrinked #recorderControls svg {\n  width: 20px;\n  height: 20px;\n}\n.video-call-modal-container .video-call-modal.is-shrinked .remote-streams {\n  border-radius: 0.5rem;\n  border: solid 1px rgba(129, 140, 161, 0.3);\n}\n.video-call-modal-container .video-call-modal.is-fullscreen .modal-dialog {\n  height: 100vh;\n  max-height: 100vh !important;\n  width: 100vw;\n  max-width: 100vw !important;\n  margin: 0;\n}\n.video-call-modal-container .video-call-modal.is-fullscreen .video-call {\n  height: 100% !important;\n}\n.video-call-modal-container .video-call-modal.is-fullscreen .ongoing-body {\n  border-radius: 0 !important;\n}\n.video-call-modal-container .video-call-modal .call-topbar {\n  background-image: linear-gradient(rgba(0, 0, 0, 0.25), transparent);\n  z-index: 1;\n  top: 0;\n  left: 0;\n}\n.video-call-modal-container .video-call-modal .call-bottombar {\n  background-color: #232324;\n}\n.video-call-modal-container .video-call-modal .btn-close {\n  top: 5px;\n  right: 5px;\n}\n.video-call-modal-container .video-call-modal .mainControls .btn {\n  width: 40px;\n  height: 40px;\n}\n.video-call-modal-container .video-call-modal .call-bottombar {\n  border-bottom-left-radius: 0.5rem;\n  border-bottom-right-radius: 0.5rem;\n}\n.video-call-modal-container .video-call-modal #remote-streams {\n  background-color: #232324;\n}\n.fade-enter-active,\n.fade-leave-active {\n  transition: opacity 0.15s !important;\n}\n.fade-enter, .fade-leave-to {\n  opacity: 0;\n}", ""]);
 // Exports
 module.exports = exports;
 
@@ -51351,30 +51429,6 @@ var render = function() {
                                                           )
                                                         )
                                                       ]
-                                                    ),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-close p-0 position-absolute",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.endCall()
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("close-icon", {
-                                                          attrs: {
-                                                            width: "36",
-                                                            height: "36"
-                                                          }
-                                                        })
-                                                      ],
-                                                      1
                                                     )
                                                   ]
                                                 )
@@ -51474,15 +51528,144 @@ var render = function() {
                                                 "position-absolute-center opacity-0 bg-black"
                                             }),
                                             _vm._v(" "),
-                                            _c("div", {
-                                              ref: "remoteStreams",
-                                              staticClass:
-                                                "d-flex flex-grow-1 overflow-hidden",
-                                              class: {
-                                                "opacity-0": !_vm.status
+                                            _c(
+                                              "div",
+                                              {
+                                                staticClass:
+                                                  "d-flex flex-grow-1 overflow-hidden",
+                                                class: {
+                                                  "has-presenter": _vm.presenter
+                                                },
+                                                attrs: {
+                                                  id: "remote-streams-container"
+                                                }
                                               },
-                                              attrs: { id: "remote-streams" }
-                                            }),
+                                              [
+                                                _c("div", {
+                                                  staticClass: "bg-dark",
+                                                  class: {
+                                                    "flex-grow-1":
+                                                      _vm.presenter &&
+                                                      _vm.presenter !=
+                                                        _vm.$root.auth.id
+                                                  },
+                                                  attrs: {
+                                                    id: "presenter-container"
+                                                  }
+                                                }),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  {
+                                                    ref: "remoteStreams",
+                                                    staticClass:
+                                                      "overflow-hidden",
+                                                    class: {
+                                                      "opacity-0": !_vm.status,
+                                                      "shrink-right":
+                                                        _vm.presenter &&
+                                                        _vm.presenter !=
+                                                          _vm.$root.auth.id
+                                                    },
+                                                    attrs: {
+                                                      id: "remote-streams"
+                                                    }
+                                                  },
+                                                  [
+                                                    _vm.presenter &&
+                                                    _vm.presenter !=
+                                                      _vm.$root.auth.id &&
+                                                    _vm.presenterUser
+                                                      ? _c(
+                                                          "div",
+                                                          {
+                                                            staticClass:
+                                                              "presenter-thumbnail bg-white mb-3 text-center position-relative"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "div",
+                                                              {
+                                                                staticClass:
+                                                                  "position-absolute-center w-100 p-3"
+                                                              },
+                                                              [
+                                                                _c(
+                                                                  "div",
+                                                                  {
+                                                                    staticClass:
+                                                                      "presenter-profile-image d-inline-block rounded-circle bg-light position-relative",
+                                                                    style: {
+                                                                      backgroundImage:
+                                                                        "url(" +
+                                                                        _vm
+                                                                          .presenterUser
+                                                                          .profile_image +
+                                                                        ")"
+                                                                    }
+                                                                  },
+                                                                  [
+                                                                    !_vm
+                                                                      .presenterUser
+                                                                      .profile_image
+                                                                      ? _c(
+                                                                          "span",
+                                                                          {
+                                                                            staticClass:
+                                                                              "text-secondary position-absolute-center"
+                                                                          },
+                                                                          [
+                                                                            _vm._v(
+                                                                              _vm._s(
+                                                                                _vm
+                                                                                  .presenterUser
+                                                                                  .initials
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        )
+                                                                      : _vm._e()
+                                                                  ]
+                                                                ),
+                                                                _vm._v(" "),
+                                                                _c(
+                                                                  "h6",
+                                                                  {
+                                                                    staticClass:
+                                                                      "h5 mb-1 text-ellipsis"
+                                                                  },
+                                                                  [
+                                                                    _vm._v(
+                                                                      _vm._s(
+                                                                        _vm
+                                                                          .presenterUser
+                                                                          .full_name
+                                                                      )
+                                                                    )
+                                                                  ]
+                                                                ),
+                                                                _vm._v(" "),
+                                                                _c(
+                                                                  "span",
+                                                                  {
+                                                                    staticClass:
+                                                                      "text-success"
+                                                                  },
+                                                                  [
+                                                                    _vm._v(
+                                                                      "PRESENTING"
+                                                                    )
+                                                                  ]
+                                                                )
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      : _vm._e()
+                                                  ]
+                                                )
+                                              ]
+                                            ),
                                             _vm._v(" "),
                                             _c(
                                               "div",
@@ -51737,6 +51920,13 @@ var render = function() {
                                                                         _vm.isScreenSharing
                                                                     },
                                                                     attrs: {
+                                                                      disabled:
+                                                                        _vm.presenter &&
+                                                                        _vm.presenter !=
+                                                                          _vm
+                                                                            .$root
+                                                                            .auth
+                                                                            .id,
                                                                       type:
                                                                         "button"
                                                                     },

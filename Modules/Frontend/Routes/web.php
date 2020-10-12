@@ -77,6 +77,7 @@ Route::group(
         //Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');
+        Route::get('/callback/xero', 'XeroController@callback')->middleware('auth')->name('xerocallback');
 
         // AJAX
         Route::group([
@@ -130,6 +131,12 @@ Route::group(
                 Route::get('outlook_calendar_list', 'BookingController@outlookCalendarList');
                 Route::get('outlook_calendar_events', 'BookingController@outlookCalendarEvents');
                 Route::post('update_outlook_calendar_events', 'BookingController@updateOutlookCalendarEvents');
+
+                // Xero
+                Route::get('xero_authenticate', 'XeroController@authenticate');
+                Route::get('xero_tenants', 'XeroController@tenants');
+                Route::post('xero_tenants_save', 'XeroController@saveTenant');
+                Route::get('xero_invoices', 'XeroController@invoices');
 
                 Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');

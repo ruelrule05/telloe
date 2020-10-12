@@ -37,7 +37,9 @@ class AuthController extends Controller
             'stripe_account',
             'ignored_calendar_events',
             'id_documents',
-            'phone'
+            'phone',
+            'xero_token',
+            'xero_tenant_id'
         ]) : false;
 
         if ($user && $last_online) {
@@ -243,7 +245,7 @@ class AuthController extends Controller
         if ($request->hasFile('profile_image_file') && $request->file('profile_image_file')->isValid()) {
             $destinationPath = 'storage/profile-images/';
             $extension = $request->profile_image_file->extension();
-            $fileName = time().'.'.$extension;
+            $fileName = time() . '.' . $extension;
 
             $img = Image::make($request->profile_image_file);
             if ($img->width() > 350) {
@@ -252,8 +254,8 @@ class AuthController extends Controller
                     $constraint->upsize();
                 });
             }
-            $img->save($destinationPath.$fileName);
-            $user->profile_image = '/'.$destinationPath.$fileName;
+            $img->save($destinationPath . $fileName);
+            $user->profile_image = '/' . $destinationPath . $fileName;
             $user->save();
         }
 
@@ -298,8 +300,8 @@ class AuthController extends Controller
             if (! $user) {
                 $isNew = true;
                 $time = time();
-                $profile_image = 'http://graph.facebook.com/'.$request->id.'/picture?type=normal';
-                Image::make($profile_image)->save(public_path('storage/profile-images/'.$time.'.jpeg'));
+                $profile_image = 'http://graph.facebook.com/' . $request->id . '/picture?type=normal';
+                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
                 $username = $this->generateUsername($request);
                 $user = User::create([
                     'username' => $username,
@@ -307,7 +309,7 @@ class AuthController extends Controller
                     'last_name' => $request->last_name,
                     'email' => $request->email,
                 ]);
-                $user->profile_image = '/storage/profile-images/'.$time.'.jpeg';
+                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
                 if (isValidTimezone($request->timezone) && ! $user->timezone) {
@@ -366,7 +368,7 @@ class AuthController extends Controller
             if (! $user) {
                 $isNew = true;
                 $time = time();
-                Image::make($request->image_url)->save(public_path('storage/profile-images/'.$time.'.jpeg'));
+                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
                 $username = $this->generateUsername($request);
                 $user = User::create([
                     'username' => $username,
@@ -374,7 +376,7 @@ class AuthController extends Controller
                     'last_name' => $request->last_name,
                     'email' => $request->email,
                 ]);
-                $user->profile_image = '/storage/profile-images/'.$time.'.jpeg';
+                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
                 if (isValidTimezone($request->timezone) && ! $user->timezone) {
@@ -508,13 +510,13 @@ class AuthController extends Controller
     public function generateUsername(Request $request)
     {
         $i = '';
-        $username = strtolower($request->first_name).strtolower($request->last_name);
+        $username = strtolower($request->first_name) . strtolower($request->last_name);
         while (true) {
             if (! User::where('username', $username)->first()) {
                 break;
             }
             $i = $i == '' ? 1 : $i++;
-            $username = $username.$i;
+            $username = $username . $i;
         }
 
         return $username;

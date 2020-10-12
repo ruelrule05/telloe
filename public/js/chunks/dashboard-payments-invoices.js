@@ -449,18 +449,21 @@ vue__WEBPACK_IMPORTED_MODULE_15___default.a.use(vue_paginate__WEBPACK_IMPORTED_M
       selectedInvoice: null,
       paginate: ['invoices'],
       invoiceStatuses: [{
-        'text': 'All',
-        'value': 'all'
+        text: 'All',
+        value: 'all'
       }, {
-        'text': 'Draft',
-        'value': 'draft'
+        text: 'Draft',
+        value: 'draft'
       }, {
-        'text': 'Open',
-        'value': 'open'
+        text: 'Open',
+        value: 'open'
       }],
       invoiceStatus: 'all',
       hasInvoices: false,
-      openInfo: false
+      openInfo: false,
+      chooseIntegration: false,
+      xeroTenants: [],
+      chooseXeroTenant: false
     };
   },
   computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
@@ -523,7 +526,7 @@ vue__WEBPACK_IMPORTED_MODULE_15___default.a.use(vue_paginate__WEBPACK_IMPORTED_M
         this.hasInvoices = true;
       } else {
         invoices.push({
-          'placeholder': true
+          placeholder: true
         });
         this.hasInvoices = false;
       }
@@ -532,18 +535,18 @@ vue__WEBPACK_IMPORTED_MODULE_15___default.a.use(vue_paginate__WEBPACK_IMPORTED_M
     }
   }),
   watch: {
-    ready: function ready(value) {
-      this.$root.contentloading = !value;
+    ready: function ready(value) {//this.$root.contentloading = !value;
     },
     invoiceStatus: function invoiceStatus(value) {
       if (this.$refs['paginate']) this.$refs['paginate'].goToPage(1);
     }
   },
   created: function created() {
-    this.$root.contentloading = !this.ready;
+    //this.$root.contentloading = !this.ready;
     this.getUserContacts();
     this.getServices();
     this.getPendingInvoices();
+    this.getXeroInvoices();
   },
   mounted: function mounted() {
     var _this2 = this;
@@ -565,30 +568,165 @@ vue__WEBPACK_IMPORTED_MODULE_15___default.a.use(vue_paginate__WEBPACK_IMPORTED_M
     storePendingInvoice: 'pending_invoices/store',
     deletePendingInvoice: 'pending_invoices/delete'
   })), {}, {
-    getCurrency: function getCurrency(invoice) {
-      return !invoice.is_pending ? invoice.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
-    },
-    finalizeInvoice: function finalizeInvoice(invoice) {
+    saveXeroTenant: function saveXeroTenant(tenantId) {
       var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                invoice.statusLoading = true;
+                _this3.$root.contentloading = true;
                 _context.next = 3;
-                return _this3.finalizeContactInvoice(invoice);
+                return axios.post('/xero_tenants_save', {
+                  tenant_id: tenantId
+                });
+
+              case 3:
+                response = _context.sent;
+                _this3.$root.auth.xero_tenant_id = response.data;
+                _this3.chooseXeroTenant = false;
+
+                _this3.getXeroInvoices();
+
+              case 7:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    getXeroInvoices: function getXeroInvoices() {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response, _response;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!(Object.keys(_this4.$root.auth.xero_token).length > 0)) {
+                  _context2.next = 17;
+                  break;
+                }
+
+                if (_this4.$root.auth.xero_tenant_id) {
+                  _context2.next = 10;
+                  break;
+                }
+
+                _context2.next = 4;
+                return axios.get('/xero_tenants');
+
+              case 4:
+                response = _context2.sent;
+                _this4.xeroTenants = response.data;
+                _this4.chooseXeroTenant = true;
+                _this4.$root.contentloading = false;
+                _context2.next = 15;
+                break;
+
+              case 10:
+                _context2.next = 12;
+                return axios.get('/xero_invoices', {
+                  toasted: true
+                })["catch"](function (e) {});
+
+              case 12:
+                _response = _context2.sent;
+
+                if (_response) {}
+
+                _this4.$root.contentloading = false;
+
+              case 15:
+                _context2.next = 19;
+                break;
+
+              case 17:
+                _this4.chooseIntegration = true;
+                _this4.$root.contentloading = false;
+
+              case 19:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    authenticateXero: function authenticateXero() {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return axios.get('/xero_authenticate');
+
+              case 2:
+                response = _context3.sent;
+
+                _this5.goToXeroAuthUrl(response.data.authUrl);
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    goToXeroAuthUrl: function goToXeroAuthUrl(url) {
+      var _this6 = this;
+
+      if (url) {
+        var width = 450;
+        var height = 650;
+        var left = screen.width / 2 - width / 2;
+        var top = screen.height / 2 - height / 2;
+        var xeroAuthWindow = window.open(url, 'xero_auth_window', "width=".concat(width, ", height=").concat(height, ", top=").concat(top, ", left=").concat(left));
+        var callbackInterval = setInterval(function () {
+          if (xeroAuthWindow.closed) {
+            _this6.chooseIntegration = false;
+
+            _this6.getXeroInvoices();
+
+            clearInterval(callbackInterval);
+          }
+        }, 500);
+      }
+    },
+    getCurrency: function getCurrency(invoice) {
+      return !invoice.is_pending ? invoice.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
+    },
+    finalizeInvoice: function finalizeInvoice(invoice) {
+      var _this7 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                invoice.statusLoading = true;
+                _context4.next = 3;
+                return _this7.finalizeContactInvoice(invoice);
 
               case 3:
                 invoice.statusLoading = false;
 
               case 4:
               case "end":
-                return _context.stop();
+                return _context4.stop();
             }
           }
-        }, _callee);
+        }, _callee4);
       }))();
     },
     resetInvoiceForm: function resetInvoiceForm() {
@@ -600,21 +738,21 @@ vue__WEBPACK_IMPORTED_MODULE_15___default.a.use(vue_paginate__WEBPACK_IMPORTED_M
       this.openInfo = false;
     },
     draftInvoice: function draftInvoice(invoice) {
-      var _this4 = this;
+      var _this8 = this;
 
       if (invoice.is_pending) {
         this.$set(invoice, 'statusLoading', true);
         var data = {
-          'id': invoice.contact_id,
-          'service_ids': invoice.service_ids,
-          'amount': invoice.amount / 100
+          id: invoice.contact_id,
+          service_ids: invoice.service_ids,
+          amount: invoice.amount / 100
         };
         this.createContactInvoice(data).then(function () {
-          _this4.$set(invoice, 'statusLoading', false);
+          _this8.$set(invoice, 'statusLoading', false);
 
-          _this4.deleteInvoice(invoice);
+          _this8.deleteInvoice(invoice);
         })["catch"](function () {
-          _this4.$set(invoice, 'statusLoading', false);
+          _this8.$set(invoice, 'statusLoading', false);
         });
       }
     },
@@ -624,22 +762,22 @@ vue__WEBPACK_IMPORTED_MODULE_15___default.a.use(vue_paginate__WEBPACK_IMPORTED_M
       }
     },
     createInvoice: function createInvoice() {
-      var _this5 = this;
+      var _this9 = this;
 
       this.newInvoiceForm.loading = true;
       this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
 
       if (this.$root.payoutComplete) {
         this.createContactInvoice(this.newInvoiceForm).then(function () {
-          _this5.resetInvoiceForm();
+          _this9.resetInvoiceForm();
         })["catch"](function () {
-          _this5.newInvoiceForm.loading = false;
+          _this9.newInvoiceForm.loading = false;
         });
       } else {
         this.storePendingInvoice(this.newInvoiceForm).then(function () {
-          _this5.resetInvoiceForm();
+          _this9.resetInvoiceForm();
         })["catch"](function () {
-          _this5.newInvoiceForm.loading = false;
+          _this9.newInvoiceForm.loading = false;
         });
       }
     },
@@ -901,457 +1039,562 @@ var render = function() {
           _c("div", { staticClass: "d-flex overflow-hidden h-100 w-100" }, [
             _c(
               "div",
-              { staticClass: "d-flex flex-column flex-grow-1 px-4 mt-2 pb-4" },
+              { staticClass: "xd-flex flex-column flex-grow-1 px-4 mt-2 pb-4" },
               [
-                _vm.invoices.length > 0
-                  ? _c(
-                      "div",
-                      {
-                        staticClass: "overflow-auto h-100",
-                        class: { "d-none": !_vm.hasInvoices }
-                      },
-                      [
-                        _c(
-                          "table",
-                          {
-                            staticClass:
-                              "table table-borderless table-fixed-header mb-0"
-                          },
-                          [
-                            _vm._m(0),
-                            _vm._v(" "),
-                            _c(
-                              "paginate",
-                              {
-                                ref: "paginate",
-                                attrs: {
-                                  tag: "tbody",
-                                  name: "invoices",
-                                  list: _vm.invoices,
-                                  per: 15
+                _vm.chooseIntegration
+                  ? _c("div", { staticClass: "position-absolute-center" }, [
+                      !_vm.$root.xero_token
+                        ? _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.authenticateXero()
                                 }
-                              },
-                              [
-                                _vm._l(_vm.paginated("invoices"), function(
-                                  invoice
-                                ) {
-                                  return [
-                                    !invoice.placeholder
-                                      ? _c("tr", { key: invoice.id }, [
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass:
-                                                "align-middle text-gray-500"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n\t\t\t\t\t\t\t\t\t\t\t\t" +
-                                                  _vm._s(
-                                                    invoice.is_pending
-                                                      ? "Not available"
-                                                      : invoice.number || "-"
-                                                  ) +
-                                                  "\n\t\t\t\t\t\t\t\t\t\t\t\t"
-                                              ),
-                                              invoice.is_pending &&
-                                              !_vm.$root.payoutComplete
-                                                ? _c(
-                                                    "router-link",
-                                                    {
-                                                      directives: [
-                                                        {
-                                                          name: "tooltip",
-                                                          rawName:
-                                                            "v-tooltip.right",
-                                                          value:
-                                                            "Please complete your payout account <br /> to create active subscriptions.",
-                                                          expression:
-                                                            "'Please complete your payout account <br /> to create active subscriptions.'",
-                                                          modifiers: {
-                                                            right: true
-                                                          }
-                                                        }
-                                                      ],
-                                                      staticClass:
-                                                        "badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer",
-                                                      attrs: {
-                                                        to:
-                                                          "/dashboard/account?tab=payout"
-                                                      }
-                                                    },
-                                                    [_c("small", [_vm._v("?")])]
-                                                  )
-                                                : _vm._e()
-                                            ],
-                                            1
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "td",
-                                            { staticClass: "align-middle" },
-                                            [
-                                              _vm._v(
-                                                _vm._s(
-                                                  (
-                                                    (invoice.amount_due ||
-                                                      invoice.amount) / 100
-                                                  ).toFixed(2)
-                                                ) + " "
-                                              ),
-                                              _c(
-                                                "span",
-                                                {
-                                                  staticClass:
-                                                    "text-uppercase text-muted"
-                                                },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.getCurrency(invoice)
-                                                    )
-                                                  )
-                                                ]
-                                              )
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "td",
-                                            { staticClass: "align-middle" },
-                                            [
-                                              _vm._v(
-                                                _vm._s(
-                                                  invoice.contact.contact_user
-                                                    .full_name
-                                                )
-                                              )
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "td",
-                                            { staticClass: "align-middle" },
-                                            [
-                                              _c(
-                                                "span",
-                                                {
-                                                  staticClass:
-                                                    "badge text-capitalize position-relative",
-                                                  class:
-                                                    "badge-" + invoice.status
-                                                },
-                                                [
-                                                  _c(
-                                                    "span",
-                                                    {
-                                                      class: {
-                                                        "opacity-0":
-                                                          invoice.statusLoading
-                                                      }
-                                                    },
-                                                    [
-                                                      _vm._v(
-                                                        _vm._s(
-                                                          invoice.status ||
-                                                            "Pending"
-                                                        )
-                                                      )
-                                                    ]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  invoice.statusLoading
+                              }
+                            },
+                            [_vm._v("Xero")]
+                          )
+                        : _vm._e()
+                    ])
+                  : [
+                      _vm.chooseXeroTenant
+                        ? _c(
+                            "div",
+                            {
+                              staticClass:
+                                "position-absolute-center text-center"
+                            },
+                            [
+                              _c("h4", [_vm._v("Choose a Xero Organization")]),
+                              _vm._v(" "),
+                              _vm._l(_vm.xeroTenants, function(tenant) {
+                                return _c(
+                                  "button",
+                                  {
+                                    key: tenant.id,
+                                    staticClass: "btn btn-white",
+                                    attrs: { type: "button" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.saveXeroTenant(tenant.id)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n\t\t\t\t\t\t\t\t\t" +
+                                        _vm._s(tenant.tenantName) +
+                                        "\n\t\t\t\t\t\t\t\t"
+                                    )
+                                  ]
+                                )
+                              })
+                            ],
+                            2
+                          )
+                        : [
+                            _vm.invoices.length > 0
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass: "overflow-auto h-100",
+                                    class: { "d-none": !_vm.hasInvoices }
+                                  },
+                                  [
+                                    _c(
+                                      "table",
+                                      {
+                                        staticClass:
+                                          "table table-borderless table-fixed-header mb-0"
+                                      },
+                                      [
+                                        _vm._m(0),
+                                        _vm._v(" "),
+                                        _c(
+                                          "paginate",
+                                          {
+                                            ref: "paginate",
+                                            attrs: {
+                                              tag: "tbody",
+                                              name: "invoices",
+                                              list: _vm.invoices,
+                                              per: 15
+                                            }
+                                          },
+                                          [
+                                            _vm._l(
+                                              _vm.paginated("invoices"),
+                                              function(invoice) {
+                                                return [
+                                                  !invoice.placeholder
                                                     ? _c(
-                                                        "div",
-                                                        {
-                                                          staticClass:
-                                                            "position-absolute-center"
-                                                        },
+                                                        "tr",
+                                                        { key: invoice.id },
                                                         [
-                                                          _c("div", {
-                                                            staticClass:
-                                                              "spinner-border spinner-border-sm text-primary"
-                                                          })
-                                                        ]
-                                                      )
-                                                    : _vm._e()
-                                                ]
-                                              )
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass:
-                                                "align-middle text-muted"
-                                            },
-                                            [
-                                              _vm._v(
-                                                _vm._s(
-                                                  _vm.formatDate(
-                                                    invoice.created
-                                                  )
-                                                )
-                                              )
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "td",
-                                            {
-                                              staticClass:
-                                                "text-right align-middle"
-                                            },
-                                            [
-                                              _c(
-                                                "div",
-                                                { staticClass: "dropleft" },
-                                                [
-                                                  _c(
-                                                    "button",
-                                                    {
-                                                      staticClass:
-                                                        "btn btn-white p-1 line-height-0",
-                                                      attrs: {
-                                                        "data-toggle":
-                                                          "dropdown",
-                                                        disabled:
-                                                          invoice.statusLoading
-                                                      }
-                                                    },
-                                                    [
-                                                      _c("more-icon", {
-                                                        staticClass:
-                                                          "fill-gray-500",
-                                                        attrs: {
-                                                          width: "20",
-                                                          height: "20",
-                                                          transform:
-                                                            "scale(0.75)"
-                                                        }
-                                                      })
-                                                    ],
-                                                    1
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "div",
-                                                    {
-                                                      staticClass:
-                                                        "dropdown-menu dropdown-menu-right"
-                                                    },
-                                                    [
-                                                      invoice.is_pending
-                                                        ? [
-                                                            _c(
-                                                              "span",
-                                                              {
-                                                                staticClass:
-                                                                  "dropdown-item d-flex align-items-center cursor-pointer",
-                                                                on: {
-                                                                  click: function(
-                                                                    $event
-                                                                  ) {
-                                                                    return _vm.draftInvoice(
-                                                                      invoice
+                                                          _c(
+                                                            "td",
+                                                            {
+                                                              staticClass:
+                                                                "align-middle text-gray-500"
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t" +
+                                                                  _vm._s(
+                                                                    invoice.is_pending
+                                                                      ? "Not available"
+                                                                      : invoice.number ||
+                                                                          "-"
+                                                                  ) +
+                                                                  "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                              ),
+                                                              invoice.is_pending &&
+                                                              !_vm.$root
+                                                                .payoutComplete
+                                                                ? _c(
+                                                                    "router-link",
+                                                                    {
+                                                                      directives: [
+                                                                        {
+                                                                          name:
+                                                                            "tooltip",
+                                                                          rawName:
+                                                                            "v-tooltip.right",
+                                                                          value:
+                                                                            "Please complete your payout account <br /> to create active subscriptions.",
+                                                                          expression:
+                                                                            "'Please complete your payout account <br /> to create active subscriptions.'",
+                                                                          modifiers: {
+                                                                            right: true
+                                                                          }
+                                                                        }
+                                                                      ],
+                                                                      staticClass:
+                                                                        "badge badge-pill shadow-none py-0 px-1 badge-dark border-0 badge-sm cursor-pointer",
+                                                                      attrs: {
+                                                                        to:
+                                                                          "/dashboard/account?tab=payout"
+                                                                      }
+                                                                    },
+                                                                    [
+                                                                      _c(
+                                                                        "small",
+                                                                        [
+                                                                          _vm._v(
+                                                                            "?"
+                                                                          )
+                                                                        ]
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                : _vm._e()
+                                                            ],
+                                                            1
+                                                          ),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "td",
+                                                            {
+                                                              staticClass:
+                                                                "align-middle"
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                _vm._s(
+                                                                  (
+                                                                    (invoice.amount_due ||
+                                                                      invoice.amount) /
+                                                                    100
+                                                                  ).toFixed(2)
+                                                                ) + " "
+                                                              ),
+                                                              _c(
+                                                                "span",
+                                                                {
+                                                                  staticClass:
+                                                                    "text-uppercase text-muted"
+                                                                },
+                                                                [
+                                                                  _vm._v(
+                                                                    _vm._s(
+                                                                      _vm.getCurrency(
+                                                                        invoice
+                                                                      )
                                                                     )
-                                                                  }
-                                                                }
-                                                              },
-                                                              [
-                                                                _c(
-                                                                  "task-icon",
-                                                                  {
-                                                                    staticClass:
-                                                                      "ml-n2 mr-2 fill-secondary",
-                                                                    attrs: {
-                                                                      transform:
-                                                                        "scale(0.85)"
-                                                                    }
-                                                                  }
-                                                                ),
-                                                                _vm._v(
-                                                                  "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tCreate draft\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                  )
+                                                                ]
+                                                              )
+                                                            ]
+                                                          ),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "td",
+                                                            {
+                                                              staticClass:
+                                                                "align-middle"
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                _vm._s(
+                                                                  invoice
+                                                                    .contact
+                                                                    .contact_user
+                                                                    .full_name
                                                                 )
-                                                              ],
-                                                              1
-                                                            ),
-                                                            _vm._v(" "),
-                                                            _c(
-                                                              "span",
-                                                              {
-                                                                staticClass:
-                                                                  "dropdown-item d-flex align-items-center cursor-pointer",
-                                                                on: {
-                                                                  click: function(
-                                                                    $event
-                                                                  ) {
-                                                                    _vm.selectedInvoice = invoice
-                                                                    _vm.$refs[
-                                                                      "deleteModal"
-                                                                    ].show()
-                                                                  }
-                                                                }
-                                                              },
-                                                              [
-                                                                _c(
-                                                                  "trash-icon",
-                                                                  {
-                                                                    staticClass:
-                                                                      "ml-n2 mr-2 fill-secondary",
-                                                                    attrs: {
-                                                                      transform:
-                                                                        "scale(0.85)"
-                                                                    }
-                                                                  }
-                                                                ),
-                                                                _vm._v(
-                                                                  "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tDelete\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
-                                                                )
-                                                              ],
-                                                              1
-                                                            )
-                                                          ]
-                                                        : [
-                                                            invoice.status ==
-                                                            "draft"
-                                                              ? [
+                                                              )
+                                                            ]
+                                                          ),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "td",
+                                                            {
+                                                              staticClass:
+                                                                "align-middle"
+                                                            },
+                                                            [
+                                                              _c(
+                                                                "span",
+                                                                {
+                                                                  staticClass:
+                                                                    "badge text-capitalize position-relative",
+                                                                  class:
+                                                                    "badge-" +
+                                                                    invoice.status
+                                                                },
+                                                                [
                                                                   _c(
                                                                     "span",
                                                                     {
-                                                                      staticClass:
-                                                                        "dropdown-item d-flex align-items-center cursor-pointer",
-                                                                      on: {
-                                                                        click: function(
-                                                                          $event
-                                                                        ) {
-                                                                          return _vm.finalizeInvoice(
-                                                                            invoice
-                                                                          )
-                                                                        }
+                                                                      class: {
+                                                                        "opacity-0":
+                                                                          invoice.statusLoading
                                                                       }
                                                                     },
                                                                     [
-                                                                      _c(
-                                                                        "task-icon",
+                                                                      _vm._v(
+                                                                        _vm._s(
+                                                                          invoice.status ||
+                                                                            "Pending"
+                                                                        )
+                                                                      )
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(" "),
+                                                                  invoice.statusLoading
+                                                                    ? _c(
+                                                                        "div",
                                                                         {
                                                                           staticClass:
-                                                                            "ml-n2 mr-2 fill-secondary",
-                                                                          attrs: {
-                                                                            transform:
-                                                                              "scale(0.85)"
-                                                                          }
-                                                                        }
-                                                                      ),
-                                                                      _vm._v(
-                                                                        "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tFinalize Invoice\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                            "position-absolute-center"
+                                                                        },
+                                                                        [
+                                                                          _c(
+                                                                            "div",
+                                                                            {
+                                                                              staticClass:
+                                                                                "spinner-border spinner-border-sm text-primary"
+                                                                            }
+                                                                          )
+                                                                        ]
                                                                       )
-                                                                    ],
-                                                                    1
-                                                                  )
+                                                                    : _vm._e()
                                                                 ]
-                                                              : [
+                                                              )
+                                                            ]
+                                                          ),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "td",
+                                                            {
+                                                              staticClass:
+                                                                "align-middle text-muted"
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                _vm._s(
+                                                                  _vm.formatDate(
+                                                                    invoice.created
+                                                                  )
+                                                                )
+                                                              )
+                                                            ]
+                                                          ),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "td",
+                                                            {
+                                                              staticClass:
+                                                                "text-right align-middle"
+                                                            },
+                                                            [
+                                                              _c(
+                                                                "div",
+                                                                {
+                                                                  staticClass:
+                                                                    "dropleft"
+                                                                },
+                                                                [
                                                                   _c(
-                                                                    "a",
+                                                                    "button",
                                                                     {
                                                                       staticClass:
-                                                                        "dropdown-item d-flex align-items-center",
+                                                                        "btn btn-white p-1 line-height-0",
                                                                       attrs: {
-                                                                        target:
-                                                                          "_blank",
-                                                                        href:
-                                                                          invoice.hosted_invoice_url
+                                                                        "data-toggle":
+                                                                          "dropdown",
+                                                                        disabled:
+                                                                          invoice.statusLoading
                                                                       }
                                                                     },
                                                                     [
                                                                       _c(
-                                                                        "shortcut-icon",
+                                                                        "more-icon",
                                                                         {
                                                                           staticClass:
-                                                                            "ml-n2 mr-2 fill-secondary",
+                                                                            "fill-gray-500",
                                                                           attrs: {
+                                                                            width:
+                                                                              "20",
+                                                                            height:
+                                                                              "20",
                                                                             transform:
                                                                               "scale(0.75)"
                                                                           }
                                                                         }
-                                                                      ),
-                                                                      _vm._v(
-                                                                        "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tPayment page\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
                                                                       )
                                                                     ],
                                                                     1
                                                                   ),
                                                                   _vm._v(" "),
                                                                   _c(
-                                                                    "a",
+                                                                    "div",
                                                                     {
                                                                       staticClass:
-                                                                        "dropdown-item d-flex align-items-center",
-                                                                      attrs: {
-                                                                        href:
-                                                                          invoice.invoice_pdf,
-                                                                        download:
-                                                                          ""
-                                                                      }
+                                                                        "dropdown-menu dropdown-menu-right"
                                                                     },
                                                                     [
-                                                                      _c(
-                                                                        "arrow-down-icon",
-                                                                        {
-                                                                          staticClass:
-                                                                            "ml-n2 mr-2 fill-secondary"
-                                                                        }
-                                                                      ),
-                                                                      _vm._v(
-                                                                        "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tDownload PDF\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
-                                                                      )
+                                                                      invoice.is_pending
+                                                                        ? [
+                                                                            _c(
+                                                                              "span",
+                                                                              {
+                                                                                staticClass:
+                                                                                  "dropdown-item d-flex align-items-center cursor-pointer",
+                                                                                on: {
+                                                                                  click: function(
+                                                                                    $event
+                                                                                  ) {
+                                                                                    return _vm.draftInvoice(
+                                                                                      invoice
+                                                                                    )
+                                                                                  }
+                                                                                }
+                                                                              },
+                                                                              [
+                                                                                _c(
+                                                                                  "task-icon",
+                                                                                  {
+                                                                                    staticClass:
+                                                                                      "ml-n2 mr-2 fill-secondary",
+                                                                                    attrs: {
+                                                                                      transform:
+                                                                                        "scale(0.85)"
+                                                                                    }
+                                                                                  }
+                                                                                ),
+                                                                                _vm._v(
+                                                                                  "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tCreate draft\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                                )
+                                                                              ],
+                                                                              1
+                                                                            ),
+                                                                            _vm._v(
+                                                                              " "
+                                                                            ),
+                                                                            _c(
+                                                                              "span",
+                                                                              {
+                                                                                staticClass:
+                                                                                  "dropdown-item d-flex align-items-center cursor-pointer",
+                                                                                on: {
+                                                                                  click: function(
+                                                                                    $event
+                                                                                  ) {
+                                                                                    _vm.selectedInvoice = invoice
+                                                                                    _vm.$refs[
+                                                                                      "deleteModal"
+                                                                                    ].show()
+                                                                                  }
+                                                                                }
+                                                                              },
+                                                                              [
+                                                                                _c(
+                                                                                  "trash-icon",
+                                                                                  {
+                                                                                    staticClass:
+                                                                                      "ml-n2 mr-2 fill-secondary",
+                                                                                    attrs: {
+                                                                                      transform:
+                                                                                        "scale(0.85)"
+                                                                                    }
+                                                                                  }
+                                                                                ),
+                                                                                _vm._v(
+                                                                                  "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tDelete\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                                )
+                                                                              ],
+                                                                              1
+                                                                            )
+                                                                          ]
+                                                                        : [
+                                                                            invoice.status ==
+                                                                            "draft"
+                                                                              ? [
+                                                                                  _c(
+                                                                                    "span",
+                                                                                    {
+                                                                                      staticClass:
+                                                                                        "dropdown-item d-flex align-items-center cursor-pointer",
+                                                                                      on: {
+                                                                                        click: function(
+                                                                                          $event
+                                                                                        ) {
+                                                                                          return _vm.finalizeInvoice(
+                                                                                            invoice
+                                                                                          )
+                                                                                        }
+                                                                                      }
+                                                                                    },
+                                                                                    [
+                                                                                      _c(
+                                                                                        "task-icon",
+                                                                                        {
+                                                                                          staticClass:
+                                                                                            "ml-n2 mr-2 fill-secondary",
+                                                                                          attrs: {
+                                                                                            transform:
+                                                                                              "scale(0.85)"
+                                                                                          }
+                                                                                        }
+                                                                                      ),
+                                                                                      _vm._v(
+                                                                                        "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tFinalize Invoice\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                                      )
+                                                                                    ],
+                                                                                    1
+                                                                                  )
+                                                                                ]
+                                                                              : [
+                                                                                  _c(
+                                                                                    "a",
+                                                                                    {
+                                                                                      staticClass:
+                                                                                        "dropdown-item d-flex align-items-center",
+                                                                                      attrs: {
+                                                                                        target:
+                                                                                          "_blank",
+                                                                                        href:
+                                                                                          invoice.hosted_invoice_url
+                                                                                      }
+                                                                                    },
+                                                                                    [
+                                                                                      _c(
+                                                                                        "shortcut-icon",
+                                                                                        {
+                                                                                          staticClass:
+                                                                                            "ml-n2 mr-2 fill-secondary",
+                                                                                          attrs: {
+                                                                                            transform:
+                                                                                              "scale(0.75)"
+                                                                                          }
+                                                                                        }
+                                                                                      ),
+                                                                                      _vm._v(
+                                                                                        "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tPayment page\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                                      )
+                                                                                    ],
+                                                                                    1
+                                                                                  ),
+                                                                                  _vm._v(
+                                                                                    " "
+                                                                                  ),
+                                                                                  _c(
+                                                                                    "a",
+                                                                                    {
+                                                                                      staticClass:
+                                                                                        "dropdown-item d-flex align-items-center",
+                                                                                      attrs: {
+                                                                                        href:
+                                                                                          invoice.invoice_pdf,
+                                                                                        download:
+                                                                                          ""
+                                                                                      }
+                                                                                    },
+                                                                                    [
+                                                                                      _c(
+                                                                                        "arrow-down-icon",
+                                                                                        {
+                                                                                          staticClass:
+                                                                                            "ml-n2 mr-2 fill-secondary"
+                                                                                        }
+                                                                                      ),
+                                                                                      _vm._v(
+                                                                                        "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tDownload PDF\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+                                                                                      )
+                                                                                    ],
+                                                                                    1
+                                                                                  )
+                                                                                ]
+                                                                          ]
                                                                     ],
-                                                                    1
+                                                                    2
                                                                   )
                                                                 ]
-                                                          ]
-                                                    ],
-                                                    2
-                                                  )
+                                                              )
+                                                            ]
+                                                          )
+                                                        ]
+                                                      )
+                                                    : _vm._e()
                                                 ]
-                                              )
-                                            ]
-                                          )
-                                        ])
-                                      : _vm._e()
+                                              }
+                                            )
+                                          ],
+                                          2
+                                        )
+                                      ],
+                                      1
+                                    )
                                   ]
-                                })
-                              ],
-                              2
-                            )
-                          ],
-                          1
-                        )
-                      ]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.invoices.length == 0 || !_vm.hasInvoices
-                  ? _c(
-                      "div",
-                      {
-                        staticClass:
-                          "text-muted text-center position-absolute-center"
-                      },
-                      [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "h6 text-secondary font-weight-normal mb-0"
-                          },
-                          [_vm._v("No invoices found.")]
-                        )
-                      ]
-                    )
-                  : _vm._e()
-              ]
+                                )
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.invoices.length == 0 || !_vm.hasInvoices
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "text-muted text-center position-absolute-center w-100"
+                                  },
+                                  [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass:
+                                          "h6 text-secondary font-weight-normal mb-0"
+                                      },
+                                      [_vm._v("No invoices found.")]
+                                    )
+                                  ]
+                                )
+                              : _vm._e()
+                          ]
+                    ]
+              ],
+              2
             ),
             _vm._v(" "),
             _c(

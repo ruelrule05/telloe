@@ -8,6 +8,35 @@
 		.caller {
 			z-index: 100;
 		}
+		#remote-streams-container.has-presenter {
+			#presenter-container .remote-video {
+				height: 100% !important;
+			}
+		}
+		#remote-streams {
+			&:not(.shrink-right) {
+				display: flex;
+				flex-grow: 1 !important;
+			}
+			&.shrink-right {
+				width: 250px;
+				padding: 1em;
+				.remote-video {
+					height: 130px;
+					overflow: hidden;
+				}
+				.presenter-thumbnail {
+					height: 130px;
+					.presenter-profile-image {
+						width: 60px;
+						height: 60px;
+						background-size: cover;
+						background-position: center;
+						background-repeat: no-repeat;
+					}
+				}
+			}
+		}
 
 		.user-profile-image {
 			width: 120px;
@@ -160,8 +189,6 @@
 			z-index: 1;
 			top: 0;
 			left: 0;
-			border-top-left-radius: $border-radius;
-			border-top-right-radius: $border-radius;
 		}
 		.call-bottombar {
 			background-color: #232324;

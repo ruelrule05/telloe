@@ -52,9 +52,9 @@
 						    		<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column rounded overflow-hidden">
 						    			<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked">
 						    				<h5 class="font-heading mb-0 text-white">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h5>
-						    				<button @click="endCall()" class="btn btn-sm btn-close p-0 position-absolute">
+						    				<!-- <button @click="endCall()" class="btn btn-sm btn-close p-0 position-absolute">
 												<close-icon width="36" height="36"></close-icon>
-											</button>
+											</button> -->
 						    			</div>
 										<!-- <button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center">
 											<i :class="{'bg-gray': !isRecording}"></i>&nbsp;{{ isRecording ? 'Stop recording' : 'Record this call' }}</span>
@@ -72,7 +72,20 @@
 										
 										<!-- Remote camera -->
 										<canvas ref="preview" class="position-absolute-center opacity-0 bg-black"></canvas>
-										<div ref="remoteStreams" id="remote-streams" class="d-flex flex-grow-1 overflow-hidden" :class="{'opacity-0': !status}">
+										<div class="d-flex flex-grow-1 overflow-hidden" :class="{'has-presenter': presenter}" id="remote-streams-container">
+											<div id="presenter-container" class="bg-dark" :class="{'flex-grow-1': presenter && presenter != $root.auth.id}">
+											</div>
+											<div ref="remoteStreams" id="remote-streams" class="overflow-hidden" :class="{'opacity-0': !status, 'shrink-right': presenter && presenter != $root.auth.id}">
+												<div v-if="presenter && presenter != $root.auth.id && presenterUser" class="presenter-thumbnail bg-white mb-3 text-center position-relative">
+													<div class="position-absolute-center w-100 p-3">
+														<div class="presenter-profile-image d-inline-block rounded-circle bg-light position-relative" :style="{backgroundImage: 'url('+presenterUser.profile_image+')'}">
+															<span v-if="!presenterUser.profile_image" class="text-secondary position-absolute-center">{{ presenterUser.initials }}</span>
+														</div>
+														<h6 class="h5 mb-1 text-ellipsis">{{ presenterUser.full_name }}</h6>
+														<span class="text-success">PRESENTING</span>
+													</div>
+												</div>
+											</div>
 										</div>
 										
 
@@ -105,7 +118,7 @@
 								            <div class="text-right w-25">
 							        			<template v-if="status == 'ongoing'">
 								        			<template v-if="!isShrinked">
-												        <button v-tooltip.top="'Share Screen'" type="button" :class="{'d-none': isScreenSharing}" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
+												        <button :disabled="presenter && presenter != $root.auth.id" v-tooltip.top="'Share Screen'" type="button" :class="{'d-none': isScreenSharing}" class="btn btn-white border badge-pill p-1 line-height-1" @click="shareScreen">
 												            <duplicate-alt-icon width="20" height="20"></duplicate-alt-icon>
 												        </button>
 												        <button v-tooltip.top="'Exit Share Screen'" type="button" :class="{'d-none': !isScreenSharing}" class="btn btn-white border badge-pill line-height-1 p-1" @click="stopShareScreen">

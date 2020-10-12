@@ -543,12 +543,12 @@ vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(v_calendar__WEBPACK_IMPORTED_MODU
         var before = dateForWeekView.subtract(i, 'day');
         var after = dateForWeekView.add(i, 'day');
         /*daysBefore.unshift({
-            date: before.toDate(),
-            title: before.format('ddd'),
-            description: before.format('D MMM'),
-            label: before.format('YYYY-MM-DD'),
-            id: before.format('MMMDYYYY'),
-        });*/
+                        date: before.toDate(),
+                        title: before.format('ddd'),
+                        description: before.format('D MMM'),
+                        label: before.format('YYYY-MM-DD'),
+                        id: before.format('MMMDYYYY'),
+                    });*/
 
         daysAfter.push({
           date: after.toDate(),
