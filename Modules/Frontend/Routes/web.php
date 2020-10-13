@@ -16,9 +16,11 @@ Route::get('test', function () {
     // preg_match_all('!https?://\S+!', 'dsds sdsd s https://google.com and http://clyde.com', $links, false);
     // echo '<pre>';
     // print_r($links);
-    $assignedServices = App\Models\Service::with('assignedService')->whereNotNull('assigned_service_id')->first()->toArray();
-    echo '<pre>';
-    print_r($assignedServices);
+    // $assignedServices = App\Models\Service::with('assignedService')->whereNotNull('assigned_service_id')->first()->toArray();
+    // echo '<pre>';
+    // print_r($assignedServices);
+    $ip = trim(shell_exec('dig +short myip.opendns.com @resolver1.opendns.com'));
+    echo $ip;
 });
 
 Route::get('widget', function () {
