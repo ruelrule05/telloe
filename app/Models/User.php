@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Http;
 use Mail;
 use Modules\Frontend\Mail\NewUser;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -141,11 +142,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Service::class);
     }
 
-    public function getTimezoneAttribute($value)
-    {
-        return strlen($value) ? $value : config('app.timezone');
-    }
-
     protected function castAttribute($key, $value)
     {
         if (is_null($value)) {
@@ -180,9 +176,24 @@ class User extends Authenticatable implements JWTSubject
     public static function boot()
     {
         parent::boot();
+
+        static::creating(function ($model) {
+            $ipinfo = json_decode(Http::get('https://ipinfo.io/json'), true);
+            $timezone = $ipinfo['timezone'] ?? null;
+            if ($timezone) {
+                $model->timezone = $timezone;
+            }
+        });
+
         static::created(function ($user) {
             foreach (config('app.admin_emails') as $email) {
                 Mail::to($email)->queue(new NewUser($user));
+            }
+        });
+
+        static::retrieved(function ($model) {
+            if (! $model->timezone) {
+                $model->timezone = config('app.timezone');
             }
         });
     }

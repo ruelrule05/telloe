@@ -1,7 +1,7 @@
 <template>
   <div class="h-100" v-if="service">
     <div class="d-flex h-100 overflow-hidden">
-      <div class="p-3 flex-grow-1">
+      <div class="p-4 flex-grow-1">
         <div class="d-flex">
           <div>
             <button
@@ -44,23 +44,25 @@
           </div>
         </div>
 
-        <h1 class="font-heading h3 mt-4">{{ service.name }}</h1>
-        <p class="service-description">{{ service.description }}</p>
+        <div class="rounded bg-white shadow-sm p-3 mt-3">
+          <h1 class="font-heading h3">{{ service.name }}</h1>
+          <p class="service-description">{{ service.description }}</p>
 
-        <h6 class="font-heading d-inline-block mb-2">Duration:</h6>
-        {{ service.duration }} minutes
-        <div>
-          <h6 class="font-heading d-inline-block mb-2">Interval:</h6>
-          {{ service.interval }} minutes
-        </div>
-        <h6 class="font-heading d-inline-block mb-2">Default Rate:</h6>
-        ${{ service.default_rate }}
-        <div>
-          <h6 class="font-heading d-inline-block mb-4">Available in widget:</h6>
-          {{ service.in_widget ? "Yes" : "No" }}
+          <h6 class="font-heading d-inline-block mb-2">Duration:</h6>
+          {{ service.duration }} minutes
+          <div>
+            <h6 class="font-heading d-inline-block mb-2">Interval:</h6>
+            {{ service.interval }} minutes
+          </div>
+          <h6 class="font-heading d-inline-block mb-2">Default Rate:</h6>
+          ${{ service.default_rate }}
+          <div>
+            <h6 class="font-heading d-inline-block">Available in widget:</h6>
+            {{ service.in_widget ? "Yes" : "No" }}
+          </div>
         </div>
         <!-- Bookings -->
-        <h5 class="mt-3 font-heading">Bookings</h5>
+        <h5 class="mt-5 font-heading mb-0">Bookings</h5>
         <div class="overflow-auto h-100" v-if="service.bookings.length > 0">
           <table class="table table-borderless table-fixed-header mb-0">
             <thead class="text-muted">
@@ -87,15 +89,206 @@
                   <td class="align-middle">
                     {{ booking.start }}
                   </td>
-                  <td class="align-middle"></td>
+                  <td class="align-middle">{{ formatDate(booking.created_at) }}</td>
                 </tr>
               </template>
             </paginate>
           </table>
         </div>
         <div v-else>
-          <div class="rounded bg-white text-center py-3 text-muted">
+          <div class="rounded bg-white text-center py-3 text-muted mt-2">
             No bookings.
+          </div>
+        </div>
+      </div>
+      <div class="info bg-white h-100 overflow-auto shadow-sm">
+        <div class="d-flex mb-2">
+          <button
+            :data-intro="$root.intros.service_availability.intro"
+            :data-step="$root.intros.service_availability.step"
+            class="btn position-relative w-50 rounded-0 py-3"
+            :class="[
+              serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light',
+            ]"
+            @click="serviceDetailsTab = 'availability'"
+          >
+            Availability
+          </button>
+          <button
+            :data-intro="$root.intros.service_holidays.intro"
+            :data-step="$root.intros.service_holidays.step"
+            class="btn btn-tab position-relative w-50 rounded-0 py-3"
+            :class="[
+              serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light',
+            ]"
+            @click="serviceDetailsTab = 'holidays'"
+          >
+            Holidays
+          </button>
+        </div>
+
+        <div v-if="serviceDetailsTab == 'availability'" id="service-days">
+          <div
+            v-for="(day, index) in days"
+            :key="index"
+            class="service-day p-2 border-bottom"
+          >
+            <div
+              class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer"
+              data-toggle="collapse"
+              :data-target="`#day-${day}`"
+            >
+              <toggle-switch
+                class="mr-2"
+                active-class="bg-green"
+                @click.native.stop
+                @input="updateService(service)"
+                v-model="service.days[day].isOpen"
+              ></toggle-switch>
+              <div class="h6 mb-0">{{ day.toUpperCase() }}</div>
+              <chevron-down-icon
+                class="ml-auto chevron-down"
+              ></chevron-down-icon>
+            </div>
+            <div
+              class="collapse"
+              data-parent="#service-days"
+              :id="`day-${day}`"
+            >
+              <div class="py-2 px-3">
+                <div class="">
+                  <label class="mb-1 text-gray">Available Time</label>
+                  <timerangepicker
+                    @update="updateAvailableHours($event, day)"
+                    :start="service.days[day].start"
+                    :end="service.days[day].end"
+                  ></timerangepicker>
+
+                  <label class="mb-1 mt-3 text-gray">Break Times</label>
+                  <div
+                    class="d-flex align-items-center mb-1"
+                    v-for="(breaktime, index) in service.days[day].breaktimes"
+                    :key="index"
+                  >
+                    <timerangepicker
+                      @update="updateBreaktime($event, index, day)"
+                      :start="breaktime.start"
+                      :end="breaktime.end"
+                      class="flex-grow-1"
+                    ></timerangepicker>
+                    <trash-icon
+                      class="ml-auto cursor-pointer"
+                      width="20"
+                      height="20"
+                      fill="red"
+                      @click.native="removeBreaktime(index, day)"
+                    ></trash-icon>
+                  </div>
+
+                  <timerangepicker
+                    v-if="newBreaktime"
+                    :start="newBreaktime.start"
+                    :end="newBreaktime.end"
+                    @update="updateNewBreaktime($event, day)"
+                    class="mt-1"
+                  ></timerangepicker>
+                  <div class="mt-2 d-flex align-items-center">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      :disabled="
+                        newBreaktime &&
+                        (!newBreaktime.start || !newBreaktime.end)
+                      "
+                      @click="newBreaktime = {}"
+                    >
+                      + Add breaktime
+                    </button>
+                    <button
+                      v-if="(service.days[day].breaktimes || []).length > 0"
+                      type="button"
+                      class="btn btn-white border btn-sm ml-auto"
+                      @click="
+                        selectedDay = day;
+                        $refs['applyBreaktimeToAllModal'].show();
+                      "
+                    >
+                      Apply to all days
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="serviceDetailsTab == 'holidays'" class="mt-3 px-3">
+          <button
+            class="btn btn-sm btn-outline-primary mb-2"
+            @click="newHoliday = {}"
+          >
+            + Add Holiday
+          </button>
+          <div v-if="newHoliday">
+            <div
+              class="d-flex border rounded align-items-stretch mb-2 overflow-hidden"
+            >
+              <div class="text-gray bg-gray-300 p-2">Date</div>
+              <div class="flex-grow-1">
+                <v-date-picker
+                  is-required
+                  :disabled-dates="formattedHolidays"
+                  :min-date="new Date()"
+                  :popover="{ visibility: 'click' }"
+                  v-model="newHoliday.date"
+                  class="d-block h-100"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100"
+                    :class="{ 'text-gray': !newHoliday.date }"
+                  >
+                    {{
+                      newHoliday.date ? formatDate(newHoliday.date) : "Set date"
+                    }}
+                  </button>
+                </v-date-picker>
+              </div>
+            </div>
+            <div class="d-flex align-items-center mt-1">
+              <div class="ml-auto">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-link text-body pl-0"
+                  @click="newHoliday = null"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-primary ml-auto"
+                  :disabled="!newHoliday.date"
+                  @click="addHoliday"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div
+              v-for="(holiday, index) in service.holidays"
+              :key="index"
+              class="border-bottom py-2 d-flex"
+            >
+              {{ formatDate(holiday) }}
+              <trash-icon
+                class="ml-auto cursor-pointer"
+                width="20"
+                height="20"
+                fill="red"
+                @click.native="removeHoliday(index)"
+              ></trash-icon>
+            </div>
           </div>
         </div>
       </div>

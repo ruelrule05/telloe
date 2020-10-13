@@ -169,7 +169,7 @@
 				border: solid 1px $border-color;
 			}
 		}
-		&.is-fullscreen {
+		&.is-fullscreen:not(.is-shrinked) {
 			.modal-dialog {
 				height: 100vh;
 				max-height: 100vh !important;

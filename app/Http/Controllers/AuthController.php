@@ -67,11 +67,6 @@ class AuthController extends Controller
                 return response()->json($response);
             }
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-                if (isValidTimezone($request->timezone) && ! $user->timezone) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
-
                 if ($request->invite_token) {
                     checkInviteToken($user, $request);
                 } elseif ($request->member_invite_token) {
@@ -120,11 +115,6 @@ class AuthController extends Controller
         $widget = Widget::create([
             'user_id' => $user->id
         ]);
-
-        if (isValidTimezone($request->timezone) && ! $user->timezone) {
-            $user->timezone = $request->timezone;
-            $user->save();
-        }
 
         Auth::login($user);
 
@@ -312,10 +302,6 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
-                if (isValidTimezone($request->timezone) && ! $user->timezone) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
                 $widget = Widget::create([
                     'user_id' => $user->id
                 ]);
@@ -379,10 +365,6 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
-                if (isValidTimezone($request->timezone) && ! $user->timezone) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
                 $widget = Widget::create([
                     'user_id' => $user->id
                 ]);

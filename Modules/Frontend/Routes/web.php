@@ -19,8 +19,7 @@ Route::get('test', function () {
     // $assignedServices = App\Models\Service::with('assignedService')->whereNotNull('assigned_service_id')->first()->toArray();
     // echo '<pre>';
     // print_r($assignedServices);
-    $ip = trim(shell_exec('dig +short myip.opendns.com @resolver1.opendns.com'));
-    echo $ip;
+    //$response = \Illuminate\Support\Facades\Http::get('http://ip-api.com/json');
 });
 
 Route::get('widget', function () {
