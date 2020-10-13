@@ -10,6 +10,7 @@ import ArrowDownIcon from '../../../../icons/arrow-down';
 import TaskIcon from '../../../../icons/task';
 import TrashIcon from '../../../../icons/trash';
 import MoreIcon from '../../../../icons/more';
+import XeroIcon from '../../../../icons/xero';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
@@ -28,7 +29,8 @@ export default {
 		ArrowDownIcon,
 		TaskIcon,
 		TrashIcon,
-		MoreIcon
+		MoreIcon,
+		XeroIcon
 	},
 
 	directives: { Tooltip },
@@ -202,9 +204,11 @@ export default {
 				let xeroAuthWindow = window.open(url, 'xero_auth_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
 				let callbackInterval = setInterval(() => {
 					if (xeroAuthWindow.closed) {
+						clearInterval(callbackInterval);
+						console.log('closed');
 						this.chooseIntegration = false;
 						this.getXeroInvoices();
-						clearInterval(callbackInterval);
+						console.log('closedxxxx');
 					}
 				}, 500);
 			}
