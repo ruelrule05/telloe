@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import Modal from '../../../../../components/modal/modal.vue';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import Timerangepicker from '../../../../../components/timerangepicker/timerangepicker.vue';
@@ -12,12 +12,13 @@ import CogIcon from '../../../../../icons/cog';
 import TrashIcon from '../../../../../icons/trash';
 import ClockIcon from '../../../../../icons/clock';
 import ArrowLeftIcon from '../../../../../icons/arrow-left';
+import MoreIcon from '../../../../../icons/more';
 import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon },
 	data: () => ({
 		service: null,
 		clonedService: null,
@@ -26,10 +27,15 @@ export default {
 		newHoliday: null,
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
-		paginate: ['bookings']
+		paginate: ['bookings'],
+		assignMember: false
 	}),
 
 	computed: {
+		...mapState({
+			members: state => state.members.index
+		}),
+
 		formattedHolidays() {
 			let formattedHolidays = [];
 			if (this.service) {
@@ -64,6 +70,7 @@ export default {
 			this.service = service;
 			this.clonedService = Object.assign({}, service);
 		});
+		this.getMembers();
 	},
 
 	mounted() {},
@@ -72,7 +79,8 @@ export default {
 		...mapActions({
 			getService: 'services/show',
 			updateService: 'services/update',
-			deleteService: 'services/delete'
+			deleteService: 'services/delete',
+			getMembers: 'members/index'
 		}),
 
 		applyBreaktimeToAll() {

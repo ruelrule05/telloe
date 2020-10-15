@@ -48,6 +48,8 @@ class UserController extends Controller
             $profile->load(['services' => function($service) {
                 $service->where('is_available', true)->where('in_widget', true);
             }]);
+            
+            $profile->services->map($service, )
 
             return response()->json($profile->services);
         endif;

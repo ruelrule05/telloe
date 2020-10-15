@@ -70,7 +70,7 @@
                 <th>User</th>
                 <th>Date</th>
                 <th>Time</th>
-                <th>Date Created</th>
+                <th>Assignee</th>
               </tr>
             </thead>
             <paginate
@@ -89,7 +89,38 @@
                   <td class="align-middle">
                     {{ booking.start }}
                   </td>
-                  <td class="align-middle">{{ formatDate(booking.created_at) }}</td>
+                  <td>
+                    {{ booking.service.user.full_name }}
+                    <span v-if="$root.auth.id == booking.service.user_id">(You)</span>
+                  </td>
+                  <td>
+                    <div class="flex-grow-1 text-right">
+                      <div class="dropleft">
+                        <button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" @click="assignMember = false">
+                          <more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <span v-if="!assignMember" class="dropdown-item cursor-pointer" @click.stop="assignMember = true">Assign</span>
+                            <template v-else>
+                              <div v-for="member in members" :key="member.id" class="dropdown-item cursor-pointer d-flex align-items-center" @click="booking.service.user = member.member_user; booking.service.user_id = member.member_user_id">
+                                <div
+                                  class="user-profile-image user-profile-image-sm mr-2"
+                                  :style="{
+                                    backgroundImage:
+                                      'url(' + member.member_user.profile_image + ')',
+                                  }"
+                                >
+                                  <span v-if="!member.member_user.profile_image">{{
+                                    member.member_user.initials
+                                  }}</span>
+                                </div>
+                                {{ member.member_user.full_name }}
+                              </div>
+                            </template>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               </template>
             </paginate>

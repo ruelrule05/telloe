@@ -57,31 +57,40 @@
         :key="service.id"
         class="pl-3 d-inline-block w-25"
       >
-        <div class="w-100 d-flex align-items-center mb-2 rounded p-3 bg-white">
+        <div class="w-100 mb-2 rounded p-3 bg-white">
           <div class="overflow-hidden">
             <h6 class="font-heading mb-0 text-ellipsis">{{ service.name }}</h6>
             <small class="text-gray d-block"
               >{{ service.duration }} minutes</small
             >
           </div>
-          <div class="ml-auto">
-            <div
-              v-if="service.is_loading"
-              class="spinner-border spinner-border-sm mr-2"
-              role="status"
-            >
-              <span class="sr-only">Loading...</span>
+          <div class="mt-3">
+            <div class="d-flex align-items-center">
+              <toggle-switch
+                active-class="bg-green"
+                :value="
+                  member.services.find((x) => x.assigned_service_id == service.id)
+                    ? true
+                    : false
+                "
+                @input="memberToggleAssignedService($event, service)"
+              ></toggle-switch>
+              <span class="ml-2">Available</span>
             </div>
-            <toggle-switch
-              :class="{ 'd-none': service.is_loading }"
-              active-class="bg-green"
-              :value="
-                member.services.find((x) => x.assigned_service_id == service.id)
-                  ? true
-                  : false
-              "
-              @input="memberToggleAssignedService($event, service)"
-            ></toggle-switch>
+          </div>
+          <div class="mt-2">
+            <div class="d-flex align-items-center">
+              <toggle-switch
+                active-class="bg-green"
+                :value="
+                  member.services.find((x) => x.assigned_service_id == service.id)
+                    ? true
+                    : false
+                "
+                @input="memberToggleAssignedService($event, service)"
+              ></toggle-switch>
+              <span class="ml-2">Manage Bookings</span>
+            </div>
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@
     "/js/chunks/modals-audiorecorder-1602569215341.js": "/js/chunks/modals-audiorecorder-1602569215341.js?id=32c54a6e09a34da813f9",
     "/js/chunks/sidebar-conversations-1602569215341.js": "/js/chunks/sidebar-conversations-1602569215341.js?id=f164bcb510233a8e6e42",
     "/js/page.js": "/js/page.js?id=a5a4949f0ff6f7312597",
-    "/js/profile.js": "/js/profile.js?id=c5a53f427dc7ab5b855b",
+    "/js/profile.js": "/js/profile.js",
     "/js/widget/widget.js": "/js/widget/widget.js?id=95adbb5c03a390278722",
     "/css/dashboard.css": "/css/dashboard.css?id=f730a9f62f09a16f4674",
     "/css/auth.css": "/css/auth.css?id=124b2161cba6d1da0d43",
@@ -51,5 +51,7 @@
     "/js/chunks/dashboard-widget.js": "/js/chunks/dashboard-widget.js",
     "/js/chunks/gallery.js": "/js/chunks/gallery.js",
     "/js/chunks/modals-audiorecorder.js": "/js/chunks/modals-audiorecorder.js",
-    "/js/chunks/sidebar-conversations.js": "/js/chunks/sidebar-conversations.js"
+    "/js/chunks/sidebar-conversations.js": "/js/chunks/sidebar-conversations.js",
+    "/js/chunks/dashboard-bookings-services~dashboard-contacts~dashboard-conversations~dashboard-members~sidebar-con~daf3e509.js": "/js/chunks/dashboard-bookings-services~dashboard-contacts~dashboard-conversations~dashboard-members~sidebar-con~daf3e509.js",
+    "/js/chunks/dashboard-payments-invoices~dashboard-payments-subscriptions.js": "/js/chunks/dashboard-payments-invoices~dashboard-payments-subscriptions.js"
 }

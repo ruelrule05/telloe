@@ -26,7 +26,7 @@ class MemberController extends Controller
                 $memberUser->where('LIKE', '%' . $query . '%');
             });
         }
-        $members = $members->get();
+        $members = $members->get()->load('memberUser');
 
         return response()->json($members);
     }
@@ -92,7 +92,8 @@ class MemberController extends Controller
         return response()->json($member);
     }
 
-    public function show(Member $member) {
+    public function show(Member $member)
+    {
         $this->authorize('show', $member);
         return response($member->load('memberUser', 'services'));
     }
