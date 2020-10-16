@@ -26,6 +26,7 @@ const mutations = {
 	store_service(state, data) {
 		let index = state.index.findIndex(x => x.id == data.member_id);
 		if (index > -1) {
+			state.index[index].services = state.index[index].services || [];
 			state.index[index].services.push(data);
 		}
 	},

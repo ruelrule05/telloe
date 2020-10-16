@@ -10,7 +10,7 @@ class Service extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'assigned_service_id'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id'];
     protected $casts = [
         'days' => 'array',
         'holidays' => 'array',
@@ -26,8 +26,8 @@ class Service extends BaseModel
     {
         parent::boot();
         static::retrieved(function ($model) {
-            if ($model->assigned_service_id) {
-                $assignedService = Service::find($model->assigned_service_id);
+            if ($model->parent_service_id) {
+                $assignedService = Service::find($model->parent_service_id);
                 if ($assignedService) {
                     $model->name = $assignedService->name;
                     $model->description = $assignedService->description;
@@ -54,9 +54,14 @@ class Service extends BaseModel
         return $this->hasMany(Booking::class);
     }
 
-    public function assignedService()
+    public function assignedServices()
     {
-        return $this->hasOne(Service::class, 'id', 'assigned_service_id');
+        return $this->hasMany(Service::class, 'parent_service_id', 'id');
+    }
+
+    public function parentService()
+    {
+        return $this->belongsTo(Service::class, 'parent_service_id', 'id');
     }
 
     public function timeslots($dateString)
@@ -159,5 +164,29 @@ class Service extends BaseModel
         }
 
         return $timeslots;
+    }
+
+    public function getAllBookingsAttribute()
+    {
+        $bookings = $this->bookings->toArray();
+        $assignedServices = $this->assignedServices()->withTrashed()->get();
+        $assignedServices->map(function ($assignedService) use (&$bookings) {
+            if ($assignedService->bookings->count() > 0) {
+                $bookings = array_merge($bookings, $assignedService->bookings()->with(['user', 'service.user', 'service.member', 'service' => function ($service) {
+                    $service->withTrashed();
+                }])->get()->toArray());
+            }
+        });
+        $bookings = collect($bookings);
+        $bookings = $bookings->sortByDesc(function ($booking, $key) {
+            return $booking['created_at'];
+        });
+        $bookings = $bookings->map(function ($booking) {
+            if (! isset($booking['service']['user']) && isset($booking['service']['member'])) {
+                $booking['service']['user'] = $booking['service']['member'];
+            }
+            return $booking;
+        });
+        return $bookings->values()->all();
     }
 }

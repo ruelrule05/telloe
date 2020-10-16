@@ -843,26 +843,34 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(v_calendar__WEBPACK_IMPORTED_MODU
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _components_modal_modal_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../components/modal/modal.vue */ "./Resources/components/modal/modal.vue");
-/* harmony import */ var _components_toggle_switch_toggle_switch_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../components/toggle-switch/toggle-switch.vue */ "./Resources/components/toggle-switch/toggle-switch.vue");
-/* harmony import */ var _components_timerangepicker_timerangepicker_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../../../components/timerangepicker/timerangepicker.vue */ "./Resources/components/timerangepicker/timerangepicker.vue");
-/* harmony import */ var _components_vue_form_validate_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../../../components/vue-form-validate.vue */ "./Resources/components/vue-form-validate.vue");
-/* harmony import */ var _components_vue_checkbox_vue_checkbox_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../../../components/vue-checkbox/vue-checkbox.vue */ "./Resources/components/vue-checkbox/vue-checkbox.vue");
-/* harmony import */ var _icons_pencil__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../../icons/pencil */ "./Resources/icons/pencil.vue");
-/* harmony import */ var _icons_chevron_down__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../../icons/chevron-down */ "./Resources/icons/chevron-down.vue");
-/* harmony import */ var _icons_plus__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../../../icons/plus */ "./Resources/icons/plus.vue");
-/* harmony import */ var _icons_cog__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../../icons/cog */ "./Resources/icons/cog.vue");
-/* harmony import */ var _icons_trash__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../../../../icons/trash */ "./Resources/icons/trash.vue");
-/* harmony import */ var _icons_clock__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../../../icons/clock */ "./Resources/icons/clock.vue");
-/* harmony import */ var _icons_arrow_left__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../../../../icons/arrow-left */ "./Resources/icons/arrow-left.vue");
-/* harmony import */ var _icons_more__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../../../../icons/more */ "./Resources/icons/more.vue");
-/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
-/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var vue_paginate__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! vue-paginate */ "./node_modules/vue-paginate/dist/vue-paginate.js");
-/* harmony import */ var vue_paginate__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(vue_paginate__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _components_modal_modal_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../components/modal/modal.vue */ "./Resources/components/modal/modal.vue");
+/* harmony import */ var _components_toggle_switch_toggle_switch_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../../../components/toggle-switch/toggle-switch.vue */ "./Resources/components/toggle-switch/toggle-switch.vue");
+/* harmony import */ var _components_timerangepicker_timerangepicker_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../../../components/timerangepicker/timerangepicker.vue */ "./Resources/components/timerangepicker/timerangepicker.vue");
+/* harmony import */ var _components_vue_form_validate_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../../../components/vue-form-validate.vue */ "./Resources/components/vue-form-validate.vue");
+/* harmony import */ var _components_vue_checkbox_vue_checkbox_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../../components/vue-checkbox/vue-checkbox.vue */ "./Resources/components/vue-checkbox/vue-checkbox.vue");
+/* harmony import */ var _icons_pencil__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../../icons/pencil */ "./Resources/icons/pencil.vue");
+/* harmony import */ var _icons_chevron_down__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../../../icons/chevron-down */ "./Resources/icons/chevron-down.vue");
+/* harmony import */ var _icons_plus__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../../icons/plus */ "./Resources/icons/plus.vue");
+/* harmony import */ var _icons_cog__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../../../../icons/cog */ "./Resources/icons/cog.vue");
+/* harmony import */ var _icons_trash__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../../../icons/trash */ "./Resources/icons/trash.vue");
+/* harmony import */ var _icons_clock__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../../../../icons/clock */ "./Resources/icons/clock.vue");
+/* harmony import */ var _icons_arrow_left__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../../../../icons/arrow-left */ "./Resources/icons/arrow-left.vue");
+/* harmony import */ var _icons_more__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../../../../icons/more */ "./Resources/icons/more.vue");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var vue_paginate__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! vue-paginate */ "./node_modules/vue-paginate/dist/vue-paginate.js");
+/* harmony import */ var vue_paginate__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(vue_paginate__WEBPACK_IMPORTED_MODULE_17__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -886,22 +894,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_paginate__WEBPACK_IMPORTED_MODULE_16___default.a);
+vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vue_paginate__WEBPACK_IMPORTED_MODULE_17___default.a);
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    Modal: _components_modal_modal_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    VueFormValidate: _components_vue_form_validate_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
-    VueCheckbox: _components_vue_checkbox_vue_checkbox_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
-    PencilIcon: _icons_pencil__WEBPACK_IMPORTED_MODULE_7__["default"],
-    ChevronDownIcon: _icons_chevron_down__WEBPACK_IMPORTED_MODULE_8__["default"],
-    PlusIcon: _icons_plus__WEBPACK_IMPORTED_MODULE_9__["default"],
-    CogIcon: _icons_cog__WEBPACK_IMPORTED_MODULE_10__["default"],
-    TrashIcon: _icons_trash__WEBPACK_IMPORTED_MODULE_11__["default"],
-    ClockIcon: _icons_clock__WEBPACK_IMPORTED_MODULE_12__["default"],
-    ToggleSwitch: _components_toggle_switch_toggle_switch_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Timerangepicker: _components_timerangepicker_timerangepicker_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    ArrowLeftIcon: _icons_arrow_left__WEBPACK_IMPORTED_MODULE_13__["default"],
-    MoreIcon: _icons_more__WEBPACK_IMPORTED_MODULE_14__["default"]
+    Modal: _components_modal_modal_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    VueFormValidate: _components_vue_form_validate_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    VueCheckbox: _components_vue_checkbox_vue_checkbox_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
+    PencilIcon: _icons_pencil__WEBPACK_IMPORTED_MODULE_8__["default"],
+    ChevronDownIcon: _icons_chevron_down__WEBPACK_IMPORTED_MODULE_9__["default"],
+    PlusIcon: _icons_plus__WEBPACK_IMPORTED_MODULE_10__["default"],
+    CogIcon: _icons_cog__WEBPACK_IMPORTED_MODULE_11__["default"],
+    TrashIcon: _icons_trash__WEBPACK_IMPORTED_MODULE_12__["default"],
+    ClockIcon: _icons_clock__WEBPACK_IMPORTED_MODULE_13__["default"],
+    ToggleSwitch: _components_toggle_switch_toggle_switch_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Timerangepicker: _components_timerangepicker_timerangepicker_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    ArrowLeftIcon: _icons_arrow_left__WEBPACK_IMPORTED_MODULE_14__["default"],
+    MoreIcon: _icons_more__WEBPACK_IMPORTED_MODULE_15__["default"]
   },
   data: function data() {
     return {
@@ -913,10 +921,10 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_paginate__WEBPACK_IMPORTED_MO
       serviceDetailsTab: 'availability',
       selectedDay: '',
       paginate: ['bookings'],
-      assignMember: false
+      assigningMember: false
     };
   },
-  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
+  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapState"])({
     members: function members(state) {
       return state.members.index;
     }
@@ -962,21 +970,60 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_paginate__WEBPACK_IMPORTED_MO
     this.getMembers();
   },
   mounted: function mounted() {},
-  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])({
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])({
     getService: 'services/show',
     updateService: 'services/update',
     deleteService: 'services/delete',
-    getMembers: 'members/index'
+    getMembers: 'members/index',
+    assignBookingToMember: 'bookings/assignToMember'
   })), {}, {
+    assignMember: function assignMember(booking) {
+      var _arguments = arguments,
+          _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var member, parentService;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                member = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : null;
+
+                if (member) {
+                  parentService = member.assigned_services.find(function (x) {
+                    return x.parent_service_id = _this3.service.id;
+                  });
+
+                  if (parentService) {
+                    booking.service_id = parentService.id;
+                    booking.service.user = member;
+
+                    _this3.assignBookingToMember(booking);
+                  }
+                } else {
+                  booking.service_id = _this3.service.id;
+                  booking.service.user = _this3.$root.auth;
+
+                  _this3.assignBookingToMember(booking);
+                }
+
+              case 2:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
     applyBreaktimeToAll: function applyBreaktimeToAll() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.service && this.selectedDay) {
         this.$refs['applyBreaktimeToAllModal'].hide();
         this.$toasted.show('Breaktimes has been applied to all days successfully.');
         Object.keys(this.service.days).forEach(function (key) {
-          if (key != _this3.selectedDay) {
-            _this3.service.days[key].breaktimes = _this3.service.days[_this3.selectedDay].breaktimes;
+          if (key != _this4.selectedDay) {
+            _this4.service.days[key].breaktimes = _this4.service.days[_this4.selectedDay].breaktimes;
           }
         });
         this.updateService(this.service);
@@ -989,7 +1036,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_paginate__WEBPACK_IMPORTED_MO
     addHoliday: function addHoliday() {
       if (this.newHoliday && this.newHoliday.date) {
         if (!this.service.holidays) this.$set(this.service, 'holidays', []);
-        var formattedDate = dayjs__WEBPACK_IMPORTED_MODULE_15___default()(this.newHoliday.date).format('YYYY-MM-DD');
+        var formattedDate = dayjs__WEBPACK_IMPORTED_MODULE_16___default()(this.newHoliday.date).format('YYYY-MM-DD');
         this.service.holidays.push(formattedDate);
         this.newHoliday = null;
         this.updateService(this.service);
@@ -1023,17 +1070,17 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_paginate__WEBPACK_IMPORTED_MO
       }
     },
     submit: function submit() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.updateService(this.clonedService).then(function (service) {
         Object.keys(service).map(function (key) {
-          _this4.service[key] = service[key];
+          _this5.service[key] = service[key];
         });
       });
       this.$refs['editModal'].hide();
     },
     formatDate: function formatDate(date) {
-      return dayjs__WEBPACK_IMPORTED_MODULE_15___default()(date).format('MMMM D, YYYY');
+      return dayjs__WEBPACK_IMPORTED_MODULE_16___default()(date).format('MMMM D, YYYY');
     }
   })
 });
@@ -1591,7 +1638,7 @@ var render = function() {
                                                 _vm._s(service.name) +
                                                 "\n                  "
                                             ),
-                                            service.assigned_service_id
+                                            service.parent_service_id
                                               ? _c(
                                                   "span",
                                                   {
@@ -2710,7 +2757,7 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn p-2 btn-white badge-pill",
+                      staticClass: "btn p-2 btn-white badge-pill shadow-sm",
                       attrs: { type: "button" },
                       on: {
                         click: function($event) {
@@ -2729,7 +2776,7 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "btn p-2 btn-white badge-pill",
+                      staticClass: "btn p-2 btn-white badge-pill shadow-sm",
                       attrs: {
                         "data-intro": _vm.$root.intros.edit_service.intro,
                         "data-step": _vm.$root.intros.edit_service.step,
@@ -2850,7 +2897,7 @@ var render = function() {
                 _vm._v("Bookings")
               ]),
               _vm._v(" "),
-              _vm.service.bookings.length > 0
+              _vm.service.allBookings.length > 0
                 ? _c("div", { staticClass: "overflow-auto h-100" }, [
                     _c(
                       "table",
@@ -2862,20 +2909,9 @@ var render = function() {
                         _vm._m(0),
                         _vm._v(" "),
                         _c(
-                          "paginate",
-                          {
-                            ref: "paginate",
-                            attrs: {
-                              tag: "tbody",
-                              name: "bookings",
-                              list: _vm.service.bookings,
-                              per: 15
-                            }
-                          },
+                          "tbody",
                           [
-                            _vm._l(_vm.paginated("bookings"), function(
-                              booking
-                            ) {
+                            _vm._l(_vm.service.allBookings, function(booking) {
                               return [
                                 _c("tr", { key: booking.id }, [
                                   _c("td", { staticClass: "align-middle" }, [
@@ -2900,18 +2936,55 @@ var render = function() {
                                     )
                                   ]),
                                   _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      "\n                  " +
-                                        _vm._s(booking.service.user.full_name) +
-                                        "\n                  "
-                                    ),
-                                    _vm.$root.auth.id == booking.service.user_id
-                                      ? _c("span", [_vm._v("(You)")])
-                                      : _vm._e()
+                                  _c("td", { staticClass: "align-middle" }, [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass: "d-flex align-items-center"
+                                      },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "user-profile-image user-profile-image-sm mr-2",
+                                            style: {
+                                              backgroundImage:
+                                                "url(" +
+                                                booking.service.user
+                                                  .profile_image +
+                                                ")"
+                                            }
+                                          },
+                                          [
+                                            !booking.service.user.profile_image
+                                              ? _c("span", [
+                                                  _vm._v(
+                                                    _vm._s(
+                                                      booking.service.user
+                                                        .initials
+                                                    )
+                                                  )
+                                                ])
+                                              : _vm._e()
+                                          ]
+                                        ),
+                                        _vm._v(
+                                          "\n                    " +
+                                            _vm._s(
+                                              booking.service.user.full_name
+                                            ) +
+                                            "\n                    "
+                                        ),
+                                        _vm.$root.auth.id ==
+                                        booking.service.user.id
+                                          ? _c("span", [_vm._v("(You)")])
+                                          : _vm._e()
+                                      ]
+                                    )
                                   ]),
                                   _vm._v(" "),
-                                  _c("td", [
+                                  _c("td", { staticClass: "align-middle" }, [
                                     _c(
                                       "div",
                                       { staticClass: "flex-grow-1 text-right" },
@@ -2927,7 +3000,7 @@ var render = function() {
                                               },
                                               on: {
                                                 click: function($event) {
-                                                  _vm.assignMember = false
+                                                  _vm.assigningMember = false
                                                 }
                                               }
                                             },
@@ -2951,7 +3024,7 @@ var render = function() {
                                                 "dropdown-menu dropdown-menu-right"
                                             },
                                             [
-                                              !_vm.assignMember
+                                              !_vm.assigningMember
                                                 ? _c(
                                                     "span",
                                                     {
@@ -2962,29 +3035,31 @@ var render = function() {
                                                           $event
                                                         ) {
                                                           $event.stopPropagation()
-                                                          _vm.assignMember = true
+                                                          _vm.assigningMember = true
                                                         }
                                                       }
                                                     },
                                                     [_vm._v("Assign")]
                                                   )
-                                                : _vm._l(_vm.members, function(
-                                                    member
-                                                  ) {
-                                                    return _c(
+                                                : [
+                                                    _c(
                                                       "div",
                                                       {
-                                                        key: member.id,
                                                         staticClass:
                                                           "dropdown-item cursor-pointer d-flex align-items-center",
+                                                        class: {
+                                                          "disabled bg-light":
+                                                            booking.service.user
+                                                              .id ==
+                                                            _vm.$root.auth.id
+                                                        },
                                                         on: {
                                                           click: function(
                                                             $event
                                                           ) {
-                                                            booking.service.user =
-                                                              member.member_user
-                                                            booking.service.user_id =
-                                                              member.member_user_id
+                                                            return _vm.assignMember(
+                                                              booking
+                                                            )
                                                           }
                                                         }
                                                       },
@@ -2997,20 +3072,19 @@ var render = function() {
                                                             style: {
                                                               backgroundImage:
                                                                 "url(" +
-                                                                member
-                                                                  .member_user
+                                                                _vm.$root.auth
                                                                   .profile_image +
                                                                 ")"
                                                             }
                                                           },
                                                           [
-                                                            !member.member_user
+                                                            !_vm.$root.auth
                                                               .profile_image
                                                               ? _c("span", [
                                                                   _vm._v(
                                                                     _vm._s(
-                                                                      member
-                                                                        .member_user
+                                                                      _vm.$root
+                                                                        .auth
                                                                         .initials
                                                                     )
                                                                   )
@@ -3021,14 +3095,103 @@ var render = function() {
                                                         _vm._v(
                                                           "\n                              " +
                                                             _vm._s(
-                                                              member.member_user
+                                                              _vm.$root.auth
                                                                 .full_name
                                                             ) +
-                                                            "\n                            "
+                                                            " (You)\n                            "
                                                         )
                                                       ]
+                                                    ),
+                                                    _vm._v(" "),
+                                                    _vm._l(
+                                                      _vm.members,
+                                                      function(member) {
+                                                        return [
+                                                          !member.is_pending &&
+                                                          member.assigned_services.find(
+                                                            function(x) {
+                                                              return (x.parent_service_id =
+                                                                _vm.service.id)
+                                                            }
+                                                          )
+                                                            ? _c(
+                                                                "div",
+                                                                {
+                                                                  key:
+                                                                    member.id,
+                                                                  staticClass:
+                                                                    "dropdown-item cursor-pointer d-flex align-items-center",
+                                                                  class: {
+                                                                    "disabled bg-light":
+                                                                      booking
+                                                                        .service
+                                                                        .user
+                                                                        .id ==
+                                                                      member
+                                                                        .member_user
+                                                                        .id
+                                                                  },
+                                                                  on: {
+                                                                    click: function(
+                                                                      $event
+                                                                    ) {
+                                                                      return _vm.assignMember(
+                                                                        booking,
+                                                                        member
+                                                                      )
+                                                                    }
+                                                                  }
+                                                                },
+                                                                [
+                                                                  _c(
+                                                                    "div",
+                                                                    {
+                                                                      staticClass:
+                                                                        "user-profile-image user-profile-image-sm mr-2",
+                                                                      style: {
+                                                                        backgroundImage:
+                                                                          "url(" +
+                                                                          member
+                                                                            .member_user
+                                                                            .profile_image +
+                                                                          ")"
+                                                                      }
+                                                                    },
+                                                                    [
+                                                                      !member
+                                                                        .member_user
+                                                                        .profile_image
+                                                                        ? _c(
+                                                                            "span",
+                                                                            [
+                                                                              _vm._v(
+                                                                                _vm._s(
+                                                                                  member
+                                                                                    .member_user
+                                                                                    .initials
+                                                                                )
+                                                                              )
+                                                                            ]
+                                                                          )
+                                                                        : _vm._e()
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(
+                                                                    "\n                                " +
+                                                                      _vm._s(
+                                                                        member
+                                                                          .member_user
+                                                                          .full_name
+                                                                      ) +
+                                                                      "\n                              "
+                                                                  )
+                                                                ]
+                                                              )
+                                                            : _vm._e()
+                                                        ]
+                                                      }
                                                     )
-                                                  })
+                                                  ]
                                             ],
                                             2
                                           )
@@ -3042,8 +3205,7 @@ var render = function() {
                           ],
                           2
                         )
-                      ],
-                      1
+                      ]
                     )
                   ])
                 : _c("div", [
@@ -3594,9 +3756,7 @@ var render = function() {
               _c("vue-form-validate", { on: { submit: _vm.submit } }, [
                 _c(
                   "fieldset",
-                  {
-                    attrs: { disabled: _vm.clonedService.assigned_service_id }
-                  },
+                  { attrs: { disabled: _vm.clonedService.parent_service_id } },
                   [
                     _c("div", { staticClass: "form-group" }, [
                       _c("label", { staticClass: "form-label" }, [

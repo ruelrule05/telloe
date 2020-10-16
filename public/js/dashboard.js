@@ -1686,6 +1686,10 @@ var actions = {
     axios.get("/outlook_calendar_list").then(function (response) {
       commit('outlookCalendars', response.data);
     });
+  },
+  assignToMember: function assignToMember(_ref7, data) {
+    var commit = _ref7.commit;
+    axios.post("/".concat(name, "/").concat(data.id, "/assign_to_member"), data);
   }
 };
 var getters = {};
@@ -2215,6 +2219,7 @@ var mutations = {
     });
 
     if (index > -1) {
+      state.index[index].services = state.index[index].services || [];
       state.index[index].services.push(data);
     }
   },

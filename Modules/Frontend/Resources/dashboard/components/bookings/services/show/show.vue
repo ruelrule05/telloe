@@ -5,7 +5,7 @@
         <div class="d-flex">
           <div>
             <button
-              class="btn p-2 btn-white badge-pill"
+              class="btn p-2 btn-white badge-pill shadow-sm"
               type="button"
               @click="$router.push('/dashboard/bookings/services')"
             >
@@ -16,7 +16,7 @@
             <button
               :data-intro="$root.intros.edit_service.intro"
               :data-step="$root.intros.edit_service.step"
-              class="btn p-2 btn-white badge-pill"
+              class="btn p-2 btn-white badge-pill shadow-sm"
               data-toggle="dropdown"
               data-offset="-130, 10"
             >
@@ -63,7 +63,7 @@
         </div>
         <!-- Bookings -->
         <h5 class="mt-5 font-heading mb-0">Bookings</h5>
-        <div class="overflow-auto h-100" v-if="service.bookings.length > 0">
+        <div class="overflow-auto h-100" v-if="service.allBookings.length > 0">
           <table class="table table-borderless table-fixed-header mb-0">
             <thead class="text-muted">
               <tr>
@@ -73,14 +73,8 @@
                 <th>Assignee</th>
               </tr>
             </thead>
-            <paginate
-              tag="tbody"
-              name="bookings"
-              :list="service.bookings"
-              :per="15"
-              ref="paginate"
-            >
-              <template v-for="booking in paginated('bookings')">
+            <tbody>
+              <template v-for="booking in service.allBookings">
                 <tr :key="booking.id">
                   <td class="align-middle">{{ booking.user.full_name }}</td>
                   <td class="align-middle">
@@ -89,33 +83,62 @@
                   <td class="align-middle">
                     {{ booking.start }}
                   </td>
-                  <td>
-                    {{ booking.service.user.full_name }}
-                    <span v-if="$root.auth.id == booking.service.user_id">(You)</span>
+                  <td class="align-middle">
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="user-profile-image user-profile-image-sm mr-2"
+                        :style="{
+                          backgroundImage:
+                            'url(' + booking.service.user.profile_image + ')',
+                        }"
+                      >
+                        <span v-if="!booking.service.user.profile_image">{{
+                          booking.service.user.initials
+                        }}</span>
+                      </div>
+                      {{ booking.service.user.full_name }}
+                      <span v-if="$root.auth.id == booking.service.user.id">(You)</span>
+                    </div>
                   </td>
-                  <td>
+                  <td class="align-middle">
                     <div class="flex-grow-1 text-right">
                       <div class="dropleft">
-                        <button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" @click="assignMember = false">
+                        <button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" @click="assigningMember = false">
                           <more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <span v-if="!assignMember" class="dropdown-item cursor-pointer" @click.stop="assignMember = true">Assign</span>
+                            <span v-if="!assigningMember" class="dropdown-item cursor-pointer" @click.stop="assigningMember = true">Assign</span>
                             <template v-else>
-                              <div v-for="member in members" :key="member.id" class="dropdown-item cursor-pointer d-flex align-items-center" @click="booking.service.user = member.member_user; booking.service.user_id = member.member_user_id">
+                              <div class="dropdown-item cursor-pointer d-flex align-items-center" :class="{'disabled bg-light': booking.service.user.id == $root.auth.id}" @click="assignMember(booking)">
                                 <div
                                   class="user-profile-image user-profile-image-sm mr-2"
                                   :style="{
                                     backgroundImage:
-                                      'url(' + member.member_user.profile_image + ')',
+                                      'url(' + $root.auth.profile_image + ')',
                                   }"
                                 >
-                                  <span v-if="!member.member_user.profile_image">{{
-                                    member.member_user.initials
+                                  <span v-if="!$root.auth.profile_image">{{
+                                    $root.auth.initials
                                   }}</span>
                                 </div>
-                                {{ member.member_user.full_name }}
+                                {{ $root.auth.full_name }} (You)
                               </div>
+                            <template v-for="member in members">
+                                <div v-if="!member.is_pending && member.assigned_services.find(x => (x.parent_service_id = service.id))" :key="member.id" class="dropdown-item cursor-pointer d-flex align-items-center" @click="assignMember(booking, member)" :class="{'disabled bg-light': booking.service.user.id == member.member_user.id}">
+                                  <div
+                                    class="user-profile-image user-profile-image-sm mr-2"
+                                    :style="{
+                                      backgroundImage:
+                                        'url(' + member.member_user.profile_image + ')',
+                                    }"
+                                  >
+                                    <span v-if="!member.member_user.profile_image">{{
+                                      member.member_user.initials
+                                    }}</span>
+                                  </div>
+                                  {{ member.member_user.full_name }}
+                                </div>
+                            </template>
                             </template>
                         </div>
                       </div>
@@ -123,7 +146,7 @@
                   </td>
                 </tr>
               </template>
-            </paginate>
+            </tbody>
           </table>
         </div>
         <div v-else>
@@ -357,7 +380,7 @@
     <modal ref="editModal" :close-button="false">
       <h5 class="font-heading mb-3">Edit Service</h5>
       <vue-form-validate @submit="submit">
-        <fieldset :disabled="clonedService.assigned_service_id">
+        <fieldset :disabled="clonedService.parent_service_id">
           <div class="form-group">
             <label class="form-label">Service name</label>
             <input

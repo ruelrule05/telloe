@@ -776,7 +776,7 @@ vue__WEBPACK_IMPORTED_MODULE_6___default.a.use(vue_paginate__WEBPACK_IMPORTED_MO
                 _this.$set(service, 'is_loading', true);
 
                 assigned_service = _this.member.services.find(function (x) {
-                  return x.assigned_service_id == service.id;
+                  return x.parent_service_id == service.id;
                 });
 
                 if (!assigned_service) {
@@ -789,7 +789,7 @@ vue__WEBPACK_IMPORTED_MODULE_6___default.a.use(vue_paginate__WEBPACK_IMPORTED_MO
 
               case 5:
                 _this.member.services.splice(_this.member.services.findIndex(function (x) {
-                  return x.assigned_service_id == service.id;
+                  return x.parent_service_id == service.id;
                 }), 1);
 
                 _context.next = 11;
@@ -1405,7 +1405,9 @@ var render = function() {
                                           [
                                             _c("strong", [
                                               _vm._v(
-                                                _vm._s(member.services_count)
+                                                _vm._s(
+                                                  member.assigned_services_count
+                                                )
                                               )
                                             ])
                                           ]
@@ -1631,7 +1633,7 @@ var render = function() {
                                                     value: _vm.selectedMember.services.find(
                                                       function(x) {
                                                         return (
-                                                          x.assigned_service_id ==
+                                                          x.parent_service_id ==
                                                           service.id
                                                         )
                                                       }
@@ -2305,7 +2307,7 @@ var render = function() {
                                     value: _vm.member.services.find(function(
                                       x
                                     ) {
-                                      return x.assigned_service_id == service.id
+                                      return x.parent_service_id == service.id
                                     })
                                       ? true
                                       : false
@@ -2339,7 +2341,7 @@ var render = function() {
                                     value: _vm.member.services.find(function(
                                       x
                                     ) {
-                                      return x.assigned_service_id == service.id
+                                      return x.parent_service_id == service.id
                                     })
                                       ? true
                                       : false

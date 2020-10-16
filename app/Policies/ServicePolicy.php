@@ -33,7 +33,7 @@ class ServicePolicy
 
     public function delete(User $user, Service $service)
     {
-        return $user->id == $service->user_id || $user->id == ($service->assignedService->user_id ?? null) || $user->id == ($service->member->member_user_id ?? null);
+        return $user->id == $service->user_id || $user->id == ($service->parentService->user_id ?? null) || $user->id == ($service->member->member_user_id ?? null);
     }
 
     public function addBooking(User $user, Service $service)

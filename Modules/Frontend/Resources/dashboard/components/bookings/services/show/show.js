@@ -28,7 +28,7 @@ export default {
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		paginate: ['bookings'],
-		assignMember: false
+		assigningMember: false
 	}),
 
 	computed: {
@@ -80,8 +80,24 @@ export default {
 			getService: 'services/show',
 			updateService: 'services/update',
 			deleteService: 'services/delete',
-			getMembers: 'members/index'
+			getMembers: 'members/index',
+			assignBookingToMember: 'bookings/assignToMember'
 		}),
+
+		async assignMember(booking, member = null) {
+			if (member) {
+				let parentService = member.assigned_services.find(x => (x.parent_service_id = this.service.id));
+				if (parentService) {
+					booking.service_id = parentService.id;
+					booking.service.user = member;
+					this.assignBookingToMember(booking);
+				}
+			} else {
+				booking.service_id = this.service.id;
+				booking.service.user = this.$root.auth;
+				this.assignBookingToMember(booking);
+			}
+		},
 
 		applyBreaktimeToAll() {
 			if (this.service && this.selectedDay) {

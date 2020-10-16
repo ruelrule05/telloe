@@ -63,7 +63,7 @@
                   <h5 class="font-heading mb-3">
                     {{ service.name }}
                     <span
-                      v-if="service.assigned_service_id"
+                      v-if="service.parent_service_id"
                       class="d-block text-secondary font-size-base font-weight-normal"
                       >ASSIGNED</span
                     >

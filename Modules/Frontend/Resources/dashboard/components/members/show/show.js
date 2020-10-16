@@ -44,11 +44,11 @@ export default {
 
 		async memberToggleAssignedService(value, service) {
 			this.$set(service, 'is_loading', true);
-			let assigned_service = this.member.services.find(x => x.assigned_service_id == service.id);
+			let assigned_service = this.member.services.find(x => x.parent_service_id == service.id);
 			if (assigned_service) {
 				await this.deleteService(assigned_service);
 				this.member.services.splice(
-					this.member.services.findIndex(x => x.assigned_service_id == service.id),
+					this.member.services.findIndex(x => x.parent_service_id == service.id),
 					1
 				);
 			} else {

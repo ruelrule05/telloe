@@ -16,9 +16,10 @@ class MemberController extends Controller
 {
     public function index(Request $request)
     {
+        $authUser = Auth::user();
         $query = $request->get('query');
-        $members = Member::with('memberUser', 'services.assignedService')
-            ->withCount('services')
+        $members = Member::with('memberUser', 'assignedServices')
+            ->withCount('assignedServices')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC');
         if ($query) {
@@ -80,7 +81,7 @@ class MemberController extends Controller
                 $assignedService = $service->replicate();
                 $assignedService->user_id = null;
                 $assignedService->member_id = $member->id;
-                $assignedService->assigned_service_id = $service->id;
+                $assignedService->parent_service_id = $service->id;
                 $assignedService->save();
             }
         }
@@ -141,17 +142,16 @@ class MemberController extends Controller
         $this->authorize('assignService', $member);
         $service = Service::where('id', $request->service_id)->where('user_id', Auth::user()->id)->firstOrFail();
 
-        $assignedService = Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('assigned_service_id', $service->id)->first();
+        $assignedService = Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->first();
         if ($assignedService) {
             $assignedService->restore();
         } else {
             $assignedService = $service->replicate();
             $assignedService->user_id = null;
             $assignedService->member_id = $member->id;
-            $assignedService->assigned_service_id = $service->id;
+            $assignedService->parent_service_id = $service->id;
             $assignedService->save();
         }
-
         return response()->json($assignedService);
     }
 }

@@ -98,7 +98,7 @@
                       </div>
                     </td>
                     <td class="align-middle">
-                      <strong>{{ member.services_count }}</strong>
+                      <strong>{{ member.assigned_services_count }}</strong>
                     </td>
                     <td class="align-middle">
                       <div class="flex-grow-1 text-muted">
@@ -228,7 +228,7 @@
                       active-class="bg-green"
                       :value="
                         selectedMember.services.find(
-                          (x) => x.assigned_service_id == service.id
+                          (x) => x.parent_service_id == service.id
                         )
                           ? true
                           : false

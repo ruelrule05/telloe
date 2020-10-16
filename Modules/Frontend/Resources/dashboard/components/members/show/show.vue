@@ -69,7 +69,7 @@
               <toggle-switch
                 active-class="bg-green"
                 :value="
-                  member.services.find((x) => x.assigned_service_id == service.id)
+                  member.services.find((x) => x.parent_service_id == service.id)
                     ? true
                     : false
                 "
@@ -83,7 +83,7 @@
               <toggle-switch
                 active-class="bg-green"
                 :value="
-                  member.services.find((x) => x.assigned_service_id == service.id)
+                  member.services.find((x) => x.parent_service_id == service.id)
                     ? true
                     : false
                 "
