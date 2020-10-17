@@ -96,7 +96,9 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         $this->authorize('show', $member);
-        return response($member->load('memberUser', 'services'));
+        $response = $member->load('memberUser')->toArray();
+        $response['services'] = $member->services()->with('bookings.user')->withTrashed()->get()->toArray();
+        return response($response);
     }
 
     public function update(Request $request, Member $member)
@@ -144,7 +146,9 @@ class MemberController extends Controller
 
         $assignedService = Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->first();
         if ($assignedService) {
-            $assignedService->restore();
+            // restore
+            Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->restore();
+            $assignedService->deleted_at = null;
         } else {
             $assignedService = $service->replicate();
             $assignedService->user_id = null;
@@ -152,6 +156,6 @@ class MemberController extends Controller
             $assignedService->parent_service_id = $service->id;
             $assignedService->save();
         }
-        return response()->json($assignedService);
+        return response()->json($assignedService->load('bookings.user'));
     }
 }

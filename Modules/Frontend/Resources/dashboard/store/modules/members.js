@@ -40,11 +40,10 @@ const mutations = {
 };
 
 const actions = {
-	index({ commit, rootState }, user_id) {
+	async index({ commit, rootState }, user_id) {
 		const user_query = user_id ? `?user_id=${user_id}` : '';
-		axios.get(`/${name}${user_query}`).then(response => {
-			commit('index', response.data);
-		});
+		let response = await axios.get(`/${name}${user_query}`);
+		commit('index', response.data);
 	},
 
 	async store({ commit }, data) {

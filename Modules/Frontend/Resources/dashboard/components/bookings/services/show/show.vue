@@ -1,7 +1,7 @@
 <template>
   <div class="h-100" v-if="service">
     <div class="d-flex h-100 overflow-hidden">
-      <div class="p-4 flex-grow-1">
+      <div class="p-4 flex-grow-1 overflow-auto">
         <div class="d-flex">
           <div>
             <button
@@ -63,7 +63,7 @@
         </div>
         <!-- Bookings -->
         <h5 class="mt-5 font-heading mb-0">Bookings</h5>
-        <div class="overflow-auto h-100" v-if="service.allBookings.length > 0">
+        <div v-if="service.allBookings.length > 0">
           <table class="table table-borderless table-fixed-header mb-0">
             <thead class="text-muted">
               <tr>
@@ -81,7 +81,7 @@
                     {{ formatDate(booking.created_at) }}
                   </td>
                   <td class="align-middle">
-                    {{ booking.start }}
+                    {{ convertTime(booking.start, 'hh:MMA') }}
                   </td>
                   <td class="align-middle">
                     <div class="d-flex align-items-center">
@@ -123,22 +123,22 @@
                                 </div>
                                 {{ $root.auth.full_name }} (You)
                               </div>
-                            <template v-for="member in members">
-                                <div v-if="!member.is_pending && member.assigned_services.find(x => (x.parent_service_id = service.id))" :key="member.id" class="dropdown-item cursor-pointer d-flex align-items-center" @click="assignMember(booking, member)" :class="{'disabled bg-light': booking.service.user.id == member.member_user.id}">
-                                  <div
-                                    class="user-profile-image user-profile-image-sm mr-2"
-                                    :style="{
-                                      backgroundImage:
-                                        'url(' + member.member_user.profile_image + ')',
-                                    }"
-                                  >
-                                    <span v-if="!member.member_user.profile_image">{{
-                                      member.member_user.initials
-                                    }}</span>
+                              <template v-for="member in members">
+                                  <div v-if="!member.is_pending && member.assigned_services.find(x => (x.parent_service_id == service.id))" :key="member.id" class="dropdown-item cursor-pointer d-flex align-items-center" @click="assignMember(booking, member)" :class="{'disabled bg-light': booking.service.user.id == member.member_user.id}">
+                                    <div
+                                      class="user-profile-image user-profile-image-sm mr-2"
+                                      :style="{
+                                        backgroundImage:
+                                          'url(' + member.member_user.profile_image + ')',
+                                      }"
+                                    >
+                                      <span v-if="!member.member_user.profile_image">{{
+                                        member.member_user.initials
+                                      }}</span>
+                                    </div>
+                                    {{ member.member_user.full_name }}
                                   </div>
-                                  {{ member.member_user.full_name }}
-                                </div>
-                            </template>
+                              </template>
                             </template>
                         </div>
                       </div>
@@ -155,6 +155,7 @@
           </div>
         </div>
       </div>
+
       <div class="info bg-white h-100 overflow-auto shadow-sm">
         <div class="d-flex mb-2">
           <button

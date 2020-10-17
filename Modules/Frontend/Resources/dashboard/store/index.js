@@ -15,8 +15,6 @@ import pending_subscriptions from './modules/pending_subscriptions';
 import pending_invoices from './modules/pending_invoices';
 import notifications from './modules/notifications';
 
-
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -34,6 +32,6 @@ export default new Vuex.Store({
 		plans,
 		pending_subscriptions,
 		pending_invoices,
-		notifications,
-	},
+		notifications
+	}
 });

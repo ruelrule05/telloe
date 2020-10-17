@@ -10,14 +10,15 @@ class Service extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings'];
     protected $casts = [
         'days' => 'array',
         'holidays' => 'array',
         'is_available' => 'boolean',
         'ignored_calendar_events_google' => 'array',
         'default_rate' => 'decimal:2',
-        'in_widget' => 'boolean'
+        'in_widget' => 'boolean',
+        'manage_bookings' => 'boolean'
     ];
 
     protected $test = [1, 2];
@@ -34,14 +35,17 @@ class Service extends BaseModel
                     $model->duration = $assignedService->duration;
                     $model->interval = $assignedService->interval;
                     $model->default_rate = $assignedService->default_rate;
+                    $model->user = $model->member->memberUser;
                 }
             }
+        });
+        static::restoring(function ($model) {
         });
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class) ?? $this->member->memberUser;
     }
 
     public function member()
@@ -68,8 +72,9 @@ class Service extends BaseModel
     {
         $timeslots = [];
         $holidays = $this->holidays;
+        $user = $this->user ?? $this->member->memberUser;
 
-        if (! array_search($dateString, $holidays)) {
+        if (! array_search($dateString, $holidays) && $user) {
             $date = Carbon::parse($dateString);
             $days = json_decode($this->attributes['days'], true);
             $dayName = $date->format('l');
@@ -87,9 +92,9 @@ class Service extends BaseModel
                 $timeEnd->hour = $partsEnd[0];
                 $timeEnd->minute = $partsEnd[1];
 
-                $ignoredCalendarEvents = $this->user->ignored_calendar_events;
-                $googleEventsList = $this->user->google_calendar_events;
-                $outlookEventsList = $this->user->outlook_calendar_events;
+                $ignoredCalendarEvents = $user->ignored_calendar_events;
+                $googleEventsList = $user->google_calendar_events;
+                $outlookEventsList = $user->outlook_calendar_events;
 
                 while ($timeStart->lessThan($timeEnd)) {
                     $timeslot = [
@@ -97,11 +102,7 @@ class Service extends BaseModel
                         'time' => $timeStart->format('H:i'),
                     ];
                     $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
-                    $bookings = Booking::whereHas('service', function ($service) {
-                        $service->whereHas('user', function ($user) {
-                            $user->where('id', $this->user->id);
-                        });
-                    })
+                    $bookings = Booking::where('service_id', $this->attributes['id'])
                         ->where('date', $dateString)
                         ->where('start', '<=', $timeslot['time'])
                         ->where('end', '>=', $timeslot['time'])
@@ -133,10 +134,10 @@ class Service extends BaseModel
                                 $outlookEvents[] = $event;
                             } elseif (! $event['isAllDay']) {
                                 $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-                                $start->tz = new \DateTimeZone($this->user->timezone);
+                                $start->tz = new \DateTimeZone($user->timezone);
                                 $start = $start->format('H:i');
                                 $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-                                $end->tz = new \DateTimeZone($this->user->timezone);
+                                $end->tz = new \DateTimeZone($user->timezone);
                                 $end = $end->format('H:i');
                                 if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
                                     $outlookEvents[] = $event;

@@ -1,5 +1,5 @@
 <template>
-	<div class="toggle" :class="state_class" @click.self="onClick">
+	<div class="toggle" :class="state_class" :disabled="disabled" @click.self="onClick">
 		<div class="draggable" :style="style"></div>
 	</div>
 </template>

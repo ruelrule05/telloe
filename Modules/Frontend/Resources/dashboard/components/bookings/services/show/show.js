@@ -16,6 +16,7 @@ import MoreIcon from '../../../../../icons/more';
 import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
+const convertTime = require('convert-time');
 
 export default {
 	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon },
@@ -28,7 +29,8 @@ export default {
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		paginate: ['bookings'],
-		assigningMember: false
+		assigningMember: false,
+		convertTime: convertTime
 	}),
 
 	computed: {
@@ -86,7 +88,7 @@ export default {
 
 		async assignMember(booking, member = null) {
 			if (member) {
-				let parentService = member.assigned_services.find(x => (x.parent_service_id = this.service.id));
+				let parentService = member.assigned_services.find(x => x.parent_service_id == this.service.id);
 				if (parentService) {
 					booking.service_id = parentService.id;
 					booking.service.user = member;

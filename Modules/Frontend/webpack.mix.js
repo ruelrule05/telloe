@@ -2,7 +2,8 @@ const mix = require('laravel-mix');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const argv = JSON.parse(process.env.npm_config_argv).original;
-const LiveReloadPlugin = require('webpack-livereload-plugin');
+const fs = require('fs');
+//const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 mix.setPublicPath('../../public').mergeManifest();
 
@@ -99,18 +100,56 @@ if (argv.indexOf('--css') > -1) {
 		});
 	}
 }
-
 if (mix.config.production) {
-	console.log('Running in production...');
 	mix.version();
 } else {
-	mix.webpackConfig({
-		plugins: [
-			new LiveReloadPlugin({
-				protocol: 'http',
-				hostname: 'localhost',
-				appendScriptTag: true
-			})
-		]
+	mix.options({
+		hmrOptions: {
+			host: 'telloe.test',
+			port: 8080
+		}
 	});
 }
+
+// if (mix.config.production) {
+// 	console.log('Running in production...');
+// 	mix.version();
+// } else {
+// 	mix.options({
+// 		hmrOptions: {
+// 			host: 'telloe.test',
+// 			port: 8000,
+// 			https: false
+// 		}
+// 	});
+// 	// mix.webpackConfig({
+// 	// 	watchOptions: {
+// 	// 		aggregateTimeout: 200,
+// 	// 		poll: 5000
+// 	// 	},
+// 	// 	proxy: {
+// 	// 		host: '192.168.1.103', // host machine ip
+// 	// 		port: 8080
+// 	// 	}
+// 	// });
+// 	// mix.webpackConfig({
+// 	// 	plugins: [
+// 	// 		new LiveReloadPlugin({
+// 	// 			protocol: 'http',
+// 	// 			hostname: 'localhost',
+// 	// 			appendScriptTag: true
+// 	// 		})
+// 	// 	]
+// 	// 	// module: {
+// 	// 	// 	rules: [
+// 	// 	// 		{
+// 	// 	// 			test: /\.vue$/,
+// 	// 	// 			loader: 'vue-loader',
+// 	// 	// 			options: {
+// 	// 	// 				hotReload: false // disables Hot Reload
+// 	// 	// 			}
+// 	// 	// 		}
+// 	// 	// 	]
+// 	// 	// }
+// 	// });
+// }
