@@ -109,6 +109,12 @@ if (mix.config.production) {
 			port: 8080
 		}
 	});
+	mix.webpackConfig({
+		watchOptions: {
+			aggregateTimeout: 300,
+			poll: 1000
+		}
+	});
 }
 
 // if (mix.config.production) {
