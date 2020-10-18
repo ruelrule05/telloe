@@ -29,6 +29,11 @@ export default {
 		size: {
 			type: String,
 			default: ''
+		},
+
+		scrollable: {
+			type: Boolean,
+			default: true
 		}
 	},
 

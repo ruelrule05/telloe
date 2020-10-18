@@ -49,15 +49,11 @@
               :key="service.id"
             >
               <div
-                class="bg-white service rounded p-3 cursor-pointer"
+                class="bg-white service rounded p-3"
                 :class="[
                   service == selectedService ? 'active' : 'shadow-sm',
                   { unavailable: !service.is_available },
                 ]"
-                @click="
-                  selectedService = service;
-                  newService = JSON.parse(JSON.stringify(selectedService));
-                "
               >
                 <div class="d-flex">
                   <h5 class="font-heading mb-3">
@@ -77,7 +73,7 @@
                   ></toggle-switch>
                 </div>
                 <p
-                  class="text-secondary mb-0 multiline-ellipsis small service-description mb-5"
+                  class="text-secondary mb-0 multiline-ellipsis service-description mb-5"
                 >
                   {{ service.description }}
                 </p>

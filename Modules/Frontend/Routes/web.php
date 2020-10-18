@@ -107,6 +107,7 @@ Route::group(
                 Route::apiResource('plans', 'PlanController')->only('index');
                 Route::apiResource('pending_subscriptions', 'PendingSubscriptionController')->only(['index', 'store', 'destroy']);
                 Route::apiResource('pending_invoices', 'PendingInvoiceController')->only(['index', 'store', 'destroy']);
+                Route::apiResource('packages', 'PackageController');
 
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::post('notifications/clear', 'NotificationController@clear');
