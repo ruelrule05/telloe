@@ -129,12 +129,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function customers()
     {
-        return $this->hasMany(UserCustomer::class);
+        return $this->hasMany(UserCustomer::class)->orderBy('created_at', 'DESC');
     }
 
     public function packages()
     {
-        return $this->hasMany(Package::class);
+        return $this->hasMany(Package::class)->orderBy('created_at', 'DESC');
     }
 
     public function customFields()

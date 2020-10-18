@@ -41,13 +41,15 @@
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 p-2 overflow-auto">
           <div class="d-flex flex-wrap">
-            <router-link
-              :to="`/dashboard/bookings/services/${service.id}`"
-              tag="div"
+            <div 
               class="service-container p-3"
               v-for="service in services"
-              :key="service.id"
-            >
+              :key="service.id">
+                <router-link
+                class="cursor-pointer"
+                :to="`/dashboard/bookings/services/${service.id}`"
+                tag="div"
+              >
               <div
                 class="bg-white service rounded p-3"
                 :class="[
@@ -55,50 +57,51 @@
                   { unavailable: !service.is_available },
                 ]"
               >
-                <div class="d-flex">
-                  <h5 class="font-heading mb-3">
-                    {{ service.name }}
-                    <span
-                      v-if="service.parent_service_id"
-                      class="d-block text-secondary font-size-base font-weight-normal"
-                      >ASSIGNED</span
-                    >
-                  </h5>
-                  <toggle-switch
-                    class="ml-auto"
-                    @click.native.stop
-                    @input="updateService(service)"
-                    active-class="bg-green"
-                    v-model="service.is_available"
-                  ></toggle-switch>
-                </div>
-                <p
-                  class="text-secondary mb-0 multiline-ellipsis service-description mb-5"
-                >
-                  {{ service.description }}
-                </p>
-                <div class="d-flex align-items-center mt-3">
-                  <clock-icon width="17" height="17" fill="#888"></clock-icon>
-                  <span class="ml-1">{{ service.duration }} minutes</span>
-                </div>
-                <div class="d-flex mt-2">
-                  <div
-                    v-for="(day, index) in days"
-                    :key="index"
-                    class="badge-day mr-1 rounded-circle position-relative overflow-hidden"
-                    :class="[
-                      service.days[day].isOpen
-                        ? 'text-white bg-primary'
-                        : 'text-gray-400 bg-gray-200',
-                    ]"
-                  >
-                    <span class="position-absolute-center line-height-1">{{
-                      day.charAt(0)
-                    }}</span>
+                  <div class="d-flex">
+                    <h5 class="font-heading mb-3">
+                      {{ service.name }}
+                      <span
+                        v-if="service.parent_service_id"
+                        class="d-block text-secondary font-size-base font-weight-normal"
+                        >ASSIGNED</span
+                      >
+                    </h5>
+                    <toggle-switch
+                      class="ml-auto"
+                      @click.native.stop
+                      @input="updateService(service)"
+                      active-class="bg-green"
+                      v-model="service.is_available"
+                    ></toggle-switch>
                   </div>
-                </div>
+                  <p
+                    class="text-secondary mb-0 multiline-ellipsis service-description mb-5"
+                  >
+                    {{ service.description }}
+                  </p>
+                  <div class="d-flex align-items-center mt-3">
+                    <clock-icon width="17" height="17" fill="#888"></clock-icon>
+                    <span class="ml-1">{{ service.duration }} minutes</span>
+                  </div>
+                  <div class="d-flex mt-2">
+                    <div
+                      v-for="(day, index) in days"
+                      :key="index"
+                      class="badge-day mr-1 rounded-circle position-relative overflow-hidden"
+                      :class="[
+                        service.days[day].isOpen
+                          ? 'text-white bg-primary'
+                          : 'text-gray-400 bg-gray-200',
+                      ]"
+                    >
+                      <span class="position-absolute-center line-height-1">{{
+                        day.charAt(0)
+                      }}</span>
+                    </div>
+                  </div>
               </div>
-            </router-link>
+                </router-link>
+            </div>
           </div>
         </div>
 

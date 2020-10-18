@@ -39,40 +39,48 @@
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 p-2 overflow-auto">
           <div class="d-flex flex-wrap">
-            <router-link
-              :to="`/dashboard/bookings/packages/${packageItem.id}`"
-              tag="div"
-              class="service-container p-3 cursor-pointer"
-              v-for="packageItem in packages"
-              :key="packageItem.id"
-            >
-              <div
-                class="bg-white service rounded p-3 shadow-sm"
+            <div class="service-container p-3" v-for="packageItem in packages" :key="packageItem.id">
+              <router-link
+                :to="`/dashboard/bookings/packages/${packageItem.id}`"
+                tag="div"
+                class="cursor-pointer"
               >
-                <div class="d-flex">
-                  <h5 class="font-heading mb-3">
-                    {{ packageItem.name }}
-                  </h5>
-                </div>
-                <p
-                  class="text-secondary mb-0 multiline-ellipsis xsmall service-description mb-4"
+                <div
+                  class="bg-white service rounded p-3 shadow-sm"
                 >
-                  {{ packageItem.description }}
-                </p>
-                <div class="d-flex align-items-center">
-                  <package-icon width="17" height="17" fill="#888"></package-icon>
-                  <span class="ml-2">{{ packageItem.services.length }} services</span>
+                  <div class="d-flex">
+                    <h5 class="font-heading mb-3">
+                      {{ packageItem.name }}
+                    </h5>
+
+                    <toggle-switch
+                      class="ml-auto"
+                      @click.native.stop
+                      @input="updatePackage(packageItem)"
+                      active-class="bg-green"
+                      v-model="packageItem.is_available"
+                    ></toggle-switch>
+                  </div>
+                  <p
+                    class="text-secondary mb-0 multiline-ellipsis xsmall service-description mb-4"
+                  >
+                    {{ packageItem.description }}
+                  </p>
+                  <div class="d-flex align-items-center">
+                    <package-icon width="17" height="17" fill="#888"></package-icon>
+                    <span class="ml-2">{{ packageItem.services.length }} services</span>
+                  </div>
+                  <div class="d-flex align-items-center mt-2">
+                    <coin-icon width="17" height="17" fill="#888"></coin-icon>
+                    <span class="ml-2">${{ parseFloat(packageItem.price).toFixed(2) }}</span>
+                  </div>
+                  <div class="d-flex align-items-center mt-2">
+                    <calendar-icon width="17" height="17" fill="#888"></calendar-icon>
+                    <span class="ml-2">Expires on {{ formatDate(packageItem.expiration_date) }}</span>
+                  </div>
                 </div>
-                <div class="d-flex align-items-center mt-2">
-                  <coin-icon width="17" height="17" fill="#888"></coin-icon>
-                  <span class="ml-2">${{ parseFloat(packageItem.price).toFixed(2) }}</span>
-                </div>
-                <div class="d-flex align-items-center mt-2">
-                  <calendar-icon width="17" height="17" fill="#888"></calendar-icon>
-                  <span class="ml-2">Expires on {{ formatDate(packageItem.expiration_date) }}</span>
-                </div>
-              </div>
-            </router-link>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>

@@ -9,10 +9,11 @@ class Package extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'name', 'description', 'services', 'expiration_date', 'price'];
+    protected $fillable = ['user_id', 'name', 'description', 'services', 'expiration_date', 'price', 'is_available', 'in_widget'];
     protected $casts = [
         'services' => 'array',
-        'expiration_date' => 'date'
+        'is_available' => 'boolean',
+        'in_widget' => 'boolean',
     ];
 
     public function user()
@@ -20,8 +21,8 @@ class Package extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    public function packageItems()
+    public function orders()
     {
-        return $this->hasMany(PackageItem::class);
+        return $this->hasMany(Order::class);
     }
 }

@@ -506,7 +506,7 @@ export default {
 
 		getData() {
 			TelloeAxios.get(`/@${this.$root.profile.username}`).then(response => {
-				this.services = response.data;
+				this.services = response.data.services;
 				//this.selectedService = this.services[0]; // testing
 				this.ready = true;
 			});

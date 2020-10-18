@@ -19,6 +19,11 @@ const mutations = {
 		state.index.unshift(data);
 	},
 
+	show(state, data) {
+		let packageItem = state.index.find(x => x.id == data.id);
+		if (packageItem) Object.assign(packageItem, data);
+	},
+
 	update(state, data) {
 		let booking = state.index.find(x => x.id == data.id);
 		if (booking) Object.assign(booking, data);
@@ -42,6 +47,12 @@ const actions = {
 	async store({ commit }, data) {
 		let response = await axios.post(`/${name}`, data);
 		commit('store', response.data);
+	},
+
+	async show({ commit }, package_id) {
+		let response = await axios.get(`/${name}/${package_id}`);
+		commit('show', response.data);
+		return response.data;
 	},
 
 	async update({ commit }, data) {

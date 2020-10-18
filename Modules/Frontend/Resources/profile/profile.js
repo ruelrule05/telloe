@@ -30,6 +30,9 @@ import CheckmarkCircleIcon from '../icons/checkmark-circle';
 import FacebookIcon from '../icons/facebook';
 import GoogleIcon from '../icons/google';
 import UsersIcon from '../icons/users';
+import CalendarIcon from '../icons/calendar';
+import CoinIcon from '../icons/coin';
+import PackageIcon from '../icons/package';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 
@@ -50,13 +53,17 @@ export default {
 		CheckmarkCircleIcon,
 		FacebookIcon,
 		GoogleIcon,
-		UsersIcon
+		UsersIcon,
+		CalendarIcon,
+		CoinIcon,
+		PackageIcon
 	},
 	data: () => ({
 		profile: PROFILE,
 		auth: AUTH,
 		ready: false,
 		services: [],
+		packages: [],
 		selectedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		selectAttribute: {
@@ -90,7 +97,8 @@ export default {
 		authAction: 'signup',
 		GoogleAuth: null,
 		timezone: '',
-		assignedService: null
+		assignedService: null,
+		tab: 'services'
 	}),
 
 	computed: {
@@ -568,7 +576,8 @@ export default {
 
 		getData() {
 			axios.get(window.location.pathname).then(response => {
-				this.services = response.data;
+				this.services = response.data.services;
+				this.packages = response.data.packages;
 
 				// testing
 				//this.selectedService = this.services[0];

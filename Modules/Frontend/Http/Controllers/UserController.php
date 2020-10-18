@@ -48,7 +48,11 @@ class UserController extends Controller
                 $service->where('is_available', true)->where('in_widget', true);
             }])->services->load('assignedServices.member.memberUser');
 
-            return response()->json($services);
+            $data = [];
+            $data['services'] = $services;
+            $data['packages'] = $profile->packages()->where('is_available', true)->where('in_widget', true)->get();
+
+            return response()->json($data);
         }
 
         return view('frontend::profile', compact('profile'));

@@ -36,8 +36,37 @@ class PackageController extends Controller
         return response($package);
     }
 
-    public function update($id, Request $request)
+
+    public function show(Package $package, Request $request)
     {
+        if($package->user_id != Auth::user()->id) return abort(403);
+        return response($package->load('orders.user'));
+    }
+
+    public function update(Package $package, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+            'services' => 'required|array',
+            'expiration_date' => 'required|date',
+            'price' => 'required|numeric'
+        ]);
+
+        if($package->user_id != Auth::user()->id) return abort(403);
+
+        $package->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'user_id' => Auth::user()->id,
+            'services' => $request->services,
+            'expiration_date' => $request->expiration_date,
+            'price' => $request->price,
+            'in_widget' => $request->in_widget,
+            'is_available' => $request->is_available,
+        ]);
+
+        return response($package);
     }
 
     public function destroy($id)

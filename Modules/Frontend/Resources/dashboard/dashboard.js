@@ -53,13 +53,18 @@ const router = new VueRouter({
 						{
 							path: 'services/:id',
 							name: 'services_show',
-							component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ './components/bookings/services/show/show.vue')
+							component: () => import(/* webpackChunkName: "dashboard-bookings-services-show" */ './components/bookings/services/show/show.vue')
 						},
 						{
 							path: 'packages',
 							name: 'packages_index',
 							component: () => import(/* webpackChunkName: "dashboard-bookings-packages" */ './components/bookings/packages/index/index.vue')
-						}
+						},
+						{
+							path: 'packages/:id',
+							name: 'packages_show',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-packages-show" */ './components/bookings/packages/show/show.vue')
+						},
 					]
 				},
 				{

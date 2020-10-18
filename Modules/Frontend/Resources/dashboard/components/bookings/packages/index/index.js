@@ -7,11 +7,12 @@ import PlusIcon from '../../../../../icons/plus';
 import CalendarIcon from '../../../../../icons/calendar';
 import CoinIcon from '../../../../../icons/coin';
 import PackageIcon from '../../../../../icons/package';
+import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
 import dayjs from 'dayjs';
 export default {
-	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon },
+	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch },
 	data: () => ({
 		newPackage: {}
 	}),
@@ -65,6 +66,7 @@ export default {
 		submit() {
 			this.newPackage.expiration_date = dayjs(this.newPackage.expiration_date).format('YYYY-MM-DD');
 			this.storePackage(this.newPackage);
+			this.$refs['addModal'].hide();
 		},
 
 		formatDate(date) {
