@@ -169,13 +169,16 @@ class Service extends BaseModel
 
     public function getAllBookingsAttribute()
     {
-        $bookings = $this->bookings->toArray();
-        $assignedServices = $this->assignedServices()->withTrashed()->get();
+        $bookings = $this->bookings()->whereNotNull('user_id')->orWhereNotNull('contact_id')->get()->load(['user', 'contact.contactUser', 'service.user', 'service.member', 'service' => function ($service) {
+            $service->withTrashed();
+        }])->toArray();
+        $assignedServices = $this->assignedServices()->where('parent_service_id', '<>', $this->attributes['id'])->withTrashed()->get();
         $assignedServices->map(function ($assignedService) use (&$bookings) {
-            if ($assignedService->bookings->count() > 0) {
-                $bookings = array_merge($bookings, $assignedService->bookings()->with(['user', 'service.user', 'service.member', 'service' => function ($service) {
+            $assignedServiceBookings = $assignedService->bookings()->whereNotNull('user_id')->orWhereNotNull('contact_id')->get();
+            if ($assignedServiceBookings->count() > 0) {
+                $bookings = array_merge($bookings, $assignedServiceBookings->load(['user', 'contact.contactUser', 'service.user', 'service.member', 'service' => function ($service) {
                     $service->withTrashed();
-                }])->get()->toArray());
+                }])->toArray());
             }
         });
         $bookings = collect($bookings);

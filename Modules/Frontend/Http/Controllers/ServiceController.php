@@ -42,7 +42,7 @@ class ServiceController extends Controller
     public function show(Request $request, Service $service)
     {
         $this->authorize('show', $service);
-        $service = $service->load('user', 'bookings.user', 'bookings.service.user', 'assignedServices.bookings');
+        $service = $service->load('user', 'bookings.user', 'bookings.contact.contactUser', 'bookings.service.user', 'assignedServices.bookings');
         $service->append('allBookings');
         return response($service);
     }

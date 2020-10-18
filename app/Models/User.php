@@ -100,9 +100,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function getFullNameAttribute()
     {
-        $first_name = $this->attributes['first_name'];
-        $last_name = $this->attributes['last_name'];
-        return $first_name || $last_name ? "$first_name $last_name" : $this->attributes['email'];
+        $first_name = $this->attributes['first_name'] ?? $this->first_name;
+        $last_name = $this->attributes['last_name'] ?? $this->first_name;
+        $email = $this->attributes['email'] ?? $this->email;
+        return $first_name || $last_name ? "$first_name $last_name" : $email;
     }
 
     public function chatbots()
@@ -117,14 +118,16 @@ class User extends Authenticatable implements JWTSubject
 
     public function getInitialsAttribute()
     {
-        $first_name = $this->attributes['first_name'];
-        $last_name = $this->attributes['last_name'];
-        return $first_name || $last_name ? strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1)) : strtoupper(substr($this->attributes['email'], 0, 1));
+        $first_name = $this->attributes['first_name'] ?? $this->first_name;
+        $last_name = $this->attributes['last_name'] ?? $this->last_name;
+        $email = $this->attributes['email'] ?? $this->email;
+        return $first_name || $last_name ? strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) : strtoupper(substr($email, 0, 1));
     }
 
     public function getLastOnlineFormatAttribute()
     {
-        return $this->attributes['last_online'] ? Carbon::parse($this->attributes['last_online'])->diffForHumans() : '';
+        $last_online = $this->attributes['last_online'] ?? $this->last_online;
+        return $last_online ? Carbon::parse($last_online)->diffForHumans() : '';
     }
 
     public function customers()

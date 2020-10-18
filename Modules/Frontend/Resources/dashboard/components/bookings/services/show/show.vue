@@ -76,7 +76,7 @@
             <tbody>
               <template v-for="booking in service.allBookings">
                 <tr :key="booking.id">
-                  <td class="align-middle">{{ booking.user.full_name }}</td>
+                  <td class="align-middle">{{ (booking.user || booking.contact.contact_user || {}).full_name }}</td>
                   <td class="align-middle">
                     {{ formatDate(booking.created_at) }}
                   </td>

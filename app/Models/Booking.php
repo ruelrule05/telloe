@@ -18,9 +18,22 @@ class Booking extends BaseModel
         'notified_24' => 'boolean',
     ];
 
+
     public function user()
     {
         return $this->belongsTo(User::class);
+        $user = $this->belongsTo(User::class);
+        if(!isset($user->id) && isset($this->attributes['contact_id'])) {
+            $contact = Contact::with('contactUser')->where('id', $this->attributes['contact_id'])->first();
+
+            return $user->withDefault([
+                'first_name' => $contact->contactUser->first_name ?? $contact->first_name,
+                'last_name' => $contact->contactUser->last_name ?? $contact->last_name,
+                'email' => $contact->contactUser->email ?? $contact->email
+            ]);
+        } else {
+            return $user;
+        }
     }
 
     public function contact()
