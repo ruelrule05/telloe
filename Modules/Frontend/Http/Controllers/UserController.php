@@ -153,7 +153,7 @@ class UserController extends Controller
 
         $script = File::get(public_path() . '/js/widget/widget.js');
         $response = Response::make($script);
-        $response->header('Content-Type', 'text/js');
+        $response->header('Content-Type', 'text/javascript');
         return $response;
     }
 
