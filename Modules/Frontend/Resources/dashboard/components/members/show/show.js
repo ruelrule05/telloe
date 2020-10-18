@@ -68,7 +68,7 @@ export default {
 			this.$set(service, 'is_loading', true);
 			let assigned_service = this.member.services.find(x => x.parent_service_id == service.id);
 
-			if (!(assigned_service || {}).deleted_at) {
+			if (assigned_service && !assigned_service.deleted_at) {
 				await this.deleteService(assigned_service);
 				assigned_service.deleted_at = 'deleted';
 			} else {
@@ -77,7 +77,7 @@ export default {
 					service_id: service.id
 				};
 				await this.storeMemberService(data).then(data => {
-					assigned_service.deleted_at = null;
+					if(assigned_service) assigned_service.deleted_at = null;
 				});
 			}
 			this.$set(service, 'is_loading', false);
