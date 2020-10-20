@@ -64,3 +64,21 @@
 		font-size: 11px;
 	}
 }
+.pagination ::v-deep .page-item {
+	.page-link {
+		color: $body-color;
+		transition: $transition-base;
+		box-shadow: none !important;
+	}
+	&.active {
+		.page-link {
+			background: $gray-400 !important;
+		}
+	}
+	&.pagination-prev-nav,
+	&.pagination-next-nav {
+		&.disabled {
+			opacity: 0.25;
+		}
+	}
+}

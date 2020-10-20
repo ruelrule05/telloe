@@ -267,6 +267,18 @@ export default {
 	},
 
 	methods: {
+		moveSelector(e) {
+			let selector = this.$refs['selector'];
+			let rect = e.target.getBoundingClientRect();
+			let selectorWidth = selector.offsetWidth / 2;
+			let selectorHeight = selector.offsetHeight / 2;
+			let x = e.clientX - rect.left - selectorWidth;
+			let y = e.clientY - rect.top - selectorHeight;
+			selector.style.top = `${y}px`;
+			selector.style.left = `${x}px`;
+			console.log(x, y);
+		},
+
 		timezoneTime(time) {
 			let profileTimezone = this.$root.profile.timezone;
 			let timezoneTime;
@@ -580,7 +592,7 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				//this.selectedService = this.services[0];
+				this.selectedService = this.services[0];
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;

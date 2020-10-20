@@ -62,8 +62,13 @@
           </div>
         </div>
         <!-- Bookings -->
-        <h5 class="mt-5 font-heading mb-0">Bookings</h5>
-        <div v-if="service.allBookings.length > 0">
+        <h5 class="mt-5 font-heading mb-3">Bookings</h5>
+
+        <div v-if="service.allBookings.data.length > 0">
+          <div class="d-flex">
+            <pagination :data="service.allBookings" @pagination-change-page="getResults" :show-disabled="true" class="mb-0 shadow-sm"></pagination>
+          </div>
+
           <table class="table table-borderless table-fixed-header mb-0">
             <thead class="text-muted">
               <tr>
@@ -74,7 +79,7 @@
               </tr>
             </thead>
             <tbody>
-              <template v-for="booking in service.allBookings">
+              <template v-for="booking in service.allBookings.data">
                 <tr :key="booking.id">
                   <td class="align-middle">{{ (booking.user || booking.contact.contact_user || {}).full_name }}</td>
                   <td class="align-middle">

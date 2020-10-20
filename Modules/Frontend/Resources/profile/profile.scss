@@ -40,6 +40,13 @@ body {
 			font-size: 20px;
 		}
 	}
+	&.profile-image-xs {
+		width: 35px;
+		height: 35px;
+		span {
+			font-size: 20px;
+		}
+	}
 }
 .cursor-pointer {
 	cursor: pointer !important;
@@ -156,6 +163,28 @@ body {
 }
 .booking-modal-progress {
 	height: 200px;
+}
+.coach-container {
+	.coach:last-child {
+		margin-bottom: 0 !important;
+	}
+}
+.timeline-container {
+	padding: 1px;
+	.selector {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 50px;
+		height: 100%;
+		border: solid 2px $primary;
+		border-radius: 5px;
+		pointer-events: none !important;
+		transform: calc(mx - 50%, my - 50%);
+	}
+	.timeline:last-child {
+		margin-bottom: 0 !important;
+	}
 }
 
 @media only screen and (max-width: 991px) {

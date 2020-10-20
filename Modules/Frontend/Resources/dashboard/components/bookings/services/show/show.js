@@ -17,10 +17,12 @@ import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
 const convertTime = require('convert-time');
+Vue.component('pagination', require('laravel-vue-pagination'));
 
 export default {
 	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon },
 	data: () => ({
+		page: 1,
 		service: null,
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -67,11 +69,7 @@ export default {
 	},
 
 	created() {
-		this.getService(this.$route.params.id).then(service => {
-			this.$root.contentloading = false;
-			this.service = service;
-			this.clonedService = Object.assign({}, service);
-		});
+		this.getData();
 		this.getMembers();
 	},
 
@@ -85,6 +83,19 @@ export default {
 			getMembers: 'members/index',
 			assignBookingToMember: 'bookings/assignToMember'
 		}),
+
+		getData() {
+			this.getService(`${this.$route.params.id}?page=${this.page}`).then(service => {
+				this.$root.contentloading = false;
+				this.service = service;
+				this.clonedService = Object.assign({}, service);
+			});
+		},
+
+		getResults(page) {
+			this.page = page;
+			this.getData();
+		},
 
 		async assignMember(booking, member = null) {
 			if (member) {
