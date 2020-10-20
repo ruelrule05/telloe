@@ -1,4 +1,4 @@
-@import '../sass/bootstrap';
+@import '../sass/variables';
 
 [v-cloak] {
 	opacity: 0;
@@ -41,8 +41,8 @@ body {
 		}
 	}
 	&.profile-image-xs {
-		width: 35px;
-		height: 35px;
+		width: 40px;
+		height: 40px;
 		span {
 			font-size: 20px;
 		}
@@ -159,7 +159,11 @@ body {
 	// min-height: 360px;
 }
 .timeslots-container {
-	height: 230px;
+	.timeslot {
+		flex: 0 0 calc(100%/18);
+		letter-spacing: -0.05em;
+		line-height: 1.1em;
+	}
 }
 .booking-modal-progress {
 	height: 200px;
@@ -170,14 +174,40 @@ body {
 	}
 }
 .timeline-container {
-	padding: 1px;
+	&:before,
+	&:after{
+		content: '';
+		position: absolute;
+		top: 0;
+		height: 100%;
+		width: 1px;
+		background-color: $light;
+	}
+	&:before{
+		left: 0;
+	}
+	&:after{
+		right: 0;
+	}
+	// background-image: linear-gradient(
+	// 	90deg, 
+	// 	#ddd 0.98%, 
+	// 	transparent 0.98%,
+	// 	transparent 50%, 
+	//  	#ddd 50%,
+	// 	#ddd 50.98%, 
+	// 	transparent 50.98%, 
+	// 	transparent 100%);
+	// background-size: calc(100% / 18 * 2);
+	// background-position: -0.5px center;
+
 	.selector {
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 50px;
 		height: 100%;
-		border: solid 2px $primary;
+		border: dashed 1px #aaa;
 		border-radius: 5px;
 		pointer-events: none !important;
 		transform: calc(mx - 50%, my - 50%);
@@ -185,6 +215,9 @@ body {
 	.timeline:last-child {
 		margin-bottom: 0 !important;
 	}
+}
+.flex-1{
+	flex: 1
 }
 
 @media only screen and (max-width: 991px) {

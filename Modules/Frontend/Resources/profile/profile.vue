@@ -80,11 +80,11 @@
 
 				<div class="position-absolute-center container selected-service-container" v-else key="service">
 					<div class="row justify-content-center h-100">
-						<div class="col-md-9 col-container h-100">
+						<div class="col-md-12 col-container h-100">
 							<div class="bg-white shadow-sm rounded selected-service text-left">
 
                                 <!-- Select coach -->
-								<template v-if="(selectedService.assigned_services || []).length > 0 && !assignedService">
+								<template v-if="(selectedService.assigned_services || []).length == 0 && !assignedService">
 									<div class="w-100 pb-4">
                                         <div class="ml-3 mt-3 w-100 text-left">
                                             <button class="btn p-0 close float-none line-height-0 mr-3" type="button" @click="selectedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
@@ -114,30 +114,42 @@
 										<h4 class="mb-0 font-heading ml-2">{{ selectedService.name }}</h4>
 									</div>
 
-									<div class="mt-3">
+									<div class="mt-3 pb-4">
 										<div class="d-flex">
 											<div class="coach-container">
+												<div style="height: 50px"></div>
 												<div class="d-flex align-items-center mb-3 coach">
 													<div class="profile-image profile-image-xs d-inline-block bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
 														<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
 													</div>
-													<h6 class="font-heading ml-2 mb-0">{{ $root.profile.full_name }}</h6>
-												</div>
-												<div class="d-flex align-items-center mb-3 coach">
-													<div class="profile-image profile-image-xs d-inline-block bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
-														<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
+													<div class="flex-1 ml-2">
+														<h6 class="font-heading mb-0">{{ $root.profile.full_name }}</h6>
+														<small class="text-muted">{{ $root.profile.timezone }}</small>
 													</div>
-													<h6 class="font-heading ml-2 mb-0">{{ $root.profile.full_name }}</h6>
 												</div>
 											</div>
 											
-											<div class="flex-grow-1 mx-4 h-100 position-relative timeline-container" @mousemove="moveSelector">
+											<div class="bg-light rounded flex-grow-1 mx-4 position-relative timeline-container overflow-hidden" @mousemove="moveSelector">
 												<div class="selector" ref="selector"></div>
-												<div class="bg-light rounded py-2 mb-3 timeline">
-													sds
+												
+												<div class="py-1 timeline d-flex text-center overflow-auto timeslots-container">
+													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot">
+														<div class="px-1">
+															<div class="p-1 small">
+																{{ convertTime(timeslot, 'hh:mm A')  }}
+															</div>
+														</div>
+													</div>
 												</div>
-												<div class="bg-light rounded py-2 mb-3 timeline">
-													sds
+
+												<div class="timeline border-top py-2 d-flex text-center overflow-auto timeslots-container">
+													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot">
+														<div class="px-1">
+															<div class="bg-primary text-white p-1 small rounded" :class="{'opacity-0': !timeslotAvailable(selectedService, timeslot)}">
+																{{ convertTime(timeslot, 'hh:mm A')  }}
+															</div>
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>

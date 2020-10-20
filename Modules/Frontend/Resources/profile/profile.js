@@ -35,6 +35,7 @@ import CoinIcon from '../icons/coin';
 import PackageIcon from '../icons/package';
 import jstz from 'jstz';
 const timezone = jstz.determine();
+const convertTime = require('convert-time');
 
 export default {
 	components: {
@@ -86,7 +87,6 @@ export default {
 			loading: false
 		},
 		timeslotsLoading: false,
-		timeslots: [],
 		dateForWeekView: null,
 		calendarView: 'month',
 		sliderNavIndex: 0,
@@ -98,7 +98,8 @@ export default {
 		GoogleAuth: null,
 		timezone: '',
 		assignedService: null,
-		tab: 'services'
+		tab: 'services',
+		convertTime: convertTime
 	}),
 
 	computed: {
@@ -221,13 +222,26 @@ export default {
 					.format('hh:mm');
 			}
 			return this.timezoneTime(endTime);
-		}
+		},
+
+		timeslots() {
+			let timeslots = [];
+			let c = 18;
+			let now = dayjs();
+			now = now.set('hour', 5).set('minute', 0);
+			while(c >= 1) {
+				timeslots.push(now.format('H:mm'));
+				now = now.add(60, 'minute');
+				c--;
+			}
+
+			return timeslots;
+		},
 	},
 
 	watch: {
 		selectedDate: function(value) {
 			if (value) this.error = null;
-			this.getTimeslots();
 			this.timeslotsLoading = true;
 			this.authError = '';
 		},
@@ -239,7 +253,8 @@ export default {
 		selectedService: function(value) {
 			this.error = null;
 			this.authError = '';
-			this.timeslots = [];
+			//this.timeslots = [];
+			this.getTimeslots();
 			this.selectedTimeslot = null;
 			this.selectedDate = null;
 			this.calendarView = 'month';
@@ -251,6 +266,7 @@ export default {
 	created() {
 		this.getData();
 		this.timezone = timezone.name();
+		this.selectedDate = new Date();
 
 		if (typeof gapi != 'undefined') {
 			gapi.load('auth2', () => {
@@ -267,16 +283,18 @@ export default {
 	},
 
 	methods: {
+		timeslotAvailable(service, timeslot) {
+			return (service.timeslots || []).find(x => x.time == timeslot);
+		},
+
 		moveSelector(e) {
 			let selector = this.$refs['selector'];
 			let rect = e.target.getBoundingClientRect();
 			let selectorWidth = selector.offsetWidth / 2;
-			let selectorHeight = selector.offsetHeight / 2;
 			let x = e.clientX - rect.left - selectorWidth;
-			let y = e.clientY - rect.top - selectorHeight;
-			selector.style.top = `${y}px`;
-			selector.style.left = `${x}px`;
-			console.log(x, y);
+			if(x >= 0 && x <= e.srcElement.offsetWidth - selector.offsetWidth) {
+				selector.style.left = `${x}px`;
+			}
 		},
 
 		timezoneTime(time) {
@@ -576,7 +594,7 @@ export default {
 			if (service && this.selectedDate) {
 				this.selectedTimeslot = null;
 				axios.get(`${window.location.pathname}/${service.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
-					this.timeslots = response.data;
+					this.$set(service, 'timeslots', response.data);
 					this.timeslotsLoading = false;
 				});
 			}
