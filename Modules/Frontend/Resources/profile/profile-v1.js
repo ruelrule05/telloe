@@ -257,7 +257,6 @@ export default {
 			if (value) this.error = null;
 			this.timeslotsLoading = true;
 			this.authError = '';
-			this.getTimeslots();
 		},
 		step: function(value) {
 			if (value == 4) {
@@ -307,7 +306,8 @@ export default {
 					let availableTimeslotParts = availableTimeslot.time.split(':');
 					let width = service.duration / 60 * 100;
 					let left = parseInt(availableTimeslotParts[1]) / 60 * 100;
-					timeslotEls += `<div class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white overflow-hidden"><span class="text-nowrap">${convertTime(availableTimeslot.time, 'hh:mmA')}</span></div>`;
+					let style = `height: 18px; width: ${width}%; left: ${left}%`;
+					timeslotEls += `<div class="small position-absolute bg-primary d-inline-block position-relative text-white cursor-pointer rounded border border-white overflow-hidden" style="${style}"><span class="position-absolute-center d-nxone text-nowrap" style="font-size: 10px">${convertTime(availableTimeslot.time, 'hh:mmA')}</span></div>`;
 				});
 			}
 

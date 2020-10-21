@@ -81,22 +81,6 @@
 				<div class="position-absolute-center container selected-service-container" v-else key="service">
 					<div class="row justify-content-center h-100">
 						<div class="col-md-12 col-container h-100">
-
-
-							<div class="d-flex align-items-center mb-3">
-								<div class="d-flex align-items-center">
-									<button class="btn line-height-0 p-0 close float-none" type="button" @click="(selectedService.assigned_services || []).length > 0 ? goToCoachSelection() : selectedService = assignedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
-									<h4 class="mb-0 font-heading ml-2">{{ selectedService.name }}</h4>
-								</div>
-								
-								<div class="ml-auto">
-									<button type="button" class="btn btn-white badge-pill line-height-0 p-1 border"><chevron-left-icon width="24" height="24" class="fill-secondary" transform="scale(1.5)"></chevron-left-icon></button>
-									<v-date-picker :min-date="new Date()" :popover="{placement: 'bottom', visibility: 'click' }" v-model="selectedDate" class="mx-1">
-										<button class="btn btn-white border shadow-none" :class="{'text-gray': !selectedDate}">{{ selectedDate ? formatDate(selectedDate) : 'Set date' }}</button>
-									</v-date-picker>
-									<button type="button" class="btn btn-white badge-pill line-height-0 p-1 border"><chevron-right-icon width="24" height="24" class="fill-secondary" transform="scale(1.5)"></chevron-right-icon></button>
-								</div>
-							</div>
 							<div class="bg-white shadow-sm rounded selected-service text-left">
 
                                 <!-- Select coach -->
@@ -125,26 +109,36 @@
                                 
 
 								<!-- Date/time selection -->
-								<div xv-else class="pl-3 py-4">
+								<div xv-else class="pl-3 pt-3">
 									<div class="d-flex align-items-center">
-										<div class="coach-container">
-											<div class="coach text-center">
-												<div class="profile-image profile-image-xs d-inline-block bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
-													<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
+										<button class="btn line-height-0 p-0 close float-none" type="button" @click="(selectedService.assigned_services || []).length > 0 ? goToCoachSelection() : selectedService = assignedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
+										<h4 class="mb-0 font-heading ml-2">{{ selectedService.name }}</h4>
+									</div>
+
+									<div class="pb-4">
+										<div class="d-flex align-items-center mt-4">
+											<div class="coach-container">
+												<div class="d-flex align-items-center coach">
+													<div class="profile-image profile-image-xs d-inline-block bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
+														<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
+													</div>
+													<div class="flex-1 ml-2">
+														<h6 class="font-heading mb-0">{{ $root.profile.full_name }}</h6>
+													</div>
 												</div>
-												<h6 class="font-heading mb-0 mt-1">{{ $root.profile.full_name }}</h6>
+												
 											</div>
 											
-										</div>
-										
-										<div class="bg-light rounded flex-grow-1 mx-4 position-relative timeline-container">
-											<div class="timeline d-flex text-center overflow-auto timeslots-container">
-												<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-2">
-													<div class="small mb-1">{{ convertTime(timeslot, 'h:mmA') }}</div>
-													<div class="position-relative px-1 pb-1" v-html="availableTimeslot(selectedService, timeslot)"></div>
+											<div class="bg-light shadow-sm rounded flex-grow-1 mx-4 position-relative timeline-container">
+												<div class="timeline d-flex text-center overflow-auto timeslots-container">
+													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-2 pb-1">
+														<div class="small mb-2">{{ convertTime(timeslot, 'h:mmA') }}</div>
+														<div class="position-relative" style="height: 25px" v-html="availableTimeslot(selectedService, timeslot)"></div>
+													</div>
 												</div>
 											</div>
 										</div>
+										
 									</div>
 								</div>
 							</div>
