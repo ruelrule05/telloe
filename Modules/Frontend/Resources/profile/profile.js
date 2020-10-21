@@ -36,6 +36,10 @@ import PackageIcon from '../icons/package';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 const convertTime = require('convert-time');
+const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+dayjs.extend(IsSameOrBefore);
+dayjs.extend(IsSameOrAfter);
 
 export default {
 	components: {
@@ -226,17 +230,25 @@ export default {
 
 		timeslots() {
 			let timeslots = [];
-			let c = 18;
-			let now = dayjs();
-			now = now.set('hour', 5).set('minute', 0);
-			while(c >= 1) {
-				timeslots.push(now.format('H:mm'));
-				now = now.add(60, 'minute');
-				c--;
+			let start = dayjs();
+			let end = dayjs();
+			if (this.selectedService && this.selectedDate) {
+				let dayName = dayjs(this.selectedDate).format('dddd');
+				let dayAvailability = this.selectedService.days[dayName];
+				if (dayAvailability) {
+					let startParts = dayAvailability.start.split(':');
+					let endParts = dayAvailability.end.split(':');
+					start = start.set('hour', startParts[0]).set('minute', startParts[1]);
+					end = end.set('hour', endParts[0]).set('minute', endParts[1]);
+				}
+			}
+			while (start.isSameOrBefore(end)) {
+				timeslots.push(start.format('HH:mm'));
+				start = start.add(this.selectedService.duration, 'minute');
 			}
 
 			return timeslots;
-		},
+		}
 	},
 
 	watch: {
@@ -254,9 +266,7 @@ export default {
 			this.error = null;
 			this.authError = '';
 			//this.timeslots = [];
-			this.getTimeslots();
 			this.selectedTimeslot = null;
-			this.selectedDate = null;
 			this.calendarView = 'month';
 			this.authAction = 'signup';
 			this.authForm = false;
@@ -283,16 +293,29 @@ export default {
 	},
 
 	methods: {
-		timeslotAvailable(service, timeslot) {
-			return (service.timeslots || []).find(x => x.time == timeslot);
+		availableTimeslot(service, timeslot, index) {
+			let startParts = timeslot.split(':');
+			let el = '';
+			let availableTimeslot = (service.timeslots || []).find(x => {
+				let serviceStartParts = x.time.split(':');
+				return startParts[0] == serviceStartParts[0];
+			});
+			if (availableTimeslot) {
+				let availableTimeslotParts = availableTimeslot.time.split(':');
+				let style = `height: 18px; width: 100%;`;
+				el = `<div class="bg-primary d-inline-block position-relative text-white cursor-pointer" style="${style}"></div>`;
+			}
+
+			return el;
 		},
 
 		moveSelector(e) {
 			let selector = this.$refs['selector'];
 			let rect = e.target.getBoundingClientRect();
 			let selectorWidth = selector.offsetWidth / 2;
-			let x = e.clientX - rect.left - selectorWidth;
-			if(x >= 0 && x <= e.srcElement.offsetWidth - selector.offsetWidth) {
+			let x = e.clientX - rect.left;
+			console.log(x);
+			if (x >= 0 && x <= e.srcElement.offsetWidth - selector.offsetWidth) {
 				selector.style.left = `${x}px`;
 			}
 		},
@@ -611,6 +634,7 @@ export default {
 
 				// testing
 				this.selectedService = this.services[0];
+				this.getTimeslots();
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;

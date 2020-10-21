@@ -1,10 +1,15 @@
 @import '../sass/variables';
-
+$timeCount: 15;
 [v-cloak] {
 	opacity: 0;
 }
-body {
-	background-color: rgba($gray-200, 0.5);
+.backlines {
+	pointer-events: none;
+	z-index: 0;
+	> div {
+		border-left: solid 1px $border-color;
+	}
+	left: -0.5px;
 }
 .font-heading {
 	font-family: 'Avenir Next', sans-serif;
@@ -155,12 +160,9 @@ body {
 	top: 10px;
 	left: 10px;
 }
-.selected-service {
-	// min-height: 360px;
-}
 .timeslots-container {
 	.timeslot {
-		flex: 0 0 calc(100%/18);
+		// flex: 0 0 calc(100% / $timeCount);
 		letter-spacing: -0.05em;
 		line-height: 1.1em;
 	}
@@ -174,38 +176,10 @@ body {
 	}
 }
 .timeline-container {
-	&:before,
-	&:after{
-		content: '';
-		position: absolute;
-		top: 0;
-		height: 100%;
-		width: 1px;
-		background-color: $light;
-	}
-	&:before{
-		left: 0;
-	}
-	&:after{
-		right: 0;
-	}
-	// background-image: linear-gradient(
-	// 	90deg, 
-	// 	#ddd 0.98%, 
-	// 	transparent 0.98%,
-	// 	transparent 50%, 
-	//  	#ddd 50%,
-	// 	#ddd 50.98%, 
-	// 	transparent 50.98%, 
-	// 	transparent 100%);
-	// background-size: calc(100% / 18 * 2);
-	// background-position: -0.5px center;
-
 	.selector {
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 50px;
 		height: 100%;
 		border: dashed 1px #aaa;
 		border-radius: 5px;
@@ -215,9 +189,12 @@ body {
 	.timeline:last-child {
 		margin-bottom: 0 !important;
 	}
+	.timeslot:last-child {
+		border-right: none !important;
+	}
 }
-.flex-1{
-	flex: 1
+.flex-1 {
+	flex: 1;
 }
 
 @media only screen and (max-width: 991px) {
