@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="text-center h-100 w-100 overflow-auto bg-danger" v-if="ready">
+        <div class="text-center h-100 w-100 overflow-auto" v-if="ready">
 			<transition-group name="fade" tag="div">
 				<div class="container" v-if="!selectedService" key="services">
 					<div class="row justify-content-center">
@@ -85,16 +85,16 @@
 
 							<div class="d-flex align-items-center mb-3">
 								<div class="d-flex align-items-center">
-									<button class="btn line-height-0 p-0 close float-none" type="button" @click="(selectedService.assigned_services || []).length > 0 ? goToCoachSelection() : selectedService = assignedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
+									<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedService = assignedService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
 									<h4 class="mb-0 font-heading ml-2">{{ selectedService.name }}</h4>
 								</div>
 								
 								<div class="ml-auto">
-									<button type="button" class="btn btn-white badge-pill line-height-0 p-1 border"><chevron-left-icon width="24" height="24" class="fill-secondary" transform="scale(1.5)"></chevron-left-icon></button>
+									<button type="button" class="btn btn-white badge-pill line-height-0 p-1 shadow-sm" @click="decDate()"><chevron-left-icon width="24" height="24" class="fill-secondary" transform="scale(1.5)"></chevron-left-icon></button>
 									<v-date-picker :min-date="new Date()" :popover="{placement: 'bottom', visibility: 'click' }" v-model="selectedDate" class="mx-1">
-										<button class="btn btn-white border shadow-none" :class="{'text-gray': !selectedDate}">{{ selectedDate ? formatDate(selectedDate) : 'Set date' }}</button>
+										<button class="btn btn-white shadow-sm" :class="{'text-gray': !selectedDate}">{{ selectedDate ? formatDate(selectedDate) : 'Set date' }}</button>
 									</v-date-picker>
-									<button type="button" class="btn btn-white badge-pill line-height-0 p-1 border"><chevron-right-icon width="24" height="24" class="fill-secondary" transform="scale(1.5)"></chevron-right-icon></button>
+									<button type="button" class="btn btn-white badge-pill line-height-0 p-1 shadow-sm" @click="incDate()"><chevron-right-icon width="24" height="24" class="fill-secondary" transform="scale(1.5)"></chevron-right-icon></button>
 								</div>
 							</div>
 							<div class="bg-white shadow-sm rounded selected-service text-left">
@@ -127,21 +127,44 @@
 								<!-- Date/time selection -->
 								<div xv-else class="pl-3 py-4">
 									<div class="d-flex align-items-center">
-										<div class="coach-container">
+										<div class="coach-container pt-4">
 											<div class="coach text-center">
-												<div class="profile-image profile-image-xs d-inline-block bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
+												<div class="profile-image profile-image-xs bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
 													<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
 												</div>
-												<h6 class="font-heading mb-0 mt-1">{{ $root.profile.full_name }}</h6>
 											</div>
-											
 										</div>
 										
-										<div class="bg-light rounded flex-grow-1 mx-4 position-relative timeline-container">
-											<div class="timeline d-flex text-center overflow-auto timeslots-container">
-												<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-2">
-													<div class="small mb-1">{{ convertTime(timeslot, 'h:mmA') }}</div>
-													<div class="position-relative px-1 pb-1" v-html="availableTimeslot(selectedService, timeslot)"></div>
+										<div class="flex-grow-1 ml-3 mr-4">
+											<h6 class="font-heading">{{ $root.profile.full_name }}</h6>
+											<div class="bg-light rounded position-relative timeline-container">
+												<div class="timeline d-flex text-center overflow-auto timeslots-container">
+													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-2">
+														<div class="small mb-1 text-secondary">{{ convertTime(timeslot, 'h:mmA') }}</div>
+														<div class="position-relative px-1 pb-1" v-html="availableTimeslot(selectedService, timeslot)"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div v-for="assignedService in selectedService.assigned_services" class="d-flex align-items-center mt-4" :key="assignedService.id">
+										<div class="coach-container pt-4">
+											<div class="coach text-center">
+												<div class="profile-image profile-image-xs bg-white" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
+													<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+												</div>
+											</div>
+										</div>
+
+										<div class="flex-grow-1 ml-3 mr-4">
+											<h6 class="font-heading">{{ assignedService.user.full_name }}</h6>
+											<div class="bg-light rounded position-relative timeline-container">
+												<div class="timeline d-flex text-center overflow-auto timeslots-container">
+													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-2">
+														<div class="small mb-1 text-secondary">{{ convertTime(timeslot, 'h:mmA') }}</div>
+														<div class="position-relative px-1 pb-1" v-html="availableTimeslot(assignedService, timeslot)"></div>
+													</div>
 												</div>
 											</div>
 										</div>

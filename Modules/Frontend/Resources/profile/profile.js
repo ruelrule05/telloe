@@ -264,14 +264,16 @@ export default {
 				this.submit();
 			}
 		},
-		selectedService: function(value) {
-			this.error = null;
-			this.authError = '';
-			//this.timeslots = [];
-			this.selectedTimeslot = null;
-			this.calendarView = 'month';
-			this.authAction = 'signup';
-			this.authForm = false;
+		'selectedService.id': function(value) {
+			if (value) {
+				this.error = null;
+				this.authError = '';
+				this.getTimeslots();
+				this.selectedTimeslot = null;
+				this.calendarView = 'month';
+				this.authAction = 'signup';
+				this.authForm = false;
+			}
 		}
 	},
 
@@ -295,6 +297,16 @@ export default {
 	},
 
 	methods: {
+		incDate() {
+			let parsedDate = dayjs(this.selectedDate);
+			this.selectedDate = parsedDate.add(1, 'day');
+		},
+
+		decDate() {
+			let parsedDate = dayjs(this.selectedDate);
+			this.selectedDate = parsedDate.subtract(1, 'day');
+		},
+
 		availableTimeslot(service, timeslot, index) {
 			let startParts = timeslot.split(':');
 			let timeslotEls = '';
@@ -305,8 +317,8 @@ export default {
 			if (availableTimeslots.length > 0) {
 				availableTimeslots.forEach(availableTimeslot => {
 					let availableTimeslotParts = availableTimeslot.time.split(':');
-					let width = service.duration / 60 * 100;
-					let left = parseInt(availableTimeslotParts[1]) / 60 * 100;
+					let width = (service.duration / 60) * 100;
+					let left = (parseInt(availableTimeslotParts[1]) / 60) * 100;
 					timeslotEls += `<div class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white overflow-hidden"><span class="text-nowrap">${convertTime(availableTimeslot.time, 'hh:mmA')}</span></div>`;
 				});
 			}
@@ -618,19 +630,21 @@ export default {
 		},
 
 		getTimeslots() {
-			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedDate) {
+			if (this.selectedService) {
 				this.selectedTimeslot = null;
-				axios.get(`${window.location.pathname}/${service.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
-					this.$set(service, 'timeslots', response.data);
+				axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
+					this.$set(this.selectedService, 'timeslots', response.data);
 					this.timeslotsLoading = false;
+				});
+				this.selectedService.assigned_services.forEach(assignedService => {
+					axios.get(`${window.location.pathname}/${assignedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
+						this.$set(assignedService, 'timeslots', response.data);
+					});
 				});
 			}
 		},
 
-		setService(service) {
-			this.selectedService = service;
-		},
+		setService(service) {},
 
 		getData() {
 			axios.get(window.location.pathname).then(response => {
@@ -639,7 +653,6 @@ export default {
 
 				// testing
 				this.selectedService = this.services[0];
-				this.getTimeslots();
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;
