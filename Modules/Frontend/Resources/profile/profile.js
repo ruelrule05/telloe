@@ -19,6 +19,7 @@ import VueButton from '../components/vue-button';
 import Modal from '../components/modal/modal.vue';
 import ClockIcon from '../icons/clock';
 import CalendarDayIcon from '../icons/calendar-day';
+import CalendarDayAltIcon from '../icons/calendar-day-alt';
 import InfoCircleIcon from '../icons/info-circle';
 import CheckmarkIcon from '../icons/checkmark';
 import ArrowLeftIcon from '../icons/arrow-left';
@@ -40,6 +41,7 @@ const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
 const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
+import tooltip from '../js/directives/tooltip.js';
 
 export default {
 	components: {
@@ -47,6 +49,7 @@ export default {
 		Modal,
 		ClockIcon,
 		CalendarDayIcon,
+		CalendarDayAltIcon,
 		InfoCircleIcon,
 		CheckmarkIcon,
 		VueButton,
@@ -63,13 +66,15 @@ export default {
 		CoinIcon,
 		PackageIcon
 	},
+
+	directives: { tooltip },
+
 	data: () => ({
 		profile: PROFILE,
 		auth: AUTH,
 		ready: false,
 		services: [],
 		packages: [],
-		selectedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		selectAttribute: {
 			highlight: {
@@ -78,6 +83,8 @@ export default {
 			}
 		},
 		step: 1,
+		selectedServiceForTimeline: null,
+		selectedService: null,
 		selectedDate: null,
 		selectedTimeslot: null,
 		detailsConfirmed: false,
@@ -103,7 +110,8 @@ export default {
 		timezone: '',
 		assignedService: null,
 		tab: 'services',
-		convertTime: convertTime
+		convertTime: convertTime,
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -218,13 +226,13 @@ export default {
 
 		endTime() {
 			let endTime = '';
-			let service = this.assignedService || this.selectedService;
 			if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
 				let selectedDate = dayjs(dayjs(this.selectedDate).format('YYYY-MM-DD') + ' ' + this.selectedTimeslot.time);
 				endTime = dayjs(selectedDate)
 					.add(this.selectedService.duration, 'minute')
-					.format('hh:mm');
+					.format('hh:mmA');
 			}
+			return endTime;
 			return this.timezoneTime(endTime);
 		},
 
@@ -232,9 +240,9 @@ export default {
 			let timeslots = [];
 			let start = dayjs();
 			let end = dayjs();
-			if (this.selectedService && this.selectedDate) {
+			if (this.selectedServiceForTimeline && this.selectedDate) {
 				let dayName = dayjs(this.selectedDate).format('dddd');
-				let dayAvailability = this.selectedService.days[dayName];
+				let dayAvailability = this.selectedServiceForTimeline.days[dayName];
 				if (dayAvailability) {
 					let startParts = dayAvailability.start.split(':');
 					let endParts = dayAvailability.end.split(':');
@@ -244,18 +252,33 @@ export default {
 			}
 			while (start.isSameOrBefore(end)) {
 				timeslots.push(start.format('HH:mm'));
-				//start = start.add(this.selectedService.duration, 'minute');
 				start = start.add(60, 'minute');
 			}
 
 			return timeslots;
+		},
+
+		tabDates() {
+			let tabDates = [];
+			let i = 7;
+			let now = dayjs();
+			while (i > 0) {
+				tabDates.push({
+					name: now.format('ddd'),
+					date: now.toDate(),
+					label: now.format('MMM DD')
+				});
+				now = now.add(1, 'day');
+				i--;
+			}
+
+			return tabDates;
 		}
 	},
 
 	watch: {
 		selectedDate: function(value) {
 			if (value) this.error = null;
-			this.timeslotsLoading = true;
 			this.authError = '';
 			this.getTimeslots();
 		},
@@ -264,7 +287,7 @@ export default {
 				this.submit();
 			}
 		},
-		'selectedService.id': function(value) {
+		'selectedServiceForTimeline.id': function(value) {
 			if (value) {
 				this.error = null;
 				this.authError = '';
@@ -280,7 +303,7 @@ export default {
 	created() {
 		this.getData();
 		this.timezone = timezone.name();
-		this.selectedDate = new Date();
+		this.selectedDate = dayjs().toDate();
 
 		if (typeof gapi != 'undefined') {
 			gapi.load('auth2', () => {
@@ -297,33 +320,27 @@ export default {
 	},
 
 	methods: {
-		incDate() {
-			let parsedDate = dayjs(this.selectedDate);
-			this.selectedDate = parsedDate.add(1, 'day');
+		timezoneTooltip(timezone, timeslot) {
+			return `
+				<div class="text-left py-1 line-height-base">
+					<div class="mb-2"><div>${timezone}</div><div><strong>${timeslot.label}</strong></div></div>
+					<div>${this.timezone}</div><div><strong>${this.timezoneTime(timeslot.time)}</strong></div>
+				</div>
+			`;
+		},
+		selectTimeslot(e) {
+			console.log(e.target);
 		},
 
-		decDate() {
-			let parsedDate = dayjs(this.selectedDate);
-			this.selectedDate = parsedDate.subtract(1, 'day');
-		},
-
-		availableTimeslot(service, timeslot, index) {
+		availableTimeslots(service, timeslot) {
 			let startParts = timeslot.split(':');
 			let timeslotEls = '';
 			let availableTimeslots = (service.timeslots || []).filter(x => {
 				let serviceStartParts = x.time.split(':');
 				return startParts[0] == serviceStartParts[0];
 			});
-			if (availableTimeslots.length > 0) {
-				availableTimeslots.forEach(availableTimeslot => {
-					let availableTimeslotParts = availableTimeslot.time.split(':');
-					let width = (service.duration / 60) * 100;
-					let left = (parseInt(availableTimeslotParts[1]) / 60) * 100;
-					timeslotEls += `<div class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white overflow-hidden"><span class="text-nowrap">${convertTime(availableTimeslot.time, 'hh:mmA')}</span></div>`;
-				});
-			}
 
-			return timeslotEls;
+			return availableTimeslots;
 		},
 
 		moveSelector(e) {
@@ -389,13 +406,13 @@ export default {
 		reset() {
 			this.$refs['bookingModal'].hide();
 			setTimeout(() => {
-				this.selectedService = null;
-				this.selectedDate = null;
-				this.selectedTimeslot = null;
 				this.isBooking = false;
 				this.bookingSuccess = false;
 				this.authForm = false;
 				this.authAction = 'signup';
+				this.authForm = false;
+				this.selectedDate = dayjs().toDate();
+				this.selectedServiceForTimeline = this.selectedService = this.selectedTimeslot = null;
 			}, 150);
 		},
 
@@ -475,8 +492,6 @@ export default {
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
-							this.authForm = false;
-							this.selectedService = this.assignedService = this.selectedDate = this.selectedTimeslot = null;
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -508,7 +523,6 @@ export default {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
 							this.authForm = false;
-							this.selectedService = this.assignedService = this.selectedDate = this.selectedTimeslot = null;
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -542,7 +556,6 @@ export default {
 											this.bookingSuccess = true;
 											this.loginForm.loading = false;
 											this.authForm = false;
-											this.selectedService = this.assignedService = this.selectedDate = this.selectedTimeslot = null;
 										})
 										.catch(e => {
 											setTimeout(() => {
@@ -595,7 +608,6 @@ export default {
 									this.bookingSuccess = true;
 									this.loginForm.loading = false;
 									this.authForm = false;
-									this.selectedService = this.assignedService = this.selectedDate = this.selectedTimeslot = null;
 								})
 								.catch(e => {
 									setTimeout(() => {
@@ -624,23 +636,18 @@ export default {
 			return formatDate;
 		},
 
-		resetStep() {
-			this.step = 1;
-			this.selectedTimeslot = this.selectedDate = null;
-		},
-
-		getTimeslots() {
-			if (this.selectedService) {
+		async getTimeslots() {
+			if (this.selectedServiceForTimeline) {
+				this.timeslotsLoading = true;
 				this.selectedTimeslot = null;
-				axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
-					this.$set(this.selectedService, 'timeslots', response.data);
-					this.timeslotsLoading = false;
-				});
-				this.selectedService.assigned_services.forEach(assignedService => {
-					axios.get(`${window.location.pathname}/${assignedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
-						this.$set(assignedService, 'timeslots', response.data);
-					});
-				});
+				let response = await axios.get(`${window.location.pathname}/${this.selectedServiceForTimeline.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`);
+				this.$set(this.selectedServiceForTimeline, 'timeslots', response.data);
+
+				for (const assignedService of this.selectedServiceForTimeline.assigned_services) {
+					let response = await axios.get(`${window.location.pathname}/${assignedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`);
+					this.$set(assignedService, 'timeslots', response.data);
+				}
+				this.timeslotsLoading = false;
 			}
 		},
 
@@ -652,7 +659,7 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				this.selectedService = this.services[0];
+				this.selectedServiceForTimeline = this.services[0];
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;
@@ -664,30 +671,6 @@ export default {
 
 				this.ready = true;
 			});
-		},
-
-		nextStep() {
-			if (!this.nextDisabled) this.step++;
-			if (this.step == 4) this.detailsConfirmed = true;
-		},
-
-		stepClass(step) {
-			let stepClass = [];
-			if (this.step == step) stepClass.push('step-current');
-			switch (step) {
-				case 1:
-					if (this.selectedDate) stepClass.push('step-complete');
-					break;
-
-				case 2:
-					if (this.selectedTimeslot) stepClass.push('step-complete');
-					break;
-
-				case 3:
-					if (this.detailsConfirmed) stepClass.push('step-complete');
-					break;
-			}
-			return stepClass.join(' ');
 		}
 	}
 };

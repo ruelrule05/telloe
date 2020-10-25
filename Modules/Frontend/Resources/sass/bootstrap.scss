@@ -36,7 +36,6 @@
 	font-smoothing: antialiased;
 }
 
-
 .modal {
 	.modal-dialog {
 		.close {
@@ -56,11 +55,11 @@
 }
 @each $color, $value in $theme-colors {
 	.btn-#{$color} {
-		&:hover{
+		&:hover {
 			box-shadow: $box-shadow-xs;
 		}
 	}
-	
+
 	.btn-outline-#{$color} {
 		border: solid 1px $value;
 		&:focus,
@@ -186,7 +185,7 @@
 .cursor-pointer {
 	cursor: pointer !important;
 }
-.cursor-move{
+.cursor-move {
 	cursor: move !important;
 }
 .outline-0 {
@@ -210,20 +209,20 @@
 	}
 }
 .dropdown-menu {
-	padding-left:  .5rem;
-	padding-right:  .5rem;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 	max-height: 98vh;
 	box-shadow: rgba($dark, 0.2) 0px 0px 15px, rgba($dark, 0.15) 0px 0px 3px 1px;
-	.dropdown-item{
+	.dropdown-item {
 		padding: 0.25rem 0.5rem 0.3rem 0.5rem;
 		transition: $transition-base;
 		border-radius: $border-radius-sm;
-		&.disabled{
+		&.disabled {
 			svg {
 				fill: $gray-600;
 			}
 		}
-		.dropdown-item-icon{
+		.dropdown-item-icon {
 			margin-right: 10px;
 			margin-left: -2px;
 			fill: $gray-600;

@@ -11,7 +11,6 @@ export default {
 		let tooltipInner = document.createElement('div');
 		tooltipInner.classList.add('tooltip-inner');
 
-
 		tooltip.appendChild(tooltipArrow);
 		tooltip.appendChild(tooltipInner);
 		tooltip.setAttribute('x-placement', Object.keys(binding.modifiers)[0]);
@@ -19,5 +18,5 @@ export default {
 
 		el.style.position = 'relative';
 		el.appendChild(tooltip);
-	},
+	}
 };

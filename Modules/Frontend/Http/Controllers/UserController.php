@@ -46,7 +46,7 @@ class UserController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $services = $profile->load(['services' => function ($service) {
                 $service->where('is_available', true)->where('in_widget', true);
-            }])->services->load('assignedServices.member.memberUser');
+            }])->services->load('user', 'assignedServices.member.memberUser');
 
             $data = [];
             $data['services'] = $services;
