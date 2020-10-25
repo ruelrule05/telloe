@@ -186,26 +186,26 @@
 							</div>
 							<div class="bg-white shadow-sm rounded selected-service text-left d-flex">
 								<div class="p-4 border-right flex-1">
-									<h3 class="h3 mb-3">{{ selectedService.name }}</h3>
+									<h3 class="h3 mb-3 font-heading">{{ selectedService.name }}</h3>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Coach</div>
-										<div class="h6">{{ selectedService.user.full_name }}</div>
+										<div class="h6 font-heading">{{ selectedService.user.full_name }}</div>
 									</div>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Date</div>
-										<div class="h6">{{ formatDate(selectedDate) }}</div>
+										<div class="h6 font-heading">{{ formatDate(selectedDate) }}</div>
 									</div>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Starts at</div>
-										<div class="h6">{{ convertTime(selectedTimeslot.time, 'hh:mmA') }}</div>
+										<div class="h6 font-heading">{{ convertTime(selectedTimeslot.time, 'hh:mmA') }}</div>
 									</div>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Ends at</div>
-										<div class="h6">{{ endTime }}</div>
+										<div class="h6 font-heading">{{ endTime }}</div>
 									</div>
 									<div>
 										<div class="font-weight-normal text-secondary">Duration</div>
-										<div class="h6">{{ selectedService.duration }} minutes</div>
+										<div class="h6 font-heading">{{ selectedService.duration }} minutes</div>
 									</div>
 								</div>
 								<div class="p-4 flex-1">
@@ -223,7 +223,7 @@
 													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
 												</template>
 												<template v-else-if="authAction == 'signup'">
-													<h5 class="h4 font-heading mb-4">Create your account</h5>
+													<h5 class="h4 font-heading mb-3">Create your account</h5>
 													<div class="form-group mb-2">
 														<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required>
 													</div>
@@ -236,10 +236,10 @@
 													<div class="form-group">
 														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required>
 													</div>
-													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Sign Up & Book</vue-button>
+													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
 												</template>
 
-												<div class="d-flex mx-n1 mt-3">
+												<div class="d-flex mx-n1 mt-2">
 													<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
 													<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
 												</div>
