@@ -1,5 +1,0 @@
-/**
- * vue-paginate v3.6.0
- * (c) 2018 Taha Shashtari
- * @license MIT
- */
