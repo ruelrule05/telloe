@@ -197,7 +197,35 @@ $timeCount: 15;
 .flex-1 {
 	flex: 1;
 }
-
+.table-layout-fixed {
+	table-layout: fixed !important;
+}
+.active-user {
+	transition: $transition-base;
+	border-top-left-radius: 50%;
+	border-bottom-left-radius: 50%;
+	top: 72px;
+	left: 0;
+	height: 70px;
+	background-color: white;
+	box-shadow: $box-shadow-sm;
+	&:after {
+		content: '';
+		height: 100%;
+		width: 2px;
+		background-color: white;
+		top: 0;
+		right: -1px;
+		position: absolute;
+	}
+}
+.timeslots-wrapper,
+.timeslots-loader {
+	border-radius: 20px;
+}
+.timeslots-wrapper td > div > div:last-child .timeslot-button {
+	margin-bottom: 0 !important;
+}
 @media only screen and (max-width: 991px) {
 	#app {
 		overflow: hidden;
@@ -221,11 +249,6 @@ $timeCount: 15;
 	.profile-image {
 		width: 100px;
 		height: 100px;
-	}
-	.selected-service {
-		.w-50 {
-			width: 100% !important;
-		}
 	}
 }
 

@@ -111,9 +111,7 @@ export default {
 		assignedService: null,
 		tab: 'services',
 		convertTime: convertTime,
-		dayjs: dayjs,
-		selectedCoachId: null,
-		activeUserBgPosition: 0
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -263,15 +261,14 @@ export default {
 		tabDates() {
 			let tabDates = [];
 			let i = 7;
-			let selectedDate = dayjs(this.selectedDate);
+			let now = dayjs();
 			while (i > 0) {
 				tabDates.push({
-					name: selectedDate.format('ddd'),
-					date: selectedDate.toDate(),
-					label: selectedDate.format('MMM DD'),
-					format: selectedDate.format('YYYY-MM-DD')
+					name: now.format('ddd'),
+					date: now.toDate(),
+					label: now.format('MMM DD')
 				});
-				selectedDate = selectedDate.add(1, 'day');
+				now = now.add(1, 'day');
 				i--;
 			}
 
@@ -280,30 +277,21 @@ export default {
 	},
 
 	watch: {
-		selectedCoachId: function(value) {
-			this.$nextTick(() => {
-				let activeUser = document.querySelector('.user-container.active');
-				if (activeUser) {
-					this.activeUserBgPosition = activeUser.offsetTop - 4;
-				}
-			});
-		},
-
-		'selectedService.id': function(value) {
-			this.getTimeslots();
-		},
-
 		selectedDate: function(value) {
 			if (value) this.error = null;
 			this.authError = '';
 			this.getTimeslots();
 		},
-
+		step: function(value) {
+			if (value == 4) {
+				this.submit();
+			}
+		},
 		'selectedServiceForTimeline.id': function(value) {
 			if (value) {
-				this.selectedCoachId = this.profile.id;
 				this.error = null;
 				this.authError = '';
+				this.getTimeslots();
 				this.selectedTimeslot = null;
 				this.calendarView = 'month';
 				this.authAction = 'signup';
@@ -340,7 +328,6 @@ export default {
 				</div>
 			`;
 		},
-
 		selectTimeslot(e) {
 			console.log(e.target);
 		},
@@ -650,16 +637,16 @@ export default {
 		},
 
 		async getTimeslots() {
-			if (this.selectedService) {
+			if (this.selectedServiceForTimeline) {
 				this.timeslotsLoading = true;
 				this.selectedTimeslot = null;
-				let response = await axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`);
-				this.$set(this.selectedService, 'timeslots', response.data);
+				let response = await axios.get(`${window.location.pathname}/${this.selectedServiceForTimeline.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`);
+				this.$set(this.selectedServiceForTimeline, 'timeslots', response.data);
 
-				// for (const assignedService of this.selectedServiceForTimeline.assigned_services) {
-				// 	let response = await axios.get(`${window.location.pathname}/${assignedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`);
-				// 	this.$set(assignedService, 'timeslots', response.data);
-				// }
+				for (const assignedService of this.selectedServiceForTimeline.assigned_services) {
+					let response = await axios.get(`${window.location.pathname}/${assignedService.id}/timeslots?date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`);
+					this.$set(assignedService, 'timeslots', response.data);
+				}
 				this.timeslotsLoading = false;
 			}
 		},
@@ -673,7 +660,6 @@ export default {
 
 				// testing
 				this.selectedServiceForTimeline = this.services[0];
-				this.selectedService = this.selectedServiceForTimeline;
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;

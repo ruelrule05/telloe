@@ -81,7 +81,17 @@ class UserController extends Controller
                 $query->where('user_id', $user->id);
             });
         })->firstOrfail();
-        $timeslots = $service->timeslots($request->date);
+
+        $timeslots = [];
+        $i = 1;
+        $startDate = Carbon::parse($request->date);
+        while ($i <= 7) {
+            $date = $startDate->format('Y-m-d');
+            $timeslots[$date] = $service->timeslots($date);
+            $startDate = $startDate->addDays(1);
+            $i++;
+        }
+        //$timeslots = $service->timeslots($request->date);
 
         return response()->json($timeslots);
     }
