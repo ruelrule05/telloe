@@ -672,8 +672,8 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				this.selectedServiceForTimeline = this.services[0];
-				this.selectedService = this.selectedServiceForTimeline;
+				//this.selectedServiceForTimeline = this.services[0];
+				//this.selectedService = this.selectedServiceForTimeline;
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.selectedDate = now;
