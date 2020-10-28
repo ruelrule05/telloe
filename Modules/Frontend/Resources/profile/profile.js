@@ -679,14 +679,11 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-<<<<<<< HEAD
 				this.selectedServiceForTimeline = this.services[0];
 				this.selectedService = this.selectedServiceForTimeline;
 
-=======
 				//this.selectedServiceForTimeline = this.services[0];
 				//this.selectedService = this.selectedServiceForTimeline;
->>>>>>> 7fe6b7c53f64d51d4abe0d194b3b545166f730c6
 				/*let now = new Date();
                 now.setHours(0, 0, 0);
                 this.startDate = now;
