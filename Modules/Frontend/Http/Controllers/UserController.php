@@ -113,7 +113,7 @@ class UserController extends Controller
 
         $timeslotAvailable = false;
         foreach ($timeslots as $timeslot) {
-            if ($timeslot['time'] == $request->time) {
+            if ($timeslot['time'] == $request->time && $timeslot['is_available']) {
                 $timeslotAvailable = true;
                 break;
             }

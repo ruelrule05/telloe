@@ -200,15 +200,19 @@ $timeCount: 15;
 .table-layout-fixed {
 	table-layout: fixed !important;
 }
+.user-container {
+	z-index: 2;
+}
 .active-user {
 	transition: $transition-base;
-	border-top-left-radius: 50%;
-	border-bottom-left-radius: 50%;
+	border-top-left-radius: $border-radius;
+	border-bottom-left-radius: $border-radius;
 	top: 72px;
 	left: 0;
 	height: 70px;
 	background-color: white;
 	box-shadow: $box-shadow-sm;
+	z-index: 1;
 	&:after {
 		content: '';
 		height: 100%;
@@ -219,12 +223,17 @@ $timeCount: 15;
 		position: absolute;
 	}
 }
-.timeslots-wrapper,
-.timeslots-loader {
-	border-radius: 20px;
+::v-deep .vc-highlight {
+	background-color: $primary !important;
 }
-.timeslots-wrapper td > div > div:last-child .timeslot-button {
-	margin-bottom: 0 !important;
+::v-deep .vc-reset,
+::v-deep .vc-reset * {
+	line-height: 1.35;
+}
+.timeslots-wrapper .timeslot-button.disabled {
+	opacity: 0.45;
+	user-select: none !important;
+	color: $dark;
 }
 @media only screen and (max-width: 991px) {
 	#app {

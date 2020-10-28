@@ -74,97 +74,97 @@ class Service extends BaseModel
         $holidays = $this->holidays;
         $user = $this->user ?? $this->member->memberUser;
 
-        if (! array_search($dateString, $holidays) && $user) {
-            $date = Carbon::parse($dateString);
-            $days = json_decode($this->attributes['days'], true);
-            $dayName = $date->format('l');
+        //if (! array_search($dateString, $holidays) && $user) {
+        $date = Carbon::parse($dateString);
+        $days = json_decode($this->attributes['days'], true);
+        $dayName = $date->format('l');
 
-            $day = $days[$dayName];
-            if ($day['isOpen']) {
-                $timeStart = $date->copy();
-                $timeEnd = $date->copy();
+        $day = $days[$dayName];
+        //if ($day['isOpen']) {
+        $timeStart = $date->copy();
+        $timeEnd = $date->copy();
 
-                $partsStart = explode(':', $day['start']);
-                $timeStart->hour = $partsStart[0];
-                $timeStart->minute = $partsStart[1];
+        $partsStart = explode(':', $day['start']);
+        $timeStart->hour = $partsStart[0];
+        $timeStart->minute = $partsStart[1];
 
-                $partsEnd = explode(':', $day['end']);
-                $timeEnd->hour = $partsEnd[0];
-                $timeEnd->minute = $partsEnd[1];
+        $partsEnd = explode(':', $day['end']);
+        $timeEnd->hour = $partsEnd[0];
+        $timeEnd->minute = $partsEnd[1];
 
-                $ignoredCalendarEvents = $user->ignored_calendar_events;
-                $googleEventsList = $user->google_calendar_events;
-                $outlookEventsList = $user->outlook_calendar_events;
+        $ignoredCalendarEvents = $user->ignored_calendar_events;
+        $googleEventsList = $user->google_calendar_events;
+        $outlookEventsList = $user->outlook_calendar_events;
 
-                $now = Carbon::now();
-                while ($timeStart->lessThan($timeEnd)) {
-                    if ($timeStart->greaterThanOrEqualTo($now)) {
-                        $timeslot = [
-                            'label' => $timeStart->format('h:iA'),
-                            'time' => $timeStart->format('H:i'),
-                        ];
-                        $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
-                        $bookings = Booking::where('service_id', $this->attributes['id'])
-                        ->where('date', $dateString)
-                        ->where('start', '<=', $timeslot['time'])
-                        ->where('end', '>=', $timeslot['time'])
-                        ->get();
+        $now = Carbon::now();
+        while ($timeStart->lessThan($timeEnd)) {
+            $timeslot = [
+                'label' => $timeStart->format('h:iA'),
+                'time' => $timeStart->format('H:i'),
+                'is_available' => false
+            ];
+            $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
+            $bookings = Booking::where('service_id', $this->attributes['id'])
+                                ->where('date', $dateString)
+                                ->where('start', '<=', $timeslot['time'])
+                                ->where('end', '>=', $timeslot['time'])
+                                ->get();
 
-                        // google calendar events
-                        $googleEvents = [];
-                        foreach ($googleEventsList as $event) {
-                            $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
-                            if ($eventDate == $dateString) {
-                                if (! $event['start']['dateTime'] && ! $event['end']['dateTime'] && ! in_array('google-event-' . $event['id'], $ignoredCalendarEvents)) {
-                                    $googleEvents[] = $event;
-                                } elseif ($event['start']['dateTime'] && $event['end']['dateTime']) {
-                                    $start = Carbon::parse($event['start']['dateTime'])->format('H:i');
-                                    $end = Carbon::parse($event['end']['dateTime'])->format('H:i');
-                                    if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
-                                        $googleEvents[] = $event;
-                                    }
-                                }
-                            }
-                        }
-
-                        // outlook calendar events
-                        $outlookEvents = [];
-                        foreach ($outlookEventsList as $event) {
-                            $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
-                            if ($eventDate == $dateString) {
-                                if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
-                                    $outlookEvents[] = $event;
-                                } elseif (! $event['isAllDay']) {
-                                    $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-                                    $start->tz = new \DateTimeZone($user->timezone);
-                                    $start = $start->format('H:i');
-                                    $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-                                    $end->tz = new \DateTimeZone($user->timezone);
-                                    $end = $end->format('H:i');
-                                    if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
-                                        $outlookEvents[] = $event;
-                                    }
-                                }
-                            }
-                        }
-
-                        $isBreaktime = false;
-                        foreach ($this->days[$dayName]['breaktimes'] ?? [] as $breaktime) {
-                            $start = str_replace(':', '', $breaktime['start']);
-                            $end = str_replace(':', '', $breaktime['end']);
-                            $time = str_replace(':', '', $timeslot['time']);
-                            if ($time >= $start && $time <= $end) {
-                                $isBreaktime = true;
-                            }
-                        }
-                        if ($bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime) {
-                            $timeslots[] = $timeslot;
+            // google calendar events
+            $googleEvents = [];
+            foreach ($googleEventsList as $event) {
+                $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
+                if ($eventDate == $dateString) {
+                    if (! $event['start']['dateTime'] && ! $event['end']['dateTime'] && ! in_array('google-event-' . $event['id'], $ignoredCalendarEvents)) {
+                        $googleEvents[] = $event;
+                    } elseif ($event['start']['dateTime'] && $event['end']['dateTime']) {
+                        $start = Carbon::parse($event['start']['dateTime'])->format('H:i');
+                        $end = Carbon::parse($event['end']['dateTime'])->format('H:i');
+                        if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
+                            $googleEvents[] = $event;
                         }
                     }
-                    $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
                 }
             }
+
+            // outlook calendar events
+            $outlookEvents = [];
+            foreach ($outlookEventsList as $event) {
+                $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
+                if ($eventDate == $dateString) {
+                    if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
+                        $outlookEvents[] = $event;
+                    } elseif (! $event['isAllDay']) {
+                        $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
+                        $start->tz = new \DateTimeZone($user->timezone);
+                        $start = $start->format('H:i');
+                        $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
+                        $end->tz = new \DateTimeZone($user->timezone);
+                        $end = $end->format('H:i');
+                        if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
+                            $outlookEvents[] = $event;
+                        }
+                    }
+                }
+            }
+
+            $isBreaktime = false;
+            foreach ($this->days[$dayName]['breaktimes'] ?? [] as $breaktime) {
+                $start = str_replace(':', '', $breaktime['start']);
+                $end = str_replace(':', '', $breaktime['end']);
+                $time = str_replace(':', '', $timeslot['time']);
+                if ($time >= $start && $time <= $end) {
+                    $isBreaktime = true;
+                }
+            }
+            if ($timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime) {
+                $timeslot['is_available'] = true;
+            }
+            $timeslots[] = $timeslot;
+            $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
         }
+        //}
+        //}
 
         return $timeslots;
     }
