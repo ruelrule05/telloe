@@ -52,4 +52,18 @@ class OrganizationController extends Controller
         }
         return response($organization->load('members.member.memberUser'));
     }
+
+    public function deleteMember($id, Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|exists:organization_members,id',
+        ]);
+        $organization = Organization::findOrFail($id);
+        if ($organization->user_id != Auth::user()->id) {
+            return abort(403);
+        }
+        OrganizationMember::where('id', $request->id)->where('organization_id', $organization->id)->delete();
+
+        return response(['deleted' => true]);
+    }
 }

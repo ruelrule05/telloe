@@ -1,12 +1,15 @@
 import { mapState, mapActions } from 'vuex';
 import ArrowLeftIcon from '../../../../../icons/arrow-left';
 import ShortcutIcon from '../../../../../icons/shortcut';
+import MoreIcon from '../../../../../icons/more-h';
+import Modal from '../../../../../components/modal/modal.vue';
 
 export default {
-	components: { ArrowLeftIcon, ShortcutIcon },
+	components: { ArrowLeftIcon, ShortcutIcon, MoreIcon, Modal },
 
 	data: () => ({
-		organization: null
+		organization: null,
+		selectedMember: null,
 	}),
 
 	computed: {
@@ -26,6 +29,7 @@ export default {
 	methods: {
 		...mapActions({
 			getMembers: 'members/index',
+			deleteMember: 'organizations/delete_member',
 			getOrganization: 'organizations/show'
 		})
 	}

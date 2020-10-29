@@ -112,6 +112,8 @@ Route::group(
                 Route::apiResource('pending_invoices', 'PendingInvoiceController')->only(['index', 'store', 'destroy']);
                 Route::apiResource('packages', 'PackageController');
                 Route::apiResource('organizations', 'OrganizationController');
+                Route::delete('organizations/{id}/delete_member', 'OrganizationController@deleteMember');
+                
 
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::post('notifications/clear', 'NotificationController@clear');

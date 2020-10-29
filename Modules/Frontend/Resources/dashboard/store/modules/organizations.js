@@ -65,6 +65,10 @@ const actions = {
 	delete({ commit }, data) {
 		axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
+	},
+
+	delete_member({ commit }, data) {
+		axios.delete(`/${name}/${data.organization_id}/delete_member?id=${data.id}`);
 	}
 };
 
