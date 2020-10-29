@@ -64,7 +64,7 @@ const router = new VueRouter({
 							path: 'packages/:id',
 							name: 'packages_show',
 							component: () => import(/* webpackChunkName: "dashboard-bookings-packages-show" */ './components/bookings/packages/show/show.vue')
-						},
+						}
 					]
 				},
 				{
@@ -72,15 +72,37 @@ const router = new VueRouter({
 					name: 'contacts',
 					component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/contacts.vue')
 				},
+
 				{
-					path: 'members',
-					name: 'members_index',
-					component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/index/index.vue')
-				},
-				{
-					path: 'members/:id',
-					name: 'members_show',
-					component: () => import(/* webpackChunkName: "dashboard-members" */ './components/members/show/show.vue')
+					name: 'team',
+					path: 'team',
+					component: {
+						render(c) {
+							return c('router-view');
+						}
+					},
+					children: [
+						{
+							path: 'organizations',
+							name: 'organizations_index',
+							component: () => import(/* webpackChunkName: "dashboard-team-organizations" */ './components/team/organizations/index/index.vue')
+						},
+						{
+							path: 'organizations/:id',
+							name: 'organizations_show',
+							component: () => import(/* webpackChunkName: "dashboard-team-organizations-show" */ './components/team/organizations/show/show.vue')
+						},
+						{
+							path: 'members',
+							name: 'members_index',
+							component: () => import(/* webpackChunkName: "dashboard-team-members" */ './components/team/members/index/index.vue')
+						},
+						{
+							path: 'members/:id',
+							name: 'members_show',
+							component: () => import(/* webpackChunkName: "dashboard-team-members-show" */ './components/team/members/show/show.vue')
+						}
+					]
 				},
 				{
 					name: 'payments',

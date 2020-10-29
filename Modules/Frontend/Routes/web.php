@@ -6,6 +6,9 @@
  */
 
 Route::get('test', function () {
+    // echo Illuminate\Support\Str::slug('!)*#&^&*+#dwada ikadw');
+    // echo '<br />';
+    // echo Modules\Frontend\Http\Slugify::create(App\Models\Organization::class, '!)*#&@&*@#dwada ikadw');
     // $nexmo = new \App\Http\NexmoClient;
     // $nexmo->sms('+639162792651', 'You an upcoming booking in');
 
@@ -108,6 +111,7 @@ Route::group(
                 Route::apiResource('pending_subscriptions', 'PendingSubscriptionController')->only(['index', 'store', 'destroy']);
                 Route::apiResource('pending_invoices', 'PendingInvoiceController')->only(['index', 'store', 'destroy']);
                 Route::apiResource('packages', 'PackageController');
+                Route::apiResource('organizations', 'OrganizationController');
 
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::post('notifications/clear', 'NotificationController@clear');

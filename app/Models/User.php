@@ -150,6 +150,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Service::class);
     }
 
+    public function organizations()
+    {
+        return $this->hasMany(Organization::class)->orderBy('created_at', 'DESC');
+    }
+
     protected function castAttribute($key, $value)
     {
         if (is_null($value)) {

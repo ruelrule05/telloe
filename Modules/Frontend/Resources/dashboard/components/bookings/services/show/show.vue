@@ -94,15 +94,15 @@
                         class="user-profile-image user-profile-image-sm mr-2"
                         :style="{
                           backgroundImage:
-                            'url(' + booking.service.user.profile_image + ')',
+                            'url(' + (booking.service.user || booking.service.member.member_user).profile_image + ')',
                         }"
                       >
-                        <span v-if="!booking.service.user.profile_image">{{
-                          booking.service.user.initials
+                        <span v-if="!(booking.service.user || booking.service.member.member_user).profile_image">{{
+                          (booking.service.user || booking.service.member.member_user).initials
                         }}</span>
                       </div>
-                      {{ booking.service.user.full_name }}
-                      <span v-if="$root.auth.id == booking.service.user.id">(You)</span>
+                      {{ (booking.service.user || booking.service.member.member_user).full_name }}
+                      <span v-if="$root.auth.id == (booking.service.user || booking.service.member.member_user).id">(You)</span>
                     </div>
                   </td>
                   <td class="align-middle">

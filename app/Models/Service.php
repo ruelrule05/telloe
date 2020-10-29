@@ -179,20 +179,20 @@ class Service extends BaseModel
             ->where(function ($query) {
                 $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
             })
-            ->with('user', 'service.user', 'contact.contactUser', 'service.member')
+            ->with('user', 'service.user', 'contact.contactUser', 'service.member.memberUser')
             ->paginate(15, ['*'], 'page', $page);
         return $bookings;
 
         $bookings = $this->bookings()->where(function ($query) {
             $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
-        })->get()->load(['user', 'contact.contactUser', 'service.user', 'service.member'])->toArray();
+        })->get()->load(['user', 'contact.contactUser', 'service.user', 'service.member.memberUser'])->toArray();
         $assignedServices = $this->assignedServices()->where('parent_service_id', '<>', $this->attributes['id'])->withTrashed()->get();
         $assignedServices->map(function ($assignedService) use (&$bookings) {
             $assignedServiceBookings = $assignedService->bookings()->where(function ($query) {
                 $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
             })->get();
             if ($assignedServiceBookings->count() > 0) {
-                $bookings = array_merge($bookings, $assignedServiceBookings->load(['user', 'contact.contactUser', 'service.user', 'service.member', 'service' => function ($service) {
+                $bookings = array_merge($bookings, $assignedServiceBookings->load(['user', 'contact.contactUser', 'service.user', 'service.member.memberUser', 'service' => function ($service) {
                     $service->withTrashed();
                 }])->toArray());
             }

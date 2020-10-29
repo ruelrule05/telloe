@@ -114,7 +114,7 @@
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>
 											</button>
-											<div class="collapse show" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
+											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
 												<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 													<span class="pl-3">Calendar</span>
 												</router-link>
@@ -131,11 +131,22 @@
 												<contact-alt-icon height="18" width="18"></contact-alt-icon>
 												<span class="pl-3">Contacts</span>
 											</router-link>
-
-											<router-link :data-intro='intros.members.intro' :data-step="intros.members.step" to="/dashboard/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4">
+											
+											<button data-intro='intros.team.intro' data-step="intros.team.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
+												<div class="d-flex align-items-center px-4">
 												<member-icon height="18" width="18" stroke="black" stroke-width="13"></member-icon>
-												<span class="pl-3">Members</span>
-											</router-link>
+													<span class="ml-3">Team</span>
+													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
+												</div>
+											</button>
+											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers', 'members_index', 'members_show', 'organizations_index'].find((x) => x == $route.name) }" id="item-team">
+												<router-link to="/dashboard/team/organizations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+													<span class="pl-3">Organizations</span>
+												</router-link>
+												<router-link to="/dashboard/team/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+													<span class="pl-3">Members</span>
+												</router-link>
+											</div>
 
 											<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 												<div class="d-flex align-items-center px-4">
@@ -144,7 +155,7 @@
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>
 											</button>
-											<div class="collapse show" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
+											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
 												<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
 													<span class="pl-3">Subscriptions</span>
 												</router-link>

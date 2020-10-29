@@ -18,7 +18,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="booking in bookings">
+							<tr v-for="booking in bookings" :key="booking.vue">
 								<td class="align-middle">
 									<strong class="d-block">{{ booking.service.name }}</strong>
 									<small class="d-block text-muted">{{ booking.service.user.full_name }}</small>

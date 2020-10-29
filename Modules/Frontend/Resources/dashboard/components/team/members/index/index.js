@@ -1,17 +1,17 @@
 import { mapState, mapActions } from 'vuex';
-import Modal from '../../../../components/modal/modal.vue';
-import VueFormValidate from '../../../../components/vue-form-validate.vue';
-import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
-import VueButton from '../../../../components/vue-button.vue';
-import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
+import Modal from '../../../../../components/modal/modal.vue';
+import VueFormValidate from '../../../../../components/vue-form-validate.vue';
+import VueCheckbox from '../../../../../components/vue-checkbox/vue-checkbox.vue';
+import VueButton from '../../../../../components/vue-button.vue';
+import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 
-import MoreIcon from '../../../../icons/more';
-import PlusIcon from '../../../../icons/plus';
-import TrashIcon from '../../../../icons/trash';
-import PencilIcon from '../../../../icons/pencil';
-import ClockIcon from '../../../../icons/clock';
-import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
-import CloseIcon from '../../../../icons/close';
+import MoreIcon from '../../../../../icons/more';
+import PlusIcon from '../../../../../icons/plus';
+import TrashIcon from '../../../../../icons/trash';
+import PencilIcon from '../../../../../icons/pencil';
+import ClockIcon from '../../../../../icons/clock';
+import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
+import CloseIcon from '../../../../../icons/close';
 export default {
 	components: {
 		Modal,
@@ -94,7 +94,7 @@ export default {
 		}),
 
 		goToMember(member_id) {
-			this.$router.push(`/dashboard/members/${member_id}`);
+			this.$router.push(`/dashboard/team/members/${member_id}`);
 		},
 
 		resendEmail(member) {

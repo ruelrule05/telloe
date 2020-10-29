@@ -1,8 +1,8 @@
 import { mapState, mapActions } from 'vuex';
-import ArrowLeftIcon from '../../../../icons/arrow-left';
-import ClockIcon from '../../../../icons/clock';
-import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
-import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
+import ArrowLeftIcon from '../../../../../icons/arrow-left';
+import ClockIcon from '../../../../../icons/clock';
+import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
+import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import Vue from 'vue';
 import VuePaginate from 'vue-paginate';
 import dayjs from 'dayjs';
@@ -77,7 +77,7 @@ export default {
 					service_id: service.id
 				};
 				await this.storeMemberService(data).then(data => {
-					if(assigned_service) assigned_service.deleted_at = null;
+					if (assigned_service) assigned_service.deleted_at = null;
 				});
 			}
 			this.$set(service, 'is_loading', false);

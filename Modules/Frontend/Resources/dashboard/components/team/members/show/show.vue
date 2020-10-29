@@ -5,7 +5,7 @@
         <button
           class="btn p-2 btn-white badge-pill shadow-sm"
           type="button"
-          @click="$router.push('/dashboard/members')"
+          @click="$router.push('/dashboard/team/members')"
         >
           <arrow-left-icon></arrow-left-icon>
         </button>
