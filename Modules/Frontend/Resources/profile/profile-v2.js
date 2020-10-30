@@ -355,7 +355,7 @@ export default {
 		},
 
 		timezoneTime(time) {
-			let profileTimezone = this.$root.profile.timezone;
+			let profileTimezone = this.profile.timezone;
 			let timezoneTime;
 			if (profileTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
