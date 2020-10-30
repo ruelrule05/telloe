@@ -69,6 +69,10 @@ const actions = {
 
 	delete_member({ commit }, data) {
 		axios.delete(`/${name}/${data.organization_id}/delete_member?id=${data.id}`);
+	},
+
+	async add_members({ commit }, data) {
+		return await axios.post(`/${name}/${data.organization_id}/add_members`, data);
 	}
 };
 

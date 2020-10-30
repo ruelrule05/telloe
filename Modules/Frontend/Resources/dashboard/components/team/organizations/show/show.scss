@@ -6,7 +6,7 @@
 		font-size: 20px;
 	}
 }
-.position-top-right{
+.position-top-right {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -32,4 +32,15 @@
 }
 .text-decoration-dark {
 	text-decoration-color: $dark !important;
+}
+.member {
+	.btn-more {
+		opacity: 0;
+		transition: $transition-base;
+	}
+	&:hover {
+		.btn-more {
+			opacity: 1;
+		}
+	}
 }

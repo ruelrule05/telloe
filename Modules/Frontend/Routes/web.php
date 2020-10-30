@@ -77,6 +77,7 @@ Route::group(
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
+        Route::get('/{organization}', 'OrganizationController@profile');
         //Route::get('/@{username}/{service_id}', 'UserController@showService');
         //Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
@@ -113,7 +114,7 @@ Route::group(
                 Route::apiResource('packages', 'PackageController');
                 Route::apiResource('organizations', 'OrganizationController');
                 Route::delete('organizations/{id}/delete_member', 'OrganizationController@deleteMember');
-                
+                Route::post('organizations/{id}/add_members', 'OrganizationController@addMembers');
 
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::post('notifications/clear', 'NotificationController@clear');
@@ -161,6 +162,10 @@ Route::group(
             Route::post('@{username}/{service_id}/signup_and_book', 'UserController@signupAndBook')->name('profile.signup_and_book');
             Route::post('@{username}/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook')->name('profile.google_login_and_book');
             Route::post('@{username}/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook')->name('profile.facebook_login_and_book');
+
+            // Organization booking page
+            Route::get('{organization}', 'OrganizationController@profile');
+            Route::get('{organization}/{service_id}/timeslots', 'OrganizationController@serviceTimeslots')->name('organization.service.timeslots');
 
             //Dashboard
             Route::group([

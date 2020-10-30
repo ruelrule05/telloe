@@ -20,6 +20,7 @@ if (argv.indexOf('--css') > -1) {
 		.sass(__dirname + '/Resources/app/auth/auth.scss', 'css')
 		.sass(__dirname + '/Resources/sass/page.scss', 'css')
 		.sass(__dirname + '/Resources/sass/profile.scss', 'css')
+		.sass(__dirname + '/Resources/sass/organization.scss', 'css')
 		.sass(__dirname + '/Resources/sass/widget.scss', 'css')
 		.sass(__dirname + '/Resources/sass/call.scss', 'css');
 } else {
@@ -98,64 +99,36 @@ if (argv.indexOf('--css') > -1) {
 				}
 			}
 		});
+	} else if (argv.indexOf('--organization') > -1) {
+		console.log('Running organization...');
+		mix.js(__dirname + '/Resources/js/organization.js', 'js').webpackConfig({
+			output: {
+				chunkFilename: `js/chunks/[name]${timestamp}.js`
+			},
+			optimization: {
+				splitChunks: {
+					chunks: 'all',
+					cacheGroups: {
+						vendors: false
+					}
+				}
+			}
+		});
+	}
+	if (mix.config.production) {
+		mix.version();
+	} else {
+		mix.options({
+			hmrOptions: {
+				host: 'telloe.test',
+				port: 8080
+			}
+		});
+		mix.webpackConfig({
+			watchOptions: {
+				aggregateTimeout: 300,
+				poll: 1000
+			}
+		});
 	}
 }
-if (mix.config.production) {
-	mix.version();
-} else {
-	mix.options({
-		hmrOptions: {
-			host: 'telloe.test',
-			port: 8080
-		}
-	});
-	mix.webpackConfig({
-		watchOptions: {
-			aggregateTimeout: 300,
-			poll: 1000
-		}
-	});
-}
-
-// if (mix.config.production) {
-// 	console.log('Running in production...');
-// 	mix.version();
-// } else {
-// 	mix.options({
-// 		hmrOptions: {
-// 			host: 'telloe.test',
-// 			port: 8000,
-// 			https: false
-// 		}
-// 	});
-// 	// mix.webpackConfig({
-// 	// 	watchOptions: {
-// 	// 		aggregateTimeout: 200,
-// 	// 		poll: 5000
-// 	// 	},
-// 	// 	proxy: {
-// 	// 		host: '192.168.1.103', // host machine ip
-// 	// 		port: 8080
-// 	// 	}
-// 	// });
-// 	// mix.webpackConfig({
-// 	// 	plugins: [
-// 	// 		new LiveReloadPlugin({
-// 	// 			protocol: 'http',
-// 	// 			hostname: 'localhost',
-// 	// 			appendScriptTag: true
-// 	// 		})
-// 	// 	]
-// 	// 	// module: {
-// 	// 	// 	rules: [
-// 	// 	// 		{
-// 	// 	// 			test: /\.vue$/,
-// 	// 	// 			loader: 'vue-loader',
-// 	// 	// 			options: {
-// 	// 	// 				hotReload: false // disables Hot Reload
-// 	// 	// 			}
-// 	// 	// 		}
-// 	// 	// 	]
-// 	// 	// }
-// 	// });
-// }
