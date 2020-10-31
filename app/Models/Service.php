@@ -157,7 +157,7 @@ class Service extends BaseModel
                     $isBreaktime = true;
                 }
             }
-            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime) {
+            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && !in_array($dateString, $holidays)) {
                 $timeslot['is_available'] = true;
             }
             $timeslots[] = $timeslot;

@@ -87,11 +87,11 @@ class UserController extends Controller
         $startDate = Carbon::parse($request->date);
         while ($i <= 7) {
             $date = $startDate->format('Y-m-d');
-            $timeslots[$date] = $service->timeslots($date);
+            $dateLabel = $startDate->format('l');
+            $timeslots[$dateLabel] = $service->timeslots($date);
             $startDate = $startDate->addDays(1);
             $i++;
         }
-        //$timeslots = $service->timeslots($request->date);
 
         return response()->json($timeslots);
     }

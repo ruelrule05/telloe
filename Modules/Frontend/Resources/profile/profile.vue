@@ -73,10 +73,25 @@
 				
 				<!-- Select coach/date/time -->
 				<div v-else-if="selectedServiceForTimeline && (!startDate || !selectedTimeslot)" class="container selected-service-container" key="service">
-					<div class="ml-5 pl-5">
-						<div class="d-flex align-items-center ml-5 pl-5">
-							<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
-							<h4 class="mb-0 font-heading ml-3">{{ selectedServiceForTimeline.name }}</h4>
+					<div class="mb-5 px-5">
+						<h4 class="mb-1 h3 font-heading">{{ selectedServiceForTimeline.name }}</h4>
+						<p class="mb-0 px-5 service-description">{{ selectedServiceForTimeline.description }}</p>
+					</div>
+
+					<div class="d-flex align-items-center">
+						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null">
+							<arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon>
+						</button>
+						<div class="ml-auto bg-white rounded shadow-sm d-flex align-items-center">
+							<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
+								<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+							</button>
+							<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+								<button type="button" class="btn btn-white px-1 shadow-none rounded-0">{{ formatDate(startDate) }}</button>
+							</v-date-picker>
+							<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
+								<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+							</button>
 						</div>
 					</div>
 
@@ -86,73 +101,67 @@
 							<div class="text-center position-relative">
 								<div class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
 
-								<div class="pl-2 pb-0 mb-0 pr-3 mt-2 ml-1 d-flex align-items-center" :class="{'active': selectedCoachId == profile.id}" >
-									<div>
-										<v-date-picker :min-date="new Date()" :popover="{placement: 'right', visibility: 'click' }" v-model="startDate">
-											<button class="btn btn-white btn-sm p-2 badge-pill shadow-sm"><calendar-day-alt-icon width="30" height="30"></calendar-day-alt-icon></button>
-										</v-date-picker>
-									</div>
-									<div class="flex-1 text-left pl-2">
-										<h6 class="font-heading text-nowrap mb-0 text-muted">Calendar</h6>
-										<small class="text-secondary">Select Date</small>
-									</div>
-								</div>
-
 								<!-- Main Coach -->
-								<div class="pl-2 py-2 pr-3 my-3 ml-1 cursor-pointer rounded position-relative user-container d-flex align-items-center" :class="{'active': selectedCoachId == profile.id}" @click="selectedCoachId = profile.id; selectedService = selectedServiceForTimeline">
-									<div class="profile-image profile-image-xs" :style="{'background-image': `url(${profile.profile_image})`}">
-										<span v-if="!profile.profile_image">{{ profile.initials }}</span>
-									</div>
-									<div class="flex-1 text-left pl-2">
-										<h6 class="font-heading text-nowrap mb-0">
-											{{ profile.full_name }}
-										</h6>
-										<small class="text-secondary">{{ profile.timezone }}</small>
+								<div class="xborder pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container" :class="{'active': selectedCoachId == profile.id}" @click="selectedCoachId = profile.id; selectedService = selectedServiceForTimeline">
+									<div class="d-flex align-items-center p-1">
+										<div class="profile-image profile-image-xs" :style="{'background-image': `url(${profile.profile_image})`}">
+											<span v-if="!profile.profile_image">{{ profile.initials }}</span>
+										</div>
+										<div class="flex-1 text-left pl-2">
+											<h6 class="font-heading text-nowrap mb-0">
+												{{ profile.full_name }}
+											</h6>
+											<small class="text-secondary">{{ profile.timezone }}</small>
+										</div>
 									</div>
 								</div>
 
 								<!-- Assigned Coaches -->
-								<div v-for="assignedService in selectedServiceForTimeline.assigned_services" class="pl-2 py-2 pr-3 my-3 ml-1 rounded position-relative user-container d-flex align-items-center cursor-pointer" :class="{'active': selectedCoachId == assignedService.user.id}" :key="assignedService.id" @click="selectedCoachId = assignedService.user.id; selectedService = assignedService">
-									<div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
-										<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
-									</div>
-									<div class="flex-1 text-left pl-2">
-										<h6 class="font-heading text-nowrap mb-0">
-											{{ assignedService.user.full_name }}
-										</h6>
-										<small class="text-secondary">{{ assignedService.user.timezone }}</small>
+								<div v-for="assignedService in selectedServiceForTimeline.assigned_services" class="xborder pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer" :class="{'active': selectedCoachId == assignedService.user.id}" :key="assignedService.id" @click="selectedCoachId = assignedService.user.id; selectedService = assignedService">
+									<div class="d-flex align-items-center p-1">
+										<div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
+											<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+										</div>
+										<div class="flex-1 text-left pl-2">
+											<h6 class="font-heading text-nowrap mb-0">
+												{{ assignedService.user.full_name }}
+											</h6>
+											<small class="text-secondary">{{ assignedService.user.timezone }}</small>
+										</div>
 									</div>
 								</div>
 							</div>
 
-							<div class="p-4 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
+							<div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
 								<table class="table table-sm table-borderless mb-0 table-layout-fixed">
 									<thead>
 										<tr>
-											<th class="align-middle pb-2 pt-0 text-center" v-for="(tabDate, index) in tabDates" :key="index">
+											<th class="align-middle pb-2 pt-0 pl-2" v-for="(tabDate, index) in tabDates" :key="index">
 												<strong>{{ tabDate.name }}</strong> <span class="text-gray">{{ tabDate.label }}</span>
 											</th>
 										</tr>
 									</thead>
-									<tbody class="shadow-none bg-transparent">
+									<tbody class="shadow-none bg-transparent text-center">
 										<tr>
-											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 rounded-0 position-relative">
-												<div class="text-center" v-if="selectedService && selectedService.timeslots && (selectedService.timeslots[date.format] || []).length > 0">
-													<div v-for="(timeslot, timeslotIndex) in selectedService.timeslots[date.format]" :key="timeslotIndex">
+											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
+												<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
+													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
 														<div v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)"><span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span></div>
 													</div>
-												</div>
+												</template>
 												<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
 											</td>
 										</tr>
 									</tbody>
 								</table>
 
-								<div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
-									<div class="position-absolute-center">
-										<div class="spinner-border text-primary" role="status"></div>
+								<transition name="fade">
+									<div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
+										<div class="position-absolute-center">
+											<div class="spinner-border text-primary" role="status"></div>
+										</div>
 									</div>
-								</div>
+								</transition>
 							</div>
 						</div>
 					</div>

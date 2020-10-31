@@ -99,6 +99,7 @@ export default {
 			loading: false
 		},
 		timeslotsLoading: false,
+		timeslots: [],
 		dateForWeekView: null,
 		calendarView: 'month',
 		sliderNavIndex: 0,
@@ -239,28 +240,6 @@ export default {
 			return this.timezoneTime(endTime);
 		},
 
-		timeslots() {
-			let timeslots = [];
-			let start = dayjs();
-			let end = dayjs();
-			if (this.selectedServiceForTimeline && this.startDate) {
-				let dayName = dayjs(this.startDate).format('dddd');
-				let dayAvailability = this.selectedServiceForTimeline.days[dayName];
-				if (dayAvailability) {
-					let startParts = dayAvailability.start.split(':');
-					let endParts = dayAvailability.end.split(':');
-					start = start.set('hour', startParts[0]).set('minute', startParts[1]);
-					end = end.set('hour', endParts[0]).set('minute', endParts[1]);
-				}
-			}
-			while (start.isSameOrBefore(end)) {
-				timeslots.push(start.format('HH:mm'));
-				start = start.add(60, 'minute');
-			}
-
-			return timeslots;
-		},
-
 		tabDates() {
 			let tabDates = [];
 			let i = 7;
@@ -268,6 +247,7 @@ export default {
 			while (i > 0) {
 				tabDates.push({
 					name: startDate.format('ddd'),
+					dayName: startDate.format('dddd'),
 					date: startDate.toDate(),
 					label: startDate.format('MMM DD'),
 					format: startDate.format('YYYY-MM-DD')
@@ -285,7 +265,7 @@ export default {
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
 				if (activeUser) {
-					this.activeUserBgPosition = activeUser.offsetTop - 4.8;
+					this.activeUserBgPosition = activeUser.offsetTop;
 				}
 			});
 		},
@@ -333,6 +313,21 @@ export default {
 	},
 
 	methods: {
+		previousWeek() {
+			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
+			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = previousWeek.toDate();
+			} else if (!dayjs(dayjs(this.startDate).format('YYYY-MM-DD')).isSame(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = dayjs().toDate();
+			}
+		},
+
+		nextWeek() {
+			this.startDate = dayjs(this.startDate)
+				.add(7, 'day')
+				.toDate();
+		},
+
 		setSelectedDateAndTimeslot(date, timeslot) {
 			if (timeslot.is_available) {
 				this.selectedDate = date.date;
@@ -661,12 +656,7 @@ export default {
 				this.timeslotsLoading = true;
 				this.selectedTimeslot = null;
 				let response = await axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
-				this.$set(this.selectedService, 'timeslots', response.data);
-
-				// for (const assignedService of this.selectedServiceForTimeline.assigned_services) {
-				// 	let response = await axios.get(`${window.location.pathname}/${assignedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
-				// 	this.$set(assignedService, 'timeslots', response.data);
-				// }
+				this.timeslots = response.data;
 				this.timeslotsLoading = false;
 			}
 		},

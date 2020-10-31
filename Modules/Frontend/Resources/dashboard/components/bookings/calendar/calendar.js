@@ -21,6 +21,7 @@ import utcPlugin from 'dayjs/plugin/utc';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 Vue.use(VCalendar);
 import dayjs from 'dayjs';
+import Timetable from './timetable/timetable.vue';
 export default {
 	components: {
 		Modal,
@@ -38,7 +39,8 @@ export default {
 		CalendarMonthIcon,
 		ChevronRightIcon,
 		ChevronLeftIcon,
-		CheckmarkCircleIcon
+		CheckmarkCircleIcon,
+		Timetable
 	},
 
 	data: () => ({
@@ -251,8 +253,8 @@ export default {
 				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
 				if (nextBooking) {
 					let date = this.dayjs(nextBooking.date).toDate();
-					this.selectedDate = date;
-					this.infoTab = 'bookings';
+					// this.selectedDate = date;
+					// this.infoTab = 'bookings';
 				}
 			}
 		}
@@ -711,6 +713,7 @@ export default {
 
 		dayclick(date) {
 			this.selectedDate = date;
+			this.$router.push({ query: { date: dayjs(date).format('YYYY-MM-DD') } });
 			this.resetBookingForm();
 		},
 

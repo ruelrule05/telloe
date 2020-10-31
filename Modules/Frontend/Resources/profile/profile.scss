@@ -203,6 +203,9 @@ $timeCount: 15;
 .user-container {
 	z-index: 2;
 }
+.service-description {
+	line-height: 1.5;
+}
 .active-user {
 	transition: $transition-base;
 	border-top-left-radius: $border-radius;
@@ -216,12 +219,15 @@ $timeCount: 15;
 	&:after {
 		content: '';
 		height: 100%;
-		width: 2px;
+		width: 5px;
 		background-color: white;
 		top: 0;
-		right: -1px;
+		right: -5px;
 		position: absolute;
 	}
+}
+.timeslots-wrapper table td > div:last-child .timeslot-button {
+	margin-bottom: 0 !important;
 }
 ::v-deep .vc-highlight {
 	background-color: $primary !important;
