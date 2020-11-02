@@ -13,17 +13,28 @@ import TrashIcon from '../../../../../icons/trash';
 import ClockIcon from '../../../../../icons/clock';
 import ArrowLeftIcon from '../../../../../icons/arrow-left';
 import MoreIcon from '../../../../../icons/more';
+import ChevronLeftIcon from '../../../../../icons/chevron-left';
+import ChevronRightIcon from '../../../../../icons/chevron-right';
 import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
+import tooltip from '../../../../../js/directives/tooltip.js';
+import Axios from 'axios';
 Vue.use(VuePaginate);
 const convertTime = require('convert-time');
 Vue.component('pagination', require('laravel-vue-pagination'));
+const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+dayjs.extend(IsSameOrBefore);
+dayjs.extend(IsSameOrAfter);
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon },
+
+	directives: { tooltip },
+
 	data: () => ({
-		page: 1,
 		service: null,
+		selectedService: null,
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		newBreaktime: null,
@@ -32,7 +43,13 @@ export default {
 		selectedDay: '',
 		paginate: ['bookings'],
 		assigningMember: false,
-		convertTime: convertTime
+		convertTime: convertTime,
+		timeslotsLoading: false,
+		timeslots: [],
+		selectedCoachId: null,
+		activeUserBgPosition: 0,
+
+		startDate: dayjs().toDate()
 	}),
 
 	computed: {
@@ -50,6 +67,25 @@ export default {
 				});
 			}
 			return formattedHolidays;
+		},
+
+		tabDates() {
+			let tabDates = [];
+			let i = 7;
+			let startDate = dayjs(this.startDate);
+			while (i > 0) {
+				tabDates.push({
+					name: startDate.format('ddd'),
+					dayName: startDate.format('dddd'),
+					date: startDate.toDate(),
+					label: startDate.format('MMM DD'),
+					format: startDate.format('YYYY-MM-DD')
+				});
+				startDate = startDate.add(1, 'day');
+				i--;
+			}
+
+			return tabDates;
 		}
 	},
 
@@ -65,10 +101,28 @@ export default {
 					}
 				}, 500);
 			}
+		},
+
+		selectedCoachId: function(value) {
+			this.$nextTick(() => {
+				let activeUser = document.querySelector('.user-container.active');
+				if (activeUser) {
+					this.activeUserBgPosition = activeUser.offsetTop;
+				}
+			});
+		},
+
+		'selectedService.id': function(value) {
+			this.getTimeslots();
+		},
+
+		startDate: function(value) {
+			this.getTimeslots();
 		}
 	},
 
 	created() {
+		this.selectedCoachId = this.$root.auth.id;
 		this.getData();
 		this.getMembers();
 	},
@@ -84,12 +138,38 @@ export default {
 			assignBookingToMember: 'bookings/assignToMember'
 		}),
 
-		getData() {
-			this.getService(`${this.$route.params.id}?page=${this.page}`).then(service => {
-				this.$root.contentloading = false;
-				this.service = service;
-				this.clonedService = Object.assign({}, service);
-			});
+		previousWeek() {
+			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
+			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = previousWeek.toDate();
+			} else if (!dayjs(dayjs(this.startDate).format('YYYY-MM-DD')).isSame(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = dayjs().toDate();
+			}
+		},
+
+		nextWeek() {
+			this.startDate = dayjs(this.startDate)
+				.add(7, 'day')
+				.toDate();
+		},
+
+		async getTimeslots() {
+			console.log('getTimeslots');
+			if (this.selectedService) {
+				this.timeslotsLoading = true;
+				let response = await axios.get(`/services/${this.selectedService.id}?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
+				this.timeslots = response.data.timeslots;
+				this.timeslotsLoading = false;
+			}
+		},
+
+		async getData() {
+			let service = await this.getService(`${this.$route.params.id}`);
+			this.$root.contentloading = false;
+			this.service = service;
+			this.selectedService = service;
+			this.timeslots = service.timeslots;
+			this.clonedService = Object.assign({}, service);
 		},
 
 		getResults(page) {

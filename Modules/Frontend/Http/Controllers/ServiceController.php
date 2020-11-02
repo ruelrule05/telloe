@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\Service;
 use Auth;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ServiceController extends Controller
 {
@@ -16,7 +17,7 @@ class ServiceController extends Controller
     {
         $auth_user = Auth::user();
         $member_ids = Member::where('member_user_id', $auth_user->id)->get()->pluck('id')->toArray();
-        $services = Service::with('user')->where(function ($query) use ($auth_user, $member_ids) {
+        $services = Service::with('user', 'assignedServices.member.memberUser')->where(function ($query) use ($auth_user, $member_ids) {
             $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
         })->orderBy('created_at', 'DESC')->get();
         return response()->json($services);
@@ -42,8 +43,24 @@ class ServiceController extends Controller
     public function show(Request $request, Service $service)
     {
         $this->authorize('show', $service);
-        $service = $service->load('user', 'bookings.user', 'bookings.contact.contactUser', 'bookings.service.user', 'assignedServices.bookings');
-        $service->append('allBookings');
+        $service->load('assignedServices');
+
+
+        $timeslots = [];
+        if($request->date) {
+            $i = 1;
+            $startDate = Carbon::parse($request->date);
+            while ($i <= 7) {
+                $date = $startDate->format('Y-m-d');
+                $dateLabel = $startDate->format('l');
+                $timeslots[$dateLabel] = $service->timeslots($date);
+                $startDate = $startDate->addDays(1);
+                $i++;
+            }
+            $service = $service->toArray();
+        }
+        $service['timeslots'] = $timeslots;
+
         return response($service);
     }
 

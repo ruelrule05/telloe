@@ -11,11 +11,18 @@ import PlusIcon from '../../../../../icons/plus';
 import CogIcon from '../../../../../icons/cog';
 import TrashIcon from '../../../../../icons/trash';
 import ClockIcon from '../../../../../icons/clock';
+import UserCircleIcon from '../../../../../icons/user-circle';
+import DollarSignIcon from '../../../../../icons/dollar-sign';
+import WindowPlusIcon from '../../../../../icons/window-plus';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
+import tooltip from '../../../../../js/directives/tooltip.js';
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon },
+
+	directives: { tooltip },
+
 	data: () => ({
 		newService: {},
 		selectedService: null,

@@ -82,3 +82,84 @@
 		}
 	}
 }
+.coaches-container {
+	z-index: 2;
+}
+.active-user {
+	transition: $transition-base;
+	border-top-left-radius: $border-radius;
+	border-bottom-left-radius: $border-radius;
+	top: 72px;
+	left: 0;
+	height: 69px;
+	background-color: white;
+	box-shadow: $box-shadow-sm;
+	z-index: 1;
+	&:after {
+		content: '';
+		height: 100%;
+		width: 5px;
+		background-color: white;
+		top: 0;
+		right: -5px;
+		position: absolute;
+	}
+}
+
+.profile-image {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-size: cover;
+	background-size: no-repeat;
+	background-position: center;
+	background-color: $gray-400 !important;
+	position: relative;
+	span {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-500;
+		font-size: 24px;
+	}
+	&.profile-image-md {
+		width: 80px;
+		height: 80px;
+		span {
+			font-size: 24px;
+		}
+	}
+	&.profile-image-sm {
+		width: 60px;
+		height: 60px;
+		span {
+			font-size: 20px;
+		}
+	}
+	&.profile-image-xs {
+		width: 45px;
+		height: 45px;
+		span {
+			font-size: 16px;
+		}
+	}
+}
+
+.timeslots-wrapper .timeslot-button.disabled {
+	opacity: 0.45;
+	user-select: none !important;
+	color: $dark;
+}
+
+.table-layout-fixed {
+	table-layout: fixed !important;
+}
+
+::v-deep .vc-highlight {
+	background-color: $primary !important;
+}
+::v-deep .vc-reset,
+::v-deep .vc-reset * {
+	line-height: 1.35;
+}

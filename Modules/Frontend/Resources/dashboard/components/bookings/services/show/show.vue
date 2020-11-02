@@ -2,17 +2,23 @@
   <div class="h-100" v-if="service">
     <div class="d-flex h-100 overflow-hidden">
       <div class="p-4 flex-grow-1 overflow-auto">
-        <div class="d-flex">
+        <div class="d-flex justify-content-between mb-5">
           <div>
             <button
-              class="btn p-2 btn-white badge-pill shadow-sm"
+              class="btn p-1 btn-white badge-pill shadow-sm"
               type="button"
               @click="$router.push('/dashboard/bookings/services')"
             >
-              <arrow-left-icon></arrow-left-icon>
+              <arrow-left-icon width="30" height="30"></arrow-left-icon>
             </button>
           </div>
-          <div class="dropdown ml-auto">
+          
+          <div class="text-center">
+            <h1 class="font-heading h3 mb-1">{{ service.name }}</h1>
+					  <p class="mb-0">{{ service.description }}</p>
+          </div>
+
+          <div class="dropdown">
             <button
               :data-intro="$root.intros.edit_service.intro"
               :data-step="$root.intros.edit_service.step"
@@ -44,124 +50,95 @@
           </div>
         </div>
 
-        <div class="rounded bg-white shadow-sm p-3 mt-3">
-          <h1 class="font-heading h3">{{ service.name }}</h1>
-          <p class="service-description">{{ service.description }}</p>
 
-          <h6 class="font-heading d-inline-block mb-2">Duration:</h6>
-          {{ service.duration }} minutes
-          <div>
-            <h6 class="font-heading d-inline-block mb-2">Interval:</h6>
-            {{ service.interval }} minutes
-          </div>
-          <h6 class="font-heading d-inline-block mb-2">Default Rate:</h6>
-          ${{ service.default_rate }}
-          <div>
-            <h6 class="font-heading d-inline-block">Available in widget:</h6>
-            {{ service.in_widget ? "Yes" : "No" }}
+        <div class="text-right">
+          <div class="bg-white rounded shadow-sm d-inline-flex align-items-center">
+            <button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
+              <chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+            </button>
+            <v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+              <button type="button" class="btn btn-white px-1 shadow-none rounded-0">{{ formatDate(startDate) }}</button>
+            </v-date-picker>
+            <button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
+              <chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+            </button>
           </div>
         </div>
-        <!-- Bookings -->
-        <h5 class="mt-5 font-heading mb-3">Bookings</h5>
 
-        <div v-if="service.allBookings.data.length > 0">
-          <div class="d-flex">
-            <pagination :data="service.allBookings" @pagination-change-page="getResults" :show-disabled="true" class="mb-0 shadow-sm"></pagination>
-          </div>
 
-          <table class="table table-borderless table-fixed-header mb-0">
-            <thead class="text-muted">
-              <tr>
-                <th>User</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Assignee</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="booking in service.allBookings.data">
-                <tr :key="booking.id">
-                  <td class="align-middle">{{ (booking.user || booking.contact.contact_user || {}).full_name }}</td>
-                  <td class="align-middle">
-                    {{ formatDate(booking.created_at) }}
-                  </td>
-                  <td class="align-middle">
-                    {{ convertTime(booking.start, 'hh:MMA') }}
-                  </td>
-                  <td class="align-middle">
-                    <div class="d-flex align-items-center">
-                      <div
-                        class="user-profile-image user-profile-image-sm mr-2"
-                        :style="{
-                          backgroundImage:
-                            'url(' + (booking.service.user || booking.service.member.member_user).profile_image + ')',
-                        }"
-                      >
-                        <span v-if="!(booking.service.user || booking.service.member.member_user).profile_image">{{
-                          (booking.service.user || booking.service.member.member_user).initials
-                        }}</span>
+
+        <div class="pt-3 d-flex">
+							<div class="text-center position-relative">
+								<div class="position-relative coaches-container">
+                  <!-- Main Coach -->
+                  <div class="pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container" :class="{'active': selectedCoachId == $root.auth.id}" @click="selectedCoachId = $root.auth.id; selectedService = service">
+                    <div class="d-flex align-items-center p-1">
+                      <div class="profile-image profile-image-xs" :style="{'background-image': `url(${$root.auth.profile_image})`}">
+                        <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
                       </div>
-                      {{ (booking.service.user || booking.service.member.member_user).full_name }}
-                      <span v-if="$root.auth.id == (booking.service.user || booking.service.member.member_user).id">(You)</span>
-                    </div>
-                  </td>
-                  <td class="align-middle">
-                    <div class="flex-grow-1 text-right">
-                      <div class="dropleft">
-                        <button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" @click="assigningMember = false">
-                          <more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <span v-if="!assigningMember" class="dropdown-item cursor-pointer" @click.stop="assigningMember = true">Assign</span>
-                            <template v-else>
-                              <div class="dropdown-item cursor-pointer d-flex align-items-center" :class="{'disabled bg-light': booking.service.user.id == $root.auth.id}" @click="assignMember(booking)">
-                                <div
-                                  class="user-profile-image user-profile-image-sm mr-2"
-                                  :style="{
-                                    backgroundImage:
-                                      'url(' + $root.auth.profile_image + ')',
-                                  }"
-                                >
-                                  <span v-if="!$root.auth.profile_image">{{
-                                    $root.auth.initials
-                                  }}</span>
-                                </div>
-                                {{ $root.auth.full_name }} (You)
-                              </div>
-                              <template v-for="member in members">
-                                  <div v-if="!member.is_pending && member.assigned_services.find(x => (x.parent_service_id == service.id))" :key="member.id" class="dropdown-item cursor-pointer d-flex align-items-center" @click="assignMember(booking, member)" :class="{'disabled bg-light': booking.service.user.id == member.member_user.id}">
-                                    <div
-                                      class="user-profile-image user-profile-image-sm mr-2"
-                                      :style="{
-                                        backgroundImage:
-                                          'url(' + member.member_user.profile_image + ')',
-                                      }"
-                                    >
-                                      <span v-if="!member.member_user.profile_image">{{
-                                        member.member_user.initials
-                                      }}</span>
-                                    </div>
-                                    {{ member.member_user.full_name }}
-                                  </div>
-                              </template>
-                            </template>
-                        </div>
+                      <div class="flex-1 text-left pl-2">
+                        <h6 class="font-heading text-nowrap mb-0">
+                          {{ $root.auth.full_name }}
+                        </h6>
+                        <small class="text-secondary">{{ $root.auth.timezone }}</small>
                       </div>
                     </div>
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-        <div v-else>
-          <div class="rounded bg-white text-center py-3 text-muted mt-2">
-            No bookings.
-          </div>
-        </div>
+                  </div>
+
+                  <!-- Assigned Coaches -->
+                  <div v-for="assignedService in service.assigned_services" class="xborder pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer" :class="{'active': selectedCoachId == assignedService.user.id}" :key="assignedService.id" @click="selectedService = assignedService; selectedCoachId = assignedService.user.id">
+                    <div class="d-flex align-items-center p-1">
+                      <div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
+                        <span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+                      </div>
+                      <div class="flex-1 text-left pl-2">
+                        <h6 class="font-heading text-nowrap mb-0">
+                          {{ assignedService.user.full_name }}
+                        </h6>
+                        <small class="text-secondary">{{ assignedService.user.timezone }}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+								<div class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
+							</div>
+
+							<div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
+								<table class="table table-sm table-borderless mb-0 table-layout-fixed">
+									<thead>
+										<tr>
+											<th class="align-middle pb-2 pt-0 pl-2 " v-for="(tabDate, index) in tabDates" :key="index">
+												<strong>{{ tabDate.name }}</strong> <span class="text-gray">{{ tabDate.label }}</span>
+											</th>
+										</tr>
+									</thead>
+									<tbody class="shadow-none bg-transparent text-center">
+										<tr>
+											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
+												<template v-if="service && timeslots && (timeslots[date.dayName] || []).length > 0">
+													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
+														<div :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)"><span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span></div>
+													</div>
+												</template>
+												<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+
+								<transition name="fade">
+									<div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
+										<div class="position-absolute-center">
+											<div class="spinner-border text-primary" role="status"></div>
+										</div>
+									</div>
+								</transition>
+							</div>
+						</div>
       </div>
 
-      <div class="info bg-white h-100 overflow-auto shadow-sm">
+      <div class="info bg-white h-100 overflow-auto shadow-sm d-none">
         <div class="d-flex mb-2">
           <button
             :data-intro="$root.intros.service_availability.intro"
@@ -385,7 +362,7 @@
 
     <modal ref="editModal" :close-button="false">
       <h5 class="font-heading mb-3">Edit Service</h5>
-      <vue-form-validate @submit="submit">
+      <vue-form-validate @submit="submit" v-if="clonedService">
         <fieldset :disabled="clonedService.parent_service_id">
           <div class="form-group">
             <label class="form-label">Service name</label>

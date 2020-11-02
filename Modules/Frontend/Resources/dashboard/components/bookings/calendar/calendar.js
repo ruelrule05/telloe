@@ -17,8 +17,10 @@ import ChevronRightIcon from '../../../../icons/chevron-right';
 import ChevronLeftIcon from '../../../../icons/chevron-left';
 import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
 import VCalendar from 'v-calendar';
-import utcPlugin from 'dayjs/plugin/utc';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+const utcPlugin = require('dayjs/plugin/utc');
+const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+dayjs.extend(utcPlugin);
+dayjs.extend(IsSameOrAfter);
 Vue.use(VCalendar);
 import dayjs from 'dayjs';
 import Timetable from './timetable/timetable.vue';
@@ -267,8 +269,6 @@ export default {
 		this.getConversations();
 		this.$root.heading = 'Bookings';
 		this.dayjs = require('dayjs');
-		this.dayjs.extend(utcPlugin);
-		this.dayjs.extend(isSameOrAfter);
 
 		let days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 		let business_hours = [];

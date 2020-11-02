@@ -23,7 +23,9 @@ class ServicePolicy
 
     public function show(User $user, Service $service)
     {
-        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null);
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null) || $service->whereHas('parentService', function($parentService) use ($user) {
+            $parentService->where('user_id', $user->id);
+        });
     }
 
     public function update(User $user, Service $service)
