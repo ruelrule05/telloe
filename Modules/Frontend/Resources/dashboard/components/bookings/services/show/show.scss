@@ -5,19 +5,6 @@
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 }
-.service {
-	border: solid 1px transparent;
-	transition: $transition-base;
-	&:hover:not(.active) {
-		border-color: $gray-400;
-	}
-	&.active {
-		box-shadow: 0 0 0 0.1rem $primary;
-	}
-	&.unavailable {
-		opacity: 0.45;
-	}
-}
 .service-add {
 	background-color: $light;
 	transition: $transition-base;
@@ -25,6 +12,9 @@
 	&:hover {
 		background-color: white;
 	}
+}
+.timeslots-wrapper table td > div:last-child .timeslot-button {
+	margin-bottom: 0 !important;
 }
 .badge-day {
 	width: 25px;
@@ -113,7 +103,7 @@
 	background-size: cover;
 	background-size: no-repeat;
 	background-position: center;
-	background-color: $gray-400 !important;
+	background-color: $gray-400;
 	position: relative;
 	span {
 		position: absolute;
@@ -124,31 +114,37 @@
 		font-size: 24px;
 	}
 	&.profile-image-md {
-		width: 80px;
-		height: 80px;
+		width: 60px;
+		height: 60px;
 		span {
 			font-size: 24px;
 		}
 	}
 	&.profile-image-sm {
-		width: 60px;
-		height: 60px;
+		width: 45px;
+		height: 45px;
 		span {
 			font-size: 20px;
 		}
 	}
 	&.profile-image-xs {
-		width: 45px;
-		height: 45px;
+		width: 30px;
+		height: 30px;
 		span {
-			font-size: 16px;
+			font-size: 12px;
+		}
+	}
+	&.profile-image-xxs {
+		width: 24px;
+		height: 24px;
+		span {
+			font-size: 10px;
 		}
 	}
 }
 
 .timeslots-wrapper .timeslot-button.disabled {
-	opacity: 0.45;
-	user-select: none !important;
+	opacity: 0.85;
 	color: $dark;
 }
 
@@ -162,4 +158,11 @@
 ::v-deep .vc-reset,
 ::v-deep .vc-reset * {
 	line-height: 1.35;
+}
+.add-member {
+	transition: $transition-base !important;
+	&:hover {
+		background-color: white;
+		box-shadow: $box-shadow-sm;
+	}
 }

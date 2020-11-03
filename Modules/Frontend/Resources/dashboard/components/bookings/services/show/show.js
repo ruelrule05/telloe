@@ -48,8 +48,9 @@ export default {
 		timeslots: [],
 		selectedCoachId: null,
 		activeUserBgPosition: 0,
-
-		startDate: dayjs().toDate()
+		startDate: dayjs().toDate(),
+		selectedTimeslot: null,
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -135,16 +136,42 @@ export default {
 			updateService: 'services/update',
 			deleteService: 'services/delete',
 			getMembers: 'members/index',
-			assignBookingToMember: 'bookings/assignToMember'
+			assignBookingToMember: 'bookings/assignToMember',
+			assignService: 'members/store_service'
 		}),
+
+		updateBooking(selectedTimeslot) {
+			let timeslot = this.timeslots[selectedTimeslot.dayName][selectedTimeslot.index];
+			console.log(timeslot);
+			if (timeslot) {
+				console.log(dayjs(timeslot.date).format('dddd'));
+				timeslot.bookings = [];
+			}
+			this.$refs['bookingModal'].hide();
+		},
+
+		viewTimeslotBookings(timeslot, dayName, index) {
+			if (timeslot.bookings && timeslot.bookings.length > 0) {
+				let selectedTimeslot = JSON.parse(JSON.stringify(timeslot));
+				selectedTimeslot.bookings[0].start = dayjs(`${selectedTimeslot.bookings[0].date} ${selectedTimeslot.bookings[0].start}`).toDate();
+				selectedTimeslot.index = index;
+				selectedTimeslot.dayName = dayName;
+				this.selectedTimeslot = selectedTimeslot;
+				this.$refs['bookingModal'].show();
+			}
+		},
+
+		async addMember(member) {
+			let data = Object.assign({}, member);
+			data.service_id = this.service.id;
+			let assignedService = await this.assignService(data);
+			console.log(assignedService);
+			this.service.assigned_services.push(assignedService);
+		},
 
 		previousWeek() {
 			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
-			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
-				this.startDate = previousWeek.toDate();
-			} else if (!dayjs(dayjs(this.startDate).format('YYYY-MM-DD')).isSame(dayjs(dayjs().format('YYYY-MM-DD')))) {
-				this.startDate = dayjs().toDate();
-			}
+			this.startDate = previousWeek.toDate();
 		},
 
 		nextWeek() {
@@ -154,7 +181,6 @@ export default {
 		},
 
 		async getTimeslots() {
-			console.log('getTimeslots');
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
 				let response = await axios.get(`/services/${this.selectedService.id}?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);

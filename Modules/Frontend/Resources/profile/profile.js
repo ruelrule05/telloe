@@ -34,6 +34,8 @@ import UsersIcon from '../icons/users';
 import CalendarIcon from '../icons/calendar';
 import CoinIcon from '../icons/coin';
 import PackageIcon from '../icons/package';
+import DollarSignIcon from '../icons/dollar-sign';
+import WindowPlusIcon from '../icons/window-plus';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
@@ -64,7 +66,9 @@ export default {
 		UsersIcon,
 		CalendarIcon,
 		CoinIcon,
-		PackageIcon
+		PackageIcon,
+		DollarSignIcon,
+		WindowPlusIcon
 	},
 
 	directives: { tooltip },

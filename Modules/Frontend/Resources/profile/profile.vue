@@ -7,7 +7,7 @@
 				<div class="container" v-if="!selectedServiceForTimeline" key="services">
 					<div class="row justify-content-center">
 						<div class="col-md-10 col-container">
-							<div class="bg-white shadow-sm rounded p-md-4 py-5 h-100 w-100">
+							<div class="p-md-4 py-5 h-100 w-100">
 								<div class="profile-image d-inline-block bg-white mb-2" :style="{'background-image': `url(${profile.profile_image})`}">
 									<span v-if="!profile.profile_image">{{ profile.initials }}</span>
 								</div>
@@ -18,22 +18,48 @@
 									<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
 									<div v-else class="row text-left mt-5 mx-0">
 										<div v-for="service in services" :key="service.id" class="col-md-6">
-											<div class="card rounded service cursor-pointer mb-3 border" @click="selectedServiceForTimeline = service; selectedService = service">
+											<div class="card rounded service cursor-pointer mb-3 shadow-sm" @click="selectedServiceForTimeline = service; selectedService = service">
 												<div class="card-body">
 													<h3 class="font-heading h5 mb-1">{{ service.name }}</h3>
-													<p class="mb-0">{{ service.description }}</p>
+													<p class="mb-0 text-ellipsis text-muted">{{ service.description }}</p>
+													
+													<div class="d-flex align-items-center mt-3 user-profile-container">
+														<div
+															v-tooltip.top="'You'"
+															class="profile-image profile-image-xxs"
+															:style="{
+															backgroundImage:
+																'url(' + profile.profile_image + ')',
+															}"
+														>
+															<span v-if="!profile.profile_image">{{ profile.initials }}</span>
+														</div>
+														<div
+															v-for="assignedService in service.assigned_services"
+															:key="assignedService.id"
+															v-tooltip.top="assignedService.member.member_user.full_name"
+															class="profile-image profile-image-xxs"
+															:style="{
+															backgroundImage:
+																'url(' + assignedService.member.member_user.profile_image + ')',
+															}"
+														>
+															<span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
+														</div>
+													</div>
 
-													<div class="d-flex align-items-center mt-3">
-														<clock-icon width="17" height="17" fill="#888"></clock-icon>
-														<span class="ml-2">{{ service.duration }} minutes</span>
-													</div>
-													<div v-if="service.assigned_services.length > 0" class="d-flex align-items-center mt-1">
-														<users-icon width="17" height="17" fill="#888"></users-icon>
-														<span class="ml-2">{{ service.assigned_services.length }} available coaches</span>
-													</div>
-													<div class="d-flex mt-3">
-														<div v-for="(day, index) in days" :key="index" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
-															<span class="position-absolute-center font-weight-light line-height-1">{{ day.charAt(0) }}</span>
+													<div class="d-flex align-items-center mt-4 line-height-1">
+														<div class="d-flex align-items-center">
+														<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+														<small class="text-muted ml-1">{{ service.duration }} min</small>
+														</div>
+														<div class="d-flex align-items-center ml-3">
+														<dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
+														<small class="text-muted ml-1">{{ service.default_rate }}</small>
+														</div>
+														<div class="d-flex align-items-center ml-3" v-if="service.in_widget">
+														<window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
+														<small class="text-muted ml-1">In widget</small>
 														</div>
 													</div>
 												</div>
@@ -42,7 +68,7 @@
 									</div>
 
 									<!-- Packages -->
-									<div class="row text-left mt-4 mx-0">
+									<div class="d-none row text-left mt-4 mx-0">
 										<div v-for="packageItem in packages" :key="packageItem.id" class="col-md-6">
 											<div class="card rounded service cursor-pointer mb-3 border" @click="selectedService = service">
 												<div class="card-body">

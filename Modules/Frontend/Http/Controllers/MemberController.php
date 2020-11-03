@@ -156,6 +156,6 @@ class MemberController extends Controller
             $assignedService->parent_service_id = $service->id;
             $assignedService->save();
         }
-        return response()->json($assignedService->load('bookings.user'));
+        return response()->json($assignedService->refresh()->load('bookings.user'));
     }
 }

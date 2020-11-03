@@ -105,10 +105,10 @@ class Service extends BaseModel
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = Booking::where('service_id', $this->attributes['id'])
-                                ->where('date', $dateString)
-                                ->where('start', '<=', $timeslot['time'])
-                                ->where('end', '>=', $timeslot['time'])
-                                ->get();
+                ->where('date', $dateString)
+                ->where('start', '<=', $timeslot['time'])
+                ->where('end', '>=', $timeslot['time'])
+                ->get();
 
             // google calendar events
             $googleEvents = [];
@@ -157,8 +157,10 @@ class Service extends BaseModel
                     $isBreaktime = true;
                 }
             }
-            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && !in_array($dateString, $holidays)) {
+            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays)) {
                 $timeslot['is_available'] = true;
+            } elseif ($bookings->count() > 0) {
+                $timeslot['bookings'] = $bookings->load('user', 'contact.contactUser', 'service.user');
             }
             $timeslots[] = $timeslot;
             $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');

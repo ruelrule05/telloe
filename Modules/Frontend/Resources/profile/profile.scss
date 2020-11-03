@@ -52,15 +52,18 @@ $timeCount: 15;
 			font-size: 16px;
 		}
 	}
+	&.profile-image-xxs {
+		margin-right: -7px;
+		border: solid 2px white;
+		width: 32px;
+		height: 32px;
+		span {
+			font-size: 10px;
+		}
+	}
 }
 .cursor-pointer {
 	cursor: pointer !important;
-}
-.service {
-	transition: $transition-base;
-	&:hover {
-		background-color: $light;
-	}
 }
 
 .v-calendar {

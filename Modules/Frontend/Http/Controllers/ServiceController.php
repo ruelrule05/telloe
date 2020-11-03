@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\Service;
 use Auth;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
@@ -43,11 +43,10 @@ class ServiceController extends Controller
     public function show(Request $request, Service $service)
     {
         $this->authorize('show', $service);
-        $service->load('assignedServices');
-
+        $service->load('assignedServices', 'user');
 
         $timeslots = [];
-        if($request->date) {
+        if ($request->date) {
             $i = 1;
             $startDate = Carbon::parse($request->date);
             while ($i <= 7) {
