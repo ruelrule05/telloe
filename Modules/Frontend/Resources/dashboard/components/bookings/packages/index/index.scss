@@ -11,15 +11,6 @@
 .service {
 	border: solid 1px transparent;
 	transition: $transition-base;
-	&:hover:not(.active) {
-		border-color: $gray-400;
-	}
-	&.active {
-		box-shadow: 0 0 0 0.1rem $primary;
-	}
-	&.unavailable {
-		opacity: 0.45;
-	}
 }
 .service-add {
 	background-color: $light;
@@ -28,6 +19,10 @@
 	&:hover {
 		background-color: white;
 	}
+}
+.btn-add {
+	border: dashed 1px $gray-500;
+	transform: none !important;
 }
 .badge-day {
 	width: 25px;

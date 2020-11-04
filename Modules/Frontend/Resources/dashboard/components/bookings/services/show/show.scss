@@ -166,3 +166,12 @@
 		box-shadow: $box-shadow-sm;
 	}
 }
+.member-dropdown {
+	opacity: 0;
+	transition: $transition-base;
+}
+.member-container:hover {
+	.member-dropdown {
+		opacity: 1;
+	}
+}

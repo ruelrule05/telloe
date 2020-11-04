@@ -34,6 +34,10 @@
 		}
 	}
 }
+.btn-add {
+	border: dashed 1px $gray-500;
+	transform: none !important;
+}
 .service-day {
 	.chevron-down {
 		fill: $gray-500;

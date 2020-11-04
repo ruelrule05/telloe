@@ -1,21 +1,8 @@
 <template>
   <div class="row h-100">
     <div v-if="ready" class="col-md-12 h-100 d-flex flex-column">
-      <div class="border-bottom bg-white p-3 d-flex align-items-center">
+      <div class="border-bottom bg-white px-3 py-4">
         <h5 class="font-heading mb-0">Packages</h5>
-        <div class="ml-auto d-flex align-items-center">
-          <button
-            class="btn btn-light shadow-none d-flex align-items-center"
-            type="button"
-            @click="
-              newPackage = {};
-              $refs['addModal'].show();
-            "
-          >
-            <plus-icon class="btn-icon"></plus-icon>
-            Add Package
-          </button>
-        </div>
       </div>
 
       <div
@@ -37,9 +24,9 @@
       </div>
 
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
-        <div class="flex-grow-1 p-2 overflow-auto">
-          <div class="d-flex flex-wrap">
-            <div class="service-container p-3" v-for="packageItem in packages" :key="packageItem.id">
+        <div class="flex-grow-1 py-4 overflow-auto container">
+          <div class="row px-2">
+            <div class="col-md-4 px-2" v-for="packageItem in packages" :key="packageItem.id">
               <router-link
                 :to="`/dashboard/bookings/packages/${packageItem.id}`"
                 tag="div"
@@ -57,7 +44,7 @@
                       class="ml-auto"
                       @click.native.stop
                       @input="updatePackage(packageItem)"
-                      active-class="bg-green"
+                      active-class="bg-primary"
                       v-model="packageItem.is_available"
                     ></toggle-switch>
                   </div>
@@ -80,6 +67,26 @@
                   </div>
                 </div>
               </router-link>
+            </div>
+
+            <div class="col-md-4 px-2">
+              <div class="position-relative h-100">
+                <div class="h-100 position-relative">
+                  <button
+                    :data-intro="$root.intros.add_service.intro"
+                    :data-step="$root.intros.add_service.step"
+                    class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                    type="button"
+                    @click="
+                      newService = {};
+                      $refs['addModal'].show();
+                    "
+                  >
+                    <plus-icon class="fill-gray"></plus-icon>
+                    Add Package
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

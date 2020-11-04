@@ -1,23 +1,8 @@
 <template>
   <div class="row h-100">
     <div v-if="ready" class="col-md-12 h-100 d-flex flex-column">
-      <div class="border-bottom bg-white p-3 d-flex align-items-center">
+      <div class="border-bottom bg-white px-3 py-4">
         <h5 class="font-heading mb-0">Services</h5>
-        <div class="ml-auto d-flex align-items-center">
-          <button
-            :data-intro="$root.intros.add_service.intro"
-            :data-step="$root.intros.add_service.step"
-            class="btn btn-light shadow-none d-flex align-items-center"
-            type="button"
-            @click="
-              newService = {};
-              $refs['addModal'].show();
-            "
-          >
-            <plus-icon class="btn-icon"></plus-icon>
-            Add Service
-          </button>
-        </div>
       </div>
 
       <div
@@ -129,6 +114,26 @@
                       </div> -->
                   </div>
                     </router-link>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 px-2">
+              <div class="position-relative pb-4 h-100">
+                <div class="h-100 position-relative">
+                  <button
+                    :data-intro="$root.intros.add_service.intro"
+                    :data-step="$root.intros.add_service.step"
+                    class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                    type="button"
+                    @click="
+                      newService = {};
+                      $refs['addModal'].show();
+                    "
+                  >
+                    <plus-icon class="fill-gray"></plus-icon>
+                    Add Service
+                  </button>
                 </div>
               </div>
             </div>

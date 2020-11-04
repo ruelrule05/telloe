@@ -70,100 +70,127 @@
 
 
         <div class="pt-3 d-flex">
-							<div class="text-center position-relative">
-								<div class="position-relative coaches-container">
-                  <!-- Main Coach -->
-                  <div class="pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container" :class="{'active': selectedCoachId == $root.auth.id}" @click="selectedCoachId = $root.auth.id; selectedService = service">
-                    <div class="d-flex align-items-center p-1">
-                      <div class="profile-image profile-image-sm" :style="{'background-image': `url(${$root.auth.profile_image})`}">
-                        <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
-                      </div>
-                      <div class="flex-1 text-left pl-2">
-                        <h6 class="font-heading text-nowrap mb-0">
-                          {{ $root.auth.full_name }}
-                        </h6>
-                        <small class="text-secondary">{{ $root.auth.timezone }}</small>
-                      </div>
-                    </div>
+          <div class="text-center position-relative">
+            <div class="position-relative coaches-container">
+              <!-- Main Coach -->
+              <div class="pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container" :class="{'active': selectedCoachId == $root.auth.id}" @click="selectedCoachId = $root.auth.id; selectedService = service">
+                <div class="d-flex align-items-center p-1">
+                  <div class="profile-image profile-image-sm" :style="{'background-image': `url(${$root.auth.profile_image})`}">
+                    <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
                   </div>
+                  <div class="flex-1 text-left pl-2">
+                    <h6 class="font-heading text-nowrap mb-0">
+                      {{ $root.auth.full_name }}
+                    </h6>
+                    <small class="text-secondary">{{ $root.auth.timezone }}</small>
+                  </div>
+                </div>
+              </div>
 
-                  <!-- Assigned Coaches -->
-                  <div v-for="assignedService in service.assigned_services" class="pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer" :class="{'active': selectedCoachId == assignedService.user.id}" :key="assignedService.id" @click="selectedService = assignedService; selectedCoachId = assignedService.user.id">
-                    <div class="d-flex align-items-center p-1">
+              <!-- Assigned Coaches -->
+              <div v-for="(assignedService, index) in service.assigned_services" class="position-relative user-container cursor-pointer" :class="{'active': selectedCoachId == assignedService.user.id}" :key="assignedService.id">
+                <div class="d-flex member-container align-items-center py-1 pl-1">
+                  <div class="d-flex align-items-center py-2 pl-2" @click="selectedService = assignedService; selectedCoachId = assignedService.user.id">
                       <div class="profile-image profile-image-sm cursor-pointer" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
-                        <span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
-                      </div>
-                      <div class="flex-1 text-left pl-2">
-                        <h6 class="font-heading text-nowrap mb-0">
-                          {{ assignedService.user.full_name }}
-                        </h6>
-                        <small class="text-secondary">{{ assignedService.user.timezone }}</small>
-                      </div>
+                      <span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+                    </div>
+                    <div class="flex-1 text-left pl-2">
+                      <h6 class="font-heading text-nowrap mb-0">
+                        {{ assignedService.user.full_name }}
+                      </h6>
+                      <small class="text-secondary">{{ assignedService.user.timezone }}</small>
                     </div>
                   </div>
 
-                  <div class="px-2 mt-2 dropdown">
-                    <div class="rounded py-2 cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
-                      <plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
-                      Add Member
-                    </div>
-                    <div class="dropdown-menu dropdown-menu-right p-1">
-                      <template v-for="member in members">
-                        <div v-if="!member.is_pending" class="dropdown-item d-flex align-items-center cursor-pointer px-1" :key="member.id" :class="{'disabled': service.assigned_services.find(x => x.member_id == member.id)}" @click="addMember(member)">
-                          <div class="d-flex align-items-center">
-                            <div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${member.member_user.profile_image})`}">
-                              <span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
-                            </div>
-                            <span class="font-heading ml-1">{{ member.member_user.full_name }}</span>
-                          </div>
-                        </div>
-                      </template>
+                  <div class="dropdown mx-1 member-dropdown">
+                    <button
+                      class="btn btn-white line-height-0 p-1 badge-pill shadow-none"
+                      data-toggle="dropdown"
+                      data-offset="-140, 0"
+                    >
+                      <more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
+                    </button>
+                    <div class="dropdown-menu">
+                      <router-link
+                        class="dropdown-item cursor-pointer"
+                        tag="span"
+                        :to="`/dashboard/team/members/${assignedService.member_id}`"
+                      >
+                        View Member
+                      </router-link>
+                      <span
+                        class="dropdown-item cursor-pointer"
+                        @click="removeAssignedService(assignedService, index)"
+                      >
+                        Remove
+                      </span>
                     </div>
                   </div>
                 </div>
+              </div>
 
-								<div class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
-							</div>
+              <div class="px-2 mt-2 dropdown">
+                <div class="rounded py-2 cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
+                  <plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
+                  Add Member
+                </div>
+                <div class="dropdown-menu dropdown-menu-right p-1">
+                  <template v-for="member in members">
+                    <div v-if="!member.is_pending" class="dropdown-item d-flex align-items-center cursor-pointer px-1" :key="member.id" :class="{'disabled': service.assigned_services.find(x => x.member_id == member.id)}" @click="addMember(member)">
+                      <div class="d-flex align-items-center">
+                        <div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${member.member_user.profile_image})`}">
+                          <span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
+                        </div>
+                        <span class="font-heading ml-1">{{ member.member_user.full_name }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
 
-							<div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
-								<table class="table table-sm table-borderless mb-0 table-layout-fixed">
-									<thead>
-										<tr>
-											<th class="align-middle pb-2 pt-0 pl-2 " v-for="(tabDate, index) in tabDates" :key="index">
-												<strong>{{ tabDate.name }}</strong> <span class="text-gray">{{ tabDate.label }}</span>
-											</th>
-										</tr>
-									</thead>
-									<tbody class="shadow-none bg-transparent text-center">
-										<tr>
-											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
-												<template v-if="service && timeslots && (timeslots[date.dayName] || []).length > 0">
-													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-														<div :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button justify-content-center" :class="[timeslot.is_available ? 'bg-primary text-white' : 'disabled bg-gray-400', {'cursor-pointer': (timeslot.bookings || []).length > 0}]" @click="viewTimeslotBookings(timeslot, date.dayName, timeslotIndex)">
-                              <span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
-                              <div v-if="(timeslot.bookings || []).length > 0">
-                                <div class="profile-image bg-white profile-image-xxs d-inline-block mt-2" :style="{'background-image': `url(${(timeslot.bookings[0].user || timeslot.bookings[0].contact).profile_image})`}">
-                                  <span v-if="!(timeslot.bookings[0].user || timeslot.bookings[0].contact).profile_image">{{ (timeslot.bookings[0].user || timeslot.bookings[0].contact).initials }}</span>
-                                </div>
-                              </div>
+            <div class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
+          </div>
+
+          <div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
+            <table class="table table-sm table-borderless mb-0 table-layout-fixed">
+              <thead>
+                <tr>
+                  <th class="align-middle pb-2 pt-0 pl-2 " v-for="(tabDate, index) in tabDates" :key="index">
+                    <strong>{{ tabDate.name }}</strong> <span class="text-gray">{{ tabDate.label }}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="shadow-none bg-transparent text-center">
+                <tr>
+                  <td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
+                    <template v-if="service && timeslots && (timeslots[date.dayName] || []).length > 0">
+                      <div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
+                        <div :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button justify-content-center" :class="[timeslot.is_available ? 'bg-primary text-white' : 'disabled bg-gray-400', {'cursor-pointer': (timeslot.bookings || []).length > 0}]" @click="viewTimeslotBookings(timeslot, date.dayName, timeslotIndex)">
+                          <span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
+                          <div v-if="(timeslot.bookings || []).length > 0">
+                            <div class="profile-image bg-white profile-image-xxs d-inline-block mt-2" :style="{'background-image': `url(${(timeslot.bookings[0].user || timeslot.bookings[0].contact).profile_image})`}">
+                              <span v-if="!(timeslot.bookings[0].user || timeslot.bookings[0].contact).profile_image">{{ (timeslot.bookings[0].user || timeslot.bookings[0].contact).initials }}</span>
                             </div>
-													</div>
-												</template>
-												<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                    <div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-								<transition name="fade">
-									<div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
-										<div class="position-absolute-center">
-											<div class="spinner-border text-primary" role="status"></div>
-										</div>
-									</div>
-								</transition>
-							</div>
-						</div>
+            <transition name="fade">
+              <div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
+                <div class="position-absolute-center">
+                  <div class="spinner-border text-primary" role="status"></div>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
       </div>
 
       <div class="info bg-white h-100 overflow-auto shadow-sm d-none">
@@ -386,7 +413,8 @@
           </div>
           <div class="d-flex align-items-center text-left mb-3">
             <div class="font-weight-normal text-secondary w-50">Starts at</div>
-            <v-date-picker mode="time" :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].start">
+            <div class="text-danger">Error querying available timeslots</div>
+            <v-date-picker class="d-none" mode="time" :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].start">
               <template v-slot="{ inputValue, inputEvents }">
                 <button type="button" class="btn btn-light shadow-none" v-on="inputEvents"><span v-if="inputValue.length == 7">0</span>{{ inputValue }}</button>
               </template>

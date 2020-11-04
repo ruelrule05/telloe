@@ -108,7 +108,7 @@ export default {
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
 				if (activeUser) {
-					this.activeUserBgPosition = activeUser.offsetTop;
+					this.activeUserBgPosition = activeUser.offsetTop + 1;
 				}
 			});
 		},
@@ -137,8 +137,16 @@ export default {
 			deleteService: 'services/delete',
 			getMembers: 'members/index',
 			assignBookingToMember: 'bookings/assignToMember',
-			assignService: 'members/store_service'
+			assignService: 'members/store_service',
+			deleteService: 'services/delete'
 		}),
+
+		removeAssignedService(assignedService, index) {
+			this.deleteService(assignedService);
+			this.service.assigned_services.splice(index, 1);
+			this.selectedService = this.service;
+			this.selectedCoachId = this.$root.auth.id;
+		},
 
 		updateBooking(selectedTimeslot) {
 			let timeslot = this.timeslots[selectedTimeslot.dayName][selectedTimeslot.index];
@@ -165,7 +173,6 @@ export default {
 			let data = Object.assign({}, member);
 			data.service_id = this.service.id;
 			let assignedService = await this.assignService(data);
-			console.log(assignedService);
 			this.service.assigned_services.push(assignedService);
 		},
 

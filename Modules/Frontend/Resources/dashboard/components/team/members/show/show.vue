@@ -49,7 +49,7 @@
       </div>
 
       <!-- Assigned services -->
-      <h5 class="mt-5 font-heading px-4 mb-3">Assigned Services</h5>
+      <!-- <h5 class="mt-5 font-heading px-4 mb-3">Assigned Services</h5>
       <template v-for="service in services">
         <div
           v-if="service.is_available"
@@ -92,7 +92,7 @@
             </div>
           </div>
         </div>
-      </template>
+      </template> -->
 
       <!-- Bookings -->
       <h5 class="mt-4 font-heading px-4 mb-0">Bookings</h5>

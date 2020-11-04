@@ -13,22 +13,30 @@ import TrashIcon from '../../../../../icons/trash';
 import ClockIcon from '../../../../../icons/clock';
 import ArrowLeftIcon from '../../../../../icons/arrow-left';
 import MoreIcon from '../../../../../icons/more';
+import DollarSignIcon from '../../../../../icons/dollar-sign';
+import WindowPlusIcon from '../../../../../icons/window-plus';
+import CalendarIcon from '../../../../../icons/calendar';
 import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
+import tooltip from '../../../../../js/directives/tooltip.js';
 const convertTime = require('convert-time');
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, DollarSignIcon, WindowPlusIcon, CalendarIcon },
+
+	directives: { tooltip },
+
 	data: () => ({
 		packageItem: null,
 		clonedPackage: null,
+		selectedService: null
 	}),
 
 	computed: {
 		...mapState({
 			services: state => state.services.index
-		}),
+		})
 	},
 
 	created() {
@@ -40,12 +48,11 @@ export default {
 		this.getServices();
 	},
 
-
 	methods: {
 		...mapActions({
 			getPackage: 'packages/show',
 			deletePackage: 'packages/delete',
-			getServices: 'services/index',
+			getServices: 'services/index'
 		}),
 
 		submit() {

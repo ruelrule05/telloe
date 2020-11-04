@@ -42,76 +42,140 @@
           </div>
         </div>
 
-        <div class="rounded bg-white shadow-sm p-3 mt-3">
+        <div class="mt-4">
           <h1 class="font-heading h3">{{ packageItem.name }}</h1>
-          <p class="service-description">{{ packageItem.description }}</p>
-
-          <h6 class="font-heading d-inline-block mb-2">Services:</h6>
-          {{ packageItem.services.map(service => {
-            return `${service.name} (${service.bookings} bookings)`;
-          }).join(', ') }}
-          <div>
-            <h6 class="font-heading d-inline-block mb-2">Price:</h6>
-            ${{ parseFloat(packageItem.price).toFixed(2) }}
-          </div>
-          <h6 class="font-heading d-inline-block mb-2">Expires on:</h6>
-          {{ formatDate(packageItem.expiration_date) }}
-          <div>
-            <h6 class="font-heading d-inline-block">Available in widget:</h6>
-            {{ packageItem.in_widget ? "Yes" : "No" }}
+          <p class="service-description mb-3">{{ packageItem.description }}</p>
+          <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center ">
+              <dollar-sign-icon width="8" height="8" transform="scale(2.4)"></dollar-sign-icon>
+              <span class="ml-1">{{ parseFloat(packageItem.price).toFixed(2) }}</span>
+            </div>
+            <div class="d-flex align-items-center ml-4">
+              <calendar-icon width="8" height="8" transform="scale(2)"></calendar-icon>
+              <span class="ml-2">{{ formatDate(packageItem.expiration_date) }}</span>
+            </div>
           </div>
         </div>
-        <!-- Orders -->
-        <h5 class="mt-5 font-heading mb-0">Orders</h5>
-        <div v-if="packageItem.orders.length > 0">
-          <table class="table table-borderless table-fixed-header mb-0">
-            <thead class="text-muted">
-              <tr>
-                <th>User</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Assignee</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="booking in packageItem.orders">
-                <tr :key="booking.id">
-                  <td class="align-middle">{{ booking.user.full_name }}</td>
-                  <td class="align-middle">
-                    {{ formatDate(booking.created_at) }}
-                  </td>
-                  <td class="align-middle">
-                    {{ convertTime(booking.start, 'hh:MMA') }}
-                  </td>
-                  <td class="align-middle">
-                    <div class="d-flex align-items-center">
-                      <div
-                        class="user-profile-image user-profile-image-sm mr-2"
+
+        
+        <!-- Services -->
+        <div class="mt-4 d-flex">
+
+          <div class="text-center text-danger">Error querying services</div>
+          <!-- <div class="text-center position-relative">
+            <div class="position-relative services-container">
+              <div class="pl-2 py-2 pr-3 cursor-pointer rounded position-relative border" v-for="service in packageItem.services" :key="service.id">
+                <div class="d-flex align-items-center p-1">
+                  <h6 class="mb-0">{{ service.name }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+           <div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
+           </div> -->
+        </div>
+
+        <!-- <div class="mt-5">
+          <div class="row px-2">
+            <div class="col-md-4 px-2" v-for="(service, index) in packageItem.services" :key="service.id">
+              <div class="mx-1 mb-4">
+                <div class="card rounded service p-3 shadow-sm w-100 position-relative">
+                  <div class="dropdown service-more position-absolute">
+                    <button
+                      class="btn btn-white line-height-0 p-1 badge-pill shadow-none"
+                      data-toggle="dropdown"
+                      data-offset="-140, 0"
+                    >
+                      <more-icon width="25" height="25" transform="scale(0.65)" class="fill-gray"></more-icon>
+                    </button>
+                    <div class="dropdown-menu">
+                      <router-link
+                        class="dropdown-item cursor-pointer"
+                        tag="span"
+                        :to="`/dashboard/bookings/services/${service.id}`"
+                      >
+                        View Service
+                      </router-link>
+                      <span
+                        class="dropdown-item cursor-pointer"
+                        @click="packageItem.services.splice(index, 1)"
+                      >
+                        Remove
+                      </span>
+                    </div>
+                  </div>
+                  <h5 class="font-heading mb-1">{{ service.name }}</h5>
+                  <p class="multiline-ellipsis mb-0 text-muted">
+                    {{ service.description }}
+                  </p>
+
+                  <div class="d-flex align-items-center mt-3 user-profile-container">
+                    <div
+                        v-tooltip.top="'You'"
+                        class="user-profile-image user-profile-image-sm"
                         :style="{
                           backgroundImage:
-                            'url(' + packageItem.user.profile_image + ')',
+                            'url(' + $root.auth.profile_image + ')',
                         }"
                       >
-                        <span v-if="!packageItem.user.profile_image">{{
-                          packageItem.user.initials
-                        }}</span>
+                        <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
                       </div>
-                      {{ packageItem.user.full_name }}
-                      <span v-if="$root.auth.id == packageItem.user.id">(You)</span>
+                      <div
+                        v-for="assignedService in service.assigned_services"
+                        :key="assignedService.id"
+                        v-tooltip.top="assignedService.member.member_user.full_name"
+                        class="user-profile-image user-profile-image-sm"
+                        :style="{
+                          backgroundImage:
+                            'url(' + assignedService.member.member_user.profile_image + ')',
+                        }"
+                      >
+                        <span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
+                      </div>
+                  </div>
+
+                  <div class="d-flex align-items-center mt-4 line-height-1">
+                    <div class="d-flex align-items-center">
+                      <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+                      <small class="text-muted ml-1">{{ service.duration }} min</small>
                     </div>
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-        <div v-else>
-          <div class="rounded bg-white text-center py-3 text-muted mt-2">
-            No orders.
+                    <div class="d-flex align-items-center ml-3">
+                      <dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
+                      <small class="text-muted ml-1">{{ service.default_rate }}</small>
+                    </div>
+                    <div class="d-flex align-items-center ml-3" v-if="service.in_widget">
+                      <window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
+                      <small class="text-muted ml-1">In widget</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 px-2">
+              <div class="position-relative pb-4 h-100">
+                <div class="h-100 position-relative">
+                  <button
+                    :data-intro="$root.intros.add_service.intro"
+                    :data-step="$root.intros.add_service.step"
+                    class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                    type="button"
+                    @click="
+                      newService = {};
+                      $refs['addModal'].show();
+                    "
+                  >
+                    <plus-icon class="fill-gray"></plus-icon>
+                    Add Service
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
+
 
     <modal ref="editModal" :close-button="false">
       <h5 class="font-heading mb-3">Edit Package</h5>
