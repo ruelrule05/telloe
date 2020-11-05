@@ -56,12 +56,6 @@ $timeCount: 15;
 .cursor-pointer {
 	cursor: pointer !important;
 }
-.service {
-	transition: $transition-base;
-	&:hover {
-		background-color: $light;
-	}
-}
 
 .v-calendar {
 	.vc-title {

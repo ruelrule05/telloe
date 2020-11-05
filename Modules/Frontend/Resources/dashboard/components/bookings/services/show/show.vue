@@ -56,7 +56,7 @@
             <button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
               <chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
             </button>
-            <v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+            <v-date-picker :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
               <template v-slot="{ inputValue, inputEvents }">
                <button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
               </template>
@@ -129,22 +129,24 @@
                 </div>
               </div>
 
-              <div class="px-2 mt-2 dropdown">
-                <div class="rounded py-2 cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
-                  <plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
-                  Add Member
-                </div>
-                <div class="dropdown-menu dropdown-menu-right p-1">
-                  <template v-for="member in members">
-                    <div v-if="!member.is_pending" class="dropdown-item d-flex align-items-center cursor-pointer px-1" :key="member.id" :class="{'disabled': service.assigned_services.find(x => x.member_id == member.id)}" @click="addMember(member)">
-                      <div class="d-flex align-items-center">
-                        <div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${member.member_user.profile_image})`}">
-                          <span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
+              <div class="pr-2 mr-1 mt-3">
+                <div class="dropdown">
+                  <div class="rounded py-2 cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
+                    <plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
+                    Add Member
+                  </div>
+                  <div class="dropdown-menu dropdown-menu-right w-100">
+                    <template v-for="member in members">
+                      <div v-if="!member.is_pending" class="dropdown-item d-flex align-items-center cursor-pointer px-1" :key="member.id" :class="{'disabled': service.assigned_services.find(x => x.member_id == member.id)}" @click="addMember(member)">
+                        <div class="d-flex align-items-center">
+                          <div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${member.member_user.profile_image})`}">
+                            <span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
+                          </div>
+                          <span class="font-heading ml-1">{{ member.member_user.full_name }}</span>
                         </div>
-                        <span class="font-heading ml-1">{{ member.member_user.full_name }}</span>
                       </div>
-                    </div>
-                  </template>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
@@ -413,12 +415,21 @@
           </div>
           <div class="d-flex align-items-center text-left mb-3">
             <div class="font-weight-normal text-secondary w-50">Starts at</div>
-            <div class="text-danger">Error querying available timeslots</div>
-            <v-date-picker class="d-none" mode="time" :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].start">
-              <template v-slot="{ inputValue, inputEvents }">
-                <button type="button" class="btn btn-light shadow-none" v-on="inputEvents"><span v-if="inputValue.length == 7">0</span>{{ inputValue }}</button>
-              </template>
-            </v-date-picker>
+            <div class="dropright">
+              <button
+                class="btn btn-light shadow-none"
+                data-toggle="dropdown"
+              >
+                {{ dayjs(selectedTimeslot.bookings[0].start).format('hh:mmA') }}
+              </button>
+              <div class="dropdown-menu">
+                <template v-for="(timeslot, index) in timeslots['Friday']">
+                  <button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available"  @click="selectedTimeslot.bookings[0].start = timeslot.time">
+                    {{ timeslot.time }}
+                  </button>
+                </template>
+              </div>
+            </div>
           </div>
           <div class="d-flex align-items-center text-left mb-3">
             <div class="font-weight-normal text-secondary w-50">Ends at</div>

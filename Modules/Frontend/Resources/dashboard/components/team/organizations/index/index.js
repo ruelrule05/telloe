@@ -13,6 +13,7 @@ import PencilIcon from '../../../../../icons/pencil';
 import ClockIcon from '../../../../../icons/clock';
 import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../../icons/close';
+import ShortcutIcon from '../../../../../icons/shortcut';
 export default {
 	components: {
 		Modal,
@@ -28,7 +29,8 @@ export default {
 		PencilIcon,
 		ClockIcon,
 		CheckmarkCircleIcon,
-		CloseIcon
+		CloseIcon,
+		ShortcutIcon
 	},
 
 	data: () => ({

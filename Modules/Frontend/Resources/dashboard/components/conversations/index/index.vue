@@ -6,7 +6,7 @@
                     <h5 class="mb-0 font-heading">Messages</h5>
                     <div v-if="$root.auth.role.role == 'client'" class="ml-auto">
                         <button :data-intro='$root.intros.new_chat.intro' :data-step="$root.intros.new_chat.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()">
-                            <plus-icon class="btn-icon fill-primary stroke-primary"></plus-icon>
+                            <plus-icon class="btn-icon"></plus-icon>
                             New Chat
                         </button>
                     </div>

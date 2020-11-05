@@ -194,3 +194,33 @@
 .services-container {
 	z-index: 2;
 }
+.service-dropdown {
+	opacity: 0;
+	transition: $transition-base;
+}
+.service-container:hover {
+	.service-dropdown {
+		opacity: 1;
+	}
+}
+
+.active-package {
+	transition: $transition-base;
+	border-top-left-radius: $border-radius;
+	border-bottom-left-radius: $border-radius;
+	top: 72px;
+	left: 0;
+	height: 64px;
+	background-color: white;
+	box-shadow: $box-shadow-sm;
+	z-index: 1;
+	&:after {
+		content: '';
+		height: 100%;
+		width: 5px;
+		background-color: white;
+		top: 0;
+		right: -5px;
+		position: absolute;
+	}
+}

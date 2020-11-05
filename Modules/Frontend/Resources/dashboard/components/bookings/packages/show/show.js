@@ -30,8 +30,36 @@ export default {
 	data: () => ({
 		packageItem: null,
 		clonedPackage: null,
-		selectedService: null
+		selectedService: null,
+		activeServicePosition: 0
 	}),
+
+	watch: {
+		'selectedService.id': function(value) {
+			this.$nextTick(() => {
+				let activeService = document.querySelector('.service-container.active');
+				if (activeService) {
+					this.activeServicePosition = activeService.offsetTop + 1;
+				}
+			});
+		}
+	},
+	selectedCoachId: function(value) {
+		this.$nextTick(() => {
+			let activeUser = document.querySelector('.user-container.active');
+			if (activeUser) {
+				this.activeServicePosition = activeUser.offsetTop + 1;
+			}
+		});
+	},
+	selectedCoachId: function(value) {
+		this.$nextTick(() => {
+			let activeUser = document.querySelector('.user-container.active');
+			if (activeUser) {
+				this.activeServicePosition = activeUser.offsetTop + 1;
+			}
+		});
+	},
 
 	computed: {
 		...mapState({
@@ -44,6 +72,9 @@ export default {
 			this.$root.contentloading = false;
 			this.packageItem = packageItem;
 			this.clonedPackage = Object.assign({}, packageItem);
+			if (this.packageItem.services.length > 0) {
+				this.selectedService = this.packageItem.services[0];
+			}
 		});
 		this.getServices();
 	},

@@ -6,16 +6,16 @@
 				<div class="container" v-if="!selectedServiceForTimeline" key="services">
 					<div class="row justify-content-center">
 						<div class="col-md-10 col-container">
-							<div class="bg-white shadow-sm rounded p-md-4 py-5 h-100 w-100">
+							<div class="p-md-4 py-5 h-100 w-100">
 								<h1 class="font-heading h3">{{ organization.name }}</h1>
 
 								<template v-cloak>
 									<!-- Services -->
 									<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
-									<div v-else class="row text-left mt-5 mx-0">
-										<div v-for="service in services" :key="service.id" class="col-md-6">
+									<div v-else class="text-left mt-4 d-flex flex-wrap">
+										<div v-for="service in services" :key="service.id" class="w-50 p-3">
 											<div
-												class="card rounded service cursor-pointer mb-3 border"
+												class="card rounded service cursor-pointer shadow-sm"
 												@click="
 													selectedServiceForTimeline = service;
 													selectedService = service.member_services[0];
@@ -24,7 +24,7 @@
 											>
 												<div class="card-body">
 													<h3 class="font-heading h5 mb-1">{{ service.name }}</h3>
-													<p class="mb-0">{{ service.description }}</p>
+													<p class="mb-0 text-ellipsis">{{ service.description }}</p>
 
 													<div class="d-flex align-items-center mt-3">
 														<clock-icon width="17" height="17" fill="#888"></clock-icon>

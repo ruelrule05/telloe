@@ -60,19 +60,54 @@
         
         <!-- Services -->
         <div class="mt-4 d-flex">
-
-          <div class="text-center text-danger">Error querying services</div>
-          <!-- <div class="text-center position-relative">
+          <div class="position-relative">
             <div class="position-relative services-container">
-              <div class="pl-2 py-2 pr-3 cursor-pointer rounded position-relative border" v-for="service in packageItem.services" :key="service.id">
-                <div class="d-flex align-items-center p-1">
-                  <h6 class="mb-0">{{ service.name }}</h6>
+              <div class="pl-2 py-2 cursor-pointer position-relative service-container" :class="{'active': selectedService.id == service.id}" v-for="service in packageItem.services" :key="service.id" @click="selectedService = service">
+                <div class="d-flex align-items-center py-1 pl-1">
+                  <div>
+                    <h6 class="mb-1">{{ service.name }}</h6>
+                    <div class="d-flex align-items-center">
+                      <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+                      <small class="text-muted ml-1">{{ service.duration }} min</small>
+                    </div>
+                  </div>
+
+                  <div class="dropdown mr-1 pl-1 ml-auto service-dropdown">
+                    <button
+                      class="btn btn-white line-height-0 p-1 badge-pill shadow-none"
+                      data-toggle="dropdown"
+                      data-offset="-140, 0"
+                    >
+                      <more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
+                    </button>
+                    <div class="dropdown-menu">
+                      <router-link
+                        class="dropdown-item cursor-pointer"
+                        tag="span"
+                        :to="`/dashboard/bookings/services/${service.id}`"
+                      >
+                        View Service
+                      </router-link>
+                      <span
+                        class="dropdown-item cursor-pointer"
+                        @click="removeAssignedService(service, index)"
+                      >
+                        Remove
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+            <div class="active-package position-absolute w-100" :style="{'top': `${activeServicePosition}px`}"></div>
           </div>
-           <div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
-           </div> -->
+          <div class="p-3 flex-1 bg-white shadow-sm position-relative rounded">
+            <div class="px-1 mb-2 d-inline-block" v-for="(block, index) in (new Array(parseInt(selectedService.bookings)))" :key="index">
+              <div class="bg-primary rounded text-white py-3 px-4 cursor-pointer">
+                <h6 class="font-heading mb-0">{{ selectedService.duration }} min</h6>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- <div class="mt-5">
@@ -200,31 +235,12 @@
             ></textarea>
           </div>
           <div class="form-group">
-            <label class="form-label">Duration (in minutes)</label>
-            <input
-              type="number"
-              class="form-control"
-              v-model="clonedPackage.duration"
-              data-required
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Interval (in minutes)</label>
-            <input
-              type="number"
-              onkeydown="if(event.key==='.'){event.preventDefault();}"
-              class="form-control"
-              v-model="clonedPackage.interval"
-              placeholder="Defaults to 15 mins"
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Default Rate</label>
+            <label class="form-label">Price</label>
             <input
               type="number"
               step="0.01"
               class="form-control"
-              v-model="clonedPackage.default_rate"
+              v-model="clonedPackage.price"
               placeholder="$0.00"
             />
           </div>

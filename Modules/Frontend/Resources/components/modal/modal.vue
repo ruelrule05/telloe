@@ -10,7 +10,7 @@
                 <button v-if="closeButton" type="button" class="btn p-0 btn-white badge-pill close position-absolute line-height-0" aria-label="Close" data-dismiss="modal">
                     <close-icon width="28" height="28"></close-icon>
                 </button>
-                <div v-if="title" class="modal-header bg-light">
+                <div v-if="title" class="modal-header pb-0">
                     <h5 class="modal-title font-heading">{{ title }}</h5>
                 </div>
 
@@ -18,7 +18,7 @@
     				<slot></slot>
                 </div>
 
-                <div v-if="hasFooterSlot" class="modal-footer bg-light">
+                <div v-if="hasFooterSlot" class="modal-footer">
                     <slot name="footer"></slot>
                 </div>
             </component>

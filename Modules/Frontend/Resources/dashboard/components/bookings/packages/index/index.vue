@@ -24,9 +24,9 @@
       </div>
 
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
-        <div class="flex-grow-1 py-4 overflow-auto container">
+        <div class="flex-grow-1 p-4 overflow-auto container">
           <div class="row px-2">
-            <div class="col-md-4 px-2" v-for="packageItem in packages" :key="packageItem.id">
+            <div class="col-md-4 px-2 mb-4" v-for="packageItem in packages" :key="packageItem.id">
               <router-link
                 :to="`/dashboard/bookings/packages/${packageItem.id}`"
                 tag="div"
@@ -71,7 +71,7 @@
 
             <div class="col-md-4 px-2">
               <div class="position-relative h-100">
-                <div class="h-100 position-relative">
+                <div class="h-100 position-relative pb-4">
                   <button
                     :data-intro="$root.intros.add_service.intro"
                     :data-step="$root.intros.add_service.step"

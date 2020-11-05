@@ -45,17 +45,21 @@
                     v-for="organization in organizations"
                     :key="organization.id"
                     class="cursor-pointer"
-                    @click="goToOrganization(organization.id);"
                   >
-                    <td class="align-middle">
+                    <td class="align-middle" @click="goToOrganization(organization.id);">
                       <h6 class="font-heading mb-0">{{ organization.name }}</h6>
                       <small class="text-secondary">{{ organization.slug }}</small>
                     </td>
-                    <td class="align-middle">
+                    <td class="align-middle" @click="goToOrganization(organization.id);">
                       {{ organization.members_count }}
                     </td>
-                    <td class="align-middle">
+                    <td class="align-middle" @click="goToOrganization(organization.id);">
                       {{ organization.created_at }}
+                    </td>
+                    <td class="align-middle" width="1%">
+                      <a :href="`/${organization.slug}`" target="_blank" class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none btn-more">
+                        <shortcut-icon width="20" height="20" class="fill-gray-500"></shortcut-icon>
+                      </a>
                     </td>
                   </tr>
                 </tbody>
