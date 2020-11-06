@@ -5,6 +5,7 @@ import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.
 import Timerangepicker from '../../../../../components/timerangepicker/timerangepicker.vue';
 import VueFormValidate from '../../../../../components/vue-form-validate.vue';
 import VueCheckbox from '../../../../../components/vue-checkbox/vue-checkbox.vue';
+import VueButton from '../../../../../components/vue-button.vue';
 import PencilIcon from '../../../../../icons/pencil';
 import ChevronDownIcon from '../../../../../icons/chevron-down';
 import PlusIcon from '../../../../../icons/plus';
@@ -20,7 +21,7 @@ import VuePaginate from 'vue-paginate';
 import tooltip from '../../../../../js/directives/tooltip.js';
 import Axios from 'axios';
 Vue.use(VuePaginate);
-const convertTime = require('convert-time');
+import convertTime from '../../../../../js/plugins/convert-time.js';
 Vue.component('pagination', require('laravel-vue-pagination'));
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
 const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
@@ -28,7 +29,7 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton },
 
 	directives: { tooltip },
 
@@ -50,7 +51,8 @@ export default {
 		activeUserBgPosition: 0,
 		startDate: dayjs().toDate(),
 		selectedTimeslot: null,
-		dayjs: dayjs
+		dayjs: dayjs,
+		bookingModalLoading: false
 	}),
 
 	computed: {
@@ -137,9 +139,47 @@ export default {
 			deleteService: 'services/delete',
 			getMembers: 'members/index',
 			assignBookingToMember: 'bookings/assignToMember',
+			updateBooking: 'bookings/update',
 			assignService: 'members/store_service',
 			deleteService: 'services/delete'
 		}),
+
+		async createZoomLink() {
+			if (this.$root.auth.zoom_token.length == 0) {
+				let response = await axios.get('/zoom/install');
+				let zoomInstallLink = response.data;
+				const width = 450;
+				const height = 650;
+				const left = screen.width / 2 - width / 2;
+				const top = screen.height / 2 - height / 2;
+				let zoomAuthWindow = window.open(zoomInstallLink, 'zoom_auth_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
+				let callbackInterval = setInterval(() => {
+					if (zoomAuthWindow.closed) {
+						clearInterval(callbackInterval);
+						console.log('closed');
+					}
+				}, 500);
+			} else {
+				let response = await axios.get(`/zoom/create_meeting?booking_id=${this.selectedTimeslot.bookings[0].id}`);
+			}
+		},
+
+		filterAvailableTimeslots(timeslots) {
+			return timeslots.filter(x => x.is_available);
+		},
+
+		async getSelectedBookingNewTimeslots(date) {
+			let timeslot = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index];
+			if (timeslot) {
+				let response = await axios.get(`/services/${this.selectedService.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+				this.selectedTimeslot.timeslots = response.data;
+			}
+		},
+
+		sortedTimeslots(timeslots) {
+			let dayTimeslots = JSON.parse(JSON.stringify(timeslots));
+			return dayTimeslots.sort((a, b) => (a.time > b.time ? 1 : -1));
+		},
 
 		removeAssignedService(assignedService, index) {
 			this.deleteService(assignedService);
@@ -148,13 +188,27 @@ export default {
 			this.selectedCoachId = this.$root.auth.id;
 		},
 
-		updateBooking(selectedTimeslot) {
-			let timeslot = this.timeslots[selectedTimeslot.dayName][selectedTimeslot.index];
-			console.log(timeslot);
-			if (timeslot) {
-				console.log(dayjs(timeslot.date).format('dddd'));
-				timeslot.bookings = [];
-			}
+		async updateSelectedBooking(selectedTimeslot) {
+			this.bookingModalLoading = true;
+			let booking = JSON.parse(JSON.stringify(selectedTimeslot.bookings[0]));
+			booking.date = dayjs(booking.date).format('YYYY-MM-DD');
+			booking.start = dayjs(booking.start).format('HH:mm');
+			await this.updateBooking(booking);
+			await this.getTimeslots();
+			this.bookingModalLoading = false;
+			//this.updateSelectedBooking(selectedTimeslot.bookings[0]);
+			// if (timeslot) {
+			// 	// let newDayName = dayjs(selectedTimeslot.bookings[0].date).format('dddd');
+			// 	// timeslot.bookings[0].date = dayjs(selectedTimeslot.bookings[0].date).format('YYYY-MM-DD');
+			// 	// timeslot.bookings[0].start = dayjs(selectedTimeslot.bookings[0].start).format('HH:mm');
+			// 	// //console.log(timeslot);
+			// 	// //this.timeslots[newDayName].push(timeslot);
+			// 	// let targetTimeslot = this.timeslots[newDayName].find(x => x.time == timeslot.bookings[0].start);
+			// 	// if (targetTimeslot) {
+			// 	// 	this.$set(targetTimeslot, 'bookings', timeslot.bookings);
+			// 	// }
+			// 	// this.timeslots[selectedTimeslot.dayName].splice(selectedTimeslot.index, 1);
+			// }
 			this.$refs['bookingModal'].hide();
 		},
 
@@ -164,6 +218,8 @@ export default {
 				selectedTimeslot.bookings[0].start = dayjs(`${selectedTimeslot.bookings[0].date} ${selectedTimeslot.bookings[0].start}`).toDate();
 				selectedTimeslot.index = index;
 				selectedTimeslot.dayName = dayName;
+				selectedTimeslot.timeslots = this.timeslots[dayName];
+				selectedTimeslot.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(selectedTimeslot.bookings[0].start));
 				this.selectedTimeslot = selectedTimeslot;
 				this.$refs['bookingModal'].show();
 			}

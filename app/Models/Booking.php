@@ -10,7 +10,7 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'link'];
+    protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
     protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
@@ -18,12 +18,11 @@ class Booking extends BaseModel
         'notified_24' => 'boolean',
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
         $user = $this->belongsTo(User::class);
-        if(!isset($user->id) && isset($this->attributes['contact_id'])) {
+        if (! isset($user->id) && isset($this->attributes['contact_id'])) {
             $contact = Contact::with('contactUser')->where('id', $this->attributes['contact_id'])->first();
 
             return $user->withDefault([

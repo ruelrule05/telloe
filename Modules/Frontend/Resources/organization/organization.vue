@@ -1,13 +1,14 @@
 <template>
 	<div>
 		<div class="text-center h-100 w-100" v-if="ready">
+
 			<transition-group name="fade" tag="div">
 				<!-- Select service -->
 				<div class="container" v-if="!selectedServiceForTimeline" key="services">
 					<div class="row justify-content-center">
 						<div class="col-md-10 col-container">
 							<div class="p-md-4 py-5 h-100 w-100">
-								<h1 class="font-heading h3">{{ organization.name }}</h1>
+								<h1 class="font-heading h3 mb-5">{{ organization.name }}</h1>
 
 								<template v-cloak>
 									<!-- Services -->
@@ -19,45 +20,36 @@
 												@click="
 													selectedServiceForTimeline = service;
 													selectedService = service.member_services[0];
-													selectedCoachId = service.member_services[0].member_id
 												"
 											>
 												<div class="card-body">
 													<h3 class="font-heading h5 mb-1">{{ service.name }}</h3>
 													<p class="mb-0 text-ellipsis">{{ service.description }}</p>
 
-													<div class="d-flex align-items-center mt-3">
-														<clock-icon width="17" height="17" fill="#888"></clock-icon>
-														<span class="ml-2">{{ service.duration }} minutes</span>
+													<div class="d-flex align-items-center mt-3 ml-n1 user-profile-container">
+														<div
+															v-for="assignedService in service.member_services"
+															:key="assignedService.id"
+															v-tooltip.top="assignedService.member.member_user.full_name"
+															class="profile-image profile-image-xxs"
+															:style="{
+															backgroundImage:
+																'url(' + assignedService.member.member_user.profile_image + ')',
+															}"
+														>
+															<span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
+														</div>
 													</div>
-													<div v-if="service.member_services.length > 0" class="d-flex align-items-center mt-1">
-														<users-icon width="17" height="17" fill="#888"></users-icon>
-														<span class="ml-2">{{ service.member_services.length }} available coaches</span>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
 
-									<!-- Packages -->
-									<div class="row text-left mt-4 mx-0">
-										<div v-for="packageItem in packages" :key="packageItem.id" class="col-md-6">
-											<div class="card rounded service cursor-pointer mb-3 border" @click="selectedService = service">
-												<div class="card-body">
-													<h3 class="font-heading h5 mb-1">{{ packageItem.name }}</h3>
-													<p class="mb-4 mt-2">{{ packageItem.description }}</p>
-
-													<div class="d-flex align-items-center">
-														<package-icon width="17" height="17" fill="#888"></package-icon>
-														<span class="ml-2">{{ packageItem.services.length }} services</span>
-													</div>
-													<div class="d-flex align-items-center mt-2">
-														<coin-icon width="17" height="17" fill="#888"></coin-icon>
-														<span class="ml-2">${{ parseFloat(packageItem.price).toFixed(2) }}</span>
-													</div>
-													<div class="d-flex align-items-center mt-2">
-														<calendar-icon width="17" height="17" fill="#888"></calendar-icon>
-														<span class="ml-2">Expires on {{ formatDate(packageItem.expiration_date) }}</span>
+													<div class="d-flex align-items-center mt-4 line-height-1">
+														<div class="d-flex align-items-center">
+															<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+															<small class="text-muted ml-1">{{ service.duration }} min</small>
+														</div>
+														<div class="d-flex align-items-center ml-3">
+															<dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
+															<small class="text-muted ml-1">{{ service.default_rate }}</small>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -71,88 +63,82 @@
 
 				<!-- Select coach/date/time -->
 				<div v-else-if="selectedServiceForTimeline && (!startDate || !selectedTimeslot)" class="container selected-service-container" key="service">
-					<div class="mb-4 text-left">
-						<button class="btn line-height-0 p-0 close float-none ml-n1" type="button" @click="selectedServiceForTimeline = selectService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
-						<h3 class="mb-0 font-heading">{{ selectedServiceForTimeline.name }}</h3>
+					<div class="mb-5 px-5">
+						<h4 class="mb-1 h3 font-heading">{{ selectedServiceForTimeline.name }}</h4>
+						<p class="mb-0 px-5 service-description">{{ selectedServiceForTimeline.description }}</p>
 					</div>
 
+					<div class="d-flex align-items-center">
+						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectedService = null">
+							<arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon>
+						</button>
+						<div class="ml-auto bg-white rounded shadow-sm d-flex align-items-center">
+							<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
+								<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+							</button>
+							<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+								<template v-slot="{ inputValue, inputEvents }">
+									<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
+								</template>
+							</v-date-picker>
+							<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
+								<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+							</button>
+						</div>
+					</div>
 
 					<div class="text-left">
 						<!-- Date/time selection -->
 						<div class="pt-3 pb-4 d-flex">
-
-							<div class="flex-grow-1 timeslots-wrapper position-relative">
+							<div class="text-center position-relative">
+								<div ref="activeUser" class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
+								
 								<!-- Assigned Coaches -->
-								<div class="d-flex align-items-center coaches-container">
-									<div
-										v-for="memberService in selectedServiceForTimeline.member_services"
-										class="px-3 pb-3 pt-2 rounded position-relative user-container cursor-pointer"
-										:class="{ active: selectedCoachId == memberService.member_id }"
-										:key="memberService.id"
-										@click="
-											selectedCoachId = memberService.member_id;
-											selectedService = memberService;
-										"
-									>
-										<div class="d-flex align-items-center px-1 pt-1">
-											<div class="profile-image profile-image-xs cursor-pointer" :style="{ 'background-image': `url(${memberService.member.member_user.profile_image})` }">
-												<span v-if="!memberService.member.member_user.profile_image">{{ memberService.member.member_user.initials }}</span>
-											</div>
-											<div class="flex-1 text-left pl-2">
-												<h6 class="font-heading text-nowrap mb-0">
-													{{ memberService.member.member_user.full_name }}
-												</h6>
-												<small class="text-secondary">{{ memberService.member.member_user.timezone }}</small>
-											</div>
+								<div v-for="assignedService in selectedServiceForTimeline.member_services" class="pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer" :class="{'active': selectedCoachId == assignedService.member_id}" :key="assignedService.id" @click="selectedCoachId = assignedService.member_id; selectedService = assignedService">
+									<div class="d-flex align-items-center p-1">
+										<div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
+											<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+										</div>
+										<div class="flex-1 text-left pl-2">
+											<h6 class="font-heading text-nowrap mb-0">
+												{{ assignedService.user.full_name }}
+											</h6>
+											<small class="text-secondary">{{ assignedService.user.timezone }}</small>
 										</div>
 									</div>
-									<div class="ml-auto bg-white rounded shadow-sm d-flex align-items-center">
-										<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
-											<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
-										</button>
-										<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
-											<button type="button" class="btn btn-white px-1 shadow-none rounded-0">{{ formatDate(startDate) }}</button>
-										</v-date-picker>
-										<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
-											<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
-										</button>
-									</div>
 								</div>
+							</div>
 
-								<div class="p-3 bg-white rounded timeslots-body shadow-sm position-relative">
-									<table class="table table-sm table-borderless mb-0 table-layout-fixed">
-										<thead>
-											<tr>
-												<th class="align-middle pb-2 pt-2 pl-2" v-for="(tabDate, index) in tabDates" :key="index">
-													<strong>{{ tabDate.name }}</strong>
-													<span class="text-gray">{{ tabDate.label }}</span>
-												</th>
-											</tr>
-										</thead>
-										<tbody class="shadow-none bg-transparent">
-											<tr>
-												<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 rounded-0 position-relative">
-													<div class="text-center" v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
-														<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-															<div v-tooltip.top="timezoneTooltip(selectedService.member.member_user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)">
-																<span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
-															</div>
-														</div>
+							<div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
+								<table class="table table-sm table-borderless mb-0 table-layout-fixed">
+									<thead>
+										<tr>
+											<th class="align-middle pb-2 pt-0 pl-2" v-for="(tabDate, index) in tabDates" :key="index">
+												<strong>{{ tabDate.name }}</strong> <span class="text-gray">{{ tabDate.label }}</span>
+											</th>
+										</tr>
+									</thead>
+									<tbody class="shadow-none bg-transparent text-center">
+										<tr>
+											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
+												<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
+													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
+														<div v-tooltip.top="timezoneTooltip(selectedService.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)"><span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span></div>
 													</div>
-													<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
-												</td>
-											</tr>
-										</tbody>
-									</table>
+												</template>
+												<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 
-									<transition name="fade">
-										<div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
-											<div class="position-absolute-center">
-												<div class="spinner-border text-primary" role="status"></div>
-											</div>
+								<transition name="fade">
+									<div v-if="timeslotsLoading" class="timeslots-loader rounded position-absolute-center w-100 h-100 bg-white">
+										<div class="position-absolute-center">
+											<div class="spinner-border text-primary" role="status"></div>
 										</div>
-									</transition>
-								</div>
+									</div>
+								</transition>
 							</div>
 						</div>
 					</div>

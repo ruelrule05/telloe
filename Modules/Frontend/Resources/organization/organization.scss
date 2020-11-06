@@ -52,6 +52,15 @@ $timeCount: 15;
 			font-size: 16px;
 		}
 	}
+	&.profile-image-xxs {
+		margin-right: -7px;
+		border: solid 2px white;
+		width: 32px;
+		height: 32px;
+		span {
+			font-size: 10px;
+		}
+	}
 }
 .cursor-pointer {
 	cursor: pointer !important;
@@ -198,14 +207,11 @@ $timeCount: 15;
 	border-bottom-left-radius: 0 !important;
 	border-bottom-right-radius: 0 !important;
 	transition: $transition-base;
-	&.active {
-		background-color: white;
-		box-shadow: $box-shadow-sm;
-	}
 }
 .coaches-container {
 	margin-bottom: -6px !important;
 }
+
 .active-user {
 	transition: $transition-base;
 	border-top-left-radius: $border-radius;
@@ -219,12 +225,15 @@ $timeCount: 15;
 	&:after {
 		content: '';
 		height: 100%;
-		width: 2px;
+		width: 5px;
 		background-color: white;
 		top: 0;
-		right: -1px;
+		right: -5px;
 		position: absolute;
 	}
+}
+.user-container {
+	z-index: 2;
 }
 ::v-deep .vc-highlight {
 	background-color: $primary !important;

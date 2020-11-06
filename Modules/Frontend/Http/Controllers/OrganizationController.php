@@ -29,6 +29,7 @@ class OrganizationController extends Controller
                     $data['services'][$service->parent_service_id]['name'] = $service->parentService->name;
                     $data['services'][$service->parent_service_id]['description'] = $service->parentService->description;
                     $data['services'][$service->parent_service_id]['duration'] = $service->parentService->duration;
+                    $data['services'][$service->parent_service_id]['default_rate'] = $service->parentService->default_rate;
                     $data['services'][$service->parent_service_id]['member_services'][] = $service;
                 }
             }

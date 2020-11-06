@@ -34,6 +34,7 @@ import UsersIcon from '../icons/users';
 import CalendarIcon from '../icons/calendar';
 import CoinIcon from '../icons/coin';
 import PackageIcon from '../icons/package';
+import DollarSignIcon from '../icons/dollar-sign';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
@@ -64,7 +65,8 @@ export default {
 		UsersIcon,
 		CalendarIcon,
 		CoinIcon,
-		PackageIcon
+		PackageIcon,
+		DollarSignIcon
 	},
 
 	directives: { tooltip },
@@ -114,7 +116,8 @@ export default {
 		tab: 'services',
 		convertTime: convertTime,
 		dayjs: dayjs,
-		selectedCoachId: null
+		selectedCoachId: null,
+		activeUserBgPosition: 0
 	}),
 
 	computed: {
@@ -135,12 +138,28 @@ export default {
 			}
 
 			return tabDates;
+		},
+
+		endTime() {
+			let endTime = '';
+			if (this.selectedService && this.startDate && this.selectedTimeslot) {
+				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + this.selectedTimeslot.time);
+				endTime = dayjs(startDate)
+					.add(this.selectedService.duration, 'minute')
+					.format('hh:mmA');
+			}
+			return endTime;
+			return this.timezoneTime(endTime);
 		}
 	},
 
 	watch: {
 		'selectedService.id': function(value) {
-			this.getTimeslots();
+			if (value) {
+				this.getTimeslots();
+			} else {
+				this.selectedCoachId = null;
+			}
 		},
 
 		startDate: function(value) {
@@ -151,6 +170,7 @@ export default {
 
 		'selectedServiceForTimeline.id': function(value) {
 			if (value) {
+				this.selectedCoachId = this.selectedServiceForTimeline.member_services[0].member_id;
 				this.error = null;
 				this.authError = '';
 				this.selectedTimeslot = null;
@@ -158,6 +178,15 @@ export default {
 				this.authAction = 'signup';
 				this.authForm = false;
 			}
+		},
+
+		selectedCoachId: function(value) {
+			this.$nextTick(() => {
+				let activeUser = document.querySelector('.user-container.active');
+				if (activeUser) {
+					this.activeUserBgPosition = activeUser.offsetTop;
+				}
+			});
 		}
 	},
 

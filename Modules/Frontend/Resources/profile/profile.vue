@@ -50,16 +50,12 @@
 
 													<div class="d-flex align-items-center mt-4 line-height-1">
 														<div class="d-flex align-items-center">
-														<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
-														<small class="text-muted ml-1">{{ service.duration }} min</small>
+															<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+															<small class="text-muted ml-1">{{ service.duration }} min</small>
 														</div>
 														<div class="d-flex align-items-center ml-3">
-														<dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
-														<small class="text-muted ml-1">{{ service.default_rate }}</small>
-														</div>
-														<div class="d-flex align-items-center ml-3" v-if="service.in_widget">
-														<window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
-														<small class="text-muted ml-1">In widget</small>
+															<dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
+															<small class="text-muted ml-1">{{ service.default_rate }}</small>
 														</div>
 													</div>
 												</div>
@@ -113,7 +109,9 @@
 								<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
 							</button>
 							<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
-								<button type="button" class="btn btn-white px-1 shadow-none rounded-0">{{ formatDate(startDate) }}</button>
+								<template v-slot="{ inputValue, inputEvents }">
+									<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
+								</template>
 							</v-date-picker>
 							<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
 								<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>

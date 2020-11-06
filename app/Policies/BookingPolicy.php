@@ -20,6 +20,11 @@ class BookingPolicy
         //
     }
 
+    public function createZoomLink(User $user, Booking $booking)
+    {
+        return $user->id == $booking->service->user_id;
+    }
+
     public function update(User $user, Booking $booking)
     {
         return

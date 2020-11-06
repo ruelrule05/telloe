@@ -167,7 +167,7 @@
                 <tr>
                   <td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
                     <template v-if="service && timeslots && (timeslots[date.dayName] || []).length > 0">
-                      <div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
+                      <div v-for="(timeslot, timeslotIndex) in sortedTimeslots(timeslots[date.dayName])" :key="timeslotIndex">
                         <div :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button justify-content-center" :class="[timeslot.is_available ? 'bg-primary text-white' : 'disabled bg-gray-400', {'cursor-pointer': (timeslot.bookings || []).length > 0}]" @click="viewTimeslotBookings(timeslot, date.dayName, timeslotIndex)">
                           <span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
                           <div v-if="(timeslot.bookings || []).length > 0">
@@ -388,7 +388,7 @@
       </div>
     </div>
 
-		<modal ref="bookingModal" :close-button="false" :scrollable="false">
+		<modal ref="bookingModal" :close-button="(selectedTimeslot || {}).isPrevious" :scrollable="false">
 			<div v-if="selectedTimeslot && selectedTimeslot.bookings.length > 0 && selectedService" class="text-center">
         <div class="profile-image profile-image-md d-inline-block mb-2" :style="{'background-image': `url(${(selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).profile_image})`}">
            <span v-if="!(selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).profile_image">{{ (selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).initials }}</span>
@@ -407,7 +407,8 @@
           </div>
           <div class="d-flex align-items-center text-left mb-3">
             <div class="font-weight-normal text-secondary w-50">Date</div>
-            <v-date-picker :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].date">
+            <div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedTimeslot.bookings[0].date) }}</div>
+            <v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].date" @input="getSelectedBookingNewTimeslots">
               <template v-slot="{ inputValue, inputEvents }">
                 <button type="button" class="btn btn-light shadow-none" v-on="inputEvents">{{ formatDate(selectedTimeslot.bookings[0].date) }}</button>
               </template>
@@ -415,7 +416,8 @@
           </div>
           <div class="d-flex align-items-center text-left mb-3">
             <div class="font-weight-normal text-secondary w-50">Starts at</div>
-            <div class="dropright">
+            <div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ dayjs(selectedTimeslot.bookings[0].start).format('hh:mmA') }}</div>
+            <div v-else class="dropright">
               <button
                 class="btn btn-light shadow-none"
                 data-toggle="dropdown"
@@ -423,9 +425,10 @@
                 {{ dayjs(selectedTimeslot.bookings[0].start).format('hh:mmA') }}
               </button>
               <div class="dropdown-menu">
-                <template v-for="(timeslot, index) in timeslots['Friday']">
-                  <button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available"  @click="selectedTimeslot.bookings[0].start = timeslot.time">
-                    {{ timeslot.time }}
+                <div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="filterAvailableTimeslots(selectedTimeslot.timeslots) == 0">No available timeslots</div>
+                <template v-else v-for="(timeslot, index) in filterAvailableTimeslots(selectedTimeslot.timeslots)">
+                  <button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available"  @click="selectedTimeslot.bookings[0].start = dayjs(`${dayjs(selectedTimeslot.bookings[0].date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+                    {{ timeslot.label }}
                   </button>
                 </template>
               </div>
@@ -439,11 +442,14 @@
             <div class="font-weight-normal text-secondary w-50">Duration</div>
             <div class="h6 font-heading mb-0">{{ selectedService.duration }} minutes</div>
           </div>
+          <div v-if="!selectedTimeslot.isPrevious" class="mt-3 text-left">
+            <button type="button" class="btn btn-white shadow-sm border" @click="createZoomLink()">Create Zoom link</button>
+          </div>
         </div>
 
-        <div class="d-flex justify-content-between mt-3">
-          <button type="button" class="btn btn-white shadow-sm border" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary shadow-sm border" @click="updateBooking(selectedTimeslot)">Update</button>
+        <div v-if="!selectedTimeslot.isPrevious" class="d-flex justify-content-between mt-3">
+          <button type="button" class="btn btn-white shadow-sm border" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+          <vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedTimeslot)">Update</vue-button>
         </div>
 			</div>
 		</modal>

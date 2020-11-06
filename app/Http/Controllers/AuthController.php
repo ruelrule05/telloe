@@ -39,7 +39,8 @@ class AuthController extends Controller
             'id_documents',
             'phone',
             'xero_token',
-            'xero_tenant_id'
+            'xero_tenant_id',
+            'zoom_token'
         ]) : false;
 
         if ($user && $last_online) {

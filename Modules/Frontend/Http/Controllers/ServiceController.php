@@ -44,6 +44,9 @@ class ServiceController extends Controller
     {
         $this->authorize('show', $service);
         $service->load('assignedServices', 'user');
+        if ($request->single) {
+            return response($service->timeslots($request->date));
+        }
 
         $timeslots = [];
         if ($request->date) {
@@ -55,6 +58,9 @@ class ServiceController extends Controller
                 $timeslots[$dateLabel] = $service->timeslots($date);
                 $startDate = $startDate->addDays(1);
                 $i++;
+                if ($request->single) {
+                    break;
+                }
             }
             $service = $service->toArray();
         }

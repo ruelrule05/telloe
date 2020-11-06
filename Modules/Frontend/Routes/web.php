@@ -6,23 +6,7 @@
  */
 
 Route::get('test', function () {
-    // echo Illuminate\Support\Str::slug('!)*#&^&*+#dwada ikadw');
-    // echo '<br />';
-    // echo Modules\Frontend\Http\Slugify::create(App\Models\Organization::class, '!)*#&@&*@#dwada ikadw');
-    // $nexmo = new \App\Http\NexmoClient;
-    // $nexmo->sms('+639162792651', 'You an upcoming booking in');
-
-    //\App\Jobs\SendSMS::dispatch('+639162792651', 'You have an upcoming booking in less than 2 hours.');
-    //$conversation = App\Models\Conversation::withTrashed()->find(273);
-    //print_r(json_encode($conversation));
-    // print_r(config('app.admin_emails'));
-    // preg_match_all('!https?://\S+!', 'dsds sdsd s https://google.com and http://clyde.com', $links, false);
-    // echo '<pre>';
-    // print_r($links);
-    // $assignedServices = App\Models\Service::with('assignedService')->whereNotNull('assigned_service_id')->first()->toArray();
-    // echo '<pre>';
-    // print_r($assignedServices);
-    //$response = \Illuminate\Support\Facades\Http::get('http://ip-api.com/json');
+    echo Carbon\Carbon::parse('2020-12-01 15:30')->toIso8601ZuluString();
 });
 
 Route::get('widget', function () {
@@ -83,6 +67,7 @@ Route::group(
         Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth')->name('xerocallback');
+        Route::get('/callback/zoom', 'ZoomController@callback')->middleware('auth')->name('zoomcallback');
 
         // AJAX
         Route::group([
@@ -152,6 +137,10 @@ Route::group(
                 Route::get('get_invoice', 'UserController@getInvoice');
 
                 Route::get('get_page_preview', 'MessageController@getPagePreview');
+
+                // ZOom
+                Route::get('zoom/install', 'ZoomController@install')->middleware('auth')->name('zoominstall');
+                Route::get('zoom/create_meeting', 'ZoomController@createMeeting')->middleware('auth')->name('zoomcreateMeeting');
             });
 
             // Booking page

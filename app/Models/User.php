@@ -60,7 +60,8 @@ class User extends Authenticatable implements JWTSubject
         'google_calendar_token',
         'outlook_token',
         'xero_token',
-        'xero_tenant_id'
+        'xero_tenant_id',
+        'zoom_token'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];
@@ -76,6 +77,7 @@ class User extends Authenticatable implements JWTSubject
         'ignored_calendar_events' => 'array',
         'id_documents' => 'array',
         'xero_token' => 'array',
+        'zoom_token' => 'array',
     ];
 
     public function widget()
