@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="modal-dialog modal-dialog-centered" role="document" :class="[{'opacity-0': loading}, size, {'modal-dialog-scrollable': scrollable}]">
-            <component :is="contentComponent" class="modal-content" @submit="submit">
+            <component :is="contentComponent" class="modal-content rounded-lg" @submit="submit">
                 <button v-if="closeButton" type="button" class="btn p-0 btn-white badge-pill close position-absolute line-height-0" aria-label="Close" data-dismiss="modal">
                     <close-icon width="28" height="28"></close-icon>
                 </button>

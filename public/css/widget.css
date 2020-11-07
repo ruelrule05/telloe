@@ -11721,6 +11721,25 @@ a.text-green:focus {
   font-smoothing: antialiased;
 }
 
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 15px;
+  background-clip: padding-box;
+  border: 10px solid transparent;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
 .modal .modal-dialog .close {
   outline: 0;
   padding: 0 !important;

@@ -100,7 +100,7 @@
 								<template v-if="auth.role.role == 'client'">
 									<div class="list-group mt-3 font-heading sidebar-menu">
 										<router-link :data-intro='intros.messages.intro' :data-step="intros.messages.step" data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
-											<messages-icon height="18" width="18"></messages-icon>
+											<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black"></messages-icon>
 											<span class="ml-3">Messages</span>
 											<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
 										</router-link>
@@ -114,10 +114,10 @@
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>
 											</button>
-											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-bookings">
-												<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+											<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index', 'packages_index', 'services_show','packages_show'].find((x) => x == $route.name) }" id="item-bookings">
+												<!-- <router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 													<span class="pl-3">Calendar</span>
-												</router-link>
+												</router-link> -->
 												<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 													<span class="pl-3">Services</span>
 												</router-link>
@@ -139,7 +139,7 @@
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>
 											</button>
-											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers', 'members_index', 'members_show', 'organizations_index'].find((x) => x == $route.name) }" id="item-team">
+											<div class="collapse" data-parent="#sidebar" :class="{'show': ['members_index', 'members_show', 'organizations_index', 'organizations_show'].find((x) => x == $route.name) }" id="item-team">
 												<router-link to="/dashboard/team/organizations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 													<span class="pl-3">Organizations</span>
 												</router-link>
@@ -163,6 +163,11 @@
 													<span class="pl-3">Invoices</span>
 												</router-link>
 											</div>
+											
+											<router-link to="/dashboard/integrations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
+												<tray-stack-icon height="18" width="18" transform="scale(1.2)" stroke-width="0.5" stroke="black"></tray-stack-icon>
+												<span class="pl-3">Integrations</span>
+											</router-link>
 
 										</template>
 										<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>

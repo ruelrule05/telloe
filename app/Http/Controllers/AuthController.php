@@ -38,15 +38,21 @@ class AuthController extends Controller
             'ignored_calendar_events',
             'id_documents',
             'phone',
-            'xero_token',
             'xero_tenant_id',
-            'zoom_token'
+            'zoom_token',
+            'google_calendar_token',
+            'outlook_token',
+            'xero_token',
         ]) : false;
 
         if ($user && $last_online) {
             $user->last_online = Carbon::now();
             $user->save();
         }
+        $user = $user->toArray();
+        $user['zoom_token'] = $user['zoom_token'] ? 1 : 0;
+        $user['google_calendar_token'] = $user['google_calendar_token'] ? 1 : 0;
+        $user['xero_token'] = $user['xero_token'] ? 1 : 0;
 
         return response()->json($user);
     }

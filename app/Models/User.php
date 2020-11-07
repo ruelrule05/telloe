@@ -157,21 +157,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Organization::class)->orderBy('created_at', 'DESC');
     }
 
-    protected function castAttribute($key, $value)
-    {
-        if (is_null($value)) {
-            switch ($this->getCastType($key)) :
-                case 'array':
-                    return [];
-
-            /*case 'object':
-                return new \stdClass();*/
-            endswitch;
-        }
-
-        return parent::castAttribute($key, $value);
-    }
-
     public function getCreatedAtFormatAttribute()
     {
         return Carbon::parse($this->attributes['created_at'])->format('M d, Y');

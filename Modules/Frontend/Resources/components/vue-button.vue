@@ -3,9 +3,9 @@
         <span v-if="loading" class="spinner position-absolute-center">
             <span class="spinner-border spinner-border-sm align-middle" role="status" aria-hidden="true"></span>
         </span>
-        <span :class="{'opacity-0': loading}">
+        <div :class="{'opacity-0': loading}">
             <template v-if="icon"><i :class="icon"></i>&nbsp;&nbsp;</template><slot></slot>
-        </span>
+        </div>
     </button>
 </template>
 

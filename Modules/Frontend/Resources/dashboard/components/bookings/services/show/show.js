@@ -16,6 +16,8 @@ import ArrowLeftIcon from '../../../../../icons/arrow-left';
 import MoreIcon from '../../../../../icons/more';
 import ChevronLeftIcon from '../../../../../icons/chevron-left';
 import ChevronRightIcon from '../../../../../icons/chevron-right';
+import ZoomIcon from '../../../../../icons/zoom';
+import ShortcutIcon from '../../../../../icons/shortcut';
 import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 import tooltip from '../../../../../js/directives/tooltip.js';
@@ -29,7 +31,7 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton, ZoomIcon, ShortcutIcon },
 
 	directives: { tooltip },
 
@@ -52,7 +54,8 @@ export default {
 		startDate: dayjs().toDate(),
 		selectedTimeslot: null,
 		dayjs: dayjs,
-		bookingModalLoading: false
+		bookingModalLoading: false,
+		createZoomLoading: false
 	}),
 
 	computed: {
@@ -145,22 +148,16 @@ export default {
 		}),
 
 		async createZoomLink() {
-			if (this.$root.auth.zoom_token.length == 0) {
-				let response = await axios.get('/zoom/install');
-				let zoomInstallLink = response.data;
-				const width = 450;
-				const height = 650;
-				const left = screen.width / 2 - width / 2;
-				const top = screen.height / 2 - height / 2;
-				let zoomAuthWindow = window.open(zoomInstallLink, 'zoom_auth_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
-				let callbackInterval = setInterval(() => {
-					if (zoomAuthWindow.closed) {
-						clearInterval(callbackInterval);
-						console.log('closed');
-					}
-				}, 500);
-			} else {
-				let response = await axios.get(`/zoom/create_meeting?booking_id=${this.selectedTimeslot.bookings[0].id}`);
+			// axios get zoom token
+			this.createZoomLoading = true;
+			if (this.$root.auth.zoom_token) {
+				let booking = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index].bookings[0];
+				if (booking) {
+					let response = await axios.get(`/zoom/create_meeting?booking_id=${this.selectedTimeslot.bookings[0].id}`);
+					this.selectedTimeslot.bookings[0].zoom_link = response.data;
+					booking.zoom_link = response.data;
+				}
+				this.createZoomLoading = false;
 			}
 		},
 

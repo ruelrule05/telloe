@@ -24,28 +24,22 @@
               :data-step="$root.intros.edit_service.step"
               class="btn p-2 btn-white badge-pill shadow-sm"
               data-toggle="dropdown"
-              data-offset="-130, 10"
+              data-offset="-125, 5"
             >
               <cog-icon></cog-icon>
             </button>
             <div class="dropdown-menu">
               <span
-                class="dropdown-item cursor-pointer d-flex align-items-center"
+                class="dropdown-item cursor-pointer"
                 @click="
                   clonedService = Object.assign({}, service);
                   $refs['editModal'].show();
                 "
-              >
-                <pencil-icon width="16" height="16" class="mr-2"></pencil-icon>
-                Edit
-              </span>
+              >Edit</span>
               <span
-                class="dropdown-item cursor-pointer d-flex align-items-center"
+                class="dropdown-item cursor-pointerr"
                 @click="$refs['deleteModal'].show()"
-              >
-                <trash-icon width="16" height="16" class="mr-2"></trash-icon>
-                Delete
-              </span>
+              >Delete</span>
             </div>
           </div>
         </div>
@@ -443,12 +437,24 @@
             <div class="h6 font-heading mb-0">{{ selectedService.duration }} minutes</div>
           </div>
           <div v-if="!selectedTimeslot.isPrevious" class="mt-3 text-left">
-            <button type="button" class="btn btn-white shadow-sm border" @click="createZoomLink()">Create Zoom link</button>
+            <template v-if="Object.keys(selectedTimeslot.bookings[0].zoom_link).length > 0">
+              <div class="d-flex align-items-center text-left">
+                <div class="font-weight-normal text-secondary w-50">Zoom Link</div>
+                <a target="_blank" :href="selectedTimeslot.bookings[0].zoom_link.join_url" class="d-flex align-items-center">
+                  Go to Zoom meeting<shortcut-icon width="16" height="16" class="ml-1 fill-blue"></shortcut-icon>
+                </a>
+              </div>
+            </template>
+            <vue-button v-else-if="$root.auth.zoom_token" type="button" :loading="createZoomLoading" button_class="btn btn-light shadow-none" @click="createZoomLink()">
+              <div class="d-flex align-items-center">
+                <zoom-icon width="20" height="20" class="mr-2"></zoom-icon>Create Zoom link
+              </div>
+            </vue-button>
           </div>
         </div>
 
         <div v-if="!selectedTimeslot.isPrevious" class="d-flex justify-content-between mt-3">
-          <button type="button" class="btn btn-white shadow-sm border" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+          <button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
           <vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedTimeslot)">Update</vue-button>
         </div>
 			</div>
@@ -543,7 +549,7 @@
         </div>
         <div class="d-flex align-items-center">
           <button
-            class="btn btn-white border mr-1"
+            class="btn btn-light shadow-none mr-1"
             type="button"
             data-dismiss="modal"
           >
@@ -566,7 +572,7 @@
         </p>
         <div class="d-flex">
           <button
-            class="btn btn-white border"
+            class="btn btn-light shadow-none"
             type="button"
             data-dismiss="modal"
           >

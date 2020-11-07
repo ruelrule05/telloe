@@ -46,3 +46,10 @@
 	top: 10px;
 	right: 10px;
 }
+.btn-more {
+	opacity: 0;
+	transition: $transition-base;
+}
+tr:hover .btn-more {
+	opacity: 1;
+}

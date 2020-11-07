@@ -247,12 +247,6 @@ class BookingController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function googleClient()
-    {
-        $GoogleCalendarClient = new GoogleCalendarClient();
-        return response()->json($GoogleCalendarClient->client);
-    }
-
     public function googleCalendarEvents()
     {
         $events = [];
@@ -319,19 +313,6 @@ class BookingController extends Controller
         $user->save();
 
         return response()->json($calendars);
-    }
-
-    public function googleCalendarCallback(Request $request)
-    {
-        $GoogleCalendarClient = new GoogleCalendarClient();
-        $GoogleCalendarClient->setAccessToken($request->code);
-        echo "
-            <script>
-                window.code = '{$request->code}';
-                window.close();
-            </script>";
-
-        return;
     }
 
     public function updateGoogleCalendarEvents(Request $request)
@@ -418,24 +399,7 @@ class BookingController extends Controller
         return response()->json($events);
     }
 
-    public function msOutlookCallback(Request $request)
-    {
-        $OutlookClient = new \Modules\Frontend\Http\OutlookClient();
-        $user = $OutlookClient->callback($request);
 
-        echo '
-            <script>
-                window.close();
-            </script>';
-
-        return;
-    }
-
-    public function outlookClient()
-    {
-        $OutlookClient = new \Modules\Frontend\Http\OutlookClient();
-        return response()->json($OutlookClient->client);
-    }
 
     public function updateOutlookCalendarEvents(Request $request)
     {

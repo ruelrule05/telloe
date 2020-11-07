@@ -35,7 +35,23 @@
 	-moz-osx-font-smoothing: grayscale;
 	font-smoothing: antialiased;
 }
-
+::-webkit-scrollbar {
+	width: 7px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 15px;
+	background-clip: padding-box;
+	border: 10px solid transparent;
+}
+*:hover {
+	&::-webkit-scrollbar-thumb {
+		background: #888;
+	}
+}
 .modal {
 	.modal-dialog {
 		.close {

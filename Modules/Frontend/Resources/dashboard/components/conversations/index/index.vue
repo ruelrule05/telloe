@@ -2,22 +2,29 @@
 	<div class="bg-white text-left border-right">
 		<div class="conversation-list d-flex flex-column h-100 position-relative">
             <div class="conversations-header">
-                <div class="d-flex px-3 align-items-center">
+                <div class="d-flex px-3 align-items-center mb-2">
                     <h5 class="mb-0 font-heading">Messages</h5>
                     <div v-if="$root.auth.role.role == 'client'" class="ml-auto">
-                        <button :data-intro='$root.intros.new_chat.intro' :data-step="$root.intros.new_chat.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()">
+                        <button class="btn btn-light badge-pill line-height-0 p-1" type="button" @click="$refs['newConversationModal'].show()">
+                            <edit-square-icon></edit-square-icon>
+                        </button>
+                        <button class="btn btn-light badge-pill line-height-0 p-1 ml-1" type="button" @click="$root.muted = !$root.muted">
+                            <bell-icon v-if="!$root.muted"></bell-icon>
+                            <bell-slash-icon v-else class="fill-gray-500"></bell-slash-icon>
+                        </button>
+                        <!-- <button :data-intro='$root.intros.new_chat.intro' :data-step="$root.intros.new_chat.step" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['newConversationModal'].show()">
                             <plus-icon class="btn-icon"></plus-icon>
                             New Chat
-                        </button>
+                        </button> -->
                     </div>
                 </div>
     			<div class="d-flex align-items-center border-bottom btn-tab mt-1">
     				<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{'active': conversationTab == 'active'}" @click="conversationTab = 'active'">Chats</button>
     				<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{'active': conversationTab == 'archive'}" @click="conversationTab = 'archive'">Archive</button>
-                    <button class="ml-auto btn badge-pill line-height-0 p-0 mr-2 shadow-none" type="button" @click="$root.muted = !$root.muted">
+                    <!-- <button class="ml-auto btn badge-pill line-height-0 p-0 mr-2 shadow-none" type="button" @click="$root.muted = !$root.muted">
                         <bell-icon width="22" height="22" v-if="!$root.muted"></bell-icon>
                         <bell-slash-icon width="22" height="22" v-else class="fill-gray-500"></bell-slash-icon>
-                    </button>
+                    </button> -->
     			</div>
             </div>
 
@@ -34,9 +41,9 @@
                             
                             <div v-else class="position-absolute conversation-dropdown dropdown opacity-0 pr-2">
                                 <button class="btn btn-sm btn-light p-1 line-height-0" type="button" data-toggle="dropdown" data-offset="-130,0"><more-icon width="20" height="20" class="fill-gray-500" transform="scale(0.75)"></more-icon></button>
-                                <div class="dropdown-menu py-1">
-                                    <small v-if="!conversation.archive" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)"><archive-icon height="16" width="16"></archive-icon> &nbsp;&nbsp;Move to archives</small>
-                                    <small v-else class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)"><download-icon height="16" width="16"></download-icon> &nbsp;&nbsp;Move to active</small>
+                                <div class="dropdown-menu">
+                                    <span v-if="!conversation.archive" class="dropdown-item cursor-pointer" @click="conversation.archive = true; updateConversation(conversation)">Move to archives</span>
+                                    <span v-else class="dropdown-item cursor-pointer" @click="conversation.archive = false; updateConversation(conversation)">Move to active</span>
                                 </div>
                             </div>
 
@@ -61,8 +68,8 @@
                                     <div class="media-body pl-3 overflow-hidden">
                                         <div class="h6 mb-0 font-heading" :class="{'font-weight-normal': conversation.last_message.is_read}">{{ conversation.member.full_name || conversation.name }}</div>
                                         <div class="d-flex align-items-center text-nowrap conversation-message-preview">
-                                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-secondary' : 'text-black font-weight-bold']"></div>    
-                                            <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-gray last-message-time">{{ conversation.last_message.created_diff }}</span>   
+                                            <div v-html="(conversation.last_message.prefix || '') + conversation.last_message.message" class="flex-grow-1 text-ellipsis" :class="[(conversation.last_message.is_read || conversation.last_message.user_id == $root.auth.id) ? 'text-muted' : 'text-black font-weight-bold']"></div>    
+                                            <span v-if="!$root.callConversation|| $root.callConversation.id != conversation.id" class="ml-auto text-muted last-message-time pl-2">{{ conversation.last_message.created_diff }}</span>   
                                         </div>    
                                     </div>
                                 </div>
@@ -76,7 +83,11 @@
 
 
         <!-- New conversation modal -->
-        <modal :close-button="false" title="New Conversation" ref="newConversationModal" @hidden="resetNewConversationForm">
+        <modal :close-button="false" :scrollable="false" ref="newConversationModal" @hidden="resetNewConversationForm">
+            <div class="d-flex modal-title align-items-center mb-3">
+                <h5 class="font-heading mb-0">New Conversation</h5>
+                <button class="ml-auto btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addContactModal'].show()"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon>Add Contact</button>
+            </div>
             <div class="h-100 overflow-hidden d-flex flex-column" :default="contacts" ref="addNewConversationMembersForm">
                <input type="text" placeholder="Search contacts..." class="form-control shadow-none border" v-model="userSearch">
                 <div v-if="newConversation.members.length > 0" class="mt-1">
@@ -110,9 +121,10 @@
 
             </div>
             <template v-slot:footer>
-                <button class="mr-auto btn btn-white border d-flex align-items-center" type="button" @click="$refs['addContactModal'].show()"><plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon>Add Contact</button>
-                <button class="btn btn-white border" type="button" @click="$refs['newConversationModal'].hide()">Cancel</button>
-                <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
+                <div class="d-flex justify-content-between w-100">
+                    <button class="btn btn-light shadow-none" type="button" @click="$refs['newConversationModal'].hide()">Cancel</button>
+                    <button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
+                    </div>
             </template>
         </modal>
 
@@ -169,8 +181,10 @@
             </div>
             
             <template v-slot:footer>
-                <button class="btn btn-white border mr-1" type="button" data-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" type="submit">Add</button>
+                <div class="d-flex w-100 justify-content-between">
+                    <button class="btn btn-light shadow-sm" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Add</button>
+                </div>
             </template>
         </modal>
 

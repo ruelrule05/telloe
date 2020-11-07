@@ -64,10 +64,10 @@ Route::group(
         Route::get('/{organization}', 'OrganizationController@profile');
         //Route::get('/@{username}/{service_id}', 'UserController@showService');
         //Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
-        Route::get('/callback/googlecalendar', 'BookingController@googleCalendarCallback')->middleware('auth')->name('googlecalendarcallback');
-        Route::get('/callback/msoutlook', 'BookingController@msOutlookCallback')->middleware('auth')->name('msoutlookcallback');
-        Route::get('/callback/xero', 'XeroController@callback')->middleware('auth')->name('xerocallback');
-        Route::get('/callback/zoom', 'ZoomController@callback')->middleware('auth')->name('zoomcallback');
+        Route::get('/callback/zoom', 'ZoomController@callback')->middleware('auth');
+        Route::get('/callback/googlecalendar', 'GoogleCalendarController@callback')->middleware('auth')->name('googlecalendarcallback');
+        Route::get('/callback/msoutlook', 'OutlookController@callback')->middleware('auth');
+        Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
 
         // AJAX
         Route::group([
@@ -116,31 +116,39 @@ Route::group(
                 Route::get('conversations/{id}/files', 'ConversationController@files');
 
                 // Google calendar
-                Route::get('google_client', 'BookingController@googleClient');
+                Route::get('google_calendar/client', 'GoogleCalendarController@getClient');
                 Route::get('google_calendar_list', 'BookingController@googleCalendarList');
                 Route::get('google_calendar_events', 'BookingController@googleCalendarEvents');
                 Route::post('update_google_calendar_events', 'BookingController@updateGoogleCalendarEvents');
+                Route::get('google_calendar/token', 'GoogleCalendarController@getToken');
+                Route::get('google_calendar/remove', 'GoogleCalendarController@remove');
 
                 // Outlook calendar
-                Route::get('outlook_client', 'BookingController@outlookClient');
+                Route::get('outlook/client', 'OutlookController@getClient');
                 Route::get('outlook_calendar_list', 'BookingController@outlookCalendarList');
                 Route::get('outlook_calendar_events', 'BookingController@outlookCalendarEvents');
                 Route::post('update_outlook_calendar_events', 'BookingController@updateOutlookCalendarEvents');
+                Route::get('outlook/token', 'OutlookController@getToken');
+                Route::get('outlook/remove', 'OutlookController@remove');
 
                 // Xero
-                Route::get('xero_authenticate', 'XeroController@authenticate');
-                Route::get('xero_tenants', 'XeroController@tenants');
-                Route::post('xero_tenants_save', 'XeroController@saveTenant');
-                Route::get('xero_invoices', 'XeroController@invoices');
+                Route::get('xero/authenticate', 'XeroController@authenticate');
+                Route::get('xero/tenants', 'XeroController@tenants');
+                Route::post('xero/tenants_save', 'XeroController@saveTenant');
+                Route::get('xero/invoices', 'XeroController@invoices');
+                Route::get('xero/token', 'XeroController@getToken');
+                Route::get('xero/remove', 'XeroController@remove');
 
                 Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');
 
                 Route::get('get_page_preview', 'MessageController@getPagePreview');
 
-                // ZOom
-                Route::get('zoom/install', 'ZoomController@install')->middleware('auth')->name('zoominstall');
-                Route::get('zoom/create_meeting', 'ZoomController@createMeeting')->middleware('auth')->name('zoomcreateMeeting');
+                // Zoom
+                Route::get('zoom/token', 'ZoomController@getToken')->name('zoomtoken');
+                Route::get('zoom/install', 'ZoomController@install')->name('zoominstall');
+                Route::get('zoom/remove', 'ZoomController@remove')->name('zoomremove');
+                Route::get('zoom/create_meeting', 'ZoomController@createMeeting')->name('zoomcreateMeeting');
             });
 
             // Booking page

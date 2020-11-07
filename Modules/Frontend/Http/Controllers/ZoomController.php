@@ -17,6 +17,18 @@ class ZoomController extends Controller
         return response(config('zoom.install_url'));
     }
 
+    public function remove()
+    {
+        $authUser = Auth::user();
+        $authUser->zoom_token = null;
+        $authUser->save();
+        return response(['removed' => true]);
+    }
+
+    public function getToken() {
+        return response(Auth::user()->zoom_token ? 1 : 0);
+    }
+
     public function callback(Request $request)
     {
         if (! $request->code) {
@@ -48,6 +60,10 @@ class ZoomController extends Controller
         ]);
         $booking = Booking::findOrFail($request->booking_id);
         $this->authorize('createZoomLink', $booking);
+        if($booking->zoom_link) {
+            return $booking->zoom_link;
+        }
+
         $authUser = Auth::user();
         if ($authUser->zoom_token['access_token']) {
             try {
@@ -58,10 +74,11 @@ class ZoomController extends Controller
                     'type' => 2, // Scheduled meeting
                 ]);
 
-                $data = json_decode($response->getBody());
-                echo 'Join URL: ' . $data->join_url;
-                echo '<br>';
-                echo 'Meeting Password: ' . $data->password;
+                $data = $response->getBody();
+                $booking->update([
+                    'zoom_link' => json_decode($data)
+                ]);
+                return response($data);
             } catch (\Exception $e) {
                 if (401 == $e->getCode()) {
                     $refresh_token = $authUser->zoom_token['refresh_token'];

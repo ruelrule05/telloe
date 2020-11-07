@@ -5,11 +5,11 @@
         <div class="d-flex">
           <div>
             <button
-              class="btn p-2 btn-white badge-pill shadow-sm"
+              class="btn p-1 btn-white badge-pill shadow-sm"
               type="button"
               @click="$router.push('/dashboard/bookings/packages')"
             >
-              <arrow-left-icon></arrow-left-icon>
+              <arrow-left-icon width="30" height="30"></arrow-left-icon>
             </button>
           </div>
           <div class="dropdown ml-auto">

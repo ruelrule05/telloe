@@ -139,6 +139,11 @@ const router = new VueRouter({
 					name: 'widget',
 					path: 'widget',
 					component: () => import(/* webpackChunkName: "dashboard-widget" */ './components/widget/widget.vue')
+				},
+				{
+					path: 'integrations',
+					name: 'integrations',
+					component: () => import(/* webpackChunkName: "dashboard-integrations" */ './components/integrations/integrations.vue')
 				}
 			]
 		}
@@ -176,12 +181,13 @@ import FilePdfIcon from '../icons/file-pdf';
 import FileArchiveIcon from '../icons/file-archive';
 import CloseIcon from '../icons/close';
 import TrayIcon from '../icons/tray';
+import TrayStackIcon from '../icons/tray-stack';
 import LighthouseIcon from '../icons/lighthouse';
 
 import ContactAltIcon from '../icons/contact-alt';
 import MonthviewIcon from '../icons/monthview';
 import PaymentsIcon from '../icons/payments';
-import MessagesIcon from '../icons/messages';
+import MessagesIcon from '../icons/chat';
 import MemberIcon from '../icons/member';
 
 import DocumentIcon from '../icons/document';
@@ -225,6 +231,7 @@ window.app = new Vue({
 		MessagesIcon,
 		CloseIcon,
 		TrayIcon,
+		TrayStackIcon,
 		LighthouseIcon,
 		MemberIcon,
 
@@ -400,7 +407,7 @@ window.app = new Vue({
 		},
 
 		payoutComplete() {
-			return !this.auth.stripe_account.individual || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
+			return !this.auth.stripe_account || (this.auth.stripe_account.individual && this.auth.stripe_account.individual.requirements.pending_verification.length > 2) ? false : true;
 		},
 
 		newMessagesCount() {

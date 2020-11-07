@@ -11,6 +11,10 @@ class XeroController extends Controller
 {
     //
 
+    public function getToken() {
+        return response(Auth::user()->xero_token ? 1 : 0);
+    }
+   
     public function authenticate(Request $request)
     {
         $XeroClient = new XeroClient($request);
@@ -69,5 +73,13 @@ class XeroController extends Controller
         }
 
         return response(json_decode(json_encode($invoices), true));
+    }
+
+    public function remove()
+    {
+        $authUser = Auth::user();
+        $authUser->xero_token = null;
+        $authUser->save();
+        return response(['removed' => true]);
     }
 }

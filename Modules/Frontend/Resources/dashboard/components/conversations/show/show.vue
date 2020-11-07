@@ -237,7 +237,7 @@
                     Are you sure to delete this message?
                 </p>
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-white border text-body" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-light shadow-none" type="button" data-dismiss="modal">Cancel</button>
                     <button class="btn btn-danger ml-auto" type="button" @click="deleteMessage(selectedMessage); $refs['deleteMessageModal'].hide()">Delete</button>
                 </div>
             </template>
