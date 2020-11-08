@@ -181,7 +181,7 @@
 					Are you sure to resend the invitation email to contact <strong>{{ selectedContact.contact_user.full_name.trim() || selectedContact.contact_user.email }}</strong>? <br />
 				</p>
 				<div class="d-flex justify-content-end">
-					<button class="btn btn-white border text-body" type="button" data-dismiss="modal">Cancel</button>
+					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">Cancel</button>
 					<vue-button button_class="btn btn-primary ml-auto" :loading="resendLoading" type="button" @click="resendEmail(selectedContact);">Resend Invitation</vue-button>
 				</div>
 			</template>
@@ -195,7 +195,7 @@
 					<span class="text-danger">This action cannot be undone</span>
 				</p>
 				<div class="d-flex justify-content-end">
-					<button class="btn btn-white border text-body" type="button" data-dismiss="modal">Cancel</button>
+					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">Cancel</button>
 					<button class="btn btn-danger ml-auto" type="button" @click="deleteContact(selectedContact); $refs['deleteModal'].hide()">Delete</button>
 				</div>
 			</template>

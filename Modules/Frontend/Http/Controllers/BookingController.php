@@ -129,7 +129,8 @@ class BookingController extends Controller
         }
 
         $booking = Booking::create($data);
-        Mail::queue(new NewBooking($booking));
+        Mail::queue(new NewBooking($booking, null, 'client'));
+        Mail::queue(new NewBooking($booking, null, 'contact'));
 
         $user_id = null;
         $description = '';

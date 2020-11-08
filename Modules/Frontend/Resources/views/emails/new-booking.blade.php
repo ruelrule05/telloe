@@ -32,9 +32,13 @@
     {{ $actionText }}
 </a>
 
-@if($booking->user)
+<!-- @if($booking->user)
 <small style="color: #888">Please <a href="{{ config('app.url') }}?auth=login" target="_blank" style="color: blue"><u>login</u></a> to your account to manage this booking.</small>
-@endif
+@endif -->
+
+<div style="margin-top: 20px;">
+Add this booking to: <u><a target="_blank" href="{{ $link->google() }}">Google Calendar</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ $link->webOutlook() }}">Outlook</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ $link->yahoo() }}">Yahoo!</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a download="{{ $booking->service->name }}.ics" href="{{ $link->ics() }}">iCal</a></u>
+</div>
 
 <div style="text-align: left; margin-top: 20px; border-top: solid 1px #ddd; padding-top: 20px;">
      <p style="{{ $style['paragraph-sub'] }} margin-bottom: 0">

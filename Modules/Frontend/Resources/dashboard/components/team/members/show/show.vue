@@ -3,11 +3,11 @@
     <div class="overflow-auto h-100">
       <div class="p-4">
         <button
-          class="btn p-2 btn-white badge-pill shadow-sm"
+          class="btn p-1 btn-white badge-pill shadow-sm"
           type="button"
           @click="$router.push('/dashboard/team/members')"
         >
-          <arrow-left-icon></arrow-left-icon>
+          <arrow-left-icon width="30" height="30"></arrow-left-icon>
         </button>
       </div>
 

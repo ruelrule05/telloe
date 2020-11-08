@@ -149,7 +149,8 @@ class UserController extends Controller
             ]);
         }
 
-        Mail::queue(new NewBooking($booking, $authUser));
+        Mail::queue(new NewBooking($booking, $authUser, 'client'));
+        Mail::queue(new NewBooking($booking, $authUser, 'contact'));
 
         return response()->json(['success' => true]);
     }

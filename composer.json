@@ -26,6 +26,7 @@
         "nwidart/laravel-modules": "^7.1",
         "pbmedia/laravel-ffmpeg": "^7.0",
         "rinvex/countries": "^7.0",
+        "spatie/calendar-links": "^1.4",
         "spatie/laravel-image-optimizer": "^1.5",
         "stripe/stripe-php": "^7.21",
         "tymon/jwt-auth": "^1.0.0"

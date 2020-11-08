@@ -19,7 +19,7 @@
                     <checkmark-icon width="36" height="36" v-if="$root.auth.google_calendar_token" class="integrated-icon fill-green position-absolute"></checkmark-icon>
                     <div class="card-body">
                         <img src="/logos/google-calendar.png" alt="Google Calendar" height="80">
-                        <p class="my-3 text-ellipsis">Sync bookings to your Google Calendar</p>
+                        <p class="my-3 text-ellipsis">Sync bookings with your Google Calendar</p>
                         <vue-button v-if="$root.auth.google_calendar_token" :loading="googleCalendarLoading" button_class="btn btn-light shadow-none" type="button" @click="removeGoogleCalendar">Remove</vue-button>
                         <vue-button v-else button_class="btn btn-primary" :loading="googleCalendarLoading" type="button" @click="integrateGoogleCalendar">Integrate</vue-button>
                     </div>
@@ -30,7 +30,7 @@
                     <checkmark-icon width="36" height="36" v-if="$root.auth.outlook_token" class="integrated-icon fill-green position-absolute"></checkmark-icon>
                     <div class="card-body">
                         <img src="/logos/outlook.png" alt="Outlook Calendar" height="80">
-                        <p class="my-3 text-ellipsis">Sync bookings to your Outlook Calendar</p>
+                        <p class="my-3 text-ellipsis">Sync bookings with your Outlook Calendar</p>
                         <vue-button v-if="$root.auth.outlook_token" :loading="outlookLoading" button_class="btn btn-light shadow-none" type="button" @click="removeOutlook">Remove</vue-button>
                         <vue-button v-else button_class="btn btn-primary" :loading="outlookLoading" type="button" @click="integrateOutlook">Integrate</vue-button>
                     </div>

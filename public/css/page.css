@@ -13276,10 +13276,6 @@ a.text-green:focus {
 }
 
 .table thead th {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 2;
   font-weight: 400;
 }
 

@@ -1,10 +1,9 @@
 	<template>
 	<div class="overflow-hidden h-100 flex-grow-1 d-flex flex-column" id="invoices">
-		{{ chooseIntegration }}
 		<div v-if="chooseIntegration" class="position-absolute-center text-center">
 			<xero-icon height="100"></xero-icon>
 			<div class="mt-3">
-				<button class="btn btn-white shadow-sm" type="button" @click="authenticateXero()" v-if="!$root.xero_token">Connect to Xero</button>
+				<button class="btn btn-white shadow-sm" type="button" @click="authenticateXero()" v-if="!$root.auth.xero_token">Connect to Xero</button>
 			</div>
 		</div>
 		
@@ -27,17 +26,17 @@
 
 				<div class="flex-grow-1 d-flex h-100 overflow-hidden">
 					<div class="d-flex overflow-hidden h-100 w-100">
-						<div class="xd-flex flex-column flex-grow-1 px-4 mt-2 pb-4">
+						<div class="flex-column flex-grow-1 mt-2">
 							<div v-if="chooseXeroTenant" class="position-absolute-center text-center">
-								<h4>Choose a Xero Organization</h4>
-								<button type="button" class="btn btn-white" @click="saveXeroTenant(tenant.tenantId)" v-for="tenant in xeroTenants" :key="tenant.tenantId">
+								<h4 class="font-heading mb-3">Choose a Xero Organization</h4>
+								<button type="button" class="btn btn-white mx-1 shadow-sm" @click="saveXeroTenant(tenant.tenantId)" v-for="tenant in xeroTenants" :key="tenant.tenantId">
 									{{ tenant.tenantName }}
 								</button>
 							</div>
 
 							<template v-else>
-								<div class="overflow-auto h-100" v-if="invoices.length > 0">
-									<table class="table table-borderless table-fixed-header mb-0">
+								<div class="overflow-auto h-100 px-4 pb-4" v-if="invoices.length > 0">
+									<table class="table table-borderless mb-0">
 										<thead>
 											<tr>
 												<th>Invoice #</th>
@@ -60,7 +59,7 @@
 													<td>{{ invoice.AmountPaid }}</td>
 													<td>{{ invoice.AmountDue }}</td>
 													<td>{{ invoice.Status }}</td>
-													<td>{{ invoice.SentToContact }}</td>
+													<td><checkmark-icon v-if="invoice.SentToContact" class="fill-success"></checkmark-icon></td>
 												</tr>
 											</template>
 										</paginate>

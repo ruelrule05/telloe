@@ -445,7 +445,7 @@
         </div>
         <div class="d-flex align-items-center">
           <button
-            class="btn btn-white border mr-1"
+            class="btn btn-light shadow-sm mr-1"
             type="button"
             data-dismiss="modal"
           >

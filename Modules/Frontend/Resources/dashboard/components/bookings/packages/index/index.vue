@@ -129,7 +129,14 @@
 
         <div class="form-group">
           <label class="form-label">Expires on</label>
-          <v-date-picker v-model="newPackage.expiration_date" :input-props='{class: "form-control cursor-pointer bg-white",placeholder: "Select expiration date", readonly: true, "data-required": true}' :popover="{ placement: 'bottom', visibility: 'click' }" :min-date="new Date()"></v-date-picker>
+          <v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="newPackage.expiration_date">
+            <template v-slot="{ inputValue, inputEvents }">
+              <div type="button" class="form-control" v-on="inputEvents">
+                <span v-if="inputValue">{{ formatDate(inputValue) }}</span>
+                <span v-else class="text-muted font-weight-normal">Set expiration date</span>
+              </div>
+            </template>
+          </v-date-picker>
         </div>
 
         <div class="form-group">
@@ -139,7 +146,7 @@
 
         <div class="d-flex align-items-center mt-4">
           <button
-            class="btn btn-white border mr-1"
+            class="btn btn-light shadow-none mr-1"
             type="button"
             data-dismiss="modal"
           >

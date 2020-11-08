@@ -93,7 +93,7 @@
           </div>
           <div class="d-flex mt-3">
             <button
-              class="btn btn-white border"
+              class="btn btn-light shadow-none"
               type="button"
               data-dismiss="modal"
             >
@@ -145,7 +145,7 @@
 
         <div class="d-flex mt-3">
           <button
-            class="btn btn-white border"
+            class="btn btn-light shadow-none"
             type="button"
             data-dismiss="modal"
           >

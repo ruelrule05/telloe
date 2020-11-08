@@ -92,9 +92,9 @@ class Service extends BaseModel
         $timeEnd->hour = $partsEnd[0];
         $timeEnd->minute = $partsEnd[1];
 
-        $ignoredCalendarEvents = $user->ignored_calendar_events;
-        $googleEventsList = $user->google_calendar_events;
-        $outlookEventsList = $user->outlook_calendar_events;
+        $ignoredCalendarEvents = $user->ignored_calendar_events ?? [];
+        $googleEventsList = $user->google_calendar_events ?? [];
+        $outlookEventsList = $user->outlook_calendar_events ?? [];
 
         $now = Carbon::now();
         while ($timeStart->lessThan($timeEnd)) {

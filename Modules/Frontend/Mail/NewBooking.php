@@ -6,6 +6,8 @@ use Modules\Frontend\Mail\Mailer;
 use App\Models\Booking;
 use App\Models\User;
 use Auth;
+use Spatie\CalendarLinks\Link;
+use Carbon\Carbon;
 
 class NewBooking extends Mailer
 {
@@ -14,17 +16,18 @@ class NewBooking extends Mailer
     public $actionUrl;
     public $email;
     public $emailMessage;
+    public $link;
 
-    public function __construct(Booking $booking, User $authUser = null)
+    public function __construct(Booking $booking, User $authUser = null, $target)
     {
         $this->booking = $booking;
         $authUser = $authUser ?? Auth::user();
-        if($authUser->id == $booking->user_id || ($booking->contact && $authUser->id == $booking->contact->contact_user_id)) : // if contact - send to client
+        if($target == 'client') : // if contact - send to client
             $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
             $this->email = $booking->service->user->email;
             $this->emailMessage = "<strong>{$full_name}</strong> has made a booking with the following details:";
             $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
-        elseif($authUser->id == $booking->service->user_id) : // if client - send to contact
+        elseif($target == 'contact') : // if client - send to contact
             $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
             $this->emailMessage = "A booking has been made for your account with the following details:";
             if(!$booking->user && $booking->contact && $booking->contact->is_pending) :
@@ -33,6 +36,13 @@ class NewBooking extends Mailer
                 $this->actionText = 'Create an account';
             endif;
         endif;
+
+        $from = Carbon::parse("$booking->date $booking->start");
+        $to = $from->clone()->addMinute($booking->service->duration);
+
+        $this->link = Link::create($booking->service->name, $from, $to)
+            ->description('Cookies & cocktails!')
+            ->address('Kruikstraat 22, 2018 Antwerpen');
 
     }
 

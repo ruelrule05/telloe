@@ -11,6 +11,7 @@ import TaskIcon from '../../../../icons/task';
 import TrashIcon from '../../../../icons/trash';
 import MoreIcon from '../../../../icons/more';
 import XeroIcon from '../../../../icons/xero';
+import CheckmarkIcon from '../../../../icons/checkmark';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
@@ -30,7 +31,8 @@ export default {
 		TaskIcon,
 		TrashIcon,
 		MoreIcon,
-		XeroIcon
+		XeroIcon,
+		CheckmarkIcon
 	},
 
 	directives: { Tooltip },
@@ -163,30 +165,27 @@ export default {
 
 		async saveXeroTenant(tenantId) {
 			this.$root.contentloading = true;
-			let response = await axios.post('/xero_tenants_save', { tenant_id: tenantId });
+			let response = await axios.post('/xero/tenants_save', { tenant_id: tenantId });
 			this.$root.auth.xero_tenant_id = response.data;
 			this.chooseXeroTenant = false;
 			this.getXeroInvoices();
 		},
 
 		async getXeroInvoices() {
-			if (Object.keys(this.$root.auth.xero_token).length > 0) {
+			if (this.$root.auth.xero_token) {
 				if (!this.$root.auth.xero_tenant_id) {
-					let response = await axios.get('/xero_tenants');
+					let response = await axios.get('/xero/tenants');
 					this.xeroTenants = response.data;
 					this.chooseXeroTenant = true;
 					this.$root.contentloading = false;
 				} else {
-					let response = await axios.get('/xero_invoices', { toasted: true }).catch(e => {});
+					let response = await axios.get('/xero/invoices', { toasted: true }).catch(e => {});
 					if (response) {
 						this.invoices = response.data;
 					}
 
 					this.$root.contentloading = false;
 				}
-			} else {
-				this.chooseIntegration = true;
-				this.$root.contentloading = false;
 			}
 		},
 
