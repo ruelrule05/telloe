@@ -31,10 +31,10 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    //$email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::first(), null, 'client');
+    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::first(), null, 'client');
     //\Mail::to('cleidoscope@gmail.com')->send($email);
 
-    //return $email;
+    return $email;
 });
 
 Route::get('events', function () {
