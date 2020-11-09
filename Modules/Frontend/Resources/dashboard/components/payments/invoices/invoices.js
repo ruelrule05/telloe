@@ -183,9 +183,10 @@ export default {
 					if (response) {
 						this.invoices = response.data;
 					}
-
 					this.$root.contentloading = false;
 				}
+			} else {
+				this.$root.contentloading = false;
 			}
 		},
 
