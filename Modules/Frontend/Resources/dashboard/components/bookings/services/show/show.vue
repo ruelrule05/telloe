@@ -189,7 +189,7 @@
         </div>
       </div>
 
-      <div class="info bg-white h-100 overflow-auto shadow-sm d-nxone">
+      <div class="info bg-white h-100 overflow-auto shadow-sm d-none">
         <div class="d-flex mb-2">
           <button
             :data-intro="$root.intros.service_availability.intro"
