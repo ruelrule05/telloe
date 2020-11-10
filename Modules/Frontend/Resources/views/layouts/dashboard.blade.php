@@ -99,13 +99,6 @@
 
 								<template v-if="auth.role.role == 'client'">
 									<div class="list-group mt-3 font-heading sidebar-menu">
-										<router-link :data-intro='intros.messages.intro' :data-step="intros.messages.step" data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
-											<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black"></messages-icon>
-											<span class="ml-3">Messages</span>
-											<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
-										</router-link>
-										<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
-
 										<template>
 											<button :data-intro='intros.bookings.intro' :data-step="intros.bookings.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 												<div class="d-flex align-items-center px-4">
@@ -125,6 +118,13 @@
 													<span class="pl-3">Packages</span>
 												</router-link>
 											</div>
+
+											<router-link :data-intro='intros.messages.intro' :data-step="intros.messages.step" data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
+												<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black"></messages-icon>
+												<span class="ml-3">Messages</span>
+												<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
+											</router-link>
+											<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
 											
 											<router-link :data-intro='intros.contacts.intro' :data-step="intros.contacts.step" to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>

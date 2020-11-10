@@ -5,13 +5,14 @@ import VueCheckbox from '../../../../../components/vue-checkbox/vue-checkbox.vue
 import VueButton from '../../../../../components/vue-button.vue';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 
-import MoreIcon from '../../../../../icons/more';
+import MoreIcon from '../../../../../icons/more-h';
 import PlusIcon from '../../../../../icons/plus';
 import TrashIcon from '../../../../../icons/trash';
 import PencilIcon from '../../../../../icons/pencil';
 import ClockIcon from '../../../../../icons/clock';
 import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../../icons/close';
+import PackageIcon from '../../../../../icons/package';
 export default {
 	components: {
 		Modal,
@@ -26,7 +27,8 @@ export default {
 		PencilIcon,
 		ClockIcon,
 		CheckmarkCircleIcon,
-		CloseIcon
+		CloseIcon,
+		PackageIcon
 	},
 
 	data: () => ({
@@ -130,7 +132,7 @@ export default {
 						sendToEmail: 1
 					};
 				});
-				this.infoTab = '';
+				this.$refs['addModal'].hide();
 			}
 		}
 	}

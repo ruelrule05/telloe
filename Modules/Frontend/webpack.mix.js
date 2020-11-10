@@ -120,7 +120,7 @@ if (argv.indexOf('--css') > -1) {
 	} else {
 		mix.options({
 			hmrOptions: {
-				host: 'telloe.dev',
+				host: 'telloe.test',
 				port: 8080
 			}
 		});

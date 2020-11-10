@@ -53,3 +53,20 @@
 tr:hover .btn-more {
 	opacity: 1;
 }
+
+.user-profile-container {
+	margin-left: -3px;
+	.user-profile-image-sm {
+		margin-right: -7px;
+		border: solid 2px white;
+		width: 32px;
+		height: 32px;
+		span {
+			font-size: 10px;
+		}
+	}
+}
+.btn-add {
+	border: dashed 1px $gray-500;
+	transform: none !important;
+}

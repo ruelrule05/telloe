@@ -14,6 +14,7 @@ import ClockIcon from '../../../../../icons/clock';
 import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../../icons/close';
 import ShortcutIcon from '../../../../../icons/shortcut';
+import tooltip from '../../../../../js/directives/tooltip.js';
 export default {
 	components: {
 		Modal,
@@ -32,6 +33,8 @@ export default {
 		CloseIcon,
 		ShortcutIcon
 	},
+
+	directives: { tooltip },
 
 	data: () => ({
 		infoTab: '',
@@ -93,6 +96,7 @@ export default {
 		resetForm() {
 			this.newOrganization.name = '';
 			this.newOrganization.members = [];
+			this.$refs['addModal'].hide();
 		}
 	}
 };

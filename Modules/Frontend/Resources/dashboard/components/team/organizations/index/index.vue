@@ -3,22 +3,12 @@
     <div class="d-flex h-100">
       <div class="h-100 flex-grow-1">
         <div class="d-flex flex-column h-100">
-          <div class="border-bottom bg-white p-3 d-flex align-items-center">
+          <div class="border-bottom bg-white px-3 py-4">
             <h5 class="font-heading mb-0">Organizations</h5>
-            <div class="ml-auto d-flex align-items-center">
-              <button
-                class="btn btn-light shadow-none d-flex align-items-center"
-                type="button"
-                @click="resetForm();infoTab = 'add_organization'"
-              >
-                <plus-icon class="btn-icon"></plus-icon>
-                Add Organization
-              </button>
-            </div>
           </div>
 
           <div
-            class="rounded mt-2 overflow-auto h-100 flex-grow-1 d-flex flex-column position-relative"
+            class="rounded overflow-auto h-100 flex-grow-1 d-flex flex-column position-relative"
           >
             <div
               v-if="organizations.length == 0"
@@ -29,269 +19,119 @@
               </div>
             </div>
 
-            <div class="overflow-auto flex-grow-1 pb-4 px-4 h-100" v-else>
-              <table
-                class="table table-borderless table-hover mb-0"
-              >
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Members</th>
-                    <th>Date Created</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="organization in organizations"
-                    :key="organization.id"
-                    class="cursor-pointer"
-                  >
-                    <td class="align-middle" @click="goToOrganization(organization.id);">
-                      <h6 class="font-heading mb-0">{{ organization.name }}</h6>
-                      <small class="text-secondary">{{ organization.slug }}</small>
-                    </td>
-                    <td class="align-middle" @click="goToOrganization(organization.id);">
-                      {{ organization.members_count }}
-                    </td>
-                    <td class="align-middle" @click="goToOrganization(organization.id);">
-                      {{ organization.created_at }}
-                    </td>
-                    <td class="align-middle" width="1%">
-                      <a :href="`/${organization.slug}`" target="_blank" class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none btn-more">
-                        <shortcut-icon width="20" height="20" class="fill-gray-500"></shortcut-icon>
-                      </a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="info bg-white h-100 border-left d-flex flex-column position-relative"
-        :class="{ open: infoTab }"
-      >
-        <button
-          class="btn btn-white p-0 btn-close position-absolute"
-          type="button"
-          @click="infoTab = ''"
-        >
-          <close-icon height="30" width="30"></close-icon>
-        </button>
-
-        <template v-if="infoTab == 'manage_organization'">
-          <div class="border-bottom py-3 px-3">
-            <strong class="d-block my-2">Manage Member</strong>
-          </div>
-          <div v-if="selectedOrganization" class="p-3">
-            <div class="text-center info-profile">
-              <div
-                class="user-profile-image d-inline-block"
-                ref="profileImage"
-                :style="{
-                  backgroundImage: 'url(' + selectedOrganization.profile_image + ')',
-                }"
-              >
-                <span v-if="!selectedOrganization.profile_image">{{
-                  selectedOrganization.initials
-                }}</span>
-              </div>
-              <h4 class="h5 font-heading conversation-title mb-0 rounded">
-                {{ selectedOrganization.full_name }}
-              </h4>
-              <div class="text-muted">{{ selectedOrganization.email }}</div>
-              <div
-                v-if="(selectedOrganization.contact || {}).is_pending"
-                class="mt-1 badge badge-icon d-inline-flex align-items-center bg-warning-light text-warning"
-              >
-                <clock-icon
-                  class="fill-warning"
-                  height="12"
-                  width="12"
-                ></clock-icon>
-                &nbsp;Pending
-              </div>
-            </div>
-
-            <div class="form-group">
-              <strong class="d-block mb-2 font-weight-bold mt-3"
-                >Assigned Services</strong
-              >
-              <template v-for="service in services">
-                <div
-                  v-if="service.is_available"
-                  :key="service.id"
-                  class="d-flex align-items-center mb-2 rounded p-3 bg-light"
-                >
-                  <div>
-                    <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                    <small class="text-gray d-block"
-                      >{{ service.duration }} minutes</small
-                    >
-                  </div>
-                  <div class="ml-auto">
-                    <div
-                      v-if="service.is_loading"
-                      class="spinner-border spinner-border-sm mr-2"
-                      role="status"
-                    >
-                      <span class="sr-only">Loading...</span>
+            <div class="h-100 container py-4" v-else>
+              <div class="row">
+                <router-link tag="div" :to="`/dashboard/team/organizations/${organization.id}`" v-for="organization in organizations" class="col-md-4 mb-4 px-2" :key="organization.id">
+                  <div class="px-1">
+                    <div class="card rounded service p-3 shadow-sm w-100 h-100 cursor-pointer">
+                        <h5 class="font-heading mb-0 text-ellipsis">{{ organization.name }}</h5>
+                        <p class="text-gray">{{ organization.slug }}</p>
+                        <div class="user-profile-container d-flex align-items-center">
+                          <template v-if="organization.members.length > 0">
+                            <div
+                              v-for="member in organization.members"
+                              :key="member.id"
+                              v-tooltip.top="member.member.member_user.full_name"
+                              class="user-profile-image user-profile-image-sm"
+                              :style="{
+                                backgroundImage:
+                                  'url(' + member.member.member_user.profile_image + ')',
+                              }"
+                            >
+                              <span v-if="!member.member.member_user.profile_image">{{  member.member.member_user.initials }}</span>
+                            </div>
+                          </template>
+                          <div v-else class="text-gray-500 d-flex align-items-center ml-1">
+                            No members
+                            <div class="user-profile-image user-profile-image-sm opacity-0"></div>
+                          </div>
+                      </div>
                     </div>
-                    <toggle-switch
-                      :class="{ 'd-none': service.is_loading }"
-                      active-class="bg-green"
-                      :value="
-                        selectedOrganization.services.find(
-                          (x) => x.parent_service_id == service.id
-                        )
-                          ? true
-                          : false
-                      "
-                      @input="memberToggleAssignedService($event, service)"
-                    ></toggle-switch>
+                  </div>
+                </router-link>
+                <div class="col-md-4 mb-4 px-2">
+                  <div class="px-1">
+                    <div class="position-relative h-100">
+                      <div class="h-100 position-relative">
+                        <button
+                          :data-intro="$root.intros.add_service.intro"
+                          :data-step="$root.intros.add_service.step"
+                          class="py-5 btn btn-light btn-add btn-lg shadow-none d-flex line-height-0 align-items-center justify-content-center w-100 h-100 text-muted"
+                          type="button"
+                          @click="resetForm(); $refs['addModal'].show()"
+                        >
+                          <plus-icon class="fill-gray"></plus-icon>
+                          Add Organization
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </template>
+              </div>
             </div>
-          </div>
-        </template>
-
-        <div
-          v-else-if="infoTab == 'add_organization'"
-          class="d-flex flex-column overflow-hidden"
-        >
-          <div class="border-bottom py-3 px-3">
-            <strong class="d-block my-2">Add Organization</strong>
-          </div>
-          <div class="p-4 overflow-auto flex-grow-1">
-            <vue-form-validate @submit="storeOrganization(newOrganization).then(() => {infoTab = ''; resetForm();})">
-              <div class="form-group">
-                <label class="form-label">Organization Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="newOrganization.name"
-                  data-required
-                />
-              </div>
-
-              <div class="form-group mb-1">
-                <label class="form-label">Add Members</label>
-								<vue-select v-model="newOrganization.members" :options="membersList" multiple placeholder="Add members"></vue-select>
-              </div>
-              <div v-for="(member, index) in newOrganization.members" :key="member.id" class="rounded bg-light p-2 d-flex align-items-center mb-1">
-                <div
-                  class="user-profile-image user-profile-image-sm"
-                  :style="{
-                    backgroundImage:
-                      'url(' + member.member_user.profile_image + ')',
-                  }"
-                >
-                  <span v-if="!member.member_user.profile_image">{{
-                    member.member_user.initials
-                  }}</span>
-                </div>
-                <div class="pl-2 flex-grow-1">
-                 <h6 class="mb-0 font-heading">{{ member.member_user.full_name }}</h6>
-                 <small class="text-secondary">{{ member.member_user.email }}</small>
-                </div>
-                <div class="align-self-start">
-                <button
-                  class="btn btn-sm p-0 line-height-0 mr-n1 mt-n1"
-                  type="button"
-                  @click="newOrganization.members.splice(index, 1)"
-                >
-                  <close-icon height="20" width="20"></close-icon>
-                </button>
-                </div>
-              </div>
-
-              <div class="d-flex mt-4">
-                <button
-                  class="btn btn-white border"
-                  type="button"
-                  @click="infoTab = ''"
-                >
-                  Cancel
-                </button>
-                <button class="ml-auto btn btn-primary" type="submit">
-                  Add
-                </button>
-              </div>
-            </vue-form-validate>
           </div>
         </div>
       </div>
     </div>
 
-    <modal ref="resendModal" :close-button="false">
-      <template v-if="selectedOrganization">
-        <h5 class="font-heading text-center">Resend Invitation</h5>
-        <p class="text-center mt-3">
-          Are you sure to resend the invitation email to member
-          <strong>{{
-            selectedOrganization.member_user.full_name.trim() ||
-            selectedOrganization.member_user.email
-          }}</strong>
-          ?
-          <br />
-        </p>
-        <div class="d-flex justify-content-end">
-          <button
-            class="btn btn-white border text-body"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <vue-button
-            button_class="btn btn-primary ml-auto"
-            :loading="resendLoading"
-            type="button"
-            @click="resendEmail(selectedOrganization)"
-            >Resend Invitation</vue-button
-          >
+    
+    <modal ref="addModal" :close-button="false">
+      <h5 class="font-heading mb-3">Add Organization</h5>
+      <vue-form-validate @submit="storeOrganization(newOrganization).then(() => {resetForm();})">
+        <div class="form-group">
+          <label class="form-label">Organization Name</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="newOrganization.name"
+            data-required
+          />
         </div>
-      </template>
-    </modal>
 
-    <modal ref="deleteModal" :close-button="false">
-      <template v-if="selectedOrganization">
-        <h5 class="font-heading text-center">Delete Member</h5>
-        <p class="text-center mt-3">
-          Are you sure to delete member
-          <strong>{{
-            selectedOrganization.member_user.full_name.trim() ||
-            selectedOrganization.member_user.email
-          }}</strong>
-          ?
-          <br />
-          <span class="text-danger">This action cannot be undone</span>
-        </p>
-        <div class="d-flex justify-content-end">
+        <div class="form-group mb-1">
+          <label class="form-label">Add Members</label>
+          <vue-select v-model="newOrganization.members" :options="membersList" multiple placeholder="Add members"></vue-select>
+        </div>
+        <div v-for="(member, index) in newOrganization.members" :key="member.id" class="rounded bg-light p-2 d-flex align-items-center mb-1">
+          <div
+            class="user-profile-image user-profile-image-sm"
+            :style="{
+              backgroundImage:
+                'url(' + member.member_user.profile_image + ')',
+            }"
+          >
+            <span v-if="!member.member_user.profile_image">{{
+              member.member_user.initials
+            }}</span>
+          </div>
+          <div class="pl-2 flex-grow-1">
+            <h6 class="mb-0 font-heading">{{ member.member_user.full_name }}</h6>
+            <small class="text-secondary">{{ member.member_user.email }}</small>
+          </div>
+          <div class="align-self-start">
           <button
-            class="btn btn-white border text-body"
+            class="btn btn-sm p-0 line-height-0 mr-n1 mt-n1"
+            type="button"
+            @click="newOrganization.members.splice(index, 1)"
+          >
+            <close-icon height="20" width="20"></close-icon>
+          </button>
+          </div>
+        </div>
+
+        <div class="d-flex mt-4">
+          <button
+            class="btn btn-light shadow-none"
             type="button"
             data-dismiss="modal"
           >
             Cancel
           </button>
-          <button
-            class="btn btn-danger ml-auto"
-            type="button"
-            @click="
-              deleteMember(selectedOrganization);
-              $refs['deleteModal'].hide();
-              selectedOrganization = null;
-              infoTab = '';
-            "
-          >
-            Delete
+          <button class="ml-auto btn btn-primary" type="submit">
+            Add
           </button>
         </div>
-      </template>
+      </vue-form-validate>
     </modal>
   </div>
 </template>

@@ -53,7 +53,7 @@
 															<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
 															<small class="text-muted ml-1">{{ service.duration }} min</small>
 														</div>
-														<div class="d-flex align-items-center ml-3">
+														<div class="d-flex align-items-center ml-3" v-if="parseInt(service.default_rate)">
 															<dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
 															<small class="text-muted ml-1">{{ service.default_rate }}</small>
 														</div>

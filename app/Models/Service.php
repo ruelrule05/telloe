@@ -35,7 +35,10 @@ class Service extends BaseModel
                     $model->duration = $assignedService->duration;
                     $model->interval = $assignedService->interval;
                     $model->default_rate = $assignedService->default_rate;
-                    $model->user = $model->member->memberUser;
+                    if (! $model->member) {
+                        $model->member = ['memberUser' => $model->member];
+                    }
+                    $model->user = $model->member->memberUser ?? null;
                 }
             }
         });
@@ -60,7 +63,9 @@ class Service extends BaseModel
 
     public function assignedServices()
     {
-        return $this->hasMany(Service::class, 'parent_service_id', 'id');
+        return $this->hasMany(Service::class, 'parent_service_id', 'id')->where(function ($query) {
+            $query->has('user')->orHas('member');
+        });
     }
 
     public function parentService()

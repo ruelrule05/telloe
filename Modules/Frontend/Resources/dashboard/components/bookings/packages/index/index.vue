@@ -26,7 +26,7 @@
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 p-4 overflow-auto container">
           <div class="row px-2">
-            <div class="col-md-4 px-2 mb-4" v-for="packageItem in packages" :key="packageItem.id">
+            <div class="col-md-4 px-2 mb-3" v-for="packageItem in packages" :key="packageItem.id">
               <router-link
                 :to="`/dashboard/bookings/packages/${packageItem.id}`"
                 tag="div"

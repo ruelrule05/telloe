@@ -27,7 +27,7 @@ class MemberController extends Controller
                 $memberUser->where('LIKE', '%' . $query . '%');
             });
         }
-        $members = $members->get()->load('memberUser');
+        $members = $members->get();
 
         return response()->json($members);
     }
@@ -85,7 +85,7 @@ class MemberController extends Controller
                 $assignedService->save();
             }
         }
-        $member->load('memberUser', 'services');
+        $member->load('memberUser', 'assignedServices');
 
         if ($request->sendToEmail) {
             Mail::to($member->email)->queue(new SendMemberInvitation($member, $authTab, $request->invite_message));

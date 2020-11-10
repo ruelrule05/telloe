@@ -37,7 +37,7 @@
 @endif -->
 
 <div style="margin-top: 20px;">
-Add this booking to: <u><a target="_blank" href="{{ $link->google() }}">Google Calendar</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ $link->webOutlook() }}">Outlook</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ $link->yahoo() }}">Yahoo!</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a download="{{ $booking->service->name }}.ics" href="{{ $link->ics() }}">iCal</a></u>
+Add this booking to: <u><a target="_blank" href="{{ $link->google() }}">Google Calendar</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ str_replace(['&rru=addevent', '+'], ['', '%20'], $link->webOutlook()) }}">Outlook</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ $link->yahoo() }}">Yahoo!</a></u>&nbsp;&nbsp;|&nbsp;&nbsp;<u><a target="_blank" href="{{ url('/ics?name='.$booking->service->name.'&data=' . $link->ics()) }}">iCal</a></u>
 </div>
 
 <div style="text-align: left; margin-top: 20px; border-top: solid 1px #ddd; padding-top: 20px;">

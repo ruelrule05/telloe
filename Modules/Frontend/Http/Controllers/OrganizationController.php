@@ -42,7 +42,7 @@ class OrganizationController extends Controller
 
     public function index(Request $request)
     {
-        return response()->json(Auth::user()->organizations()->withCount('members')->get());
+        return response()->json(Auth::user()->organizations()->with('members.member.memberUser')->get());
     }
 
     public function store(Request $request)
@@ -70,7 +70,7 @@ class OrganizationController extends Controller
             }
         }
         $organization->members_count = $members_count;
-        return response()->json($organization);
+        return response()->json($organization->load('members.member.memberUser'));
     }
 
     public function show(Organization $organization, Request $request)
@@ -78,7 +78,7 @@ class OrganizationController extends Controller
         if ($organization->user_id != Auth::user()->id) {
             return abort(403);
         }
-        return response($organization->load('members.member.memberUser'));
+        return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));
     }
 
     public function update(Organization $organization, Request $request)
@@ -93,7 +93,7 @@ class OrganizationController extends Controller
         $organization->update([
             'name' => $request->name
         ]);
-        return response($organization);
+        return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));
     }
 
     public function deleteMember($id, Request $request)

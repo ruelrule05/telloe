@@ -9,12 +9,12 @@ use App\Models\Notification;
 use App\Models\Service;
 use Auth;
 use Carbon\Carbon;
+use File;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Illuminate\Http\Request;
 use Mail;
 use Modules\Frontend\Http\GoogleCalendarClient;
-use Modules\Frontend\Http\OutlookClient;
 use Modules\Frontend\Mail\DeleteBooking;
 use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\UpdateBooking;
@@ -400,8 +400,6 @@ class BookingController extends Controller
         return response()->json($events);
     }
 
-
-
     public function updateOutlookCalendarEvents(Request $request)
     {
         $this->validate($request, [
@@ -649,5 +647,13 @@ class BookingController extends Controller
         ]);
 
         return response($booking);
+    }
+
+    public function downloadIcs(Request $request)
+    {
+        $base_64_ics = base64_decode(substr($request->data, strpos($request->data, ',') + 1));
+        $path = storage_path('app/private/var/tmp/' . Carbon::now()->timestamp . '.ics');
+        File::put($path, $base_64_ics);
+        return response()->download($path, $request->name . '.ics')->deleteFileAfterSend();
     }
 }

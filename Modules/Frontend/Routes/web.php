@@ -57,6 +57,8 @@ Route::group(
     function () {
         Route::get('/', 'PageController@homepage');
 
+        Route::get('/ics', 'BookingController@downloadIcs');
+
         Route::get('/js/widget.js', 'UserController@widget');
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');

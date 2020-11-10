@@ -12,16 +12,9 @@
 
         <div class="ml-auto">
           <button
-            class="btn btn-white d-inline-flex align-items-center shadow-sm"
-            type="button"
-            @click="$refs['addMemberModal'].show()"
-          >
-          Add Member
-          </button>
-          <button
             class="btn p-1 btn-white badge-pill shadow-sm"
             type="button"
-            @click="$refs['editModal'].show()"
+            @click="clonedOrganization = Object.assign({}, organization); $refs['editModal'].show()"
           >
             <pencil-icon width="30" height="30" transform="scale(0.75)"></pencil-icon>
           </button>
@@ -37,32 +30,58 @@
       </div>
 
       <div class="container mt-5">
-        <div class="row">
+        <div class="row pt-3">
           <template v-if="organization.members.length > 0">
-            <div v-for="member in organization.members" :key="member.id" class="col-md-3 member">
-              <div class="bg-white rounded p-3 shadow-sm text-center position-relative">
-                <div class="dropdown position-top-right mr-2 mt-1">
-                  <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none btn-more" type="button" data-toggle="dropdown">
-                    <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
-                  </button>
-                  <div class="dropdown-menu py-1">
-                    <router-link :to="`/dashboard/team/members/${member.member.id}`" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Manage Member</router-link>
-                    <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedMember = member; $refs['deleteModal'].show()">Remove</span>
+            <div v-for="member in organization.members" :key="member.id" class="col-md-4 member px-2">
+              <div class="px-1">
+                <div class="bg-white rounded p-3 shadow-sm text-cenxter position-relative">
+                  <div class="dropdown position-top-right mr-2 mt-1 btn-more">
+                    <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+                      <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+                    </button>
+                    <div class="dropdown-menu">
+                      <router-link :to="`/dashboard/team/members/${member.member.id}`" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Manage Member</router-link>
+                      <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedMember = member; $refs['deleteModal'].show()">Remove</span>
+                    </div>
+                  </div>
+                  <div class="mt-n3">
+                    <div
+                      class="user-profile-image user-profile-image-sm d-inline-block mb-2 mt-n4"
+                      :style="{
+                        backgroundImage:
+                          'url(' + member.member.member_user.profile_image + ')',
+                      }"
+                    >
+                      <span v-if="!member.member.member_user.profile_image">{{
+                        member.member.member_user.initials
+                      }}</span>
+                    </div>
+                  </div>
+                  <h5 class="font-heading mb-0">{{ member.member.member_user.full_name }}</h5>
+                  <small class="text-gray">{{ member.member.member_user.email }}</small>
+                  <div class="d-flex align-items-center mt-3">
+                      <package-icon width="17" height="17" fill="#888"></package-icon>
+                      <span class="ml-2">{{ member.member.assigned_services.length }} assigned services</span>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 member px-2">
+              <div class="px-1 h-100">
+                <div class="position-relative h-100">
+                  <div class="h-100 position-relative">
+                    <button
+                      :data-intro="$root.intros.add_service.intro"
+                      :data-step="$root.intros.add_service.step"
+                      class="py-5 btn btn-light btn-add btn-lg shadow-none d-flex line-height-0 align-items-center justify-content-center w-100 h-100 text-muted"
+                      type="button"
+                      @click="$refs['addMemberModal'].show()"
+                    >
+                      <plus-icon class="fill-gray"></plus-icon>
+                      Add Member
+                    </button>
                   </div>
                 </div>
-                <div
-                  class="user-profile-image user-profile-image-sm d-inline-block mb-2"
-                  :style="{
-                    backgroundImage:
-                      'url(' + member.member.member_user.profile_image + ')',
-                  }"
-                >
-                  <span v-if="!member.member.member_user.profile_image">{{
-                    member.member.member_user.initials
-                  }}</span>
-                </div>
-                <h6 class="font-heading mb-0">{{ member.member.member_user.full_name }}</h6>
-                <small class="text-secondary">{{ member.member.member_user.email }}</small>
               </div>
             </div>
           </template>
@@ -80,16 +99,16 @@
 
     <modal ref="editModal" :close-button="false">
         <h5 class="font-heading">Edit Organization</h5>
-        <vue-form-validate @submit="updateOrganization(organization)">
+        <vue-form-validate @submit="$refs['editModal'].hide(); updateOrganization(clonedOrganization).then(data => organization = data)">
           <div class="form-group mb-1">
               <label class="form-label">Organization Name</label>
               <input
                 type="text"
                 class="form-control"
-                v-model="newOrganizationName"
+                v-model="clonedOrganization.name"
                 data-required
               />
-              <small class="text-muted">{{ slugify(newOrganizationName, {lower: true, strict: true}) }}</small>
+              <small class="text-muted">{{ slugify(clonedOrganization.name, {lower: true, strict: true}) }}</small>
           </div>
           <div class="d-flex mt-3">
             <button
@@ -169,7 +188,7 @@
         </p>
         <div class="d-flex">
           <button
-            class="btn btn-white border"
+            class="btn btn-light shadow-none"
             type="button"
             data-dismiss="modal"
           >

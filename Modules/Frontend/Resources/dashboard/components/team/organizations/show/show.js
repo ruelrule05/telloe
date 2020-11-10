@@ -7,16 +7,18 @@ import PencilIcon from '../../../../../icons/pencil';
 import Modal from '../../../../../components/modal/modal.vue';
 import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import VueFormValidate from '../../../../../components/vue-form-validate.vue';
+import PackageIcon from '../../../../../icons/package';
+import PlusIcon from '../../../../../icons/plus';
 const slugify = require('slugify');
 
 export default {
-	components: { ArrowLeftIcon, ShortcutIcon, MoreIcon, CloseIcon, PencilIcon, Modal, VueSelect, VueFormValidate },
+	components: { ArrowLeftIcon, ShortcutIcon, MoreIcon, CloseIcon, PencilIcon, Modal, VueSelect, VueFormValidate, PackageIcon, PlusIcon },
 
 	data: () => ({
 		organization: null,
+		clonedOrganization: null,
 		selectedMember: null,
 		newMembers: [],
-		newOrganizationName: '',
 		slugify: slugify
 	}),
 
@@ -44,7 +46,7 @@ export default {
 		this.getMembers();
 		this.getOrganization(this.$route.params.id).then(organization => {
 			this.organization = organization;
-			this.newOrganizationName = organization.name;
+			this.clonedOrganization = Object.assign({}, organization);
 			this.$root.contentloading = false;
 		});
 	},
