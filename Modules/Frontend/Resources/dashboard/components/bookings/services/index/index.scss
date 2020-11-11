@@ -9,6 +9,15 @@
 	.unavailable {
 		// opacity: 0.45;
 	}
+	.service-buttons {
+		opacity: 1;
+		transition: $transition-base;
+	}
+	&:hover {
+		.service-buttons {
+			opacity: 1;
+		}
+	}
 }
 .service-add {
 	background-color: $light;

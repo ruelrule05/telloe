@@ -189,10 +189,12 @@ import MonthviewIcon from '../icons/monthview';
 import PaymentsIcon from '../icons/payments';
 import MessagesIcon from '../icons/chat';
 import MemberIcon from '../icons/member';
+import PlusIcon from '../icons/plus';
 
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
 import Notification from '../components/notification/notification.vue';
+import Modal from '../components/modal/modal.vue';
 
 import store from './store';
 window.app = new Vue({
@@ -234,10 +236,12 @@ window.app = new Vue({
 		TrayStackIcon,
 		LighthouseIcon,
 		MemberIcon,
+		PlusIcon,
 
 		VideoCall,
 		ScreenRecorder,
 		Notification,
+		Modal,
 
 		'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue')
 	},

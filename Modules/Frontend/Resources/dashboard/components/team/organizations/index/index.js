@@ -89,6 +89,10 @@ export default {
 			getMembers: 'members/index'
 		}),
 
+		goToPage(slug) {
+			window.open(`/${slug}`);
+		},
+
 		goToOrganization(id) {
 			this.$router.push(`/dashboard/team/organizations/${id}`);
 		},

@@ -253,7 +253,7 @@
         </div>
         <div class="d-flex align-items-center">
           <button
-            class="btn btn-white border mr-1"
+            class="btn btn-light shadow-none"
             type="button"
             data-dismiss="modal"
           >

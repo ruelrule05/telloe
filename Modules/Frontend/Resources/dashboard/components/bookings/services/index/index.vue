@@ -25,7 +25,7 @@
 
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 py-4 overflow-auto container">
-          <div class="row px-2">
+          <div class="row px-1">
             <div class="col-md-4 px-2" v-for="service in services" :key="service.id">
               <div class="mx-1 mb-4">
                 <div 
@@ -45,13 +45,14 @@
                             >ASSIGNED</span
                           >
                         </h5>
-                        <toggle-switch
-                          class="ml-auto"
-                          @click.native.stop
-                          @input="updateService(service)"
-                          active-class="bg-primary"
-                          v-model="service.is_available"
-                        ></toggle-switch>
+                        <div class="ml-auto service-buttons d-flex align-items-center">
+                          <toggle-switch
+                            @click.native.stop
+                            @input="updateService(service)"
+                            active-class="bg-primary"
+                            v-model="service.is_available"
+                          ></toggle-switch>
+                        </div>
                       </div>
                       <p class="multiline-ellipsis mb-0 text-muted">
                         {{ service.description }}
@@ -121,19 +122,21 @@
             <div class="col-md-4 px-2">
               <div class="position-relative pb-4 h-100">
                 <div class="h-100 position-relative">
-                  <button
-                    :data-intro="$root.intros.add_service.intro"
-                    :data-step="$root.intros.add_service.step"
-                    class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
-                    type="button"
-                    @click="
-                      newService = {};
-                      $refs['addModal'].show();
-                    "
-                  >
-                    <plus-icon class="fill-gray"></plus-icon>
-                    Add Service
-                  </button>
+                  <div class="px-1 h-100">
+                    <button
+                      :data-intro="$root.intros.add_service.intro"
+                      :data-step="$root.intros.add_service.step"
+                      class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                      type="button"
+                      @click="
+                        newService = {};
+                        $refs['addModal'].show();
+                      "
+                    >
+                      <plus-icon class="fill-gray"></plus-icon>
+                      Add Service
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

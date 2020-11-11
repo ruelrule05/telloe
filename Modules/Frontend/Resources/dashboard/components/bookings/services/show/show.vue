@@ -26,7 +26,7 @@
               data-toggle="dropdown"
               data-offset="-125, 5"
             >
-              <cog-icon></cog-icon>
+              <pencil-icon></pencil-icon>
             </button>
             <div class="dropdown-menu">
               <span

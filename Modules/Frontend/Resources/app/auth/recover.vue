@@ -5,6 +5,7 @@
 				<checkmark-icon class="fill-success" width="50" height="50"></checkmark-icon>
 				<h3 class="mt-2 mb-0 font-heading">Password reset link sent</h3>
 				<div class="text-muted mb-4">We have sent you the instructions on how to reset your password</div>
+				<button class="btn btn-light btn-lg shadow-none" type="button" @click="$root.action = 'login'">Log In</button>
 			</div>
 			<vue-form-validate @submit="recover" v-else>
 				<h1 class="h3 mb-1 font-heading">Forgot your password?</h1>

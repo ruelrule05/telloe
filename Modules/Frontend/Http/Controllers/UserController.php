@@ -82,6 +82,10 @@ class UserController extends Controller
             });
         })->firstOrfail();
 
+        if ($request->single) {
+            return response($service->timeslots($request->date));
+        }
+
         $timeslots = [];
         $i = 1;
         $startDate = Carbon::parse($request->date);

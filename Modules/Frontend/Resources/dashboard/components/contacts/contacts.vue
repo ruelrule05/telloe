@@ -20,7 +20,7 @@
 						</div>
 
 						<div class="overflow-auto flex-grow-1 pb-4 px-4 h-100" v-else>
-							<table class="table table-borderless table-fixed-header mb-0">
+							<table class="table table-borderless mb-0">
 								<thead>
 									<tr>
 										<th>Name</th>

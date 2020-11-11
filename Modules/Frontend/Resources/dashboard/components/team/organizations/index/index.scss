@@ -70,3 +70,14 @@ tr:hover .btn-more {
 	border: dashed 1px $gray-500;
 	transform: none !important;
 }
+.organization {
+	.badge-pill {
+		transition: $transition-base !important;
+		opacity: 0;
+	}
+	&:hover {
+		.badge-pill {
+			opacity: 1;
+		}
+	}
+}

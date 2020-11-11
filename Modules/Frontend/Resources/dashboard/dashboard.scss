@@ -6,6 +6,9 @@
 #sidebar {
 	width: 250px;
 }
+.dashboard-content {
+	background-color: rgba($light, 0.5);
+}
 .contentloader {
 	z-index: 555555;
 }
@@ -61,9 +64,19 @@
 				}
 			}
 			&.active {
-				svg #path,
-				svg .path {
-					fill: $primary !important;
+				.sidebar-icon {
+					path,
+					#path,
+					.path {
+						fill: $primary !important;
+					}
+				}
+				.sidebar-icon-stroke {
+					path,
+					#path,
+					.path {
+						stroke: $primary !important;
+					}
 				}
 			}
 		}

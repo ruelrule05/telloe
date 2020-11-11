@@ -191,7 +191,7 @@
 					</div>
 				</div>
 
-				<div v-else class="position-absolute-center container selected-service-container" key="summary">
+				<div v-else class="container selected-service-container" key="summary">
 					<div class="row justify-content-center">
 						<div class="col-md-9">
 							<div class="d-flex align-items-center mb-3">

@@ -23,8 +23,13 @@
               <div class="row">
                 <router-link tag="div" :to="`/dashboard/team/organizations/${organization.id}`" v-for="organization in organizations" class="col-md-4 mb-4 px-2" :key="organization.id">
                   <div class="px-1">
-                    <div class="card rounded service p-3 shadow-sm w-100 h-100 cursor-pointer">
-                        <h5 class="font-heading mb-0 text-ellipsis">{{ organization.name }}</h5>
+                    <div class="card rounded organization p-3 shadow-sm w-100 h-100 cursor-pointer">
+                        <div class="d-flex">
+                          <h5 class="font-heading mb-0 text-ellipsis">{{ organization.name }}</h5>
+                          <button class="btn btn-light badge-pill line-height-0 p-1 ml-auto" type="button" @click.stop="goToPage(organization.slug)">
+                              <shortcut-icon transform="scale(0.9)"></shortcut-icon>
+                          </button>
+                        </div>
                         <p class="text-gray">{{ organization.slug }}</p>
                         <div class="user-profile-container d-flex align-items-center">
                           <template v-if="organization.members.length > 0">
@@ -50,7 +55,7 @@
                   </div>
                 </router-link>
                 <div class="col-md-4 mb-4 px-2">
-                  <div class="px-1">
+                  <div class="px-1 h-100">
                     <div class="position-relative h-100">
                       <div class="h-100 position-relative">
                         <button

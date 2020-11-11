@@ -15,7 +15,7 @@
 					</div>
 
 					<div class="d-flex h-100 overflow-hidden align-items-stretch w-100">
-						<div class="sidebar border-right align-self-stretch text-center bg-white" :class="{'sidebar-customer': auth.role.role == 'customer'}" id="sidebar">
+						<div class="sidebar border-right border-gray-200 align-self-stretch text-center bg-white" :class="{'sidebar-customer': auth.role.role == 'customer'}" id="sidebar">
 							<div class="d-flex flex-column h-100">
 								<div class="dropright profile-dropdown cursor-pointer">
 									<div class="px-4 py-3" data-toggle="dropdown" data-offset="-10, 5">
@@ -102,7 +102,7 @@
 										<template>
 											<button :data-intro='intros.bookings.intro' :data-step="intros.bookings.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 												<div class="d-flex align-items-center px-4">
-													<monthview-icon height="18" width="18"></monthview-icon>
+													<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
 													<span class="ml-3">Bookings</span>
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
 												</div>
@@ -120,7 +120,7 @@
 											</div>
 
 											<router-link :data-intro='intros.messages.intro' :data-step="intros.messages.step" data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
-												<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black"></messages-icon>
+												<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></messages-icon>
 												<span class="ml-3">Messages</span>
 												<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
 											</router-link>
@@ -128,46 +128,58 @@
 
 											
 											<router-link :data-intro='intros.contacts.intro' :data-step="intros.contacts.step" to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
-												<contact-alt-icon height="18" width="18"></contact-alt-icon>
+												<contact-alt-icon height="18" width="18" class="sidebar-icon"></contact-alt-icon>
 												<span class="pl-3">Contacts</span>
 											</router-link>
 											
-											<button data-intro='intros.team.intro' data-step="intros.team.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
-												<div class="d-flex align-items-center px-4">
-												<member-icon height="18" width="18" stroke="black" stroke-width="13"></member-icon>
-													<span class="ml-3">Team</span>
-													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
-												</div>
-											</button>
-											<div class="collapse" data-parent="#sidebar" :class="{'show': ['members_index', 'members_show', 'organizations_index', 'organizations_show'].find((x) => x == $route.name) }" id="item-team">
-												<router-link to="/dashboard/team/organizations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
-													<span class="pl-3">Organizations</span>
-												</router-link>
-												<router-link to="/dashboard/team/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
-													<span class="pl-3">Members</span>
-												</router-link>
-											</div>
-
-											<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
-												<div class="d-flex align-items-center px-4">
-													<payments-icon height="18" width="18"></payments-icon>
-													<span class="ml-3">Payments</span>
-													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
-												</div>
-											</button>
-											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
-												<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-													<span class="pl-3">Subscriptions</span>
-												</router-link>
-												<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-													<span class="pl-3">Invoices</span>
-												</router-link>
-											</div>
-											
 											<router-link to="/dashboard/integrations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
-												<tray-stack-icon height="18" width="18" transform="scale(1.2)" stroke-width="0.5" stroke="black"></tray-stack-icon>
+												<tray-stack-icon height="18" width="18" transform="scale(1.2)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></tray-stack-icon>
 												<span class="pl-3">Integrations</span>
 											</router-link>
+
+
+											<div class="list-group-item text-left border-0 mt-2 pl-3 d-flex align-items-center">
+												<span class="text-secondary">APPS</span>
+												<button class="ml-auto btn btn-light p-1 badge-pill line-height-0 shadow-none" type="button" @click="$refs['addAppModal'].show()">
+													<plus-icon width="12" height="12" transform="scale(2)"></plus-icon>
+												</button>
+											</div>
+											
+											<template xv-if="auth.has_team">
+												<button data-intro='intros.team.intro' data-step="intros.team.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
+													<div class="d-flex align-items-center px-4">
+														<member-icon height="18" width="18" stroke="black" stroke-width="13" class="sidebar-icon sidebar-icon-stroke"></member-icon>
+														<span class="ml-3">Team</span>
+														<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
+													</div>
+												</button>
+												<div class="collapse" data-parent="#sidebar" :class="{'show': ['members_index', 'members_show', 'organizations_index', 'organizations_show'].find((x) => x == $route.name) }" id="item-team">
+													<router-link to="/dashboard/team/organizations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+														<span class="pl-3">Organizations</span>
+													</router-link>
+													<router-link to="/dashboard/team/members" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+														<span class="pl-3">Members</span>
+													</router-link>
+												</div>
+											</template>
+
+											<template xv-if="auth.has_payments">
+												<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
+													<div class="d-flex align-items-center px-4">
+														<payments-icon height="18" width="18" class="sidebar-icon"></payments-icon>
+														<span class="ml-3">Payments</span>
+														<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
+													</div>
+												</button>
+												<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
+													<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+														<span class="pl-3">Subscriptions</span>
+													</router-link>
+													<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+														<span class="pl-3">Invoices</span>
+													</router-link>
+												</div>
+											</template>
 
 										</template>
 										<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
@@ -218,11 +230,11 @@
 						</div>
 
 						<div class="d-flex flex-column flex-grow-1 w-100">
-							<div class="bg-light position-relative h-100 overflow-hidden">
+							<div class="dashboard-content position-relative h-100 overflow-hidden">
 								<div class="contentloader position-absolute w-100 h-100 bg-light" v-if="$root.contentloading">
 									<div class="position-absolute-center">
 										<div class="spinner-border text-primary" role="status"></div>
-									</div>
+									</div> 
 								</div>
 								<router-view></router-view>
 							</div>
@@ -234,6 +246,25 @@
 			<video-call ref="videoCall"></video-call>
 			<screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
 			<notification ref="notification"></notification>
+			<modal ref="addAppModal">
+				<h5 class="font-heading mb-3">Add App</h5>
+				<div class="d-flex border-bottom pt-3 pb-4">
+					<payments-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></payments-icon>
+					<div class="flex-grow-1 pl-4">
+						<h5 class="font-heading mb-1">Payment</h5>
+						<p class="text-muted">Create invoices and subscriptions for your customers. Integrate and sync with your Xero account.</p>
+						<button class="btn btn-primary" type="button" @click="auth.has_payments = true">Upgrade to Pro</button>
+					</div>
+				</div>
+				<div class="d-flex pt-4 pb-3">
+					<member-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></member-icon>
+					<div class="flex-grow-1 pl-4">
+						<h5 class="font-heading mb-1">Team</h5>
+						<p class="text-muted">Manage and assign services to your members, and group them into organizations.</p>
+						<button class="btn btn-primary" type="button" @click="auth.has_team = true">Upgrade to Enterprise</button>
+					</div>
+				</div>
+			</modal>
 		</div>
 
 

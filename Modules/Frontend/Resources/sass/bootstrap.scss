@@ -212,6 +212,10 @@
 	font-family: 'Avenir Next', sans-serif;
 	letter-spacing: -0.025rem;
 }
+.font-family-base {
+	font-family: $font-family-base !important;
+	letter-spacing: normal !important;
+}
 .font-size-base {
 	font-size: $font-size-base !important;
 }
