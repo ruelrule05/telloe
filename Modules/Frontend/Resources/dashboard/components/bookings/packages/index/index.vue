@@ -25,19 +25,17 @@
 
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 py-4 overflow-auto container">
-          <div class="row px-1">
+          <div class="row px-2">
             <div class="col-md-4 px-2" v-for="packageItem in packages" :key="packageItem.id">
-              <div class="mx-1 mb-4">
-                <router-link
-                  :to="`/dashboard/bookings/packages/${packageItem.id}`"
-                  tag="div"
-                  class="cursor-pointer"
-                >
-                  <div
-                    class="bg-white service rounded p-3 shadow-sm"
+              <div class="px-1 mb-4">
+                <div class="card rounded service p-3 shadow-sm w-100">
+                  <router-link
+                    :to="`/dashboard/bookings/packages/${packageItem.id}`"
+                    tag="div"
+                    class="cursor-pointer"
                   >
-                    <div class="d-flex">
-                      <h5 class="font-heading mb-3">
+                    <div class="d-flex mb-1 align-items-center">
+                      <h5 class="font-heading mb-0">
                         {{ packageItem.name }}
                       </h5>
 
@@ -50,7 +48,7 @@
                       ></toggle-switch>
                     </div>
                     <p
-                      class="text-secondary mb-0 multiline-ellipsis xsmall service-description mb-4"
+                      class="text-muted mb-0 multiline-ellipsis xsmall service-description mb-4"
                     >
                       {{ packageItem.description }}
                     </p>
@@ -66,27 +64,29 @@
                       <calendar-icon width="17" height="17" fill="#888"></calendar-icon>
                       <span class="ml-2">Expires on {{ formatDate(packageItem.expiration_date) }}</span>
                     </div>
-                  </div>
-                </router-link>
+                  </router-link>
+                </div>
               </div>
             </div>
 
             <div class="col-md-4 px-2">
               <div class="position-relative h-100">
                 <div class="h-100 position-relative pb-4">
-                  <button
-                    :data-intro="$root.intros.add_service.intro"
-                    :data-step="$root.intros.add_service.step"
-                    class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
-                    type="button"
-                    @click="
-                      newService = {};
-                      $refs['addModal'].show();
-                    "
-                  >
-                    <plus-icon class="fill-gray"></plus-icon>
-                    Add Package
-                  </button>
+                  <div class="px-1 h-100">
+                    <button
+                      :data-intro="$root.intros.add_service.intro"
+                      :data-step="$root.intros.add_service.step"
+                      class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                      type="button"
+                      @click="
+                        newService = {};
+                        $refs['addModal'].show();
+                      "
+                    >
+                      <plus-icon class="fill-gray"></plus-icon>
+                      Add Package
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

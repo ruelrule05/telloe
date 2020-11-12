@@ -25,96 +25,77 @@
 
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 py-4 overflow-auto container">
-          <div class="row px-1">
+          <div class="row px-2">
             <div class="col-md-4 px-2" v-for="service in services" :key="service.id">
-              <div class="mx-1 mb-4">
-                <div 
-                  class="card rounded service p-3 shadow-sm w-100">
-                    <router-link
+              <div class="px-1 mb-4">
+                <div class="card rounded service p-3 shadow-sm w-100">
+                  <router-link
                     class="cursor-pointer"
                     :to="`/dashboard/bookings/services/${service.id}`"
                     tag="div"
                   >
-                  <div :class="{'unavailable': !service.is_available}">
-                      <div class="d-flex align-items-center mb-1">
-                        <h5 class="font-heading mb-0">
-                        {{ service.name }}
-                          <span
-                            v-if="service.parent_service_id"
-                            class="d-block text-secondary font-size-base font-weight-normal"
-                            >ASSIGNED</span
-                          >
-                        </h5>
-                        <div class="ml-auto service-buttons d-flex align-items-center">
-                          <toggle-switch
-                            @click.native.stop
-                            @input="updateService(service)"
-                            active-class="bg-primary"
-                            v-model="service.is_available"
-                          ></toggle-switch>
-                        </div>
-                      </div>
-                      <p class="multiline-ellipsis mb-0 text-muted">
-                        {{ service.description }}
-                      </p>
-
-                      <div class="d-flex align-items-center mt-3 user-profile-container">
-                        <div
-                            v-tooltip.top="'You'"
-                            class="user-profile-image user-profile-image-sm"
-                            :style="{
-                              backgroundImage:
-                                'url(' + $root.auth.profile_image + ')',
-                            }"
-                          >
-                            <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
-                          </div>
-                          <div
-                            v-for="assignedService in service.assigned_services"
-                            :key="assignedService.id"
-                            v-tooltip.top="assignedService.member.member_user.full_name"
-                            class="user-profile-image user-profile-image-sm"
-                            :style="{
-                              backgroundImage:
-                                'url(' + assignedService.member.member_user.profile_image + ')',
-                            }"
-                          >
-                            <span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
-                          </div>
-                      </div>
-
-                      <div class="d-flex align-items-center mt-4 line-height-1">
-                        <div class="d-flex align-items-center">
-                          <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
-                          <small class="text-muted ml-1">{{ service.duration }} min</small>
-                        </div>
-                        <div class="d-flex align-items-center ml-3">
-                          <dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
-                          <small class="text-muted ml-1">{{ service.default_rate }}</small>
-                        </div>
-                        <div class="d-flex align-items-center ml-3" v-if="service.in_widget">
-                          <window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
-                          <small class="text-muted ml-1">In widget</small>
-                        </div>
-                      </div>
-                      <!-- <div class="d-flex mt-3">
-                        <div
-                          v-for="(day, index) in days"
-                          :key="index"
-                          class="badge-day mr-1 rounded-circle position-relative overflow-hidden"
-                          :class="[
-                            service.days[day].isOpen
-                              ? 'text-white bg-primary'
-                              : 'text-gray-400 bg-gray-200',
-                          ]"
+                    <div class="d-flex mb-1 align-items-center">
+                      <h5 class="font-heading mb-0">
+                      {{ service.name }}
+                        <span
+                          v-if="service.parent_service_id"
+                          class="d-block text-secondary font-size-base font-weight-normal"
+                          >ASSIGNED</span
                         >
-                          <span class="position-absolute-center line-height-1">{{
-                            day.charAt(0)
-                          }}</span>
+                      </h5>
+                      <div class="ml-auto d-flex align-items-center">
+                        <toggle-switch
+                          @click.native.stop
+                          @input="updateService(service)"
+                          active-class="bg-primary"
+                          v-model="service.is_available"
+                        ></toggle-switch>
+                      </div>
+                    </div>
+                    <p class="multiline-ellipsis mb-0 text-muted">
+                      {{ service.description }}
+                    </p>
+
+                    <div class="d-flex align-items-center mt-3 user-profile-container">
+                      <div
+                          v-tooltip.top="'You'"
+                          class="user-profile-image user-profile-image-sm"
+                          :style="{
+                            backgroundImage:
+                              'url(' + $root.auth.profile_image + ')',
+                          }"
+                        >
+                          <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
                         </div>
-                      </div> -->
-                  </div>
-                    </router-link>
+                        <div
+                          v-for="assignedService in service.assigned_services"
+                          :key="assignedService.id"
+                          v-tooltip.top="assignedService.member.member_user.full_name"
+                          class="user-profile-image user-profile-image-sm"
+                          :style="{
+                            backgroundImage:
+                              'url(' + assignedService.member.member_user.profile_image + ')',
+                          }"
+                        >
+                          <span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mt-4 line-height-1">
+                      <div class="d-flex align-items-center">
+                        <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+                        <small class="text-muted ml-1">{{ service.duration }} min</small>
+                      </div>
+                      <div class="d-flex align-items-center ml-3">
+                        <dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
+                        <small class="text-muted ml-1">{{ service.default_rate }}</small>
+                      </div>
+                      <div class="d-flex align-items-center ml-3" v-if="service.in_widget">
+                        <window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
+                        <small class="text-muted ml-1">In widget</small>
+                      </div>
+                    </div>
+                  </router-link>
                 </div>
               </div>
             </div>

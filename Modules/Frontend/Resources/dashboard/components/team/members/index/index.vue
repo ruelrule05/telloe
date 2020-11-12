@@ -20,7 +20,7 @@
             </div>
 
             <div class="overflow-auto flex-grow-1 h-100 container pb-3 pt-4" v-else>
-              <div class="row pt-2">
+              <div class="row pt-2 px-2">
                 <router-link tag="div" :to="`/dashboard/team/members/${member.id}`" v-for="member in members" :key="member.id" class="col-md-4 member px-2 mb-5 cursor-pointer">
                   <div class="px-1">
                     <div class="bg-white rounded p-3 shadow-sm text-centxer position-relative">

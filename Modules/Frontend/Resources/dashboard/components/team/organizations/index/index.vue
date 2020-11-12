@@ -20,16 +20,23 @@
             </div>
 
             <div class="h-100 container py-4" v-else>
-              <div class="row">
-                <router-link tag="div" :to="`/dashboard/team/organizations/${organization.id}`" v-for="organization in organizations" class="col-md-4 mb-4 px-2" :key="organization.id">
+              <div class="row px-2">
+                <div v-for="organization in organizations" class="col-md-4 mb-4 px-2" :key="organization.id">
                   <div class="px-1">
-                    <div class="card rounded organization p-3 shadow-sm w-100 h-100 cursor-pointer">
-                        <div class="d-flex">
-                          <h5 class="font-heading mb-0 text-ellipsis">{{ organization.name }}</h5>
-                          <button class="btn btn-light badge-pill line-height-0 p-1 ml-auto" type="button" @click.stop="goToPage(organization.slug)">
-                              <shortcut-icon transform="scale(0.9)"></shortcut-icon>
+                    <div class="card rounded organization p-3 shadow-sm w-100 h-100">
+                        <div class="organization-buttons dropdown position-absolute">
+                          <!-- <button class="btn btn-light badge-pill line-height-0 p-1" type="button" @click.stop="goToPage(organization.slug)">
+                            <shortcut-icon transform="scale(0.8)"></shortcut-icon>
+                          </button> -->
+                          <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+                            <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
                           </button>
+                          <div class="dropdown-menu">
+                            <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedOrganization = Object.assign({}, organization); $refs['editModal'].show()">Edit</span>
+                            <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Delete</span>
+                          </div>
                         </div>
+                        <h5 class="font-heading mb-0 text-ellipsis">{{ organization.name }}</h5>
                         <p class="text-gray">{{ organization.slug }}</p>
                         <div class="user-profile-container d-flex align-items-center">
                           <template v-if="organization.members.length > 0">
@@ -45,6 +52,9 @@
                             >
                               <span v-if="!member.member.member_user.profile_image">{{  member.member.member_user.initials }}</span>
                             </div>
+                            <div class="user-profile-image user-profile-image-sm cursor-pointer" v-tooltip.top="'Add Member'">
+                              <span><plus-icon transform="scale(0.85)" class="fill-secondary"></plus-icon></span>
+                            </div>
                           </template>
                           <div v-else class="text-gray-500 d-flex align-items-center ml-1">
                             No members
@@ -53,7 +63,7 @@
                       </div>
                     </div>
                   </div>
-                </router-link>
+                </div>
                 <div class="col-md-4 mb-4 px-2">
                   <div class="px-1 h-100">
                     <div class="position-relative h-100">
@@ -137,6 +147,47 @@
           </button>
         </div>
       </vue-form-validate>
+    </modal>
+
+
+    <modal ref="editModal" :close-button="false">
+        <h5 class="font-heading">Edit Organization</h5>
+        <vue-form-validate v-if="clonedOrganization" @submit="$refs['editModal'].hide(); updateOrganization(clonedOrganization).then(data => organization = data)">
+          <div class="form-group">
+              <label class="form-label">Company</label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="clonedOrganization.company"
+                data-required
+              />
+          </div>
+          <div class="form-group">
+              <label class="form-label">Organization Name</label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="clonedOrganization.name"
+                data-required
+              />
+              <!-- <small class="text-muted">{{ slugify(clonedOrganization.name, {lower: true, strict: true}) }}</small> -->
+          </div>
+          <div class="d-flex mt-4">
+            <button
+              class="btn btn-light shadow-none"
+              type="button"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary ml-auto"
+              type="submit"
+            >
+              Save
+            </button>
+          </div>
+        </vue-form-validate>
     </modal>
   </div>
 </template>

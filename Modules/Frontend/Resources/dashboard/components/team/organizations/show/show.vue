@@ -30,7 +30,7 @@
       </div>
 
       <div class="container mt-5">
-        <div class="row pt-3">
+        <div class="row pt-3 px-2">
           <template v-if="organization.members.length > 0">
             <div v-for="member in organization.members" :key="member.id" class="col-md-4 member px-2">
               <div class="px-1">

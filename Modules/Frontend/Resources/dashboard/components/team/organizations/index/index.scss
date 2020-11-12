@@ -71,13 +71,8 @@ tr:hover .btn-more {
 	transform: none !important;
 }
 .organization {
-	.badge-pill {
-		transition: $transition-base !important;
-		opacity: 0;
-	}
-	&:hover {
-		.badge-pill {
-			opacity: 1;
-		}
+	.organization-buttons {
+		top: 10px;
+		right: 10px;
 	}
 }

@@ -84,14 +84,18 @@ class OrganizationController extends Controller
     public function update(Organization $organization, Request $request)
     {
         $this->validate($request, [
+            'company' => 'required|string',
             'name' => 'required|string',
         ]);
 
         if ($organization->user_id != Auth::user()->id) {
             return abort(403);
         }
+        $slug = Slugify::create(Organization::class, strtolower($request->name));
         $organization->update([
-            'name' => $request->name
+            'company' => $request->company,
+            'name' => $request->name,
+            'slug' => $slug
         ]);
         return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));
     }

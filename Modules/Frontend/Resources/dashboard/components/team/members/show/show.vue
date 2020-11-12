@@ -95,7 +95,7 @@
       </template> -->
 
       <!-- Bookings -->
-      <h5 class="mt-4 font-heading px-4 mb-0">Bookings</h5>
+      <h5 class="mt-4 font-heading px-4 mb-3">Bookings</h5>
       <div class="px-4 mb-4" v-if="bookings.length > 0">
         <table class="table table-borderless table-fixed-header mb-0">
           <thead class="text-secondary">
@@ -123,7 +123,7 @@
         </table>
       </div>
       <div v-else class="px-4 mb-4">
-        <div class="rounded bg-white text-center py-3 text-muted">
+        <div class="rounded bg-white shadow-sm text-center py-3 text-muted">
           No bookings.
         </div>
       </div>

@@ -5,8 +5,7 @@ import VueCheckbox from '../../../../../components/vue-checkbox/vue-checkbox.vue
 import VueButton from '../../../../../components/vue-button.vue';
 import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
-
-import MoreIcon from '../../../../../icons/more';
+import MoreIcon from '../../../../../icons/more-h';
 import PlusIcon from '../../../../../icons/plus';
 import TrashIcon from '../../../../../icons/trash';
 import PencilIcon from '../../../../../icons/pencil';
@@ -15,6 +14,8 @@ import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../../icons/close';
 import ShortcutIcon from '../../../../../icons/shortcut';
 import tooltip from '../../../../../js/directives/tooltip.js';
+const slugify = require('slugify');
+
 export default {
 	components: {
 		Modal,
@@ -43,7 +44,9 @@ export default {
 		newOrganization: {
 			name: '',
 			members: []
-		}
+		},
+		clonedOrganization: null,
+		slugify: slugify
 	}),
 
 	computed: {
@@ -86,7 +89,8 @@ export default {
 		...mapActions({
 			getOrganizations: 'organizations/index',
 			storeOrganization: 'organizations/store',
-			getMembers: 'members/index'
+			getMembers: 'members/index',
+			updateOrganization: 'organizations/update'
 		}),
 
 		goToPage(slug) {
