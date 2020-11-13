@@ -586,6 +586,18 @@ class AuthController extends Controller
                 }')
             ]);
         }
+
+        // Set timezone
+        $timezone = config('app.timezone');
+        $ip = request()->server('HTTP_CF_CONNECTING_IP');
+        if ($ip) {
+            $ipinfo = json_decode(Http::get("https://ipinfo.io/$ip/json"), true);
+            if (isset($ipinfo['timezone'])) {
+                $timezone = $ipinfo['timezone'];
+            }
+        }
+        $user->timezone = $timezone;
+        $user->save();
     }
 
     public function createDefaultField(User $user)
