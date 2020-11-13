@@ -194,16 +194,16 @@ class User extends Authenticatable implements JWTSubject
         });
 
         static::retrieved(function ($model) {
-            $timezone = config('app.timezone');
-            $ip = request()->server('HTTP_CF_CONNECTING_IP');
-            if ($ip) {
-                $ipinfo = json_decode(Http::get("https://ipinfo.io/$ip/json"), true);
-                if (isset($ipinfo['timezone'])) {
-                    $timezone = $ipinfo['timezone'];
-                }
-            }
-            $model->timezone = $timezone;
-            $model->save();
+            // $timezone = config('app.timezone');
+            // $ip = request()->server('HTTP_CF_CONNECTING_IP');
+            // if ($ip) {
+            //     $ipinfo = json_decode(Http::get("https://ipinfo.io/$ip/json"), true);
+            //     if (isset($ipinfo['timezone'])) {
+            //         $timezone = $ipinfo['timezone'];
+            //     }
+            // }
+            // $model->timezone = $timezone;
+            // $model->save();
         });
     }
 }
