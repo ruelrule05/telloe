@@ -36,10 +36,11 @@ class PackageController extends Controller
         return response($package);
     }
 
-
     public function show(Package $package, Request $request)
     {
-        if($package->user_id != Auth::user()->id) return abort(403);
+        if ($package->user_id != Auth::user()->id) {
+            return abort(403);
+        }
         return response($package->load('orders.user'));
     }
 
@@ -53,7 +54,9 @@ class PackageController extends Controller
             'price' => 'required|numeric'
         ]);
 
-        if($package->user_id != Auth::user()->id) return abort(403);
+        if ($package->user_id != Auth::user()->id) {
+            return abort(403);
+        }
 
         $package->update([
             'name' => $request->name,
@@ -71,5 +74,12 @@ class PackageController extends Controller
 
     public function destroy($id)
     {
+        $package = Package::findOrFail($id);
+        if ($package->user_id != Auth::user()->id) {
+            return abort(403);
+        }
+        $package->delete();
+
+        return response()->json(['deleted' => true]);
     }
 }

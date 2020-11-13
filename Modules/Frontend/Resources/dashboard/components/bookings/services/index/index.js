@@ -14,12 +14,13 @@ import ClockIcon from '../../../../../icons/clock';
 import UserCircleIcon from '../../../../../icons/user-circle';
 import DollarSignIcon from '../../../../../icons/dollar-sign';
 import WindowPlusIcon from '../../../../../icons/window-plus';
+import MoreIcon from '../../../../../icons/more-h';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
 import tooltip from '../../../../../js/directives/tooltip.js';
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon, MoreIcon },
 
 	directives: { tooltip },
 
@@ -30,7 +31,9 @@ export default {
 		newBreaktime: null,
 		newHoliday: null,
 		serviceDetailsTab: 'availability',
-		selectedDay: ''
+		selectedDay: '',
+		clonedService: null,
+		selectedService: null
 	}),
 
 	computed: {
@@ -88,6 +91,15 @@ export default {
 			updateService: 'services/update',
 			deleteService: 'services/delete'
 		}),
+
+		update() {
+			this.updateService(this.clonedService).then(service => {
+				Object.keys(service).map(key => {
+					this.services[this.clonedService.index][key] = service[key];
+				});
+			});
+			this.$refs['editModal'].hide();
+		},
 
 		applyBreaktimeToAll() {
 			if (this.selectedService && this.selectedDay) {

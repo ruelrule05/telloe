@@ -26,7 +26,7 @@
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 py-4 overflow-auto container">
           <div class="row px-2">
-            <div class="col-md-4 px-2" v-for="packageItem in packages" :key="packageItem.id">
+            <div class="col-md-4 px-2" v-for="(packageItem, index) in packages" :key="packageItem.id">
               <div class="px-1 mb-4">
                 <div class="card rounded service p-3 shadow-sm w-100">
                   <router-link
@@ -34,11 +34,7 @@
                     tag="div"
                     class="cursor-pointer"
                   >
-                    <div class="d-flex mb-1 align-items-center">
-                      <h5 class="font-heading mb-0">
-                        {{ packageItem.name }}
-                      </h5>
-
+                    <div class="package-buttons position-absolute d-flex align-items-center">
                       <toggle-switch
                         class="ml-auto"
                         @click.native.stop
@@ -46,6 +42,22 @@
                         active-class="bg-primary"
                         v-model="packageItem.is_available"
                       ></toggle-switch>
+
+                      <div class="dropdown ml-2" @click.prevent>
+                        <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+                          <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+                        </button>
+
+                        <div class="dropdown-menu">
+                          <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedPackage = Object.assign({}, packageItem); clonedPackage.index = index; $refs['editModal'].show();">Edit</span>
+                          <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedPackage = packageItem; $refs['deleteModal'].show();">Delete</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-1">
+                      <h5 class="font-heading mb-0">
+                        {{ packageItem.name }}
+                      </h5>
                     </div>
                     <p
                       class="text-muted mb-0 multiline-ellipsis xsmall service-description mb-4"
@@ -76,15 +88,17 @@
                     <button
                       :data-intro="$root.intros.add_service.intro"
                       :data-step="$root.intros.add_service.step"
-                      class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                      class="py-5 btn btn-light btn-add btn-lg shadow-none w-100 h-100 text-muted"
                       type="button"
                       @click="
                         newService = {};
                         $refs['addModal'].show();
                       "
                     >
-                      <plus-icon class="fill-gray"></plus-icon>
-                      Add Package
+                      <div class="d-flex align-items-center py-4 justify-content-center">
+                        <plus-icon class="fill-gray"></plus-icon>
+                        Add Package
+                      </div>
                     </button>
                   </div>
                 </div>
@@ -94,6 +108,92 @@
         </div>
       </div>
     </div>
+
+
+
+    <modal ref="editModal" :close-button="false">
+      <h5 class="font-heading mb-3">Edit Package</h5>
+      <vue-form-validate @submit="update" v-if="clonedPackage">
+        <fieldset>
+          <div class="form-group">
+            <label class="form-label">Package name</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="clonedPackage.name"
+              data-required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control resize-none"
+              v-model="clonedPackage.description"
+              data-required
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price</label>
+            <input
+              type="number"
+              step="0.01"
+              class="form-control"
+              v-model="clonedPackage.price"
+              placeholder="$0.00"
+            />
+          </div>
+        </fieldset>
+        <div class="form-group">
+          <vue-checkbox
+            v-model="clonedPackage.in_widget"
+            label="Available in widget"
+          ></vue-checkbox>
+        </div>
+        <div class="d-flex align-items-center">
+          <button
+            class="btn btn-light shadow-none"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button class="ml-auto btn btn-primary" type="submit">Update</button>
+        </div>
+      </vue-form-validate>
+    </modal>
+
+    <modal ref="deleteModal" :close-button="false">
+      <template v-if="selectedPackage">
+        <h5 class="font-heading text-center">Delete Service</h5>
+        <p class="text-center mt-3">
+          Are you sure to delete the package
+          <strong>{{ selectedPackage.name }}</strong>
+          ?
+          <br />
+          <span class="text-danger">This action cannot be undone</span>
+        </p>
+        <div class="d-flex">
+          <button
+            class="btn btn-light shadow-none"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger ml-auto"
+            type="button"
+            @click="
+              deletePackage(selectedPackage);
+              $refs['deleteModal'].hide();
+            "
+          >
+            Delete
+          </button>
+        </div>
+      </template>
+    </modal>
 
     <modal ref="addModal" :close-button="false" :scrollable="false">
       <h5 class="font-heading mb-3">Add Package</h5>

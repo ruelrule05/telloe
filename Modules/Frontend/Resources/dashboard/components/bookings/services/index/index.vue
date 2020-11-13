@@ -26,7 +26,7 @@
       <div v-else class="d-flex flex-grow-1 overflow-hidden">
         <div class="flex-grow-1 py-4 overflow-auto container">
           <div class="row px-2">
-            <div class="col-md-4 px-2" v-for="service in services" :key="service.id">
+            <div class="col-md-4 px-2" v-for="(service, index) in services" :key="service.id">
               <div class="px-1 mb-4">
                 <div class="card rounded service p-3 shadow-sm w-100">
                   <router-link
@@ -34,7 +34,25 @@
                     :to="`/dashboard/bookings/services/${service.id}`"
                     tag="div"
                   >
-                    <div class="d-flex mb-1 align-items-center">
+                    <div class="service-buttons position-absolute d-flex align-items-center">
+                      <toggle-switch
+                        @click.native.stop
+                        @input="updateService(service)"
+                        active-class="bg-primary"
+                        v-model="service.is_available"
+                      ></toggle-switch>
+                      <div class="dropdown ml-2" @click.prevent>
+                        <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+                          <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+                        </button>
+
+                        <div class="dropdown-menu">
+                          <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedService = Object.assign({}, service); clonedService.index = index; $refs['editModal'].show();">Edit</span>
+                          <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedService = service; $refs['deleteModal'].show();">Delete</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-1">
                       <h5 class="font-heading mb-0">
                       {{ service.name }}
                         <span
@@ -43,14 +61,6 @@
                           >ASSIGNED</span
                         >
                       </h5>
-                      <div class="ml-auto d-flex align-items-center">
-                        <toggle-switch
-                          @click.native.stop
-                          @input="updateService(service)"
-                          active-class="bg-primary"
-                          v-model="service.is_available"
-                        ></toggle-switch>
-                      </div>
                     </div>
                     <p class="multiline-ellipsis mb-0 text-muted">
                       {{ service.description }}
@@ -107,269 +117,132 @@
                     <button
                       :data-intro="$root.intros.add_service.intro"
                       :data-step="$root.intros.add_service.step"
-                      class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                      class="btn btn-light py-5 btn-add btn-lg shadow-none w-100 h-100 text-muted"
                       type="button"
                       @click="
                         newService = {};
                         $refs['addModal'].show();
                       "
                     >
-                      <plus-icon class="fill-gray"></plus-icon>
-                      Add Service
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="info bg-white border-left py-4 h-100 position-relative overflow-auto"
-          :class="{ open: selectedService }"
-        >
-          <div v-if="selectedService">
-            <div class="px-4 mb-5">
-              <div class="d-flex align-items-center mb-1">
-                <h5 class="font-heading mb-0">{{ selectedService.name }}</h5>
-                <div class="ml-auto d-flex align-items-center">
-                  <toggle-switch
-                    @input="updateService(selectedService)"
-                    active-class="bg-green"
-                    v-model="selectedService.is_available"
-                  ></toggle-switch>
-                </div>
-              </div>
-              <p class="mb-0 mt-2 small text-secondary">
-                {{ selectedService.description }}
-              </p>
-            </div>
-
-            <div class="px-4">
-              <h6 class="font-heading d-inline-block mb-2">Duration:</h6>
-              {{ selectedService.duration }} minutes
-              <div>
-                <h6 class="font-heading d-inline-block mb-2">Interval:</h6>
-                {{ selectedService.interval }} minutes
-              </div>
-              <h6 class="font-heading d-inline-block mb-2">Default Rate:</h6>
-              ${{ selectedService.default_rate }}
-              <div>
-                <h6 class="font-heading d-inline-block mb-4">
-                  Available in widget:
-                </h6>
-                {{ selectedService.in_widget ? "Yes" : "No" }}
-              </div>
-            </div>
-
-            <div class="d-flex mb-2">
-              <button
-                :data-intro="$root.intros.service_availability.intro"
-                :data-step="$root.intros.service_availability.step"
-                class="btn position-relative w-50 rounded-0 py-3"
-                :class="[
-                  serviceDetailsTab == 'availability'
-                    ? 'btn-primary'
-                    : 'btn-light',
-                ]"
-                @click="serviceDetailsTab = 'availability'"
-              >
-                Availability
-              </button>
-              <button
-                :data-intro="$root.intros.service_holidays.intro"
-                :data-step="$root.intros.service_holidays.step"
-                class="btn btn-tab position-relative w-50 rounded-0 py-3"
-                :class="[
-                  serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light',
-                ]"
-                @click="serviceDetailsTab = 'holidays'"
-              >
-                Holidays
-              </button>
-            </div>
-
-            <div v-if="serviceDetailsTab == 'availability'" id="service-days">
-              <div
-                v-for="(day, index) in days"
-                :key="index"
-                class="service-day p-2 border-bottom"
-              >
-                <div
-                  class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer"
-                  data-toggle="collapse"
-                  :data-target="`#day-${day}`"
-                >
-                  <toggle-switch
-                    class="mr-2"
-                    active-class="bg-green"
-                    @click.native.stop
-                    @input="updateService(selectedService)"
-                    v-model="selectedService.days[day].isOpen"
-                  ></toggle-switch>
-                  <div class="h6 mb-0">{{ day.toUpperCase() }}</div>
-                  <chevron-down-icon
-                    class="ml-auto chevron-down"
-                  ></chevron-down-icon>
-                </div>
-                <div
-                  class="collapse"
-                  data-parent="#service-days"
-                  :id="`day-${day}`"
-                >
-                  <div class="py-2 px-3">
-                    <div class="">
-                      <label class="mb-1 text-gray">Available Time</label>
-                      <timerangepicker
-                        @update="updateAvailableHours($event, day)"
-                        :start="selectedService.days[day].start"
-                        :end="selectedService.days[day].end"
-                      ></timerangepicker>
-
-                      <label class="mb-1 mt-3 text-gray">Break Times</label>
-                      <div
-                        class="d-flex align-items-center mb-1"
-                        v-for="(breaktime, index) in selectedService.days[day]
-                          .breaktimes"
-                        :key="index"
-                      >
-                        <timerangepicker
-                          @update="updateBreaktime($event, index, day)"
-                          :start="breaktime.start"
-                          :end="breaktime.end"
-                          class="flex-grow-1"
-                        ></timerangepicker>
-                        <trash-icon
-                          class="ml-auto cursor-pointer"
-                          width="20"
-                          height="20"
-                          fill="red"
-                          @click.native="removeBreaktime(index, day)"
-                        ></trash-icon>
+                      <div class="d-flex align-items-center justify-content-center py-3">
+                        <plus-icon class="fill-gray"></plus-icon>
+                        Add Service
                       </div>
-
-                      <timerangepicker
-                        v-if="newBreaktime"
-                        :start="newBreaktime.start"
-                        :end="newBreaktime.end"
-                        @update="updateNewBreaktime($event, day)"
-                        class="mt-1"
-                      ></timerangepicker>
-                      <div class="mt-2 d-flex align-items-center">
-                        <button
-                          type="button"
-                          class="btn btn-primary btn-sm"
-                          :disabled="
-                            newBreaktime &&
-                            (!newBreaktime.start || !newBreaktime.end)
-                          "
-                          @click="newBreaktime = {}"
-                        >
-                          + Add breaktime
-                        </button>
-                        <button
-                          v-if="
-                            (selectedService.days[day].breaktimes || [])
-                              .length > 0
-                          "
-                          type="button"
-                          class="btn btn-white border btn-sm ml-auto"
-                          @click="
-                            selectedDay = day;
-                            $refs['applyBreaktimeToAllModal'].show();
-                          "
-                        >
-                          Apply to all days
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div v-else-if="serviceDetailsTab == 'holidays'" class="mt-3 px-3">
-              <button
-                class="btn btn-sm btn-outline-primary mb-2"
-                @click="newHoliday = {}"
-              >
-                + Add Holiday
-              </button>
-              <div v-if="newHoliday">
-                <div
-                  class="d-flex border rounded align-items-stretch mb-2 overflow-hidden"
-                >
-                  <div class="text-gray bg-gray-300 p-2">Date</div>
-                  <div class="flex-grow-1">
-                    <v-date-picker
-                      is-required
-                      :disabled-dates="formattedHolidays"
-                      :min-date="new Date()"
-                      :popover="{ visibility: 'click' }"
-                      v-model="newHoliday.date"
-                      class="d-block h-100"
-                    >
-                      <button
-                        type="button"
-                        class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100"
-                        :class="{ 'text-gray': !newHoliday.date }"
-                      >
-                        {{
-                          newHoliday.date
-                            ? formatDate(newHoliday.date)
-                            : "Set date"
-                        }}
-                      </button>
-                    </v-date-picker>
-                  </div>
-                </div>
-                <div class="d-flex align-items-center mt-1">
-                  <div class="ml-auto">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-link text-body pl-0"
-                      @click="newHoliday = null"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-primary ml-auto"
-                      :disabled="!newHoliday.date"
-                      @click="addHoliday"
-                    >
-                      Add
                     </button>
                   </div>
                 </div>
               </div>
-              <div>
-                <div
-                  v-for="(holiday, index) in selectedService.holidays"
-                  :key="index"
-                  class="border-bottom py-2 d-flex"
-                >
-                  {{ formatDate(holiday) }}
-                  <trash-icon
-                    class="ml-auto cursor-pointer"
-                    width="20"
-                    height="20"
-                    fill="red"
-                    @click.native="removeHoliday(index)"
-                  ></trash-icon>
-                </div>
-              </div>
             </div>
-          </div>
-
-          <div
-            v-else
-            class="position-absolute-center text-gray text-center w-100"
-          >
-            Please select a service
           </div>
         </div>
       </div>
     </div>
+
+
+
+    <modal ref="deleteModal" :close-button="false">
+      <template v-if="selectedService">
+        <h5 class="font-heading text-center">Delete Service</h5>
+        <p class="text-center mt-3">
+          Are you sure to delete the service
+          <strong>{{ selectedService.name }}</strong>
+          ?
+          <br />
+          <span class="text-danger">This action cannot be undone</span>
+        </p>
+        <div class="d-flex">
+          <button
+            class="btn btn-light shadow-none"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger ml-auto"
+            type="button"
+            @click="
+              deleteService(selectedService);
+              $refs['deleteModal'].hide();
+            "
+          >
+            Delete
+          </button>
+        </div>
+      </template>
+    </modal>
+
+
+    <modal ref="editModal" :close-button="false">
+      <h5 class="font-heading mb-3">Edit Service</h5>
+      <vue-form-validate @submit="update" v-if="clonedService">
+        <fieldset :disabled="clonedService.parent_service_id">
+          <div class="form-group">
+            <label class="form-label">Service name</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="clonedService.name"
+              data-required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control resize-none"
+              v-model="clonedService.description"
+              data-required
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duration (in minutes)</label>
+            <input
+              type="number"
+              class="form-control"
+              v-model="clonedService.duration"
+              data-required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Interval (in minutes)</label>
+            <input
+              type="number"
+              onkeydown="if(event.key==='.'){event.preventDefault();}"
+              class="form-control"
+              v-model="clonedService.interval"
+              placeholder="Defaults to 15 mins"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Default Rate</label>
+            <input
+              type="number"
+              step="0.01"
+              class="form-control"
+              v-model="clonedService.default_rate"
+              placeholder="$0.00"
+            />
+          </div>
+        </fieldset>
+        <div class="form-group">
+          <vue-checkbox
+            v-model="clonedService.in_widget"
+            label="Available in widget"
+          ></vue-checkbox>
+        </div>
+        <div class="d-flex align-items-center">
+          <button
+            class="btn btn-light shadow-none mr-1"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button class="ml-auto btn btn-primary" type="submit">Update</button>
+        </div>
+      </vue-form-validate>
+    </modal>
 
     <modal ref="addModal" :close-button="false">
       <h5 class="font-heading mb-3">Add Service</h5>

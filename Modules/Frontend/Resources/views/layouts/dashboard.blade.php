@@ -101,7 +101,7 @@
 									<div class="list-group mt-3 font-heading sidebar-menu">
 										<template>
 											<button :data-intro='intros.bookings.intro' :data-step="intros.bookings.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
-												<div class="d-flex align-items-center px-4">
+												<div class="d-flex align-items-center pl-4 pr-2">
 													<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
 													<span class="ml-3">Bookings</span>
 													<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
@@ -147,7 +147,7 @@
 											
 											<template xv-if="auth.has_team">
 												<button data-intro='intros.team.intro' data-step="intros.team.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
-													<div class="d-flex align-items-center px-4">
+													<div class="d-flex align-items-center pl-4 pr-2">
 														<member-icon height="18" width="18" stroke="black" stroke-width="13" class="sidebar-icon sidebar-icon-stroke"></member-icon>
 														<span class="ml-3">Team</span>
 														<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>
@@ -165,7 +165,7 @@
 
 											<template xv-if="auth.has_payments">
 												<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
-													<div class="d-flex align-items-center px-4">
+													<div class="d-flex align-items-center pl-4 pr-2">
 														<payments-icon height="18" width="18" class="sidebar-icon"></payments-icon>
 														<span class="ml-3">Payments</span>
 														<chevron-down-icon class="ml-auto" fill="#777"></chevron-down-icon>

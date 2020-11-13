@@ -94,6 +94,16 @@
       <h5 class="font-heading mb-3">Add Organization</h5>
       <vue-form-validate @submit="storeOrganization(newOrganization).then(() => {resetForm();})">
         <div class="form-group">
+          <label class="form-label">Company Name</label>
+          <input
+            type="text"
+            class="form-control"
+            v-model="newOrganization.company"
+            data-required
+          />
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Organization Name</label>
           <input
             type="text"

@@ -8,13 +8,17 @@ import CalendarIcon from '../../../../../icons/calendar';
 import CoinIcon from '../../../../../icons/coin';
 import PackageIcon from '../../../../../icons/package';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
+import MoreIcon from '../../../../../icons/more-h';
+import VueCheckbox from '../../../../../components/vue-checkbox/vue-checkbox.vue';
 import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
 import dayjs from 'dayjs';
 export default {
-	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch },
+	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch, MoreIcon, VueCheckbox },
 	data: () => ({
-		newPackage: {}
+		newPackage: {},
+		clonedPackage: null,
+		selectedPackage: null
 	}),
 
 	computed: {
@@ -62,6 +66,15 @@ export default {
 			updatePackage: 'packages/update',
 			deletePackage: 'packages/delete'
 		}),
+
+		update() {
+			this.updatePackage(this.clonedPackage).then(packageItem => {
+				Object.keys(packageItem).map(key => {
+					this.packages[this.clonedPackage.index][key] = packageItem[key];
+				});
+			});
+			this.$refs['editModal'].hide();
+		},
 
 		submit() {
 			this.newPackage.expiration_date = dayjs(this.newPackage.expiration_date).format('YYYY-MM-DD');
