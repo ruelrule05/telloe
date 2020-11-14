@@ -28,25 +28,29 @@
           <div class="row px-2">
             <div class="col-md-4 px-2" v-for="(service, index) in services" :key="service.id">
               <div class="px-1 mb-4">
-                <div class="card rounded service p-3 shadow-sm w-100">
-                  <router-link
-                    class="cursor-pointer"
-                    :to="`/dashboard/bookings/services/${service.id}`"
-                    tag="div"
-                  >
-                    <div class="service-buttons position-absolute d-flex align-items-center">
-                      <toggle-switch
-                        @click.native.stop
-                        @input="updateService(service)"
-                        active-class="bg-primary"
-                        v-model="service.is_available"
-                      ></toggle-switch>
+                <router-link
+                  class="card rounded service p-3 shadow-sm w-100 overflow-hidden cursor-pointer"
+                  :to="`/dashboard/bookings/services/${service.id}`"
+                  :class="{'active': service.is_available}"
+                  tag="div"
+                >
+                    <div class="service-buttons position-absolute">
                       <div class="dropdown ml-2" @click.prevent>
                         <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
                           <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
                         </button>
 
                         <div class="dropdown-menu">
+                          <div class="d-flex align-items-center px-2 py-1">
+                            <span>Available</span>
+                            <toggle-switch
+                              class="ml-auto"
+                              @click.native.stop
+                              @input="updateService(service)"
+                              active-class="bg-primary"
+                              v-model="service.is_available"
+                            ></toggle-switch>
+                          </div>
                           <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedService = Object.assign({}, service); clonedService.index = index; $refs['editModal'].show();">Edit</span>
                           <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedService = service; $refs['deleteModal'].show();">Delete</span>
                         </div>
@@ -105,8 +109,7 @@
                         <small class="text-muted ml-1">In widget</small>
                       </div>
                     </div>
-                  </router-link>
-                </div>
+                </router-link>
               </div>
             </div>
 
