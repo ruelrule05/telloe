@@ -7,9 +7,7 @@
             <h5 class="font-heading mb-0">Members</h5>
           </div>
 
-          <div
-            class="rounded mt-2 overflow-auto h-100 flex-grow-1 d-flex flex-column"
-          >
+          <div class="mt-2 overflow-auto h-100 flex-grow-1">
             <div
               v-if="members.length == 0"
               class="text-secondary text-center p-4 position-absolute-center"
@@ -19,7 +17,7 @@
               </div>
             </div>
 
-            <div class="overflow-auto flex-grow-1 h-100 container pb-3 pt-4" v-else>
+            <div class="overflow-auto h-100 container pb-3 pt-4" v-else>
               <div class="row pt-2 px-2">
                 <router-link tag="div" :to="`/dashboard/team/members/${member.id}`" v-for="member in members" :key="member.id" class="col-md-4 member px-2 mb-5 cursor-pointer">
                   <div class="px-1">
