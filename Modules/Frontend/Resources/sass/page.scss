@@ -165,3 +165,27 @@
 .seats-50{
     margin-right: 62px;
 }
+.booking-plus{
+    &[data-plan='standard'],
+    &[data-plan='pro'] {
+        svg {
+            opacity: 0;
+        }
+    }
+}
+.payments{
+    &[data-plan='standard'] {
+        svg {
+            opacity: 0;
+        }
+    }
+}
+.integrations{
+    &[data-plan='standard'] {
+        > div:nth-child(5) svg,
+        > div:nth-child(6) svg
+         {
+            opacity: 0;
+        }
+    }
+}

@@ -11,71 +11,43 @@
 				<img src="{{ asset('images/home/home_1.svg') }}" alt="" class="w-100">
 			</div>
 			<div class="col-md-6 pr-md-0">
-				<h1 class="font-heading font-weight-bold mb-0 display-4">You Coach...</h1>
-				<h2 class="font-heading mb-4">Let {{ config('app.name') }} do the rest!</h2>
-				<p class="text-muted h5 font-weight-light mb-5">Fed up with clients missing their appointments, confused with managing multiple calendars, having issues tracking and accepting client payments, and keeping all your clients' communications and details together?</p>
+				<h1 class="font-heading font-weight-bold mb-0 display-4">It's time to Telloe...</h1>
+				<h2 class="font-heading mb-4">Scheduling a meeting has never been easy!</h2>
+				<p class="text-muted h5 font-weight-light mb-5">Control your available meeting times and empower your contacts to schedule meetings with you at a time that works for you both. <br /><br /> No more ping pong back and forth setting dates and times.</p>
 				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
-				<a class="btn btn-outline-primary btn-lg px-4 btn-sm-block" href="{{ url('/@johnwell') }}">Book a Demo</a>
+				<button class="btn btn-outline-primary btn-lg px-4 btn-sm-block">Watch video</button>
 			</div>
 		</div>
 	</div>
 </div>
 
 <div class="bg-gray-100 home-content home-content-2 position-relative">
-	<div class="container">
+	<div class="container py-5">
 		<div class="row flex-row-reverse">
 			<div class="col-md-4">
 				<img src="{{ asset('images/home/home_2.svg') }}" alt="">
 			</div>
 			<div class="col-md-8">
-				<strong class="h5 text-orange font-heading">Why {{ config('app.name') }}?</strong>
-				<h3 class="font-heading mt-4 mb-5 h1">Purposely designed to manage the clients you coach.</h3>
-				<div class="d-md-flex">
-					<div class="flex-1 w-sm-100">
-						<strong>Booking hub</strong>
-						<p class="mb-0 mt-1 pr-4 text-muted font-weight-light">Set available booking times ready for your clients to select or book it for them all while seamlessly synced to your existing calendars such as Google, iCal, or Outlook.</p>
-					</div>
-					<div class="flex-1 mt-md-0 mt-4">
-						<strong>Value add</strong>
-						<p class="mt-1 mb-0 pr-4 text-muted font-weight-light">Outside of available meetings enable clients to message you via chat, voice memo, or recorded video and reply when it suits you, giving your clients the attention without annoying interruptions to your day.</p>
-					</div>
-				</div>
-				<div class="d-md-flex">
-					<div class="flex-1 mt-4">
-						<strong>Ready to replay</strong>
-						<p class="mt-1 mb-0 pr-4 text-muted font-weight-light">Book and carry out live calls like Skype or Zoom, record, and store them for clients to replay later when they need to refresh their memory or recall those aha moments!</p>
-					</div>
-					<div class="flex-1"></div>
-				</div>
+				<strong class="h5 text-orange font-heading">Simple solutions.</strong>
+				<h3 class="font-heading mt-4 mb-5 h1">Manage contact with your contacts.</h3>
+				<p class="mb-0 mt-1 pr-4 text-muted font-weight-light h5">Set available booking times ready for your contacts to select or book it for them all while seamlessly synced to your existing calendars such as Google, iCal, or Outlook. <br /><br />Track booked meetings over time and keep account of the number of meetings for each contact.</p>
 			</div>
 		</div>
 	</div>
 </div>
 
 <div class="home-content home-content-3 position-relative">
-	<div class="container">
+	<div class="container py-5">
 		<div class="row flex-row-reverse">
 			<div class="col-md-5 mt-n5 mt-md-0">
 				<img src="{{ asset('images/home/home_5.svg') }}" alt="" class="mt-n5 mt-md-0">
 			</div>
-			<div class="col-md-7">
-				<strong class="h5 text-primary font-heading">Simple software for Coaches.</strong>
+			<div class="col-md-7 pr-5">
+				<strong class="h5 text-primary font-heading">Save time, get organized, get it done!</strong>
 				<h3 class="font-heading mt-4 mb-5 h1">Simplify how you manage bookings, payments, and communications all in one simple to use tool.</h3>
-				<strong class="h5 font-heading mb-4 d-block">Best suited for coaches of all kinds including:</strong>
-				<div class="d-md-flex flex-wrap text-muted w-50">
-					<div class="flex-1 font-weight-light">
-						<div>Executive Coaching</div>
-						<div>Leadership Coaching</div>
-						<div>Career Coaching</div>
-						<div>Team Coaching</div>
-					</div>
-					<div class="flex-1 font-weight-light">
-						<div>Business Coaching</div>
-						<div>Systemic Coaching</div>
-						<div>Life Coaching</div>
-						<div>Performance Coaching</div>
-					</div>
-				</div>
+				<p class="mb-0 mt-1 pr-4 text-muted font-weight-light h5">
+				Create and track multiple bookings that you can make available in blocks for regular meetings. <br /><br />Enable clients to choose who they want to book within your organization by setting up organizational booking calendars. <br /><br />Charge for meeting with a single set price, monthly subscriptions, or bulk pricing for contacts who want to book blocks of meetings.Take payments for meetings via our integrated Stripe and Xero solutions.<br /><br />Conduct meetings face to face, with Zoom, Skype, or Google Meets or use our own fully-featured messaging system inside Telloe.
+				</p>
 			</div>
 		</div>
 	</div>
@@ -303,8 +275,8 @@
 							<h4 class="mb-0 font-weight-normal d-inline @if($plan->name == 'Annual') text-warning @endif"><strong>${{ intval($plan->price) }}</strong></h4><span class="@if($plan->name == 'Annual') text-warning @endif">{{ substr(strval($plan->price - intval($plan->price)), 1) }}</span> / {{ $plan->interval }}
 
 							<div class="text-secondary">
-								@if($plan->every_months > 1)
-									Billed as one payment of ${{ number_format($plan->price * $plan->every_months, 2) }}
+								@if($plan->per_user)
+									per user
 								@endif
 								&nbsp;
 							</div>
@@ -323,14 +295,62 @@
 								<div class="d-flex align-items-center">
 									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Email Reminders
 								</div>
+								<div class="d-flex align-items-center">
+									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Unlimited Service Types
+								</div>
+								
+								<div class="booking-plus" data-plan="{{ strtolower($plan->name) }}">
+									<strong class="mt-3 d-block">Booking Plus</strong>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Multi Book&nbsp;&nbsp;<u><a href="">Learn more</a></u>
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Multi-team booking system
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Organization Booking URL
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Linked Accounts
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Admin Bookings
+									</div>
+								</div>
 
-								<strong class="mt-3 d-block">Payments</strong>
-								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments
+								<div class="payments" data-plan="{{ strtolower($plan->name) }}">
+									<strong class="mt-3 d-block">Payments</strong>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments (via Stripe)
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Xero Accounting Integration
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Subscription Manager
+									</div>
 								</div>
-								<div class="d-flex align-items-center">
-									<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Subscription Manager
+
+								<div class="integrations" data-plan="{{ strtolower($plan->name) }}">
+									<strong class="mt-3 d-block">Integrations</strong>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Zoom
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Google Calendar
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Outlook Calendar
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Xero
+									</div>
+									<div class="d-flex align-items-center">
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Stripe
+									</div>
 								</div>
+
+
 
 								<strong class="mt-3 d-block">Communication</strong>
 								<div class="d-flex align-items-center">
