@@ -10,6 +10,7 @@ use App\Models\Service;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Modules\Frontend\Http\Slugify;
 
 class OrganizationController extends Controller
@@ -84,19 +85,45 @@ class OrganizationController extends Controller
     public function update(Organization $organization, Request $request)
     {
         $this->validate($request, [
-            'company' => 'required|string',
             'name' => 'required|string',
+            'slug' => 'required|string',
+            'members' => 'array',
         ]);
 
         if ($organization->user_id != Auth::user()->id) {
             return abort(403);
         }
-        $slug = Slugify::create(Organization::class, strtolower($request->name));
+
+        if (Organization::where('id', '<>', $organization->id)->where('slug', $request->slug)->first()) {
+            return abort(403, 'Slug is already associated to a different organization');
+        }
+
+        if (count($request->members) == 0) {
+            OrganizationMember::where('organization_id', $organization->id)->delete();
+        } else {
+            $member_ids = Arr::pluck($request->members, 'id');
+            foreach ($organization->members as $member) {
+                if (! in_array($member->id, $member_ids)) {
+                    $member->delete();
+                }
+            }
+
+            foreach ($request->members as $member) {
+                $member = Member::where('user_id', Auth::user()->id)->where('id', $member['id'])->first();
+                if ($member) {
+                    OrganizationMember::firstOrCreate([
+                        'organization_id' => $organization->id,
+                        'member_id' => $member->id
+                    ]);
+                }
+            }
+        }
+
         $organization->update([
-            'company' => $request->company,
             'name' => $request->name,
-            'slug' => $slug
+            'slug' => $request->slug
         ]);
+
         return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));
     }
 
@@ -162,5 +189,16 @@ class OrganizationController extends Controller
         }
 
         return response()->json($timeslots);
+    }
+
+    public function destroy($id)
+    {
+        $organization = Organization::findOrFail($id);
+        if ($organization->user_id != Auth::user()->id) {
+            return abort(403);
+        }
+        $organization->delete();
+
+        return response()->json(['deleted' => true]);
     }
 }

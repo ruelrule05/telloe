@@ -28,56 +28,57 @@
           <div class="row px-2">
             <div class="col-md-4 px-2" v-for="(packageItem, index) in packages" :key="packageItem.id">
               <div class="px-1 mb-4">
-                <div class="card rounded service p-3 shadow-sm w-100">
-                  <router-link
-                    :to="`/dashboard/bookings/packages/${packageItem.id}`"
-                    tag="div"
-                    class="cursor-pointer"
-                  >
-                    <div class="package-buttons position-absolute d-flex align-items-center">
-                      <toggle-switch
-                        class="ml-auto"
-                        @click.native.stop
-                        @input="updatePackage(packageItem)"
-                        active-class="bg-primary"
-                        v-model="packageItem.is_available"
-                      ></toggle-switch>
+                <router-link
+                  :to="`/dashboard/bookings/packages/${packageItem.id}`"
+                  tag="div"
+                  class="card rounded service p-3 shadow-sm w-100 overflow-hidden cursor-pointer"
+                  :class="{'active': packageItem.is_available}"
+                >
+                  <div class="package-buttons position-absolute d-flex align-items-center">
+                    <div class="dropdown ml-2" @click.prevent>
+                      <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+                        <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+                      </button>
 
-                      <div class="dropdown ml-2" @click.prevent>
-                        <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
-                          <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
-                        </button>
-
-                        <div class="dropdown-menu">
-                          <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedPackage = Object.assign({}, packageItem); clonedPackage.index = index; $refs['editModal'].show();">Edit</span>
-                          <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedPackage = packageItem; $refs['deleteModal'].show();">Delete</span>
+                      <div class="dropdown-menu">
+                        <div class="d-flex align-items-center px-2 py-1">
+                          <span>Available</span>
+                          <toggle-switch
+                            class="ml-auto"
+                            @click.native.stop
+                            @input="updatePackage(packageItem)"
+                            active-class="bg-primary"
+                            v-model="packageItem.is_available"
+                          ></toggle-switch>
                         </div>
+                        <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedPackage = Object.assign({}, packageItem); clonedPackage.index = index; $refs['editModal'].show();">Edit</span>
+                        <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedPackage = packageItem; $refs['deleteModal'].show();">Delete</span>
                       </div>
                     </div>
-                    <div class="mb-1">
-                      <h5 class="font-heading mb-0">
-                        {{ packageItem.name }}
-                      </h5>
-                    </div>
-                    <p
-                      class="text-muted mb-0 multiline-ellipsis xsmall service-description mb-4"
-                    >
-                      {{ packageItem.description }}
-                    </p>
-                    <div class="d-flex align-items-center">
-                      <package-icon width="17" height="17" fill="#888"></package-icon>
-                      <span class="ml-2">{{ packageItem.services.length }} services</span>
-                    </div>
-                    <div class="d-flex align-items-center mt-2">
-                      <coin-icon width="17" height="17" fill="#888"></coin-icon>
-                      <span class="ml-2">${{ parseFloat(packageItem.price).toFixed(2) }}</span>
-                    </div>
-                    <div class="d-flex align-items-center mt-2">
-                      <calendar-icon width="17" height="17" fill="#888"></calendar-icon>
-                      <span class="ml-2">Expires on {{ formatDate(packageItem.expiration_date) }}</span>
-                    </div>
-                  </router-link>
-                </div>
+                  </div>
+                  <div class="mb-1">
+                    <h5 class="font-heading mb-0">
+                      {{ packageItem.name }}
+                    </h5>
+                  </div>
+                  <p
+                    class="text-muted mb-0 multiline-ellipsis xsmall service-description mb-4"
+                  >
+                    {{ packageItem.description }}
+                  </p>
+                  <div class="d-flex align-items-center">
+                    <package-icon width="17" height="17" fill="#888"></package-icon>
+                    <span class="ml-2">{{ packageItem.services.length }} services</span>
+                  </div>
+                  <div class="d-flex align-items-center mt-2">
+                    <coin-icon width="17" height="17" fill="#888"></coin-icon>
+                    <span class="ml-2">${{ parseFloat(packageItem.price).toFixed(2) }}</span>
+                  </div>
+                  <div class="d-flex align-items-center mt-2">
+                    <calendar-icon width="17" height="17" fill="#888"></calendar-icon>
+                    <span class="ml-2">Expires on {{ formatDate(packageItem.expiration_date) }}</span>
+                  </div>
+                </router-link>
               </div>
             </div>
 

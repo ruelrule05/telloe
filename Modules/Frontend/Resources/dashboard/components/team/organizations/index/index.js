@@ -46,7 +46,9 @@ export default {
 			members: []
 		},
 		clonedOrganization: null,
-		slugify: slugify
+		selectedOrganization: null,
+		slugify: slugify,
+		newMembers: []
 	}),
 
 	computed: {
@@ -88,9 +90,11 @@ export default {
 	methods: {
 		...mapActions({
 			getOrganizations: 'organizations/index',
+			deleteOrganization: 'organizations/delete',
 			storeOrganization: 'organizations/store',
 			getMembers: 'members/index',
-			updateOrganization: 'organizations/update'
+			updateOrganization: 'organizations/update',
+			addOrganizationMembers: 'organizations/add_members'
 		}),
 
 		goToPage(slug) {
@@ -105,6 +109,25 @@ export default {
 			this.newOrganization.name = '';
 			this.newOrganization.members = [];
 			this.$refs['addModal'].hide();
+		},
+
+		async submitUpdate() {
+			let data = await this.updateOrganization(this.clonedOrganization);
+			this.organization = data;
+			this.$refs['editModal'].hide();
+		},
+
+		addMembers() {
+			if (this.newMembers.length > 0) {
+				this.addOrganizationMembers({ organization_id: this.clonedOrganization.id, member_ids: this.newMembers.map(member => member.id) }).then(response => {
+					let organization = this.organizations.find(x => x.id == this.clonedOrganization.id);
+					if (organization) {
+						organization.members = response.data;
+					}
+					this.$refs['addMemberModal'].hide();
+					this.newMembers = [];
+				});
+			}
 		}
 	}
 };
