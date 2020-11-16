@@ -176,63 +176,92 @@
     </modal>
 
 
-    <modal ref="editModal" :close-button="false">
+    <modal ref="editModal" :close-button="false" size="modal-lg">
       <h5 class="font-heading mb-3">Edit Service</h5>
       <vue-form-validate @submit="update" v-if="clonedService">
-        <fieldset :disabled="clonedService.parent_service_id">
-          <div class="form-group">
-            <label class="form-label">Service name</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="clonedService.name"
-              data-required
-            />
+        <div class="row mx-0 mb-2">
+          <div class="col-md-7 pl-0">
+            <fieldset :disabled="clonedService.parent_service_id">
+              <div class="form-group">
+                <label class="form-label">Service name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="clonedService.name"
+                  data-required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-control resize-none"
+                  v-model="clonedService.description"
+                  data-required
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Duration (in minutes)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  v-model="clonedService.duration"
+                  data-required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Interval (in minutes)</label>
+                <input
+                  type="number"
+                  onkeydown="if(event.key==='.'){event.preventDefault();}"
+                  class="form-control"
+                  v-model="clonedService.interval"
+                  placeholder="Defaults to 15 mins"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Default Rate</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  class="form-control"
+                  v-model="clonedService.default_rate"
+                  placeholder="$0.00"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="clonedService.address"
+                  placeholder="Address"
+                />
+              </div>
+            </fieldset>
           </div>
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea
-              class="form-control resize-none"
-              v-model="clonedService.description"
-              data-required
-              rows="3"
-            ></textarea>
+
+          <div class="col-md-5 border-left border-gray-200 pr-0">
+            <h6 class="font-heading">Service Settings</h6>
+            <div class="form-group mb-2">
+              <vue-checkbox
+                v-model="clonedService.in_widget"
+                label="Available in widget"
+              ></vue-checkbox>
+            </div>
+            <div class="form-group mb-2">
+              <vue-checkbox
+                v-model="clonedService.require_skype"
+                label="Require Skype ID in booking"
+              ></vue-checkbox>
+            </div>
+            <div class="form-group">
+              <vue-checkbox
+                v-model="clonedService.require_phone"
+                label="Require phone number booking"
+              ></vue-checkbox>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Duration (in minutes)</label>
-            <input
-              type="number"
-              class="form-control"
-              v-model="clonedService.duration"
-              data-required
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Interval (in minutes)</label>
-            <input
-              type="number"
-              onkeydown="if(event.key==='.'){event.preventDefault();}"
-              class="form-control"
-              v-model="clonedService.interval"
-              placeholder="Defaults to 15 mins"
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Default Rate</label>
-            <input
-              type="number"
-              step="0.01"
-              class="form-control"
-              v-model="clonedService.default_rate"
-              placeholder="$0.00"
-            />
-          </div>
-        </fieldset>
-        <div class="form-group">
-          <vue-checkbox
-            v-model="clonedService.in_widget"
-            label="Available in widget"
-          ></vue-checkbox>
         </div>
         <div class="d-flex align-items-center">
           <button
