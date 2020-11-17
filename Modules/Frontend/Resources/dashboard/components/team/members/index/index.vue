@@ -22,26 +22,40 @@
                 <router-link tag="div" :to="`/dashboard/team/members/${member.id}`" v-for="member in members" :key="member.id" class="col-md-4 member px-2 mb-5 cursor-pointer">
                   <div class="px-1">
                     <div class="bg-white rounded p-3 shadow-sm text-centxer position-relative">
-                      <div
-                          class="badge badge-icon d-inline-flex align-items-center position-absolute"
-                          :class="[
-                            member.is_pending
-                              ? 'bg-warning-light text-warning'
-                              : 'bg-primary-light text-primary',
-                          ]"
-                        >
-                          <clock-icon
-                            v-if="member.is_pending"
-                            height="12"
-                            width="12"
-                          ></clock-icon>
-                          <checkmark-circle-icon
-                            v-else
-                            height="12"
-                            width="12"
-                          ></checkmark-circle-icon>
-                          &nbsp;{{ member.is_pending ? "Pending" : "Accepted" }}
+                      <div class="member-buttons position-absolute d-flex align-items-center">
+                        <div
+                            class="badge badge-icon d-inline-flex align-items-center mr-2"
+                            :class="[
+                              member.is_pending
+                                ? 'bg-warning-light text-warning'
+                                : 'bg-primary-light text-primary',
+                            ]"
+                          >
+                            <clock-icon
+                              v-if="member.is_pending"
+                              height="12"
+                              width="12"
+                            ></clock-icon>
+                            <checkmark-circle-icon
+                              v-else
+                              height="12"
+                              width="12"
+                            ></checkmark-circle-icon>
+                            &nbsp;{{ member.is_pending ? "Pending" : "Accepted" }}
+                        </div>
+                        
+                        <div class="dropdown" @click.prevent>
+                          <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+                            <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+                          </button>
+                          <div class="dropdown-menu">
+                            <span v-if="member.is_pending" class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedMember = member; $refs['resendModal'].show()">Resend invitation</span>
+                            <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedMember = JSON.parse(JSON.stringify(member)); $refs['editModal'].show()">Edit</span>
+                            <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedMember = member; $refs['deleteModal'].show()">Delete</span>
+                          </div>
+                        </div>
                       </div>
+
                       <div class="mt-n3">
                         <div
                           class="user-profile-image user-profile-image-sm d-inline-block mb-2 mt-n4"
@@ -161,7 +175,7 @@
                     </div>
                     <toggle-switch
                       :class="{ 'd-none': service.is_loading }"
-                      active-class="bg-green"
+                      active-class="bg-primary"
                       :value="
                         selectedMember.services.find(
                           (x) => x.parent_service_id == service.id
@@ -191,6 +205,85 @@
         </div>
       </div>
     </div>
+
+
+    <modal ref="editModal" :close-button="false">
+      <h5 class="font-heading mb-3">Edit Member</h5>
+      <vue-form-validate v-if="clonedMember" @submit="update">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            v-model="clonedMember.email"
+            data-required
+          />
+        </div>
+        <div class="form-row form-group">
+          <div class="col">
+            <label class="form-label">First Name (Optional)</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="clonedMember.first_name"
+            />
+          </div>
+          <div class="col">
+            <label class="form-label">Last Name (Optional)</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="clonedMember.last_name"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <strong class="d-block mb-2 font-weight-bold"
+            >Assign Services</strong
+          >
+          <template v-for="service in services">
+            <div
+              v-if="service.is_available"
+              :key="service.id"
+              class="d-flex align-items-center mb-2 rounded p-3 bg-light"
+            >
+              <div>
+                <h6 class="font-heading mb-0">{{ service.name }}</h6>
+                <small class="text-gray d-block"
+                  >{{ service.duration }} minutes</small
+                >
+              </div>
+              <div class="ml-auto">
+                <toggle-switch
+                  active-class="bg-primary"
+                  :value="
+                    clonedMember.assigned_services.find(
+                      (x) => x.id == service.id
+                    )
+                      ? true
+                      : false
+                  "
+                  @input="toggleAssignedService(service)"
+                ></toggle-switch>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class="d-flex">
+          <button
+            class="btn btn-light shadow-none"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button class="ml-auto btn btn-primary" type="submit">
+            Save
+          </button>
+        </div>
+      </vue-form-validate>
+    </modal>
 
     <modal ref="addModal" :close-button="false">
       <h5 class="font-heading mb-3">Add Member</h5>
@@ -240,7 +333,7 @@
               </div>
               <div class="ml-auto">
                 <toggle-switch
-                  active-class="bg-green"
+                  active-class="bg-primary"
                   :value="
                     newMember.assigned_services.find(
                       (x) => x == service.id
@@ -295,15 +388,15 @@
         <p class="text-center mt-3">
           Are you sure to resend the invitation email to member
           <strong>{{
-            selectedmember_user.full_name.trim() ||
-            selectedmember_user.email
+            selectedMember.full_name.trim() ||
+            selectedMember.email
           }}</strong>
           ?
           <br />
         </p>
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-white border text-body"
+            class="btn btn-light shadow-none"
             type="button"
             data-dismiss="modal"
           >
@@ -326,8 +419,8 @@
         <p class="text-center mt-3">
           Are you sure to delete member
           <strong>{{
-            selectedmember_user.full_name.trim() ||
-            selectedmember_user.email
+            selectedMember.full_name.trim() ||
+            selectedMember.email
           }}</strong>
           ?
           <br />
@@ -335,7 +428,7 @@
         </p>
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-white border text-body"
+            class="btn btn-light shadow-none text-body"
             type="button"
             data-dismiss="modal"
           >
@@ -348,7 +441,6 @@
               deleteMember(selectedMember);
               $refs['deleteModal'].hide();
               selectedMember = null;
-              infoTab = '';
             "
           >
             Delete

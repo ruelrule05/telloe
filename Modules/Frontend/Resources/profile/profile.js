@@ -3,6 +3,7 @@ require('../js/bootstrap');
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/modal';
+import 'bootstrap/js/dist/dropdown';
 import VCalendar from 'v-calendar';
 import Toasted from 'vue-toasted';
 import dayjs from 'dayjs';
@@ -23,6 +24,7 @@ import CalendarDayAltIcon from '../icons/calendar-day-alt';
 import InfoCircleIcon from '../icons/info-circle';
 import CheckmarkIcon from '../icons/checkmark';
 import ArrowLeftIcon from '../icons/arrow-left';
+import ArrowRightIcon from '../icons/arrow-right';
 import CalendarMonthIcon from '../icons/calendar-month';
 import ChevronLeftIcon from '../icons/chevron-left';
 import ChevronRightIcon from '../icons/chevron-right';
@@ -36,6 +38,8 @@ import CoinIcon from '../icons/coin';
 import PackageIcon from '../icons/package';
 import DollarSignIcon from '../icons/dollar-sign';
 import WindowPlusIcon from '../icons/window-plus';
+import CloseIcon from '../icons/close';
+import MoreIcon from '../icons/more-h';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
@@ -44,6 +48,7 @@ const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';
+import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
 
 export default {
 	components: {
@@ -56,6 +61,7 @@ export default {
 		CheckmarkIcon,
 		VueButton,
 		ArrowLeftIcon,
+		ArrowRightIcon,
 		CalendarMonthIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -68,7 +74,10 @@ export default {
 		CoinIcon,
 		PackageIcon,
 		DollarSignIcon,
-		WindowPlusIcon
+		WindowPlusIcon,
+		CloseIcon,
+		MoreIcon,
+		ToggleSwitch
 	},
 
 	directives: { tooltip },
@@ -119,7 +128,8 @@ export default {
 		convertTime: convertTime,
 		dayjs: dayjs,
 		selectedCoachId: null,
-		activeUserBgPosition: 0
+		activeUserBgPosition: 0,
+		selectedTimeslots: []
 	}),
 
 	computed: {
@@ -232,18 +242,6 @@ export default {
 			return options;
 		},
 
-		endTime() {
-			let endTime = '';
-			if (this.selectedService && this.startDate && this.selectedTimeslot) {
-				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + this.selectedTimeslot.time);
-				endTime = dayjs(startDate)
-					.add(this.selectedService.duration, 'minute')
-					.format('hh:mmA');
-			}
-			return endTime;
-			return this.timezoneTime(endTime);
-		},
-
 		tabDates() {
 			let tabDates = [];
 			let i = 7;
@@ -317,6 +315,23 @@ export default {
 	},
 
 	methods: {
+		endTime(time) {
+			let endTime = '';
+			if (this.selectedService && this.startDate) {
+				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
+				endTime = dayjs(startDate)
+					.add(this.selectedService.duration, 'minute')
+					.format('hh:mmA');
+			}
+			return endTime;
+		},
+
+		summary() {
+			if (this.selectedTimeslots.length > 0) {
+				this.selectedTimeslot = true;
+			}
+		},
+
 		previousWeek() {
 			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
 			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
@@ -334,8 +349,17 @@ export default {
 
 		setSelectedDateAndTimeslot(date, timeslot) {
 			if (timeslot.is_available) {
-				this.selectedDate = date.date;
-				this.selectedTimeslot = timeslot;
+				// this.selectedDate = date.date;
+				// this.selectedTimeslot = timeslot;
+				let index = this.selectedTimeslots.findIndex(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time);
+				if (index > -1) {
+					this.selectedTimeslots.splice(index, 1);
+				} else {
+					this.selectedTimeslots.push({
+						date: date,
+						timeslot: timeslot
+					});
+				}
 			}
 		},
 		timezoneTooltip(timezone, timeslot) {
@@ -673,19 +697,8 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				//this.selectedServiceForTimeline = this.services[0];
-				//this.selectedService = this.selectedServiceForTimeline;
-
-				//this.selectedServiceForTimeline = this.services[0];
-				//this.selectedService = this.selectedServiceForTimeline;
-				/*let now = new Date();
-                now.setHours(0, 0, 0);
-                this.startDate = now;
-                this.setService(this.services[0]);
-                setTimeout(() => {
-                    this.selectedTimeslot = {label: '12:30PM'};
-                    this.step = 3;
-                });*/
+				this.selectedServiceForTimeline = this.services[0];
+				this.selectedService = this.selectedServiceForTimeline;
 
 				this.ready = true;
 			});

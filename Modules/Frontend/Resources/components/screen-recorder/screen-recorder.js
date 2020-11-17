@@ -8,9 +8,9 @@ import CommentIcon from '../../icons/comment';
 const loadImage = require('blueimp-load-image');
 const mime = require('mime-types');
 export default {
-	components: {CameraIcon, CloseIcon, PauseAltIcon, CommentIcon},
+	components: { CameraIcon, CloseIcon, PauseAltIcon, CommentIcon },
 
-	directives: {Tooltip},
+	directives: { Tooltip },
 
 	data: () => ({
 		cameraReady: false,
@@ -51,8 +51,8 @@ export default {
 
 	methods: {
 		goToConversation() {
-			let target = `/dashboard/conversations/${this.$root.screenRecorder.conversation_id}`;
-			if(this.$route.path != target) this.$router.push(target);
+			let target = `/dashboard/bookings/services/${this.$root.screenRecorder.conversation_id}`;
+			if (this.$route.path != target) this.$router.push(target);
 		},
 
 		close() {
@@ -65,53 +65,52 @@ export default {
 			this.videoRecorder.stop();
 
 			return new Promise((resolve, reject) => {
-				if(this.blobs.length > 0) {
-	                const timestamp = dayjs().valueOf();
-				    let file = new File(this.blobs, timestamp, {
-				        type: this.blobs[0].type
+				if (this.blobs.length > 0) {
+					const timestamp = dayjs().valueOf();
+					let file = new File(this.blobs, timestamp, {
+						type: this.blobs[0].type
 					});
 
-				    //let extension = mime.extension(file.type);
-				    let extension = 'mp4';
-				    file = new File([file], `${timestamp}.${extension}`, {
-				    	type: file.type
-				    });
-	
+					//let extension = mime.extension(file.type);
+					let extension = 'mp4';
+					file = new File([file], `${timestamp}.${extension}`, {
+						type: file.type
+					});
 
-				    let duration = '';
-				    this.$refs['videoPreview'].play().then(() => {
-				    	this.$refs['videoPreview'].currentTime = 10e99;
-				        this.$refs['videoPreview'].onseeked = () => {
-				          	this.$refs['videoPreview'].currentTime = 0;
-				          	this.$refs['videoPreview'].pause();
-				          	this.$refs['videoPreview'].onseeked = null;
-				          	duration = this.$refs['videoPreview'].duration;
-						    let video = {
-						    	source: file,
-						    	duration: this.secondsToDuration(duration, 14, 5),
-						    	type: 'video',
-						    	timestamp: `${timestamp}.${extension}`,
-	               				created_at: dayjs(timestamp).format('hh:mm A'),
-						    };
-		                    setTimeout(() => {
-		                        let canvas = document.createElement("canvas");
-		                        canvas.width = this.$refs['videoPreview'].videoWidth;
-		                        canvas.height = this.$refs['videoPreview'].videoHeight;
-		                        canvas.getContext('2d').drawImage(this.$refs['videoPreview'], 0, 0, canvas.width, canvas.height);
-		                        canvas.toBlob((blob) => {
-					  				let reader = new FileReader();
-								    reader.onload = () => {
-			                            video.preview = reader.result;
-			                            resolve(video);
-						  				this.$emit('submit', video);
-				  						this.close();
-								    };
-								    reader.readAsDataURL(blob);
-		                        });
-		                   });
-				        }
-				    });
-			  	}
+					let duration = '';
+					this.$refs['videoPreview'].play().then(() => {
+						this.$refs['videoPreview'].currentTime = 10e99;
+						this.$refs['videoPreview'].onseeked = () => {
+							this.$refs['videoPreview'].currentTime = 0;
+							this.$refs['videoPreview'].pause();
+							this.$refs['videoPreview'].onseeked = null;
+							duration = this.$refs['videoPreview'].duration;
+							let video = {
+								source: file,
+								duration: this.secondsToDuration(duration, 14, 5),
+								type: 'video',
+								timestamp: `${timestamp}.${extension}`,
+								created_at: dayjs(timestamp).format('hh:mm A')
+							};
+							setTimeout(() => {
+								let canvas = document.createElement('canvas');
+								canvas.width = this.$refs['videoPreview'].videoWidth;
+								canvas.height = this.$refs['videoPreview'].videoHeight;
+								canvas.getContext('2d').drawImage(this.$refs['videoPreview'], 0, 0, canvas.width, canvas.height);
+								canvas.toBlob(blob => {
+									let reader = new FileReader();
+									reader.onload = () => {
+										video.preview = reader.result;
+										resolve(video);
+										this.$emit('submit', video);
+										this.close();
+									};
+									reader.readAsDataURL(blob);
+								});
+							});
+						};
+					});
+				}
 			});
 		},
 
@@ -123,34 +122,34 @@ export default {
 		},
 
 		pauseRecord() {
-			if(this.videoRecorder) {
+			if (this.videoRecorder) {
 				clearInterval(this.timer);
 				this.$root.screenRecorder.status = 'paused';
 				this.recorderStatus = 'paused';
 				this.isRecording = false;
 				this.videoRecorder.pause();
 				this.videoRecorder.requestData();
-		    	let blob = new Blob(this.blobs);
-		    	this.$refs['videoPreview'].src = URL.createObjectURL(blob);
-		    	this.$refs['videoPreview'].load();
-		    	this.$root.screenRecorder.data = this.blobs;
+				let blob = new Blob(this.blobs);
+				this.$refs['videoPreview'].src = URL.createObjectURL(blob);
+				this.$refs['videoPreview'].load();
+				this.$root.screenRecorder.data = this.blobs;
 			}
 		},
 
 		startRecord() {
-			if(!this.screenCapture) {
+			if (!this.screenCapture) {
 				this.initDevices();
 				return;
 			}
 
 			this.recorderStatus = 'recording';
 			this.$root.screenRecorder.status = 'recording';
-			if(this.videoRecorder) {
+			if (this.videoRecorder) {
 				this.timer = setInterval(() => {
 					this.duration += 0.01;
-				}, 10)
+				}, 10);
 				this.isRecording = true;
-				if(this.hasRecorded) {
+				if (this.hasRecorded) {
 					this.videoRecorder.resume();
 				} else {
 					this.videoRecorder.start(30);
@@ -162,8 +161,10 @@ export default {
 		async initDevices() {
 			this.cameraReady = false;
 			let finalStream = new MediaStream();
-			let audioStreams = await navigator.mediaDevices.getUserMedia({audio: true}).catch((e) => {this.close();});
-			if(!audioStreams) {
+			let audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(e => {
+				this.close();
+			});
+			if (!audioStreams) {
 				this.close();
 				return;
 			}
@@ -171,9 +172,10 @@ export default {
 				finalStream.addTrack(track);
 			});
 
-
-			let displayStreams = await navigator.mediaDevices.getDisplayMedia({video: true}).catch((e) => {this.close();});
-			if(!displayStreams) {
+			let displayStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {
+				this.close();
+			});
+			if (!displayStreams) {
 				this.close();
 				return;
 			}
@@ -190,15 +192,14 @@ export default {
 			this.cameraReady = true;
 			this.screenCapture = true;
 			this.streams = finalStream;
-			this.videoRecorder = new MediaRecorder(finalStream, {mimeType: 'video/webm'});
+			this.videoRecorder = new MediaRecorder(finalStream, { mimeType: 'video/webm' });
 			this.videoRecorder.ondataavailable = e => this.blobs.push(e.data);
 			this.videoRecorder.camera = finalStream;
 			this.$refs['videoFile'].muted = true;
 			this.$refs['videoFile'].volume = 0;
 			this.$refs['videoFile'].srcObject = finalStream;
 			this.$refs['videoFile'].play();
-			this.$refs['videoFile'].onplaying = () => {
-			};
-		},
-	},
+			this.$refs['videoFile'].onplaying = () => {};
+		}
+	}
 };

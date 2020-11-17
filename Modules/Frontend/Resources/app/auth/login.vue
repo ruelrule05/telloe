@@ -84,7 +84,7 @@ export default {
                         this.$parent.socket.emit('invite_token', this.loginForm.invite_token);
 						this.$parent.socket.emit('member_invite_token', this.loginForm.member_invite_token);
 						setTimeout(() => {
-							window.location.href = '/dashboard/conversations';
+							window.location.href = '/dashboard/bookings/services';
 						}, 150);
 					})
 					.catch(e => {

@@ -244,6 +244,16 @@ $timeCount: 15;
 	user-select: none !important;
 	color: $dark;
 }
+.timeslot-button {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	.selected-checkmark {
+		right: -2px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
 @media only screen and (max-width: 991px) {
 	#app {
 		overflow: hidden;

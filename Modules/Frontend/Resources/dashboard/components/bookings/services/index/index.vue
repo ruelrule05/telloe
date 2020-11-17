@@ -100,13 +100,21 @@
                         <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
                         <small class="text-muted ml-1">{{ service.duration }} min</small>
                       </div>
-                      <div class="d-flex align-items-center ml-3">
+                      <div class="d-flex align-items-center ml-2">
                         <dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
                         <small class="text-muted ml-1">{{ service.default_rate }}</small>
                       </div>
-                      <div class="d-flex align-items-center ml-3" v-if="service.in_widget">
+                      <div class="d-flex align-items-center ml-2" v-if="service.in_widget">
                         <window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
                         <small class="text-muted ml-1">In widget</small>
+                      </div>
+                      <div class="d-flex align-items-center ml-2" v-if="service.require_skype">
+                        <skype-icon width="11" height="11" transform="scale(1.3)" fill="#6c757d"></skype-icon>
+                        <small class="text-muted ml-1">Skype</small>
+                      </div>
+                      <div class="d-flex align-items-center ml-2" v-if="service.require_phone">
+                        <phone-icon width="11" height="11" transform="scale(1.3)" fill="#6c757d"></phone-icon>
+                        <small class="text-muted ml-1">Phone</small>
                       </div>
                     </div>
                 </router-link>
@@ -252,13 +260,13 @@
             <div class="form-group mb-2">
               <vue-checkbox
                 v-model="clonedService.require_skype"
-                label="Require Skype ID in booking"
+                label="Ask for Skype ID in booking"
               ></vue-checkbox>
             </div>
             <div class="form-group">
               <vue-checkbox
                 v-model="clonedService.require_phone"
-                label="Require phone number booking"
+                label="Ask for phone number in booking"
               ></vue-checkbox>
             </div>
           </div>

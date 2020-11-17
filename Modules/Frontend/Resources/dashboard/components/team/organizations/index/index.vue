@@ -25,9 +25,6 @@
                   <div class="px-1">
                     <div class="card rounded organization p-3 shadow-sm w-100 h-100">
                         <div class="organization-buttons dropdown position-absolute">
-                          <!-- <button class="btn btn-light badge-pill line-height-0 p-1" type="button" @click.stop="goToPage(organization.slug)">
-                            <shortcut-icon transform="scale(0.8)"></shortcut-icon>
-                          </button> -->
                           <button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
                             <more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
                           </button>

@@ -20,8 +20,6 @@
 }
 
 .badge-icon {
-	top: 10px;
-	right: 10px;
 	svg {
 		transform: scale(1.3);
 		margin-right: 2px;
@@ -53,4 +51,8 @@
 	transform: none !important;
 	padding-top: 55px;
 	padding-bottom: 55px;
+}
+.member-buttons {
+	top: 10px;
+	right: 10px;
 }

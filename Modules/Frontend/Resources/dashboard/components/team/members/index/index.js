@@ -46,7 +46,9 @@ export default {
 		selectedFile: null,
 		addField: false,
 		newField: '',
-		resendLoading: false
+		resendLoading: false,
+		selectedMember: null,
+		clonedMember: null
 	}),
 
 	computed: {
@@ -91,9 +93,19 @@ export default {
 			getServices: 'services/index',
 			getMembers: 'members/index',
 			storeMember: 'members/store',
+			updateMember: 'members/update',
 			deleteMember: 'members/delete',
 			getMemberFromInviteToken: 'members/get_member_from_invite_token'
 		}),
+
+		update() {
+			let serviceIds = this.clonedMember.assigned_services.map(service => {
+				return service.id;
+			});
+			this.clonedMember.assigned_services = serviceIds;
+			this.updateMember(this.clonedMember);
+			this.$refs['editModal'].hide();
+		},
 
 		goToMember(member_id) {
 			this.$router.push(`/dashboard/team/members/${member_id}`);

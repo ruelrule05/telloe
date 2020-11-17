@@ -49,7 +49,7 @@ export default {
 
 	methods: {
 		goToConversation() {
-			let target = `/dashboard/conversations/${this.$root.screenRecorder.conversation_id}`;
+			let target = `/dashboard/bookings/services/${this.$root.screenRecorder.conversation_id}`;
 			if(this.$route.path != target) this.$router.push(target);
 		},
 

@@ -430,7 +430,7 @@ window.app = new Vue({
 			for (let conversation of this.conversations) {
 				let role = (conversation.member.role || {}).role;
 				if (role == 'support') {
-					supportLink = `/dashboard/conversations/${conversation.id}`;
+					supportLink = `/dashboard/bookings/services/${conversation.id}`;
 					break;
 				}
 			}

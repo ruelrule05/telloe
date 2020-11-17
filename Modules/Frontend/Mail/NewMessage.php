@@ -15,7 +15,7 @@ class NewMessage extends Mailer
     public function __construct(Message $convoMessage)
     {
         $this->convoMessage = $convoMessage;
-        $this->actionUrl = config('app.url') . '/dashboard/conversations/' . $convoMessage->conversation_id;
+        $this->actionUrl = config('app.url') . '/dashboard/bookings/services/' . $convoMessage->conversation_id;
     }
 
     /**

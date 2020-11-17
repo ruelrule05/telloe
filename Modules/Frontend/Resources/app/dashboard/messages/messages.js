@@ -85,7 +85,7 @@ export default {
         isOnline() {
             let is_online = this.$root.online_users.find((x) => x == this.$root.selectedConversation.member.id);
             if(!is_online) {
-                axios.get(`/dashboard/conversations/${this.$root.selectedConversation.id}`).then((response) => {
+                axios.get(`/dashboard/bookings/services/${this.$root.selectedConversation.id}`).then((response) => {
                     this.$set(this.$root.selectedConversation.member, 'last_online_format', response.data.member.last_online_format);
                 });
             }
@@ -297,7 +297,7 @@ export default {
                 this.newChat.selectedChatMembers.forEach((m) => {
                     selectedChatMembers.push(m.id);
                 });
-                axios.post('/dashboard/conversations', {members: selectedChatMembers}).then((response) => {
+                axios.post('/dashboard/bookings/services', {members: selectedChatMembers}).then((response) => {
                     $('#newChatCreateModal').modal('hide');
                     this.newChat.searchingMembers = false;
                     this.newChat.groupMembersResults = [];
@@ -332,7 +332,7 @@ export default {
         },
 
         updateConversation(conversation) {
-            axios.put(`/dashboard/conversations/${conversation.id}`, conversation);
+            axios.put(`/dashboard/bookings/services/${conversation.id}`, conversation);
         },
 
         deleteNote(note) {
@@ -616,7 +616,7 @@ export default {
     	},
 
     	getData() {
-    		axios.get('/dashboard/conversations').then((response) => {
+    		axios.get('/dashboard/bookings/services').then((response) => {
                 this.conversations = response.data;
                 this.orderConversations();
                 this.$root.contentloading = false;
@@ -655,7 +655,7 @@ export default {
 
         setConversation(conversation) {
         	this.$set(conversation.last_message, 'is_read', true);
-            axios.get(`/dashboard/conversations/${conversation.id}?is_read=true`).then((response) => {
+            axios.get(`/dashboard/bookings/services/${conversation.id}?is_read=true`).then((response) => {
                 this.convoLoading = false;
                 this.$root.selectedConversation = response.data;
                 this.scrollDown();

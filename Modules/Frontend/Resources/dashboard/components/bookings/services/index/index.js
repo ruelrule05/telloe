@@ -15,12 +15,14 @@ import UserCircleIcon from '../../../../../icons/user-circle';
 import DollarSignIcon from '../../../../../icons/dollar-sign';
 import WindowPlusIcon from '../../../../../icons/window-plus';
 import MoreIcon from '../../../../../icons/more-h';
+import SkypeIcon from '../../../../../icons/skype';
+import PhoneIcon from '../../../../../icons/phone';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
 import tooltip from '../../../../../js/directives/tooltip.js';
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon, MoreIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon, MoreIcon, SkypeIcon, PhoneIcon },
 
 	directives: { tooltip },
 

@@ -48,7 +48,7 @@ class ConversationController extends Controller
                 ->update(['is_read' => 1]);
         //endif;
 
-        $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20)->withPath('/dashboard/conversations/' . $conversation->id);
+        $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20)->withPath('/dashboard/bookings/services/' . $conversation->id);
 
         return response()->json($conversation);
     }
@@ -148,7 +148,7 @@ class ConversationController extends Controller
     {
         $conversation = Conversation::withTrashed()->findOrFail($id);
         $this->authorize('show', $conversation);
-        $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/conversations/' . $conversation->id);
+        $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/bookings/services/' . $conversation->id);
         return response()->json($files);
     }
 }

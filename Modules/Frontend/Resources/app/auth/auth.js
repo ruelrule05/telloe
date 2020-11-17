@@ -70,7 +70,7 @@ export default {
 										this.socket.emit('invite_token', invite_token);
 										this.socket.emit('member_invite_token', member_invite_token);
 										setTimeout(() => {
-											window.location.href = '/dashboard/conversations';
+											window.location.href = '/dashboard/bookings/services';
 										}, 150);
 									})
 									.catch(e => {
@@ -113,7 +113,7 @@ export default {
 								this.socket.emit('invite_token', invite_token);
 								this.socket.emit('member_invite_token', member_invite_token);
 								setTimeout(() => {
-									window.location.href = '/dashboard/conversations';
+									window.location.href = '/dashboard/bookings/services';
 								}, 150);
 							})
 							.catch(e => {

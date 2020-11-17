@@ -28,7 +28,7 @@ class PageController extends Controller
                 $params = $request->member_invite_token ? "?member_invite_token={$request->member_invite_token}" : '';
                 checkMemberInviteToken($authUser, $request);
             endif;
-    		return redirect('/dashboard/conversations' . $params);
+    		return redirect('/dashboard/bookings/services' . $params);
     	endif;
 
         if($request->auth == 'reset' && $request->token) :

@@ -104,18 +104,29 @@
 						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null">
 							<arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon>
 						</button>
-						<div class="ml-auto bg-white rounded shadow-sm d-flex align-items-center">
-							<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
-								<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+						<div class="pl-5 ml-5">
+							<div class="pl-4">
+								<div class="ml-5 bg-white rounded shadow-sm d-flex align-items-center">
+									<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
+										<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+									</button>
+									<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+										<template v-slot="{ inputValue, inputEvents }">
+											<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
+										</template>
+									</v-date-picker>
+									<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
+										<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<div class="ml-auto">
+							<button class="btn line-height-0 p-0 close float-none" type="button" @click="summary()">
+								<arrow-right-icon width="30" height="30" transform="scale(1.2)"></arrow-right-icon>
 							</button>
-							<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
-								<template v-slot="{ inputValue, inputEvents }">
-									<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
-								</template>
-							</v-date-picker>
-							<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
-								<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
-							</button>
+
 						</div>
 					</div>
 
@@ -170,7 +181,12 @@
 											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
 												<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
 													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-														<div v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)"><span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span></div>
+														<div v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)">
+															<span class="selected-checkmark position-absolute">
+																<checkmark-icon v-if="selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time)" height="30" width="30" class="fill-green"></checkmark-icon>
+															</span>
+															<span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
+														</div>
 													</div>
 												</template>
 												<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
@@ -195,7 +211,7 @@
 					<div class="row justify-content-center">
 						<div class="col-md-9">
 							<div class="d-flex align-items-center mb-3">
-								<button class="btn line-height-0 p-0 close" type="button" @click="selectedTimeslot = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
+								<button class="btn line-height-0 p-0 close" type="button" @click="selectedTimeslot = false"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
 								<h4 class="mb-0 font-heading ml-3">Confirm and Book</h4>
 							</div>
 							<div class="bg-white shadow-sm rounded selected-service text-left d-flex">
@@ -205,7 +221,7 @@
 										<div class="font-weight-normal text-secondary">Coach</div>
 										<div class="h6 font-heading">{{ selectedService.user.full_name }}</div>
 									</div>
-									<div class="mb-3">
+									<!-- <div class="mb-3">
 										<div class="font-weight-normal text-secondary">Date</div>
 										<div class="h6 font-heading">{{ formatDate(selectedDate) }}</div>
 									</div>
@@ -216,10 +232,52 @@
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Ends at</div>
 										<div class="h6 font-heading">{{ endTime }}</div>
-									</div>
-									<div>
+									</div> -->
+									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Duration</div>
 										<div class="h6 font-heading">{{ selectedService.duration }} minutes</div>
+									</div>
+									<div class="mb-3">
+										<div class="font-weight-normal text-secondary">Timeslots</div>
+										<div v-for="(timeslot, index) in selectedTimeslots" :key="index" class="bg-light rounded px-3 py-2 my-2">
+											<div class="d-flex align-items-center">
+												<div>
+													{{ formatDate(timeslot.date.date) }}
+													@ {{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}
+												</div>
+												<div class="dropleft ml-auto mr-n2">
+													{{ timeslot.dateRange }}
+													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
+														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+													</button>
+
+													<div class="dropdown-menu">
+														<div class="d-flex align-items-center px-2 py-1">
+															<span>Recurring</span>
+															<toggle-switch
+																class="ml-auto"
+																@click.native.stop
+																@input="if(timeslot.is_recurring) { $set(timeslot, 'dateRange', {start: new Date(), end: dayjs(new Date()).add(1, 'day').toDate}) }"
+																active-class="bg-primary"
+																v-model="timeslot.is_recurring"
+															></toggle-switch>
+														</div>
+
+														<span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedTimeslots.splice(index, 1); if(selectedTimeslots.length == 0) {selectedTimeslot = false}">Remove</span>
+													</div>
+												</div>
+											</div>
+											<div v-if="timeslot.is_recurring">
+												<div class="d-flex align-items-center">
+													<span class="text-muted">Date range:</span> 
+													<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="timeslot.dateRange" is-range>
+														<template v-slot="{ inputValue, inputEvents }">
+															<button type="button" class="btn btn-white btn-sm ml-2 shadow-none" v-on="inputEvents">{{ inputValue }}</button>
+														</template>
+													</v-date-picker>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 								<div class="p-4 flex-1">

@@ -103,6 +103,21 @@ class MemberController extends Controller
 
     public function update(Request $request, Member $member)
     {
+        $this->authorize('update', $member);
+        $authUser = Auth::user();
+        foreach ($request->assigned_services as $assigned_service) {
+            $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
+            if ($service) {
+                $assignedService = $service->replicate();
+                $assignedService->user_id = null;
+                $assignedService->member_id = $member->id;
+                $assignedService->parent_service_id = $service->id;
+                $assignedService->save();
+            }
+        }
+        $member->update($request->all());
+
+        return response()->json($member->load('memberUser', 'assignedServices'));
     }
 
     public function destroy(Member $member)

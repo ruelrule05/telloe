@@ -16,6 +16,11 @@ const mutations = {
 		state.index.unshift(data);
 	},
 
+	update(state, data) {
+		let member = state.index.find(x => x.id == data.id);
+		if (member) Object.assign(member, data);
+	},
+
 	delete(state, data) {
 		state.index.splice(
 			state.index.findIndex(x => x.id == data.id),
@@ -49,6 +54,13 @@ const actions = {
 	async store({ commit }, data) {
 		let response = await axios.post(`/${name}`, data, { toasted: true });
 		commit('store', response.data);
+	},
+
+	async update({ commit }, data) {
+		let response = await axios.put(`/${name}/${data.id}`, data);
+		commit('update', response.data);
+
+		return response.data;
 	},
 
 	async store_service({ commit }, data) {

@@ -25,6 +25,11 @@ class MemberPolicy
         return $user->id == $member->user_id;
     }
 
+    public function update(User $user, Member $member)
+    {
+        return $user->id == $member->user_id;
+    }
+
     public function delete(User $user, Member $member)
     {
         return $user->id == $member->user_id;

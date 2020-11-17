@@ -247,7 +247,7 @@ export default {
 	methods: {
 		goToConversation() {
 			this.isShrinked = true;
-			let conversationUrl = `/dashboard/conversations/${this.$root.callConversation.id}`;
+			let conversationUrl = `/dashboard/bookings/services/${this.$root.callConversation.id}`;
 			if (this.$route.path != conversationUrl) {
 				conversationUrl = `${conversationUrl}?focus=message_input`;
 				this.$router.push(conversationUrl);
@@ -714,7 +714,9 @@ export default {
 		async shareScreen() {
 			if (this.presenter) return;
 
-			let screenStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {console.log(e)});
+			let screenStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {
+				console.log(e);
+			});
 			if (screenStreams) {
 				this.localStream.getVideoTracks().forEach(function(track) {
 					track.stop();
