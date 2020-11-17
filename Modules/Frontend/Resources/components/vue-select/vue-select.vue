@@ -22,6 +22,7 @@
                     </span>
                     <span v-else class="dropdown-item cursor-pointer" :id="'item-' + option.value" :class="{active: !multiple && option.value == selected_value}" @click.prevent="updateValue(option)" v-for="option in filtered_options">
                         <div class="text-ellipsis">
+                            {{ selected_value }}
                             <vue-checkbox v-if="multiple" :value="(selected_value || []).find(x => x == option.value)" :label="option.text"></vue-checkbox>
                             <span v-else>{{ option.text }}</span>
                         </div>

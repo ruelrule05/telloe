@@ -62,7 +62,7 @@
                     </h5>
                   </div>
                   <p
-                    class="text-muted mb-0 multiline-ellipsis xsmall service-description mb-4"
+                    class="text-muted mb-0 multiline-ellipsis xsmall mb-3"
                   >
                     {{ packageItem.description }}
                   </p>
@@ -112,39 +112,64 @@
 
 
 
-    <modal ref="editModal" :close-button="false">
+    <modal ref="editModal" :close-button="false" size="modal-lg">
       <h5 class="font-heading mb-3">Edit Package</h5>
       <vue-form-validate @submit="update" v-if="clonedPackage">
-        <fieldset>
-          <div class="form-group">
-            <label class="form-label">Package name</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="clonedPackage.name"
-              data-required
-            />
+        <div class="row mx-0 mb-2">
+          <div class="col-md-6 pl-0">
+            <fieldset>
+              <div class="form-group">
+                <label class="form-label">Package name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="clonedPackage.name"
+                  data-required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-control resize-none"
+                  v-model="clonedPackage.description"
+                  data-required
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Expires on</label>
+                <v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date">
+                  <template v-slot="{ inputValue, inputEvents }">
+                    <div type="button" class="form-control" v-on="inputEvents">
+                      <span v-if="inputValue">{{ formatDate(inputValue) }}</span>
+                      <span v-else class="text-muted font-weight-normal">Set expiration date</span>
+                    </div>
+                  </template>
+                </v-date-picker>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Package Total</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  class="form-control"
+                  v-model="clonedPackage.price"
+                  placeholder="Package Price"
+                />
+              </div>
+            </fieldset>
           </div>
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea
-              class="form-control resize-none"
-              v-model="clonedPackage.description"
-              data-required
-              rows="3"
-            ></textarea>
+          <div class="col-md-6 border-left pr-0 border-gray-200">
+            <h6 class="font-heading">Services</h6>
+				    <vue-select v-model="clonedPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
+            <div v-for="(service, index) in clonedPackage.services" :key="service.id" class="rounded bg-light px-3 py-2 my-1 d-flex align-items-center">
+                <h6 class="mb-1">{{ service.name }}</h6>
+                <input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="clonedPackage.services[index].bookings" value="1">
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Price</label>
-            <input
-              type="number"
-              step="0.01"
-              class="form-control"
-              v-model="clonedPackage.price"
-              placeholder="$0.00"
-            />
-          </div>
-        </fieldset>
+        </div>
         <div class="form-group">
           <vue-checkbox
             v-model="clonedPackage.in_widget"

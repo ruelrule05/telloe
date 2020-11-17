@@ -246,7 +246,6 @@
 													@ {{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}
 												</div>
 												<div class="dropleft ml-auto mr-n2">
-													{{ timeslot.dateRange }}
 													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
 														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
 													</button>
@@ -256,8 +255,7 @@
 															<span>Recurring</span>
 															<toggle-switch
 																class="ml-auto"
-																@click.native.stop
-																@input="if(timeslot.is_recurring) { $set(timeslot, 'dateRange', {start: new Date(), end: dayjs(new Date()).add(1, 'day').toDate}) }"
+																@input="if(timeslot.is_recurring) { $set(timeslot, 'dateRange', {start: new Date(), end: dayjs(new Date).add(5, 'day').toDate()}) }"
 																active-class="bg-primary"
 																v-model="timeslot.is_recurring"
 															></toggle-switch>
@@ -268,13 +266,21 @@
 												</div>
 											</div>
 											<div v-if="timeslot.is_recurring">
-												<div class="d-flex align-items-center">
-													<span class="text-muted">Date range:</span> 
-													<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="timeslot.dateRange" is-range>
+												<div class="d-flex align-items-center mt-2">
+													<span class="text-muted">Date range</span> 
+													<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'right', visibility: 'click' }" :masks="dateRangeMask" v-model="timeslot.dateRange" is-range>
 														<template v-slot="{ inputValue, inputEvents }">
-															<button type="button" class="btn btn-white btn-sm ml-2 shadow-none" v-on="inputEvents">{{ inputValue }}</button>
+															<button type="button" class="btn btn-white btn-sm ml-2 shadow-none" v-on="inputEvents.start">
+																{{ dayjs(inputValue.start).format('YYYY/MM/DD') }}
+																-
+																{{ dayjs(inputValue.end).format('YYYY/MM/DD') }}
+															</button>
 														</template>
 													</v-date-picker>
+												</div>
+												<div class="d-flex align-items-center mt-2">
+													<span class="text-muted mr-1">Days in week</span> 
+													<div v-tooltip.top="day" v-for="(day, dayIndex) in days" class="badge badge-pill badge-primary ml-1 cursor-pointer" :key="dayIndex">{{ day.substring(0, 1) }}</div>
 												</div>
 											</div>
 										</div>

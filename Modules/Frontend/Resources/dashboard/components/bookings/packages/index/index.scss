@@ -2,7 +2,7 @@
 .multiline-ellipsis {
 	overflow: hidden;
 	display: -webkit-box;
-	-webkit-line-clamp: 2;
+	-webkit-line-clamp: 1;
 	-webkit-box-orient: vertical;
 }
 .service {
@@ -56,9 +56,6 @@
 			}
 		}
 	}
-}
-.service-description {
-	height: 34px;
 }
 .package-buttons {
 	top: 10px;
