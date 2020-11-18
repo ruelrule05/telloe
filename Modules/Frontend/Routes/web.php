@@ -31,7 +31,7 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::first(), null, 'contact');
+    $email = new Modules\Frontend\Mail\SendInvitation(App\Models\Contact::first(), 'login', 'Hi Damian, <br/> <br />I would like to add you in Telloe, a tool that we could use to add bookings and also conduct video calls. Please accept this invitation. <br /><br />Thank you, <br />John');
     //\Mail::to('cleidoscope@gmail.com')->send($email);
 
     return $email;

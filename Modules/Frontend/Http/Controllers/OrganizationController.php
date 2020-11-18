@@ -20,7 +20,7 @@ class OrganizationController extends Controller
         $organization = Organization::where('slug', $organization)->firstOrfail();
 
         if ($request->ajax() || $request->wantsJson()) {
-            $data = [];
+            $data = ['services' => []];
             foreach ($organization->members as $member) {
                 $services = $member->member->services()->whereHas('parentService', function ($parentService) use ($organization) {
                     $parentService->where('user_id', $organization->user_id);

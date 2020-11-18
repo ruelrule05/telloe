@@ -131,13 +131,13 @@ export default {
 		activeUserBgPosition: 0,
 		selectedTimeslots: [],
 		dateRangeMask: {
-			input: 'YYYY-MM-DD h:mm A',
+			input: 'YYYY-MM-DD h:mm A'
 		},
 
 		range: {
 			start: new Date(2020, 0, 6),
-			end: new Date(2020, 0, 23),
-		  },
+			end: new Date(2020, 0, 23)
+		}
 	}),
 
 	computed: {
@@ -323,6 +323,15 @@ export default {
 	},
 
 	methods: {
+		timeslotToggleDay(timeslotIndex, dayIndex) {
+			let index = this.selectedTimeslots[timeslotIndex].days.indexOf(dayIndex);
+			if (index == -1) {
+				this.selectedTimeslots[timeslotIndex].days.push(dayIndex);
+			} else {
+				this.selectedTimeslots[timeslotIndex].days.splice(index, 1);
+			}
+		},
+
 		endTime(time) {
 			let endTime = '';
 			if (this.selectedService && this.startDate) {
@@ -365,7 +374,8 @@ export default {
 				} else {
 					this.selectedTimeslots.push({
 						date: date,
-						timeslot: timeslot
+						timeslot: timeslot,
+						days: []
 					});
 				}
 			}
@@ -525,7 +535,7 @@ export default {
 
 		SignupAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedDate && this.selectedTimeslot) {
+			if (service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
@@ -534,8 +544,7 @@ export default {
 						last_name: this.loginForm.last_name,
 						email: this.loginForm.email,
 						password: this.loginForm.password,
-						date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-						time: this.selectedTimeslot.time,
+						timeslots: this.selectedTimeslots,
 						timezone: this.timezone
 					};
 					axios
@@ -543,6 +552,7 @@ export default {
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
+							this.selectedTimeslots = [];
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -558,15 +568,14 @@ export default {
 
 		LoginAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedDate && this.selectedTimeslot) {
+			if (service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
 					let data = {
 						email: this.loginForm.email,
 						password: this.loginForm.password,
-						date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-						time: this.selectedTimeslot.time
+						timeslots: this.selectedTimeslots
 					};
 					axios
 						.post(`/@${this.profile.username}/${service.id}/login_and_book`, data, { toasted: true })
@@ -574,6 +583,7 @@ export default {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
 							this.authForm = false;
+							this.selectedTimeslots = [];
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -589,7 +599,7 @@ export default {
 
 		FacebookLoginAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (typeof FB != 'undefined' && service && this.selectedDate && this.selectedTimeslot) {
+			if (typeof FB != 'undefined' && service && this.selectedDate && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
@@ -598,8 +608,7 @@ export default {
 							FB.api('/me', { fields: 'first_name, last_name, email' }, data => {
 								if (data && !data.error) {
 									data.timezone = this.timezone;
-									data.date = dayjs(this.selectedDate).format('YYYY-MM-DD');
-									data.time = this.selectedTimeslot.time;
+									data.timeslots = this.selectedTimeslots;
 
 									axios
 										.post(`/@${this.profile.username}/${service.id}/facebook_login_and_book`, data, { toasted: true })
@@ -607,6 +616,7 @@ export default {
 											this.bookingSuccess = true;
 											this.loginForm.loading = false;
 											this.authForm = false;
+											this.selectedTimeslots = [];
 										})
 										.catch(e => {
 											setTimeout(() => {
@@ -634,7 +644,7 @@ export default {
 
 		GoogleLoginAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (this.GoogleAuth && service && this.selectedDate && this.selectedTimeslot) {
+			if (this.GoogleAuth && service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
@@ -649,8 +659,7 @@ export default {
 								email: profile.getEmail(),
 								image_url: profile.getImageUrl(),
 								timezone: timezone,
-								date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-								time: this.selectedTimeslot.time
+								timeslots: this.selectedTimeslots
 							};
 
 							axios
@@ -659,6 +668,7 @@ export default {
 									this.bookingSuccess = true;
 									this.loginForm.loading = false;
 									this.authForm = false;
+									this.selectedTimeslots = [];
 								})
 								.catch(e => {
 									setTimeout(() => {

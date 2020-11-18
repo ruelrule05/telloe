@@ -416,3 +416,13 @@ $timeCount: 15;
 		}
 	}
 }
+.badge-day {
+	width: 25px;
+	height: 25px;
+	span {
+		position: absolute;
+		top: 49%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+}

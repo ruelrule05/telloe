@@ -103,8 +103,7 @@ class UserController extends Controller
     public function book($username, $service_id, Request $request, User $authUser = null)
     {
         $this->validate($request, [
-            'date' => 'required|date',
-            'time' => 'required',
+            'timeslots' => 'required|array',
         ]);
 
         $user = User::where('username', $username)->firstOrfail();
@@ -113,22 +112,20 @@ class UserController extends Controller
                 $query->where('user_id', $user->id);
             });
         })->firstOrfail();
-        $timeslots = $service->timeslots($request->date);
 
-        $timeslotAvailable = false;
-        foreach ($timeslots as $timeslot) {
-            if ($timeslot['time'] == $request->time && $timeslot['is_available']) {
-                $timeslotAvailable = true;
-                break;
-            }
-        }
-
-        if (! $timeslotAvailable) {
-            return abort(403, 'The selected date or time is not anymore available.');
-        }
-
-        $start = Carbon::parse("$request->date $request->time");
-        $end = $start->copy()->add('minute', $service->duration);
+        // $availableTimeslots = $service->timeslots($request->date);
+        // $timeslotAvailable = false;
+        // foreach ($availableTimeslots as $availableTimeslot) {
+        //     foreach ($request->timeslots as $timeslot) {
+        //         if ($availableTimeslot['time'] == $timeslot['time'] && $availableTimeslot['is_available']) {
+        //             $timeslotAvailable = true;
+        //             break;
+        //         }
+        //     }
+        // }
+        // if (! $timeslotAvailable) {
+        //     return abort(403, 'The selected date or time is not anymore available.');
+        // }
 
         $authUser = $authUser ?? Auth::user();
 
@@ -136,13 +133,19 @@ class UserController extends Controller
             return abort(403, 'You are not allowed to book using your own account.');
         }
 
-        $booking = Booking::create([
-            'user_id' => $authUser->id,
-            'service_id' => $service->id,
-            'date' => $request->date,
-            'start' => $start->format('H:i'),
-            'end' => $end->format('H:i'),
-        ]);
+        foreach ($request->timeslots as $timeslot) {
+            $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}");
+            $end = $start->copy()->add('minute', $service->duration);
+            $booking = Booking::create([
+                'user_id' => $authUser->id,
+                'service_id' => $service->id,
+                'date' => $timeslot['date']['format'],
+                'start' => $start->format('H:i'),
+                'end' => $end->format('H:i'),
+            ]);
+            Mail::queue(new NewBooking($booking, $authUser, 'client'));
+            Mail::queue(new NewBooking($booking, $authUser, 'contact'));
+        }
 
         if (! Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) {
             Contact::create([
@@ -152,9 +155,6 @@ class UserController extends Controller
                 'is_pending' => false,
             ]);
         }
-
-        Mail::queue(new NewBooking($booking, $authUser, 'client'));
-        Mail::queue(new NewBooking($booking, $authUser, 'contact'));
 
         return response()->json(['success' => true]);
     }
@@ -177,8 +177,7 @@ class UserController extends Controller
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required',
-            'date' => 'required|date',
-            'time' => 'required',
+            'timeslots' => 'required|array',
         ]);
         $user = User::where('email', $request->email)->first();
         if (! $user) {
@@ -203,7 +202,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
             'date' => 'required|date',
-            'time' => 'required',
+            'timeslots' => 'required|array',
         ]);
 
         $authController = new AuthController();
@@ -246,7 +245,8 @@ class UserController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
-            'image_url' => 'required'
+            'image_url' => 'required',
+            'timeslots' => 'required|array',
         ]);
         $user = User::where('email', $request->email)->first();
         $authController = new AuthController();
@@ -301,7 +301,8 @@ class UserController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
-            'id' => 'required'
+            'id' => 'required',
+            'timeslots' => 'required|array',
         ]);
         $user = User::where('email', $request->email)->first();
         $authController = new AuthController();

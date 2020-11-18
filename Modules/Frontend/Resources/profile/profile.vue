@@ -239,7 +239,7 @@
 									</div>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Timeslots</div>
-										<div v-for="(timeslot, index) in selectedTimeslots" :key="index" class="bg-light rounded px-3 py-2 my-2">
+										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded px-3 py-2 my-2">
 											<div class="d-flex align-items-center">
 												<div>
 													{{ formatDate(timeslot.date.date) }}
@@ -279,8 +279,10 @@
 													</v-date-picker>
 												</div>
 												<div class="d-flex align-items-center mt-2">
-													<span class="text-muted mr-1">Days in week</span> 
-													<div v-tooltip.top="day" v-for="(day, dayIndex) in days" class="badge badge-pill badge-primary ml-1 cursor-pointer" :key="dayIndex">{{ day.substring(0, 1) }}</div>
+													<span class="text-muted mr-1">Days in week</span>
+													<div v-tooltip.top="day" @click="timeslotToggleDay(timeslotIndex, dayIndex)" v-for="(day, dayIndex) in days" class="badge badge-pill badge-day ml-1 cursor-pointer position-relative" :class="[selectedTimeslots[timeslotIndex].days.indexOf(dayIndex) == -1 ? 'badge-white' : 'badge-primary']" :key="dayIndex">
+														<span>{{ day.substring(0, 1) }}</span>
+													</div>
 												</div>
 											</div>
 										</div>

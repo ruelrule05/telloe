@@ -37,6 +37,11 @@
                 "
               >Edit</span>
               <span
+                class="dropdown-item cursor-pointer"
+                @click="$refs['availabilityModal'].show()">
+                Availability
+              </span>
+              <span
                 class="dropdown-item cursor-pointerr"
                 @click="$refs['deleteModal'].show()"
               >Delete</span>
@@ -188,8 +193,11 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="info bg-white h-100 overflow-auto shadow-sm d-none">
+    <modal ref="availabilityModal" @hide="getTimeslots()">
+      <div id="availability-modal">
+        <h5 class="font-heading mb-3">Manage Availability</h5>
         <div class="d-flex mb-2">
           <button
             :data-intro="$root.intros.service_availability.intro"
@@ -219,16 +227,16 @@
           <div
             v-for="(day, index) in days"
             :key="index"
-            class="service-day p-2 border-bottom"
+            class="service-day py-2 border-bottom"
           >
             <div
-              class="service-day-heading py-2 px-3 d-flex align-items-center cursor-pointer"
+              class="service-day-heading py-2 d-flex align-items-center cursor-pointer"
               data-toggle="collapse"
               :data-target="`#day-${day}`"
             >
               <toggle-switch
                 class="mr-2"
-                active-class="bg-green"
+                active-class="bg-primary"
                 @click.native.stop
                 @input="updateService(service)"
                 v-model="service.days[day].isOpen"
@@ -380,7 +388,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </modal>
 
 		<modal ref="bookingModal" :close-button="(selectedTimeslot || {}).isPrevious" :scrollable="false">
 			<div v-if="selectedTimeslot && selectedTimeslot.bookings.length > 0 && selectedService" class="text-center">

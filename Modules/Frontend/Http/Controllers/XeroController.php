@@ -11,10 +11,11 @@ class XeroController extends Controller
 {
     //
 
-    public function getToken() {
+    public function getToken()
+    {
         return response(Auth::user()->xero_token ? 1 : 0);
     }
-   
+
     public function authenticate(Request $request)
     {
         $XeroClient = new XeroClient($request);
@@ -79,6 +80,7 @@ class XeroController extends Controller
     {
         $authUser = Auth::user();
         $authUser->xero_token = null;
+        $authUser->xero_tenant_id = null;
         $authUser->save();
         return response(['removed' => true]);
     }
