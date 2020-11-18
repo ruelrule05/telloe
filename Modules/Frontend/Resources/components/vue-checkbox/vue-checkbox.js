@@ -14,7 +14,7 @@ export default {
 		},
 
 		state: function(value) {
-			this.$emit('input', value)
+			this.$emit('input', value);
 		}
 	},
 
@@ -23,11 +23,15 @@ export default {
 	},
 
 	props: {
-		value: {
+		value: {},
+
+		disabled: {
+			type: Boolean,
+			default: false
 		},
-		
+
 		label: {
 			type: String
 		}
-	},
-}
+	}
+};

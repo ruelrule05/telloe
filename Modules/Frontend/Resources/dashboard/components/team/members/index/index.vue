@@ -213,6 +213,7 @@
         <div class="form-group">
           <label class="form-label">Email</label>
           <input
+            :disabled="!clonedMember.is_pending"
             type="email"
             class="form-control"
             v-model="clonedMember.email"
@@ -223,6 +224,7 @@
           <div class="col">
             <label class="form-label">First Name (Optional)</label>
             <input
+              :disabled="!clonedMember.is_pending"
               type="text"
               class="form-control"
               v-model="clonedMember.first_name"
@@ -231,6 +233,7 @@
           <div class="col">
             <label class="form-label">Last Name (Optional)</label>
             <input
+              :disabled="!clonedMember.is_pending"
               type="text"
               class="form-control"
               v-model="clonedMember.last_name"

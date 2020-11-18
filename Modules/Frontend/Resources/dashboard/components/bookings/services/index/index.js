@@ -18,11 +18,12 @@ import MoreIcon from '../../../../../icons/more-h';
 import SkypeIcon from '../../../../../icons/skype';
 import PhoneIcon from '../../../../../icons/phone';
 import VCalendar from 'v-calendar';
+import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
 import tooltip from '../../../../../js/directives/tooltip.js';
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon, MoreIcon, SkypeIcon, PhoneIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, UserCircleIcon, ToggleSwitch, Timerangepicker, DollarSignIcon, WindowPlusIcon, MoreIcon, SkypeIcon, PhoneIcon, VueSelect },
 
 	directives: { tooltip },
 
@@ -35,7 +36,29 @@ export default {
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		clonedService: null,
-		selectedService: null
+		selectedService: null,
+		currencies: [
+			{
+				text: 'AUD',
+				value: 'AUD'
+			},
+			{
+				text: 'USD',
+				value: 'USD'
+			},
+			{
+				text: 'PHP',
+				value: 'PHP'
+			},
+			{
+				text: 'CHF',
+				value: 'CHF'
+			},
+			{
+				text: 'EUR',
+				value: 'EUR'
+			}
+		]
 	}),
 
 	computed: {

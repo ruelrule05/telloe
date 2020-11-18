@@ -96,9 +96,9 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         $this->authorize('show', $member);
-        $response = $member->load('memberUser')->toArray();
-        $response['services'] = $member->services()->with('bookings.user')->withTrashed()->get()->toArray();
-        return response($response);
+        // $response = $member->load('memberUser')->toArray();
+        // $response['assigned_services'] = $member->assignedServices()->with('bookings.user')->withTrashed()->get()->toArray();
+        return response($member->load('memberUser', 'assignedServices.bookings.user'));
     }
 
     public function update(Request $request, Member $member)
@@ -117,7 +117,7 @@ class MemberController extends Controller
         }
         $member->update($request->all());
 
-        return response()->json($member->load('memberUser', 'assignedServices'));
+        return response()->json($member->load('memberUser', 'assignedServices.bookings.user'));
     }
 
     public function destroy(Member $member)

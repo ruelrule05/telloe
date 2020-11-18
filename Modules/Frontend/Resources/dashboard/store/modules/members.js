@@ -69,8 +69,8 @@ const actions = {
 		return response.data;
 	},
 
-	delete({ commit }, data) {
-		axios.delete(`/${name}/${data.id}`, data);
+	async delete({ commit }, data) {
+		await axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
 	},
 

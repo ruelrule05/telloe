@@ -5,6 +5,7 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
@@ -29,7 +30,7 @@ class PackageController extends Controller
             'description' => $request->description,
             'user_id' => Auth::user()->id,
             'services' => $request->services,
-            'expiration_date' => $request->expiration_date,
+            'expiration_date' => Carbon::parse($request->expiration_date)->format('Y-m-d'),
             'price' => $request->price
         ]);
 
@@ -63,7 +64,7 @@ class PackageController extends Controller
             'description' => $request->description,
             'user_id' => Auth::user()->id,
             'services' => $request->services,
-            'expiration_date' => $request->expiration_date,
+            'expiration_date' => Carbon::parse($request->expiration_date)->format('Y-m-d'),
             'price' => $request->price,
             'in_widget' => $request->in_widget,
             'is_available' => $request->is_available,

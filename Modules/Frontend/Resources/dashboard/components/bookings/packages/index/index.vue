@@ -51,7 +51,7 @@
                             v-model="packageItem.is_available"
                           ></toggle-switch>
                         </div>
-                        <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="clonedPackage = Object.assign({}, packageItem); clonedPackage.index = index; $refs['editModal'].show();">Edit</span>
+                        <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="edit(packageItem, index)">Edit</span>
                         <span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedPackage = packageItem; $refs['deleteModal'].show();">Delete</span>
                       </div>
                     </div>
@@ -164,7 +164,7 @@
           <div class="col-md-6 border-left pr-0 border-gray-200">
             <h6 class="font-heading">Services</h6>
 				    <vue-select v-model="clonedPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
-            <div v-for="(service, index) in clonedPackage.services" :key="service.id" class="rounded bg-light px-3 py-2 my-1 d-flex align-items-center">
+            <div v-for="(service, index) in clonedPackage.services" :key="service.id" class="rounded bg-light px-3 py-2 mt-2 d-flex align-items-center">
                 <h6 class="mb-1">{{ service.name }}</h6>
                 <input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="clonedPackage.services[index].bookings" value="1">
             </div>
@@ -221,55 +221,58 @@
       </template>
     </modal>
 
-    <modal ref="addModal" :close-button="false" :scrollable="false">
+    <modal ref="addModal" :close-button="false" size="modal-lg">
       <h5 class="font-heading mb-3">Add Package</h5>
       <vue-form-validate @submit="submit">
-        <div class="form-group">
-          <label class="form-label">Package Name</label>
-          <input
-            type="text"
-            class="form-control"
-            v-model="newPackage.name"
-            data-required
-          />
-        </div>
+        <div class="row mx-0 mb-2">
+          <div class="col-md-6 pl-0">
+            <div class="form-group">
+              <label class="form-label">Package Name</label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="newPackage.name"
+                data-required
+              />
+            </div>
 
-        <div class="form-group">
-          <label class="form-label">Description</label>
-          <textarea
-            type="text"
-            class="form-control resize-none"
-            rows="4"
-            v-model="newPackage.description"
-            data-required
-          ></textarea>
-        </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea
+                type="text"
+                class="form-control resize-none"
+                rows="4"
+                v-model="newPackage.description"
+                data-required
+              ></textarea>
+            </div>
 
-        <div class="form-group">
-          <label class="form-label">Services</label>
-				  <vue-select v-model="newPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
-        </div>
+            <div class="form-group">
+              <label class="form-label">Expires on</label>
+              <v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="newPackage.expiration_date">
+                <template v-slot="{ inputValue, inputEvents }">
+                  <div type="button" class="form-control" v-on="inputEvents">
+                    <span v-if="inputValue">{{ formatDate(inputValue) }}</span>
+                    <span v-else class="text-muted font-weight-normal">Set expiration date</span>
+                  </div>
+                </template>
+              </v-date-picker>
+            </div>
 
-        <div v-for="(service, index) in newPackage.services" :key="service.id" class="rounded bg-light p-3 mb-3 d-flex align-items-center">
-            <h6 class="mb-1">{{ service.name }}</h6>
-            <input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="newPackage.services[index].bookings" value="1">
-        </div>
+            <div class="form-group">
+              <label class="form-label">Package Total</label>
+              <input type="number" class="form-control" data-required placeholder="Package Price" min="1" v-model="newPackage.price">
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Expires on</label>
-          <v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="newPackage.expiration_date">
-            <template v-slot="{ inputValue, inputEvents }">
-              <div type="button" class="form-control" v-on="inputEvents">
-                <span v-if="inputValue">{{ formatDate(inputValue) }}</span>
-                <span v-else class="text-muted font-weight-normal">Set expiration date</span>
-              </div>
-            </template>
-          </v-date-picker>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Package Total</label>
-          <input type="number" class="form-control" data-required placeholder="Package Price" min="1" v-model="newPackage.price">
+          <div class="col-md-6 border-left pr-0 border-gray-200">
+            <h6 class="font-heading">Services</h6>
+            <vue-select v-model="newPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
+            <div v-for="(service, index) in newPackage.services" :key="service.id" class="rounded bg-light p-3 mt-2 d-flex align-items-center">
+                <h6 class="mb-1">{{ service.name }}</h6>
+                <input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="newPackage.services[index].bookings" value="1">
+            </div>
+          </div>
         </div>
 
         <div class="d-flex align-items-center mt-4">

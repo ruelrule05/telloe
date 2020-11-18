@@ -18,24 +18,22 @@
               data-toggle="dropdown"
               data-offset="-130, 10"
             >
-              <cog-icon></cog-icon>
+              <more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
             </button>
             <div class="dropdown-menu">
               <span
-                class="dropdown-item cursor-pointer d-flex align-items-center"
+                class="dropdown-item cursor-pointer"
                 @click="
                   clonedPackage = Object.assign({}, packageItem);
                   $refs['editModal'].show();
                 "
               >
-                <pencil-icon width="16" height="16" class="mr-2"></pencil-icon>
                 Edit
               </span>
               <span
-                class="dropdown-item cursor-pointer d-flex align-items-center"
+                class="dropdown-item cursor-pointer"
                 @click="$refs['deleteModal'].show()"
               >
-                <trash-icon width="16" height="16" class="mr-2"></trash-icon>
                 Delete
               </span>
             </div>

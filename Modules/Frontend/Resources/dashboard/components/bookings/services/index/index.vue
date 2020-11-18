@@ -108,11 +108,11 @@
                         <window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
                         <small class="text-muted ml-1">In widget</small>
                       </div>
-                      <div class="d-flex align-items-center ml-2" v-if="service.require_skype">
+                      <div class="d-flex align-items-center ml-2" v-if="service.ask_skype">
                         <skype-icon width="11" height="11" transform="scale(1.3)" fill="#6c757d"></skype-icon>
                         <small class="text-muted ml-1">Skype</small>
                       </div>
-                      <div class="d-flex align-items-center ml-2" v-if="service.require_phone">
+                      <div class="d-flex align-items-center ml-2" v-if="service.ask_phone">
                         <phone-icon width="11" height="11" transform="scale(1.3)" fill="#6c757d"></phone-icon>
                         <small class="text-muted ml-1">Phone</small>
                       </div>
@@ -188,8 +188,8 @@
       <h5 class="font-heading mb-3">Edit Service</h5>
       <vue-form-validate @submit="update" v-if="clonedService">
         <div class="row mx-0 mb-2">
-          <div class="col-md-7 pl-0">
-            <fieldset :disabled="clonedService.parent_service_id">
+          <div class="col-md-7 px-0">
+            <fieldset :disabled="clonedService.parent_service_id" class="pr-3">
               <div class="form-group">
                 <label class="form-label">Service name</label>
                 <input
@@ -227,15 +227,21 @@
                   placeholder="Defaults to 15 mins"
                 />
               </div>
-              <div class="form-group">
-                <label class="form-label">Default Rate</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  class="form-control"
-                  v-model="clonedService.default_rate"
-                  placeholder="$0.00"
-                />
+              <div class="form-group d-flex align-items-center">
+                <div class="flex-grow-1 pr-2">
+                  <label class="form-label">Default Rate</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    class="form-control"
+                    v-model="clonedService.default_rate"
+                    placeholder="$0.00"
+                  />
+                </div>
+                <div class="flex-grow-1 pl-2">
+                  <label class="form-label">Currency</label>
+                  <vue-select v-model="clonedService.currency" :options="currencies" data-required placeholder="Select currency"></vue-select>
+                </div>
               </div>
               <div class="form-group">
                 <label class="form-label">Address</label>
@@ -249,25 +255,49 @@
             </fieldset>
           </div>
 
-          <div class="col-md-5 border-left border-gray-200 pr-0">
-            <h6 class="font-heading">Service Settings</h6>
-            <div class="form-group mb-2">
-              <vue-checkbox
-                v-model="clonedService.in_widget"
-                label="Available in widget"
-              ></vue-checkbox>
-            </div>
-            <div class="form-group mb-2">
-              <vue-checkbox
-                v-model="clonedService.require_skype"
-                label="Ask for Skype ID in booking"
-              ></vue-checkbox>
-            </div>
-            <div class="form-group">
-              <vue-checkbox
-                v-model="clonedService.require_phone"
-                label="Ask for phone number in booking"
-              ></vue-checkbox>
+          <div class="col-md-5 border-left border-gray-200 px-0">
+            <div class="pl-3">
+              <h6 class="font-heading mb-3">Service Settings</h6>
+              <div class="form-group">
+                <vue-checkbox
+                  v-model="clonedService.in_widget"
+                  label="Available in widget"
+                ></vue-checkbox>
+              </div>
+              <div class="form-group">
+                <vue-checkbox
+                  v-model="clonedService.ask_skype"
+                  label="Ask for Skype ID in booking"
+                ></vue-checkbox>
+                <div class="pl-3 ml-1 mt-2">
+                  <vue-checkbox
+                    :disabled="!clonedService.ask_skype"
+                    v-model="clonedService.require_skype"
+                    label="Required"
+                  ></vue-checkbox>
+                </div>
+              </div>
+              <div class="form-group">
+                <vue-checkbox
+                  v-model="clonedService.ask_phone"
+                  label="Ask for phone number in booking"
+                ></vue-checkbox>
+                <div class="pl-3 ml-1 mt-2">
+                  <vue-checkbox
+                    :disabled="!clonedService.ask_phone"
+                    v-model="clonedService.require_phone"
+                    label="Required"
+                  ></vue-checkbox>
+                </div>
+              </div>
+              <div class="form-group d-flex align-items-center">
+                <vue-checkbox
+                  :disabled="!$root.auth.zoom_token"
+                  v-model="clonedService.create_zoom_link"
+                  label="Create Zoom link on booking"
+                ></vue-checkbox>
+                <span v-tooltip.top="'Requires Zoom integration'" class="badge badge-pill badge-dark ml-1 badge-tooltip"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -284,65 +314,126 @@
       </vue-form-validate>
     </modal>
 
-    <modal ref="addModal" :close-button="false">
+    <modal ref="addModal" :close-button="false" size="modal-lg">
       <h5 class="font-heading mb-3">Add Service</h5>
       <vue-form-validate @submit="submit">
-        <div class="form-group">
-          <label class="form-label">Service name</label>
-          <input
-            type="text"
-            class="form-control"
-            v-model="newService.name"
-            data-required
-          />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Description</label>
-          <textarea
-            class="form-control resize-none"
-            v-model="newService.description"
-            data-required
-            rows="3"
-          ></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Duration (in minutes)</label>
-          <input
-            type="number"
-            class="form-control"
-            v-model="newService.duration"
-            data-required
-          />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Interval (in minutes)</label>
-          <input
-            type="number"
-            onkeydown="if(event.key==='.'){event.preventDefault();}"
-            class="form-control"
-            v-model="newService.interval"
-            placeholder="Defaults to 15 mins"
-          />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Default Rate</label>
-          <input
-            type="number"
-            step="0.01"
-            class="form-control"
-            v-model="newService.default_rate"
-            placeholder="$0.00"
-          />
-        </div>
-        <div class="form-group">
-          <vue-checkbox
-            v-model="newService.in_widget"
-            label="Available in widget"
-          ></vue-checkbox>
+        <div class="row mx-0 mb-2">
+          <div class="col-md-7 px-0">
+            <div class="pr-3">
+              <div class="form-group">
+                <label class="form-label">Service name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="newService.name"
+                  data-required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea
+                  class="form-control resize-none"
+                  v-model="newService.description"
+                  data-required
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Duration (in minutes)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  v-model="newService.duration"
+                  data-required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Interval (in minutes)</label>
+                <input
+                  type="number"
+                  onkeydown="if(event.key==='.'){event.preventDefault();}"
+                  class="form-control"
+                  v-model="newService.interval"
+                  placeholder="Defaults to 15 mins"
+                />
+              </div>
+              <div class="form-group d-flex align-items-center">
+                <div class="flex-grow-1 pr-2">
+                  <label class="form-label">Default Rate</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    class="form-control"
+                    v-model="newService.default_rate"
+                    placeholder="$0.00"
+                  />
+                </div>
+                <div class="flex-grow-1 pl-2">
+                  <label class="form-label">Currency</label>
+                  <vue-select v-model="newService.currency" :options="currencies" data-required placeholder="Select currency"></vue-select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="newService.address"
+                  placeholder="Address"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-5 border-left border-gray-200 px-0">
+            <div class="pl-3">
+              <h6 class="font-heading mb-3">Service Settings</h6>
+              <div class="form-group">
+                <vue-checkbox
+                  v-model="newService.in_widget"
+                  label="Available in widget"
+                ></vue-checkbox>
+              </div>
+              <div class="form-group">
+                <vue-checkbox
+                  v-model="newService.ask_skype"
+                  label="Ask for Skype ID in booking"
+                ></vue-checkbox>
+                <div class="pl-3 ml-1 mt-2">
+                  <vue-checkbox
+                    :disabled="!newService.ask_skype"
+                    v-model="newService.require_skype"
+                    label="Required"
+                  ></vue-checkbox>
+                </div>
+              </div>
+              <div class="form-group">
+                <vue-checkbox
+                  v-model="newService.ask_phone"
+                  label="Ask for phone number in booking"
+                ></vue-checkbox>
+                <div class="pl-3 ml-1 mt-2">
+                  <vue-checkbox
+                    :disabled="!newService.ask_phone"
+                    v-model="newService.require_phone"
+                    label="Required"
+                  ></vue-checkbox>
+                </div>
+              </div>
+              <div class="form-group d-flex align-items-center">
+                <vue-checkbox
+                  :disabled="!$root.auth.zoom_token"
+                  v-model="newService.create_zoom_link"
+                  label="Create Zoom link on booking"
+                ></vue-checkbox>
+                <span v-tooltip.top="'Requires Zoom integration'" class="badge badge-pill badge-dark ml-1 badge-tooltip"></span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="d-flex align-items-center">
           <button
-            class="btn btn-light shadow-sm mr-1"
+            class="btn btn-light shadow-none mr-1"
             type="button"
             data-dismiss="modal"
           >

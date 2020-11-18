@@ -67,6 +67,12 @@ export default {
 			deletePackage: 'packages/delete'
 		}),
 
+		edit(packageItem, index) {
+			this.clonedPackage = Object.assign({}, packageItem);
+			this.clonedPackage.index = index;
+			this.$refs['editModal'].show();
+		},
+
 		update() {
 			this.updatePackage(this.clonedPackage).then(packageItem => {
 				Object.keys(packageItem).map(key => {

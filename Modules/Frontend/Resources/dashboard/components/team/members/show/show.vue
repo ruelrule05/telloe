@@ -1,7 +1,7 @@
 <template>
   <div v-if="member" class="w-100 h-100 overflow-hidden">
     <div class="overflow-auto h-100">
-      <div class="p-4">
+      <div class="p-4 d-flex align-items-center">
         <button
           class="btn p-1 btn-white badge-pill shadow-sm"
           type="button"
@@ -9,6 +9,30 @@
         >
           <arrow-left-icon width="30" height="30"></arrow-left-icon>
         </button>
+
+          <div class="dropdown ml-auto">
+            <button
+              class="btn p-2 btn-white badge-pill shadow-sm"
+              data-toggle="dropdown"
+              data-offset="-130, 10"
+            >
+              <more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
+            </button>
+            <div class="dropdown-menu">
+              <span
+                class="dropdown-item cursor-pointer"
+                @click=" $refs['editModal'].show();"
+              >
+                Edit
+              </span>
+              <span
+                class="dropdown-item cursor-pointer"
+                @click="$refs['deleteModal'].show()"
+              >
+                Delete
+              </span>
+            </div>
+          </div>
       </div>
 
       <div class="text-center mt-n5 mb-3">
@@ -128,6 +152,122 @@
         </div>
       </div>
     </div>
+
+    <modal ref="editModal" :close-button="false">
+      <h5 class="font-heading mb-3">Edit Member</h5>
+      <vue-form-validate v-if="clonedMember" @submit="update">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input
+            :disabled="!clonedMember.is_pending"
+            type="email"
+            class="form-control"
+            v-model="clonedMember.email"
+            data-required
+          />
+        </div>
+        <div class="form-row form-group">
+          <div class="col">
+            <label class="form-label">First Name (Optional)</label>
+            <input
+              :disabled="!clonedMember.is_pending"
+              type="text"
+              class="form-control"
+              v-model="clonedMember.first_name"
+            />
+          </div>
+          <div class="col">
+            <label class="form-label">Last Name (Optional)</label>
+            <input
+              :disabled="!clonedMember.is_pending"
+              type="text"
+              class="form-control"
+              v-model="clonedMember.last_name"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <strong class="d-block mb-2 font-weight-bold"
+            >Assign Services</strong
+          >
+          <template v-for="service in services">
+            <div
+              v-if="service.is_available"
+              :key="service.id"
+              class="d-flex align-items-center mb-2 rounded p-3 bg-light"
+            >
+              <div>
+                <h6 class="font-heading mb-0">{{ service.name }}</h6>
+                <small class="text-gray d-block"
+                  >{{ service.duration }} minutes</small
+                >
+              </div>
+              <div class="ml-auto">
+                <toggle-switch
+                  active-class="bg-primary"
+                  :value="
+                    clonedMember.assigned_services.find(
+                      (x) => x.id == service.id
+                    )
+                      ? true
+                      : false
+                  "
+                  @input="toggleAssignedService(service)"
+                ></toggle-switch>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class="d-flex">
+          <button
+            class="btn btn-light shadow-none"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button class="ml-auto btn btn-primary" type="submit">
+            Save
+          </button>
+        </div>
+      </vue-form-validate>
+    </modal>
+
+    <modal ref="deleteModal" :close-button="false">
+      <template v-if="member">
+        <h5 class="font-heading text-center">Delete Member</h5>
+        <p class="text-center mt-3">
+          Are you sure to delete member
+          <strong>{{
+            member.full_name.trim() ||
+            member.email
+          }}</strong>
+          ?
+          <br />
+          <span class="text-danger">This action cannot be undone</span>
+        </p>
+        <div class="d-flex justify-content-end">
+          <button
+            class="btn btn-light shadow-none text-body"
+            type="button"
+            data-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger ml-auto"
+            type="button"
+            @click="
+              deleteMember(member).then(() => $router.push('/dashboard/team/members'));
+              $refs['deleteModal'].hide();
+            "
+          >
+            Delete
+          </button>
+        </div>
+      </template>
+    </modal>
   </div>
 </template>
 

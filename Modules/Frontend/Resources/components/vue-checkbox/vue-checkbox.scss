@@ -44,3 +44,9 @@
 .checkbox label input[type='checkbox']:disabled + .cr {
 	opacity: 0.5;
 }
+.checkbox.disabled {
+	pointer-events: none !important;
+	span {
+		opacity: 0.3;
+	}
+}

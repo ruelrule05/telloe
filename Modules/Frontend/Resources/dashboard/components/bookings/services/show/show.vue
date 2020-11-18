@@ -26,7 +26,7 @@
               data-toggle="dropdown"
               data-offset="-125, 5"
             >
-              <pencil-icon></pencil-icon>
+              <more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
             </button>
             <div class="dropdown-menu">
               <span

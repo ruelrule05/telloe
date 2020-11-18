@@ -20,10 +20,9 @@
                     <span class="dropdown-item disabled pl-3 font-weight-light" v-if="filtered_options.length == 0">
                         <span v-if="show_no_results" class="text-muted">No results found</span>
                     </span>
-                    <span v-else class="dropdown-item cursor-pointer" :id="'item-' + option.value" :class="{active: !multiple && option.value == selected_value}" @click.prevent="updateValue(option)" v-for="option in filtered_options">
+                    <span v-else class="dropdown-item cursor-pointer" :id="'item-' + option.value" :class="{active: !multiple && option.value == selected_value}" @click.prevent="updateValue(option)" v-for="(option, index) in filtered_options" :key="index">
                         <div class="text-ellipsis">
-                            {{ selected_value }}
-                            <vue-checkbox v-if="multiple" :value="(selected_value || []).find(x => x == option.value)" :label="option.text"></vue-checkbox>
+                            <vue-checkbox v-if="multiple" :value="(selected_value || []).find(x => x == option.value || x.id == option.value.id)" :label="option.text"></vue-checkbox>
                             <span v-else>{{ option.text }}</span>
                         </div>
                     </span>
