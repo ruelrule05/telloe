@@ -241,6 +241,7 @@
           </div>
         </div>
         <div class="form-group">
+          {{ clonedMember.assigned_services.map(x => x.id) }}
           <strong class="d-block mb-2 font-weight-bold"
             >Assign Services</strong
           >
@@ -266,7 +267,7 @@
                       ? true
                       : false
                   "
-                  @input="toggleAssignedService(service)"
+                  @input="toggleMemberAssignedService(service)"
                 ></toggle-switch>
               </div>
             </div>

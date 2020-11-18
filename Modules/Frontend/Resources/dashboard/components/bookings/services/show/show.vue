@@ -130,7 +130,7 @@
 
               <div class="pr-2 mr-1 mt-3">
                 <div class="dropdown">
-                  <div class="rounded py-2 cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
+                  <div class="rounded py-2 border bg-white cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
                     <plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
                     Add Member
                   </div>

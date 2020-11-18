@@ -120,6 +120,15 @@ export default {
 			});
 		},
 
+		toggleMemberAssignedService(service) {
+			let index = this.clonedMember.assigned_services.findIndex(x => x.id == service.id);
+			if (index > -1) {
+				this.clonedMember.assigned_services.splice(index, 1);
+			} else {
+				this.clonedMember.assigned_services.push(service);
+			}
+		},
+
 		toggleAssignedService(service) {
 			let index = this.newMember.assigned_services.findIndex(x => x == service.id);
 			if (index > -1) {
