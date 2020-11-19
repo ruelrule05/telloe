@@ -101,7 +101,7 @@
                     </div>
                   </div>
 
-                  <div class="dropdown mx-1 member-dropdown">
+                  <div class="dropdown ml-auto mr-1 member-dropdown">
                     <button
                       class="btn btn-white line-height-0 p-1 badge-pill shadow-none"
                       data-toggle="dropdown"

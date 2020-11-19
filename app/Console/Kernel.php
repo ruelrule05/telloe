@@ -2,14 +2,14 @@
 
 namespace App\Console;
 
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Jobs\SendSMS;
 use App\Models\Booking;
 use Carbon\Carbon;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 use Mail;
 use Modules\Frontend\Mail\UpcomingBooking;
-use App\Jobs\SendSMS;
-use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -33,45 +33,46 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             Log::info('[booking_users_notify] CRON job started');
             $now = \Carbon\Carbon::now();
-            $bookings = Booking::where(function($query) {
-                    $query->has('user')->orHas('contact');
-                })
+            $bookings = Booking::where(function ($query) {
+                $query->has('user')->orHas('contact');
+            })
                 ->with('service.user', 'user', 'contact')
                 ->where('date', '>=', $now->format('Y-m-d'))
                 ->get();
-            foreach($bookings as $booking) :
+            foreach ($bookings as $booking) {
                 $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
                 $bookingUser = $booking->user ? $booking->user : $booking->contact;
-                $diffInMinutes = $now->diffInMinutes(Carbon::parse($booking->date . ' ' . $booking->start), false);
+                $bookingStart = Carbon::parse($booking->date . ' ' . $booking->start, $bookingUser->timezone);
+                $diffInMinutes = $now->diffInMinutes($bookingStart, false);
                 $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
-                if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
+                if ($diffInMinutes <= 120 && ! $booking->notified_2) { // 2 hours notif
                     $booking->notified_2 = true;
                     $booking->save();
-                    if($booking->service->user->notify_email) :
+                    if ($booking->service->user->notify_email) {
                         Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
-                    endif;
-                    if($bookingUser && $bookingUser->notify_email) :
+                    }
+                    if ($bookingUser && $bookingUser->notify_email) {
                         Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
-                    endif;
+                    }
 
                     // SendSMS
-                    if($booking->service->user->notify_sms && $booking->service->user->phone && $booking->service->user->dial_code) :
+                    if ($booking->service->user->notify_sms && $booking->service->user->phone && $booking->service->user->dial_code) {
                         SendSMS::dispatch($booking->service->user->dial_code . $booking->service->user->phone, 'You have an upcoming booking in less than 2 hours.');
-                    endif;
-                    if($bookingUser && $bookingUser->notify_sms && $bookingUser->phone && $bookingUser->dial_code) :
+                    }
+                    if ($bookingUser && $bookingUser->notify_sms && $bookingUser->phone && $bookingUser->dial_code) {
                         SendSMS::dispatch($bookingUser->dial_code . $bookingUser->phone, 'You have an upcoming booking in less than 2 hours.');
-                    endif;
-                elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) : // 24 hours notif
+                    }
+                } elseif ($diffInMinutes <= 1440 && ! $booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) { // 24 hours notif
                     $booking->notified_24 = true;
                     $booking->save();
-                    if($booking->service->user->notify_email) :
+                    if ($booking->service->user->notify_email) {
                         Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
-                    endif;
-                    if($bookingUser->notify_email) :
+                    }
+                    if ($bookingUser->notify_email) {
                         Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
-                    endif;
-                endif;
-            endforeach;
+                    }
+                }
+            }
 
             Log::info('[booking_users_notify] CRON job completed.');
         })->everyMinute();
@@ -84,7 +85,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

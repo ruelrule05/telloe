@@ -20,6 +20,7 @@ use Mail;
 use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\Welcome;
 use Response;
+use Spatie\CalendarLinks\Link;
 
 class UserController extends Controller
 {
@@ -106,6 +107,7 @@ class UserController extends Controller
             'timeslots' => 'required|array',
         ]);
 
+        $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
         $service = Service::where('id', $service_id)->where(function ($query) use ($user) {
             $query->where('user_id', $user->id)->orWhereHas('parentService', function ($query) use ($user) {
@@ -143,8 +145,20 @@ class UserController extends Controller
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
             ]);
+
             Mail::queue(new NewBooking($booking, $authUser, 'client'));
             Mail::queue(new NewBooking($booking, $authUser, 'contact'));
+
+            $from = Carbon::parse("$booking->date $booking->start");
+            $to = $from->clone()->addMinute($booking->service->duration);
+            $link = Link::create($booking->service->name, $from, $to)
+                ->description($booking->service->description);
+
+            $booking->google_link = $link->google();
+            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->yahoo_link = $link->yahoo();
+            $booking->ical_link = $booking->outlook_link;
+            $bookings[] = $booking;
         }
 
         if (! Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) {
@@ -156,7 +170,7 @@ class UserController extends Controller
             ]);
         }
 
-        return response()->json(['success' => true]);
+        return response($bookings);
     }
 
     public function widget(Request $request)

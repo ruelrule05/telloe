@@ -49,6 +49,7 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';
 import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
+import VueSelect from '../components/vue-select/vue-select.vue';
 
 export default {
 	components: {
@@ -77,7 +78,8 @@ export default {
 		WindowPlusIcon,
 		CloseIcon,
 		MoreIcon,
-		ToggleSwitch
+		ToggleSwitch,
+		VueSelect
 	},
 
 	directives: { tooltip },
@@ -107,8 +109,8 @@ export default {
 
 		authError: '',
 		loginForm: {
-			email: '',
-			password: '',
+			email: 'clyde@telloe.com',
+			password: 'admin',
 			loading: false
 		},
 		timeslotsLoading: false,
@@ -130,14 +132,21 @@ export default {
 		selectedCoachId: null,
 		activeUserBgPosition: 0,
 		selectedTimeslots: [],
-		dateRangeMask: {
-			input: 'YYYY-MM-DD h:mm A'
-		},
-
-		range: {
-			start: new Date(2020, 0, 6),
-			end: new Date(2020, 0, 23)
-		}
+		recurringFrequencies: [
+			{
+				text: 'Weekly',
+				value: 'weekly'
+			},
+			{
+				text: 'Fortnightly',
+				value: 'fortnightly'
+			},
+			{
+				text: 'Monthly',
+				value: 'monthly'
+			}
+		],
+		bookings: []
 	}),
 
 	computed: {
@@ -467,6 +476,7 @@ export default {
 		reset() {
 			this.$refs['bookingModal'].hide();
 			setTimeout(() => {
+				this.bookings = [];
 				this.isBooking = false;
 				this.bookingSuccess = false;
 				this.authForm = false;
@@ -526,6 +536,10 @@ export default {
 		},
 
 		submit() {
+			// this.$refs['bookingModal'].show();
+			// this.bookingSuccess = true;
+			// return;
+
 			if (this.authAction == 'login') {
 				this.LoginAndBook();
 			} else if (this.authAction == 'signup') {
@@ -553,6 +567,7 @@ export default {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
 							this.selectedTimeslots = [];
+							this.bookings = response.data;
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -584,6 +599,7 @@ export default {
 							this.loginForm.loading = false;
 							this.authForm = false;
 							this.selectedTimeslots = [];
+							this.bookings = response.data;
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -617,6 +633,7 @@ export default {
 											this.loginForm.loading = false;
 											this.authForm = false;
 											this.selectedTimeslots = [];
+											this.bookings = response.data;
 										})
 										.catch(e => {
 											setTimeout(() => {
@@ -669,6 +686,7 @@ export default {
 									this.loginForm.loading = false;
 									this.authForm = false;
 									this.selectedTimeslots = [];
+									this.bookings = response.data;
 								})
 								.catch(e => {
 									setTimeout(() => {
@@ -695,6 +713,15 @@ export default {
 			let formatDate = '';
 			if (date) formatDate = dayjs(date).format('MMMM DD, YYYY');
 			return formatDate;
+		},
+
+		formatTime(time) {
+			let parts = time.split(':');
+			let formatTime = dayjs()
+				.hour(parts[0])
+				.minute(parts[1])
+				.format('hh:mmA');
+			return formatTime;
 		},
 
 		async getTimeslots() {

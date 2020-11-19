@@ -170,9 +170,6 @@ $timeCount: 15;
 		line-height: 1.1em;
 	}
 }
-.booking-modal-progress {
-	height: 200px;
-}
 .coach-container {
 	.coach:last-child {
 		margin-bottom: 0 !important;
@@ -424,5 +421,18 @@ $timeCount: 15;
 		top: 49%;
 		left: 50%;
 		transform: translate(-50%, -50%);
+	}
+}
+::v-deep .hide-tooltip {
+	.tooltip {
+		display: none !important;
+		opacity: 0 !important;
+		visibility: hidden !important;
+	}
+}
+#bookingModal {
+	.disabled {
+		opacity: 0 !important;
+		pointer-events: none !important;
 	}
 }

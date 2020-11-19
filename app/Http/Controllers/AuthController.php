@@ -588,6 +588,10 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->id == 118) {
+            return;
+        } // john@telloe.com
+
         // Set timezone
         $timezone = config('app.timezone');
         $ip = request()->server('HTTP_CF_CONNECTING_IP');

@@ -144,6 +144,7 @@ export default {
 				assigned_services: []
 			};
 		},
+
 		store() {
 			if (this.newMember.email) {
 				this.storeMember(this.newMember).then(() => {

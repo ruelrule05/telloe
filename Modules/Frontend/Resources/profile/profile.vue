@@ -106,25 +106,29 @@
 						</button>
 						<div class="pl-5 ml-5">
 							<div class="pl-4">
-								<div class="ml-5 bg-white rounded shadow-sm d-flex align-items-center">
-									<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
-										<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
-									</button>
-									<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
-										<template v-slot="{ inputValue, inputEvents }">
-											<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
-										</template>
-									</v-date-picker>
-									<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
-										<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
-									</button>
+								<div class="ml-5 d-flex align-items-center">
+									<div class="bg-white rounded shadow-sm d-flex align-items-center">
+										<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
+											<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+										</button>
+										<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+											<template v-slot="{ inputValue, inputEvents }">
+												<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
+											</template>
+										</v-date-picker>
+										<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
+											<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+										</button>
+									</div>
+									<div v-if="selectedTimeslots.length == 0" class="ml-3 text-muted">Select at least one (1) timeslot</div>
 								</div>
 							</div>
 						</div>
 
-						<div class="ml-auto">
-							<button class="btn line-height-0 p-0 close float-none" type="button" @click="summary()">
-								<arrow-right-icon width="30" height="30" transform="scale(1.2)"></arrow-right-icon>
+						<div class="ml-auto" :class="{'hide-tooltip': selectedTimeslots.length > 0}" v-tooltip.left="'Select at least one (1) timeslot'" >
+							<button class="btn d-flex align-items-center" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">
+								Next 
+								<arrow-right-icon width="20" height="20" transform="scale(1.2)"></arrow-right-icon>
 							</button>
 
 						</div>
@@ -137,7 +141,7 @@
 								<div class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
 
 								<!-- Main Coach -->
-								<div class="xborder pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container" :class="{'active': selectedCoachId == profile.id}" @click="selectedCoachId = profile.id; selectedService = selectedServiceForTimeline">
+								<div class="pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container" :class="{'active': selectedCoachId == profile.id}" @click="selectedCoachId = profile.id; selectedService = selectedServiceForTimeline">
 									<div class="d-flex align-items-center p-1">
 										<div class="profile-image profile-image-xs" :style="{'background-image': `url(${profile.profile_image})`}">
 											<span v-if="!profile.profile_image">{{ profile.initials }}</span>
@@ -221,31 +225,23 @@
 										<div class="font-weight-normal text-secondary">Coach</div>
 										<div class="h6 font-heading">{{ selectedService.user.full_name }}</div>
 									</div>
-									<!-- <div class="mb-3">
-										<div class="font-weight-normal text-secondary">Date</div>
-										<div class="h6 font-heading">{{ formatDate(selectedDate) }}</div>
-									</div>
-									<div class="mb-3">
-										<div class="font-weight-normal text-secondary">Starts at</div>
-										<div class="h6 font-heading">{{ convertTime(selectedTimeslot.time, 'hh:mmA') }}</div>
-									</div>
-									<div class="mb-3">
-										<div class="font-weight-normal text-secondary">Ends at</div>
-										<div class="h6 font-heading">{{ endTime }}</div>
-									</div> -->
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Duration</div>
 										<div class="h6 font-heading">{{ selectedService.duration }} minutes</div>
 									</div>
 									<div class="mb-3">
-										<div class="font-weight-normal text-secondary">Timeslots</div>
-										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded px-3 py-2 my-2">
-											<div class="d-flex align-items-center">
+										<div class="font-weight-normal text-secondary mb-n3">Timeslots</div>
+										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-4">
+											<div class="d-flex">
 												<div>
-													{{ formatDate(timeslot.date.date) }}
-													@ {{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}
+													<h6 class="font-heading mb-1">
+														{{ formatDate(timeslot.date.date) }}
+													</h6>
+													<div class="text-muted">
+														{{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}
+													</div>
 												</div>
-												<div class="dropleft ml-auto mr-n2">
+												<div class="dropleft ml-auto mr-n2 mt-n2">
 													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
 														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
 													</button>
@@ -255,34 +251,33 @@
 															<span>Recurring</span>
 															<toggle-switch
 																class="ml-auto"
-																@input="if(timeslot.is_recurring) { $set(timeslot, 'dateRange', {start: new Date(), end: dayjs(new Date).add(5, 'day').toDate()}) }"
+																@input="if(timeslot.is_recurring) { 
+																	$set(timeslot, 'endDate', dayjs(new Date).add(1, 'year').toDate()); 
+																	$set(timeslot, 'frequency', recurringFrequencies[0].value); 
+																}"
 																active-class="bg-primary"
 																v-model="timeslot.is_recurring"
 															></toggle-switch>
 														</div>
 
-														<span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedTimeslots.splice(index, 1); if(selectedTimeslots.length == 0) {selectedTimeslot = false}">Remove</span>
+														<span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="selectedTimeslots.splice(timeslotIndex, 1); if(selectedTimeslots.length == 0) {selectedTimeslot = false}">Remove</span>
 													</div>
 												</div>
 											</div>
 											<div v-if="timeslot.is_recurring">
-												<div class="d-flex align-items-center mt-2">
-													<span class="text-muted">Date range</span> 
-													<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'right', visibility: 'click' }" :masks="dateRangeMask" v-model="timeslot.dateRange" is-range>
+												<div class="form-group mt-2">
+													<label class="text-muted">Ends at</label> 
+													<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.endDate">
 														<template v-slot="{ inputValue, inputEvents }">
-															<button type="button" class="btn btn-white btn-sm ml-2 shadow-none" v-on="inputEvents.start">
-																{{ dayjs(inputValue.start).format('YYYY/MM/DD') }}
-																-
-																{{ dayjs(inputValue.end).format('YYYY/MM/DD') }}
+															<button type="button" class="btn btn-white btn-block shadow-none" v-on="inputEvents">
+																{{ formatDate(inputValue) }}
 															</button>
 														</template>
 													</v-date-picker>
 												</div>
-												<div class="d-flex align-items-center mt-2">
-													<span class="text-muted mr-1">Days in week</span>
-													<div v-tooltip.top="day" @click="timeslotToggleDay(timeslotIndex, dayIndex)" v-for="(day, dayIndex) in days" class="badge badge-pill badge-day ml-1 cursor-pointer position-relative" :class="[selectedTimeslots[timeslotIndex].days.indexOf(dayIndex) == -1 ? 'badge-white' : 'badge-primary']" :key="dayIndex">
-														<span>{{ day.substring(0, 1) }}</span>
-													</div>
+												<div class="form-group mb-0 mt-2">
+													<label class="text-muted mr-1">Frequency</label>
+													<vue-select button_class="btn btn-white btn-block shadow-none border-0" :options="recurringFrequencies" v-model="timeslot.frequency"></vue-select>
 												</div>
 											</div>
 										</div>
@@ -353,18 +348,36 @@
 
 
 
-		<modal ref="bookingModal" :close-button="false">
-			<div class="text-center booking-modal-progress position-relative">
-				<div class="position-absolute-center w-100">
-					<template v-if="bookingSuccess">
-						<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
-						<h6 class="h3 mb-4 mt-2 font-heading">Booking placed!</h6>
-						<button class="btn btn-white border" type="button" @click="reset">Close</button>
-					</template>
-					<template v-else>
-						<div class="spinner-border text-primary" role="status"></div>
-						<h6 class="h3 mt-4 mb-0 font-heading">Booking...</h6>
-					</template>
+		<modal ref="bookingModal" id="bookingModal" :close-button="bookingSuccess" @hide="reset">
+			<div class="text-center position-relative">
+				<div :class="{'disabled': !bookingSuccess}">
+					<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
+					<h6 class="h3 font-heading">Booking placed!</h6>
+					<p class="mb-4 h6 font-weight-normal text-muted">A booking confirmation has been sent to your email</p>
+
+					<div v-for="booking in bookings" :key="booking.id" class="rounded p-3 text-left bg-light d-flex align-items-center mt-3">
+						<div>
+							<h6 class="font-heading mb-1">{{ formatDate(booking.date) }}</h6>
+							<div class="text-muted">
+								{{ formatTime(booking.start) }} - {{ formatTime(booking.end) }}
+							</div>
+						</div>
+						<div class="ml-auto dropdown">
+							<button class="btn btn-white shadow-none" type="button" data-toggle="dropdown">
+								Add to Calendar
+							</button>
+							<div class="dropdown-menu">
+								<a target="_blank" :href="booking.google_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Google Calendar</a>
+								<a target="_blank" :href="booking.outlook_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Outlook</a>
+								<a target="_blank" :href="booking.yahoo_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Yahoo!</a>
+								<a target="_blank" :href="booking.ical_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">iCal</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="!bookingSuccess" class="position-absolute-center">
+					<div class="spinner-border text-primary" role="status"></div>
+					<h6 class="h3 mt-4 mb-0 font-heading">Booking...</h6>
 				</div>
 			</div>
 		</modal>
