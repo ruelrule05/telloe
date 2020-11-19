@@ -15,10 +15,13 @@
                 <span style="width: 100px; display: inline-block">Date</span> <strong>{{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }}</strong>
             </li>
             <li>
-                <span style="width: 100px; display: inline-block">From</span> <strong>{{ \Carbon\Carbon::parse($booking->start)->format('h:iA') }}</strong>
+                <span style="width: 100px; display: inline-block">From</span> <strong> {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong>
             </li>
             <li>
-                <span style="width: 100px; display: inline-block">To</span> <strong>{{ \Carbon\Carbon::parse($booking->end)->format('h:iA') }}</strong>
+                <span style="width: 100px; display: inline-block">To</span> <strong> {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong>
+            </li>
+            <li>
+                <span style="width: 100px; display: inline-block">Timezone</span> <strong> {{ $booking->user->timezone ?? config('app.timezone') }}</strong>
             </li>
         </ul>
     </div>

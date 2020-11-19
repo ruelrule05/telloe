@@ -57,6 +57,18 @@ export default {
 			{
 				text: 'EUR',
 				value: 'EUR'
+			},
+			{
+				text: 'CAD',
+				value: 'CAD'
+			},
+			{
+				text: 'GBP',
+				value: 'GBP'
+			},
+			{
+				text: 'NZD',
+				value: 'NZD'
 			}
 		]
 	}),

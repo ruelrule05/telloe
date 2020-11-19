@@ -105,9 +105,9 @@ class MemberController extends Controller
     {
         $this->authorize('update', $member);
         $authUser = Auth::user();
-        $existingAssignedServices = $member->assignedServices();
+        $existingAssignedServices = $member->assignedServices;
         foreach ($existingAssignedServices as $existingAssignedService) {
-            if (! in_array($existingAssignedService->id, $request->assigned_services)) {
+            if (! in_array($existingAssignedService->parent_service_id, $request->assigned_services)) {
                 $existingAssignedService->delete();
             }
         }
@@ -115,11 +115,9 @@ class MemberController extends Controller
             $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
             if ($service) {
                 $assignedService = Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->first();
-                if ($assignedService) {
-                    // restore
+                if ($assignedService && $assignedService->deleted_at) {
                     Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->restore();
-                    $assignedService->deleted_at = null;
-                } else {
+                } elseif (! $assignedService) {
                     $assignedService = $service->replicate();
                     $assignedService->user_id = null;
                     $assignedService->member_id = $member->id;

@@ -64,20 +64,16 @@ export default {
 			deleteService: 'services/delete'
 		}),
 
-		toggleAssignedService(service) {
-			let index = this.member.assigned_services.findIndex(x => x == service.id);
+		toggleMemberAssignedService(service) {
+			let index = this.clonedMember.assigned_services.findIndex(x => x == service.id);
 			if (index > -1) {
-				this.member.assigned_services.splice(index, 1);
+				this.clonedMember.assigned_services.splice(index, 1);
 			} else {
-				this.member.assigned_services.push(service.id);
+				this.clonedMember.assigned_services.push(service.id);
 			}
 		},
 
 		async update() {
-			let serviceIds = this.clonedMember.assigned_services.map(service => {
-				return service.id;
-			});
-			this.clonedMember.assigned_services = serviceIds;
 			let member = await this.updateMember(this.clonedMember);
 			this.member = member;
 			this.$refs['editModal'].hide();
@@ -114,7 +110,9 @@ export default {
 		async getMember() {
 			let response = await axios.get(`/members/${this.$route.params.id}`);
 			this.member = response.data;
-			this.clonedMember = JSON.parse(JSON.stringify(response.data));
+			let clonedMember = JSON.parse(JSON.stringify(response.data));
+			clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
+			this.clonedMember = clonedMember;
 			this.$root.contentloading = false;
 		}
 	}

@@ -21,7 +21,7 @@ import ShortcutIcon from '../../../../../icons/shortcut';
 import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 import tooltip from '../../../../../js/directives/tooltip.js';
-import Axios from 'axios';
+import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 Vue.use(VuePaginate);
 import convertTime from '../../../../../js/plugins/convert-time.js';
 Vue.component('pagination', require('laravel-vue-pagination'));
@@ -31,7 +31,7 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton, ZoomIcon, ShortcutIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton, ZoomIcon, ShortcutIcon, VueSelect },
 
 	directives: { tooltip },
 
@@ -55,7 +55,41 @@ export default {
 		selectedTimeslot: null,
 		dayjs: dayjs,
 		bookingModalLoading: false,
-		createZoomLoading: false
+		createZoomLoading: false,
+		currencies: [
+			{
+				text: 'AUD',
+				value: 'AUD'
+			},
+			{
+				text: 'USD',
+				value: 'USD'
+			},
+			{
+				text: 'PHP',
+				value: 'PHP'
+			},
+			{
+				text: 'CHF',
+				value: 'CHF'
+			},
+			{
+				text: 'EUR',
+				value: 'EUR'
+			},
+			{
+				text: 'CAD',
+				value: 'CAD'
+			},
+			{
+				text: 'GBP',
+				value: 'GBP'
+			},
+			{
+				text: 'NZD',
+				value: 'NZD'
+			}
+		]
 	}),
 
 	computed: {
@@ -146,6 +180,15 @@ export default {
 			assignService: 'members/store_service',
 			deleteService: 'services/delete'
 		}),
+
+		update() {
+			this.updateService(this.clonedService).then(service => {
+				Object.keys(service).map(key => {
+					this.service[key] = service[key];
+				});
+			});
+			this.$refs['editModal'].hide();
+		},
 
 		async createZoomLink() {
 			// axios get zoom token

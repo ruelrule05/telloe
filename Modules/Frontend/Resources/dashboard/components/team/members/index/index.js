@@ -99,10 +99,6 @@ export default {
 		}),
 
 		update() {
-			let serviceIds = this.clonedMember.assigned_services.map(service => {
-				return service.id;
-			});
-			this.clonedMember.assigned_services = serviceIds;
 			this.updateMember(this.clonedMember);
 			this.$refs['editModal'].hide();
 		},
@@ -120,12 +116,19 @@ export default {
 			});
 		},
 
+		editMember(member) {
+			let clonedMember = JSON.parse(JSON.stringify(member));
+			clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
+			this.clonedMember = clonedMember;
+			this.$refs['editModal'].show();
+		},
+
 		toggleMemberAssignedService(service) {
-			let index = this.clonedMember.assigned_services.findIndex(x => x.id == service.id);
+			let index = this.clonedMember.assigned_services.findIndex(x => x == service.id);
 			if (index > -1) {
 				this.clonedMember.assigned_services.splice(index, 1);
 			} else {
-				this.clonedMember.assigned_services.push(service);
+				this.clonedMember.assigned_services.push(service.id);
 			}
 		},
 

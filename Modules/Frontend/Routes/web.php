@@ -31,7 +31,7 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::first(), App\Models\User::first(), 'contact');
+    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::find(148), App\Models\User::first(), 'contact');
     //\Mail::to('cleidoscope@gmail.com')->send($email);
 
     return $email;
@@ -140,6 +140,7 @@ Route::group(
                 Route::get('xero/invoices', 'XeroController@invoices');
                 Route::get('xero/token', 'XeroController@getToken');
                 Route::get('xero/remove', 'XeroController@remove');
+                Route::post('xero/invoices', 'XeroController@storeInvoice');
 
                 Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');

@@ -1,79 +1,50 @@
 <template>
-  <div v-if="member" class="w-100 h-100 overflow-hidden">
-    <div class="overflow-auto h-100">
-      <div class="p-4 d-flex align-items-center">
-        <button
-          class="btn p-1 btn-white badge-pill shadow-sm"
-          type="button"
-          @click="$router.push('/dashboard/team/members')"
-        >
-          <arrow-left-icon width="30" height="30"></arrow-left-icon>
-        </button>
+	<div v-if="member" class="w-100 h-100 overflow-hidden">
+		<div class="overflow-auto h-100">
+			<div class="p-4 d-flex align-items-center">
+				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/team/members')">
+					<arrow-left-icon width="30" height="30"></arrow-left-icon>
+				</button>
 
-          <div class="dropdown ml-auto">
-            <button
-              class="btn p-2 btn-white badge-pill shadow-sm"
-              data-toggle="dropdown"
-              data-offset="-130, 10"
-            >
-              <more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
-            </button>
-            <div class="dropdown-menu">
-              <span
-                class="dropdown-item cursor-pointer"
-                @click=" $refs['editModal'].show();"
-              >
-                Edit
-              </span>
-              <span
-                class="dropdown-item cursor-pointer"
-                @click="$refs['deleteModal'].show()"
-              >
-                Delete
-              </span>
-            </div>
-          </div>
-      </div>
+				<div class="dropdown ml-auto">
+					<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10">
+						<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
+					</button>
+					<div class="dropdown-menu">
+						<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
+							Edit
+						</span>
+						<span class="dropdown-item cursor-pointer" @click="$refs['deleteModal'].show()">
+							Delete
+						</span>
+					</div>
+				</div>
+			</div>
 
-      <div class="text-center mt-n5 mb-3">
-        <div
-          class="user-profile-image d-inline-block"
-          :style="{
-            backgroundImage: 'url(' + member.member_user.profile_image + ')',
-          }"
-        >
-          <span v-if="!member.member_user.profile_image">
-            {{ member.member_user.initials }}
-          </span>
-        </div>
-        <h1 class="h3 font-heading mt-2 mb-0">{{ member.full_name }}</h1>
-        <div class="text-muted mb-1">{{ member.email }}</div>
-        <div class="flex-grow-1">
-          <div
-            class="badge badge-icon d-inline-flex align-items-center"
-            :class="[
-              member.is_pending
-                ? 'bg-warning-light text-warning'
-                : 'bg-primary-light text-primary',
-            ]"
-          >
-            <clock-icon
-              v-if="member.is_pending"
-              height="12"
-              width="12"
-            ></clock-icon>
-            <checkmark-circle-icon
-              v-else
-              height="12"
-              width="12"
-            ></checkmark-circle-icon>
-            &nbsp;{{ member.is_pending ? "Pending" : "Accepted" }}
-          </div>
-        </div>
-      </div>
+			<div class="text-center mt-n5 mb-3">
+				<div
+					class="user-profile-image d-inline-block"
+					:style="{
+						backgroundImage: 'url(' + member.member_user.profile_image + ')'
+					}"
+				>
+					<span v-if="!member.member_user.profile_image">
+						{{ member.member_user.initials }}
+					</span>
+				</div>
+				<h1 class="h3 font-heading mt-2 mb-0">{{ member.full_name }}</h1>
+				<div class="text-muted mb-1">{{ member.email }}</div>
+				<div class="flex-grow-1">
+					<div class="badge badge-icon d-inline-flex align-items-center" :class="[member.is_pending ? 'bg-warning-light text-warning' : 'bg-primary-light text-primary']">
+						<clock-icon v-if="member.is_pending" height="12" width="12"></clock-icon>
+						<checkmark-circle-icon v-else height="12" width="12"></checkmark-circle-icon>
+						&nbsp;{{ member.is_pending ? 'Pending' : 'Accepted' }}
+					</div>
+				</div>
+			</div>
 
-      <!-- Assigned services -->
-      <!-- <h5 class="mt-5 font-heading px-4 mb-3">Assigned Services</h5>
+			<!-- Assigned services -->
+			<!-- <h5 class="mt-5 font-heading px-4 mb-3">Assigned Services</h5>
       <template v-for="service in services">
         <div
           v-if="service.is_available"
@@ -118,157 +89,112 @@
         </div>
       </template> -->
 
-      <!-- Bookings -->
-      <h5 class="mt-4 font-heading px-4 mb-3">Bookings</h5>
-      <div class="px-4 mb-4" v-if="bookings.length > 0">
-        <table class="table table-borderless table-fixed-header mb-0">
-          <thead class="text-secondary">
-            <tr>
-              <th class="pl-0">User</th>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-for="booking in bookings">
-              <tr :key="booking.id">
-                <td class="align-middle">{{ booking.user.full_name }}</td>
-                <td class="align-middle">{{ booking.service.name }}</td>
-                <td class="align-middle">
-                  {{ formatDate(booking.created_at) }}
-                </td>
-                <td class="align-middle">
-                  {{ convertTime(booking.start, 'hh:MMA') }}
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-      </div>
-      <div v-else class="px-4 mb-4">
-        <div class="rounded bg-white shadow-sm text-center py-3 text-muted">
-          No bookings.
-        </div>
-      </div>
-    </div>
+			<!-- Bookings -->
+			<h5 class="mt-4 font-heading px-4 mb-3">Bookings</h5>
+			<div class="px-4 mb-4" v-if="bookings.length > 0">
+				<table class="table table-borderless table-fixed-header mb-0">
+					<thead class="text-secondary">
+						<tr>
+							<th class="pl-0">User</th>
+							<th>Service</th>
+							<th>Date</th>
+							<th>Time</th>
+						</tr>
+					</thead>
+					<tbody>
+						<template v-for="booking in bookings">
+							<tr :key="booking.id">
+								<td class="align-middle">{{ booking.user.full_name }}</td>
+								<td class="align-middle">{{ booking.service.name }}</td>
+								<td class="align-middle">
+									{{ formatDate(booking.created_at) }}
+								</td>
+								<td class="align-middle">
+									{{ convertTime(booking.start, 'hh:MMA') }}
+								</td>
+							</tr>
+						</template>
+					</tbody>
+				</table>
+			</div>
+			<div v-else class="px-4 mb-4">
+				<div class="rounded bg-white shadow-sm text-center py-3 text-muted">
+					No bookings.
+				</div>
+			</div>
+		</div>
 
-    <modal ref="editModal" :close-button="false">
-      <h5 class="font-heading mb-3">Edit Member</h5>
-      <vue-form-validate v-if="clonedMember" @submit="update">
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input
-            :disabled="!clonedMember.is_pending"
-            type="email"
-            class="form-control"
-            v-model="clonedMember.email"
-            data-required
-          />
-        </div>
-        <div class="form-row form-group">
-          <div class="col">
-            <label class="form-label">First Name (Optional)</label>
-            <input
-              :disabled="!clonedMember.is_pending"
-              type="text"
-              class="form-control"
-              v-model="clonedMember.first_name"
-            />
-          </div>
-          <div class="col">
-            <label class="form-label">Last Name (Optional)</label>
-            <input
-              :disabled="!clonedMember.is_pending"
-              type="text"
-              class="form-control"
-              v-model="clonedMember.last_name"
-            />
-          </div>
-        </div>
-        <div class="form-group">
-          <strong class="d-block mb-2 font-weight-bold"
-            >Assign Services</strong
-          >
-          <template v-for="service in services">
-            <div
-              v-if="service.is_available"
-              :key="service.id"
-              class="d-flex align-items-center mb-2 rounded p-3 bg-light"
-            >
-              <div>
-                <h6 class="font-heading mb-0">{{ service.name }}</h6>
-                <small class="text-gray d-block"
-                  >{{ service.duration }} minutes</small
-                >
-              </div>
-              <div class="ml-auto">
-                <toggle-switch
-                  active-class="bg-primary"
-                  :value="
-                    clonedMember.assigned_services.find(
-                      (x) => x.id == service.id
-                    )
-                      ? true
-                      : false
-                  "
-                  @input="toggleAssignedService(service)"
-                ></toggle-switch>
-              </div>
-            </div>
-          </template>
-        </div>
+		<modal ref="editModal" :close-button="false">
+			<h5 class="font-heading mb-3">Edit Member</h5>
+			<vue-form-validate v-if="clonedMember" @submit="update">
+				<div class="form-group">
+					<label class="form-label">Email</label>
+					<input :disabled="!clonedMember.is_pending" type="email" class="form-control" v-model="clonedMember.email" data-required />
+				</div>
+				<div class="form-row form-group">
+					<div class="col">
+						<label class="form-label">First Name (Optional)</label>
+						<input :disabled="!clonedMember.is_pending" type="text" class="form-control" v-model="clonedMember.first_name" />
+					</div>
+					<div class="col">
+						<label class="form-label">Last Name (Optional)</label>
+						<input :disabled="!clonedMember.is_pending" type="text" class="form-control" v-model="clonedMember.last_name" />
+					</div>
+				</div>
+				<div class="form-group">
+					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
+					<template v-for="service in services">
+						<div v-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
+							<div>
+								<h6 class="font-heading mb-0">{{ service.name }}</h6>
+								<small class="text-gray d-block">{{ service.duration }} minutes</small>
+							</div>
+							<div class="ml-auto">
+								<toggle-switch active-class="bg-primary" :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
+							</div>
+						</div>
+					</template>
+				</div>
 
-        <div class="d-flex">
-          <button
-            class="btn btn-light shadow-none"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button class="ml-auto btn btn-primary" type="submit">
-            Save
-          </button>
-        </div>
-      </vue-form-validate>
-    </modal>
+				<div class="d-flex">
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
+						Cancel
+					</button>
+					<button class="ml-auto btn btn-primary" type="submit">
+						Save
+					</button>
+				</div>
+			</vue-form-validate>
+		</modal>
 
-    <modal ref="deleteModal" :close-button="false">
-      <template v-if="member">
-        <h5 class="font-heading text-center">Delete Member</h5>
-        <p class="text-center mt-3">
-          Are you sure to delete member
-          <strong>{{
-            member.full_name.trim() ||
-            member.email
-          }}</strong>
-          ?
-          <br />
-          <span class="text-danger">This action cannot be undone</span>
-        </p>
-        <div class="d-flex justify-content-end">
-          <button
-            class="btn btn-light shadow-none text-body"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button
-            class="btn btn-danger ml-auto"
-            type="button"
-            @click="
-              deleteMember(member).then(() => $router.push('/dashboard/team/members'));
-              $refs['deleteModal'].hide();
-            "
-          >
-            Delete
-          </button>
-        </div>
-      </template>
-    </modal>
-  </div>
+		<modal ref="deleteModal" :close-button="false">
+			<template v-if="member">
+				<h5 class="font-heading text-center">Delete Member</h5>
+				<p class="text-center mt-3">
+					Are you sure to delete member
+					<strong>{{ member.full_name.trim() || member.email }}</strong>
+					?
+					<br />
+					<span class="text-danger">This action cannot be undone</span>
+				</p>
+				<div class="d-flex justify-content-end">
+					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">
+						Cancel
+					</button>
+					<button
+						class="btn btn-danger ml-auto"
+						type="button"
+						@click="
+							deleteMember(member).then(() => $router.push('/dashboard/team/members'));
+							$refs['deleteModal'].hide();
+						"
+					>
+						Delete
+					</button>
+				</div>
+			</template>
+		</modal>
+	</div>
 </template>
 
 <script src="./show.js"></script>

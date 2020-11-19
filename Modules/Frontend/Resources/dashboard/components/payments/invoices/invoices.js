@@ -138,8 +138,11 @@ export default {
 		//this.$root.contentloading = !this.ready;
 		this.getUserContacts();
 		this.getServices();
-		this.getPendingInvoices();
-		this.getXeroInvoices();
+		if (this.$root.auth.xero_token) {
+			this.getXeroInvoices();
+		} else {
+			this.getPendingInvoices();
+		}
 	},
 
 	mounted() {
@@ -259,18 +262,19 @@ export default {
 			}
 		},
 
-		createInvoice() {
+		async createInvoice() {
 			this.newInvoiceForm.loading = true;
 			this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
 
-			if (this.$root.payoutComplete) {
-				this.createContactInvoice(this.newInvoiceForm)
-					.then(() => {
-						this.resetInvoiceForm();
-					})
-					.catch(() => {
-						this.newInvoiceForm.loading = false;
-					});
+			if (this.$root.auth.xero_token) {
+				let response = await axios.post('/xero/invoices', this.newInvoiceForm, { toasted: true }).catch(() => {
+					this.newInvoiceForm.loading = false;
+				});
+				if (response) {
+					this.invoices.unshift(response.data);
+					this.newInvoiceForm.loading = false;
+					this.$refs['createInvoiceModal'].hide();
+				}
 			} else {
 				this.storePendingInvoice(this.newInvoiceForm)
 					.then(() => {

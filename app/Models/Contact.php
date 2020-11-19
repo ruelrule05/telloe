@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class Contact extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid'];
     protected $appends = ['full_name', 'initials', 'created_at_format'];
     protected $casts = [
         'blacklisted_services' => 'array',
@@ -15,14 +15,14 @@ class Contact extends BaseModel
         'subscriptions' => 'array'
     ];
 
-    public function user() 
+    public function user()
     {
-    	return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function contactUser() 
+    public function contactUser()
     {
-    	return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function($contactUser, $contact) {
+        return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function ($contactUser, $contact) {
             $contactUser->first_name = $contact->attributes['first_name'];
             $contactUser->last_name = $contact->attributes['last_name'];
             $contactUser->email = $contact->attributes['email'];
@@ -48,5 +48,4 @@ class Contact extends BaseModel
     {
         return Carbon::parse($this->attributes['created_at'])->format('M d, Y');
     }
-
 }

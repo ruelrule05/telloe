@@ -41,13 +41,7 @@
 														>
 															Resend invitation
 														</span>
-														<span
-															class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
-															@click="
-																clonedMember = JSON.parse(JSON.stringify(member));
-																$refs['editModal'].show();
-															"
-														>
+														<span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="editMember(member)">
 															Edit
 														</span>
 														<span
@@ -178,17 +172,15 @@
 					</div>
 				</div>
 				<div class="form-group">
-					{{ clonedMember.assigned_services.map(x => x.parent_service_id) }}
 					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
 					<template v-for="service in services">
 						<div v-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
 							<div>
-								{{ service.id }}
 								<h6 class="font-heading mb-0">{{ service.name }}</h6>
 								<small class="text-gray d-block">{{ service.duration }} minutes</small>
 							</div>
 							<div class="ml-auto">
-								<toggle-switch active-class="bg-primary" :value="clonedMember.assigned_services.find(x => x.id == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
+								<toggle-switch active-class="bg-primary" :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>

@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
             foreach ($bookings as $booking) {
                 $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
                 $bookingUser = $booking->user ? $booking->user : $booking->contact;
-                $bookingStart = Carbon::parse($booking->date . ' ' . $booking->start, $bookingUser->timezone);
+                $bookingStart = Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null);
                 $diffInMinutes = $now->diffInMinutes($bookingStart, false);
                 $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
                 if ($diffInMinutes <= 120 && ! $booking->notified_2) { // 2 hours notif

@@ -3,6 +3,7 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Contact;
 use Auth;
 use Illuminate\Http\Request;
 use Modules\Frontend\Http\XeroClient;
@@ -70,7 +71,7 @@ class XeroController extends Controller
         if ($authUser->xero_tenant_id) {
             $XeroClient = new XeroClient($request);
             $xero = new \XeroPHP\Application($XeroClient->accessToken, $authUser->xero_tenant_id);
-            $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)->execute();
+            $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)->orderBy('Date', 'DESC')->execute();
         }
 
         return response(json_decode(json_encode($invoices), true));
@@ -83,5 +84,51 @@ class XeroController extends Controller
         $authUser->xero_tenant_id = null;
         $authUser->save();
         return response(['removed' => true]);
+    }
+
+    public function storeInvoice(Request $request)
+    {
+        $this->validate($request, [
+            'contact_id' => 'required|exists:contacts,id',
+            'service_ids' => 'nullable|array',
+            'amount' => 'required|numeric'
+        ]);
+        $authUser = Auth::user();
+
+        if (! $authUser->xero_tenant_id) {
+            return abort(403, 'No tenant selected');
+        }
+
+        $contact = Contact::where('id', $request->contact_id)->where('user_id', $authUser->id)->firstOrFail();
+
+        $XeroClient = new XeroClient($request);
+        $xero = new \XeroPHP\Application($XeroClient->accessToken, $authUser->xero_tenant_id);
+
+        if ($contact->xero_guid) {
+            $xeroContact = $xero->loadByGUID(\XeroPHP\Models\Accounting\Contact::class, $contact->xero_guid);
+        } else {
+            $xeroContact = new \XeroPHP\Models\Accounting\Contact($xero);
+            $xeroContact->setName($contact->contactUser->full_name);
+            $xeroContact->setFirstName($contact->contactUser->first_name);
+            $xeroContact->setLastName($contact->contactUser->last_name);
+            $xeroContact->setEmailAddress($contact->contactUser->email);
+            $xeroContact->save();
+
+            $contact->update([
+                'xero_guid' => $xeroContact->getGUID()
+            ]);
+        }
+
+        $lineItem = new \XeroPHP\Models\Accounting\LineItem();
+        $lineItem->setLineAmount($request->amount);
+        $lineItem->setQuantity(1);
+
+        $invoice = new \XeroPHP\Models\Accounting\Invoice($xero);
+        $invoice->setType('ACCREC');
+        $invoice->addLineItem($lineItem);
+        $invoice->setContact($xeroContact);
+        $invoice->save();
+
+        return response($invoice);
     }
 }
