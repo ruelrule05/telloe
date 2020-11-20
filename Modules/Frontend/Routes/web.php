@@ -31,7 +31,9 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::find(148), App\Models\User::first(), 'contact');
+    //$email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::find(170), App\Models\User::first(), 'contact');
+    //$email = new Modules\Frontend\Mail\UpcomingBooking(App\Models\Booking::find(170), 'dwada');
+    $email = new Modules\Frontend\Mail\UpdateBooking(App\Models\Booking::find(170));
     //\Mail::to('cleidoscope@gmail.com')->send($email);
 
     return $email;

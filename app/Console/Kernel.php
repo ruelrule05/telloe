@@ -49,7 +49,7 @@ class Kernel extends ConsoleKernel
                     $booking->notified_2 = true;
                     $booking->save();
                     if ($booking->service->user->notify_email) {
-                        Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
+                        Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name));
                     }
                     if ($bookingUser && $bookingUser->notify_email) {
                         Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));
@@ -66,7 +66,7 @@ class Kernel extends ConsoleKernel
                     $booking->notified_24 = true;
                     $booking->save();
                     if ($booking->service->user->notify_email) {
-                        Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name, $actionUrl));
+                        Mail::to($booking->service->user->email)->queue(new UpcomingBooking($booking, $full_name));
                     }
                     if ($bookingUser->notify_email) {
                         Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->user->full_name));

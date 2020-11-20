@@ -17,6 +17,7 @@ use Hash;
 use Illuminate\Http\Request;
 use Image;
 use Mail;
+use Modules\Frontend\Http\Zoom;
 use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\Welcome;
 use Response;
@@ -148,6 +149,15 @@ class UserController extends Controller
 
             Mail::queue(new NewBooking($booking, $authUser, 'client'));
             Mail::queue(new NewBooking($booking, $authUser, 'contact'));
+
+            if ($service->create_zoom_link && $service->user->zoom_token) {
+                $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+                if ($zoomLink) {
+                    $booking->update([
+                        'zoom_link' => $zoomLink
+                    ]);
+                }
+            }
 
             $from = Carbon::parse("$booking->date $booking->start");
             $to = $from->clone()->addMinute($booking->service->duration);

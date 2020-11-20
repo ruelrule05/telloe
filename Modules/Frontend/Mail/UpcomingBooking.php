@@ -2,9 +2,7 @@
 
 namespace Modules\Frontend\Mail;
 
-use Modules\Frontend\Mail\Mailer;
 use App\Models\Booking;
-use Auth;
 
 class UpcomingBooking extends Mailer
 {
@@ -14,10 +12,10 @@ class UpcomingBooking extends Mailer
     public $emailMessage;
     public $full_name;
 
-    public function __construct(Booking $booking, $full_name = '', $actionUrl = NULL)
+    public function __construct(Booking $booking, $full_name = '', $actionUrl = null)
     {
         $this->booking = $booking;
-        $this->emailMessage = "You have an upcoming booking with the following details:";
+        $this->emailMessage = 'You have an upcoming booking with the following details:';
         $this->full_name = $full_name;
         $this->actionUrl = $actionUrl;
     }

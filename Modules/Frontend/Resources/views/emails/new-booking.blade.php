@@ -6,24 +6,35 @@
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
     {!! $emailMessage !!}
     <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 0.02rem 1rem; text-align-last: left; margin-top: 10px">
-        <h1 style="font-size: 26px; margin-bottom: 0">{{ $booking->service->user->full_name }}</h1>
-        <ul style="list-style: none; padding: 0; text-align: left">
-            <li>
-                <span style="width: 100px; display: inline-block">Service</span> <strong>{{ $booking->service->name }}</strong>
-            </li>
-            <li>
-                <span style="width: 100px; display: inline-block">Date</span> <strong>{{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }}</strong>
-            </li>
-            <li>
-                <span style="width: 100px; display: inline-block">From</span> <strong> {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong>
-            </li>
-            <li>
-                <span style="width: 100px; display: inline-block">To</span> <strong> {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong>
-            </li>
-            <li>
-                <span style="width: 100px; display: inline-block">Timezone</span> <strong> {{ $booking->user->timezone ?? config('app.timezone') }}</strong>
-            </li>
-        </ul>
+        <h1 style="font-size: 26px; margin-bottom: 10px">{{ $booking->service->user->full_name }}</h1>
+        <table style="width: 100%; margin-bottom: 10px">
+            <tr>
+                <td style="width: 25%">Service</td>
+                <td><strong>{{ $booking->service->name }}</strong></td>
+            </tr>
+            <tr>
+                <td style="width: 25%">Date</td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }}</strong></td>
+            </tr>
+            <tr>
+                <td style="width: 25%">From</td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
+            </tr>
+            <tr>
+                <td style="width: 25%">To</td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
+            </tr>
+            <tr>
+                <td style="width: 25%">Timezone</td>
+                <td><strong>{{ $booking->user->timezone ?? config('app.timezone') }}</strong></td>
+            </tr>
+            @if($booking->zoom_link)
+            <tr>
+                <td style="width: 25%; vertical-align: top">Zoom link</td>
+                <td><u><a target="_blank" style="word-break: break-all" href="{{ $booking->zoom_link['join_url'] }}">Go to Zoom meeting</a></u></td>
+            </tr>
+            @endif
+        </table>
     </div>
 </p>
 

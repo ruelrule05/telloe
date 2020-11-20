@@ -474,7 +474,6 @@ export default {
 		},
 
 		reset() {
-			this.$refs['bookingModal'].hide();
 			setTimeout(() => {
 				this.bookings = [];
 				this.isBooking = false;

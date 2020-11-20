@@ -8,6 +8,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Modules\Frontend\Http\Zoom;
 
 class ZoomController extends Controller
 {
@@ -25,7 +26,8 @@ class ZoomController extends Controller
         return response(['removed' => true]);
     }
 
-    public function getToken() {
+    public function getToken()
+    {
         return response(Auth::user()->zoom_token ? 1 : 0);
     }
 
@@ -60,42 +62,18 @@ class ZoomController extends Controller
         ]);
         $booking = Booking::findOrFail($request->booking_id);
         $this->authorize('createZoomLink', $booking);
-        if($booking->zoom_link) {
+        if ($booking->zoom_link) {
             return $booking->zoom_link;
         }
 
-        $authUser = Auth::user();
-        if ($authUser->zoom_token['access_token']) {
-            try {
-                $response = Http::withToken($authUser->zoom_token['access_token'])
-                ->post('https://api.zoom.us/v2/users/me/meetings', [
-                    'topic' => $booking->service->name,
-                    'start_time' => Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString(), // booking time
-                    'type' => 2, // Scheduled meeting
-                ]);
+        $zoomLink = Zoom::createMeeting($booking->service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
 
-                $data = $response->getBody();
-                $booking->update([
-                    'zoom_link' => json_decode($data)
-                ]);
-                return response($data);
-            } catch (\Exception $e) {
-                if (401 == $e->getCode()) {
-                    $refresh_token = $authUser->zoom_token['refresh_token'];
-
-                    $response = Http::withBasicAuth(config('zoom.client_id'), config('zoom.client_secret'))
-                    ->asForm()
-                    ->post('https://zoom.us/oauth/token', [
-                        'grant_type' => 'refresh_token',
-                        'refresh_token' => $refresh_token
-                    ]);
-                    $token = json_decode($response->getBody());
-                    $authUser->zoom_token = $token;
-                    $authUser->save();
-                } else {
-                    echo $e->getMessage();
-                }
-            }
+        if ($zoomLink) {
+            $booking->update([
+                'zoom_link' => $zoomLink
+            ]);
         }
+
+        return response($zoomLink);
     }
 }

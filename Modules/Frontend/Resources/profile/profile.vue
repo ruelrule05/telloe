@@ -233,7 +233,7 @@
 				</div>
 
 				<div v-else class="container selected-service-container" key="summary">
-					<div class="row justify-content-center">
+					<vue-form-validate @submit="submit" class="row justify-content-center">
 						<div class="col-md-9">
 							<div class="d-flex align-items-center mb-3">
 								<button class="btn line-height-0 p-0 close" type="button" @click="selectedTimeslot = false"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
@@ -250,6 +250,7 @@
 										<div class="font-weight-normal text-secondary">Duration</div>
 										<div class="h6 font-heading">{{ selectedService.duration }} minutes</div>
 									</div>
+
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary mb-n3">Timeslots</div>
 										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-4">
@@ -323,49 +324,65 @@
 								<div class="p-4 flex-1">
 									<div class="d-flex flex-column h-100">
 										<div class="flex-grow-1 h-100 position-relative">
-											<vue-form-validate @submit="submit">
-												<template v-if="authAction == 'login'">
-													<h5 class="h4 font-heading mb-4">Log In</h5>
-													<div class="form-group mb-2">
-														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
-													</div>
-													<div class="form-group">
-														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
-													</div>
-													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
-													<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'signup'">Sign Up</button>
-												</template>
-												<template v-else-if="authAction == 'signup'">
-													<h5 class="h4 font-heading mb-3">Create your account</h5>
-													<div class="d-flex align-items-center mb-2">
-														<div class="form-group mb-0 pr-1">
-															<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required />
-														</div>
-														<div class="form-group mb-0 pl-1">
-															<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required />
-														</div>
-													</div>
-													<div class="form-group mb-2">
-														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
-													</div>
-													<div class="form-group">
-														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
-													</div>
-													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
-													<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'login'">Login</button>
-												</template>
-
-												<div class="d-flex mx-n1 mt-3">
-													<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook">
-														<facebook-icon height="20" width="20" class="mr-2"></facebook-icon>
-														Facebook
-													</button>
-													<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook">
-														<google-icon height="16" width="16" class="mr-2"></google-icon>
-														Google
-													</button>
+											<template v-if="authAction == 'login'">
+												<h5 class="h4 font-heading mb-4">Log In</h5>
+												<div class="form-group mb-2">
+													<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
 												</div>
-											</vue-form-validate>
+												<div class="form-group mb-2">
+													<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
+												</div>
+
+												<div v-if="selectedService.ask_skype" class="form-group mb-2">
+													<input type="text" class="form-control" placeholder="Skype ID" :data-required="selectedService.require_skype" />
+												</div>
+
+												<div v-if="selectedService.ask_phone" class="form-group">
+													<input type="text" class="form-control" placeholder="Phone" :data-required="selectedService.require_phone" />
+												</div>
+
+												<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
+												<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'signup'">Sign Up</button>
+											</template>
+											<template v-else-if="authAction == 'signup'">
+												<h5 class="h4 font-heading mb-3">Create your account</h5>
+												<div class="d-flex align-items-center mb-2">
+													<div class="form-group mb-0 pr-1">
+														<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required />
+													</div>
+													<div class="form-group mb-0 pl-1">
+														<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required />
+													</div>
+												</div>
+												<div class="form-group mb-2">
+													<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
+												</div>
+												<div class="form-group mb-2">
+													<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
+												</div>
+
+												<div v-if="selectedService.ask_skype" class="form-group mb-2">
+													<input type="text" class="form-control" placeholder="Skype ID" :data-required="selectedService.require_skype" />
+												</div>
+
+												<div v-if="selectedService.ask_phone" class="form-group">
+													<input type="text" class="form-control" placeholder="Phone" :data-required="selectedService.require_phone" />
+												</div>
+
+												<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
+												<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'login'">Login</button>
+											</template>
+
+											<div class="d-flex mx-n1 mt-3">
+												<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook">
+													<facebook-icon height="20" width="20" class="mr-2"></facebook-icon>
+													Facebook
+												</button>
+												<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook">
+													<google-icon height="16" width="16" class="mr-2"></google-icon>
+													Google
+												</button>
+											</div>
 
 											<div class="text-center text-danger position-absolute w-100">&nbsp;{{ authError }}&nbsp;</div>
 										</div>
@@ -374,7 +391,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</vue-form-validate>
 				</div>
 			</transition-group>
 		</div>
