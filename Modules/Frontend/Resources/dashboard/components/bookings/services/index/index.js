@@ -110,16 +110,17 @@ export default {
 	created() {
 		this.getServices();
 		this.$root.contentloading = !this.ready;
-		/*this.services.push({
-			id: 1, 
-			name: 'Test service', 
-			description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat blandit lorem, volutpat molestie nulla pulvinar vel.', 
-			days: days,
-		});
-		this.selectedService = this.services[0];*/
 	},
 
-	mounted() {},
+	mounted() {
+		if (this.$root.intros.services_index.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.intros.services_index.intro.start();
+				}
+			}, 500);
+		}
+	},
 
 	methods: {
 		...mapActions({

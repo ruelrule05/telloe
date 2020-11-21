@@ -33,6 +33,7 @@ new Vue({
 	},
 
 	created() {
+		this.checkAuth();
 		const queryString = window.location.search;
 		if (queryString) {
 			const urlParams = new URLSearchParams(queryString);
@@ -56,5 +57,14 @@ new Vue({
 		}
 	},
 
-	methods: {}
+	methods: {
+		checkAuth() {
+			axios
+				.get('/auth')
+				.then(response => {
+					window.location.replace('/dashboard/bookings/services');
+				})
+				.catch(() => {});
+		}
+	}
 });

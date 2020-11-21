@@ -529,3 +529,6 @@ hr.hr-text::before {
 	@extend .btn-sm;
 	box-shadow: none !important;
 }
+.introjs-tooltipReferenceLayer {
+	visibility: visible !important;
+}

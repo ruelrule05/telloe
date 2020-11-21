@@ -85,7 +85,15 @@ export default {
 		this.getMembers();
 	},
 
-	mounted() {},
+	mounted() {
+		if (this.$root.intros.organizations_index.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.intros.organizations_index.intro.start();
+				}
+			}, 500);
+		}
+	},
 
 	methods: {
 		...mapActions({

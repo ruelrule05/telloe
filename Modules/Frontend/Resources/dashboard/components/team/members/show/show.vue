@@ -7,7 +7,7 @@
 				</button>
 
 				<div class="dropdown ml-auto">
-					<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10">
+					<button :data-intro="$root.intros.members_show.steps[0]" data-step="1" class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10">
 						<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
 					</button>
 					<div class="dropdown-menu">

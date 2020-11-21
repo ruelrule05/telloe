@@ -84,7 +84,7 @@
 	height: 69px;
 	background-color: white;
 	box-shadow: $box-shadow-sm;
-	z-index: 1;
+	z-index: 0;
 	&:after {
 		content: '';
 		height: 100%;

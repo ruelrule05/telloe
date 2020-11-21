@@ -16,9 +16,9 @@
 
 						<div class="overflow-auto h-100 container pb-3 pt-4" v-else>
 							<div class="row pt-2 px-2">
-								<router-link tag="div" :to="`/dashboard/team/members/${member.id}`" v-for="member in members" :key="member.id" class="col-md-4 member px-2 mb-5 cursor-pointer">
+								<router-link tag="div" :to="`/dashboard/team/members/${member.id}`" v-for="(member, index) in members" :key="member.id" class="col-md-4 member px-2 mb-5 cursor-pointer">
 									<div class="px-1">
-										<div class="bg-white rounded p-3 shadow-sm text-centxer position-relative">
+										<div class="bg-white rounded p-3 shadow-sm text-centxer position-relative" :data-intro="index == 0 ? $root.intros.members_index.steps[0] : null" :data-step="index == 0 ? 1 : null">
 											<div class="member-buttons position-absolute d-flex align-items-center">
 												<div class="badge badge-icon d-inline-flex align-items-center mr-2" :class="[member.is_pending ? 'bg-warning-light text-warning' : 'bg-primary-light text-primary']">
 													<clock-icon v-if="member.is_pending" height="12" width="12"></clock-icon>
@@ -27,7 +27,7 @@
 												</div>
 
 												<div class="dropdown" @click.prevent>
-													<button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
+													<button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0" :data-intro="index == 0 ? $root.intros.members_index.steps[1] : null" :data-step="index == 0 ? 2 : null">
 														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
 													</button>
 													<div class="dropdown-menu">
@@ -81,7 +81,7 @@
 									<div class="px-1 h-100">
 										<div class="position-relative h-100">
 											<div class="h-100 position-relative">
-												<button :data-intro="$root.intros.add_service.intro" :data-step="$root.intros.add_service.step" class="btn btn-light btn-add btn-lg shadow-none d-flex line-height-0 align-items-center justify-content-center w-100 text-muted" type="button" @click="$refs['addModal'].show()">
+												<button :data-intro="$root.intros.members_index.steps[2]" data-step="3" class="btn btn-light btn-add btn-lg shadow-none d-flex line-height-0 align-items-center justify-content-center w-100 text-muted" type="button" @click="$refs['addModal'].show()">
 													<plus-icon class="fill-gray"></plus-icon>
 													Add Member
 												</button>

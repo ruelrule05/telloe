@@ -54,6 +54,16 @@ export default {
 		this.getMember();
 	},
 
+	mounted() {
+		if (this.$root.intros.members_show.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.intros.members_show.intro.start();
+				}
+			}, 500);
+		}
+	},
+
 	methods: {
 		...mapActions({
 			getServices: 'services/index',

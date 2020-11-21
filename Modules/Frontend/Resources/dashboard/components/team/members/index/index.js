@@ -79,10 +79,10 @@ export default {
 	},
 
 	mounted() {
-		if (this.$root.intros.add_member.enabled) {
+		if (this.$root.intros.members_index.enabled) {
 			setTimeout(() => {
 				if (!document.querySelector('.introjs-overlay')) {
-					this.$root.introJS.start().goToStepNumber(this.$root.intros.add_member.step);
+					this.$root.intros.members_index.intro.start();
 				}
 			}, 500);
 		}

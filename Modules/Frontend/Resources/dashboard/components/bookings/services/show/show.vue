@@ -15,7 +15,7 @@
 					</div>
 
 					<div class="dropdown">
-						<button :data-intro="$root.intros.edit_service.intro" :data-step="$root.intros.edit_service.step" class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-125, 5">
+						<button :data-intro="$root.intros.services_show.steps[3]" data-step="4" class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-125, 5">
 							<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
 						</button>
 						<div class="dropdown-menu">
@@ -37,7 +37,7 @@
 				</div>
 
 				<div class="text-right">
-					<div class="bg-white rounded shadow-sm d-inline-flex align-items-center">
+					<div :data-intro="$root.intros.services_show.steps[2]" data-step="3" class="bg-white rounded shadow-sm d-inline-flex align-items-center">
 						<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
 							<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
 						</button>
@@ -55,6 +55,8 @@
 				<div class="pt-3 d-flex">
 					<div class="text-center position-relative">
 						<div class="position-relative coaches-container">
+							<div class="active-user position-absolute w-100" :style="{ top: `${activeUserBgPosition}px` }"></div>
+
 							<!-- Main Coach -->
 							<div
 								class="pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container"
@@ -79,7 +81,7 @@
 
 							<!-- Assigned Coaches -->
 							<div v-for="(assignedService, index) in service.assigned_services" class="position-relative user-container cursor-pointer" :class="{ active: selectedCoachId == assignedService.user.id }" :key="assignedService.id">
-								<div class="d-flex member-container align-items-center py-1 pl-1">
+								<div class="d-flex member-container align-items-center py-1 pl-1" :data-intro="index == 0 ? $root.intros.services_show.steps[0] : null" :data-step="index == 0 ? 1 : null">
 									<div
 										class="d-flex align-items-center py-2 pl-2"
 										@click="
@@ -116,7 +118,7 @@
 
 							<div class="pr-2 mr-1 mt-3">
 								<div class="dropdown">
-									<div class="rounded py-2 border bg-white cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
+									<div :data-intro="$root.intros.services_show.steps[1]" data-step="2" class="rounded py-2 border bg-white cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
 										<plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
 										Add Member
 									</div>
@@ -135,8 +137,6 @@
 								</div>
 							</div>
 						</div>
-
-						<div class="active-user position-absolute w-100" :style="{ top: `${activeUserBgPosition}px` }"></div>
 					</div>
 
 					<div class="p-3 flex-grow-1 bg-white timeslots-wrapper shadow-sm position-relative rounded">
@@ -186,10 +186,10 @@
 			<div id="availability-modal">
 				<h5 class="font-heading mb-3">Manage Availability</h5>
 				<div class="d-flex mb-2">
-					<button :data-intro="$root.intros.service_availability.intro" :data-step="$root.intros.service_availability.step" class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">
+					<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">
 						Availability
 					</button>
-					<button :data-intro="$root.intros.service_holidays.intro" :data-step="$root.intros.service_holidays.step" class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">
+					<button class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">
 						Holidays
 					</button>
 				</div>

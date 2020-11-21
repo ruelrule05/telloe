@@ -134,10 +134,10 @@ export default {
 			this.$root.contentloading = !value;
 		},
 		service: function(value) {
-			if (this.$root.intros.add_service.enabled) {
+			if (this.$root.intros.services_show.enabled) {
 				setTimeout(() => {
 					if (!document.querySelector('.introjs-overlay')) {
-						this.$root.introJS.start().goToStepNumber(this.$root.intros.add_service.step);
+						this.$root.intros.services_show.intro.start();
 					}
 				}, 500);
 			}

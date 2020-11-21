@@ -21,9 +21,10 @@ import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
 import tooltip from '../../../../../js/directives/tooltip.js';
 const convertTime = require('convert-time');
+import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, DollarSignIcon, WindowPlusIcon, CalendarIcon },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, DollarSignIcon, WindowPlusIcon, CalendarIcon, VueSelect },
 
 	directives: { tooltip },
 
@@ -42,29 +43,53 @@ export default {
 					this.activeServicePosition = activeService.offsetTop + 1;
 				}
 			});
+		},
+		selectedCoachId: function(value) {
+			this.$nextTick(() => {
+				let activeUser = document.querySelector('.user-container.active');
+				if (activeUser) {
+					this.activeServicePosition = activeUser.offsetTop + 1;
+				}
+			});
+		},
+		selectedCoachId: function(value) {
+			this.$nextTick(() => {
+				let activeUser = document.querySelector('.user-container.active');
+				if (activeUser) {
+					this.activeServicePosition = activeUser.offsetTop + 1;
+				}
+			});
+		},
+
+		packageItem: function(value) {
+			if (this.$root.intros.packages_show.enabled) {
+				setTimeout(() => {
+					if (!document.querySelector('.introjs-overlay')) {
+						this.$root.intros.packages_show.intro.start();
+					}
+				}, 500);
+			}
 		}
-	},
-	selectedCoachId: function(value) {
-		this.$nextTick(() => {
-			let activeUser = document.querySelector('.user-container.active');
-			if (activeUser) {
-				this.activeServicePosition = activeUser.offsetTop + 1;
-			}
-		});
-	},
-	selectedCoachId: function(value) {
-		this.$nextTick(() => {
-			let activeUser = document.querySelector('.user-container.active');
-			if (activeUser) {
-				this.activeServicePosition = activeUser.offsetTop + 1;
-			}
-		});
 	},
 
 	computed: {
 		...mapState({
 			services: state => state.services.index
-		})
+		}),
+		servicesList() {
+			let services = [];
+			this.services.forEach(service => {
+				if (service.is_available) {
+					let serviceCopy = Object.assign({}, service);
+					serviceCopy.bookings = 1;
+					services.push({
+						text: serviceCopy.name,
+						value: serviceCopy
+					});
+				}
+			});
+			return services;
+		}
 	},
 
 	created() {
@@ -83,8 +108,24 @@ export default {
 		...mapActions({
 			getPackage: 'packages/show',
 			deletePackage: 'packages/delete',
-			getServices: 'services/index'
+			getServices: 'services/index',
+			updatePackage: 'packages/update'
 		}),
+
+		update() {
+			this.updatePackage(this.clonedPackage).then(packageItemData => {
+				Object.keys(packageItemData).map(key => {
+					this.packageItem[key] = packageItemData[key];
+				});
+			});
+			this.$refs['editModal'].hide();
+		},
+
+		submit() {
+			this.newPackage.expiration_date = dayjs(this.newPackage.expiration_date).format('YYYY-MM-DD');
+			this.storePackage(this.newPackage);
+			this.$refs['addModal'].hide();
+		},
 
 		submit() {
 			this.updateService(this.clonedService).then(service => {

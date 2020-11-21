@@ -100,7 +100,7 @@
 								<template v-if="auth.role.role == 'client'">
 									<div class="list-group mt-3 font-heading sidebar-menu">
 										<template>
-											<button :data-intro='intros.bookings.intro' :data-step="intros.bookings.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
+											<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'bookings')}" data-toggle="collapse" data-target="#item-bookings">
 												<div class="d-flex align-items-center pl-4 pr-2">
 													<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
 													<span class="ml-3">Bookings</span>
@@ -119,7 +119,7 @@
 												</router-link>
 											</div>
 
-											<router-link :data-intro='intros.messages.intro' :data-step="intros.messages.step" data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
+											<router-link data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
 												<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></messages-icon>
 												<span class="ml-3">Messages</span>
 												<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>
@@ -127,7 +127,7 @@
 											<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
 											
-											<router-link :data-intro='intros.contacts.intro' :data-step="intros.contacts.step" to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
+											<router-link to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
 												<contact-alt-icon height="18" width="18" class="sidebar-icon"></contact-alt-icon>
 												<span class="pl-3">Contacts</span>
 											</router-link>
@@ -146,7 +146,7 @@
 											</div>
 											
 											<template xv-if="auth.has_team">
-												<button data-intro='intros.team.intro' data-step="intros.team.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
+												<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
 													<div class="d-flex align-items-center pl-4 pr-2">
 														<member-icon height="18" width="18" stroke="black" stroke-width="13" class="sidebar-icon sidebar-icon-stroke"></member-icon>
 														<span class="ml-3">Team</span>
@@ -164,7 +164,7 @@
 											</template>
 
 											<template xv-if="auth.has_payments">
-												<button :data-intro='intros.payments.intro' :data-step="intros.payments.step" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
+												<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
 													<div class="d-flex align-items-center pl-4 pr-2">
 														<payments-icon height="18" width="18" class="sidebar-icon"></payments-icon>
 														<span class="ml-3">Payments</span>

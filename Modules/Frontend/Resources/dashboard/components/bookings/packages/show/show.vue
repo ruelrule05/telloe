@@ -1,114 +1,91 @@
 <template>
-  <div class="h-100" v-if="packageItem">
-    <div class="d-flex h-100 overflow-hidden">
-      <div class="p-4 flex-grow-1 overflow-auto">
-        <div class="d-flex">
-          <div>
-            <button
-              class="btn p-1 btn-white badge-pill shadow-sm"
-              type="button"
-              @click="$router.push('/dashboard/bookings/packages')"
-            >
-              <arrow-left-icon width="30" height="30"></arrow-left-icon>
-            </button>
-          </div>
-          <div class="dropdown ml-auto">
-            <button
-              class="btn p-2 btn-white badge-pill shadow-sm"
-              data-toggle="dropdown"
-              data-offset="-130, 10"
-            >
-              <more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
-            </button>
-            <div class="dropdown-menu">
-              <span
-                class="dropdown-item cursor-pointer"
-                @click="
-                  clonedPackage = Object.assign({}, packageItem);
-                  $refs['editModal'].show();
-                "
-              >
-                Edit
-              </span>
-              <span
-                class="dropdown-item cursor-pointer"
-                @click="$refs['deleteModal'].show()"
-              >
-                Delete
-              </span>
-            </div>
-          </div>
-        </div>
+	<div class="h-100" v-if="packageItem">
+		<div class="d-flex h-100 overflow-hidden">
+			<div class="p-4 flex-grow-1 overflow-auto">
+				<div class="d-flex">
+					<div>
+						<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/bookings/packages')">
+							<arrow-left-icon width="30" height="30"></arrow-left-icon>
+						</button>
+					</div>
+					<div class="dropdown ml-auto">
+						<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10" :data-intro="$root.intros.packages_show.steps[2]" data-step="3">
+							<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
+						</button>
+						<div class="dropdown-menu">
+							<span
+								class="dropdown-item cursor-pointer"
+								@click="
+									clonedPackage = Object.assign({}, packageItem);
+									$refs['editModal'].show();
+								"
+							>
+								Edit
+							</span>
+							<span class="dropdown-item cursor-pointer" @click="$refs['deleteModal'].show()">
+								Delete
+							</span>
+						</div>
+					</div>
+				</div>
 
-        <div class="mt-4">
-          <h1 class="font-heading h3">{{ packageItem.name }}</h1>
-          <p class="service-description mb-3">{{ packageItem.description }}</p>
-          <div class="d-flex align-items-center">
-            <div class="d-flex align-items-center ">
-              <dollar-sign-icon width="8" height="8" transform="scale(2.4)"></dollar-sign-icon>
-              <span class="ml-1">{{ parseFloat(packageItem.price).toFixed(2) }}</span>
-            </div>
-            <div class="d-flex align-items-center ml-4">
-              <calendar-icon width="8" height="8" transform="scale(2)"></calendar-icon>
-              <span class="ml-2">{{ formatDate(packageItem.expiration_date) }}</span>
-            </div>
-          </div>
-        </div>
+				<div class="mt-4">
+					<h1 class="font-heading h3">{{ packageItem.name }}</h1>
+					<p class="service-description mb-3">{{ packageItem.description }}</p>
+					<div class="d-flex align-items-center">
+						<div class="d-flex align-items-center ">
+							<dollar-sign-icon width="8" height="8" transform="scale(2.4)"></dollar-sign-icon>
+							<span class="ml-1">{{ parseFloat(packageItem.price).toFixed(2) }}</span>
+						</div>
+						<div class="d-flex align-items-center ml-4">
+							<calendar-icon width="8" height="8" transform="scale(2)"></calendar-icon>
+							<span class="ml-2">{{ formatDate(packageItem.expiration_date) }}</span>
+						</div>
+					</div>
+				</div>
 
-        
-        <!-- Services -->
-        <div class="mt-4 d-flex">
-          <div class="position-relative">
-            <div class="position-relative services-container">
-              <div class="pl-2 py-2 cursor-pointer position-relative service-container" :class="{'active': selectedService.id == service.id}" v-for="service in packageItem.services" :key="service.id" @click="selectedService = service">
-                <div class="d-flex align-items-center py-1 pl-1">
-                  <div>
-                    <h6 class="mb-1">{{ service.name }}</h6>
-                    <div class="d-flex align-items-center">
-                      <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
-                      <small class="text-muted ml-1">{{ service.duration }} min</small>
-                    </div>
-                  </div>
+				<!-- Services -->
+				<div class="mt-4 d-flex">
+					<div class="position-relative">
+						<div class="position-relative services-container">
+							<div class="pl-2 py-2 cursor-pointer position-relative service-container" :class="{ active: selectedService.id == service.id }" v-for="(service, index) in packageItem.services" :key="service.id" @click="selectedService = service">
+								<div class="d-flex align-items-center py-1 pl-1" :data-intro="index == 0 ? $root.intros.packages_show.steps[0] : null" :data-step="index == 0 ? 1 : null">
+									<div>
+										<h6 class="mb-1">{{ service.name }}</h6>
+										<div class="d-flex align-items-center">
+											<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
+											<small class="text-muted ml-1">{{ service.duration }} min</small>
+										</div>
+									</div>
 
-                  <div class="dropdown mr-1 pl-1 ml-auto service-dropdown">
-                    <button
-                      class="btn btn-white line-height-0 p-1 badge-pill shadow-none"
-                      data-toggle="dropdown"
-                      data-offset="-140, 0"
-                    >
-                      <more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
-                    </button>
-                    <div class="dropdown-menu">
-                      <router-link
-                        class="dropdown-item cursor-pointer"
-                        tag="span"
-                        :to="`/dashboard/bookings/services/${service.id}`"
-                      >
-                        View Service
-                      </router-link>
-                      <span
-                        class="dropdown-item cursor-pointer"
-                        @click="removeAssignedService(service, index)"
-                      >
-                        Remove
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="active-package position-absolute w-100" :style="{'top': `${activeServicePosition}px`}"></div>
-          </div>
-          <div class="p-3 flex-1 bg-white shadow-sm position-relative rounded">
-            <div class="px-1 mb-2 d-inline-block" v-for="(block, index) in (new Array(parseInt(selectedService.bookings)))" :key="index">
-              <div class="bg-primary rounded text-white py-3 px-4 cursor-pointer">
-                <h6 class="font-heading mb-0">{{ selectedService.duration }} min</h6>
-              </div>
-            </div>
-          </div>
-        </div>
+									<div class="dropdown mr-1 pl-1 ml-auto service-dropdown">
+										<button class="btn btn-white line-height-0 p-1 badge-pill shadow-none" data-toggle="dropdown" data-offset="-140, 0">
+											<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
+										</button>
+										<div class="dropdown-menu">
+											<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/bookings/services/${service.id}`">
+												View Service
+											</router-link>
+											<span class="dropdown-item cursor-pointer" @click="removeAssignedService(service, index)">
+												Remove
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="active-package position-absolute w-100" :style="{ top: `${activeServicePosition}px` }"></div>
+					</div>
+					<div class="p-3 flex-1 bg-white shadow-sm position-relative rounded">
+						<div class="px-1 mb-2 d-inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings))" :key="index">
+							<div class="bg-primary rounded text-white py-3 px-4 cursor-pointer">
+								<h6 class="font-heading mb-0">{{ selectedService.duration }} min</h6>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        <!-- <div class="mt-5">
+				<!-- <div class="mt-5">
           <div class="row px-2">
             <div class="col-md-4 px-2" v-for="(service, index) in packageItem.services" :key="service.id">
               <div class="mx-1 mb-4">
@@ -206,96 +183,91 @@
             </div>
           </div>
         </div> -->
-      </div>
-    </div>
+			</div>
+		</div>
 
+		<modal ref="editModal" :close-button="false" size="modal-lg">
+			<h5 class="font-heading mb-3">Edit Package</h5>
+			<vue-form-validate @submit="update" v-if="clonedPackage">
+				<div class="row mx-0 mb-2">
+					<div class="col-md-6 pl-0">
+						<fieldset>
+							<div class="form-group">
+								<label class="form-label">Package name</label>
+								<input type="text" class="form-control" v-model="clonedPackage.name" data-required />
+							</div>
+							<div class="form-group">
+								<label class="form-label">Description</label>
+								<textarea class="form-control resize-none" v-model="clonedPackage.description" data-required rows="3"></textarea>
+							</div>
 
-    <modal ref="editModal" :close-button="false">
-      <h5 class="font-heading mb-3">Edit Package</h5>
-      <vue-form-validate @submit="submit">
-        <fieldset>
-          <div class="form-group">
-            <label class="form-label">Package name</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="clonedPackage.name"
-              data-required
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea
-              class="form-control resize-none"
-              v-model="clonedPackage.description"
-              data-required
-              rows="3"
-            ></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Price</label>
-            <input
-              type="number"
-              step="0.01"
-              class="form-control"
-              v-model="clonedPackage.price"
-              placeholder="$0.00"
-            />
-          </div>
-        </fieldset>
-        <div class="form-group">
-          <vue-checkbox
-            v-model="clonedPackage.in_widget"
-            label="Available in widget"
-          ></vue-checkbox>
-        </div>
-        <div class="d-flex align-items-center">
-          <button
-            class="btn btn-light shadow-none"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button class="ml-auto btn btn-primary" type="submit">Update</button>
-        </div>
-      </vue-form-validate>
-    </modal>
+							<div class="form-group">
+								<label class="form-label">Expires on</label>
+								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date">
+									<template v-slot="{ inputValue, inputEvents }">
+										<div type="button" class="form-control" v-on="inputEvents">
+											<span v-if="inputValue">{{ formatDate(inputValue) }}</span>
+											<span v-else class="text-muted font-weight-normal">Set expiration date</span>
+										</div>
+									</template>
+								</v-date-picker>
+							</div>
 
-    <modal ref="deleteModal" :close-button="false">
-      <template v-if="packageItem">
-        <h5 class="font-heading text-center">Delete Service</h5>
-        <p class="text-center mt-3">
-          Are you sure to delete the package
-          <strong>{{ packageItem.name }}</strong>
-          ?
-          <br />
-          <span class="text-danger">This action cannot be undone</span>
-        </p>
-        <div class="d-flex">
-          <button
-            class="btn btn-white border"
-            type="button"
-            data-dismiss="modal"
-          >
-            Cancel
-          </button>
-          <button
-            class="btn btn-danger ml-auto"
-            type="button"
-            @click="
-              deletePackage(packageItem).then(() =>
-                $router.push('/dashboard/bookings/packages')
-              );
-              $refs['deleteModal'].hide();
-            "
-          >
-            Delete
-          </button>
-        </div>
-      </template>
-    </modal>
-  </div>
+							<div class="form-group">
+								<label class="form-label">Package Total</label>
+								<input type="number" step="0.01" class="form-control" v-model="clonedPackage.price" placeholder="Package Price" />
+							</div>
+						</fieldset>
+					</div>
+					<div class="col-md-6 border-left pr-0 border-gray-200">
+						<h6 class="font-heading">Services</h6>
+						<vue-select v-model="clonedPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
+						<div v-for="(service, index) in clonedPackage.services" :key="service.id" class="rounded bg-light px-3 py-2 mt-2 d-flex align-items-center">
+							<h6 class="mb-1">{{ service.name }}</h6>
+							<input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="clonedPackage.services[index].bookings" value="1" />
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<vue-checkbox v-model="clonedPackage.in_widget" label="Available in widget"></vue-checkbox>
+				</div>
+				<div class="d-flex align-items-center">
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
+						Cancel
+					</button>
+					<button class="ml-auto btn btn-primary" type="submit">Update</button>
+				</div>
+			</vue-form-validate>
+		</modal>
+
+		<modal ref="deleteModal" :close-button="false">
+			<template v-if="packageItem">
+				<h5 class="font-heading text-center">Delete Service</h5>
+				<p class="text-center mt-3">
+					Are you sure to delete the package
+					<strong>{{ packageItem.name }}</strong>
+					?
+					<br />
+					<span class="text-danger">This action cannot be undone</span>
+				</p>
+				<div class="d-flex">
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
+						Cancel
+					</button>
+					<button
+						class="btn btn-danger ml-auto"
+						type="button"
+						@click="
+							deletePackage(packageItem).then(() => $router.push('/dashboard/bookings/packages'));
+							$refs['deleteModal'].hide();
+						"
+					>
+						Delete
+					</button>
+				</div>
+			</template>
+		</modal>
+	</div>
 </template>
 
 <script src="./show.js"></script>

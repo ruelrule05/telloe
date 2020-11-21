@@ -51,6 +51,14 @@ export default {
 		});
 	},
 
+	mounted() {
+		setTimeout(() => {
+			if (!document.querySelector('.introjs-overlay')) {
+				this.$root.intros.organizations_show.intro.start();
+			}
+		}, 500);
+	},
+
 	methods: {
 		...mapActions({
 			getMembers: 'members/index',

@@ -56,7 +56,15 @@ export default {
 		this.getPackages();
 	},
 
-	mounted() {},
+	mounted() {
+		if (this.$root.intros.packages_index.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.intros.packages_index.intro.start();
+				}
+			}, 500);
+		}
+	},
 
 	methods: {
 		...mapActions({

@@ -46,6 +46,10 @@ class AuthController extends Controller
             'xero_token',
         ]) : false;
 
+        if (! $user) {
+            return abort(401, 'Unauthenticated');
+        }
+
         if ($user && $last_online) {
             $user->last_online = Carbon::now();
             $user->save();
