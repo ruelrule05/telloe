@@ -4,13 +4,21 @@ import ClockIcon from '../../../../../icons/clock';
 import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
 import MoreIcon from '../../../../../icons/more';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
-import Vue from 'vue';
-import VuePaginate from 'vue-paginate';
 import Modal from '../../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../../components/vue-form-validate.vue';
+import Paginate from '../../../../../components/paginate/paginate.vue';
 import dayjs from 'dayjs';
-Vue.use(VuePaginate);
 const convertTime = require('convert-time');
+import VueSelect from '../../../../../components/vue-select/vue-select.vue';
+const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+dayjs.extend(IsSameOrBefore);
+dayjs.extend(IsSameOrAfter);
+import VueButton from '../../../../../components/vue-button.vue';
+import VCalendar from 'v-calendar';
+Vue.use(VCalendar);
+import ZoomIcon from '../../../../../icons/zoom';
+import ShortcutIcon from '../../../../../icons/shortcut';
 
 export default {
 	components: {
@@ -20,14 +28,24 @@ export default {
 		ToggleSwitch,
 		MoreIcon,
 		Modal,
-		VueFormValidate
+		VueFormValidate,
+		Paginate,
+		VueSelect,
+		VueButton,
+		ZoomIcon,
+		ShortcutIcon
 	},
 
 	data: () => ({
 		member: null,
-		paginate: ['bookings'],
 		convertTime: convertTime,
-		clonedMember: null
+		clonedMember: null,
+		filterServices: [],
+		selectedBooking: null,
+		dayjs: dayjs,
+		timeslots: [],
+		bookingModalLoading: false,
+		createZoomLoading: false
 	}),
 
 	computed: {
@@ -35,17 +53,15 @@ export default {
 			services: state => state.services.index
 		}),
 
-		bookings() {
-			let bookings = [];
-			this.member.assigned_services.forEach(assignedService => {
-				if (assignedService.bookings.length > 0) {
-					assignedService.bookings.forEach(booking => {
-						booking.service = assignedService;
-						bookings.push(booking);
-					});
-				}
+		servicesList() {
+			let servicesList = [];
+			this.member.assigned_services.forEach(service => {
+				servicesList.push({
+					text: service.name,
+					value: service
+				});
 			});
-			return bookings;
+			return servicesList;
 		}
 	},
 
@@ -71,8 +87,66 @@ export default {
 			updateMember: 'members/update',
 			deleteMember: 'members/delete',
 			updateService: 'services/update',
-			deleteService: 'services/delete'
+			deleteService: 'services/delete',
+			updateBooking: 'bookings/update'
 		}),
+
+		async updateSelectedBooking(booking) {
+			this.bookingModalLoading = true;
+			booking = JSON.parse(JSON.stringify(booking));
+			booking.date = dayjs(booking.date).format('YYYY-MM-DD');
+			booking.start = dayjs(booking.start).format('HH:mm');
+			let updatedBooking = await this.updateBooking(booking);
+			let index = this.member.bookings.data.findIndex(x => x.id == updatedBooking.id);
+			if (index > -1) {
+				this.$set(this.member.bookings.data, index, updatedBooking);
+			}
+			this.bookingModalLoading = false;
+			this.$refs['bookingModal'].hide();
+		},
+
+		async createZoomLink(booking) {
+			this.createZoomLoading = true;
+			if (this.$root.auth.zoom_token) {
+				let response = await axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
+				this.createZoomLoading = false;
+
+				let index = this.member.bookings.data.findIndex(x => x.id == booking.id);
+				if (index > -1) {
+					booking.zoom_link = response.data;
+					this.$set(this.member.bookings.data[index], 'zoom_link', response.data);
+				}
+			}
+		},
+
+		editBooking(booking) {
+			let selectedBooking = JSON.parse(JSON.stringify(booking));
+			selectedBooking.start = dayjs(`${selectedBooking.date} ${selectedBooking.start}`).toDate();
+			selectedBooking.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(selectedBooking.start));
+			this.selectedBooking = selectedBooking;
+			this.getSelectedBookingNewTimeslots(selectedBooking.date);
+			this.$refs['bookingModal'].show();
+		},
+
+		filterAvailableTimeslots(timeslots) {
+			return timeslots.filter(x => x.is_available);
+		},
+
+		async getSelectedBookingNewTimeslots(date) {
+			let response = await axios.get(`/services/${this.selectedBooking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+			this.timeslots = response.data;
+		},
+
+		async filterByServices(services) {
+			let serviceIds = services.map(x => x.id);
+			let response = await axios.get(`/members/${this.member.id}?page=${this.member.bookings.current_page}&services=${serviceIds}`);
+			this.member.bookings = response.data.bookings;
+		},
+
+		async getData(page) {
+			let response = await axios.get(`/members/${this.member.id}?page=${page}`);
+			this.member.bookings = response.data.bookings;
+		},
 
 		toggleMemberAssignedService(service) {
 			let index = this.clonedMember.assigned_services.findIndex(x => x == service.id);

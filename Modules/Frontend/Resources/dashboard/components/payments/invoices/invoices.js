@@ -146,10 +146,10 @@ export default {
 	},
 
 	mounted() {
-		if (this.$root.intros.invoices_filter.enabled) {
+		if (this.$root.intros.invoices_index.enabled) {
 			setTimeout(() => {
 				if (!document.querySelector('.introjs-overlay')) {
-					this.$root.introJS.start().goToStepNumber(this.$root.intros.invoices_filter.step);
+					this.$root.invoices_index.intro.start();
 				}
 			}, 500);
 		}

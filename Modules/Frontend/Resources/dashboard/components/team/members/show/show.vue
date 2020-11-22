@@ -43,57 +43,20 @@
 				</div>
 			</div>
 
-			<!-- Assigned services -->
-			<!-- <h5 class="mt-5 font-heading px-4 mb-3">Assigned Services</h5>
-      <template v-for="service in services">
-        <div
-          v-if="service.is_available"
-          :key="service.id"
-          class="pl-4 d-inline-block w-25"
-        >
-          <div class="w-100 mb-2 rounded p-3 bg-white">
-            <div class="overflow-hidden">
-              <h6 class="font-heading mb-0 text-ellipsis">{{ service.name }}</h6>
-              <small class="text-gray d-block"
-                >{{ service.duration }} minutes</small
-              >
-            </div>
-            <div class="mt-3">
-              <div class="d-flex align-items-center">
-                <toggle-switch
-                  active-class="bg-green"
-                  :value="
-                    member.services.find((x) => x.parent_service_id == service.id && !x.deleted_at)
-                      ? true
-                      : false
-                  "
-                  @input="memberToggleAssignedService($event, service)"
-                ></toggle-switch>
-                <span class="ml-3">Available</span>
-              </div>
-            </div>
-            <div class="mt-2">
-              <div class="d-flex align-items-center">
-                <toggle-switch
-                  active-class="bg-green"
-                  :disabled="member.services.find((x) => x.parent_service_id == service.id && !x.deleted_at)
-                      ? false
-                      : true"
-                  :value="service.manage_bookings"
-                  @input="memberToggleManageBookings($event, service);"
-                ></toggle-switch>
-                <span class="ml-3">Manage Bookings</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </template> -->
-
 			<!-- Bookings -->
-			<h5 class="mt-4 font-heading px-4 mb-3">Bookings</h5>
-			<div class="px-4 mb-4" v-if="bookings.length > 0">
-				<table class="table table-borderless table-fixed-header mb-0">
-					<thead class="text-secondary">
+			<div class="d-flex align-items-center px-4">
+				<h5 class="mt-4 font-heading mb-3">Bookings</h5>
+				<div class="ml-auto d-flex align-items-center">
+					<div class="d-inline-flex align-items-center mx-2">
+						<vue-select :options="servicesList" multiple button_class="border-0 bg-white shadow-sm" v-model="filterServices" label="Services" placeholder="All" @input="filterByServices"></vue-select>
+					</div>
+					<paginate @change="getData" :data="member.bookings"></paginate>
+				</div>
+			</div>
+
+			<div class="px-4 mb-4" v-if="member.bookings.data.length > 0">
+				<table class="table table-borderless mb-0">
+					<thead>
 						<tr>
 							<th class="pl-0">User</th>
 							<th>Service</th>
@@ -102,15 +65,29 @@
 						</tr>
 					</thead>
 					<tbody>
-						<template v-for="booking in bookings">
+						<template v-for="booking in member.bookings.data">
 							<tr :key="booking.id">
 								<td class="align-middle">{{ booking.user.full_name }}</td>
 								<td class="align-middle">{{ booking.service.name }}</td>
 								<td class="align-middle">
-									{{ formatDate(booking.created_at) }}
+									{{ formatDate(booking.date) }}
 								</td>
 								<td class="align-middle">
 									{{ convertTime(booking.start, 'hh:MMA') }}
+								</td>
+								<td class="align-middle">
+									<div class="flex-grow-1 text-right">
+										<div class="dropleft">
+											<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
+												<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+											</button>
+											<div class="dropdown-menu dropdown-menu-right">
+												<span class="dropdown-item cursor-pointer" @click="editBooking(booking)">
+													Edit
+												</span>
+											</div>
+										</div>
+									</div>
 								</td>
 							</tr>
 						</template>
@@ -119,10 +96,94 @@
 			</div>
 			<div v-else class="px-4 mb-4">
 				<div class="rounded bg-white shadow-sm text-center py-3 text-muted">
-					No bookings.
+					No bookings found.
 				</div>
 			</div>
 		</div>
+
+		<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
+			<div v-if="selectedBooking" class="text-center">
+				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${(selectedBooking.user || selectedBooking.contact).profile_image})` }">
+					<span v-if="!(selectedBooking.user || selectedBooking.contact).profile_image">{{ (selectedBooking.user || selectedBooking.contact).initials }}</span>
+				</div>
+				<h4 class="font-heading mb-4">
+					{{ (selectedBooking.user || selectedBooking.contact).full_name }}
+				</h4>
+
+				<div class="p-3 border rounded">
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Service</div>
+						<div class="h6 font-heading mb-0">{{ selectedBooking.service.name }}</div>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Coach</div>
+						<div class="h6 font-heading mb-0">{{ member.member_user.full_name }}</div>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Date</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedBooking.date) }}</div>
+						<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedBooking.date" @input="getSelectedBookingNewTimeslots">
+							<template v-slot="{ inputValue, inputEvents }">
+								<button type="button" class="btn btn-light shadow-none" v-on="inputEvents">{{ formatDate(selectedBooking.date) }}</button>
+							</template>
+						</v-date-picker>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Starts at</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ dayjs(selectedBooking.start).format('hh:mmA') }}</div>
+						<div v-else class="dropright">
+							<button class="btn btn-light shadow-none" data-toggle="dropdown">
+								{{ dayjs(selectedBooking.start).format('hh:mmA') }}
+							</button>
+							<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
+								<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
+								<template v-else v-for="(timeslot, index) in timeslots">
+									<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+										{{ timeslot.label }}
+									</button>
+								</template>
+							</div>
+						</div>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Ends at</div>
+						<div class="h6 font-heading mb-0">
+							{{
+								dayjs(selectedBooking.start)
+									.add(selectedBooking.service.duration, 'minute')
+									.format('hh:mmA')
+							}}
+						</div>
+					</div>
+					<div class="d-flex align-items-center text-left">
+						<div class="font-weight-normal text-secondary w-50">Duration</div>
+						<div class="h6 font-heading mb-0">{{ selectedBooking.service.duration }} minutes</div>
+					</div>
+					<div v-if="!selectedBooking.isPrevious" class="text-left">
+						<div class="mt-3" v-if="Object.keys(selectedBooking.zoom_link).length > 0">
+							<div class="d-flex align-items-center text-left">
+								<div class="font-weight-normal text-secondary w-50">Zoom Link</div>
+								<a target="_blank" :href="selectedBooking.zoom_link.join_url" class="d-flex align-items-center">
+									Go to Zoom meeting
+									<shortcut-icon width="16" height="16" class="ml-1 fill-blue"></shortcut-icon>
+								</a>
+							</div>
+						</div>
+						<vue-button v-else-if="$root.auth.zoom_token" type="button" :loading="createZoomLoading" button_class="btn btn-light shadow-none mt-3" @click="createZoomLink(selectedBooking)">
+							<div class="d-flex align-items-center">
+								<zoom-icon width="20" height="20" class="mr-2"></zoom-icon>
+								Create Zoom link
+							</div>
+						</vue-button>
+					</div>
+				</div>
+
+				<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
+					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
+				</div>
+			</div>
+		</modal>
 
 		<modal ref="editModal" :close-button="false">
 			<h5 class="font-heading mb-3">Edit Member</h5>

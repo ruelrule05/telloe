@@ -1,0 +1,6 @@
+@import '../../sass/variables';
+.page-item.disabled {
+	svg {
+		opacity: 0.25;
+	}
+}

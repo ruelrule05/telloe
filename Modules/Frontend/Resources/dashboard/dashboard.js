@@ -70,7 +70,23 @@ const router = new VueRouter({
 				{
 					path: 'contacts',
 					name: 'contacts',
-					component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/contacts.vue')
+					component: {
+						render(c) {
+							return c('router-view');
+						}
+					},
+					children: [
+						{
+							path: '/',
+							name: 'contacts_index',
+							component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/index/index.vue')
+						},
+						{
+							path: ':id',
+							name: 'contacts_show',
+							component: () => import(/* webpackChunkName: "dashboard-contacts" */ './components/contacts/show/show.vue')
+						}
+					]
 				},
 
 				{
@@ -115,12 +131,12 @@ const router = new VueRouter({
 					children: [
 						{
 							path: 'subscriptions',
-							name: 'subscriptions',
+							name: 'subscriptions_index',
 							component: () => import(/* webpackChunkName: "dashboard-payments-subscriptions" */ './components/payments/subscriptions/subscriptions.vue')
 						},
 						{
 							path: 'Invoices',
-							name: 'invoices',
+							name: 'invoices_index',
 							component: () => import(/* webpackChunkName: "dashboard-payments-invoices" */ './components/payments/invoices/invoices.vue')
 						}
 					]

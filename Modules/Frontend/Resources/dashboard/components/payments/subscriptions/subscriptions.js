@@ -1,4 +1,4 @@
-import {mapState, mapActions} from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
@@ -36,10 +36,10 @@ export default {
 		BlockIcon,
 		TrashIcon,
 		MoreIcon,
-		CloseIcon,
+		CloseIcon
 	},
 
-	directives: {Tooltip},
+	directives: { Tooltip },
 
 	data: () => ({
 		newSubscriptionForm: {
@@ -48,7 +48,7 @@ export default {
 			date: null,
 			recurring_frequency: 'week',
 			duration: 6,
-			duration_frequency: 'month',
+			duration_frequency: 'month'
 		},
 		selectedSubscription: null,
 		openInfo: false,
@@ -64,52 +64,52 @@ export default {
 			{
 				text: 'Yearly',
 				value: 'year'
-			},
+			}
 		],
 		paginate: ['subscriptions'],
 		subscriptionStatuses: [
-			{ 
-				'text': 'All', 
-				'value': 'all' 
+			{
+				text: 'All',
+				value: 'all'
 			},
-			{ 
-				'text': 'Trialing', 
-				'value': 'trialing' 
+			{
+				text: 'Trialing',
+				value: 'trialing'
 			},
-			{ 
-				'text': 'Canceled', 
-				'value': 'canceled' 
+			{
+				text: 'Canceled',
+				value: 'canceled'
 			},
-			{ 
-				'text': 'Draft', 
-				'value': 'draft' 
-			},
+			{
+				text: 'Draft',
+				value: 'draft'
+			}
 		],
 		subscriptionStatus: 'all',
 		hasSubscriptions: false,
-		invoiceLoading: false,
+		invoiceLoading: false
 	}),
 
 	computed: {
 		...mapState({
-            ready: (state) => state.contacts.ready,
-            contacts: (state) => state.contacts.index,
-            services: (state) => state.services.index,
-            pending_subscriptions: (state) => state.pending_subscriptions.index,
+			ready: state => state.contacts.ready,
+			contacts: state => state.contacts.index,
+			services: state => state.services.index,
+			pending_subscriptions: state => state.pending_subscriptions.index
 		}),
 
 		subscriptionTotal() {
 			let total = 0;
 			this.newSubscriptionForm.services.forEach(service => {
-				total += (service.rate * service.frequency);
+				total += service.rate * service.frequency;
 			});
 			return total.toFixed(2);
 		},
 
 		stripeCustomers() {
 			let customers = [];
-			this.contacts.forEach((contact) => {
-				if(!contact.is_pending) {
+			this.contacts.forEach(contact => {
+				if (!contact.is_pending) {
 					customers.push({
 						text: contact.contact_user.full_name,
 						value: contact.id
@@ -121,9 +121,9 @@ export default {
 
 		servicesList() {
 			let services = [];
-			this.services.forEach((service) => {
-				if(service.is_available) {
-					let serviceCopy =  Object.assign({}, service);
+			this.services.forEach(service => {
+				if (service.is_available) {
+					let serviceCopy = Object.assign({}, service);
 					serviceCopy.frequency = 1;
 					serviceCopy.frequency_interval = 'day';
 					serviceCopy.rate = service.default_rate;
@@ -138,165 +138,173 @@ export default {
 
 		subscriptions() {
 			let subscriptions = [];
-			this.contacts.forEach((contact) => {
-				contact.subscriptions.forEach((subscription) => {
+			this.contacts.forEach(contact => {
+				contact.subscriptions.forEach(subscription => {
 					subscription.contact = contact;
 					this.$set(subscription, 'statusLoading', false);
-					if(this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) {
-						if(subscription.status == 'trialing') subscription.status = 'pending';
+					if (this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) {
+						if (subscription.status == 'trialing') subscription.status = 'pending';
 						subscriptions.push(subscription);
 					}
-				})
+				});
 			});
 			subscriptions = subscriptions.concat(this.pending_subscriptions);
 			subscriptions.sort((a, b) => {
-				return (a.created > b.created) ? -1 : 1;
+				return a.created > b.created ? -1 : 1;
 			});
-			if(subscriptions.length > 0) {
+			if (subscriptions.length > 0) {
 				this.hasSubscriptions = true;
 			} else {
-				subscriptions.push({ 'placeholder': true });
+				subscriptions.push({ placeholder: true });
 				this.hasSubscriptions = false;
 			}
 			return subscriptions;
 		}
 	},
 
-    watch: {
-        ready: function(value) {
-            this.$root.contentloading = !value;
+	watch: {
+		ready: function(value) {
+			this.$root.contentloading = !value;
 		},
 
 		selectedSubscription: function(value) {
-			if(value.latest_invoice) this.getInvoice(value.latest_invoice);
+			if (value.latest_invoice) this.getInvoice(value.latest_invoice);
 		}
-    },
-	
+	},
+
 	created() {
-        this.$root.contentloading = !this.ready;
+		this.$root.contentloading = !this.ready;
 		this.getUserCustomers();
 		this.getServices();
 		this.getPendingSubscriptions();
 	},
-	
-    mounted() {
-        if(this.$root.intros.subscriptions_filter.enabled) {
-            setTimeout(() => {
-                if(!document.querySelector('.introjs-overlay')) {
-                    this.$root.introJS.start().goToStepNumber(this.$root.intros.subscriptions_filter.step);
-                }
-            }, 500);
-        }
-    },
+
+	mounted() {
+		if (this.$root.intros.subscriptions_index.enabled) {
+			setTimeout(() => {
+				if (!document.querySelector('.introjs-overlay')) {
+					this.$root.intros.subscriptions_index.intro.start();
+				}
+			}, 500);
+		}
+	},
 
 	methods: {
-        ...mapActions({
-            getUserCustomers: 'contacts/index',
-            createContactSubscription: 'contacts/create_subscription',
-            cancelContactSubscription: 'contacts/cancel_subscription',
-            getServices: 'services/index',
-            getPendingSubscriptions: 'pending_subscriptions/index',
-            storePendingSubscription: 'pending_subscriptions/store',
-            deletePendingSubscription: 'pending_subscriptions/delete',
+		...mapActions({
+			getUserCustomers: 'contacts/index',
+			createContactSubscription: 'contacts/create_subscription',
+			cancelContactSubscription: 'contacts/cancel_subscription',
+			getServices: 'services/index',
+			getPendingSubscriptions: 'pending_subscriptions/index',
+			storePendingSubscription: 'pending_subscriptions/store',
+			deletePendingSubscription: 'pending_subscriptions/delete'
 		}),
 
 		getInvoice(invoice_id) {
 			this.invoiceLoading = true;
 			axios.get(`/get_invoice?invoice_id=${invoice_id}`).then(response => {
 				this.invoiceLoading = false;
-				if(this.selectedSubscription) {
+				if (this.selectedSubscription) {
 					console.log(response.data);
 					this.selectedSubscription.latest_invoice = response.data;
 				}
-			})
+			});
 		},
 
 		viewSubscription(subscription) {
-			this.selectedSubscription = subscription; 
-			this.$refs['detailsModal'].show()
+			this.selectedSubscription = subscription;
+			this.$refs['detailsModal'].show();
 		},
-		
-        getCurrency(subscription) {
-        	return subscription.plan ? subscription.plan.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
-        },
 
-        startSubscription(subscription) {
-        	this.$set(subscription, 'statusLoading', true);
-        	let data = {
-        		'id': subscription.contact_id,
-        		'date': subscription.date,
-        		'duration': subscription.duration,
-        		'duration_frequency': subscription.duration_frequency,
-        		'recurring_frequency': subscription.recurring_frequency,
-        		'services': subscription.services,
-        		'amount': subscription.amount / 100,
-        	};
+		getCurrency(subscription) {
+			return subscription.plan ? subscription.plan.currency : (this.$root.auth.stripe_account ? (((this.$root.auth.stripe_account.external_accounts || {}).data || [])[0] || {}).currency : false) || 'USD';
+		},
 
-        	this.createContactSubscription(data).then(() => {
-        		this.$set(subscription, 'statusLoading', false);
-        		this.deleteSubscription(subscription);
-        	}).catch(() => {
-        		this.$set(subscription, 'statusLoading', false);
-        	});
-        },
+		startSubscription(subscription) {
+			this.$set(subscription, 'statusLoading', true);
+			let data = {
+				id: subscription.contact_id,
+				date: subscription.date,
+				duration: subscription.duration,
+				duration_frequency: subscription.duration_frequency,
+				recurring_frequency: subscription.recurring_frequency,
+				services: subscription.services,
+				amount: subscription.amount / 100
+			};
 
-        cancelSubscription(subscription) {
-        	this.$set(subscription, 'statusLoading', true);
-			this.cancelContactSubscription(subscription).then(() => {
-        		this.$set(subscription, 'statusLoading', false);
-        	}).catch(() => {
-        		this.$set(subscription, 'statusLoading', false);
-        	});
-        },
+			this.createContactSubscription(data)
+				.then(() => {
+					this.$set(subscription, 'statusLoading', false);
+					this.deleteSubscription(subscription);
+				})
+				.catch(() => {
+					this.$set(subscription, 'statusLoading', false);
+				});
+		},
 
-        deleteSubscription(subscription) {
-        	if(!subscription.plan) {
-        		this.deletePendingSubscription(subscription);
-        	}
-        },
+		cancelSubscription(subscription) {
+			this.$set(subscription, 'statusLoading', true);
+			this.cancelContactSubscription(subscription)
+				.then(() => {
+					this.$set(subscription, 'statusLoading', false);
+				})
+				.catch(() => {
+					this.$set(subscription, 'statusLoading', false);
+				});
+		},
 
-        resetSubscriptionForm() {
-        	this.newSubscriptionForm = {
+		deleteSubscription(subscription) {
+			if (!subscription.plan) {
+				this.deletePendingSubscription(subscription);
+			}
+		},
+
+		resetSubscriptionForm() {
+			this.newSubscriptionForm = {
 				loading: false,
 				services: [],
 				date: null,
 				recurring_frequency: 'week',
 				duration: 6,
-				duration_frequency: 'month',
+				duration_frequency: 'month'
 			};
 			this.openInfo = false;
-        },
-
-        createSubscription() {
-        	this.newSubscriptionForm.loading = true;
-        	this.newSubscriptionForm.id = this.newSubscriptionForm.contact_id;
-    
-        	if(this.$root.payoutComplete) {
-	        	this.createContactSubscription(this.newSubscriptionForm).then(() => {
-	        		this.resetSubscriptionForm();
-	        		this.openInfo = false;
-	        	}).catch(() => {
-	        		this.newSubscriptionForm.loading = false;
-	        	});
-        	} else {
-        		this.newSubscriptionForm.date = dayjs(this.newSubscriptionForm.date).format('YYYY-MM-DD')
-	        	this.storePendingSubscription(this.newSubscriptionForm).then(() => {
-	        		this.resetSubscriptionForm();
-	        	}).catch(() => {
-	        		this.newSubscriptionForm.loading = false;
-	        	});
-        	}
 		},
-		
+
+		createSubscription() {
+			this.newSubscriptionForm.loading = true;
+			this.newSubscriptionForm.id = this.newSubscriptionForm.contact_id;
+
+			if (this.$root.payoutComplete) {
+				this.createContactSubscription(this.newSubscriptionForm)
+					.then(() => {
+						this.resetSubscriptionForm();
+						this.openInfo = false;
+					})
+					.catch(() => {
+						this.newSubscriptionForm.loading = false;
+					});
+			} else {
+				this.newSubscriptionForm.date = dayjs(this.newSubscriptionForm.date).format('YYYY-MM-DD');
+				this.storePendingSubscription(this.newSubscriptionForm)
+					.then(() => {
+						this.resetSubscriptionForm();
+					})
+					.catch(() => {
+						this.newSubscriptionForm.loading = false;
+					});
+			}
+		},
+
 		timestampToDate(timestamp, time = true) {
 			let date = new Date(timestamp * 1000);
 			let format = 'mmm d, yyyy';
-			if(time) format += ' h:MM TT';
+			if (time) format += ' h:MM TT';
 			return dateFormat(date, format);
 		},
- 
-        formatDate(date) {
-        	return dayjs.unix(date).format('MMM d, YYYY');
-        }
+
+		formatDate(date) {
+			return dayjs.unix(date).format('MMM d, YYYY');
+		}
 	}
-}
+};

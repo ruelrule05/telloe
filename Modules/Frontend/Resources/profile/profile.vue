@@ -100,12 +100,16 @@
 
 				<!-- Select coach/date/time -->
 				<div v-else-if="selectedServiceForTimeline && (!startDate || !selectedTimeslot)" class="container selected-service-container" key="service">
-					<div class="mb-5 px-5">
+					<div class="mb-5 text-left">
 						<h4 class="mb-1 h3 font-heading">{{ selectedServiceForTimeline.name }}</h4>
-						<p class="mb-0 px-5 service-description">{{ selectedServiceForTimeline.description }}</p>
+						<p class="mb-0 service-description">{{ selectedServiceForTimeline.description }}</p>
+						<p v-if="selectedServiceForTimeline.address" class="mb-0 d-flex align-items-center text-muted">
+							<map-marker-icon height="18" width="18" class="fill-primary"></map-marker-icon>
+							{{ selectedServiceForTimeline.address }}
+						</p>
 					</div>
 
-					<div class="d-flex align-items-center">
+					<div class="d-flex align-items-center pt-3">
 						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null">
 							<arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon>
 						</button>

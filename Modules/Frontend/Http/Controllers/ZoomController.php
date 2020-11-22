@@ -66,7 +66,7 @@ class ZoomController extends Controller
             return $booking->zoom_link;
         }
 
-        $zoomLink = Zoom::createMeeting($booking->service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+        $zoomLink = Zoom::createMeeting(Auth::user(), $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
 
         if ($zoomLink) {
             $booking->update([

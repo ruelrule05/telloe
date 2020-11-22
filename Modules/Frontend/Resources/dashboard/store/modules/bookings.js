@@ -74,7 +74,7 @@ const actions = {
 		commit('update', response.data);
 		if (response.data.notification) window.app.socket.emit('new_notification', { user_id: response.data.notification.user_id, id: response.data.notification.id });
 
-		return response;
+		return response.data;
 	},
 
 	delete({ commit }, data) {

@@ -40,6 +40,7 @@ import DollarSignIcon from '../icons/dollar-sign';
 import WindowPlusIcon from '../icons/window-plus';
 import CloseIcon from '../icons/close';
 import MoreIcon from '../icons/more-h';
+import MapMarkerIcon from '../icons/map-marker';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
@@ -79,7 +80,8 @@ export default {
 		CloseIcon,
 		MoreIcon,
 		ToggleSwitch,
-		VueSelect
+		VueSelect,
+		MapMarkerIcon
 	},
 
 	directives: { tooltip },

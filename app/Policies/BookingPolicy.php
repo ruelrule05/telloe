@@ -22,7 +22,11 @@ class BookingPolicy
 
     public function createZoomLink(User $user, Booking $booking)
     {
-        return $user->id == $booking->service->user_id;
+        return
+            $user->id == $booking->service->user_id ||
+            $user->id == $booking->user_id ||
+            ($booking->service->parentService && $booking->service->parentService->user_id == $user->id) ||
+            ($booking->contact && $user->id == $booking->contact->contact_user_id);
     }
 
     public function update(User $user, Booking $booking)

@@ -3,6 +3,7 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Member;
 use App\Models\Service;
 use App\Models\User;
@@ -93,12 +94,28 @@ class MemberController extends Controller
         return response()->json($member);
     }
 
-    public function show(Member $member)
+    public function show(Member $member, Request $request)
     {
         $this->authorize('show', $member);
         // $response = $member->load('memberUser')->toArray();
         // $response['assigned_services'] = $member->assignedServices()->with('bookings.user')->withTrashed()->get()->toArray();
-        return response($member->load('memberUser', 'assignedServices.bookings.user'));
+        $member->load('memberUser', 'assignedServices');
+        $serviceIds = $member->assignedServices()->pluck('id')->toArray();
+        if ($request->services) {
+            $serviceIdsCopy = $serviceIds;
+            $serviceIds = [];
+            $filterServiceIds = explode(',', $request->services);
+            foreach ($filterServiceIds as $filterServiceId) {
+                if (in_array($filterServiceId, $serviceIdsCopy)) {
+                    $serviceIds[] = $filterServiceId;
+                }
+            }
+        }
+        $bookings = Booking::with('service', 'user')->whereIn('service_id', $serviceIds)->paginate(10);
+        $bookings = $bookings;
+        $member->bookings = $bookings;
+
+        return response($member);
     }
 
     public function update(Request $request, Member $member)

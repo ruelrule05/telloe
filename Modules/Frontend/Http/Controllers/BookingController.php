@@ -199,16 +199,19 @@ class BookingController extends Controller
 
         $booking->update($data);
 
-        Mail::queue(new UpdateBooking($booking));
+        Mail::queue(new UpdateBooking($booking, 'client'));
+        Mail::queue(new UpdateBooking($booking, 'contact'));
+
         $user_id = null;
         $description = '';
         $link = '';
+        $authUser = Auth::user();
         if ($booking->user) {
-            if (Auth::user()->id == $booking->user_id) { // if contact - notify client
+            if ($authUser->id == $booking->user_id) { // if contact - notify client
                 $user_id = $booking->service->user->id;
                 $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
                 $link = "/dashboard/bookings/calendar?date={$booking->date}";
-            } elseif (Auth::user()->id == $booking->service->user_id) { // if client - notify contact
+            } elseif ($authUser->id == $booking->service->user_id || $authUser->id == $booking->service->parentService->user_id) { // if client - notify contact
                 $user_id = $booking->user->id;
                 $description = 'A booking you made has been modified.';
             }

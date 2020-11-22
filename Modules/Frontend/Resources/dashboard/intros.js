@@ -66,6 +66,18 @@ export default {
 		intro: introJS().setOptions(options),
 		enabled: false,
 		steps: ['Click here for actions to edit or delete this member.']
+	},
+
+	subscriptions_index: {
+		intro: introJS().setOptions(options),
+		enabled: false,
+		steps: ['Filter subscriptions by status.', 'Click here to create a new subscription for your contacts.']
+	},
+
+	invoices_index: {
+		intro: introJS().setOptions(options),
+		enabled: false,
+		steps: ['Filter invoices by status.', 'Click here to create a new invoice for your contacts.']
 	}
 
 	// service_card: {
