@@ -6,7 +6,7 @@
 					<div class="border-bottom bg-white p-3 d-flex align-items-center">
 						<h5 class="font-heading mb-0">Contacts</h5>
 						<div class="ml-auto d-flex align-items-center">
-							<button :data-intro="$root.intros.contacts.steps[0]" data-step="1" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="infoTab = 'add_contact'">
+							<button :data-intro="$root.intros.contacts.steps[0]" data-step="1" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addModal'].show()">
 								<plus-icon class="btn-icon"></plus-icon>
 								Add Contact
 							</button>
@@ -74,6 +74,15 @@
 														<span
 															class="dropdown-item cursor-pointer"
 															@click="
+																clonedContact = Object.assign({}, contact);
+																$refs['editModal'].show();
+															"
+														>
+															Edit
+														</span>
+														<span
+															class="dropdown-item cursor-pointer"
+															@click="
 																selectedContact = contact;
 																$refs['deleteModal'].show();
 															"
@@ -124,17 +133,59 @@
 						</div>
 					</div>
 				</template>
+			</div>
+		</div>
 
-				<div v-else-if="infoTab == 'add_contact'" class="d-flex flex-column overflow-hidden">
-					<div class="border-bottom py-3 px-3">
-						<strong class="d-block my-2">Add Contact</strong>
+		<modal ref="editModal" :close-button="false">
+			<h5 class="font-heading mb-3">Edit Contact</h5>
+			<vue-form-validate v-if="clonedContact" @submit="update(clonedContact)">
+				<fieldset :disabled="!clonedContact.is_pending">
+					<div class="form-group">
+						<label class="form-label">Email</label>
+						<input type="email" class="form-control" v-model="clonedContact.email" data-required />
 					</div>
-					<div class="p-4 overflow-auto flex-grow-1">
-						<vue-form-validate @submit="store">
+
+					<div class="form-row form-group">
+						<div class="col">
+							<label class="form-label">First Name</label>
+							<input type="text" class="form-control" v-model="clonedContact.first_name" />
+						</div>
+						<div class="col">
+							<label class="form-label">Last Name</label>
+							<input type="text" class="form-control" v-model="clonedContact.last_name" />
+						</div>
+					</div>
+				</fieldset>
+				<div class="form-group">
+					<strong class="d-block mb-2 font-weight-bold">Available services</strong>
+					<div v-for="service in services" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
+						<div>
+							<h6 class="font-heading mb-0">{{ service.name }}</h6>
+						</div>
+						<div class="ml-auto">
+							<toggle-switch active-class="bg-primary" :value="clonedContact.blacklisted_services.find(x => x == service.id) ? false : true" @input="toggleContactServiceBlacklist(service, clonedContact)"></toggle-switch>
+						</div>
+					</div>
+				</div>
+
+				<div class="d-flex mt-4">
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">Cancel</button>
+					<button class="ml-auto btn btn-primary" type="submit">Update</button>
+				</div>
+			</vue-form-validate>
+		</modal>
+
+		<modal ref="addModal" size="modal-lg" :close-button="false">
+			<h5 class="font-heading mb-3">Add Contact</h5>
+			<vue-form-validate @submit="store">
+				<div class="row mx-0 mb-2">
+					<div class="col-md-6 px-0">
+						<div class="pr-3">
 							<div class="form-group">
 								<label class="form-label">Email</label>
 								<input type="email" class="form-control" v-model="newContact.email" data-required />
 							</div>
+
 							<div class="form-row form-group">
 								<div class="col">
 									<label class="form-label">First Name (Optional)</label>
@@ -150,12 +201,21 @@
 								<div v-for="service in services" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
 									<div>
 										<h6 class="font-heading mb-0">{{ service.name }}</h6>
-										<small class="text-gray d-block">{{ service.duration }} minutes</small>
 									</div>
 									<div class="ml-auto">
-										<toggle-switch active-class="bg-green" :value="newContact.blacklisted_services.find(x => x == service.id) ? false : true" @input="toggleServiceBlacklist(service)"></toggle-switch>
+										<toggle-switch active-class="bg-primary" :value="newContact.blacklisted_services.find(x => x == service.id) ? false : true" @input="toggleServiceBlacklist(service)"></toggle-switch>
 									</div>
 								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 border-left border-gray-200 px-0">
+						<div class="pl-3">
+							<div class="form-group">
+								<strong class="d-block mb-2">Invitation Message (Optional)</strong>
+								<textarea cols="10" class="form-control resize-none mb-2" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
+								<vue-checkbox v-model="newContact.sendToEmail" label="Send invitation link to email"></vue-checkbox>
 							</div>
 
 							<div class="form-group" v-if="($root.auth.custom_fields || []).length > 0">
@@ -167,25 +227,16 @@
 									</div>
 								</div>
 							</div>
-
-							<div class="form-group">
-								<strong class="d-block mb-2">Invitation Message (Optional)</strong>
-								<textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
-							</div>
-
-							<div class="form-group">
-								<vue-checkbox v-model="newContact.sendToEmail" label="Send invitation link to email"></vue-checkbox>
-							</div>
-
-							<div class="d-flex">
-								<button class="btn btn-white border" type="button" @click="infoTab = ''">Cancel</button>
-								<button class="ml-auto btn btn-primary" type="submit">Add</button>
-							</div>
-						</vue-form-validate>
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+
+				<div class="d-flex">
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">Cancel</button>
+					<button class="ml-auto btn btn-primary" type="submit">Add</button>
+				</div>
+			</vue-form-validate>
+		</modal>
 
 		<modal ref="resendModal" :close-button="false">
 			<template v-if="selectedContact">

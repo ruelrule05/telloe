@@ -130,6 +130,13 @@ export default {
 			deleteService: 'services/delete'
 		}),
 
+		updateServiceStatus(state, service) {
+			if (state) {
+				service.in_widget = true;
+			}
+			this.updateService(service);
+		},
+
 		update() {
 			this.updateService(this.clonedService).then(service => {
 				Object.keys(service).map(key => {

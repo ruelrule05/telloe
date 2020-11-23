@@ -49,4 +49,19 @@ class Contact extends BaseModel
     {
         return Carbon::parse($this->attributes['created_at'])->format('M d, Y');
     }
+
+    public function getEmailAttribute($value)
+    {
+        return $this->contactUser ? $this->contactUser->email : $value;
+    }
+
+    public function getFirstNameAttribute($value)
+    {
+        return $this->contactUser ? $this->contactUser->first_name : $value;
+    }
+
+    public function getLastNameAttribute($value)
+    {
+        return $this->contactUser ? $this->contactUser->last_name : $value;
+    }
 }

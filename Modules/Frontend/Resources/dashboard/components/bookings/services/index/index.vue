@@ -35,7 +35,7 @@
 											<div class="dropdown-menu">
 												<div class="d-flex align-items-center px-2 py-1">
 													<span>Available</span>
-													<toggle-switch class="ml-auto" @click.native.stop @input="updateService(service)" active-class="bg-primary" v-model="service.is_available"></toggle-switch>
+													<toggle-switch class="ml-auto" @click.native.stop @input="updateServiceStatus($event, service)" active-class="bg-primary" v-model="service.is_available"></toggle-switch>
 												</div>
 												<span
 													class="dropdown-item d-flex align-items-center px-2 cursor-pointer"

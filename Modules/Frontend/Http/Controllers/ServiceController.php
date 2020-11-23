@@ -80,6 +80,7 @@ class ServiceController extends Controller
         ]);
         $service = Service::findOrFail($id);
         $this->authorize('update', $service);
+
         $service->update($request->all());
 
         return response()->json($service);

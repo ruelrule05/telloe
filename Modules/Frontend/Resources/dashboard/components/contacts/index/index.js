@@ -47,7 +47,8 @@ export default {
 		selectedFile: null,
 		addField: false,
 		newField: '',
-		resendLoading: false
+		resendLoading: false,
+		clonedContact: null
 	}),
 
 	computed: {
@@ -127,12 +128,18 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index',
 			storeContact: 'contacts/store',
+			updateContact: 'contacts/update',
 			deleteContact: 'contacts/delete',
 			getContactFromInviteToken: 'contacts/get_contact_from_invite_token',
 			showUserCustomFields: 'user_custom_fields/show',
 			storeUserCustomFields: 'user_custom_fields/store',
 			showConversation: 'conversations/show'
 		}),
+
+		update(contact) {
+			this.updateContact(contact);
+			this.$refs['editModal'].hide();
+		},
 
 		goToContact(contact) {
 			this.$router.push(`/dashboard/contacts/${contact.id}`);
@@ -145,6 +152,15 @@ export default {
 				this.$refs['resendModal'].hide();
 				this.$toasted.show('Invitation email has been sent successfully.');
 			});
+		},
+
+		toggleContactServiceBlacklist(service, contact) {
+			let index = contact.blacklisted_services.findIndex(x => x == service.id);
+			if (index > -1) {
+				contact.blacklisted_services.splice(index, 1);
+			} else {
+				contact.blacklisted_services.push(service.id);
+			}
 		},
 
 		toggleServiceBlacklist(service) {
@@ -193,7 +209,7 @@ export default {
 						sendToEmail: 1
 					};
 				});
-				this.infoTab = '';
+				this.$refs['addModal'].hide();
 			}
 		}
 	}

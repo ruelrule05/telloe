@@ -162,6 +162,9 @@ class ContactController extends Controller
 
     public function update(Request $request, Contact $contact)
     {
+        $this->authorize('update', $contact);
+        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields'));
+        return response($contact->load('contactUser'));
     }
 
     public function destroy(Contact $contact)

@@ -54,7 +54,7 @@ const actions = {
 
 	async update({ commit }, data) {
 		let response = await axios.put(`/${name}/${data.id}`, data);
-		commit('update', data);
+		commit('update', response.data);
 		return response.data;
 	},
 

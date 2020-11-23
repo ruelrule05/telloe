@@ -15,6 +15,8 @@ import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const convertTime = require('convert-time');
 import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
+import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
+import VueFormValidate from '../../../../components/vue-form-validate.vue';
 
 export default {
 	components: {
@@ -25,7 +27,9 @@ export default {
 		ClockIcon,
 		Paginate,
 		VueSelect,
-		TrashIcon
+		TrashIcon,
+		ToggleSwitch,
+		VueFormValidate
 	},
 
 	data: () => ({
@@ -68,8 +72,23 @@ export default {
 	methods: {
 		...mapActions({
 			getServices: 'services/index',
-			storeUserCustomFields: 'user_custom_fields/store'
+			storeUserCustomFields: 'user_custom_fields/store',
+			updateContact: 'contacts/update'
 		}),
+
+		update() {
+			this.updateContact(this.contact);
+			this.$refs['editModal'].hide();
+		},
+
+		toggleContactServiceBlacklist(service) {
+			let index = this.contact.blacklisted_services.findIndex(x => x == service.id);
+			if (index > -1) {
+				this.contact.blacklisted_services.splice(index, 1);
+			} else {
+				this.contact.blacklisted_services.push(service.id);
+			}
+		},
 
 		async getSelectedBookingNewTimeslots(date) {
 			let timeslot = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index];

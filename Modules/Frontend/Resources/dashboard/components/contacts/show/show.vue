@@ -63,7 +63,9 @@
 							</div>
 
 							<div class="rounded bg-white shadow-sm p-3 mb-4">
-								<h5 class="font-heading mb-0">Fields</h5>
+								<div class="d-flex">
+									<h5 class="font-heading mb-0">Fields</h5>
+								</div>
 								<div v-for="(custom_field, index) in contact.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
 									<div class="mt-3 d-flex align-items-center w-100">
 										<span class="text-muted">{{ custom_field.name }}</span>
@@ -157,6 +159,45 @@
 				</div>
 			</div>
 		</div>
+
+		<modal ref="editModal" :close-button="false">
+			<h5 class="font-heading mb-3">Edit Contact</h5>
+			<vue-form-validate v-if="contact" @submit="update(contact)">
+				<fieldset :disabled="!contact.is_pending">
+					<div class="form-group">
+						<label class="form-label">Email</label>
+						<input type="email" class="form-control" v-model="contact.email" data-required />
+					</div>
+
+					<div class="form-row form-group">
+						<div class="col">
+							<label class="form-label">First Name</label>
+							<input type="text" class="form-control" v-model="contact.first_name" />
+						</div>
+						<div class="col">
+							<label class="form-label">Last Name</label>
+							<input type="text" class="form-control" v-model="contact.last_name" />
+						</div>
+					</div>
+				</fieldset>
+				<div class="form-group">
+					<strong class="d-block mb-2 font-weight-bold">Available services</strong>
+					<div v-for="service in services" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
+						<div>
+							<h6 class="font-heading mb-0">{{ service.name }}</h6>
+						</div>
+						<div class="ml-auto">
+							<toggle-switch active-class="bg-primary" :value="contact.blacklisted_services.find(x => x == service.id) ? false : true" @input="toggleContactServiceBlacklist(service, contact)"></toggle-switch>
+						</div>
+					</div>
+				</div>
+
+				<div class="d-flex mt-4">
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">Cancel</button>
+					<button class="ml-auto btn btn-primary" type="submit">Update</button>
+				</div>
+			</vue-form-validate>
+		</modal>
 	</div>
 </template>
 

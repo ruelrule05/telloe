@@ -244,9 +244,11 @@
 							<div class="text-gray bg-gray-300 p-2">Date</div>
 							<div class="flex-grow-1">
 								<v-date-picker is-required :disabled-dates="formattedHolidays" :min-date="new Date()" :popover="{ visibility: 'click' }" v-model="newHoliday.date" class="d-block h-100">
-									<button type="button" class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{ 'text-gray': !newHoliday.date }">
-										{{ newHoliday.date ? formatDate(newHoliday.date) : 'Set date' }}
-									</button>
+									<template v-slot="{ inputValue, inputEvents }">
+										<button type="button" class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{ 'text-gray': !inputValue }" v-on="inputEvents">
+											{{ inputValue ? formatDate(inputValue) : 'Set date' }}
+										</button>
+									</template>
 								</v-date-picker>
 							</div>
 						</div>
