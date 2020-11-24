@@ -10,7 +10,10 @@
 					<div class="mt-2 overflow-auto h-100 flex-grow-1">
 						<div v-if="members.length == 0" class="text-secondary text-center p-4 position-absolute-center">
 							<div class="h6 mb-0 font-weight-normal">
-								You don't have any members yet.
+								<div class="mb-2">You don't have any members yet.</div>
+								<button class="btn btn-primary" type="button" @click="$refs['addModal'].show()">
+									Add Member
+								</button>
 							</div>
 						</div>
 

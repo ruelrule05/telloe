@@ -10,7 +10,17 @@
 					<div class="rounded overflow-auto h-100 flex-grow-1 d-flex flex-column position-relative">
 						<div v-if="organizations.length == 0" class="text-secondary text-center p-4 position-absolute-center">
 							<div class="h6 mb-0 font-weight-normal">
-								You don't have any organizations yet.
+								<div class="mb-2">You don't have any organizations yet.</div>
+								<button
+									class="btn btn-primary"
+									type="button"
+									@click="
+										resetForm();
+										$refs['addModal'].show();
+									"
+								>
+									Add Organization
+								</button>
 							</div>
 						</div>
 
@@ -55,13 +65,13 @@
 													<div
 														v-for="member in organization.members"
 														:key="member.id"
-														v-tooltip.top="member.member.member_user.full_name"
+														v-tooltip.top="(member.member || member).member_user.full_name"
 														class="user-profile-image user-profile-image-sm"
 														:style="{
-															backgroundImage: 'url(' + member.member.member_user.profile_image + ')'
+															backgroundImage: 'url(' + (member.member || member).member_user.profile_image + ')'
 														}"
 													>
-														<span v-if="!member.member.member_user.profile_image">{{ member.member.member_user.initials }}</span>
+														<span v-if="!(member.member || member).member_user.profile_image">{{ (member.member || member).member_user.initials }}</span>
 													</div>
 												</template>
 												<div v-else class="text-gray-500 d-flex align-items-center ml-1">
@@ -202,14 +212,14 @@
 					<div
 						class="user-profile-image user-profile-image-sm"
 						:style="{
-							backgroundImage: 'url(' + member.member.member_user.profile_image + ')'
+							backgroundImage: 'url(' + (member.member || member).member_user.profile_image + ')'
 						}"
 					>
-						<span v-if="!member.member.member_user.profile_image">{{ member.member.member_user.initials }}</span>
+						<span v-if="!(member.member || member).member_user.profile_image">{{ (member.member || member).member_user.initials }}</span>
 					</div>
 					<div class="pl-2 flex-grow-1">
-						<h6 class="mb-0 font-heading">{{ member.member.member_user.full_name }}</h6>
-						<small class="text-secondary">{{ member.member.member_user.email }}</small>
+						<h6 class="mb-0 font-heading">{{ (member.member || member).member_user.full_name }}</h6>
+						<small class="text-secondary">{{ (member.member || member).member_user.email }}</small>
 					</div>
 					<div class="align-self-start">
 						<button class="btn btn-sm p-0 line-height-0 mr-n1 mt-n1" type="button" @click="clonedOrganization.members.splice(index, 1)">
