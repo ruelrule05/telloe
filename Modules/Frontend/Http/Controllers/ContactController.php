@@ -157,7 +157,7 @@ class ContactController extends Controller
         $now = Carbon::now()->format('Y-m-d H:i');
         $bookings = Booking::with('service.user', 'bookingNote')->where('user_id', $contact->contact_user_id)->whereIn('service_id', $serviceIds);
         $contact->upcoming_bookings = $bookings->where(function ($query) use ($contact) {
-            $query->where('contact_id', $contact->id)->orWhere('user_id', $contact->contact_user_id);
+            $query->where('contact_id', $contact->id);
         })->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
         return response($contact->load('contactUser'));
