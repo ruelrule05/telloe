@@ -26,14 +26,28 @@ class ContactController extends Controller
     {
         $query = $request->get('query');
         $contacts = Contact::with('contactUser')
-            ->where('user_id', Auth::user()->id)
-            ->orderBy('created_at', 'DESC');
+            ->select(['bookings.*', 'contacts.*'])
+            ->join('bookings', 'contacts.contact_user_id', '=', 'bookings.user_id')
+            ->where('contacts.user_id', Auth::user()->id);
         if ($query) {
             $contacts = $contacts->whereHas('contactUser', function ($contactUser) use ($query) {
-                $contactUser->where('LIKE', '%' . $query . '%');
+                $contactUser->where('first_name', 'LIKE', '%' . $query . '%')->orWhere('last_name', 'LIKE', '%' . $query . '%');
             });
         }
-        $contacts = $contacts->get();
+        $status = ['accepted', 'pending'];
+        if (in_array($request->status, $status)) {
+            switch ($request->status) {
+                case 'accepted':
+                    $contacts = $contacts->where('is_pending', false);
+                    break;
+
+                case 'pending':
+                    $contacts = $contacts->where('is_pending', true);
+                    break;
+            }
+        }
+
+        $contacts = $contacts->paginate(10);
 
         return response()->json($contacts);
     }
@@ -156,12 +170,7 @@ class ContactController extends Controller
         }
         $now = Carbon::now()->format('Y-m-d H:i');
         $bookings = Booking::with('service.user', 'bookingNote')->where('user_id', $contact->contact_user_id)->whereIn('service_id', $serviceIds);
-        $contact->upcoming_bookings = $bookings->where(function ($query) use ($contact) {
-            $query->where('contact_id', $contact->id);
-            if ($contact->contact_user_id) {
-                $query->orWhere('user_id', $contact->contact_user_id);
-            }
-        })->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
+        $contact->upcoming_bookings = $bookings->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
         return response($contact->load('contactUser'));
     }

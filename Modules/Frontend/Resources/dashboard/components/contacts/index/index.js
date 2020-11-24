@@ -13,6 +13,8 @@ import PencilIcon from '../../../../icons/pencil';
 import ClockIcon from '../../../../icons/clock';
 import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../icons/close';
+import VueSelect from '../../../../components/vue-select/vue-select.vue';
+import Paginate from '../../../../components/paginate/paginate.vue';
 export default {
 	components: {
 		Modal,
@@ -29,7 +31,8 @@ export default {
 		ClockIcon,
 		CheckmarkCircleIcon,
 		CloseIcon,
-		gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue')
+		VueSelect,
+		Paginate
 	},
 
 	data: () => ({
@@ -48,13 +51,30 @@ export default {
 		addField: false,
 		newField: '',
 		resendLoading: false,
-		clonedContact: null
+		clonedContact: null,
+		contactStatuses: [
+			{
+				text: 'All',
+				value: 'all'
+			},
+			{
+				text: 'Accepted',
+				value: 'accepted'
+			},
+			{
+				text: 'Pending',
+				value: 'pending'
+			}
+		],
+		contactStatus: 'all',
+		query: ''
 	}),
 
 	computed: {
 		...mapState({
 			conversations: state => state.conversations.index,
 			contacts: state => state.contacts.index,
+			hasContacts: state => state.contacts.hasContacts,
 			ready: state => state.contacts.ready,
 			services: state => state.services.index,
 			user_blacklisted_services: state => state.user_blacklisted_services.index
@@ -135,6 +155,10 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			showConversation: 'conversations/show'
 		}),
+
+		async getData(page = this.contact.current_page) {
+			this.getContacts({ page: page, query: this.query, status: this.contactStatus });
+		},
 
 		update(contact) {
 			this.updateContact(contact);

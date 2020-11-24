@@ -15,12 +15,24 @@
 					</div>
 
 					<div class="rounded mt-2 overflow-auto h-100 flex-grow-1 d-flex flex-column">
-						<div v-if="contacts.length == 0" class="text-secondary text-center p-4 position-absolute-center">
+						<div v-if="!hasContacts && contacts.data.length == 0" class="text-secondary text-center p-4 position-absolute-center">
 							<div class="h6 mb-0 font-weight-normal">You don't have any contacts yet.</div>
 						</div>
 
-						<div class="overflow-auto flex-grow-1 pb-4 px-4 h-100" v-else>
-							<table class="table table-borderless table-hover mb-0">
+						<div class="overflow-auto flex-grow-1 pb-4 px-4 pt-3 h-100" v-else>
+							<div class="d-flex align-items-center">
+								<form class="form-inline" @submit.prevent="getData">
+									<input type="text" class="form-control" v-model="query" placeholder="Search..." />
+								</form>
+								<div class="ml-auto d-flex align-items-center">
+									<vue-select :options="contactStatuses" button_class="border-0 bg-white shadow-sm" v-model="contactStatus" label="Status" @input="getData"></vue-select>
+									<paginate @change="getData" :data="contacts" class="ml-2"></paginate>
+								</div>
+							</div>
+							<div v-if="contacts.data.length == 0" class="text-gray position-absolute-center">
+								No contacts found with your search query.
+							</div>
+							<table v-else class="table table-borderless table-hover mb-0 mt-2">
 								<thead>
 									<tr>
 										<th>Name</th>
@@ -30,7 +42,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="(contact, index) in contacts" :key="contact.id" class="cursor-pointer">
+									<tr v-for="(contact, index) in contacts.data" :key="contact.id" class="cursor-pointer">
 										<td class="align-middle" @click="goToContact(contact)">
 											<div class="d-flex align-items-center">
 												<div class="user-profile-image user-profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
@@ -279,8 +291,6 @@
 				</div>
 			</template>
 		</modal>
-
-		<gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
 	</div>
 </template>
 

@@ -1,14 +1,18 @@
 const name = 'contacts';
+const queryString = require('query-string');
 
 const state = () => ({
 	ready: false,
-	index: []
+	hasContacts: false,
+	index: {}
 });
 
 const mutations = {
 	index(state, data) {
-		state.index = [];
-		state.index.push.apply(state.index, data);
+		state.index = data;
+		if (data.data.length > 0) {
+			state.hasContacts = true;
+		}
 		state.ready = true;
 	},
 
@@ -69,9 +73,9 @@ const mutations = {
 };
 
 const actions = {
-	index({ commit, rootState }, user_id) {
-		const user_query = user_id ? `?user_id=${user_id}` : '';
-		axios.get(`/${name}${user_query}`).then(response => {
+	index({ commit, rootState }, params) {
+		params = queryString.stringify(params);
+		axios.get(`/${name}?${params}`).then(response => {
 			commit('index', response.data);
 		});
 	},

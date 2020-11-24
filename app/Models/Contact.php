@@ -64,4 +64,9 @@ class Contact extends BaseModel
     {
         return $this->contactUser ? $this->contactUser->last_name : $value;
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class)->orderBy('date', 'DESC');
+    }
 }
