@@ -278,8 +278,7 @@ export default {
 			if (this.$root.payoutComplete) {
 				this.createContactSubscription(this.newSubscriptionForm)
 					.then(() => {
-						this.resetSubscriptionForm();
-						this.openInfo = false;
+						this.$refs['addModal'].hide();
 					})
 					.catch(() => {
 						this.newSubscriptionForm.loading = false;
@@ -288,7 +287,7 @@ export default {
 				this.newSubscriptionForm.date = dayjs(this.newSubscriptionForm.date).format('YYYY-MM-DD');
 				this.storePendingSubscription(this.newSubscriptionForm)
 					.then(() => {
-						this.resetSubscriptionForm();
+						this.$refs['addModal'].hide();
 					})
 					.catch(() => {
 						this.newSubscriptionForm.loading = false;

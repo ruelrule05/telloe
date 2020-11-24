@@ -1,58 +1,60 @@
 @import '../../../../sass/variables';
-#subscriptions {
-	.user-profile-image-sm {
-		width: 35px;
-		height: 35px;
-		span {
-			font-size: 12px;
-		}
+.user-profile-image-sm {
+	width: 35px;
+	height: 35px;
+	span {
+		font-size: 12px;
 	}
-	.info {
-		transition: $transition-base;
-		width: 350px;
-		margin-right: -350px;
-		&.open {
-			margin-right: 0;
-		}
+}
+.info {
+	transition: $transition-base;
+	width: 350px;
+	margin-right: -350px;
+	&.open {
+		margin-right: 0;
 	}
-	.pagination .page-item {
+}
+.pagination .page-item {
+	.page-link {
+		background: $light;
+	}
+	&.active {
 		.page-link {
-			background: $light;
-		}
-		&.active {
-			.page-link {
-				background: $gray-400 !important;
-			}
+			background: $gray-400 !important;
 		}
 	}
-	.select-flex {
-		height: calc(1.5em + 0.7rem);
-	}
-	.subscription {
-		.subscription-id {
-			color: $gray-500;
-			transition: $transition-base;
-		}
-		&:hover {
-			.subscription-id {
-				color: $body-color;
-			}
-		}
-	}
-	.badge-pending {
-		background-color: rgba($warning, 12.5%);
-		color: $warning;
-	}
-	.badge-canceled {
-		background-color: rgba($dark, 12.5%);
+}
+.select-flex {
+	height: calc(1.5em + 0.7rem);
+}
+.subscription {
+	.subscription-id {
 		color: $gray-500;
+		transition: $transition-base;
 	}
-	.badge-active {
-		background-color: rgba($primary, 12.5%);
-		color: $primary;
+	&:hover {
+		.subscription-id {
+			color: $body-color;
+		}
 	}
-	.badge-paid {
-		background-color: rgba($primary, 12.5%);
-		color: $primary;
-	}
+}
+.badge-draft {
+	background-color: rgba($dark, 12.5%);
+	color: $dark;
+}
+.badge-pending {
+	background-color: rgba($warning, 12.5%);
+	color: $warning;
+}
+.badge-canceled {
+	background-color: rgba($dark, 12.5%);
+	color: $gray-500;
+}
+.badge-active {
+	background-color: rgba($primary, 12.5%);
+	color: $primary;
+}
+.badge-paid {
+	background-color: rgba($primary, 12.5%);
+	color: $primary;
 }

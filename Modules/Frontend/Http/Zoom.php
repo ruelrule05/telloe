@@ -21,27 +21,32 @@ class Zoom
                     'type' => $type, // Scheduled meeting
                 ]);
             $zoomLink = json_decode($response->getBody(), true);
-            if (isset($zoomLink['code'])) {
-                return false;
+            if (isset($zoomLink['code']) && $zoomLink['code'] == 124) {
+                self::refreshToken($user);
+                return self::createMeeting($user, $topic, $startTime, $type = 2);
             }
             return $zoomLink;
         } catch (\Exception $e) {
             if (401 == $e->getCode()) {
-                $refresh_token = $user->zoom_token['refresh_token'];
-
-                $response = Http::withBasicAuth(config('zoom.client_id'), config('zoom.client_secret'))
-                    ->asForm()
-                    ->post('https://zoom.us/oauth/token', [
-                        'grant_type' => 'refresh_token',
-                        'refresh_token' => $refresh_token
-                    ]);
-                $token = json_decode($response->getBody());
-                $user->zoom_token = $token;
-                $user->save();
+                self::refreshToken($user);
                 return self::createMeeting($user, $topic, $startTime);
             }
             return false;
             //return abort(403, $e->getMessage());
         }
+    }
+
+    public static function refreshToken(User $user)
+    {
+        $refresh_token = $user->zoom_token['refresh_token'];
+        $response = Http::withBasicAuth(config('zoom.client_id'), config('zoom.client_secret'))
+            ->asForm()
+            ->post('https://zoom.us/oauth/token', [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $refresh_token
+            ]);
+        $token = json_decode($response->getBody());
+        $user->zoom_token = $token;
+        $user->save();
     }
 }

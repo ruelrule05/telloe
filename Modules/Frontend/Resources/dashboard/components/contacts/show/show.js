@@ -17,6 +17,13 @@ import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
 import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import VueButton from '../../../../components/vue-button.vue';
+import ZoomIcon from '../../../../icons/zoom';
+import ShortcutIcon from '../../../../icons/shortcut';
+import NoteIcon from '../../../../icons/note';
+import PencilIcon from '../../../../icons/pencil';
+import MoveIcon from '../../../../icons/move';
+import draggable from 'vuedraggable';
 
 export default {
 	components: {
@@ -29,7 +36,13 @@ export default {
 		VueSelect,
 		TrashIcon,
 		ToggleSwitch,
-		VueFormValidate
+		VueFormValidate,
+		VueButton,
+		ZoomIcon,
+		ShortcutIcon,
+		NoteIcon,
+		PencilIcon,
+		MoveIcon
 	},
 
 	data: () => ({
@@ -40,7 +53,15 @@ export default {
 		dayjs: dayjs,
 		timeslots: [],
 		newField: '',
-		addField: false
+		addField: false,
+		selectedBooking: null,
+		timeslots: [],
+		bookingModalLoading: false,
+		createZoomLoading: false,
+		recentNotes: [],
+		editFields: false,
+		addField: false,
+		new_field: {}
 	}),
 
 	computed: {
@@ -57,6 +78,17 @@ export default {
 				});
 			});
 			return servicesList;
+		},
+
+		customFields() {
+			let custom_fields = [];
+			(this.$root.auth.custom_fields || []).forEach(custom_field => {
+				custom_fields.push({
+					text: custom_field,
+					value: custom_field
+				});
+			});
+			return custom_fields;
 		}
 	},
 
@@ -65,6 +97,7 @@ export default {
 	created() {
 		this.getContact();
 		this.getServices();
+		this.showUserCustomFields();
 	},
 
 	mounted() {},
@@ -73,8 +106,43 @@ export default {
 		...mapActions({
 			getServices: 'services/index',
 			storeUserCustomFields: 'user_custom_fields/store',
-			updateContact: 'contacts/update'
+			showUserCustomFields: 'user_custom_fields/show',
+			updateContact: 'contacts/update',
+			updateBooking: 'bookings/update'
 		}),
+
+		async updateSelectedBooking(selectedBooking) {
+			this.bookingModalLoading = true;
+			selectedBooking = JSON.parse(JSON.stringify(selectedBooking));
+			selectedBooking.date = dayjs(selectedBooking.date).format('YYYY-MM-DD');
+			selectedBooking.start = dayjs(selectedBooking.start).format('HH:mm');
+			let updatedBooking = await this.updateBooking(selectedBooking);
+			let booking = this.contact.bookings.data.find(x => x.id == updatedBooking.id);
+			if (booking) {
+				Object.assign(booking, updatedBooking);
+			}
+			this.bookingModalLoading = false;
+			this.$refs['bookingModal'].hide();
+		},
+
+		async createZoomLink(booking) {
+			this.createZoomLoading = true;
+			if (this.$root.auth.zoom_token) {
+				let response = await axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
+				this.createZoomLoading = false;
+
+				booking.zoom_link = response.data;
+			}
+		},
+
+		editBooking(booking) {
+			let selectedBooking = JSON.parse(JSON.stringify(booking));
+			selectedBooking.start = dayjs(`${selectedBooking.date} ${selectedBooking.start}`).toDate();
+			selectedBooking.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(selectedBooking.start));
+			this.selectedBooking = selectedBooking;
+			this.getSelectedBookingNewTimeslots(booking, selectedBooking.date);
+			this.$refs['bookingModal'].show();
+		},
 
 		update() {
 			this.updateContact(this.contact);
@@ -90,16 +158,13 @@ export default {
 			}
 		},
 
-		async getSelectedBookingNewTimeslots(date) {
-			let timeslot = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index];
-			if (timeslot) {
-				let response = await axios.get(`/services/${this.selectedService.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
-				this.selectedTimeslot.timeslots = response.data;
-			}
+		async getSelectedBookingNewTimeslots(booking, date) {
+			let response = await axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+			this.timeslots = response.data;
 		},
 
 		formatDate(date) {
-			return dayjs(date).format('MMMM D, YYYY');
+			return dayjs(date).format('MMM D, YYYY');
 		},
 
 		async filterByServices(services) {
@@ -117,12 +182,20 @@ export default {
 			let response = await axios.get(`/contacts/${this.$route.params.id}`);
 			let contact = response.data;
 			contact.upcoming_bookings.forEach(booking => {
-				booking.start = dayjs(`${booking.date} ${booking.start}`).toDate();
+				booking.startDate = dayjs(`${booking.date} ${booking.start}`).toDate();
 			});
 			this.contact = contact;
 			let clonedContact = JSON.parse(JSON.stringify(response.data));
 			this.clonedContact = clonedContact;
 			this.$root.contentloading = false;
+			this.getRecentNotes();
+		},
+
+		async getRecentNotes() {
+			if (this.contact) {
+				let response = await axios.get(`/contacts/${this.contact.id}/recent_notes`);
+				this.recentNotes = response.data;
+			}
 		},
 
 		resendEmail(contact) {
@@ -156,13 +229,13 @@ export default {
 		},
 
 		addNewField() {
-			if (this.newField.trim().length > 0) {
-				this.$root.auth.custom_fields.push(this.newField);
-				this.newField = '';
+			if (this.new_field.name && this.new_field.value) {
+				this.new_field.is_visible = false;
+				this.contact.custom_fields.push(this.new_field);
+				this.updateContact(this.contact);
+				this.new_field = {};
 				this.addField = false;
 			}
-			this.storeUserCustomFields();
-			this.$toasted.show('Fields saved successfully.');
 		},
 
 		updateCustomField(index) {

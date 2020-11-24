@@ -62,8 +62,9 @@ class ZoomController extends Controller
         ]);
         $booking = Booking::findOrFail($request->booking_id);
         $this->authorize('createZoomLink', $booking);
+
         if ($booking->zoom_link) {
-            return $booking->zoom_link;
+            return response($booking->zoom_link);
         }
 
         $zoomLink = Zoom::createMeeting(Auth::user(), $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());

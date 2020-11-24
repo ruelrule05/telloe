@@ -50,4 +50,11 @@ class Booking extends BaseModel
     {
         return Carbon::now()->isAfter(Carbon::parse($this->attributes['date'] . ' ' . $this->attributes['start']));
     }
+
+    public function bookingNote()
+    {
+        return $this->hasOne(BookingNote::class)->withDefault([
+            'note' => '',
+        ]);
+    }
 }

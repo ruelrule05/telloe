@@ -4,6 +4,7 @@ namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingNote;
 use App\Models\Conversation;
 use App\Models\Notification;
 use App\Models\Service;
@@ -199,6 +200,13 @@ class BookingController extends Controller
 
         $booking->update($data);
 
+        if (isset($request->booking_note['note'])) {
+            BookingNote::updateOrCreate(
+                ['booking_id' => $booking->id],
+                ['note' => $request->booking_note['note']]
+            );
+        }
+
         Mail::queue(new UpdateBooking($booking, 'client'));
         Mail::queue(new UpdateBooking($booking, 'contact'));
 
@@ -224,7 +232,7 @@ class BookingController extends Controller
             $booking->notification = $notification;
         }
 
-        return response()->json($booking->load('service.user'));
+        return response()->json($booking->load('service.user', 'bookingNote'));
     }
 
     public function destroy($id)

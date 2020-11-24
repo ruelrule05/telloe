@@ -53,7 +53,13 @@ class Service extends BaseModel
 
     public function user()
     {
-        return $this->belongsTo(User::class) ?? $this->member->memberUser;
+        $member = $this->member()->first();
+        return $this->belongsTo(User::class)->withDefault(function ($user) use ($member) {
+            $user->first_name = $member->memberUser->attributes['first_name'];
+            $user->last_name = $member->memberUser->attributes['last_name'];
+            $user->email = $member->memberUser->attributes['email'];
+            $user->last_online = null;
+        });
     }
 
     public function member()

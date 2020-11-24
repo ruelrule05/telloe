@@ -5,6 +5,7 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\StripeAPI;
 use App\Models\Booking;
+use App\Models\BookingNote;
 use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
@@ -154,8 +155,8 @@ class ContactController extends Controller
             }
         }
         $now = Carbon::now()->format('Y-m-d H:i');
-        $bookings = Booking::with('service.user')->where('user_id', $contact->contact_user_id)->whereIn('service_id', $serviceIds);
-        $contact->upcoming_bookings = $bookings->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) >= DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
+        $bookings = Booking::with('service.user', 'bookingNote')->where('user_id', $contact->contact_user_id)->whereIn('service_id', $serviceIds);
+        $contact->upcoming_bookings = $bookings->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
         return response($contact->load('contactUser'));
     }
@@ -399,5 +400,21 @@ class ContactController extends Controller
 
         Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab));
         return response(['success' => true]);
+    }
+
+    public function recentNotes($id)
+    {
+        $contact = Contact::findOrFail($id);
+        $this->authorize('show', $contact);
+
+        $authUser = Auth::user();
+        $serviceIds = Service::where('user_id', $authUser->id)->orWhereHas('parentService', function ($parentService) use ($authUser) {
+            $parentService->where('user_id', $authUser->id);
+        })->get()->pluck('id')->toArray();
+        $recent_notes = BookingNote::with('booking')->whereHas('booking', function ($booking) use ($serviceIds) {
+            $booking->whereIn('service_id', $serviceIds);
+        })->orderBy('created_at', 'DESC')->take(3)->get();
+
+        return response($recent_notes);
     }
 }

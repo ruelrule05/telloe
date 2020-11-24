@@ -91,6 +91,7 @@ Route::group(
                 Route::post('bookings/{id}/assign_to_member', 'BookingController@assignToMember');
                 Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');
                 Route::apiResource('contacts', 'ContactController');
+                Route::get('contacts/{id}/recent_notes', 'ContactController@recentNotes');
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
                 Route::apiResource('members', 'MemberController');
                 Route::post('members/{id}/resend', 'MemberController@resend');

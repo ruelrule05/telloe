@@ -1,6 +1,6 @@
 <template>
 	<div v-if="contact" class="w-100 h-100 overflow-hidden">
-		<div class="overflow-auto h-100">
+		<div class="overflow-auto h-100 pb-4">
 			<div class="p-4 d-flex align-items-center">
 				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/contacts')">
 					<arrow-left-icon width="30" height="30"></arrow-left-icon>
@@ -65,8 +65,49 @@
 							<div class="rounded bg-white shadow-sm p-3 mb-4">
 								<div class="d-flex">
 									<h5 class="font-heading mb-0">Fields</h5>
+									<button class="ml-auto btn btn-light p-1 badge-pill line-height-0 shadow-none" type="button" @click="editFields = !editFields">
+										<pencil-icon width="18" height="18"></pencil-icon>
+									</button>
 								</div>
-								<div v-for="(custom_field, index) in contact.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
+								<template v-if="editFields">
+									<div class="d-flex mb-2 text-gray mt-3">
+										<span class="w-50 ml-3">Label</span>
+										<span class="w-50 ml-n1">Value</span>
+									</div>
+									<draggable handle=".handle" :list="contact.custom_fields" @end="updateContact(contact)">
+										<div v-for="(custom_field, index) in contact.custom_fields" :key="custom_field.id" class="d-flex mb-2 align-items-center">
+											<button class="btn p-0 d-flex align-items-center handle cursor-move" type="button">
+												<move-icon width="10" height="10" transform="scale(1.5)"></move-icon>
+											</button>
+											<input type="text" placeholder="Label" @blur="updateContact(contact)" v-model="custom_field.name" class="form-control form-control-sm w-50 mr-1 ml-1" />
+											<input type="text" placeholder="Value" @blur="updateContact(contact)" v-model="custom_field.value" class="form-control form-control-sm w-50 ml-1" />
+											<trash-icon
+												width="18"
+												height="18"
+												class="cursor-pointer ml-1"
+												@click.native="
+													contact.custom_fields.splice(index, 1);
+													updateContact(contact);
+												"
+											></trash-icon>
+										</div>
+									</draggable>
+									<div v-if="addField || (contact.custom_fields || []).length == 0" class="d-flex align-items-center">
+										<button class="btn p-0 d-flex align-items-center mr-1" disabled type="button">
+											<move-icon width="10" height="10" transform="scale(1.5)" class="fill-gray-400"></move-icon>
+										</button>
+										<vue-select v-model="new_field.name" :options="customFields" button_class="form-control-sm mr-1" :searchable="true" :suggestion="true" container_class="w-50" :caret="false" placeholder="Label"></vue-select>
+										<!-- <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1"> -->
+										<input type="text" placeholder="Value" v-model="new_field.value" class="form-control form-control-sm w-50 ml-2" />
+										<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
+									</div>
+									<div class="d-flex align-items-center mt-4">
+										<button type="button" class="btn btn-sm btn-light shadow-none" @click="editFields = false">Close</button>
+										<button v-if="addField || (contact.custom_fields || []).length == 0" class="ml-auto btn btn-sm btn-primary" type="button" @click="addNewField">Save Field</button>
+										<button v-else type="button" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
+									</div>
+								</template>
+								<div v-else v-for="(custom_field, index) in contact.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
 									<div class="mt-3 d-flex align-items-center w-100">
 										<span class="text-muted">{{ custom_field.name }}</span>
 										<div class="ml-auto d-flex align-items-center">
@@ -83,14 +124,31 @@
 									<!-- Upcoming Bookings -->
 									<template v-if="contact.upcoming_bookings.length > 0">
 										<div v-for="booking in contact.upcoming_bookings" :key="booking.id" class="mt-3 pb-3 border-bottom">
-											<div class="h6 font-heading mb-0">{{ booking.service.name }}</div>
-											<div>
-												{{ formatDate(booking.date) }} {{ dayjs(booking.start).format('hh:mmA') }} -
-												{{
-													dayjs(booking.start)
-														.add(booking.service.duration, 'minute')
-														.format('hh:mmA')
-												}}
+											<div class="d-flex">
+												<div>
+													<div class="h6 font-heading mb-0">{{ booking.service.name }}</div>
+													<div>
+														{{ formatDate(booking.date) }} {{ dayjs(booking.startDate).format('hh:mmA') }} -
+														{{
+															dayjs(booking.startDate)
+																.add(booking.service.duration, 'minute')
+																.format('hh:mmA')
+														}}
+													</div>
+												</div>
+
+												<div class="ml-auto">
+													<div class="dropleft">
+														<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
+															<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+														</button>
+														<div class="dropdown-menu dropdown-menu-right">
+															<span class="dropdown-item cursor-pointer" @click="editBooking(booking)">
+																Edit
+															</span>
+														</div>
+													</div>
+												</div>
 											</div>
 										</div>
 									</template>
@@ -103,6 +161,24 @@
 
 					<div class="col-md-7 px-2">
 						<div class="px-1 h-100">
+							<div v-if="recentNotes.length > 0" class="row px-2 mb-4">
+								<!-- Recent Booking Notes -->
+								<div v-for="recentNote in recentNotes" :key="recentNote.id" class="col-md-4 px-2">
+									<div class="px-1 h-100">
+										<div class="rounded bg-white shadow-sm p-3 h-100 d-flex flex-column">
+											<div class="d-flex">
+												<note-icon class="fill-gray ml-n1" width="35" height="35"></note-icon>
+												<div class="pl-1">
+													<small class="text-gray d-block">Booking date</small>
+													<small class="text-muted">{{ formatDate(recentNote.booking.date) }}</small>
+												</div>
+											</div>
+											<p class="mb-0 mt-2 flex-grow-1">{{ recentNote.note }}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
 							<div class="rounded bg-white shadow-sm p-3">
 								<!-- Bookings -->
 								<div class="d-flex mb-2">
@@ -159,6 +235,94 @@
 				</div>
 			</div>
 		</div>
+
+		<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
+			<div v-if="selectedBooking" class="text-center">
+				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${contact.contact_user.profile_image})` }">
+					<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
+				</div>
+				<h4 class="font-heading mb-4">
+					{{ contact.contact_user.full_name }}
+				</h4>
+
+				<div class="p-3 border rounded">
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Service</div>
+						<div class="h6 font-heading mb-0">{{ selectedBooking.service.name }}</div>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Coach</div>
+						<div class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Date</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedBooking.date) }}</div>
+						<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedBooking.date" @input="getSelectedBookingNewTimeslots">
+							<template v-slot="{ inputValue, inputEvents }">
+								<button type="button" class="btn btn-light shadow-none" v-on="inputEvents">{{ formatDate(selectedBooking.date) }}</button>
+							</template>
+						</v-date-picker>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Starts at</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ dayjs(selectedBooking.start).format('hh:mmA') }}</div>
+						<div v-else class="dropright">
+							<button class="btn btn-light shadow-none" data-toggle="dropdown">
+								{{ dayjs(selectedBooking.start).format('hh:mmA') }}
+							</button>
+							<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
+								<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
+								<template v-else v-for="(timeslot, index) in timeslots">
+									<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+										{{ timeslot.label }}
+									</button>
+								</template>
+							</div>
+						</div>
+					</div>
+					<div class="d-flex align-items-center text-left mb-3">
+						<div class="font-weight-normal text-secondary w-50">Ends at</div>
+						<div class="h6 font-heading mb-0">
+							{{
+								dayjs(selectedBooking.start)
+									.add(selectedBooking.service.duration, 'minute')
+									.format('hh:mmA')
+							}}
+						</div>
+					</div>
+					<div class="d-flex align-items-center text-left">
+						<div class="font-weight-normal text-secondary w-50">Duration</div>
+						<div class="h6 font-heading mb-0">{{ selectedBooking.service.duration }} minutes</div>
+					</div>
+					<div class="text-left mt-3">
+						<div class="font-weight-normal text-secondary w-50 mb-2">Notes</div>
+						<textarea rows="4" class="form-control resize-none" v-model="selectedBooking.booking_note.note" placeholder="Write notes.."></textarea>
+					</div>
+					<div v-if="!selectedBooking.isPrevious" class="text-left">
+						<div class="mt-3" v-if="Object.keys(selectedBooking.zoom_link).length > 0">
+							<div class="d-flex align-items-center text-left">
+								<div class="font-weight-normal text-secondary w-50">Zoom Link</div>
+								<a target="_blank" :href="selectedBooking.zoom_link.join_url" class="d-flex align-items-center">
+									Go to Zoom meeting
+									<shortcut-icon width="16" height="16" class="ml-1 fill-blue"></shortcut-icon>
+								</a>
+							</div>
+						</div>
+						<vue-button v-else-if="$root.auth.zoom_token" type="button" :loading="createZoomLoading" button_class="btn btn-light shadow-none mt-3" @click="createZoomLink(selectedBooking)">
+							<div class="d-flex align-items-center">
+								<zoom-icon width="20" height="20" class="mr-2"></zoom-icon>
+								Create Zoom link
+							</div>
+						</vue-button>
+					</div>
+				</div>
+
+				<div xv-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
+					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
+				</div>
+			</div>
+		</modal>
 
 		<modal ref="editModal" :close-button="false">
 			<h5 class="font-heading mb-3">Edit Contact</h5>
