@@ -245,14 +245,15 @@
 					{{ contact.contact_user.full_name }}
 				</h4>
 
-				<div class="p-3 border rounded">
+				<div class="py-3">
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Service</div>
 						<div class="h6 font-heading mb-0">{{ selectedBooking.service.name }}</div>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Coach</div>
-						<div class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedService.user.full_name }}</div>
+						<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedBooking.service_id" :options="serviceMembers"></vue-select>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Date</div>
@@ -317,7 +318,7 @@
 					</div>
 				</div>
 
-				<div xv-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
+				<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
 					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
 					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
 				</div>

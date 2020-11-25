@@ -26,8 +26,8 @@ class ContactController extends Controller
     {
         $query = $request->get('query');
         $contacts = Contact::with('contactUser')
-            ->select(['bookings.*', 'contacts.*'])
-            ->join('bookings', 'contacts.contact_user_id', '=', 'bookings.user_id')
+            // ->select(['bookings.*', 'contacts.*'])
+            // ->join('bookings', 'contacts.contact_user_id', '=', 'bookings.user_id')
             ->where('contacts.user_id', Auth::user()->id);
         if ($query) {
             $contacts = $contacts->whereHas('contactUser', function ($contactUser) use ($query) {
@@ -169,7 +169,7 @@ class ContactController extends Controller
             }
         }
         $now = Carbon::now()->format('Y-m-d H:i');
-        $bookings = Booking::with('service.user', 'bookingNote')->where('user_id', $contact->contact_user_id)->whereIn('service_id', $serviceIds);
+        $bookings = Booking::with('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices')->where('user_id', $contact->contact_user_id)->whereIn('service_id', $serviceIds);
         $contact->upcoming_bookings = $bookings->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
         return response($contact->load('contactUser'));

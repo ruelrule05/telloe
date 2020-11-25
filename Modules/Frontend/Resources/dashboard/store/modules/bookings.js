@@ -70,7 +70,7 @@ const actions = {
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data);
+		let response = await axios.put(`/${name}/${data.id}`, data, { toasted: true });
 		commit('update', response.data);
 		if (response.data.notification) window.app.socket.emit('new_notification', { user_id: response.data.notification.user_id, id: response.data.notification.id });
 

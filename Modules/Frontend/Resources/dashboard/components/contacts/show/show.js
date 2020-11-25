@@ -61,7 +61,8 @@ export default {
 		recentNotes: [],
 		editFields: false,
 		addField: false,
-		new_field: {}
+		new_field: {},
+		serviceMembers: []
 	}),
 
 	computed: {
@@ -92,7 +93,11 @@ export default {
 		}
 	},
 
-	watch: {},
+	watch: {
+		selectedBooking: function(value) {
+			this.getServiceMembers(value);
+		}
+	},
 
 	created() {
 		this.getContact();
@@ -111,18 +116,50 @@ export default {
 			updateBooking: 'bookings/update'
 		}),
 
+		getServiceMembers(booking) {
+			if (booking) {
+				let serviceMembers = [];
+				if (booking.service.parent_service) {
+					serviceMembers.push({
+						text: this.$root.auth.full_name,
+						value: booking.service.parent_service_id
+					});
+					booking.service.parent_service.assigned_services.forEach(assignedService => {
+						serviceMembers.push({
+							text: assignedService.user.full_name,
+							value: assignedService.id
+						});
+					});
+				} else {
+					serviceMembers.push({
+						text: this.$root.auth.full_name,
+						value: booking.service_id
+					});
+					booking.service.assigned_services.forEach(assignedService => {
+						serviceMembers.push({
+							text: assignedService.user.full_name,
+							value: assignedService.id
+						});
+					});
+				}
+				this.serviceMembers = serviceMembers;
+			}
+		},
+
 		async updateSelectedBooking(selectedBooking) {
 			this.bookingModalLoading = true;
 			selectedBooking = JSON.parse(JSON.stringify(selectedBooking));
 			selectedBooking.date = dayjs(selectedBooking.date).format('YYYY-MM-DD');
 			selectedBooking.start = dayjs(selectedBooking.start).format('HH:mm');
-			let updatedBooking = await this.updateBooking(selectedBooking);
-			let booking = this.contact.bookings.data.find(x => x.id == updatedBooking.id);
-			if (booking) {
-				Object.assign(booking, updatedBooking);
-			}
+			let updatedBooking = await this.updateBooking(selectedBooking).catch(() => {});
 			this.bookingModalLoading = false;
-			this.$refs['bookingModal'].hide();
+			if (updatedBooking) {
+				let booking = this.contact.bookings.data.find(x => x.id == updatedBooking.id);
+				if (booking) {
+					Object.assign(booking, updatedBooking);
+				}
+				this.$refs['bookingModal'].hide();
+			}
 		},
 
 		async createZoomLink(booking) {

@@ -124,6 +124,21 @@ export default {
 			}
 
 			return tabDates;
+		},
+
+		serviceMembers() {
+			let serviceMembers = [];
+			serviceMembers.push({
+				text: this.$root.auth.full_name,
+				value: this.service.id
+			});
+			this.service.assigned_services.forEach(assignedService => {
+				serviceMembers.push({
+					text: assignedService.user.full_name,
+					value: assignedService.id
+				});
+			});
+			return serviceMembers;
 		}
 	},
 
@@ -231,9 +246,12 @@ export default {
 			let booking = JSON.parse(JSON.stringify(selectedTimeslot.bookings[0]));
 			booking.date = dayjs(booking.date).format('YYYY-MM-DD');
 			booking.start = dayjs(booking.start).format('HH:mm');
-			await this.updateBooking(booking);
-			await this.getTimeslots();
+			let response = await this.updateBooking(booking).catch(() => {});
 			this.bookingModalLoading = false;
+			if (response) {
+				await this.getTimeslots();
+				this.$refs['bookingModal'].hide();
+			}
 			//this.updateSelectedBooking(selectedTimeslot.bookings[0]);
 			// if (timeslot) {
 			// 	// let newDayName = dayjs(selectedTimeslot.bookings[0].date).format('dddd');
@@ -247,7 +265,6 @@ export default {
 			// 	// }
 			// 	// this.timeslots[selectedTimeslot.dayName].splice(selectedTimeslot.index, 1);
 			// }
-			this.$refs['bookingModal'].hide();
 		},
 
 		viewTimeslotBookings(timeslot, dayName, index) {

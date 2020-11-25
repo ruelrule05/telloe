@@ -56,7 +56,6 @@
 					<div class="text-center position-relative">
 						<div class="position-relative coaches-container">
 							<div class="active-user position-absolute w-100" :style="{ top: `${activeUserBgPosition}px` }"></div>
-
 							<!-- Main Coach -->
 							<div
 								class="pl-2 py-2 pr-3 ml-1 cursor-pointer rounded position-relative user-container"
@@ -281,14 +280,15 @@
 				<h4 class="font-heading mb-4">
 					{{ (selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).full_name }}
 				</h4>
-				<div class="p-3 border rounded">
+				<div class="py-3">
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Service</div>
 						<div class="h6 font-heading mb-0">{{ selectedTimeslot.bookings[0].service.name }}</div>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Coach</div>
-						<div class="h6 font-heading mb-0">{{ selectedService.user.full_name }}</div>
+						<div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ selectedService.user.full_name }}</div>
+						<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedTimeslot.bookings[0].service_id" :options="serviceMembers"></vue-select>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Date</div>
@@ -329,6 +329,11 @@
 					<div class="d-flex align-items-center text-left">
 						<div class="font-weight-normal text-secondary w-50">Duration</div>
 						<div class="h6 font-heading mb-0">{{ selectedService.duration }} minutes</div>
+					</div>
+					<div class="text-left mt-3">
+						<div class="font-weight-normal text-secondary w-50 mb-2">Notes</div>
+						<p v-if="selectedTimeslot.isPrevious" class="mb-0">{{ selectedTimeslot.bookings[0].booking_note.note }}</p>
+						<textarea v-else rows="4" class="form-control resize-none" v-model="selectedTimeslot.bookings[0].booking_note.note" placeholder="Write notes.."></textarea>
 					</div>
 					<div v-if="!selectedTimeslot.isPrevious" class="mt-3 text-left">
 						<template v-if="Object.keys(selectedTimeslot.bookings[0].zoom_link).length > 0">

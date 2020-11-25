@@ -43,6 +43,7 @@ class Service extends BaseModel
                     if (! $model->member) {
                         $model->member = ['memberUser' => $model->member];
                     }
+
                     $model->user = $model->member->memberUser ?? null;
                 }
             }
@@ -55,6 +56,7 @@ class Service extends BaseModel
     {
         $member = $this->member()->first();
         return $this->belongsTo(User::class)->withDefault(function ($user) use ($member) {
+            $user->id = null;
             $user->first_name = $member->memberUser->attributes['first_name'];
             $user->last_name = $member->memberUser->attributes['last_name'];
             $user->email = $member->memberUser->attributes['email'];
@@ -120,7 +122,8 @@ class Service extends BaseModel
                 'is_available' => false
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
-            $bookings = Booking::where('service_id', $this->attributes['id'])
+            $bookings = Booking::with('bookingNote')
+                ->where('service_id', $this->attributes['id'])
                 ->where('date', $dateString)
                 ->where('start', '<=', $timeslot['time'])
                 ->where('end', '>=', $timeslot['time'])

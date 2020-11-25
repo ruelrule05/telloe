@@ -162,24 +162,29 @@ class BookingController extends Controller
         $this->validate($request, [
             'date' => 'required|date',
             'start' => 'required',
+            'service_id' => 'required|exists:services,id'
         ]);
 
         $booking = Booking::findOrfail($id);
+        $service = Service::findOrFail($request->service_id);
+
         $this->authorize('update', $booking);
+        $this->authorize('show', $service);
 
         if (Carbon::parse(Carbon::now()->format('Y-m-d'))->gt(Carbon::parse($request->date))) {
             return abort(403, 'Invalid date.');
         }
 
-        $timeslots = $booking->service->timeslots($request->date);
-
+        $timeslots = $service->timeslots($request->date);
         $timeslotAvailable = false;
-        if ($request->date == $booking->date && $request->start == $booking->start) {
+        if (($service->user_id == Auth::user()->id || $service->id == $booking->service_id) && $request->date == $booking->date && $request->start == $booking->start) {
             $timeslotAvailable = true;
         } else {
             foreach ($timeslots as $timeslot) {
                 if ($timeslot['time'] == $request->start) {
-                    $timeslotAvailable = true;
+                    if ($timeslot['is_available']) {
+                        $timeslotAvailable = true;
+                    }
                     break;
                 }
             }
@@ -232,7 +237,7 @@ class BookingController extends Controller
             $booking->notification = $notification;
         }
 
-        return response()->json($booking->load('service.user', 'bookingNote'));
+        return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices'));
     }
 
     public function destroy($id)

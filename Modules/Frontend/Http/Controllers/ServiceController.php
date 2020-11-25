@@ -71,17 +71,18 @@ class ServiceController extends Controller
 
     public function update($id, Request $request)
     {
-        $this->validate($request, [
+        $validated = $this->validate($request, [
             'name' => 'required',
             'description' => 'required',
             'duration' => 'required|integer',
             'days' => 'required',
-            'default_rate' => 'nullable|numeric'
+            'default_rate' => 'nullable|numeric',
         ]);
         $service = Service::findOrFail($id);
         $this->authorize('update', $service);
 
-        $service->update($request->all());
+        unset($service->user);
+        $service->update($validated);
 
         return response()->json($service);
     }
