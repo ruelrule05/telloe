@@ -54,16 +54,6 @@ const router = new VueRouter({
 							path: 'services/:id',
 							name: 'services_show',
 							component: () => import(/* webpackChunkName: "dashboard-bookings-services-show" */ './components/bookings/services/show/show.vue')
-						},
-						{
-							path: 'packages',
-							name: 'packages_index',
-							component: () => import(/* webpackChunkName: "dashboard-bookings-packages" */ './components/bookings/packages/index/index.vue')
-						},
-						{
-							path: 'packages/:id',
-							name: 'packages_show',
-							component: () => import(/* webpackChunkName: "dashboard-bookings-packages-show" */ './components/bookings/packages/show/show.vue')
 						}
 					]
 				},
@@ -88,6 +78,24 @@ const router = new VueRouter({
 						}
 					]
 				},
+				{
+					name: 'packages',
+					path: 'packages',
+					component: () => import(/* webpackChunkName: "dashboard-bookings" */ './components/bookings/bookings.vue'),
+					children: [
+						{
+							path: '/',
+							name: 'packages_index',
+							component: () => import(/* webpackChunkName: "dashboard-packages" */ './components/packages/index/index.vue')
+						},
+						{
+							path: ':id',
+							name: 'packages_show',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-packages-show" */ './components/packages/show/show.vue')
+						}
+					]
+				},
+
 
 				{
 					name: 'team',
@@ -206,6 +214,7 @@ import PaymentsIcon from '../icons/payments';
 import MessagesIcon from '../icons/chat';
 import MemberIcon from '../icons/member';
 import PlusIcon from '../icons/plus';
+import PackageIcon from '../icons/package';
 
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
@@ -254,6 +263,7 @@ window.app = new Vue({
 		LighthouseIcon,
 		MemberIcon,
 		PlusIcon,
+		PackageIcon,
 
 		VideoCall,
 		ScreenRecorder,

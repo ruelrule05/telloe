@@ -33,8 +33,8 @@ class Contact extends BaseModel
 
     public function getFullNameAttribute()
     {
-        $first_name = $this->attributes['first_name'];
-        $last_name = $this->attributes['last_name'];
+        $first_name = $this->attributes['first_name'] ?? $this->first_name;
+        $last_name = $this->attributes['last_name'] ?? $this->last_name;
         return $first_name || $last_name ? "$first_name $last_name" : $this->attributes['email'];
     }
 

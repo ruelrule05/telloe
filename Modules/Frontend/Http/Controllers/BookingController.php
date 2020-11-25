@@ -203,6 +203,8 @@ class BookingController extends Controller
         $endTime->add('minute', $booking->service->duration);
         $data['end'] = $endTime->format('H:i');
 
+
+        unset($booking->user);
         $booking->update($data);
 
         if (isset($request->booking_note['note'])) {
@@ -211,9 +213,12 @@ class BookingController extends Controller
                 ['note' => $request->booking_note['note']]
             );
         }
+        
 
-        Mail::queue(new UpdateBooking($booking, 'client'));
-        Mail::queue(new UpdateBooking($booking, 'contact'));
+        try {
+            Mail::queue(new UpdateBooking($booking, 'client'));
+            Mail::queue(new UpdateBooking($booking, 'contact'));
+        } catch(\Exception $e) {}
 
         $user_id = null;
         $description = '';

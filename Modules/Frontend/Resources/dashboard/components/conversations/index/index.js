@@ -107,7 +107,7 @@ export default {
 				if (firstConversation) this.setConversation(firstConversation);
 			}
 		});
-		this.getContacts();
+		this.getContacts({nopaginate: true});
 		this.$root.socket.on('new_conversation', data => {
 			if (data.member_ids.find(x => x == this.$root.auth.id)) {
 				let conversation = this.conversations.find(x => x.id == data.conversation_id);

@@ -67,7 +67,7 @@
 					<tbody>
 						<template v-for="booking in member.bookings.data">
 							<tr :key="booking.id">
-								<td class="align-middle">{{ booking.user.full_name }}</td>
+								<td class="align-middle">{{ (booking.user || booking.contact.contact_user).full_name }}</td>
 								<td class="align-middle">{{ booking.service.name }}</td>
 								<td class="align-middle">
 									{{ formatDate(booking.date) }}
@@ -110,14 +110,15 @@
 					{{ (selectedBooking.user || selectedBooking.contact).full_name }}
 				</h4>
 
-				<div class="p-3 border rounded">
+				<div class="py-3">
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Service</div>
 						<div class="h6 font-heading mb-0">{{ selectedBooking.service.name }}</div>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Coach</div>
-						<div class="h6 font-heading mb-0">{{ member.member_user.full_name }}</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
+						<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedBooking.service_id" :options="serviceMembers"></vue-select>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-50">Date</div>

@@ -111,8 +111,9 @@ class MemberController extends Controller
                 }
             }
         }
-        $bookings = Booking::with('service', 'user')->whereIn('service_id', $serviceIds)->paginate(10);
-        $bookings = $bookings;
+        $bookings = Booking::where(function($query) {
+            $query->whereHas('user')->orWhereHas('contact');
+        })->with('service.assignedServices', 'service.parentService.assignedServices', 'user', 'contact')->whereIn('service_id', $serviceIds)->paginate(10);
         $member->bookings = $bookings;
 
         return response($member);

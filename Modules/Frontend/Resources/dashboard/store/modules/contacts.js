@@ -4,14 +4,22 @@ const queryString = require('query-string');
 const state = () => ({
 	ready: false,
 	hasContacts: false,
-	index: {}
+	index: [],
+	paginated: {}
 });
 
 const mutations = {
 	index(state, data) {
-		state.index = data;
-		if (data.data.length > 0) {
-			state.hasContacts = true;
+		if(data.data) {
+			state.paginated = data;
+			if (data.data.length > 0) {
+				state.hasContacts = true;
+			}
+		} else {
+			state.index = data;
+			if (data.length > 0) {
+				state.hasContacts = true;
+			}
 		}
 		state.ready = true;
 	},

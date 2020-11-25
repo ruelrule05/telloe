@@ -2,7 +2,7 @@
 	<div class="row h-100">
 		<div v-if="ready" class="col-md-12 h-100 d-flex flex-column">
 			<div class="border-bottom bg-white px-3 py-4">
-				<h5 class="font-heading mb-0">Services</h5>
+				<h5 class="font-heading mb-0">Booking Types</h5>
 			</div>
 
 			<div v-if="services.length == 0" class="py-5 text-center p-2 position-absolute-center">

@@ -25,7 +25,7 @@
 					<div class="row px-2">
 						<div class="col-md-4 px-2" v-for="(packageItem, index) in packages" :key="packageItem.id">
 							<div class="px-1 mb-4">
-								<router-link :data-intro="index == 0 ? $root.intros.packages_index.steps[0] : null" :data-step="index == 0 ? 1 : null" :to="`/dashboard/bookings/packages/${packageItem.id}`" tag="div" class="card rounded service p-3 shadow-sm w-100 overflow-hidden cursor-pointer" :class="{ active: packageItem.is_available }">
+								<router-link :data-intro="index == 0 ? $root.intros.packages_index.steps[0] : null" :data-step="index == 0 ? 1 : null" :to="`/dashboard/packages/${packageItem.id}`" tag="div" class="card rounded service p-3 shadow-sm w-100 overflow-hidden cursor-pointer" :class="{ active: packageItem.is_available }">
 									<div class="package-buttons position-absolute d-flex align-items-center">
 										<div class="dropdown ml-2" @click.prevent>
 											<button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0" :data-intro="index == 0 ? $root.intros.packages_index.steps[1] : null" :data-step="index == 0 ? 2 : null">

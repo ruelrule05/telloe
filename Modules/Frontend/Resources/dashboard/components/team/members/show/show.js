@@ -45,7 +45,8 @@ export default {
 		dayjs: dayjs,
 		timeslots: [],
 		bookingModalLoading: false,
-		createZoomLoading: false
+		createZoomLoading: false,
+		serviceMembers: []
 	}),
 
 	computed: {
@@ -64,6 +65,13 @@ export default {
 			return servicesList;
 		}
 	},
+
+	watch: {
+		selectedBooking: function(value) {
+			this.getServiceMembers(value);
+		}
+	},
+
 
 	created() {
 		this.getServices();
@@ -91,6 +99,36 @@ export default {
 			updateBooking: 'bookings/update'
 		}),
 
+		getServiceMembers(booking) {
+			if (booking) {
+				let serviceMembers = [];
+				if (booking.service.parent_service) {
+					serviceMembers.push({
+						text: this.$root.auth.full_name,
+						value: booking.service.parent_service_id
+					});
+					booking.service.parent_service.assigned_services.forEach(assignedService => {
+						serviceMembers.push({
+							text: assignedService.user.full_name,
+							value: assignedService.id
+						});
+					});
+				} else {
+					serviceMembers.push({
+						text: this.$root.auth.full_name,
+						value: booking.service_id
+					});
+					booking.service.assigned_services.forEach(assignedService => {
+						serviceMembers.push({
+							text: assignedService.user.full_name,
+							value: assignedService.id
+						});
+					});
+				}
+				this.serviceMembers = serviceMembers;
+			}
+		},
+
 		async updateSelectedBooking(booking) {
 			this.bookingModalLoading = true;
 			booking = JSON.parse(JSON.stringify(booking));
@@ -102,6 +140,7 @@ export default {
 				this.$set(this.member.bookings.data, index, updatedBooking);
 			}
 			this.bookingModalLoading = false;
+			await this.getMember();
 			this.$refs['bookingModal'].hide();
 		},
 

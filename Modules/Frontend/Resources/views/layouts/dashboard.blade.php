@@ -112,10 +112,7 @@
 													<span class="pl-3">Calendar</span>
 												</router-link> -->
 												<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
-													<span class="pl-3">Services</span>
-												</router-link>
-												<router-link to="/dashboard/bookings/packages" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
-													<span class="pl-3">Packages</span>
+													<span class="pl-3">Booking Types</span>
 												</router-link>
 											</div>
 
@@ -144,6 +141,16 @@
 													<plus-icon width="12" height="12" transform="scale(2)"></plus-icon>
 												</button>
 											</div>
+
+											
+											<template xv-if="auth.has_packages">
+												<router-link to="/dashboard/packages" class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0">
+													<div class="d-flex align-items-center pl-4 pr-2">
+														<package-icon height="18" width="18" transform="scale(1.2)" stroke="black" stroke-width="0.5" class="sidebar-icon sidebar-icon-stroke"></package-icon>
+														<span class="ml-3">Packages</span>
+													</div>
+												</router-link>
+											</template>
 											
 											<template xv-if="auth.has_team">
 												<button class="outline-0 list-group-item list-group-item-action border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
@@ -248,6 +255,14 @@
 			<notification ref="notification"></notification>
 			<modal ref="addAppModal">
 				<h5 class="font-heading mb-3">Add App</h5>
+				<div class="d-flex border-bottom pt-3 pb-4">
+					<package-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></package-icon>
+					<div class="flex-grow-1 pl-4">
+						<h5 class="font-heading mb-1">Packages</h5>
+						<p class="text-muted">Group and offer your booking types into packages with service slots, price adn expiration date.</p>
+						<button class="btn btn-primary" disabled type="button" @click="auth.has_payments = true">Installed</button>
+					</div>
+				</div>
 				<div class="d-flex border-bottom pt-3 pb-4">
 					<payments-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></payments-icon>
 					<div class="flex-grow-1 pl-4">

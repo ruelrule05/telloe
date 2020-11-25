@@ -113,6 +113,7 @@ class Service extends BaseModel
         $ignoredCalendarEvents = $user->ignored_calendar_events ?? [];
         $googleEventsList = $user->google_calendar_events ?? [];
         $outlookEventsList = $user->outlook_calendar_events ?? [];
+        $assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
 
         $now = Carbon::now();
         while ($timeStart->lessThan($timeEnd)) {
@@ -123,7 +124,9 @@ class Service extends BaseModel
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = Booking::with('bookingNote')
-                ->where('service_id', $this->attributes['id'])
+                ->where(function($query) use ($assignedServiceIds){
+                    $query->where('service_id', $this->attributes['id'])->orWhereIn('service_id', $assignedServiceIds);
+                })
                 ->where('date', $dateString)
                 ->where('start', '<=', $timeslot['time'])
                 ->where('end', '>=', $timeslot['time'])

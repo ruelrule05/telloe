@@ -73,7 +73,7 @@ export default {
 	computed: {
 		...mapState({
 			conversations: state => state.conversations.index,
-			contacts: state => state.contacts.index,
+			contacts: state => state.contacts.paginated,
 			hasContacts: state => state.contacts.hasContacts,
 			ready: state => state.contacts.ready,
 			services: state => state.services.index,
