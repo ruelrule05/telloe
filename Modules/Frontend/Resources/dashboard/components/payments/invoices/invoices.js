@@ -65,7 +65,11 @@ export default {
 		chooseIntegration: false,
 		xeroTenants: [],
 		invoices: [],
-		chooseXeroTenant: false
+		chooseXeroTenant: false,
+		organizations: [],
+		tenantId: '',
+		tableLoading: false,
+		xeroTenantsLoading: true
 	}),
 
 	computed: {
@@ -139,9 +143,20 @@ export default {
 		this.getUserContacts();
 		this.getServices();
 		if (this.$root.auth.xero_token) {
+			this.getTenants();
 			this.getXeroInvoices();
+			this.invoiceStatuses.push({
+				text: 'Authorised',
+				value: 'authorised',
+			});
+			this.invoiceStatuses.push({
+				text: 'Paid',
+				value: 'paid',
+			});
 		} else {
-			this.getPendingInvoices();
+			this.getPendingInvoices().then(() => {
+				this.$root.contentloading = false;
+			});
 		}
 	},
 
@@ -166,6 +181,11 @@ export default {
 			deletePendingInvoice: 'pending_invoices/delete'
 		}),
 
+		changeTenant() {
+			this.tableLoading = true;
+			this.getXeroInvoices(this.tenantId);
+		},
+
 		async saveXeroTenant(tenantId) {
 			this.$root.contentloading = true;
 			let response = await axios.post('/xero/tenants_save', { tenant_id: tenantId });
@@ -174,15 +194,32 @@ export default {
 			this.getXeroInvoices();
 		},
 
-		async getXeroInvoices() {
+		async getTenants() {
+			if (this.$root.auth.xero_token) {
+				let response = await axios.get('/xero/tenants');
+				this.xeroTenants = response.data;
+				this.xeroTenantsLoading = false;
+				if(response) {
+					let organizations = [];
+					response.data.forEach(organization => {
+						organizations.push({
+							text: organization.tenantName,
+							value: organization.tenantId,
+						});
+					});
+					this.organizations = organizations;
+					this.tenantId = response.data[0].tenantId;
+				}
+			}
+		},
+
+		async getXeroInvoices(tenantId = '') {
 			if (this.$root.auth.xero_token) {
 				if (!this.$root.auth.xero_tenant_id) {
-					let response = await axios.get('/xero/tenants');
-					this.xeroTenants = response.data;
 					this.chooseXeroTenant = true;
 					this.$root.contentloading = false;
 				} else {
-					let response = await axios.get('/xero/invoices', { toasted: true }).catch(e => {});
+					let response = await axios.get(`/xero/invoices?tenantId=${tenantId}`, { toasted: true }).catch(e => {});
 					if (response) {
 						this.invoices = response.data;
 					}

@@ -68,9 +68,10 @@ class XeroController extends Controller
         $authUser = Auth::user();
         $invoices = [];
 
+        $tenantId = $request->tenantId ?? $authUser->xero_tenant_id;
         if ($authUser->xero_tenant_id) {
             $XeroClient = new XeroClient($request);
-            $xero = new \XeroPHP\Application($XeroClient->accessToken, $authUser->xero_tenant_id);
+            $xero = new \XeroPHP\Application($XeroClient->accessToken, $tenantId);
             $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)->orderBy('Date', 'DESC')->execute();
         }
 

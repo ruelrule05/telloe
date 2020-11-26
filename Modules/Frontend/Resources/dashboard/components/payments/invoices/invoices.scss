@@ -9,16 +9,16 @@
 		}
 	}
 
-	.pagination .page-item {
-		.page-link {
-			background: $light;
-		}
-		&.active {
-			.page-link {
-				background: $gray-400 !important;
-			}
-		}
-	}
+		// .pagination .page-item {
+		// 	.page-link {
+		// 		background: $light;
+		// 	}
+		// 	&.active {
+		// 		.page-link {
+		// 			background: $gray-400 !important;
+		// 		}
+		// 	}
+		// }
 	
     .select-flex {
         height: calc(1.5em + 0.7rem);

@@ -28,7 +28,7 @@ export default {
 
 		async getXeroToken() {
 			let response = await axios.get('/xero/token');
-			this.$root.auth.xero_token = response.data;
+			this.$root.auth.xero_token = 1;
 		},
 
 		async removeXero() {
