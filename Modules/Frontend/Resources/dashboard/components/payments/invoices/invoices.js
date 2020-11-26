@@ -224,6 +224,7 @@ export default {
 						this.invoices = response.data;
 					}
 					this.$root.contentloading = false;
+					this.tableLoading = false;
 				}
 			} else {
 				this.$root.contentloading = false;
