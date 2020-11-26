@@ -190,6 +190,7 @@ export default {
 			getMembers: 'members/index',
 			assignBookingToMember: 'bookings/assignToMember',
 			updateBooking: 'bookings/update',
+			deleteBooking: 'bookings/delete',
 			assignService: 'members/store_service',
 			deleteService: 'services/delete'
 		}),

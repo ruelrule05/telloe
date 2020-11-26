@@ -44,10 +44,16 @@ export default {
 		steps: ['Start a new conversation or group chat.', 'Turn message notifications on or off.', 'Start a video call.', 'Start an audio call.', 'Toggle details panel.', 'Send an emoji message.', 'Record an audio and send as a message', 'Attach a file and send as a message.', 'Record your screen and download or send as a message.']
 	},
 
-	contacts: {
+	contacts_index: {
 		intro: introJS().setOptions(options),
 		enabled: false,
-		steps: ['Click here to add a new contact.', 'Manage default fields for your contacts.', 'Manage or delete contact.']
+		steps: ['Click here to add a new contact.', 'Manage default fields for your contacts.', 'Filter contacts by status.', 'Manage or delete contact.']
+	},
+
+	contacts_show: {
+		intro: introJS().setOptions(options),
+		enabled: false,
+		steps: ['Click here to add a new contact.', 'Manage default fields for your contacts.', 'Filter contacts by status.', 'Manage or delete contact.']
 	},
 
 	organizations_index: {

@@ -69,4 +69,9 @@ class Contact extends BaseModel
     {
         return $this->hasMany(Booking::class)->orderBy('date', 'DESC');
     }
+
+    public function contactNotes()
+    {
+        return $this->hasMany(ContactNote::class)->orderBy('created_at', 'DESC');
+    }
 }

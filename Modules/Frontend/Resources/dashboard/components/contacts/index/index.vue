@@ -6,11 +6,11 @@
 					<div class="border-bottom bg-white p-3 d-flex align-items-center">
 						<h5 class="font-heading mb-0">Contacts</h5>
 						<div class="ml-auto d-flex align-items-center">
-							<button :data-intro="$root.intros.contacts.steps[0]" data-step="1" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addModal'].show()">
+							<button :data-intro="$root.intros.contacts_index.steps[0]" data-step="1" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addModal'].show()">
 								<plus-icon class="btn-icon"></plus-icon>
 								Add Contact
 							</button>
-							<button :data-intro="$root.intros.contacts.steps[1]" data-step="2" type="button" class="btn btn-light ml-1 shadow-none" @click="infoTab = 'manage_fields'">Manage Fields</button>
+							<button :data-intro="$root.intros.contacts_index.steps[1]" data-step="2" type="button" class="btn btn-light ml-1 shadow-none" @click="infoTab = 'manage_fields'">Manage Fields</button>
 						</div>
 					</div>
 
@@ -25,7 +25,7 @@
 									<input type="text" class="form-control" v-model="query" placeholder="Search..." />
 								</form>
 								<div class="ml-auto d-flex align-items-center">
-									<vue-select :options="contactStatuses" button_class="border-0 bg-white shadow-sm" v-model="contactStatus" label="Status" @input="getData"></vue-select>
+									<vue-select :data-intro="$root.intros.contacts_index.steps[2]" data-step="3" :options="contactStatuses" button_class="border-0 bg-white shadow-sm" v-model="contactStatus" label="Status" @input="getData"></vue-select>
 									<paginate @change="getData" :data="contacts" class="ml-2"></paginate>
 								</div>
 							</div>
@@ -69,7 +69,7 @@
 										<td class="align-middle">
 											<div class="flex-grow-1 text-right">
 												<div class="dropleft">
-													<button :data-intro="index == 0 ? $root.intros.contacts.steps[2] : null" :data-step="index == 0 ? 3 : null" class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
+													<button :data-intro="index == 0 ? $root.intros.contacts_index.steps[3] : null" :data-step="index == 0 ? 4 : null" class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">

@@ -6,17 +6,25 @@
 					<arrow-left-icon width="30" height="30"></arrow-left-icon>
 				</button>
 
-				<div class="dropdown ml-auto">
-					<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10">
-						<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
+				<div class="ml-auto d-flex align-items-center">
+					<button class="btn btn-white shadow-sm mr-2" type="button" @click="$refs['addBookingModal'].show()">
+						Add Booking
 					</button>
-					<div class="dropdown-menu">
-						<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
-							Edit
-						</span>
-						<span class="dropdown-item cursor-pointer" @click="$refs['deleteModal'].show()">
-							Delete
-						</span>
+					<div class="dropdown">
+						<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10">
+							<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
+						</button>
+						<div class="dropdown-menu">
+							<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
+								Send Message
+							</span>
+							<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
+								Edit
+							</span>
+							<span class="dropdown-item cursor-pointer" @click="$refs['deleteModal'].show()">
+								Delete
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -118,12 +126,94 @@
 								</div>
 							</div>
 
-							<div class="rounded bg-white shadow-sm h-100 d-flex flex-column p-3">
+							<div class="rounded bg-white shadow-sm p-3 mb-4">
+								<div class="d-flex">
+									<h5 class="font-heading mb-0">Notes</h5>
+									<button
+										class="ml-auto btn btn-light p-1 badge-pill line-height-0 shadow-none"
+										type="button"
+										@click="
+											addingNote = true;
+											selectedNote = null;
+										"
+									>
+										<plus-icon width="18" height="18" transform="scale(1.4)"></plus-icon>
+									</button>
+								</div>
+
+								<vue-form-validate v-if="addingNote && !selectedNote" class="mt-2 mb-3" @submit="confirmAddNote()">
+									<textarea placeholder="Write note..." v-model="newNote" data-required rows="3" class="form-control resize-none"></textarea>
+									<div class="d-flex align-items-center mt-2">
+										<button class="btn btn-light shadow-none" type="button" @click="addingNote = false">Cancel</button>
+										<button class="ml-auto btn btn-primary" type="submit">Add</button>
+									</div>
+								</vue-form-validate>
+
+								<vue-form-validate v-else-if="selectedNote" class="mt-2 mb-3" @submit="confirmUpdateNote(selectedNote)">
+									<textarea placeholder="Write note..." v-model="selectedNote.new_note" data-required rows="3" class="form-control resize-none"></textarea>
+									<div class="d-flex align-items-center mt-2">
+										<button class="btn btn-light shadow-none" type="button" @click="selectedNote = null">Cancel</button>
+										<button class="ml-auto btn btn-primary" type="submit">Update</button>
+									</div>
+								</vue-form-validate>
+
+								<template v-for="(contact_note, index) in contact.contact_notes">
+									<div :key="contact_note.id" v-if="!selectedNote || selectedNote.id != contact_note.id" class="d-flex align-items-center rounded bg-light px-3 py-2 mt-2">
+										{{ contact_note.note }}
+
+										<div class="ml-auto mr-n2">
+											<div class="dropleft">
+												<button class="btn btn-light p-1 line-height-0" data-toggle="dropdown">
+													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+												</button>
+												<div class="dropdown-menu dropdown-menu-right">
+													<span
+														class="dropdown-item cursor-pointer"
+														@click="
+															selectedNote = contact_note;
+															selectedNote.new_note = selectedNote.note;
+														"
+													>
+														Edit
+													</span>
+													<span class="dropdown-item cursor-pointer" @click="deleteContactNote(contact_note, index)">
+														Delete
+													</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-7 px-2">
+						<div class="px-1 h-100">
+							<div v-if="recentNotes.length > 0" class="row px-2 mb-4">
+								<!-- Recent Booking Notes -->
+								<div v-for="recentNote in recentNotes" :key="recentNote.id" class="col-md-4 px-2">
+									<div class="px-1 h-100">
+										<div class="rounded bg-white shadow-sm p-3 h-100 d-flex flex-column">
+											<div class="d-flex">
+												<note-icon class="fill-gray ml-n1" width="35" height="35"></note-icon>
+												<div class="pl-1">
+													<small class="text-gray d-block">Booking date</small>
+													<small class="text-muted">{{ formatDate(recentNote.booking.date) }}</small>
+												</div>
+											</div>
+											<p class="mb-0 mt-2 flex-grow-1">{{ recentNote.note }}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="rounded bg-white shadow-sm d-flex flex-column p-3 mb-4">
 								<h5 class="font-heading">Upcoming Bookings</h5>
 								<div class="flex-grow-1">
 									<!-- Upcoming Bookings -->
 									<template v-if="contact.upcoming_bookings.length > 0">
-										<div v-for="booking in contact.upcoming_bookings" :key="booking.id" class="mt-3 pb-3 border-bottom">
+										<div v-for="booking in contact.upcoming_bookings" :key="booking.id" class="mt-3">
 											<div class="d-flex">
 												<div>
 													<div class="h6 font-heading mb-0">{{ booking.service.name }}</div>
@@ -154,28 +244,6 @@
 									</template>
 
 									<div v-else class="py-3 text-center text-gray">No upcoming bookings</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col-md-7 px-2">
-						<div class="px-1 h-100">
-							<div v-if="recentNotes.length > 0" class="row px-2 mb-4">
-								<!-- Recent Booking Notes -->
-								<div v-for="recentNote in recentNotes" :key="recentNote.id" class="col-md-4 px-2">
-									<div class="px-1 h-100">
-										<div class="rounded bg-white shadow-sm p-3 h-100 d-flex flex-column">
-											<div class="d-flex">
-												<note-icon class="fill-gray ml-n1" width="35" height="35"></note-icon>
-												<div class="pl-1">
-													<small class="text-gray d-block">Booking date</small>
-													<small class="text-muted">{{ formatDate(recentNote.booking.date) }}</small>
-												</div>
-											</div>
-											<p class="mb-0 mt-2 flex-grow-1">{{ recentNote.note }}</p>
-										</div>
-									</div>
 								</div>
 							</div>
 
@@ -221,7 +289,7 @@
 									</table>
 								</div>
 								<div v-else class="px-4 mb-4">
-									<div class="rounded bg-white shadow-sm text-center py-3 text-muted">
+									<div class="text-center py-3 text-muted">
 										No bookings found.
 									</div>
 								</div>
@@ -235,6 +303,27 @@
 				</div>
 			</div>
 		</div>
+
+		<modal ref="addBookingModal" :close-button="false" :scrollable="false">
+			<vue-form-validate>
+				<h5 class="font-heading">Add Booking</h5>
+				<div class="form-group">
+					<label class="form-label">Booking Type</label>
+					<vue-select :options="servicesList" required button_class="form-control" v-model="newBooking.service_id" placeholder="Select booking type"></vue-select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Coach</label>
+					<vue-select :options="servicesList" required button_class="form-control" v-model="newBooking.coach_id" placeholder="Select coach"></vue-select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Timeslot</label>
+				</div>
+				<div class="d-flex justify-content-between mt-3">
+					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+					<vue-button type="submit" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading">Add</vue-button>
+				</div>
+			</vue-form-validate>
+		</modal>
 
 		<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
 			<div v-if="selectedBooking" class="text-center">
@@ -319,10 +408,37 @@
 				</div>
 
 				<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
-					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+					<div class="d-flex align-items-center">
+						<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+						<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>
+					</div>
 					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
 				</div>
 			</div>
+		</modal>
+
+		<modal ref="deleteBookingModal" :close-button="false">
+			<template v-if="selectedBooking">
+				<h5 class="font-heading text-center">Delete Booking</h5>
+				<p class="text-center mt-3">
+					Are you sure to delete this booking?
+				</p>
+				<div class="d-flex">
+					<button class="btn btn-light shadow-none" type="button" @click="$refs['bookingModal'].show()" data-dismiss="modal">
+						Cancel
+					</button>
+					<button
+						class="btn btn-danger ml-auto"
+						type="button"
+						@click="
+							confirmDeleteBooking(selectedBooking);
+							$refs['deleteBookingModal'].hide();
+						"
+					>
+						Delete
+					</button>
+				</div>
+			</template>
 		</modal>
 
 		<modal ref="editModal" :close-button="false">

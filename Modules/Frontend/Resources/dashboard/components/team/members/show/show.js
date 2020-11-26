@@ -72,7 +72,6 @@ export default {
 		}
 	},
 
-
 	created() {
 		this.getServices();
 		this.getMember();
@@ -96,8 +95,17 @@ export default {
 			deleteMember: 'members/delete',
 			updateService: 'services/update',
 			deleteService: 'services/delete',
-			updateBooking: 'bookings/update'
+			updateBooking: 'bookings/update',
+			deleteBooking: 'bookings/delete'
 		}),
+
+		confirmDeleteBooking(booking) {
+			this.deleteBooking(booking);
+			let index = this.member.bookings.data.findIndex(x => x.id == booking.id);
+			if (index > -1) {
+				this.member.bookings.data.splice(index, 1);
+			}
+		},
 
 		getServiceMembers(booking) {
 			if (booking) {

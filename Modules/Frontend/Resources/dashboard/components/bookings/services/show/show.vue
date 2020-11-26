@@ -355,10 +355,37 @@
 				</div>
 
 				<div v-if="!selectedTimeslot.isPrevious" class="d-flex justify-content-between mt-3">
-					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+					<div class="d-flex align-items-center">
+						<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+						<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>
+					</div>
 					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedTimeslot)">Update</vue-button>
 				</div>
 			</div>
+		</modal>
+
+		<modal ref="deleteBookingModal" :close-button="false">
+			<template v-if="selectedTimeslot">
+				<h5 class="font-heading text-center">Delete Booking</h5>
+				<p class="text-center mt-3">
+					Are you sure to delete this booking?
+				</p>
+				<div class="d-flex">
+					<button class="btn btn-light shadow-none" type="button" @click="$refs['bookingModal'].show()" data-dismiss="modal">
+						Cancel
+					</button>
+					<button
+						class="btn btn-danger ml-auto"
+						type="button"
+						@click="
+							deleteBooking(selectedTimeslot.bookings[0]).then(() => getTimeslots());
+							$refs['deleteBookingModal'].hide();
+						"
+					>
+						Delete
+					</button>
+				</div>
+			</template>
 		</modal>
 
 		<modal ref="applyBreaktimeToAllModal" :close-button="false">

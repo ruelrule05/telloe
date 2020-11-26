@@ -124,8 +124,9 @@ class Service extends BaseModel
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = Booking::with('bookingNote')
-                ->where(function($query) use ($assignedServiceIds){
-                    $query->where('service_id', $this->attributes['id'])->orWhereIn('service_id', $assignedServiceIds);
+                ->where(function ($query) use ($assignedServiceIds) {
+                    $query->where('service_id', $this->attributes['id']);
+                    //->orWhereIn('service_id', $assignedServiceIds)
                 })
                 ->where('date', $dateString)
                 ->where('start', '<=', $timeslot['time'])

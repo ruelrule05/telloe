@@ -134,10 +134,10 @@ export default {
 	},
 
 	mounted() {
-		if (this.$root.intros.contacts.enabled) {
+		if (this.$root.intros.contacts_index.enabled) {
 			setTimeout(() => {
 				if (!document.querySelector('.introjs-overlay')) {
-					this.$root.intros.contacts.intro.start();
+					this.$root.intros.contacts_index.intro.start();
 				}
 			}, 500);
 		}

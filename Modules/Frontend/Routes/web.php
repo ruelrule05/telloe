@@ -105,6 +105,7 @@ Route::group(
                 Route::apiResource('organizations', 'OrganizationController');
                 Route::delete('organizations/{id}/delete_member', 'OrganizationController@deleteMember');
                 Route::post('organizations/{id}/add_members', 'OrganizationController@addMembers');
+                Route::apiResource('contact_notes', 'ContactNoteController');
 
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::post('notifications/clear', 'NotificationController@clear');

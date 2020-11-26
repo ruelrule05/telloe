@@ -203,7 +203,6 @@ class BookingController extends Controller
         $endTime->add('minute', $booking->service->duration);
         $data['end'] = $endTime->format('H:i');
 
-
         unset($booking->user);
         $booking->update($data);
 
@@ -213,12 +212,12 @@ class BookingController extends Controller
                 ['note' => $request->booking_note['note']]
             );
         }
-        
 
         try {
             Mail::queue(new UpdateBooking($booking, 'client'));
             Mail::queue(new UpdateBooking($booking, 'contact'));
-        } catch(\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         $user_id = null;
         $description = '';
@@ -253,6 +252,7 @@ class BookingController extends Controller
         Mail::queue(new DeleteBooking($booking->toArray()));
 
         if ($booking->user) {
+            $user_id = null;
             if (Auth::user()->id == $booking->user_id) { // if contact - notify client
                 $user_id = $booking->service->user->id;
                 $description = "<strong>{$booking->user->full_name}</strong> has deleted their booking.";
@@ -260,10 +260,13 @@ class BookingController extends Controller
                 $user_id = $booking->user->id;
                 $description = 'A booking you made has been deleted.';
             }
-            $notification = Notification::create([
-                'user_id' => $user_id,
-                'description' => $description,
-            ]);
+
+            if ($user_id) {
+                $notification = Notification::create([
+                    'user_id' => $user_id,
+                    'description' => $description,
+                ]);
+            }
         }
         $booking->delete();
         return response()->json(['success' => true]);

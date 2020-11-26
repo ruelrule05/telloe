@@ -30,11 +30,11 @@ class ContactController extends Controller
             // ->join('bookings', 'contacts.contact_user_id', '=', 'bookings.user_id')
             ->where('contacts.user_id', Auth::user()->id);
         if ($query) {
-            $contacts = $contacts->where(function($q) use($query) {
+            $contacts = $contacts->where(function ($q) use ($query) {
                 $q->whereHas('contactUser', function ($contactUser) use ($query) {
                     $contactUser->where('first_name', 'LIKE', '%' . $query . '%')->orWhere('last_name', 'LIKE', '%' . $query . '%');
-                })->orWhere(function($q) use ($query) {
-                    $q->where('first_name', 'LIKE', '%' . $query . '%')->orWhere('last_name', 'LIKE', '%' . $query . '%'); 
+                })->orWhere(function ($q) use ($query) {
+                    $q->where('first_name', 'LIKE', '%' . $query . '%')->orWhere('last_name', 'LIKE', '%' . $query . '%');
                 });
             });
         }
@@ -173,12 +173,12 @@ class ContactController extends Controller
             }
         }
         $now = Carbon::now()->format('Y-m-d H:i');
-        $bookings = Booking::with('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices')->where(function($query) use ($contact) {
+        $bookings = Booking::with('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices')->where(function ($query) use ($contact) {
             $query->where('user_id', $contact->contact_user_id)->orWhere('contact_id', $contact->id);
         })->whereIn('service_id', $serviceIds);
         $contact->upcoming_bookings = $bookings->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
-        return response($contact->load('contactUser'));
+        return response($contact->load('contactUser', 'contactNotes'));
     }
 
     public function update(Request $request, Contact $contact)

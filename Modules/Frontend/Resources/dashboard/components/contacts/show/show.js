@@ -24,6 +24,7 @@ import NoteIcon from '../../../../icons/note';
 import PencilIcon from '../../../../icons/pencil';
 import MoveIcon from '../../../../icons/move';
 import draggable from 'vuedraggable';
+import PlusIcon from '../../../../icons/plus';
 
 export default {
 	components: {
@@ -42,7 +43,8 @@ export default {
 		ShortcutIcon,
 		NoteIcon,
 		PencilIcon,
-		MoveIcon
+		MoveIcon,
+		PlusIcon
 	},
 
 	data: () => ({
@@ -62,7 +64,11 @@ export default {
 		editFields: false,
 		addField: false,
 		new_field: {},
-		serviceMembers: []
+		serviceMembers: [],
+		addingNote: false,
+		newNote: '',
+		selectedNote: null,
+		newBooking: {}
 	}),
 
 	computed: {
@@ -113,8 +119,39 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			showUserCustomFields: 'user_custom_fields/show',
 			updateContact: 'contacts/update',
-			updateBooking: 'bookings/update'
+			updateBooking: 'bookings/update',
+			deleteBooking: 'bookings/delete'
 		}),
+
+		async confirmUpdateNote(contactNote) {
+			let response = await axios.put(`/contact_notes/${contactNote.id}`, { note: contactNote.new_note });
+			let index = this.contact.contact_notes.findIndex(x => x.id == contactNote.id);
+			if (index > -1) {
+				this.contact.contact_notes[index] = response.data;
+			}
+			this.selectedNote = null;
+		},
+
+		deleteContactNote(contactNote, index) {
+			this.contact.contact_notes.splice(index, 1);
+		},
+
+		async confirmAddNote() {
+			if (this.newNote) {
+				let response = await axios.post('/contact_notes', { contact_id: this.contact.id, note: this.newNote });
+				this.contact.contact_notes.unshift(response.data);
+				this.addingNote = false;
+				this.newNote = '';
+			}
+		},
+
+		confirmDeleteBooking(booking) {
+			this.deleteBooking(booking);
+			let index = this.contact.bookings.data.findIndex(x => x.id == booking.id);
+			if (index > -1) {
+				this.contact.bookings.data.splice(index, 1);
+			}
+		},
 
 		getServiceMembers(booking) {
 			if (booking) {
