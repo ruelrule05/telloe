@@ -43,9 +43,10 @@ class ContactNoteController extends Controller
 
     public function destroy($id)
     {
-        $note = Note::findOrFail($id);
-        $this->authorize('delete', $note);
-        $note->delete();
+        $contactNote = ContactNote::findOrFail($id);
+        $contact = Contact::findOrFail($contactNote->contact_id);
+        $this->authorize('update', $contact);
+        $contactNote->delete();
         return response()->json(['success' => true]);
     }
 }

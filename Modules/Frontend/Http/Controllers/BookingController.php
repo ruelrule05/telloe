@@ -107,6 +107,7 @@ class BookingController extends Controller
 
         $timeslotAvailable = false;
         foreach ($timeslots as $timeslot) {
+            // if ($timeslot['time'] == $request->start && $timeslot['is_available'] == true) {
             if ($timeslot['time'] == $request->start) {
                 $timeslotAvailable = true;
                 break;
@@ -154,7 +155,7 @@ class BookingController extends Controller
             $booking->notification = $notification;
         }
 
-        return response()->json($booking->load('service'));
+        return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote'));
     }
 
     public function update($id, Request $request)

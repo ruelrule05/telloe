@@ -68,7 +68,12 @@ export default {
 		addingNote: false,
 		newNote: '',
 		selectedNote: null,
-		newBooking: {}
+		newBooking: {
+			service: null,
+			service_id: null,
+			date: new Date(),
+			timeslot: null
+		}
 	}),
 
 	computed: {
@@ -96,12 +101,50 @@ export default {
 				});
 			});
 			return custom_fields;
+		},
+
+		newBookingServicesList() {
+			let newBookingServicesList = [];
+			if (this.newBooking.service) {
+				newBookingServicesList.push({
+					text: this.newBooking.service.user.full_name,
+					value: this.newBooking.service.id
+				});
+				this.newBooking.service.assigned_services.forEach(service => {
+					newBookingServicesList.push({
+						text: service.user.full_name,
+						value: service.id
+					});
+				});
+			}
+			return newBookingServicesList;
+		},
+
+		availableTimeslots() {
+			let availableTimeslots = [];
+			this.timeslots.forEach(timeslot => {
+				if (timeslot.is_available) {
+					availableTimeslots.push(timeslot);
+				}
+			});
+			return availableTimeslots;
 		}
 	},
 
 	watch: {
 		selectedBooking: function(value) {
 			this.getServiceMembers(value);
+		},
+		'newBooking.service': function(value) {
+			this.newBooking.service_id = null;
+			this.newBooking.timeslot = null;
+			this.timeslots = [];
+		},
+		'newBooking.service_id': function(value) {
+			this.getNewBookingServiceTimeslots();
+		},
+		'newBooking.date': function(value) {
+			this.getNewBookingServiceTimeslots();
 		}
 	},
 
@@ -119,9 +162,49 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			showUserCustomFields: 'user_custom_fields/show',
 			updateContact: 'contacts/update',
+			storeBooking: 'bookings/store',
 			updateBooking: 'bookings/update',
-			deleteBooking: 'bookings/delete'
+			deleteBooking: 'bookings/delete',
+			storeConversation: 'conversations/store'
 		}),
+
+		async goToConversation() {
+			let conversation = await this.storeConversation({ members: [this.contact.id] });
+			if (conversation) {
+				this.$router.push(`/dashboard/conversations/${conversation.id}`);
+			}
+		},
+
+		resetNewBooking() {
+			this.newBooking = {
+				service: null,
+				service_id: null,
+				date: new Date(),
+				timeslot: null
+			};
+		},
+
+		async addNewBooking() {
+			if (this.newBooking.service_id && this.newBooking.date && this.newBooking.timeslot) {
+				let data = this.newBooking;
+				data.start = this.newBooking.timeslot;
+				data.contact_id = this.contact.id;
+				data.date = dayjs(this.newBooking.date).format('YYYY-MM-DD');
+				let booking = await this.storeBooking(data);
+				if (booking) {
+					this.contact.bookings.data.push(booking);
+				}
+				this.$refs['addBookingModal'].hide();
+			}
+		},
+
+		async getNewBookingServiceTimeslots() {
+			if (this.newBooking.service_id && this.newBooking.date) {
+				let response = await axios.get(`/services/${this.newBooking.service_id}?date=${dayjs(this.newBooking.date).format('YYYY-MM-DD')}&single=1`);
+				this.newBooking.timeslot = null;
+				this.timeslots = response.data;
+			}
+		},
 
 		async confirmUpdateNote(contactNote) {
 			let response = await axios.put(`/contact_notes/${contactNote.id}`, { note: contactNote.new_note });
@@ -134,6 +217,7 @@ export default {
 
 		deleteContactNote(contactNote, index) {
 			this.contact.contact_notes.splice(index, 1);
+			axios.delete(`/contact_notes/${contactNote.id}`);
 		},
 
 		async confirmAddNote() {

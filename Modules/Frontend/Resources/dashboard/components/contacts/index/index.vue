@@ -73,6 +73,9 @@
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">
+														<span v-if="!contact.is_pending" class="dropdown-item cursor-pointer" @click="goToConversation(contact)">
+															Send Message
+														</span>
 														<span
 															v-if="contact.is_pending"
 															class="dropdown-item cursor-pointer"

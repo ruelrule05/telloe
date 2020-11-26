@@ -82,7 +82,7 @@ class ServiceController extends Controller
         $this->authorize('update', $service);
 
         unset($service->user);
-        $service->update($validated);
+        $service->update($request->all());
 
         return response()->json($service);
     }

@@ -153,8 +153,15 @@ export default {
 			getContactFromInviteToken: 'contacts/get_contact_from_invite_token',
 			showUserCustomFields: 'user_custom_fields/show',
 			storeUserCustomFields: 'user_custom_fields/store',
-			showConversation: 'conversations/show'
+			storeConversation: 'conversations/store'
 		}),
+
+		async goToConversation(contact) {
+			let conversation = await this.storeConversation({ members: [contact.id] });
+			if (conversation) {
+				this.$router.push(`/dashboard/conversations/${conversation.id}`);
+			}
+		},
 
 		async getData(page = this.contact.current_page) {
 			this.getContacts({ page: page, query: this.query, status: this.contactStatus });

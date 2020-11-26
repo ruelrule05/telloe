@@ -15,7 +15,7 @@
 							<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
 						</button>
 						<div class="dropdown-menu">
-							<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
+							<span class="dropdown-item cursor-pointer" @click="goToConversation()">
 								Send Message
 							</span>
 							<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
@@ -304,23 +304,44 @@
 			</div>
 		</div>
 
-		<modal ref="addBookingModal" :close-button="false" :scrollable="false">
-			<vue-form-validate>
+		<modal ref="addBookingModal" :close-button="false" :scrollable="false" @hidden="resetNewBooking()">
+			<vue-form-validate @submit="addNewBooking">
 				<h5 class="font-heading">Add Booking</h5>
 				<div class="form-group">
 					<label class="form-label">Booking Type</label>
-					<vue-select :options="servicesList" required button_class="form-control" v-model="newBooking.service_id" placeholder="Select booking type"></vue-select>
+					<vue-select :options="servicesList" required button_class="form-control" v-model="newBooking.service" placeholder="Select booking type"></vue-select>
 				</div>
 				<div class="form-group">
 					<label class="form-label">Coach</label>
-					<vue-select :options="servicesList" required button_class="form-control" v-model="newBooking.coach_id" placeholder="Select coach"></vue-select>
+					<vue-select :disabled="!newBooking.service" :options="newBookingServicesList" required button_class="form-control" v-model="newBooking.service_id" placeholder="Select coach"></vue-select>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Date</label>
+					<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="newBooking.date">
+						<template v-slot="{ inputValue, inputEvents }">
+							<input class="form-control bg-white cursor-pointer" readonly v-on="inputEvents" :value="formatDate(inputValue)" />
+						</template>
+					</v-date-picker>
 				</div>
 				<div class="form-group">
 					<label class="form-label">Timeslot</label>
+					<div class="border rounded bg-light p-1 overflow-auto position-relative" id="timeslots-container">
+						<div v-if="availableTimeslots.length == 0" class="position-absolute-center text-gray">No available timeslots.</div>
+
+						<div v-else class="d-flex flex-wrap">
+							<template v-for="(timeslot, index) in availableTimeslots">
+								<div class="w-25 p-1" v-if="timeslot.is_available" :key="index">
+									<button type="button" class="btn btn-block" :class="[newBooking.timeslot == timeslot.time ? 'btn-primary' : 'btn-white shadow-sm']" :key="index" @click="newBooking.timeslot = timeslot.time">
+										{{ timeslot.label }}
+									</button>
+								</div>
+							</template>
+						</div>
+					</div>
 				</div>
 				<div class="d-flex justify-content-between mt-3">
 					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
-					<vue-button type="submit" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading">Add</vue-button>
+					<vue-button type="submit" :disabled="!newBooking.service_id || !newBooking.date || !newBooking.timeslot" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading">Add</vue-button>
 				</div>
 			</vue-form-validate>
 		</modal>
@@ -363,7 +384,7 @@
 							<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
 								<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
 								<template v-else v-for="(timeslot, index) in timeslots">
-									<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+									<button type="button" class="btn btn-primary btn-block mb-1" :key="index" v-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
 										{{ timeslot.label }}
 									</button>
 								</template>

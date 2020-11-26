@@ -131,9 +131,9 @@ export default {
 		}),
 
 		updateServiceStatus(state, service) {
-			if (state) {
-				service.in_widget = true;
-			}
+			// if (state) {
+			// 	service.in_widget = true;
+			// }
 			this.updateService(service);
 		},
 

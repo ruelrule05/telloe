@@ -1,7 +1,7 @@
 <template>
 	<div :class="container_class">
 		<div class="dropdown" :class="drop" ref="dropdown" :disabled="disabled">
-			<button type="button" class="btn dropdown-toggle text-left d-inline-flex align-items-center" :class="toggle_button_class" data-toggle="dropdown" ref="dropdown-toggle">
+			<button type="button" :disabled="disabled" class="btn dropdown-toggle text-left d-inline-flex align-items-center" :class="toggle_button_class" data-toggle="dropdown" ref="dropdown-toggle">
 				<span v-if="label" class="text-secondary mr-2">{{ label }}</span>
 				<template v-if="searchable">
 					<input type="text" spellcheck="false" @focus="inputFocused" @blur="inputBlurred" v-model="search" class="p-0 form-control shadow-none border-0 outline-0 input-searchable w-100 bg-transparent line-height-1 font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :data-required="required" />

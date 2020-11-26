@@ -23,7 +23,7 @@ class ServicePolicy
 
     public function show(User $user, Service $service)
     {
-        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null) || $service->whereHas('parentService', function($parentService) use ($user) {
+        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null) || $service->whereHas('parentService', function ($parentService) use ($user) {
             $parentService->where('user_id', $user->id);
         });
     }
@@ -40,7 +40,7 @@ class ServicePolicy
 
     public function addBooking(User $user, Service $service)
     {
-        return $user->id == $service->user_id || $user->id == ($service->member->member_user_id ?? null) || Contact::where('user_id', $service->user->id)->where('contact_user_id', $user->id)->first();
+        return $user->id == $service->user_id || $user->id == ($service->parentService->user_id ?? null) || $user->id == ($service->member->member_user_id ?? null) || Contact::where('user_id', $service->user->id)->where('contact_user_id', $user->id)->first();
     }
 
     public function blacklist(User $user, Service $service)
