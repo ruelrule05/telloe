@@ -67,7 +67,9 @@ export default {
 			}
 		],
 		contactStatus: 'all',
-		query: ''
+		query: '',
+		originalUserCustomFields: [],
+		userCustomFields: []
 	}),
 
 	computed: {
@@ -125,9 +127,12 @@ export default {
 
 	created() {
 		this.$root.contentloading = !this.ready;
+		this.showUserCustomFields().then(data => {
+			this.userCustomFields = data.fields;
+			this.originalUserCustomFields = JSON.parse(JSON.stringify(data.fields));
+		});
 		this.getServices();
 		this.getContacts();
-		this.showUserCustomFields();
 		this.$root.socket.on('invite_token', invite_token => {
 			if (invite_token) this.getContactFromInviteToken(invite_token);
 		});
@@ -155,6 +160,17 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			storeConversation: 'conversations/store'
 		}),
+
+		async updateUserCustomFields() {
+			if (this.newField.trim().length > 0) {
+				this.userCustomFields.push(this.newField.trim());
+			}
+			this.newField = '';
+			let response = await this.storeUserCustomFields(this.userCustomFields);
+			this.userCustomFields = response.data.fields;
+			this.originalUserCustomFields = JSON.parse(JSON.stringify(response.data.fields));
+			this.$refs['fieldsModal'].hide();
+		},
 
 		async goToConversation(contact) {
 			let conversation = await this.storeConversation({ members: [contact.id] });
@@ -222,7 +238,7 @@ export default {
 				this.addField = false;
 			}
 			this.storeUserCustomFields();
-			this.$toasted.show('Fields saved successfully.');
+			this.$refs['fieldsModal'].hide();
 		},
 
 		updateCustomField(index) {

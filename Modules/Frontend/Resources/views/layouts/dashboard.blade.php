@@ -179,11 +179,11 @@
 													</div>
 												</button>
 												<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
-													<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
-														<span class="pl-3">Subscriptions</span>
-													</router-link>
 													<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
 														<span class="pl-3">Invoices</span>
+													</router-link>
+													<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0" exact>
+														<span class="pl-3">Subscriptions</span>
 													</router-link>
 												</div>
 											</template>

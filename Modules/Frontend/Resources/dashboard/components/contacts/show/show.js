@@ -78,7 +78,8 @@ export default {
 
 	computed: {
 		...mapState({
-			services: state => state.services.index
+			services: state => state.services.index,
+			user_custom_fields: state => state.user_custom_fields.fields
 		}),
 
 		servicesList() {
@@ -94,7 +95,7 @@ export default {
 
 		customFields() {
 			let custom_fields = [];
-			(this.$root.auth.custom_fields || []).forEach(custom_field => {
+			(this.user_custom_fields || []).forEach(custom_field => {
 				custom_fields.push({
 					text: custom_field,
 					value: custom_field
@@ -279,8 +280,8 @@ export default {
 				if (booking) {
 					Object.assign(booking, updatedBooking);
 				}
-				this.$refs['bookingModal'].hide();
 			}
+			this.$refs['bookingModal'].hide();
 		},
 
 		async createZoomLink(booking) {

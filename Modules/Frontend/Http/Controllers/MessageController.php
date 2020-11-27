@@ -89,9 +89,12 @@ class MessageController extends Controller
 
         if (! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;
-            if (! $targetUser || $targetUser->role->role == 'support') {
-                Mail::to(config('app.support_email'))->queue(new NewMessage($message));
-            } elseif ($targetUser && $targetUser->email && $targetUser->notify_message) {
+            // if (! $targetUser || $targetUser->role->role == 'support') {
+            //     Mail::to(config('app.support_email'))->queue(new NewMessage($message));
+            // } elseif ($targetUser && $targetUser->email && $targetUser->notify_message) {
+            //     Mail::to($targetUser->email)->queue(new NewMessage($message));
+            // }
+            if ($targetUser && $targetUser->email && $targetUser->notify_message) {
                 Mail::to($targetUser->email)->queue(new NewMessage($message));
             }
         }

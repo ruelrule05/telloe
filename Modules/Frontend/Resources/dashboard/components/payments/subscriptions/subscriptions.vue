@@ -118,12 +118,12 @@
 			<vue-form-validate @submit="createSubscription()" class="d-flex flex-column flex-grow-1">
 				<div class="flex-grow-1">
 					<div class="form-group">
-						<label class="form-label">Customer</label>
-						<vue-select v-model="newSubscriptionForm.contact_id" :options="stripeCustomers" searchable required placeholder="Find customer"></vue-select>
+						<label class="form-label">Contact</label>
+						<vue-select button_class="form-control" v-model="newSubscriptionForm.contact_id" :options="stripeCustomers" searchable required placeholder="Find contact"></vue-select>
 					</div>
 					<div class="form-group">
-						<label class="form-label">Services</label>
-						<vue-select v-model="newSubscriptionForm.services" :options="servicesList" multiple required placeholder="Select services"></vue-select>
+						<label class="form-label">Booking Types</label>
+						<vue-select button_class="form-control" v-model="newSubscriptionForm.services" :options="servicesList" multiple required placeholder="Select booking type"></vue-select>
 						<div v-for="(service, index) in newSubscriptionForm.services" :key="service.id" class="my-2 bg-light rounded p-2 position-relative">
 							<button type="button" class="btn close p-0 line-height-0 mr-n1" @click="newSubscriptionForm.services.splice(index, 1)"><close-icon></close-icon></button>
 							<strong class="d-block mb-1">{{ service.name }}</strong>
@@ -148,7 +148,7 @@
 					</div>
 					<div class="form-group">
 						<label class="form-label">Recurring Frequency</label>
-						<vue-select v-model="newSubscriptionForm.recurring_frequency" :options="recurringOptions" required placeholder="Choose interval"></vue-select>
+						<vue-select button_class="form-control" v-model="newSubscriptionForm.recurring_frequency" :options="recurringOptions" required placeholder="Choose interval"></vue-select>
 					</div>
 					<div class="form-group">
 						<label class="form-label">Start Date</label>

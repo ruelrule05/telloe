@@ -174,7 +174,7 @@ export default {
 
 	created() {
 		this.$root.contentloading = !this.ready;
-		this.getUserCustomers();
+		this.getContacts({ nopaginate: true });
 		this.getServices();
 		this.getPendingSubscriptions();
 	},
@@ -191,7 +191,7 @@ export default {
 
 	methods: {
 		...mapActions({
-			getUserCustomers: 'contacts/index',
+			getContacts: 'contacts/index',
 			createContactSubscription: 'contacts/create_subscription',
 			cancelContactSubscription: 'contacts/cancel_subscription',
 			getServices: 'services/index',

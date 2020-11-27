@@ -1,15 +1,23 @@
 import dayjs from 'dayjs';
+const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+dayjs.extend(IsSameOrBefore);
+dayjs.extend(IsSameOrAfter);
 import VCalendar from 'v-calendar';
 import { mapState, mapActions } from 'vuex';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
-import MoreHIcon from '../../../icons/more-h';
+import MoreIcon from '../../../icons/more';
+import VueButton from '../../../components/vue-button.vue';
+import VueSelect from '../../../components/vue-select/vue-select.vue';
 export default {
 	components: {
 		VCalendar,
 		Modal,
 		VueFormValidate,
-		MoreHIcon
+		MoreIcon,
+		VueButton,
+		VueSelect
 	},
 
 	data: () => ({
@@ -24,7 +32,11 @@ export default {
 		},
 		days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 		step: 1,
-		error: ''
+		error: '',
+		dayjs: dayjs,
+		serviceMembers: [],
+		timeslots: [],
+		bookingModalLoading: false
 	}),
 
 	computed: {
@@ -95,6 +107,9 @@ export default {
 		selectedDate: function(value) {
 			if (value) this.error = null;
 			this.getTimeslots();
+		},
+		selectedBooking: function(value) {
+			this.getServiceMembers(value);
 		}
 	},
 
@@ -108,6 +123,60 @@ export default {
 			getBookings: 'bookings/index',
 			updateBooking: 'bookings/update'
 		}),
+
+		async updateSelectedBooking(selectedBooking) {
+			this.bookingModalLoading = true;
+			selectedBooking = JSON.parse(JSON.stringify(selectedBooking));
+			selectedBooking.date = dayjs(selectedBooking.date).format('YYYY-MM-DD');
+			selectedBooking.start = dayjs(selectedBooking.start).format('HH:mm');
+			await this.updateBooking(selectedBooking).catch(() => {});
+			this.bookingModalLoading = false;
+			this.$refs['bookingModal'].hide();
+		},
+
+		editBooking(booking) {
+			let selectedBooking = JSON.parse(JSON.stringify(booking));
+			selectedBooking.start = dayjs(`${selectedBooking.date} ${selectedBooking.start}`).toDate();
+			selectedBooking.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(selectedBooking.start));
+			this.selectedBooking = selectedBooking;
+			this.getSelectedBookingNewTimeslots(booking, selectedBooking.date);
+			this.$refs['bookingModal'].show();
+		},
+
+		async getSelectedBookingNewTimeslots(booking, date) {
+			let response = await axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+			this.timeslots = response.data;
+		},
+
+		getServiceMembers(booking) {
+			if (booking) {
+				let serviceMembers = [];
+				if (booking.service.parent_service) {
+					serviceMembers.push({
+						text: this.$root.auth.full_name,
+						value: booking.service.parent_service_id
+					});
+					booking.service.parent_service.assigned_services.forEach(assignedService => {
+						serviceMembers.push({
+							text: assignedService.user.full_name,
+							value: assignedService.id
+						});
+					});
+				} else {
+					serviceMembers.push({
+						text: this.$root.auth.full_name,
+						value: booking.service_id
+					});
+					booking.service.assigned_services.forEach(assignedService => {
+						serviceMembers.push({
+							text: assignedService.user.full_name,
+							value: assignedService.id
+						});
+					});
+				}
+				this.serviceMembers = serviceMembers;
+			}
+		},
 
 		resetStep() {
 			this.step = 1;
@@ -138,16 +207,6 @@ export default {
 
 		nextStep() {
 			if (!this.nextDisabled) this.step++;
-		},
-
-		edit(booking) {
-			if (booking) {
-				let parts = booking.date.split('-');
-				const date_object = new Date(parts[0], parts[1] - 1, parts[2]);
-				this.selectedBooking = booking;
-				this.selectedDate = date_object;
-				this.$refs['editModal'].show();
-			}
 		},
 
 		getTimeslots() {

@@ -63,6 +63,8 @@ class ZoomController extends Controller
         $booking = Booking::findOrFail($request->booking_id);
         $this->authorize('createZoomLink', $booking);
 
+        unset($booking->user);
+
         if ($booking->zoom_link) {
             return response($booking->zoom_link);
         }

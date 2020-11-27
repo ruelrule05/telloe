@@ -91,7 +91,7 @@ export default {
 				if (this.multiple) {
 					let multiple_texts = [];
 					this.selected_value.forEach(selected => {
-						let value = this.options.find(x => x.value == selected || x.value.id == selected.id);
+						let value = this.options.find(x => x.value == selected || (x.value.id && selected.id && x.value.id == selected.id));
 						if (value) multiple_texts.push(value.text);
 					});
 					if (multiple_texts.length > 0) placeholder = multiple_texts.join(', ');
@@ -202,7 +202,7 @@ export default {
 		updateValue(option) {
 			if (this.multiple) {
 				this.selected_value = this.selected_value || [];
-				let valueIndex = this.selected_value.findIndex(x => x == option.value || x.id == option.value.id);
+				let valueIndex = this.selected_value.findIndex(x => x == option.value || (x.id && option.value.id && x.id == option.value.id));
 				if (valueIndex == -1) this.selected_value.push(option.value);
 				else this.selected_value.splice(valueIndex, 1);
 				this.search = this.placeholder;

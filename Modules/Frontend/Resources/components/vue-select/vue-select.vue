@@ -21,7 +21,7 @@
 						<span v-if="show_no_results" class="text-muted">No results found</span>
 					</span>
 					<span v-else class="dropdown-item cursor-pointer" :id="'item-' + option.value" :class="{ active: !multiple && option.value == selected_value }" @click.prevent="updateValue(option)" v-for="(option, index) in filtered_options" :key="index">
-						<vue-checkbox v-if="multiple" :value="(selected_value || []).find(x => x == option.value || x.id == option.value.id)" :label="option.text"></vue-checkbox>
+						<vue-checkbox v-if="multiple" :value="(selected_value || []).find(x => x == option.value || (x.id && option.value.id && x.id == option.value.id))" :label="option.text"></vue-checkbox>
 						<span v-else>{{ option.text }}</span>
 					</span>
 				</div>

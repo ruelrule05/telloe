@@ -92,7 +92,8 @@ class XeroController extends Controller
         $this->validate($request, [
             'contact_id' => 'required|exists:contacts,id',
             'service_ids' => 'nullable|array',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
+            'currency' => 'required|min:3|max:3',
         ]);
         $authUser = Auth::user();
 
@@ -120,6 +121,19 @@ class XeroController extends Controller
             ]);
         }
 
+        $xeroCurrency = $xero->load(\XeroPHP\Models\Accounting\Currency::class)->where('code', $request->currency)->execute();
+        if (isset($xeroCurrency[0])) {
+            $xeroCurrency = $xeroCurrency[0];
+        } else {
+            $xeroCurrency = null;
+        }
+
+        if (! $xeroCurrency) {
+            $xeroCurrency = new \XeroPHP\Models\Accounting\Currency($xero);
+            $xeroCurrency->setCode($request->currency);
+            $xeroCurrency->save();
+        }
+
         $lineItem = new \XeroPHP\Models\Accounting\LineItem();
         $lineItem->setLineAmount($request->amount);
         $lineItem->setQuantity(1);
@@ -128,6 +142,7 @@ class XeroController extends Controller
         $invoice->setType('ACCREC');
         $invoice->addLineItem($lineItem);
         $invoice->setContact($xeroContact);
+        $invoice->setCurrencyCode($request->currency);
         $invoice->save();
 
         return response($invoice);

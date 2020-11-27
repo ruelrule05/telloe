@@ -4,8 +4,8 @@ namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserCustomField;
-use Illuminate\Http\Request;
 use Auth;
+use Illuminate\Http\Request;
 
 class UserCustomFieldController extends Controller
 {
@@ -17,7 +17,13 @@ class UserCustomFieldController extends Controller
     public function store(Request $request)
     {
         $userCustomField = UserCustomField::firstOrNew(['user_id' => Auth::user()->id]);
-        $userCustomField->fields = $request->fields ;
+        $fields = [];
+        foreach ($request->fields as $field) {
+            if (! in_array($field, $fields)) {
+                $fields[] = $field;
+            }
+        }
+        $userCustomField->fields = $fields;
         $userCustomField->save();
 
         return response()->json($userCustomField);

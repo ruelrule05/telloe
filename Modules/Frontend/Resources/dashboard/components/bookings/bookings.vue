@@ -7,7 +7,7 @@
 				</h6>
 				<div v-else>
 					<h1 class="font-heading h3 mb-3">Bookings</h1>
-					<table class="table table-borderless table-fixed-header mb-0">
+					<table class="table table-borderless mb-0">
 						<thead>
 							<tr>
 								<th class="border-0">Service</th>
@@ -28,80 +28,121 @@
 								<td class="align-middle">{{ formatTime(booking.end) }}</td>
 								<td class="text-right align-middle" style="width:50px">
 									<div class="dropdown">
-			                    		<button class="btn btn-white border p-1 line-height-0" data-toggle="dropdown">
-											<more-h-icon width="20" height="20"></more-h-icon>
-			                    		</button>
+										<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
+											<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+										</button>
 										<div class="dropdown-menu dropdown-menu-right">
-											<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="edit(booking)">
+											<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="editBooking(booking)">
 												Edit
 											</span>
-											<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="selectedBooking = booking; $refs['deleteModal'].show();">
-												Delete
-											</span>
 										</div>
-			                    	</div>
+									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 
-				<modal ref="editModal" @hidden="resetStep">
-					<template v-if="selectedBooking">
-						<h5 class="font-heading">Edit Booking</h5>
-						<strong class="d-block">{{ selectedBooking.service.name }}</strong>
-						<small class="d-block text-muted">{{ selectedBooking.service.user.full_name }}</small>
-						<div class="mb-2 mt-4">
-							<div v-if="error" class="text-danger">{{ error }}</div>
-							<template v-else>
-								<strong v-if="!selectedDate">Select Date</strong>
-								<template v-else>
-									<strong>{{ formatDate(selectedDate) }}</strong>
-									<span v-if="selectedTimeslot">@{{ selectedTimeslot.label }}</span>
-								</template>
-							</template>
-						</div>
-
-						<vue-form-validate @submit="update(selectedBooking)">
-							<div class="form-body">
-								<div class="rounded border h-100 mb-3 overflow-hidden">
-									<div v-if="step == 1">
-										<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required class="v-calendar border-0" v-model="selectedDate" is-expanded is-inline :min-date="new Date()" title-position="left">
-										</v-date-picker>
-									</div>
-
-									<div v-else-if="step == 2" class="position-relative h-100 bg-light">
-										<div v-if="(selectedBooking.service.timeslots || []).length == 0" class="text-gray text-center position-absolute-center w-100">
-											There are no timeslots available for the selected date
-										</div>
-										<div v-else class="d-flex flex-wrap pb-2 pr-2">
-											<div v-for="timeslot in selectedBooking.service.timeslots" class="pt-2 pl-2 w-20">
-												<div class="btn btn-white border btn-block btn-timeslot px-0 text-center" :class="{'bg-primary text-white': timeslot == selectedTimeslot}" @click="selectedTimeslot = timeslot">{{ timeslot.label }}</div>
-											</div>
-										</div>
+				<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
+					<div v-if="selectedBooking">
+						<h5 class="font-heading mb-3">Edit Booking</h5>
+						<div class="py-3">
+							<div class="d-flex align-items-center text-left mb-3">
+								<div class="font-weight-normal text-secondary w-50">Service</div>
+								<div class="h6 font-heading mb-0">{{ selectedBooking.service.name }}</div>
+							</div>
+							<div class="d-flex align-items-center text-left mb-3">
+								<div class="font-weight-normal text-secondary w-50">Coach</div>
+								<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
+								<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedBooking.service_id" :options="serviceMembers"></vue-select>
+							</div>
+							<div class="d-flex align-items-center text-left mb-3">
+								<div class="font-weight-normal text-secondary w-50">Date</div>
+								<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedBooking.date) }}</div>
+								<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedBooking.date" @input="getSelectedBookingNewTimeslots">
+									<template v-slot="{ inputValue, inputEvents }">
+										<button type="button" class="btn btn-light shadow-none" v-on="inputEvents">{{ formatDate(selectedBooking.date) }}</button>
+									</template>
+								</v-date-picker>
+							</div>
+							<div class="d-flex align-items-center text-left mb-3">
+								<div class="font-weight-normal text-secondary w-50">Starts at</div>
+								<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ dayjs(selectedBooking.start).format('hh:mmA') }}</div>
+								<div v-else class="dropright">
+									<button class="btn btn-light shadow-none" data-toggle="dropdown">
+										{{ dayjs(selectedBooking.start).format('hh:mmA') }}
+									</button>
+									<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
+										<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
+										<template v-else v-for="(timeslot, index) in timeslots">
+											<button type="button" class="btn btn-primary btn-block mb-1" :key="index" v-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+												{{ timeslot.label }}
+											</button>
+										</template>
 									</div>
 								</div>
 							</div>
-
-							<div class="d-flex mt-3">
-								<button v-if="step > 1" type="button" class="btn btn-white border" @click="step--">Previous</button>
-								<button v-if="step == 1" type="button" class="btn btn-primary ml-auto" :disabled="nextDisabled" @click.prevent="nextStep()">Select time</button>
-								<button v-else-if="step == 2" type="submit" class="btn btn-primary ml-auto" :disabled="nextDisabled">Update</button>
+							<div class="d-flex align-items-center text-left mb-3">
+								<div class="font-weight-normal text-secondary w-50">Ends at</div>
+								<div class="h6 font-heading mb-0">
+									{{
+										dayjs(selectedBooking.start)
+											.add(selectedBooking.service.duration, 'minute')
+											.format('hh:mmA')
+									}}
+								</div>
 							</div>
-						</vue-form-validate>
-					</template>
+							<div class="d-flex align-items-center text-left">
+								<div class="font-weight-normal text-secondary w-50">Duration</div>
+								<div class="h6 font-heading mb-0">{{ selectedBooking.service.duration }} minutes</div>
+							</div>
+							<div class="d-flex align-items-center text-left mt-3">
+								<div class="font-weight-normal text-secondary w-50 mb-2">Notes</div>
+								<p class="mb-0 flex-1">{{ selectedBooking.booking_note.note }}</p>
+							</div>
+							<div v-if="!selectedBooking.isPrevious" class="text-left">
+								<div class="mt-2" v-if="Object.keys(selectedBooking.zoom_link).length > 0">
+									<div class="d-flex align-items-center text-left">
+										<div class="font-weight-normal text-secondary w-50">Zoom Link</div>
+										<a target="_blank" :href="selectedBooking.zoom_link.join_url" class="d-flex align-items-center">
+											Go to Zoom meeting
+											<shortcut-icon width="16" height="16" class="ml-1 fill-blue"></shortcut-icon>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
+							<div class="d-flex align-items-center">
+								<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
+								<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>
+							</div>
+							<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
+						</div>
+					</div>
 				</modal>
 
-				<modal ref="deleteModal" :close-button="false">
+				<modal ref="deleteBookingModal" :close-button="false">
 					<template v-if="selectedBooking">
 						<h5 class="font-heading text-center">Delete Booking</h5>
 						<p class="text-center mt-3">
-							Are you sure to delete the booking <strong>{{ selectedBooking.service.name }}</strong>? <br />
-							<span class="text-danger">This action cannot be undone</span>
+							Are you sure to delete this booking?
 						</p>
 						<div class="d-flex">
-							<button class="btn btn-white border" type="button" data-dismiss="modal">Cancel</button>
-							<button class="btn btn-danger ml-auto" type="button" @click="destroy(selectedBooking)">Delete</button>
+							<button class="btn btn-light shadow-none" type="button" @click="$refs['bookingModal'].show()" data-dismiss="modal">
+								Cancel
+							</button>
+							<button
+								class="btn btn-danger ml-auto"
+								type="button"
+								@click="
+									confirmDeleteBooking(selectedBooking);
+									$refs['deleteBookingModal'].hide();
+								"
+							>
+								Delete
+							</button>
 						</div>
 					</template>
 				</modal>

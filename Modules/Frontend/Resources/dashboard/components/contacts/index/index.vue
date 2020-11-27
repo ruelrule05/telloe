@@ -1,5 +1,5 @@
 <template>
-	<div class="h-100" v-if="ready">
+	<div class="h-100" v-if="$root.auth && ready">
 		<div class="d-flex h-100">
 			<div class="h-100 flex-grow-1">
 				<div class="d-flex flex-column h-100">
@@ -10,7 +10,7 @@
 								<plus-icon class="btn-icon"></plus-icon>
 								Add Contact
 							</button>
-							<button :data-intro="$root.intros.contacts_index.steps[1]" data-step="2" type="button" class="btn btn-light ml-1 shadow-none" @click="infoTab = 'manage_fields'">Manage Fields</button>
+							<button :data-intro="$root.intros.contacts_index.steps[1]" data-step="2" type="button" class="btn btn-light ml-1 shadow-none" @click="$refs['fieldsModal'].show()">Manage Fields</button>
 						</div>
 					</div>
 
@@ -115,41 +115,35 @@
 					</div>
 				</div>
 			</div>
-
-			<div class="info bg-white h-100 border-left d-flex flex-column position-relative" :class="{ open: infoTab }">
-				<button class="btn btn-white p-0 btn-close position-absolute" type="button" @click="infoTab = ''"><close-icon height="30" width="30"></close-icon></button>
-
-				<template v-if="infoTab == 'manage_contact'">
-					<div class="border-bottom py-3 px-3">
-						<strong class="d-block my-2">Manage Contact</strong>
-					</div>
-					<template v-if="selectedContact">
-						<info :close-button="false" :conversation="conversation"></info>
-					</template>
-				</template>
-
-				<template v-else-if="infoTab == 'manage_fields'">
-					<div class="border-bottom py-3 px-3">
-						<strong class="d-block my-2">Manage Fields</strong>
-					</div>
-					<div class="p-3" ref="customFieldsLabel">
-						<div v-for="(custom_field, index) in $root.auth.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
-							<div class="mb-1 d-flex align-items-center w-100">
-								<input type="text" :value="custom_field" class="form-control flex-grow-1" />
-								<trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="$root.auth.custom_fields.splice(index, 1)"></trash-icon>
-							</div>
-						</div>
-						<div class="mb-1 d-flex align-items-center w-100">
-							<input type="text" v-model="newField" class="form-control flex-grow-1" placeholder="New Field" />
-							<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
-						</div>
-						<div class="d-flex mt-1">
-							<button type="button" class="btn btn-primary" :disabled="addField" @click="addNewField()">Save</button>
-						</div>
-					</div>
-				</template>
-			</div>
 		</div>
+
+		<modal ref="fieldsModal">
+			<h5 class="font-heading mb-3">Manage Fields</h5>
+			<div v-for="(custom_field, index) in userCustomFields" :key="index" class="d-flex align-items-center custom-field position-relative">
+				<div class="mb-1 d-flex align-items-center w-100">
+					<input type="text" :value="custom_field" class="form-control flex-grow-1" />
+					<trash-icon width="18" height="18" class="cursor-pointer ml-1" @click.native="userCustomFields.splice(index, 1)"></trash-icon>
+				</div>
+			</div>
+			<div class="mb-1 d-flex align-items-center w-100">
+				<input type="text" v-model="newField" class="form-control flex-grow-1" placeholder="New Field" />
+				<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
+			</div>
+			<div class="d-flex mt-3">
+				<button
+					class="btn btn-light shadow-none"
+					type="button"
+					data-dismiss="modal"
+					@click="
+						newField = '';
+						userCustomFields = JSON.parse(JSON.stringify(originalUserCustomFields));
+					"
+				>
+					Cancel
+				</button>
+				<button type="button" class="ml-auto btn btn-primary" :disabled="addField" @click="updateUserCustomFields()">Save</button>
+			</div>
+		</modal>
 
 		<modal ref="editModal" :close-button="false">
 			<h5 class="font-heading mb-3">Edit Contact</h5>

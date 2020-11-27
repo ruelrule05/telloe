@@ -104,7 +104,7 @@
 										<button class="btn p-0 d-flex align-items-center mr-1" disabled type="button">
 											<move-icon width="10" height="10" transform="scale(1.5)" class="fill-gray-400"></move-icon>
 										</button>
-										<vue-select v-model="new_field.name" :options="customFields" button_class="form-control-sm mr-1" :searchable="true" :suggestion="true" container_class="w-50" :caret="false" placeholder="Label"></vue-select>
+										<vue-select v-model="new_field.name" :options="customFields" button_class="form-control form-control-sm mr-1" :searchable="true" :suggestion="true" container_class="w-50" :caret="false" placeholder="Label"></vue-select>
 										<!-- <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1"> -->
 										<input type="text" placeholder="Value" v-model="new_field.value" class="form-control form-control-sm w-50 ml-2" />
 										<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>

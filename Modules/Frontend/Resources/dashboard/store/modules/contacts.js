@@ -5,12 +5,12 @@ const state = () => ({
 	ready: false,
 	hasContacts: false,
 	index: [],
-	paginated: {}
+	paginated: { data: [] }
 });
 
 const mutations = {
 	index(state, data) {
-		if(data.data) {
+		if (data.data) {
 			state.paginated = data;
 			if (data.data.length > 0) {
 				state.hasContacts = true;

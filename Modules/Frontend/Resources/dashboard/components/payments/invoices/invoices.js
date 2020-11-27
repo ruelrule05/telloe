@@ -17,6 +17,7 @@ import Tooltip from '../../../../js/directives/tooltip';
 import Vue from 'vue';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
+const format = require('format-number');
 export default {
 	components: {
 		Modal,
@@ -69,7 +70,42 @@ export default {
 		organizations: [],
 		tenantId: '',
 		tableLoading: false,
-		xeroTenantsLoading: true
+		xeroTenantsLoading: true,
+		currencies: [
+			{
+				text: 'AUD',
+				value: 'AUD'
+			},
+			{
+				text: 'USD',
+				value: 'USD'
+			},
+			{
+				text: 'PHP',
+				value: 'PHP'
+			},
+			{
+				text: 'CHF',
+				value: 'CHF'
+			},
+			{
+				text: 'EUR',
+				value: 'EUR'
+			},
+			{
+				text: 'CAD',
+				value: 'CAD'
+			},
+			{
+				text: 'GBP',
+				value: 'GBP'
+			},
+			{
+				text: 'NZD',
+				value: 'NZD'
+			}
+		],
+		format: format
 	}),
 
 	computed: {
@@ -104,28 +140,6 @@ export default {
 				}
 			});
 			return services;
-		},
-
-		invoicesx() {
-			let invoices = [];
-			this.contacts.forEach(contact => {
-				contact.invoices.forEach(invoice => {
-					invoice.contact = contact;
-					this.$set(invoice, 'statusLoading', false);
-					if (this.invoiceStatus == 'all' || this.invoiceStatus == invoice.status) invoices.push(invoice);
-				});
-			});
-			invoices = invoices.concat(this.pending_invoices);
-			invoices.sort((a, b) => {
-				return a.created > b.created ? -1 : 1;
-			});
-			if (invoices.length > 0) {
-				this.hasInvoices = true;
-			} else {
-				invoices.push({ placeholder: true });
-				this.hasInvoices = false;
-			}
-			return invoices;
 		}
 	},
 
@@ -140,23 +154,22 @@ export default {
 
 	created() {
 		//this.$root.contentloading = !this.ready;
-		this.getUserContacts();
+		this.getUserContacts({ nopaginate: true });
 		this.getServices();
 		if (this.$root.auth.xero_token) {
 			this.getTenants();
 			this.getXeroInvoices();
 			this.invoiceStatuses.push({
 				text: 'Authorised',
-				value: 'authorised',
+				value: 'authorised'
 			});
 			this.invoiceStatuses.push({
 				text: 'Paid',
-				value: 'paid',
+				value: 'paid'
 			});
 		} else {
-			this.getPendingInvoices().then(() => {
-				this.$root.contentloading = false;
-			});
+			//this.getPendingInvoices().then(() => {});
+			this.$root.contentloading = false;
 		}
 	},
 
@@ -199,16 +212,15 @@ export default {
 				let response = await axios.get('/xero/tenants');
 				this.xeroTenants = response.data;
 				this.xeroTenantsLoading = false;
-				if(response) {
+				if (response) {
 					let organizations = [];
 					response.data.forEach(organization => {
 						organizations.push({
 							text: organization.tenantName,
-							value: organization.tenantId,
+							value: organization.tenantId
 						});
 					});
 					this.organizations = organizations;
-					this.tenantId = response.data[0].tenantId;
 				}
 			}
 		},
@@ -223,6 +235,7 @@ export default {
 					if (response) {
 						this.invoices = response.data;
 					}
+					this.tenantId = tenantId.length > 0 ? tenantId : this.$root.auth.xero_tenant_id;
 					this.$root.contentloading = false;
 					this.tableLoading = false;
 				}
@@ -314,18 +327,17 @@ export default {
 					this.$refs['createInvoiceModal'].hide();
 				}
 			} else {
-				this.storePendingInvoice(this.newInvoiceForm)
-					.then(() => {
-						this.resetInvoiceForm();
-					})
-					.catch(() => {
-						this.newInvoiceForm.loading = false;
-					});
+				let pendingInvoice = await this.storePendingInvoice(this.newInvoiceForm);
+				if (pendingInvoice) {
+					this.invoices.unshift(pendingInvoice);
+				}
+				this.newInvoiceForm.loading = false;
+				this.$refs['createInvoiceModal'].hide();
 			}
 		},
 
 		formatDate(date) {
-			return dayjs.unix(date).format('MMM d, YYYY h:mmA');
+			return dayjs(date).format('MMM d, YYYY');
 		}
 	}
 };
