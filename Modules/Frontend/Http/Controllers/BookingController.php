@@ -74,7 +74,7 @@ class BookingController extends Controller
                 }
                 $bookings = $bookings->get();
             } elseif ($role == 'customer') {
-                $bookings = Booking::with('bookingNote', 'service.user', 'service.parentService', 'service.assignedServices')->where('user_id', $user->id)->orWhereHas('contact', function ($contact) use ($user) {
+                $bookings = Booking::with('bookingNote', 'service.user')->where('user_id', $user->id)->orWhereHas('contact', function ($contact) use ($user) {
                     $contact->where('contact_user_id', $user->id);
                 })->orderBy('created_at', 'DESC')->get();
             }

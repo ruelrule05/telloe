@@ -53,8 +53,7 @@
 							</div>
 							<div class="d-flex align-items-center text-left mb-3">
 								<div class="font-weight-normal text-secondary w-50">Coach</div>
-								<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
-								<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedBooking.service_id" :options="serviceMembers"></vue-select>
+								<div class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
 							</div>
 							<div class="d-flex align-items-center text-left mb-3">
 								<div class="font-weight-normal text-secondary w-50">Date</div>
