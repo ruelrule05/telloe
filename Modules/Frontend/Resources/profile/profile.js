@@ -111,8 +111,8 @@ export default {
 
 		authError: '',
 		loginForm: {
-			email: 'clyde@telloe.com',
-			password: 'admin',
+			email: '',
+			password: '',
 			loading: false
 		},
 		timeslotsLoading: false,
