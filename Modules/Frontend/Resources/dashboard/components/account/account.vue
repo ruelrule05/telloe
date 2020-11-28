@@ -167,22 +167,20 @@
 									</div>
 									<div class="col">
 										<label class="form-label">Date of birth</label>
-										<v-date-picker
-											is-required
-											:popover="{ visibility: 'click' }"
-											v-model="stripeAccountForm.dob"
-											:input-props="{
-												class: 'form-control bg-light',
-												placeholder: 'MM/DD/YYYY',
-												'data-required': true
-											}"
-										></v-date-picker>
+										<v-date-picker is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob">
+											<template v-slot="{ inputValue, inputEvents }">
+												<button type="button" class="form-control text-left" v-on="inputEvents">
+													<span v-if="inputValue">{{ formatDate(inputValue) }}</span>
+													<span v-else class="text-gray">Date of birth</span>
+												</button>
+											</template>
+										</v-date-picker>
 									</div>
 								</div>
 
 								<hr />
 								<h5>Bank details</h5>
-								<fieldset :disabled="$root.auth.stripe_account.external_accounts && $root.auth.stripe_account.external_accounts.data.length > 0">
+								<fieldset :disabled="($root.auth.stripe_account || {}).external_accounts && ($root.auth.stripe_account || {}).external_accounts.data.length > 0">
 									<div class="form-group">
 										<label class="form-label">Account number</label>
 										<input type="text" class="form-control" v-model="stripeAccountForm.account_number" data-required />

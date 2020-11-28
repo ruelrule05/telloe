@@ -98,16 +98,16 @@
 		<modal :close-button="false" :scrollable="false" ref="newConversationModal" @hidden="resetNewConversationForm">
 			<div class="d-flex modal-title align-items-center mb-3">
 				<h5 class="font-heading mb-0">New Conversation</h5>
-				<button class="ml-auto btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addContactModal'].show()">
+				<!-- <button class="ml-auto btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addContactModal'].show()">
 					<plus-icon height="10" width="10" transform="scale(2)" class="mr-1"></plus-icon>
 					Add Contact
-				</button>
+				</button> -->
 			</div>
 			<div class="h-100 overflow-hidden d-flex flex-column" :default="contacts" ref="addNewConversationMembersForm">
-				<input type="text" placeholder="Search contacts..." class="form-control shadow-none border" v-model="userSearch" />
+				<input type="text" placeholder="Search contacts or members..." class="form-control shadow-none border" v-model="userSearch" />
 				<div v-if="newConversation.members.length > 0" class="mt-1">
-					<div v-for="(member, index) in newConversation.members" :key="member.id" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{ backgroundImage: 'url(' + member.contact_user.profile_image + ')' }">
-						<span v-if="!member.contact_user.profile_image">{{ member.contact_user.initials }}</span>
+					<div v-for="(member, index) in newConversation.members" :key="member.id" class="user-profile-image d-inline-block new-conversation-member mr-1" :style="{ backgroundImage: 'url(' + member.user.profile_image + ')' }">
+						<span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
 						<button class="btn btn-sm btn-gray-200 badge-pill p-0 line-height-0 position-absolute" @click="newConversation.members.splice(index, 1)">
 							<close-icon height="16" width="16" class="cursor-pointer"></close-icon>
 						</button>
@@ -118,18 +118,18 @@
 					<div v-if="!contactsReady" class="text-center position-absolute-center w-100">
 						<div class="spinner-border spinner-border-sm text-primary"></div>
 					</div>
-					<div v-else-if="filteredContacts.length == 0" class="text-center text-muted position-absolute-center w-100">
+					<div v-else-if="filteredUsers.length == 0" class="text-center text-muted position-absolute-center w-100">
 						No results found.
 					</div>
-					<div v-else-if="filteredContacts.length > 0">
-						<div v-for="result in filteredContacts" :key="result.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{ active: newConversation.members.find(x => x.id == result.id), disabled: result.is_pending }">
-							<div class="user-profile-image user-profile-image-md align-self-center" :style="{ backgroundImage: 'url(' + result.contact_user.profile_image + ')' }">
-								<span v-if="!result.contact_user.profile_image">{{ result.contact_user.initials }}</span>
+					<div v-else-if="filteredUsers.length > 0">
+						<div v-for="result in filteredUsers" :key="result.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{ active: newConversation.members.find(x => x.user.id == result.user.id), disabled: result.is_pending }">
+							<div class="user-profile-image user-profile-image-md align-self-center" :style="{ backgroundImage: 'url(' + result.user.profile_image + ')' }">
+								<span v-if="!result.user.profile_image">{{ result.user.initials }}</span>
 							</div>
 							<div class="media-body pl-2">
-								<div class="font-weight-bold font-heading mb-0 h6">{{ result.contact_user.full_name }}</div>
+								<div class="font-weight-bold font-heading mb-0 h6">{{ result.user.full_name }}</div>
 								<div class="small text-muted text-nowrap">
-									{{ result.contact_user.email }}
+									{{ result.user.email }}
 									<span v-if="result.is_pending" class="text-warning">Pending</span>
 								</div>
 							</div>

@@ -145,6 +145,7 @@ Route::group(
                 Route::get('xero/token', 'XeroController@getToken');
                 Route::get('xero/remove', 'XeroController@remove');
                 Route::post('xero/invoices', 'XeroController@storeInvoice');
+                Route::put('xero/invoices', 'XeroController@updateInvoice');
 
                 Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');

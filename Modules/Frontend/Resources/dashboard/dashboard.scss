@@ -1,5 +1,8 @@
 @import '../sass/bootstrap';
 
+.vc-highlight {
+	background-color: $primary !important;
+}
 #app {
 	height: 100vh;
 }

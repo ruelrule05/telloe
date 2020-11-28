@@ -117,7 +117,7 @@ export default {
 					});
 					booking.service.parent_service.assigned_services.forEach(assignedService => {
 						serviceMembers.push({
-							text: assignedService.user.full_name,
+							text: assignedService.coach.full_name,
 							value: assignedService.id
 						});
 					});
@@ -128,7 +128,7 @@ export default {
 					});
 					booking.service.assigned_services.forEach(assignedService => {
 						serviceMembers.push({
-							text: assignedService.user.full_name,
+							text: assignedService.coach.full_name,
 							value: assignedService.id
 						});
 					});
@@ -142,14 +142,16 @@ export default {
 			booking = JSON.parse(JSON.stringify(booking));
 			booking.date = dayjs(booking.date).format('YYYY-MM-DD');
 			booking.start = dayjs(booking.start).format('HH:mm');
-			let updatedBooking = await this.updateBooking(booking);
-			let index = this.member.bookings.data.findIndex(x => x.id == updatedBooking.id);
-			if (index > -1) {
-				this.$set(this.member.bookings.data, index, updatedBooking);
+			let updatedBooking = await this.updateBooking(booking).catch(() => {});
+			if (updatedBooking) {
+				let index = this.member.bookings.data.findIndex(x => x.id == updatedBooking.id);
+				if (index > -1) {
+					this.$set(this.member.bookings.data, index, updatedBooking);
+				}
+				await this.getMember();
+				this.$refs['bookingModal'].hide();
 			}
 			this.bookingModalLoading = false;
-			await this.getMember();
-			this.$refs['bookingModal'].hide();
 		},
 
 		async createZoomLink(booking) {

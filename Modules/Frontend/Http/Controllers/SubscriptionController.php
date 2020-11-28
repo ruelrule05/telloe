@@ -3,11 +3,11 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Auth;
+use App\Http\StripeAPI;
 use App\Models\Plan;
 use App\Models\Subscription;
-use App\Http\StripeAPI;
+use Auth;
+use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
@@ -19,26 +19,28 @@ class SubscriptionController extends Controller
         ]);
 
         $user = Auth::user();
-        if (!$user->subscription) :
+        if (! $user->subscription) {
             $plan = Plan::findOrFail($request->plan_id);
-            if (!$plan->stripe_plan_id) return abort(403, 'This plan has no associated Stripe Plan ID');
+            if (! $plan->stripe_plan_id) {
+                return abort(403, 'This plan has no associated Stripe Plan ID');
+            }
 
             $stripe_api = new StripeAPI();
 
             // Create Stripe Customer ID if not set
-            if (!$user->stripe_customer_id) :
-                $customer = $stripe_api->customer('create', [ 'email' => $user->email ]);
+            if (! $user->stripe_customer_id) {
+                $customer = $stripe_api->customer('create', ['email' => $user->email]);
                 $user->stripe_customer_id = $customer->id;
                 $user->save();
-            endif;
+            }
 
             // Add Card to Stripe
-            $data = [ 
+            $data = [
                 'stripe_customer_id' => $user->stripe_customer_id,
                 'card_token' => $request->card_token
             ];
             $stripe_card = $stripe_api->card('create', $data);
-            $data = [ 
+            $data = [
                 'customer' => $user->stripe_customer_id,
                 'plan' => $plan->stripe_plan_id,
             ];
@@ -51,20 +53,19 @@ class SubscriptionController extends Controller
             ]);
 
             return response()->json($subscription);
-        endif;
+        }
 
         return abort(403, 'You are already subscribed to a plan.');
     }
 
-
     public function destroy()
-    {	
-    	$subscription = Auth::user()->subscription;
-        if ($subscription) :
+    {
+        $subscription = Auth::user()->subscription;
+        if ($subscription) {
             $stripe_api = new StripeAPI();
             $stripe_subscription = $stripe_api->subscription('cancel', $subscription->stripe_subscription_id);
             $subscription->delete();
             return response()->json(['cancelled' => true]);
-        endif;
+        }
     }
 }

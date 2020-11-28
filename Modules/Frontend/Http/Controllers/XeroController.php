@@ -72,7 +72,12 @@ class XeroController extends Controller
         if ($authUser->xero_tenant_id) {
             $XeroClient = new XeroClient($request);
             $xero = new \XeroPHP\Application($XeroClient->accessToken, $tenantId);
-            $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)->orderBy('Date', 'DESC')->execute();
+            $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)
+                ->orderBy('Date', 'DESC')
+                ->where('Status', 'DRAFT')
+                ->orWhere('Status', 'SUBMITTED')
+                ->orWhere('Status', 'AUTHORISED')
+                ->execute();
         }
 
         return response(json_decode(json_encode($invoices), true));
@@ -121,12 +126,7 @@ class XeroController extends Controller
             ]);
         }
 
-        $xeroCurrency = $xero->load(\XeroPHP\Models\Accounting\Currency::class)->where('code', $request->currency)->execute();
-        if (isset($xeroCurrency[0])) {
-            $xeroCurrency = $xeroCurrency[0];
-        } else {
-            $xeroCurrency = null;
-        }
+        $xeroCurrency = $xero->load(\XeroPHP\Models\Accounting\Currency::class)->where('code', $request->currency)->first();
 
         if (! $xeroCurrency) {
             $xeroCurrency = new \XeroPHP\Models\Accounting\Currency($xero);
@@ -146,5 +146,29 @@ class XeroController extends Controller
         $invoice->save();
 
         return response($invoice);
+    }
+
+    public function updateInvoice(Request $request)
+    {
+        $this->validate($request, [
+            'invoice_id' => 'required',
+            'status' => 'required',
+        ]);
+        $authUser = Auth::user();
+        $tenantId = $request->tenantId ?? $authUser->xero_tenant_id;
+        $XeroClient = new XeroClient($request);
+        $xero = new \XeroPHP\Application($XeroClient->accessToken, $tenantId);
+        $xeroInvoice = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)->where('InvoiceID', $request->invoice_id)->first();
+
+        // $lineItem = new \XeroPHP\Models\Accounting\LineItem();
+        // $lineItem->setLineAmount($xeroInvoice['AmountDue']);
+        // $lineItem->setQuantity(1);
+        // $lineItem->setDescription($request->description);
+        // $xeroInvoice->addLineItem($lineItem);
+        // $xeroInvoice->save();
+
+        $xeroInvoice->setStatus($request->status);
+        $xeroInvoice->save();
+        return response($xeroInvoice);
     }
 }

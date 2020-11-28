@@ -272,7 +272,7 @@
 					<div class="col-md-4">
 						<div class="border rounded bg-white plan p-3 position-relative" @click="selectPlan(plan)">
 							<h5 class="mb-4 font-heading text-primary text-uppercase">{{ $plan->name }}</h5>
-							<h4 class="mb-0 font-weight-normal d-inline @if($plan->name == 'Annual') text-warning @endif"><strong>${{ intval($plan->price) }}</strong></h4><span class="@if($plan->name == 'Annual') text-warning @endif">{{ substr(strval($plan->price - intval($plan->price)), 1) }}</span> / {{ $plan->interval }}
+							<h4 class="mb-0 font-weight-normal d-inline"><strong>${{ intval($plan->price) }}</strong></h4><span>{{ substr(strval($plan->price - intval($plan->price)), 1) }}</span> / {{ $plan->interval }}
 
 							<div class="text-secondary">
 								@if($plan->per_user)
@@ -301,9 +301,9 @@
 								
 								<div class="booking-plus" data-plan="{{ strtolower($plan->name) }}">
 									<strong class="mt-3 d-block">Booking Plus</strong>
-									<div class="d-flex align-items-center">
+									<!-- <div class="d-flex align-items-center">
 										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Multi Book&nbsp;&nbsp;<u><a href="">Learn more</a></u>
-									</div>
+									</div> -->
 									<div class="d-flex align-items-center">
 										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Multi-team booking system
 									</div>
@@ -324,7 +324,7 @@
 										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Payments (via Stripe)
 									</div>
 									<div class="d-flex align-items-center">
-										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Xero Accounting Integration
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Xero Accounting Integration
 									</div>
 									<div class="d-flex align-items-center">
 										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Subscription Manager
@@ -334,10 +334,10 @@
 								<div class="integrations" data-plan="{{ strtolower($plan->name) }}">
 									<strong class="mt-3 d-block">Integrations</strong>
 									<div class="d-flex align-items-center">
-										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Zoom
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Zoom
 									</div>
 									<div class="d-flex align-items-center">
-										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Take Google Calendar
+										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Google Calendar
 									</div>
 									<div class="d-flex align-items-center">
 										<checkmark-icon width="30" height="30" class="fill-success ml-n1"></checkmark-icon>Outlook Calendar

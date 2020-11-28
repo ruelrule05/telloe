@@ -134,7 +134,7 @@ export default {
 			});
 			this.service.assigned_services.forEach(assignedService => {
 				serviceMembers.push({
-					text: assignedService.user.full_name,
+					text: assignedService.coach.full_name,
 					value: assignedService.id
 				});
 			});

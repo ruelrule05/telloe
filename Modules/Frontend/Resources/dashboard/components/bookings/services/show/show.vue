@@ -79,23 +79,23 @@
 							</div>
 
 							<!-- Assigned Coaches -->
-							<div v-for="(assignedService, index) in service.assigned_services" class="position-relative user-container cursor-pointer" :class="{ active: selectedCoachId == assignedService.user.id }" :key="assignedService.id">
+							<div v-for="(assignedService, index) in service.assigned_services" class="position-relative user-container cursor-pointer" :class="{ active: selectedCoachId == assignedService.coach.id }" :key="assignedService.id">
 								<div class="d-flex member-container align-items-center py-1 pl-1" :data-intro="index == 0 ? $root.intros.services_show.steps[0] : null" :data-step="index == 0 ? 1 : null">
 									<div
 										class="d-flex align-items-center py-2 pl-2"
 										@click="
 											selectedService = assignedService;
-											selectedCoachId = assignedService.user.id;
+											selectedCoachId = assignedService.coach.id;
 										"
 									>
-										<div class="profile-image profile-image-sm cursor-pointer" :style="{ 'background-image': `url(${assignedService.user.profile_image})` }">
-											<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+										<div class="profile-image profile-image-sm cursor-pointer" :style="{ 'background-image': `url(${assignedService.coach.profile_image})` }">
+											<span v-if="!assignedService.coach.profile_image">{{ assignedService.coach.initials }}</span>
 										</div>
 										<div class="flex-1 text-left pl-2">
 											<h6 class="font-heading text-nowrap mb-0">
-												{{ assignedService.user.full_name }}
+												{{ assignedService.coach.full_name }}
 											</h6>
-											<small class="text-secondary">{{ assignedService.user.timezone }}</small>
+											<small class="text-secondary">{{ assignedService.coach.timezone }}</small>
 										</div>
 									</div>
 
@@ -274,24 +274,24 @@
 
 		<modal ref="bookingModal" :close-button="(selectedTimeslot || {}).isPrevious" :scrollable="false">
 			<div v-if="selectedTimeslot && selectedTimeslot.bookings.length > 0 && selectedService" class="text-center">
-				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${(selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).profile_image})` }">
-					<span v-if="!(selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).profile_image">{{ (selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).initials }}</span>
+				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${selectedTimeslot.bookings[0].customer.profile_image})` }">
+					<span v-if="!selectedTimeslot.bookings[0].customer.profile_image">{{ selectedTimeslot.bookings[0].customer.initials }}</span>
 				</div>
 				<h4 class="font-heading mb-4">
-					{{ (selectedTimeslot.bookings[0].user || selectedTimeslot.bookings[0].contact).full_name }}
+					{{ selectedTimeslot.bookings[0].customer.full_name }}
 				</h4>
-				<div class="py-3">
+				<div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Service</div>
+						<div class="font-weight-normal text-secondary w-25">Service</div>
 						<div class="h6 font-heading mb-0">{{ selectedTimeslot.bookings[0].service.name }}</div>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Coach</div>
+						<div class="font-weight-normal text-secondary w-25">Coach</div>
 						<div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ selectedService.user.full_name }}</div>
 						<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedTimeslot.bookings[0].service_id" :options="serviceMembers"></vue-select>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Date</div>
+						<div class="font-weight-normal text-secondary w-25">Date</div>
 						<div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedTimeslot.bookings[0].date) }}</div>
 						<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].date" @input="getSelectedBookingNewTimeslots">
 							<template v-slot="{ inputValue, inputEvents }">
@@ -300,45 +300,48 @@
 						</v-date-picker>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Starts at</div>
+						<div class="font-weight-normal text-secondary w-25">Time</div>
 						<div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ dayjs(selectedTimeslot.bookings[0].start).format('hh:mmA') }}</div>
-						<div v-else class="dropright">
-							<button class="btn btn-light shadow-none" data-toggle="dropdown">
-								{{ dayjs(selectedTimeslot.bookings[0].start).format('hh:mmA') }}
-							</button>
-							<div class="dropdown-menu">
-								<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="filterAvailableTimeslots(selectedTimeslot.timeslots) == 0">No available timeslots</div>
-								<template v-else v-for="(timeslot, index) in filterAvailableTimeslots(selectedTimeslot.timeslots)">
-									<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedTimeslot.bookings[0].start = dayjs(`${dayjs(selectedTimeslot.bookings[0].date).format('Y-m-d')} ${timeslot.time}`).toDate()">
-										{{ timeslot.label }}
-									</button>
-								</template>
+
+						<div v-else class="d-flex align-items-center">
+							<div class="dropright">
+								<button class="btn btn-light shadow-none" data-toggle="dropdown">
+									{{ dayjs(selectedTimeslot.bookings[0].start).format('hh:mmA') }}
+								</button>
+								<div class="dropdown-menu">
+									<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="filterAvailableTimeslots(selectedTimeslot.timeslots) == 0">No available timeslots</div>
+									<template v-else v-for="(timeslot, index) in filterAvailableTimeslots(selectedTimeslot.timeslots)">
+										<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedTimeslot.bookings[0].start = dayjs(`${dayjs(selectedTimeslot.bookings[0].date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+											{{ timeslot.label }}
+										</button>
+									</template>
+								</div>
+							</div>
+							&nbsp;&nbsp;to&nbsp;&nbsp;
+							<div class="btn btn-light shadow-none disabled">
+								{{
+									dayjs(selectedTimeslot.bookings[0].start)
+										.add(selectedService.duration, 'minute')
+										.format('hh:mmA')
+								}}
 							</div>
 						</div>
 					</div>
-					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Ends at</div>
-						<div class="h6 font-heading mb-0">
-							{{
-								dayjs(selectedTimeslot.bookings[0].start)
-									.add(selectedService.duration, 'minute')
-									.format('hh:mmA')
-							}}
-						</div>
-					</div>
 					<div class="d-flex align-items-center text-left">
-						<div class="font-weight-normal text-secondary w-50">Duration</div>
+						<div class="font-weight-normal text-secondary w-25">Duration</div>
 						<div class="h6 font-heading mb-0">{{ selectedService.duration }} minutes</div>
 					</div>
-					<div class="text-left mt-3">
-						<div class="font-weight-normal text-secondary w-50 mb-2">Notes</div>
-						<p v-if="selectedTimeslot.isPrevious" class="mb-0">{{ selectedTimeslot.bookings[0].booking_note.note }}</p>
-						<textarea v-else rows="4" class="form-control resize-none" v-model="selectedTimeslot.bookings[0].booking_note.note" placeholder="Write notes.."></textarea>
+
+					<div class="text-left mt-3 d-flex align-items-start">
+						<div class="font-weight-normal text-secondary w-25 mb-2">Notes</div>
+						<input v-if="!selectedTimeslot.isPrevious" type="text" class="form-control resize-none flex-1" v-model="selectedTimeslot.bookings[0].booking_note.note" placeholder="Write notes.." />
+						<div v-else class="flex-1">{{ selectedTimeslot.bookings[0].booking_note.note }}</div>
 					</div>
+
 					<div v-if="!selectedTimeslot.isPrevious" class="mt-3 text-left">
 						<template v-if="Object.keys(selectedTimeslot.bookings[0].zoom_link).length > 0">
 							<div class="d-flex align-items-center text-left">
-								<div class="font-weight-normal text-secondary w-50">Zoom Link</div>
+								<div class="font-weight-normal text-secondary w-25">Zoom Link</div>
 								<a target="_blank" :href="selectedTimeslot.bookings[0].zoom_link.join_url" class="d-flex align-items-center">
 									Go to Zoom meeting
 									<shortcut-icon width="16" height="16" class="ml-1 fill-blue"></shortcut-icon>
@@ -354,7 +357,7 @@
 					</div>
 				</div>
 
-				<div v-if="!selectedTimeslot.isPrevious" class="d-flex justify-content-between mt-3">
+				<div v-if="!selectedTimeslot.isPrevious" class="d-flex justify-content-between mt-4">
 					<div class="d-flex align-items-center">
 						<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
 						<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>

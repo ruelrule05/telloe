@@ -10,6 +10,7 @@ import VueFormValidate from '../../../components/vue-form-validate.vue';
 import MoreIcon from '../../../icons/more';
 import VueButton from '../../../components/vue-button.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
+import ShortcutIcon from '../../../icons/shortcut';
 export default {
 	components: {
 		VCalendar,
@@ -17,7 +18,8 @@ export default {
 		VueFormValidate,
 		MoreIcon,
 		VueButton,
-		VueSelect
+		VueSelect,
+		ShortcutIcon
 	},
 
 	data: () => ({
@@ -96,6 +98,10 @@ export default {
 			}
 
 			return buttonText;
+		},
+
+		availableTimeslots() {
+			return this.timeslots.filter(timeslot => timeslot.is_available);
 		}
 	},
 
@@ -107,9 +113,6 @@ export default {
 		selectedDate: function(value) {
 			if (value) this.error = null;
 			this.getTimeslots();
-		},
-		selectedBooking: function(value) {
-			this.getServiceMembers(value);
 		}
 	},
 
@@ -129,9 +132,11 @@ export default {
 			selectedBooking = JSON.parse(JSON.stringify(selectedBooking));
 			selectedBooking.date = dayjs(selectedBooking.date).format('YYYY-MM-DD');
 			selectedBooking.start = dayjs(selectedBooking.start).format('HH:mm');
-			await this.updateBooking(selectedBooking).catch(() => {});
+			let updatedBooking = await this.updateBooking(selectedBooking).catch(() => {});
+			if (updatedBooking) {
+				this.$refs['bookingModal'].hide();
+			}
 			this.bookingModalLoading = false;
-			this.$refs['bookingModal'].hide();
 		},
 
 		editBooking(booking) {
@@ -146,36 +151,6 @@ export default {
 		async getSelectedBookingNewTimeslots(booking, date) {
 			let response = await axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
 			this.timeslots = response.data;
-		},
-
-		getServiceMembers(booking) {
-			if (booking) {
-				let serviceMembers = [];
-				if (booking.service.parent_service) {
-					serviceMembers.push({
-						text: this.$root.auth.full_name,
-						value: booking.service.parent_service_id
-					});
-					booking.service.parent_service.assigned_services.forEach(assignedService => {
-						serviceMembers.push({
-							text: assignedService.user.full_name,
-							value: assignedService.id
-						});
-					});
-				} else {
-					serviceMembers.push({
-						text: this.$root.auth.full_name,
-						value: booking.service_id
-					});
-					booking.service.assigned_services.forEach(assignedService => {
-						serviceMembers.push({
-							text: assignedService.user.full_name,
-							value: assignedService.id
-						});
-					});
-				}
-				this.serviceMembers = serviceMembers;
-			}
 		},
 
 		resetStep() {

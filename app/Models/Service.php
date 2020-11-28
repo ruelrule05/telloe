@@ -11,6 +11,7 @@ class Service extends BaseModel
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency'];
+
     protected $casts = [
         'days' => 'array',
         'holidays' => 'array',
@@ -26,7 +27,12 @@ class Service extends BaseModel
         'create_zoom_link' => 'boolean',
     ];
 
-    protected $test = [1, 2];
+    protected $appends = ['coach'];
+
+    public function getCoachAttribute()
+    {
+        return $this->user ?? $this->member->memberUser;
+    }
 
     public static function boot()
     {
@@ -43,8 +49,6 @@ class Service extends BaseModel
                     if (! $model->member) {
                         $model->member = ['memberUser' => $model->member];
                     }
-
-                    $model->user = $model->member->memberUser ?? null;
                 }
             }
         });
@@ -54,14 +58,7 @@ class Service extends BaseModel
 
     public function user()
     {
-        $member = $this->member()->first();
-        return $this->belongsTo(User::class)->withDefault(function ($user) use ($member) {
-            $user->id = null;
-            $user->first_name = $member->memberUser->attributes['first_name'];
-            $user->last_name = $member->memberUser->attributes['last_name'];
-            $user->email = $member->memberUser->attributes['email'];
-            $user->last_online = null;
-        });
+        return $this->belongsTo(User::class);
     }
 
     public function member()

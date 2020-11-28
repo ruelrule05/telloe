@@ -18,6 +18,7 @@ import Vue from 'vue';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
 const format = require('format-number');
+import getSymbolFromCurrency from 'currency-symbol-map';
 export default {
 	components: {
 		Modal,
@@ -105,7 +106,47 @@ export default {
 				value: 'NZD'
 			}
 		],
-		format: format
+		format: format,
+		getSymbolFromCurrency: getSymbolFromCurrency,
+		xeroInvoiceStatuses: {
+			DRAFT: [
+				// {
+				// 	text: 'Submit',
+				// 	value: 'SUBMITTED'
+				// },
+				// {
+				// 	text: 'Authorise',
+				// 	value: 'AUTHORISED'
+				// },
+				{
+					text: 'Delete',
+					value: 'DELETED'
+				}
+			],
+			SUBMITTED: [
+				// {
+				// 	text: 'Authorise',
+				// 	value: 'AUTHORISED'
+				// },
+				{
+					text: 'Draft',
+					value: 'DRAFT'
+				},
+				{
+					text: 'Delete',
+					value: 'DELETED'
+				}
+			],
+			AUTHORISED: [
+				{
+					text: 'Void',
+					value: 'VOIDED'
+				}
+			]
+		},
+		invoiceToDelete: null,
+		invoiceToVoid: null,
+		invoiceToEdit: null
 	}),
 
 	computed: {
@@ -193,6 +234,40 @@ export default {
 			storePendingInvoice: 'pending_invoices/store',
 			deletePendingInvoice: 'pending_invoices/delete'
 		}),
+
+		async updateInvoice(invoiceToUpdate) {
+			this.$refs['editModal'].hide();
+			this.$set(invoiceToUpdate, 'statusLoading', true);
+			let response = await axios.put('/xero/invoices', { invoice_id: invoiceToUpdate.InvoiceID, status: invoiceToUpdate.newStatus, description: invoiceToUpdate.description, tenantId: this.tenantId }).catch(() => {});
+			if (response) {
+				if (response.data.Status == 'DELETED' || response.data.Status == 'VOIDED') {
+					let index = this.invoices.findIndex(x => x.InvoiceID == response.data.InvoiceID);
+					if (index > -1) {
+						this.invoices.splice(index, 1);
+					}
+				} else {
+					let invoice = this.invoices.find(x => x.InvoiceID == response.data.InvoiceID);
+					if (invoice) {
+						this.$set(invoice, 'statusLoading', false);
+						Object.assign({}, invoice, response.data);
+					}
+				}
+			}
+		},
+
+		confirmInvoiceUpdate(invoice, status) {
+			invoice.newStatus = status;
+			if (status == 'DELETED') {
+				this.invoiceToDelete = invoice;
+				this.$refs['deleteModal'].show();
+			} else if (status == 'VOIDED') {
+				this.invoiceToVoid = invoice;
+				this.$refs['voidModal'].show();
+			} else {
+				this.invoiceToEdit = invoice;
+				this.$refs['editModal'].show();
+			}
+		},
 
 		changeTenant() {
 			this.tableLoading = true;
@@ -304,12 +379,6 @@ export default {
 					.catch(() => {
 						this.$set(invoice, 'statusLoading', false);
 					});
-			}
-		},
-
-		deleteInvoice(invoice) {
-			if (invoice.is_pending) {
-				this.deletePendingInvoice(invoice);
 			}
 		},
 

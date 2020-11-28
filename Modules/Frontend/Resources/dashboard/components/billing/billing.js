@@ -7,44 +7,43 @@ import Stripe from 'stripe-client';
 import CheckmarkIcon from '../../../icons/checkmark';
 import { times } from 'lodash';
 export default {
-	components: { 
+	components: {
 		VueButton,
 		Modal,
 		VueFormValidate,
-		CheckmarkIcon,
+		CheckmarkIcon
 	},
 
 	data: () => ({
 		selectedPlan: null,
 		paymentLoading: false,
 		cardForm: {
-			number: '4242424242424242',
-			expiration: '11/24',
-			exp_month: '11',
-			exp_year: '24',
-			cvc: '321',
-			name: 'Clyde Escobidal',
+			number: '',
+			expiration: '',
+			exp_month: '',
+			exp_year: '',
+			cvc: '',
+			name: '',
 			errors: {
 				number: false,
 				expiration: false,
-				cvc: false,
-			},
+				cvc: false
+			}
 		},
 		stripe: null,
 		publishableKey: '',
 		seats: 0,
-		loading: false,
+		loading: false
 	}),
 
 	computed: {
 		...mapState({
-      		plans: state => state.plans.index,
-            ready: state => state.plans.ready,
-		}),
+			plans: state => state.plans.index,
+			ready: state => state.plans.ready
+		})
 	},
 
-	mounted() {
-	},
+	mounted() {},
 
 	created() {
 		this.$root.contentloading = !this.ready;
@@ -56,25 +55,25 @@ export default {
 	watch: {
 		ready: function(value) {
 			this.$root.contentloading = !value;
-			if(value) this.seats = this.plans[0].seats
-		},
+			if (value) this.seats = this.plans[0].seats;
+		}
 	},
 
 	methods: {
-    	...mapActions({
-      		getPlans: 'plans/index',
-    	}),
+		...mapActions({
+			getPlans: 'plans/index'
+		}),
 
-    	selectPlan(plan) {
-    		if(plan.id != (this.$root.auth.subscription || {}).plan_id) {
-	    		this.selectedPlan = plan;
-	    		this.$refs['paymentModal'].show();
-    		}
-    	},
+		selectPlan(plan) {
+			if (plan.id != (this.$root.auth.subscription || {}).plan_id) {
+				this.selectedPlan = plan;
+				this.$refs['paymentModal'].show();
+			}
+		},
 
 		unsubscribe() {
 			this.loading = true;
-			axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then((response) => {
+			axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then(response => {
 				this.$root.auth.subscription = null;
 				this.$refs['cancelSubscription'].hide();
 				this.loading = false;
@@ -82,7 +81,7 @@ export default {
 		},
 
 		async subscribe() {
-			Object.keys(this.cardForm.errors).forEach((k) => (this.cardForm.errors[k] = ''));
+			Object.keys(this.cardForm.errors).forEach(k => (this.cardForm.errors[k] = ''));
 			let error = false;
 
 			// validate card number
@@ -120,15 +119,15 @@ export default {
 						exp_month: '02',
 						exp_year: '21',
 						cvc: '999',
-						name: 'Billy Joe',
-					},
+						name: 'Billy Joe'
+					}
 				};
 				let card = await this.stripe.createToken(cardData);
-				card.json().then((token) => {
+				card.json().then(token => {
 					axios
-						.post(`/dashboard/subscriptions`, {card: this.cardForm, card_token: token.id, plan_id: this.selectedPlan.id})
-						.then((response) => {
-	    					this.$refs['paymentModal'].hide();
+						.post(`/dashboard/subscriptions`, { card: this.cardForm, card_token: token.id, plan_id: this.selectedPlan.id })
+						.then(response => {
+							this.$refs['paymentModal'].hide();
 							this.$root.auth.subscription = response.data;
 						})
 						.catch(() => {
@@ -142,6 +141,6 @@ export default {
 			let stripe = await axios.get('/dashboard/stripe_publishable_key');
 			this.publishableKey = stripe.data;
 			this.stripe = Stripe(this.publishableKey);
-		},
-	},
+		}
+	}
 };

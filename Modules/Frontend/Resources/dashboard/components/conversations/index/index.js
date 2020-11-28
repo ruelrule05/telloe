@@ -62,6 +62,7 @@ export default {
 			conversations: state => state.conversations.index,
 			ready: state => state.conversations.ready,
 			contacts: state => state.contacts.index,
+			members: state => state.members.index,
 			contactsReady: state => state.contacts.ready,
 			services: state => state.services.index
 		}),
@@ -82,18 +83,43 @@ export default {
 			});
 		},
 
-		filteredContacts() {
-			let filteredContacts = [];
+		filteredUsers() {
+			let filteredUsers = [];
 			let trimmedQuery = this.userSearch.trim().toLowerCase();
-			this.contacts.forEach(contact => {
-				if (contact.contact_user.full_name.toLowerCase().includes(trimmedQuery)) filteredContacts.push(contact);
+			this.users.forEach(user => {
+				if (user.user.full_name.toLowerCase().includes(trimmedQuery)) filteredUsers.push(user);
 			});
 
-			return filteredContacts;
+			return filteredUsers;
 		},
 
 		defaultEmailMessage() {
 			return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;
+		},
+
+		users() {
+			let users = [];
+
+			this.contacts.forEach(contact => {
+				let exists = users.find(x => x.user_id == contact.contact_user_id);
+				if (!exists) {
+					users.push({
+						type: 'contact',
+						user: contact.contact_user
+					});
+				}
+			});
+			this.members.forEach(member => {
+				let exists = users.find(x => x.user_id == member.member_user_id);
+				if (!exists) {
+					users.push({
+						type: 'member',
+						user: member.member_user
+					});
+				}
+			});
+
+			return users;
 		}
 	},
 
@@ -107,7 +133,8 @@ export default {
 				if (firstConversation) this.setConversation(firstConversation);
 			}
 		});
-		this.getContacts({nopaginate: true});
+		this.getContacts({ nopaginate: true });
+		this.getMembers();
 		this.$root.socket.on('new_conversation', data => {
 			if (data.member_ids.find(x => x == this.$root.auth.id)) {
 				let conversation = this.conversations.find(x => x.id == data.conversation_id);
@@ -127,7 +154,8 @@ export default {
 			showConversation: 'conversations/show',
 			getContacts: 'contacts/index',
 			storeContact: 'contacts/store',
-			getServices: 'services/index'
+			getServices: 'services/index',
+			getMembers: 'members/index'
 		}),
 
 		resetNewContact() {
@@ -160,14 +188,14 @@ export default {
 		},
 
 		addNewConversationMember(member) {
-			if (!member.is_pending && !this.newConversation.members.find(x => x.id == member.id)) this.newConversation.members.push(member);
+			if (!member.is_pending && !this.newConversation.members.find(x => x.user.id == member.user.id)) this.newConversation.members.push(member);
 		},
 
 		createConversation() {
 			if (this.newConversation.members.length > 0) {
 				let member_ids = [];
 				this.newConversation.members.forEach(m => {
-					member_ids.push(m.id);
+					member_ids.push(m.user.id);
 				});
 
 				this.storeConversation({ members: member_ids }).then(conversation => {

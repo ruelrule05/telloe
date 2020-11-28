@@ -44,6 +44,7 @@
         "country-flag-icons": "^1.2.7",
         "country-list": "^2.2.0",
         "css-loader": "^3.6.0",
+        "currency-symbol-map": "^4.0.4",
         "data-uri-to-blob": "0.0.4",
         "datauri": "^2.0.0",
         "dateformat": "^3.0.3",

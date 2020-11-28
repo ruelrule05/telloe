@@ -103,25 +103,25 @@
 
 		<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
 			<div v-if="selectedBooking" class="text-center">
-				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${(selectedBooking.user || selectedBooking.contact).profile_image})` }">
-					<span v-if="!(selectedBooking.user || selectedBooking.contact).profile_image">{{ (selectedBooking.user || selectedBooking.contact).initials }}</span>
+				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${selectedBooking.customer.profile_image})` }">
+					<span v-if="!selectedBooking.customer.profile_image">{{ selectedBooking.customer.initials }}</span>
 				</div>
 				<h4 class="font-heading mb-4">
-					{{ (selectedBooking.user || selectedBooking.contact).full_name }}
+					{{ selectedBooking.customer.full_name }}
 				</h4>
 
-				<div class="py-3">
+				<div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Service</div>
+						<div class="font-weight-normal text-secondary w-25">Service</div>
 						<div class="h6 font-heading mb-0">{{ selectedBooking.service.name }}</div>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Coach</div>
-						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedBooking.service.user.full_name }}</div>
+						<div class="font-weight-normal text-secondary w-25">Coach</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedBooking.service.coach.full_name }}</div>
 						<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedBooking.service_id" :options="serviceMembers"></vue-select>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Date</div>
+						<div class="font-weight-normal text-secondary w-25">Date</div>
 						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedBooking.date) }}</div>
 						<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedBooking.date" @input="getSelectedBookingNewTimeslots">
 							<template v-slot="{ inputValue, inputEvents }">
@@ -130,40 +130,46 @@
 						</v-date-picker>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Starts at</div>
+						<div class="font-weight-normal text-secondary w-25">Time</div>
 						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ dayjs(selectedBooking.start).format('hh:mmA') }}</div>
-						<div v-else class="dropright">
-							<button class="btn btn-light shadow-none" data-toggle="dropdown">
-								{{ dayjs(selectedBooking.start).format('hh:mmA') }}
-							</button>
-							<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
-								<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
-								<template v-else v-for="(timeslot, index) in timeslots">
-									<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
-										{{ timeslot.label }}
-									</button>
-								</template>
+						<div v-else class="d-flex align-items-center">
+							<div class="dropright">
+								<button class="btn btn-light shadow-none" data-toggle="dropdown">
+									{{ dayjs(selectedBooking.start).format('hh:mmA') }}
+								</button>
+								<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
+									<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
+									<template v-else v-for="(timeslot, index) in timeslots">
+										<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+											{{ timeslot.label }}
+										</button>
+									</template>
+								</div>
+							</div>
+							&nbsp;&nbsp;to&nbsp;&nbsp;
+
+							<div class="btn btn-light shadow-none disabled">
+								{{
+									dayjs(selectedBooking.start)
+										.add(selectedBooking.service.duration, 'minute')
+										.format('hh:mmA')
+								}}
 							</div>
 						</div>
 					</div>
-					<div class="d-flex align-items-center text-left mb-3">
-						<div class="font-weight-normal text-secondary w-50">Ends at</div>
-						<div class="h6 font-heading mb-0">
-							{{
-								dayjs(selectedBooking.start)
-									.add(selectedBooking.service.duration, 'minute')
-									.format('hh:mmA')
-							}}
-						</div>
-					</div>
 					<div class="d-flex align-items-center text-left">
-						<div class="font-weight-normal text-secondary w-50">Duration</div>
+						<div class="font-weight-normal text-secondary w-25">Duration</div>
 						<div class="h6 font-heading mb-0">{{ selectedBooking.service.duration }} minutes</div>
+					</div>
+					<div class="text-left mt-3 d-flex align-items-start">
+						<div class="font-weight-normal text-secondary w-25 mb-2">Notes</div>
+						<input v-if="!selectedBooking.isPrevious" type="text" class="form-control resize-none flex-1" v-model="selectedBooking.booking_note.note" placeholder="Write notes.." />
+						<div v-else class="flex-1">{{ selectedBooking.booking_note.note }}</div>
 					</div>
 					<div v-if="!selectedBooking.isPrevious" class="text-left">
 						<div class="mt-3" v-if="Object.keys(selectedBooking.zoom_link).length > 0">
 							<div class="d-flex align-items-center text-left">
-								<div class="font-weight-normal text-secondary w-50">Zoom Link</div>
+								<div class="font-weight-normal text-secondary w-25">Zoom Link</div>
 								<a target="_blank" :href="selectedBooking.zoom_link.join_url" class="d-flex align-items-center">
 									Go to Zoom meeting
 									<shortcut-icon width="16" height="16" class="ml-1 fill-blue"></shortcut-icon>
@@ -179,7 +185,7 @@
 					</div>
 				</div>
 
-				<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-3">
+				<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-4">
 					<div class="d-flex align-items-center">
 						<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
 						<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>

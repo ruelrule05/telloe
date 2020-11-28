@@ -23,11 +23,11 @@ class NewBooking extends Mailer
         $authUser = $authUser ?? Auth::user();
         if ($target == 'client') { // if contact - send to client
             $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
-            $this->email = $booking->service->user->email;
+            $this->email = $booking->service->coach->email;
             $this->emailMessage = "<strong>{$full_name}</strong> has made a booking with the following details:";
             $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
         } elseif ($target == 'contact') { // if client - send to contact
-            $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
+            $this->email = $booking->customer->email;
             $this->emailMessage = 'A booking has been made for your account with the following details:';
             if (! $booking->user && $booking->contact && $booking->contact->is_pending) {
                 $this->emailMessage = 'A booking has been made for your email with the following details:';

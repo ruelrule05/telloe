@@ -140,10 +140,6 @@ export default {
 				value: 'weekly'
 			},
 			{
-				text: 'Fortnightly',
-				value: 'fortnightly'
-			},
-			{
 				text: 'Monthly',
 				value: 'monthly'
 			}
@@ -743,8 +739,8 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				this.selectedServiceForTimeline = this.services[0];
-				this.selectedService = this.selectedServiceForTimeline;
+				// this.selectedServiceForTimeline = this.services[0];
+				// this.selectedService = this.selectedServiceForTimeline;
 
 				this.ready = true;
 			});

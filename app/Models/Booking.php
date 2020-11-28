@@ -11,13 +11,18 @@ class Booking extends BaseModel
     use SoftDeletes;
 
     protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
-    protected $appends = ['is_expired'];
+    protected $appends = ['is_expired', 'customer'];
     protected $casts = [
         'metadata' => 'array',
         'notified_2' => 'boolean',
         'notified_24' => 'boolean',
         'zoom_link' => 'array',
     ];
+
+    public function getCustomerAttribute()
+    {
+        return $this->user ?? $this->contact->contactUser;
+    }
 
     public function user()
     {
@@ -44,16 +49,5 @@ class Booking extends BaseModel
         return $this->hasOne(BookingNote::class)->withDefault([
             'note' => '',
         ]);
-    }
-
-
-    public static function boot()
-    {
-        parent::boot();
-        static::retrieved(function ($model) {
-            if (!$model->user && $model->contact) {
-                $model->user = $model->contact->contactUser;
-            }
-        });
     }
 }

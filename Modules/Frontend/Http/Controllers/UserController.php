@@ -147,6 +147,10 @@ class UserController extends Controller
                 'end' => $end->format('H:i'),
             ]);
 
+            // if (isset($timeslot['is_recurring']) || isset($timeslot['endDate']) || isset($timeslot['frequency'])) {
+            //     $endDate = Carbon::parse($timeslot['endDate']);
+            // }
+
             Mail::queue(new NewBooking($booking, $authUser, 'client'));
             Mail::queue(new NewBooking($booking, $authUser, 'contact'));
 

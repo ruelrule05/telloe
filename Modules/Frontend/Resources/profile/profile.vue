@@ -174,22 +174,22 @@
 								<div
 									v-for="assignedService in selectedServiceForTimeline.assigned_services"
 									class="xborder pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer"
-									:class="{ active: selectedCoachId == assignedService.user.id }"
+									:class="{ active: selectedCoachId == assignedService.coach.id }"
 									:key="assignedService.id"
 									@click="
-										selectedCoachId = assignedService.user.id;
+										selectedCoachId = assignedService.coach.id;
 										selectedService = assignedService;
 									"
 								>
 									<div class="d-flex align-items-center p-1">
-										<div class="profile-image profile-image-xs cursor-pointer" :style="{ 'background-image': `url(${assignedService.user.profile_image})` }">
-											<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+										<div class="profile-image profile-image-xs cursor-pointer" :style="{ 'background-image': `url(${assignedService.coach.profile_image})` }">
+											<span v-if="!assignedService.coach.profile_image">{{ assignedService.coach.initials }}</span>
 										</div>
 										<div class="flex-1 text-left pl-2">
 											<h6 class="font-heading text-nowrap mb-0">
-												{{ assignedService.user.full_name }}
+												{{ assignedService.coach.full_name }}
 											</h6>
-											<small class="text-secondary">{{ assignedService.user.timezone }}</small>
+											<small class="text-secondary">{{ assignedService.coach.timezone }}</small>
 										</div>
 									</div>
 								</div>
@@ -260,12 +260,10 @@
 										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-4">
 											<div class="d-flex">
 												<div>
-													<h6 class="font-heading mb-1">
-														{{ formatDate(timeslot.date.date) }}
-													</h6>
+													<h6 class="font-heading mb-1">{{ formatDate(timeslot.date.date) }} ({{ dayjs(timeslot.date.date).format('dddd') }})</h6>
 													<div class="text-muted">{{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}</div>
 												</div>
-												<div class="dropleft ml-auto mr-n2 mt-n2">
+												<div class="dropleft ml-auto mr-n2 mt-n2 d-none">
 													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
 														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
 													</button>
@@ -307,7 +305,11 @@
 												</div>
 											</div>
 											<div v-if="timeslot.is_recurring">
-												<div class="form-group mt-2">
+												<div class="form-group mb-0 mt-3">
+													Every {{ dayjs(timeslot.date.date).format('dddd') }} of the {{ timeslot.frequency.replace('ly', '').toLowerCase() }}
+													<vue-select button_class="btn btn-white btn-block shadow-none border-0 mt-2" :options="recurringFrequencies" v-model="timeslot.frequency"></vue-select>
+												</div>
+												<div class="form-group mt-3 mb-0">
 													<label class="text-muted">Ends at</label>
 													<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.endDate">
 														<template v-slot="{ inputValue, inputEvents }">
@@ -316,10 +318,6 @@
 															</button>
 														</template>
 													</v-date-picker>
-												</div>
-												<div class="form-group mb-0 mt-2">
-													<label class="text-muted mr-1">Frequency</label>
-													<vue-select button_class="btn btn-white btn-block shadow-none border-0" :options="recurringFrequencies" v-model="timeslot.frequency"></vue-select>
 												</div>
 											</div>
 										</div>

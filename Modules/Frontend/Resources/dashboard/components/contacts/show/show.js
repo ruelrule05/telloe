@@ -108,12 +108,12 @@ export default {
 			let newBookingServicesList = [];
 			if (this.newBooking.service) {
 				newBookingServicesList.push({
-					text: this.newBooking.service.user.full_name,
+					text: this.newBooking.service.coach.full_name,
 					value: this.newBooking.service.id
 				});
 				this.newBooking.service.assigned_services.forEach(service => {
 					newBookingServicesList.push({
-						text: service.user.full_name,
+						text: service.coach.full_name,
 						value: service.id
 					});
 				});
@@ -248,7 +248,7 @@ export default {
 					});
 					booking.service.parent_service.assigned_services.forEach(assignedService => {
 						serviceMembers.push({
-							text: assignedService.user.full_name,
+							text: assignedService.coach.full_name,
 							value: assignedService.id
 						});
 					});
@@ -259,7 +259,7 @@ export default {
 					});
 					booking.service.assigned_services.forEach(assignedService => {
 						serviceMembers.push({
-							text: assignedService.user.full_name,
+							text: assignedService.coach.full_name,
 							value: assignedService.id
 						});
 					});
@@ -280,8 +280,8 @@ export default {
 				if (booking) {
 					Object.assign(booking, updatedBooking);
 				}
+				this.$refs['bookingModal'].hide();
 			}
-			this.$refs['bookingModal'].hide();
 		},
 
 		async createZoomLink(booking) {
