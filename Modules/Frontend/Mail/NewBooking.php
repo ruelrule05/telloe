@@ -11,7 +11,7 @@ use Spatie\CalendarLinks\Link;
 class NewBooking extends Mailer
 {
     public $booking;
-    public $actionText = 'View Calendar';
+    public $actionText = 'Manage Booking';
     public $actionUrl;
     public $email;
     public $emailMessage;
@@ -25,7 +25,6 @@ class NewBooking extends Mailer
             $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
             $this->email = $booking->service->coach->email;
             $this->emailMessage = "<strong>{$full_name}</strong> has made a booking with the following details:";
-            $this->actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
         } elseif ($target == 'contact') { // if client - send to contact
             $this->email = $booking->customer->email;
             $this->emailMessage = 'A booking has been made for your account with the following details:';
@@ -35,6 +34,8 @@ class NewBooking extends Mailer
                 $this->actionText = 'Create an account';
             }
         }
+
+        $this->actionUrl = config('app.url') . '?auth=login';
 
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);

@@ -401,7 +401,7 @@
 						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_1">How does the free trial work?</h5>
 					    <div id="faq_1" class="collapse show" data-parent="#faq">
 					      	<p class="pt-3 mb-0">
-					        By signing up for a free trial you get full access to {{ config('app.name') }} for 14 days. There is no absolutely no obligations to continue at the end of your trial and its completely up to you if you wantto continue using the application.
+							  By signing up for a free trial, you get full access to Telloe for 14 days. There is absolutely no obligation to continue at the end of your trial and it's completely up to you if you want to continue using the application.
 					      	</p>
 					    </div>
 				  	</div>
@@ -410,7 +410,7 @@
 						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_2">What if I need help with my setup?</h5>
 					    <div id="faq_2" class="collapse" data-parent="#faq">
 					      	<p class="pt-3 mb-0">
-								We're here to help. If you have any trouble in setting up and need training simply book a one on one training session.
+							  We're here to help. If you have any trouble in setting up and need training, simply book a 15 minute demo call or send us an email at <a href="mailto:support@telloe.com">support@telloe.com</a>.
 					      	</p>
 					    </div>
 				  	</div>
@@ -419,7 +419,7 @@
 						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_3">What currencies are accepted?</h5>
 					    <div id="faq_3" class="collapse" data-parent="#faq">
 					      	<p class="pt-3 mb-0">
-					       	For all countries pricing is displayed in USD.
+							  Currency is default to USD; however, other major currencies such as AUD, CHF, EUR, GBP, CAD, SGD, PHP and NZD. Feel free to reach out to us if you need assistance on adding your own currency that is not listed yet.
 					      	</p>
 					    </div>
 				  	</div>
@@ -428,16 +428,7 @@
 						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_4">Can I change my plan?</h5>
 					    <div id="faq_4" class="collapse" data-parent="#faq">
 					      	<p class="pt-3 mb-0">
-					       	Your plan is based on the number of seats in your account. If you add more customers, you coach then your pricing is increased accordingly. You can always add and remove the number of seats over the 10 seats that are included in the base plan.
-					      	</p>
-					    </div>
-				  	</div>
-
-				  	<div class="border-bottom pb-4 mb-4">
-						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_5">How do the pricing tiers work?</h5>
-					    <div id="faq_5" class="collapse" data-parent="#faq">
-					      	<p class="pt-3 mb-0">
-					       	As your number of seats you require grows we'll make sure you're on the right pricing. Additional seats can be added as needed and fees are adjusted accordingly.
+							  Your plan is based on the purpose you would like to use Telloe for. Standard features include bookings and communication functionality. As you add more features, pricing is increased accordingly. To learn more about it, feel free to visit our link to <a href="#pricing">plan and pricing</a>.
 					      	</p>
 					    </div>
 				  	</div>
@@ -455,19 +446,19 @@
 						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_7">What is a contact?</h5>
 					    <div id="faq_7" class="collapse" data-parent="#faq">
 					      	<p class="pt-3 mb-0">
-					       	A customer is a record of a person stored in telloe that has signed up to receive ongoing communication with you. Effectively these are your customers you provide coaching services to.
+							  A contact is a record of a person stored in Telloe that has signed up to receive ongoing communication with you. Effectively, these are your customers you provide coaching services to.
 					      	</p>
 					    </div>
 				  	</div>
 
-				  	<div class="border-bottom pb-4 mb-4">
-						<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_8">Can I upgrade from a monthly to an annual plan?</h5>
-					    <div id="faq_8" class="collapse" data-parent="#faq">
-					      	<p class="pt-3 mb-0">
-					       	Yes, it's easy to change plans. Go to your Billing page, click on 'Update Plan' and follow the instructions making sure to select the “Pay Annually” option.
-					      	</p>
-					    </div>
-				  	</div>
+					<div class="border-bottom pb-4 mb-4">
+					<h5 class="font-heading cursor-pointer mb-0" data-toggle="collapse" data-target="#faq_8">What is a member?</h5>
+					<div id="faq_8" class="collapse" data-parent="#faq">
+							<p class="pt-3 mb-0"> 
+							A member is a record of a person who is a part of your company/organization. You can add members to your Company, assign them to a team or organization, and manage their bookings using Telloe. You could activate this feature by option for the Enterprise Plan.
+							</p>
+					</div>
+					</div>
 				</div>
 			</div>
 		</div>

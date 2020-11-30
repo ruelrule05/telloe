@@ -1,6 +1,6 @@
 <template>
 	<div class="d-flex h-100">
-		<index v-if="$root.auth.role.role == 'client'"></index>
+		<index></index>
 		<show @ready="showReady()"></show>
 	</div>
 </template>

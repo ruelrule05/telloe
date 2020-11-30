@@ -97,64 +97,6 @@
 					</div>
 				</div>
 			</div>
-
-			<div class="info bg-white h-100 border-left d-flex flex-column position-relative" :class="{ open: infoTab }">
-				<button class="btn btn-white p-0 btn-close position-absolute" type="button" @click="infoTab = ''">
-					<close-icon height="30" width="30"></close-icon>
-				</button>
-
-				<template v-if="infoTab == 'manage_member'">
-					<div class="border-bottom py-3 px-3">
-						<strong class="d-block my-2">Manage Member</strong>
-					</div>
-					<div v-if="selectedMember" class="p-3">
-						<div class="text-center info-profile">
-							<div
-								class="user-profile-image d-inline-block"
-								ref="profileImage"
-								:style="{
-									backgroundImage: 'url(' + selectedMember.profile_image + ')'
-								}"
-							>
-								<span v-if="!selectedMember.profile_image">{{ selectedMember.initials }}</span>
-							</div>
-							<h4 class="h5 font-heading conversation-title mb-0 rounded">
-								{{ selectedMember.full_name }}
-							</h4>
-							<div class="text-muted">{{ selectedMember.email }}</div>
-							<div v-if="(selectedMember.contact || {}).is_pending" class="mt-1 badge badge-icon d-inline-flex align-items-center bg-warning-light text-warning">
-								<clock-icon class="fill-warning" height="12" width="12"></clock-icon>
-								&nbsp;Pending
-							</div>
-						</div>
-
-						<div class="form-group">
-							<strong class="d-block mb-2 font-weight-bold mt-3">Assigned Services</strong>
-							<template v-for="service in services">
-								<div v-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
-									<div>
-										<h6 class="font-heading mb-0">{{ service.name }}</h6>
-										<small class="text-gray d-block">{{ service.duration }} minutes</small>
-									</div>
-									<div class="ml-auto">
-										<div v-if="service.is_loading" class="spinner-border spinner-border-sm mr-2" role="status">
-											<span class="sr-only">Loading...</span>
-										</div>
-										<toggle-switch :class="{ 'd-none': service.is_loading }" active-class="bg-primary" :value="selectedMember.services.find(x => x.parent_service_id == service.id) ? true : false" @input="memberToggleAssignedService($event, service)"></toggle-switch>
-									</div>
-								</div>
-							</template>
-						</div>
-					</div>
-				</template>
-
-				<div v-else-if="infoTab == 'add_member'" class="d-flex flex-column overflow-hidden">
-					<div class="border-bottom py-3 px-3">
-						<strong class="d-block my-2">Add Member</strong>
-					</div>
-					<div class="p-4 overflow-auto flex-grow-1"></div>
-				</div>
-			</div>
 		</div>
 
 		<modal ref="editModal" :close-button="false">

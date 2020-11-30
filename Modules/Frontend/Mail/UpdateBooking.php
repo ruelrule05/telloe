@@ -10,7 +10,7 @@ use Spatie\CalendarLinks\Link;
 class UpdateBooking extends Mailer
 {
     public $booking;
-    public $actionText = 'View Calendar';
+    public $actionText = 'Manage Booking';
     public $actionUrl;
     public $email;
     public $emailMessage;
@@ -25,7 +25,6 @@ class UpdateBooking extends Mailer
                 $this->email = $booking->service->user->email;
                 $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
                 $this->emailMessage = "<strong>{$full_name}</strong> has modified their booking with the following details:";
-                //$this->actionUrl = config('app.url') . '/dashboard/bookings/calendar';
             }
         } elseif ($target == 'contact') { // if client - send to contact
             if (($booking->user && $booking->user->notify_email) || ($booking->contact && $booking->contact->user->notify_email)) {
@@ -33,6 +32,8 @@ class UpdateBooking extends Mailer
                 $this->emailMessage = 'A booking you made has been modified with the following details:';
             }
         }
+
+        $this->actionUrl = config('app.url') . '?auth=login';
 
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);

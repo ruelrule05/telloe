@@ -14,6 +14,7 @@ use App\Models\Service;
 use App\Models\User;
 use Auth;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -32,9 +33,15 @@ class ContactController extends Controller
         if ($query) {
             $contacts = $contacts->where(function ($q) use ($query) {
                 $q->whereHas('contactUser', function ($contactUser) use ($query) {
-                    $contactUser->where('first_name', 'LIKE', '%' . $query . '%')->orWhere('last_name', 'LIKE', '%' . $query . '%');
+                    $contactUser->where('first_name', 'LIKE', '%' . $query . '%')
+                        ->orWhere('last_name', 'LIKE', '%' . $query . '%')
+                        ->orWhere(DB::raw("CONCAT(`first_name`, ' ', `last_name`)"), 'LIKE', '%' . $query . '%')
+                        ->orWhere('email', 'LIKE', '%' . $query . '%');
                 })->orWhere(function ($q) use ($query) {
-                    $q->where('first_name', 'LIKE', '%' . $query . '%')->orWhere('last_name', 'LIKE', '%' . $query . '%');
+                    $q->where('first_name', 'LIKE', '%' . $query . '%')
+                        ->orWhere('last_name', 'LIKE', '%' . $query . '%')
+                        ->orWhere(DB::raw("CONCAT(`first_name`, ' ', `last_name`)"), 'LIKE', '%' . $query . '%')
+                        ->orWhere('email', 'LIKE', '%' . $query . '%');
                 });
             });
         }
@@ -51,7 +58,9 @@ class ContactController extends Controller
             }
         }
 
-        $contacts = $request->nopaginate ? $contacts->get() : $contacts->paginate(10);
+        $contacts = $contacts->orderBy('created_at', 'DESC');
+
+        $contacts = $request->nopaginate ? $contacts->get() : $contacts->paginate(20);
 
         return response()->json($contacts);
     }
@@ -431,8 +440,10 @@ class ContactController extends Controller
         $serviceIds = Service::where('user_id', $authUser->id)->orWhereHas('parentService', function ($parentService) use ($authUser) {
             $parentService->where('user_id', $authUser->id);
         })->get()->pluck('id')->toArray();
-        $recent_notes = BookingNote::with('booking')->whereHas('booking', function ($booking) use ($serviceIds) {
-            $booking->whereIn('service_id', $serviceIds);
+        $recent_notes = BookingNote::has('booking')->with('booking')->whereHas('booking', function ($booking) use ($serviceIds, $contact) {
+            $booking->whereIn('service_id', $serviceIds)->where(function ($query) use ($contact) {
+                $query->where('user_id', $contact->contact_user_id)->orWhere('contact_id', $contact->id);
+            });
         })->orderBy('created_at', 'DESC')->take(3)->get();
 
         return response($recent_notes);

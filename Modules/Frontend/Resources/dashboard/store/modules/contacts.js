@@ -26,6 +26,7 @@ const mutations = {
 
 	store(state, data) {
 		state.index.unshift(data);
+		state.paginated.data.unshift(data);
 	},
 
 	update(state, data) {
@@ -36,6 +37,10 @@ const mutations = {
 	delete(state, data) {
 		state.index.splice(
 			state.index.findIndex(x => x.id == data.id),
+			1
+		);
+		state.paginated.data.splice(
+			state.paginated.data.findIndex(x => x.id == data.id),
 			1
 		);
 	},

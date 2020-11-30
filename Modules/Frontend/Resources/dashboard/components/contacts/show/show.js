@@ -192,9 +192,7 @@ export default {
 				data.contact_id = this.contact.id;
 				data.date = dayjs(this.newBooking.date).format('YYYY-MM-DD');
 				let booking = await this.storeBooking(data);
-				if (booking) {
-					this.contact.bookings.data.push(booking);
-				}
+				this.getContact();
 				this.$refs['addBookingModal'].hide();
 			}
 		},
@@ -230,12 +228,9 @@ export default {
 			}
 		},
 
-		confirmDeleteBooking(booking) {
-			this.deleteBooking(booking);
-			let index = this.contact.bookings.data.findIndex(x => x.id == booking.id);
-			if (index > -1) {
-				this.contact.bookings.data.splice(index, 1);
-			}
+		async confirmDeleteBooking(booking) {
+			await this.deleteBooking(booking);
+			this.getContact();
 		},
 
 		getServiceMembers(booking) {
@@ -275,13 +270,8 @@ export default {
 			selectedBooking.start = dayjs(selectedBooking.start).format('HH:mm');
 			let updatedBooking = await this.updateBooking(selectedBooking).catch(() => {});
 			this.bookingModalLoading = false;
-			if (updatedBooking) {
-				let booking = this.contact.bookings.data.find(x => x.id == updatedBooking.id);
-				if (booking) {
-					Object.assign(booking, updatedBooking);
-				}
-				this.$refs['bookingModal'].hide();
-			}
+			this.$refs['bookingModal'].hide();
+			this.getContact();
 		},
 
 		async createZoomLink(booking) {
