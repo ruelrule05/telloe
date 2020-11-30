@@ -115,6 +115,7 @@ export default {
 
 		resetForm() {
 			this.newOrganization.name = '';
+			this.newOrganization.slug = '';
 			this.newOrganization.members = [];
 			this.$refs['addModal'].hide();
 		},

@@ -53,11 +53,15 @@ class OrganizationController extends Controller
         ]);
         $authUser = Auth::user();
 
-        $slug = Slugify::create(Organization::class, strtolower($request->name));
+
+        if (Organization::where('slug', $request->slug)->first()) {
+            return abort(403, 'Slug is already associated to a different organization');
+        }
+
         $organization = Organization::create([
             'user_id' => $authUser->id,
             'name' => $request->name,
-            'slug' => $slug
+            'slug' => $request->slug
         ]);
         $members_count = 0;
         foreach ($request->members as $member) {

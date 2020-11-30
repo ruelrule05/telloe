@@ -148,18 +148,18 @@
 				"
 			>
 				<div class="form-group">
-					<label class="form-label">Company Name</label>
-					<input type="text" class="form-control" v-model="newOrganization.company" data-required />
-				</div>
-
-				<div class="form-group">
 					<label class="form-label">Organization Name</label>
 					<input type="text" class="form-control" v-model="newOrganization.name" data-required />
 				</div>
 
+				<div class="form-group">
+					<label class="form-label">Slug</label>
+					<input type="text" class="form-control" v-model="newOrganization.slug" data-required />
+				</div>
+
 				<div class="form-group mb-1">
 					<label class="form-label">Add Members</label>
-					<vue-select v-model="newOrganization.members" :options="membersList" multiple placeholder="Add members"></vue-select>
+					<vue-select v-model="newOrganization.members" button_class="form-control" :options="membersList" multiple placeholder="Add members"></vue-select>
 				</div>
 				<div v-for="(member, index) in newOrganization.members" :key="member.id" class="rounded bg-light p-2 d-flex align-items-center mb-1">
 					<div
