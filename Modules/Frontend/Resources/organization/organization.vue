@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<div class="text-center h-100 w-100" v-if="ready">
-
 			<transition-group name="fade" tag="div">
 				<!-- Select service -->
 				<div class="container" v-if="!selectedServiceForTimeline" key="services">
@@ -30,14 +29,13 @@
 														<div
 															v-for="assignedService in service.member_services"
 															:key="assignedService.id"
-															v-tooltip.top="assignedService.member.member_user.full_name"
+															v-tooltip.top="assignedService.coach.full_name"
 															class="profile-image profile-image-xxs"
 															:style="{
-															backgroundImage:
-																'url(' + assignedService.member.member_user.profile_image + ')',
+																backgroundImage: 'url(' + assignedService.coach.profile_image + ')'
 															}"
 														>
-															<span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
+															<span v-if="!assignedService.coach.profile_image">{{ assignedService.coach.initials }}</span>
 														</div>
 													</div>
 
@@ -63,26 +61,43 @@
 
 				<!-- Select coach/date/time -->
 				<div v-else-if="selectedServiceForTimeline && (!startDate || !selectedTimeslot)" class="container selected-service-container" key="service">
-					<div class="mb-5 px-5">
+					<div class="mb-5 text-left">
 						<h4 class="mb-1 h3 font-heading">{{ selectedServiceForTimeline.name }}</h4>
-						<p class="mb-0 px-5 service-description">{{ selectedServiceForTimeline.description }}</p>
+						<p class="mb-0 service-description">{{ selectedServiceForTimeline.description }}</p>
+						<p v-if="selectedServiceForTimeline.address" class="mb-0 d-flex align-items-center text-muted">
+							<map-marker-icon height="18" width="18" class="fill-primary"></map-marker-icon>
+							{{ selectedServiceForTimeline.address }}
+						</p>
 					</div>
 
 					<div class="d-flex align-items-center">
-						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectedService = null">
+						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null">
 							<arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon>
 						</button>
-						<div class="ml-auto bg-white rounded shadow-sm d-flex align-items-center">
-							<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
-								<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
-							</button>
-							<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
-								<template v-slot="{ inputValue, inputEvents }">
-									<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
-								</template>
-							</v-date-picker>
-							<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
-								<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+						<div class="pl-5 ml-5">
+							<div class="pl-4">
+								<div class="ml-5 d-flex align-items-center">
+									<div class="bg-white rounded shadow-sm d-flex align-items-center">
+										<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
+											<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
+										</button>
+										<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+											<template v-slot="{ inputValue, inputEvents }">
+												<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ formatDate(inputValue) }}</button>
+											</template>
+										</v-date-picker>
+										<button class="btn btn-sm btn-white p-1" type="button" @click="nextWeek()">
+											<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
+										</button>
+									</div>
+									<div v-if="selectedTimeslots.length == 0" class="ml-3 text-muted">Select at least one (1) timeslot</div>
+								</div>
+							</div>
+						</div>
+						<div class="ml-auto" :class="{ 'hide-tooltip': selectedTimeslots.length > 0 }" v-tooltip.left="'Select at least one (1) timeslot'">
+							<button class="btn d-flex align-items-center" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">
+								Next
+								<arrow-right-icon width="20" height="20" transform="scale(1.2)"></arrow-right-icon>
 							</button>
 						</div>
 					</div>
@@ -91,19 +106,28 @@
 						<!-- Date/time selection -->
 						<div class="pt-3 pb-4 d-flex">
 							<div class="text-center position-relative">
-								<div ref="activeUser" class="active-user position-absolute w-100" :style="{'top': `${activeUserBgPosition}px`}"></div>
-								
+								<div ref="activeUser" class="active-user position-absolute w-100" :style="{ top: `${activeUserBgPosition}px` }"></div>
+
 								<!-- Assigned Coaches -->
-								<div v-for="assignedService in selectedServiceForTimeline.member_services" class="pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer" :class="{'active': selectedCoachId == assignedService.member_id}" :key="assignedService.id" @click="selectedCoachId = assignedService.member_id; selectedService = assignedService">
+								<div
+									v-for="assignedService in selectedServiceForTimeline.member_services"
+									class="pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer"
+									:class="{ active: selectedCoachId == assignedService.member_id }"
+									:key="assignedService.id"
+									@click="
+										selectedCoachId = assignedService.member_id;
+										selectedService = assignedService;
+									"
+								>
 									<div class="d-flex align-items-center p-1">
-										<div class="profile-image profile-image-xs cursor-pointer" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
-											<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+										<div class="profile-image profile-image-xs cursor-pointer" :style="{ 'background-image': `url(${assignedService.coach.profile_image})` }">
+											<span v-if="!assignedService.coach.profile_image">{{ assignedService.coach.initials }}</span>
 										</div>
 										<div class="flex-1 text-left pl-2">
 											<h6 class="font-heading text-nowrap mb-0">
-												{{ assignedService.user.full_name }}
+												{{ assignedService.coach.full_name }}
 											</h6>
-											<small class="text-secondary">{{ assignedService.user.timezone }}</small>
+											<small class="text-secondary">{{ assignedService.coach.timezone }}</small>
 										</div>
 									</div>
 								</div>
@@ -123,7 +147,12 @@
 											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
 												<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
 													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-														<div v-tooltip.top="timezoneTooltip(selectedService.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)"><span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span></div>
+														<div v-tooltip.top="timezoneTooltip(selectedService.coach.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)">
+															<span class="selected-checkmark position-absolute">
+																<checkmark-icon v-if="selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time)" height="30" width="30" class="fill-green"></checkmark-icon>
+															</span>
+															<span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
+														</div>
 													</div>
 												</template>
 												<div v-else class="position-absolute-center w-100 h-100 bg-light"></div>
@@ -145,10 +174,10 @@
 				</div>
 
 				<div v-else class="position-absolute-center container selected-service-container" key="summary">
-					<div class="row justify-content-center">
+					<vue-form-validate @submit="submit" class="row justify-content-center">
 						<div class="col-md-9">
 							<div class="d-flex align-items-center mb-3">
-								<button class="btn line-height-0 p-0 close" type="button" @click="selectedTimeslot = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
+								<button class="btn line-height-0 p-0 close" type="button" @click="selectedTimeslot = false"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
 								<h4 class="mb-0 font-heading ml-3">Confirm and Book</h4>
 							</div>
 							<div class="bg-white shadow-sm rounded selected-service text-left d-flex">
@@ -156,71 +185,143 @@
 									<h3 class="h3 mb-3 font-heading">{{ selectedService.name }}</h3>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Coach</div>
-										<div class="h6 font-heading">{{ selectedService.user.full_name }}</div>
+										<div class="h6 font-heading">{{ selectedService.coach.full_name }}</div>
 									</div>
 									<div class="mb-3">
-										<div class="font-weight-normal text-secondary">Date</div>
-										<div class="h6 font-heading">{{ formatDate(selectedDate) }}</div>
-									</div>
-									<div class="mb-3">
-										<div class="font-weight-normal text-secondary">Starts at</div>
-										<div class="h6 font-heading">{{ convertTime(selectedTimeslot.time, 'hh:mmA') }}</div>
-									</div>
-									<div class="mb-3">
-										<div class="font-weight-normal text-secondary">Ends at</div>
-										<div class="h6 font-heading">{{ endTime }}</div>
-									</div>
-									<div>
 										<div class="font-weight-normal text-secondary">Duration</div>
 										<div class="h6 font-heading">{{ selectedService.duration }} minutes</div>
+									</div>
+
+									<div class="mb-3">
+										<div class="font-weight-normal text-secondary mb-n3">Timeslots</div>
+										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-4">
+											<div class="d-flex">
+												<div>
+													<h6 class="font-heading mb-1">{{ formatDate(timeslot.date.date) }} ({{ dayjs(timeslot.date.date).format('dddd') }})</h6>
+													<div class="text-muted">{{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}</div>
+												</div>
+												<div class="dropleft ml-auto mr-n2 mt-n2 d-none">
+													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
+														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
+													</button>
+
+													<div class="dropdown-menu">
+														<div class="d-flex align-items-center px-2 py-1">
+															<span>Recurring</span>
+															<toggle-switch
+																class="ml-auto"
+																@input="
+																	if (timeslot.is_recurring) {
+																		$set(
+																			timeslot,
+																			'endDate',
+																			dayjs(new Date())
+																				.add(1, 'year')
+																				.toDate()
+																		);
+																		$set(timeslot, 'frequency', recurringFrequencies[0].value);
+																	}
+																"
+																active-class="bg-primary"
+																v-model="timeslot.is_recurring"
+															></toggle-switch>
+														</div>
+
+														<span
+															class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
+															@click="
+																selectedTimeslots.splice(timeslotIndex, 1);
+																if (selectedTimeslots.length == 0) {
+																	selectedTimeslot = false;
+																}
+															"
+														>
+															Remove
+														</span>
+													</div>
+												</div>
+											</div>
+											<div v-if="timeslot.is_recurring">
+												<div class="form-group mb-0 mt-3">
+													Every {{ dayjs(timeslot.date.date).format('dddd') }} of the {{ timeslot.frequency.replace('ly', '').toLowerCase() }}
+													<vue-select button_class="btn btn-white btn-block shadow-none border-0 mt-2" :options="recurringFrequencies" v-model="timeslot.frequency"></vue-select>
+												</div>
+												<div class="form-group mt-3 mb-0">
+													<label class="text-muted">Ends at</label>
+													<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.endDate">
+														<template v-slot="{ inputValue, inputEvents }">
+															<button type="button" class="btn btn-white btn-block shadow-none" v-on="inputEvents">
+																{{ formatDate(inputValue) }}
+															</button>
+														</template>
+													</v-date-picker>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 								<div class="p-4 flex-1">
 									<div class="d-flex flex-column h-100">
 										<div class="flex-grow-1 h-100 position-relative">
-											<vue-form-validate @submit="submit">
-												<template v-if="authAction == 'login'">
-													<h5 class="h4 font-heading mb-4">Log In</h5>
-													<div class="form-group mb-2">
-														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
-													</div>
-													<div class="form-group">
-														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
-													</div>
-													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
-													<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'signup'">Sign Up</button>
-												</template>
-												<template v-else-if="authAction == 'signup'">
-													<h5 class="h4 font-heading mb-3">Create your account</h5>
-													<div class="d-flex align-items-center mb-2">
-														<div class="form-group mb-0 pr-1">
-															<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required />
-														</div>
-														<div class="form-group mb-0 pl-1">
-															<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required />
-														</div>
-													</div>
-													<div class="form-group mb-2">
-														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
-													</div>
-													<div class="form-group">
-														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
-													</div>
-													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
-													<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'login'">Login</button>
-												</template>
-
-												<div class="d-flex mx-n1 mt-3">
-													<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook">
-														<facebook-icon height="20" width="20" class="mr-2"></facebook-icon>
-														Facebook
-													</button>
-													<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook">
-														<google-icon height="16" width="16" class="mr-2"></google-icon>
-														Google
-													</button>
+											<template v-if="authAction == 'login'">
+												<h5 class="h4 font-heading mb-4">Log In</h5>
+												<div class="form-group mb-2">
+													<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
 												</div>
-											</vue-form-validate>
+												<div class="form-group mb-2">
+													<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
+												</div>
+
+												<div v-if="selectedService.ask_skype" class="form-group mb-2">
+													<input type="text" class="form-control" placeholder="Skype ID" :data-required="selectedService.require_skype" />
+												</div>
+
+												<div v-if="selectedService.ask_phone" class="form-group">
+													<input type="text" class="form-control" placeholder="Phone" :data-required="selectedService.require_phone" />
+												</div>
+
+												<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
+												<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'signup'">Sign Up</button>
+											</template>
+											<template v-else-if="authAction == 'signup'">
+												<h5 class="h4 font-heading mb-3">Create your account</h5>
+												<div class="d-flex align-items-center mb-2">
+													<div class="form-group mb-0 pr-1">
+														<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required />
+													</div>
+													<div class="form-group mb-0 pl-1">
+														<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required />
+													</div>
+												</div>
+												<div class="form-group mb-2">
+													<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
+												</div>
+												<div class="form-group mb-2">
+													<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
+												</div>
+
+												<div v-if="selectedService.ask_skype" class="form-group mb-2">
+													<input type="text" class="form-control" placeholder="Skype ID" :data-required="selectedService.require_skype" />
+												</div>
+
+												<div v-if="selectedService.ask_phone" class="form-group">
+													<input type="text" class="form-control" placeholder="Phone" :data-required="selectedService.require_phone" />
+												</div>
+
+												<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
+												<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'login'">Login</button>
+											</template>
+
+											<div class="d-flex mx-n1 mt-3">
+												<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook">
+													<facebook-icon height="20" width="20" class="mr-2"></facebook-icon>
+													Facebook
+												</button>
+												<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook">
+													<google-icon height="16" width="16" class="mr-2"></google-icon>
+													Google
+												</button>
+											</div>
 
 											<div class="text-center text-danger position-absolute w-100">&nbsp;{{ authError }}&nbsp;</div>
 										</div>
@@ -229,7 +330,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</vue-form-validate>
 				</div>
 			</transition-group>
 		</div>
@@ -240,18 +341,34 @@
 			</div>
 		</div>
 
-		<modal ref="bookingModal" :close-button="false">
-			<div class="text-center booking-modal-progress position-relative">
-				<div class="position-absolute-center w-100">
-					<template v-if="bookingSuccess">
-						<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
-						<h6 class="h3 mb-4 mt-2 font-heading">Booking placed!</h6>
-						<button class="btn btn-white border" type="button" @click="reset">Close</button>
-					</template>
-					<template v-else>
-						<div class="spinner-border text-primary" role="status"></div>
-						<h6 class="h3 mt-4 mb-0 font-heading">Booking...</h6>
-					</template>
+		<modal ref="bookingModal" id="bookingModal" :close-button="bookingSuccess" @hide="reset">
+			<div class="text-center position-relative">
+				<div :class="{ disabled: !bookingSuccess }">
+					<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
+					<h6 class="h3 font-heading">Booking placed!</h6>
+					<p class="mb-4 h6 font-weight-normal text-muted">A booking confirmation has been sent to your email</p>
+
+					<div v-for="booking in bookings" :key="booking.id" class="rounded p-3 text-left bg-light d-flex align-items-center mt-3">
+						<div>
+							<h6 class="font-heading mb-1">{{ formatDate(booking.date) }}</h6>
+							<div class="text-muted">{{ formatTime(booking.start) }} - {{ formatTime(booking.end) }}</div>
+						</div>
+						<div class="ml-auto dropdown">
+							<button class="btn btn-white shadow-none" type="button" data-toggle="dropdown">
+								Add to Calendar
+							</button>
+							<div class="dropdown-menu">
+								<a target="_blank" :href="booking.google_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Google Calendar</a>
+								<a target="_blank" :href="booking.outlook_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Outlook</a>
+								<a target="_blank" :href="booking.yahoo_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Yahoo!</a>
+								<a target="_blank" :href="booking.ical_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">iCal</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="!bookingSuccess" class="position-absolute-center">
+					<div class="spinner-border text-primary" role="status"></div>
+					<h6 class="h3 mt-4 mb-0 font-heading">Booking...</h6>
 				</div>
 			</div>
 		</modal>

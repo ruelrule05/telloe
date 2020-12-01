@@ -5,6 +5,7 @@ namespace Modules\Frontend\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingNote;
+use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\Notification;
 use App\Models\Service;
@@ -141,7 +142,10 @@ class BookingController extends Controller
             if (Auth::user()->id == $booking->user_id) { // if contact - notify client
                 $user_id = $booking->service->user->id;
                 $description = "<strong>{$booking->user->full_name}</strong> has placed a booking.";
-                $link = "/dashboard/bookings/calendar?date={$booking->date}";
+                $contact = $booking->contact ?? Contact::where('user_id', $booking->service->user_id)->where('contact_user_id', $booking->user_id)->first() ?? null;
+                if ($contact) {
+                    $link = "/dashboard/contacts/$contact->id";
+                }
             } elseif (Auth::user()->id == $booking->service->user_id) { // if client - notify contact
                 $user_id = $booking->user->id;
                 $description = 'A booking has been placed for your account.';
@@ -228,7 +232,10 @@ class BookingController extends Controller
             if ($authUser->id == $booking->user_id) { // if contact - notify client
                 $user_id = $booking->service->user->id;
                 $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
-                $link = "/dashboard/bookings/calendar?date={$booking->date}";
+                $contact = $booking->contact ?? Contact::where('user_id', $booking->service->user_id)->where('contact_user_id', $booking->user_id)->first() ?? null;
+                if ($contact) {
+                    $link = "/dashboard/contacts/$contact->id";
+                }
             } elseif ($authUser->id == $booking->service->user_id || $authUser->id == $booking->service->parentService->user_id) { // if client - notify contact
                 $user_id = $booking->user->id;
                 $description = 'A booking you made has been modified.';

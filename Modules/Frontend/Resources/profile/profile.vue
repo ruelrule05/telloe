@@ -173,7 +173,7 @@
 								<!-- Assigned Coaches -->
 								<div
 									v-for="assignedService in selectedServiceForTimeline.assigned_services"
-									class="xborder pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer"
+									class="pl-2 py-2 pr-3 mc-3 ml-1 rounded position-relative user-container cursor-pointer"
 									:class="{ active: selectedCoachId == assignedService.coach.id }"
 									:key="assignedService.id"
 									@click="
@@ -248,7 +248,7 @@
 									<h3 class="h3 mb-3 font-heading">{{ selectedService.name }}</h3>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Coach</div>
-										<div class="h6 font-heading">{{ selectedService.user.full_name }}</div>
+										<div class="h6 font-heading">{{ selectedService.coach.full_name }}</div>
 									</div>
 									<div class="mb-3">
 										<div class="font-weight-normal text-secondary">Duration</div>

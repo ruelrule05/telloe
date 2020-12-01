@@ -290,7 +290,7 @@ function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $reques
             App\Models\Notification::create([
                 'user_id' => $contact->user_id,
                 'description' => "<strong>{$contact->contactUser->full_name}</strong> has accepted your invitation.",
-                'link' => '/dashboard/contacts'
+                'link' => "/dashboard/contacts/$contact->id"
             ]);
         }
     }
@@ -308,7 +308,7 @@ function checkMemberInviteToken(App\Models\User $user, Illuminate\Http\Request $
             App\Models\Notification::create([
                 'user_id' => $member->user_id,
                 'description' => "<strong>{$member->memberUser->full_name}</strong> has accepted your member invitation.",
-                'link' => '/dashboard/members'
+                'link' => "/dashboard/members/$member->id"
             ]);
         }
     }

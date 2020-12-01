@@ -185,7 +185,8 @@ class ContactController extends Controller
         $bookings = Booking::with('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices')->where(function ($query) use ($contact) {
             $query->where('user_id', $contact->contact_user_id)->orWhere('contact_id', $contact->id);
         })->whereIn('service_id', $serviceIds);
-        $contact->upcoming_bookings = $bookings->whereRaw("DATE(CONCAT_WS(' ', `date`, `start`)) > DATE('$now')")->orderBy('date', 'ASC')->limit(5)->get();
+        $upcoming_bookings = clone $bookings;
+        $contact->upcoming_bookings = $upcoming_bookings->orderBy('date', 'DESC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
         return response($contact->load('contactUser', 'contactNotes'));
     }

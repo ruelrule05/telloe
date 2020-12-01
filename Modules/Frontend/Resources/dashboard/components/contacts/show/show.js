@@ -170,7 +170,7 @@ export default {
 		}),
 
 		async goToConversation() {
-			let conversation = await this.storeConversation({ members: [this.contact.id] });
+			let conversation = await this.storeConversation({ members: [this.contact.contact_user_id] });
 			if (conversation) {
 				this.$router.push(`/dashboard/conversations/${conversation.id}`);
 			}

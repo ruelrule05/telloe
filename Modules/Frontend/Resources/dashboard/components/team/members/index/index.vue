@@ -119,7 +119,7 @@
 				<div class="form-group">
 					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
 					<template v-for="service in services">
-						<div v-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
+						<div xv-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
 							<div>
 								<h6 class="font-heading mb-0">{{ service.name }}</h6>
 								<small class="text-gray d-block">{{ service.duration }} minutes</small>

@@ -16,7 +16,7 @@ class Organization extends BaseModel
 
     public function members()
     {
-        return $this->hasMany(OrganizationMember::class);
+        return $this->hasMany(OrganizationMember::class)->whereHas('member');
     }
 
     public function getCreatedAtAttribute()

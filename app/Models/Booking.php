@@ -21,7 +21,7 @@ class Booking extends BaseModel
 
     public function getCustomerAttribute()
     {
-        return $this->user ?? $this->contact->contactUser;
+        return $this->user ?? $this->contact->contactUser ?? null;
     }
 
     public function user()

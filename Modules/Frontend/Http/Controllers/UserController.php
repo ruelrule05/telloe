@@ -111,7 +111,11 @@ class UserController extends Controller
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
         $service = Service::where('id', $service_id)->where(function ($query) use ($user) {
-            $query->where('user_id', $user->id)->orWhereHas('parentService', function ($query) use ($user) {
+            $query->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)->orWhereHas('member', function ($member) use ($user) {
+                    $member->where('member_user_id', $user->id);
+                });
+            })->orWhereHas('parentService', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
         })->firstOrfail();

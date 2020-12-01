@@ -3,6 +3,7 @@ require('../js/bootstrap');
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/modal';
+import 'bootstrap/js/dist/dropdown';
 import VCalendar from 'v-calendar';
 import Toasted from 'vue-toasted';
 import dayjs from 'dayjs';
@@ -43,6 +44,10 @@ const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';
+import MapMarkerIcon from '../icons/map-marker';
+import ArrowRightIcon from '../icons/arrow-right';
+import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
+import MoreIcon from '../icons/more-h';
 
 export default {
 	components: {
@@ -66,7 +71,11 @@ export default {
 		CalendarIcon,
 		CoinIcon,
 		PackageIcon,
-		DollarSignIcon
+		DollarSignIcon,
+		MapMarkerIcon,
+		ArrowRightIcon,
+		ToggleSwitch,
+		MoreIcon
 	},
 
 	directives: { tooltip },
@@ -117,7 +126,9 @@ export default {
 		convertTime: convertTime,
 		dayjs: dayjs,
 		selectedCoachId: null,
-		activeUserBgPosition: 0
+		activeUserBgPosition: 0,
+		selectedTimeslots: [],
+		bookings: []
 	}),
 
 	computed: {
@@ -138,18 +149,6 @@ export default {
 			}
 
 			return tabDates;
-		},
-
-		endTime() {
-			let endTime = '';
-			if (this.selectedService && this.startDate && this.selectedTimeslot) {
-				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + this.selectedTimeslot.time);
-				endTime = dayjs(startDate)
-					.add(this.selectedService.duration, 'minute')
-					.format('hh:mmA');
-			}
-			return endTime;
-			return this.timezoneTime(endTime);
 		}
 	},
 
@@ -210,6 +209,30 @@ export default {
 	},
 
 	methods: {
+		formatTime(time) {
+			let parts = time.split(':');
+			let formatTime = dayjs()
+				.hour(parts[0])
+				.minute(parts[1])
+				.format('hh:mmA');
+			return formatTime;
+		},
+		endTime(time) {
+			let endTime = '';
+			if (this.selectedService && this.startDate) {
+				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
+				endTime = dayjs(startDate)
+					.add(this.selectedService.duration, 'minute')
+					.format('hh:mmA');
+			}
+			return endTime;
+		},
+
+		summary() {
+			if (this.selectedTimeslots.length > 0) {
+				this.selectedTimeslot = true;
+			}
+		},
 		previousWeek() {
 			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
 			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
@@ -225,8 +248,18 @@ export default {
 
 		setSelectedDateAndTimeslot(date, timeslot) {
 			if (timeslot.is_available) {
-				this.selectedDate = date.date;
-				this.selectedTimeslot = timeslot;
+				// this.selectedDate = date.date;
+				// this.selectedTimeslot = timeslot;
+				let index = this.selectedTimeslots.findIndex(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time);
+				if (index > -1) {
+					this.selectedTimeslots.splice(index, 1);
+				} else {
+					this.selectedTimeslots.push({
+						date: date,
+						timeslot: timeslot,
+						days: []
+					});
+				}
 			}
 		},
 
@@ -315,8 +348,8 @@ export default {
 		},
 
 		reset() {
-			this.$refs['bookingModal'].hide();
 			setTimeout(() => {
+				this.bookings = [];
 				this.isBooking = false;
 				this.bookingSuccess = false;
 				this.authForm = false;
@@ -385,7 +418,7 @@ export default {
 
 		SignupAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedDate && this.selectedTimeslot) {
+			if (service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
@@ -394,15 +427,16 @@ export default {
 						last_name: this.loginForm.last_name,
 						email: this.loginForm.email,
 						password: this.loginForm.password,
-						date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-						time: this.selectedTimeslot.time,
+						timeslots: this.selectedTimeslots,
 						timezone: this.timezone
 					};
 					axios
-						.post(`/@${this.profile.username}/${service.id}/signup_and_book`, data, { toasted: true })
+						.post(`/@${this.selectedService.coach.username}/${service.id}/signup_and_book`, data, { toasted: true })
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
+							this.selectedTimeslots = [];
+							this.bookings = response.data;
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -418,22 +452,23 @@ export default {
 
 		LoginAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedDate && this.selectedTimeslot) {
+			if (service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
 					let data = {
 						email: this.loginForm.email,
 						password: this.loginForm.password,
-						date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-						time: this.selectedTimeslot.time
+						timeslots: this.selectedTimeslots
 					};
 					axios
-						.post(`/@${this.profile.username}/${service.id}/login_and_book`, data, { toasted: true })
+						.post(`/@${this.selectedService.coach.username}/${service.id}/login_and_book`, data, { toasted: true })
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
 							this.authForm = false;
+							this.selectedTimeslots = [];
+							this.bookings = response.data;
 						})
 						.catch(e => {
 							setTimeout(() => {
@@ -449,7 +484,7 @@ export default {
 
 		FacebookLoginAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (typeof FB != 'undefined' && service && this.selectedDate && this.selectedTimeslot) {
+			if (typeof FB != 'undefined' && service && this.selectedDate && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
@@ -458,15 +493,16 @@ export default {
 							FB.api('/me', { fields: 'first_name, last_name, email' }, data => {
 								if (data && !data.error) {
 									data.timezone = this.timezone;
-									data.date = dayjs(this.selectedDate).format('YYYY-MM-DD');
-									data.time = this.selectedTimeslot.time;
+									data.timeslots = this.selectedTimeslots;
 
 									axios
-										.post(`/@${this.profile.username}/${service.id}/facebook_login_and_book`, data, { toasted: true })
+										.post(`/@${this.selectedService.coach.username}/${service.id}/facebook_login_and_book`, data, { toasted: true })
 										.then(response => {
 											this.bookingSuccess = true;
 											this.loginForm.loading = false;
 											this.authForm = false;
+											this.selectedTimeslots = [];
+											this.bookings = response.data;
 										})
 										.catch(e => {
 											setTimeout(() => {
@@ -494,7 +530,7 @@ export default {
 
 		GoogleLoginAndBook() {
 			let service = this.assignedService || this.selectedService;
-			if (this.GoogleAuth && service && this.selectedDate && this.selectedTimeslot) {
+			if (this.GoogleAuth && service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
 					this.loginForm.loading = true;
 					this.isBooking = true;
@@ -509,16 +545,17 @@ export default {
 								email: profile.getEmail(),
 								image_url: profile.getImageUrl(),
 								timezone: timezone,
-								date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-								time: this.selectedTimeslot.time
+								timeslots: this.selectedTimeslots
 							};
 
 							axios
-								.post(`/@${this.profile.username}/${service.id}/google_login_and_book`, data, { toasted: true })
+								.post(`/@${this.selectedService.coach.username}/${service.id}/google_login_and_book`, data, { toasted: true })
 								.then(response => {
 									this.bookingSuccess = true;
 									this.loginForm.loading = false;
 									this.authForm = false;
+									this.selectedTimeslots = [];
+									this.bookings = response.data;
 								})
 								.catch(e => {
 									setTimeout(() => {

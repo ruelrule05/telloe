@@ -11,7 +11,6 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Modules\Frontend\Http\Slugify;
 
 class OrganizationController extends Controller
 {
@@ -52,7 +51,6 @@ class OrganizationController extends Controller
             'name' => 'required|string',
         ]);
         $authUser = Auth::user();
-
 
         if (Organization::where('slug', $request->slug)->first()) {
             return abort(403, 'Slug is already associated to a different organization');
