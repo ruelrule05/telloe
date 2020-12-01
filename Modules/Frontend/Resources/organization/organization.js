@@ -128,7 +128,10 @@ export default {
 		selectedCoachId: null,
 		activeUserBgPosition: 0,
 		selectedTimeslots: [],
-		bookings: []
+		bookings: [],
+		masks: {
+			input: 'MMM D, YYYY'
+		}
 	}),
 
 	computed: {

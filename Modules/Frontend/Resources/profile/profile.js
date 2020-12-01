@@ -144,7 +144,10 @@ export default {
 				value: 'monthly'
 			}
 		],
-		bookings: []
+		bookings: [],
+		masks: {
+			input: 'MMM D, YYYY'
+		}
 	}),
 
 	computed: {
