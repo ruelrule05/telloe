@@ -141,7 +141,6 @@ export default {
 				if (!conversation) this.getConversation(data.conversation_id);
 			}
 		});
-		this.getServices();
 	},
 
 	mounted() {},

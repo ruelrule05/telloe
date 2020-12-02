@@ -378,13 +378,14 @@ export default {
 		},
 
 		addNewField() {
-			if (this.new_field.name && this.new_field.value) {
+			if (this.new_field.name) {
 				this.new_field.is_visible = false;
 				this.contact.custom_fields.push(this.new_field);
 				this.updateContact(this.contact);
 				this.new_field = {};
 				this.addField = false;
 			}
+			this.editFields = false;
 		},
 
 		updateCustomField(index) {

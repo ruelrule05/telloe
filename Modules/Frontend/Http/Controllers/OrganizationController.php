@@ -17,9 +17,18 @@ class OrganizationController extends Controller
     public function profile($organization, Request $request)
     {
         $organization = Organization::where('slug', $organization)->firstOrfail();
-
+        $data = ['services' => []];
+        $userServices = $organization->user->services()->where('is_available', true)->get();
+        foreach ($userServices as $userService) {
+            $data['services'][$userService->id]['id'] = $userService->id;
+            $data['services'][$userService->id]['name'] = $userService->name;
+            $data['services'][$userService->id]['description'] = $userService->description;
+            $data['services'][$userService->id]['duration'] = $userService->duration;
+            $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
+            $data['services'][$userService->id]['currency'] = $userService->currency;
+            $data['services'][$userService->id]['member_services'][] = $userService;
+        }
         if ($request->ajax() || $request->wantsJson()) {
-            $data = ['services' => []];
             foreach ($organization->members as $member) {
                 $services = $member->member->services()->whereHas('parentService', function ($parentService) use ($organization) {
                     $parentService->where('user_id', $organization->user_id);
@@ -30,6 +39,7 @@ class OrganizationController extends Controller
                     $data['services'][$service->parent_service_id]['description'] = $service->parentService->description;
                     $data['services'][$service->parent_service_id]['duration'] = $service->parentService->duration;
                     $data['services'][$service->parent_service_id]['default_rate'] = $service->parentService->default_rate;
+                    $data['services'][$service->parent_service_id]['currency'] = $service->parentService->currency;
                     $data['services'][$service->parent_service_id]['member_services'][] = $service;
                 }
             }

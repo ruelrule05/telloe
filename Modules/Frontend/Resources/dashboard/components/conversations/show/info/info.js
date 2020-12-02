@@ -1,4 +1,4 @@
-import {mapState, mapActions} from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 import MessageType from '../message-type';
 import VueFormValidate from '../../../../../components/vue-form-validate';
@@ -26,210 +26,199 @@ import draggable from 'vuedraggable';
 
 export default {
 	components: {
-        MessageType,
-        VueFormValidate,
-        VueSelect,
-        ToggleSwitch,
-        Bookings,
-        FormSearch,
+		MessageType,
+		VueFormValidate,
+		VueSelect,
+		ToggleSwitch,
+		Bookings,
+		FormSearch,
 
 		CloseIcon,
 		PlusIcon,
 		PlayIcon,
 		VolumeMidIcon,
 		BookmarkIcon,
-        TrashIcon,
-        HistoryIcon,
-        PencilIcon,
-        ChevronRightIcon,
-        ClockIcon,
-        PlannerIcon,
-        DocumentIcon,
-        MoveIcon,
-        draggable,
+		TrashIcon,
+		HistoryIcon,
+		PencilIcon,
+		ChevronRightIcon,
+		ClockIcon,
+		PlannerIcon,
+		DocumentIcon,
+		MoveIcon,
+		draggable
 	},
 
-    directives: {VueScrollTo, Tooltip},
+	directives: { VueScrollTo, Tooltip },
 
 	props: {
 		conversation: {
-			required: true,
+			required: true
 		},
-        closeButton: {
-            type: Boolean,
-            default: true,
-        },
+		closeButton: {
+			type: Boolean,
+			default: true
+		}
 	},
 
 	data: () => ({
 		newTag: '',
-        fileType: 'all',
-        newNote: '',
-        customFieldForm: {
-            name: '',
-            value: '',
-            is_visible: false,
-            is_custom: false,
-        },
-        tagSearch: '',
-        editFields: false,
-        addField: false,
-        new_field: {},
-        fileType: 'image',
-        addingNote: false,
-        selectedNote: null,
+		fileType: 'all',
+		newNote: '',
+		customFieldForm: {
+			name: '',
+			value: '',
+			is_visible: false,
+			is_custom: false
+		},
+		tagSearch: '',
+		editFields: false,
+		addField: false,
+		new_field: {},
+		fileType: 'image',
+		addingNote: false,
+		selectedNote: null
 	}),
 
 	computed: {
 		...mapState({
-            user_blacklisted_services: (state) => state.user_blacklisted_services.index,
+			user_blacklisted_services: state => state.user_blacklisted_services.index
 		}),
 
-        customFields() {
-            let custom_fields = [];
-            (this.$root.auth.custom_fields || []).forEach(custom_field => {
-                custom_fields.push({
-                    text: custom_field,                    
-                    value: custom_field,                    
-                });
-            });
-            return custom_fields;
-        },
+		customFields() {
+			let custom_fields = [];
+			(this.$root.auth.custom_fields || []).forEach(custom_field => {
+				custom_fields.push({
+					text: custom_field,
+					value: custom_field
+				});
+			});
+			return custom_fields;
+		},
 
-        blacklisted_services() {
-            let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
-            return this.user_blacklisted_services[user_id] || [];
-        },
+		blacklisted_services() {
+			let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
+			return this.user_blacklisted_services[user_id] || [];
+		},
 
-        tagsData() {
-            let tagsData = {
-                data: [],
-                tags: []
-            };
-            let allTags = [];
+		tagsData() {
+			let tagsData = {
+				data: [],
+				tags: []
+			};
+			let allTags = [];
 
-            ((this.conversation.paginated_messages || {}).data || []).forEach((message) => {
-                if(message.tags.length > 0) {
-                    allTags.push({
-                        type: 'message',
-                        data: message
-                    });
-                    message.tags.forEach((tag) => {
-                        if(tagsData.tags.indexOf(tag) == -1) tagsData.tags.push(tag);
-                    });
-                }
-            });
-            (this.conversation.notes || []).forEach((note) => {
-                if(note.tags.length > 0) {
-                    allTags.push({
-                        type: 'note',
-                        data: note
-                    });
-                    note.tags.forEach((tag) => {
-                        if(tagsData.tags.indexOf(tag) == -1) tagsData.tags.push(tag);
-                    });
-                }
-            });
+			((this.conversation.paginated_messages || {}).data || []).forEach(message => {
+				if (message.tags.length > 0) {
+					allTags.push({
+						type: 'message',
+						data: message
+					});
+					message.tags.forEach(tag => {
+						if (tagsData.tags.indexOf(tag) == -1) tagsData.tags.push(tag);
+					});
+				}
+			});
+			(this.conversation.notes || []).forEach(note => {
+				if (note.tags.length > 0) {
+					allTags.push({
+						type: 'note',
+						data: note
+					});
+					note.tags.forEach(tag => {
+						if (tagsData.tags.indexOf(tag) == -1) tagsData.tags.push(tag);
+					});
+				}
+			});
 
-            let tagQuery = this.tagSearch.trim().toLowerCase();
-            if(tagQuery.length > 0) {
-                allTags.forEach((tag) => {
-                    if(JSON.stringify(tag.data.tags).toLowerCase().includes(tagQuery)) tagsData.data.push(tag);
-                })
-            } else {
-                tagsData.data = allTags;
-            }
+			let tagQuery = this.tagSearch.trim().toLowerCase();
+			if (tagQuery.length > 0) {
+				allTags.forEach(tag => {
+					if (
+						JSON.stringify(tag.data.tags)
+							.toLowerCase()
+							.includes(tagQuery)
+					)
+						tagsData.data.push(tag);
+				});
+			} else {
+				tagsData.data = allTags;
+			}
 
-            return tagsData;
-        },
+			return tagsData;
+		},
 
-        files() {
-            let files = [];
-            ((this.conversation.files || {}).data || []).forEach(file => {
-                if(file.type == this.fileType) files.push(file);
-            });
-            return files;
-        }
+		files() {
+			let files = [];
+			((this.conversation.files || {}).data || []).forEach(file => {
+				if (file.type == this.fileType) files.push(file);
+			});
+			return files;
+		}
 	},
 
-    watch: {
-        '$root.profileTab': function(value) {
-            if(value == 'notes' && this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
-            this.tagSearch = '';
-        },
-        'conversation.id': function() {
-            if(this.conversation.members.length == 1) {
-                let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
-                if(user_id) this.getUserBlacklistedServices(user_id);
-            }
-            if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
-            $('#info-items > div').show();
-        },
-        'customFieldForm.name': function(value) {
-            if(value == 'custom' ) {
-                this.customFieldForm.name = '';
-                this.customFieldForm.is_custom = true;
-            }
-        },
-    },
+	watch: {
+		'$root.profileTab': function(value) {
+			this.tagSearch = '';
+		},
+		'conversation.id': function() {
+			if (this.conversation.members.length == 1) {
+				let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
+			}
+			if (this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
+			$('#info-items > div').show();
+		},
+		'customFieldForm.name': function(value) {
+			if (value == 'custom') {
+				this.customFieldForm.name = '';
+				this.customFieldForm.is_custom = true;
+			}
+		}
+	},
 
 	created() {
-        if(this.conversation.members.length == 1) {
-            let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
-            if(user_id) this.getUserBlacklistedServices(user_id);
-        }
-        if(this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
-        this.showUserCustomFields();
+		if (this.conversation.members.length == 1) {
+			let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
+		}
 	},
 
 	methods: {
 		...mapActions({
-            getNotes: 'notes/index',
-            getUserBlacklistedServices: 'user_blacklisted_services/index',
-            storeNote: 'notes/store',
-            updateNote: 'notes/update',
-			deleteNote: 'notes/delete',
-            updateConversation: 'conversations/update',
-            showUserCustomFields: 'user_custom_fields/show',
-            storeUserCustomFields: 'user_custom_fields/store',
+			updateConversation: 'conversations/update'
 		}),
 
-        submitUpdateNote(note) {
-            note.notes = note.new_notes;
-            this.updateNote(note);
-            this.selectedNote = null;
-        },
+		addNewField() {
+			if (this.new_field.name && this.new_field.value) {
+				this.new_field.is_visible = false;
+				this.conversation.custom_fields.push(this.new_field);
+				this.updateConversation(this.conversation);
+				this.new_field = {};
+				this.addField = false;
+			}
+		},
 
-        addNewField() {
-            if(this.new_field.name && this.new_field.value) {
-                this.new_field.is_visible = false;
-                this.conversation.custom_fields.push(this.new_field);
-                this.updateConversation(this.conversation);
-                this.new_field = {};
-                this.addField = false;
-            }
-        },
+		toggleCollapse(e) {
+			let parent = $(e.currentTarget).parent()[0];
+			$('#info-items > div')
+				.not(parent)
+				.hide();
+			let currentTarget = e.currentTarget;
+			setTimeout(() => {
+				if (currentTarget.getAttribute('aria-expanded') == 'false') {
+					$('#info-items > div').show();
+				}
+			}, 150);
+		},
 
-        toggleCollapse(e) {
-            let parent = $(e.currentTarget).parent()[0];
-            $('#info-items > div').not(parent).hide();
-            let currentTarget = e.currentTarget;
-            setTimeout(() => {
-                if(currentTarget.getAttribute('aria-expanded') == 'false') {
-                    $('#info-items > div').show();
-                }
-            }, 150);
-        },
+		closeInfo() {
+			this.$root.detailsTab = '';
+		},
 
-        closeInfo() {
-            this.$root.detailsTab = '';
-        },
+		updateField(custom_field) {
+			console.log(custom_field);
+		},
 
-        updateField(custom_field) {
-            console.log(custom_field);
-        },
-
-     /*   updateCustomField(custom_field) {
+		/*   updateCustomField(custom_field) {
             this.$set(custom_field, 'name', custom_field.new_name);
             this.$set(custom_field, 'value', custom_field.new_value);
             this.updateConversation(this.conversation);
@@ -248,39 +237,38 @@ export default {
             }
         },*/
 
-        updateNoteTags(note) {
-            const newTag = (note.newTag || '').trim();
-            if(newTag && !note.tags.find((x) => x == newTag)) note.tags.push(newTag);
-            note.newTag = '';
-            this.updateNote(note);
-        },
-        
-        removeHiglightMessage(message) {
-            setTimeout(() => {
-               $(`#${message.id} .message-content`).removeClass('highlight-message');
-           }, 500);
-        },
+		updateNoteTags(note) {
+			const newTag = (note.newTag || '').trim();
+			if (newTag && !note.tags.find(x => x == newTag)) note.tags.push(newTag);
+			note.newTag = '';
+			this.updateNote(note);
+		},
 
-        highlightMessage(message) {
-            $(`#${message.id} .message-content`).addClass('highlight-message');
-        },
+		removeHiglightMessage(message) {
+			setTimeout(() => {
+				$(`#${message.id} .message-content`).removeClass('highlight-message');
+			}, 500);
+		},
 
-        addNote() {
-            let note = {
-                conversation_id: this.conversation.id,
-                notes: this.newNote,
-            };
-            this.storeNote(note);
-            this.newNote = '';
-            this.addingNote = false;
-            this.$refs['profileImage'].click();
-        },
+		highlightMessage(message) {
+			$(`#${message.id} .message-content`).addClass('highlight-message');
+		},
 
+		addNote() {
+			let note = {
+				conversation_id: this.conversation.id,
+				notes: this.newNote
+			};
+			this.storeNote(note);
+			this.newNote = '';
+			this.addingNote = false;
+			this.$refs['profileImage'].click();
+		},
 
-        isFile(message) {
-            let fileTypes = ['image', 'video', 'audio', 'file'];
-            return fileTypes.indexOf(message.type) > -1;
-        },
+		isFile(message) {
+			let fileTypes = ['image', 'video', 'audio', 'file'];
+			return fileTypes.indexOf(message.type) > -1;
+		},
 
 		disableNewline(e) {
 			if (e.keyCode == 13) e.preventDefault();
@@ -293,8 +281,8 @@ export default {
 					this.conversation.name = newName;
 					this.updateConversation(this.conversation);
 				}
-                e.target.textContent = newName || this.conversation.name;
+				e.target.textContent = newName || this.conversation.name;
 			}
-		},
-	},
+		}
+	}
 };

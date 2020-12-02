@@ -282,6 +282,7 @@ export default {
 
 	watch: {
 		selectedCoachId: function(value) {
+			this.selectedTimeslots = [];
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
 				if (activeUser) {

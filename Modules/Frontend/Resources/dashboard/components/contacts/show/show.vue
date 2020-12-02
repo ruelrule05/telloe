@@ -100,7 +100,7 @@
 											></trash-icon>
 										</div>
 									</draggable>
-									<div v-if="addField || (contact.custom_fields || []).length == 0" class="d-flex align-items-center">
+									<div class="d-flex align-items-center">
 										<button class="btn p-0 d-flex align-items-center mr-1" disabled type="button">
 											<move-icon width="10" height="10" transform="scale(1.5)" class="fill-gray-400"></move-icon>
 										</button>
@@ -110,9 +110,8 @@
 										<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
 									</div>
 									<div class="d-flex align-items-center mt-4">
-										<button type="button" class="btn btn-sm btn-light shadow-none" @click="editFields = false">Close</button>
-										<button v-if="addField || (contact.custom_fields || []).length == 0" class="ml-auto btn btn-sm btn-primary" type="button" @click="addNewField">Save Field</button>
-										<button v-else type="button" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
+										<button type="button" class="btn btn-light shadow-none" @click="editFields = false">Close</button>
+										<button class="ml-auto btn btn-primary" type="button" @click="addNewField">Save</button>
 									</div>
 								</template>
 								<div v-else v-for="(custom_field, index) in contact.custom_fields" :key="index" class="d-flex align-items-center custom-field position-relative">
@@ -278,7 +277,7 @@
 													<td class="align-middle">
 														{{ convertTime(booking.end, 'hh:MMA') }}
 													</td>
-													<td class="align-middle pr-0">
+													<td class="align-middle">
 														<div class="flex-grow-1 text-right">
 															<div class="dropleft">
 																<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">

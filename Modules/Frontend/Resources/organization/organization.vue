@@ -44,9 +44,12 @@
 															<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
 															<small class="text-muted ml-1">{{ service.duration }} min</small>
 														</div>
-														<div class="d-flex align-items-center ml-3">
-															<dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
-															<small class="text-muted ml-1">{{ service.default_rate }}</small>
+
+														<div class="d-flex align-items-center ml-3" v-if="parseInt(service.default_rate)">
+															<small>
+																{{ service.currency }}
+																<span class="text-muted">{{ service.default_rate }}</span>
+															</small>
 														</div>
 													</div>
 												</div>
@@ -193,20 +196,20 @@
 									</div>
 
 									<div class="mb-3">
-										<div class="font-weight-normal text-secondary mb-n3">Timeslots</div>
-										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-4">
+										<div class="font-weight-normal text-secondary">Timeslots</div>
+										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-2">
 											<div class="d-flex">
 												<div>
 													<h6 class="font-heading mb-1">{{ formatDate(timeslot.date.date) }} ({{ dayjs(timeslot.date.date).format('dddd') }})</h6>
 													<div class="text-muted">{{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}</div>
 												</div>
-												<div class="dropleft ml-auto mr-n2 mt-n2 d-none">
+												<div class="dropleft ml-auto mr-n2 mt-n2">
 													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
 														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
 													</button>
 
 													<div class="dropdown-menu">
-														<div class="d-flex align-items-center px-2 py-1">
+														<div class="d-flex align-items-center px-2 py-1 d-none">
 															<span>Recurring</span>
 															<toggle-switch
 																class="ml-auto"

@@ -31,7 +31,7 @@ class ConversationController extends Controller
 
     public function show($id, Request $request)
     {
-        $conversation = Conversation::withTrashed()->where(function ($query) {
+        $conversation = Conversation::withTrashed()->with('contact')->where(function ($query) {
             $query->has('members.user')->orHas('contact');
         })->with('user.services', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);

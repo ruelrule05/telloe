@@ -36,64 +36,11 @@
 						<div id="overview" class="collapse" data-parent="#info-items">
 							<!-- Fields -->
 							<div v-if="conversation.members.length == 1" class="form-group">
-								<div class="d-flex align-items-center">
-									<template v-if="$root.auth.role.role == 'client' && !editFields && (conversation.custom_fields || []).length > 0">
-										<label class="text-muted mb-0" ref="customFieldsLabel">Information</label>
-										<button v-if="!editFields" class="ml-auto btn btn-sm btn-white border d-flex align-items-center" type="button" @click="editFields = true"><pencil-icon height="10" width="10" transform="scale(1.4)" class="mr-2"></pencil-icon> Edit Fields</button>
-									</template>
-									<div v-else-if="(conversation.custom_fields || []).length == 0" class="text-center w-100">
-										<button v-if="!editFields" class="btn btn-sm btn-white border d-inline-flex align-items-center" type="button" @click="editFields = true"><plus-icon height="10" width="10" transform="scale(2)" class="mr-2"></plus-icon> Add Fields</button>
-									</div>
-								</div>
-								<div v-if="editFields" class="mt-2">
-									<div class="d-flex mb-2">
-										<strong class="w-50 ml-3">Label</strong>
-										<strong class="w-50 ml-n1">Value</strong>
-									</div>
-									<draggable handle=".handle" :list="conversation.custom_fields" @end="updateConversation(conversation)">
-										<div v-for="(custom_field, index) in conversation.custom_fields" :key="custom_field.id" class="d-flex mb-2 align-items-center">
-											<button class="btn p-0 d-flex align-items-center handle cursor-move" type="button">
-												<move-icon width="10" height="10" transform="scale(1.5)"></move-icon>
-											</button>
-											<input type="text" placeholder="Label" @blur="updateConversation(conversation)" v-model="custom_field.name" class="form-control form-control-sm w-50 mr-1 ml-1" />
-											<input type="text" placeholder="Value" @blur="updateConversation(conversation)" v-model="custom_field.value" class="form-control form-control-sm w-50 ml-1" />
-											<trash-icon
-												width="18"
-												height="18"
-												class="cursor-pointer ml-1"
-												@click.native="
-													conversation.custom_fields.splice(index, 1);
-													updateConversation(conversation);
-												"
-											></trash-icon>
-										</div>
-									</draggable>
-									<div v-if="addField || (conversation.custom_fields || []).length == 0" class="d-flex align-items-center">
-										<button class="btn p-0 d-flex align-items-center mr-1" disabled type="button">
-											<move-icon width="10" height="10" transform="scale(1.5)" class="fill-gray-400"></move-icon>
-										</button>
-										<vue-select v-model="new_field.name" :options="customFields" button_class="form-control-sm mr-1" :searchable="true" :suggestion="true" container_class="w-50" :caret="false" placeholder="Label"></vue-select>
-										<!-- <input type="text" placeholder="Label" @blur="addNewField" v-model="new_field.name" class="form-control form-control-sm w-50 mr-1"> -->
-										<input type="text" placeholder="Value" @blur="addNewField" v-model="new_field.value" class="form-control form-control-sm w-50 ml-2" />
-										<trash-icon width="18" height="18" class="ml-1 opacity-0"></trash-icon>
-									</div>
-									<div class="d-flex align-items-center mt-4">
-										<button type="button" class="btn btn-sm btn-white border mr-1" @click="editFields = false">Close</button>
-										<button type="button" :disabled="addField || (conversation.custom_fields || []).length == 0" class="ml-auto btn btn-sm btn-primary" @click="addField = true">Add Field</button>
-									</div>
-								</div>
-
-								<div v-else class="mt-3">
-									<div v-for="(custom_field, index) in conversation.custom_fields" v-if="custom_field.is_visible || $root.auth.id == conversation.user_id" class="d-flex align-items-center my-2 custom-field position-relative">
-										<div class="overflow-hidden w-50">
-											<strong class="d-block text-ellipsis">{{ custom_field.name }}:</strong>
-										</div>
-										<div class="overflow-hidden w-50">
-											<div class="text-ellipsis">{{ custom_field.value }}</div>
-										</div>
-										<div v-if="$root.auth.role.role == 'client'" class="ml-auto position-static d-flex align-items-center pl-1">
-											<toggle-switch v-model="custom_field.is_visible" @input="updateConversation(conversation)"></toggle-switch>
-										</div>
+								<div v-for="(custom_field, index) in (conversation.contact || {}).custom_fields" :key="index" class="my-2 custom-field position-relative">
+									<span class="text-ellipsis text-muted">{{ custom_field.name }}</span>
+									<div class="text-ellipsis">
+										<span v-if="custom_field.value">{{ custom_field.value }}</span>
+										<span v-else><i>No value</i></span>
 									</div>
 								</div>
 							</div>

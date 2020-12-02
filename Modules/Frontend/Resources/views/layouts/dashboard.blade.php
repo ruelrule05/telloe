@@ -111,7 +111,7 @@
 												<span class="pl-3">Calendar</span>
 											</router-link> -->
 											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
-												<span class="pl-3">Booking Types</span>
+												<span class="pl-3">Types</span>
 											</router-link>
 										</div>
 									</template>

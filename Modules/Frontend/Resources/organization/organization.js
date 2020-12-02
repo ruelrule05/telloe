@@ -183,6 +183,7 @@ export default {
 		},
 
 		selectedCoachId: function(value) {
+			this.selectedTimeslots = [];
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
 				if (activeUser) {
@@ -302,7 +303,7 @@ export default {
 		},
 
 		timezoneTime(time) {
-			let selectedServiceTimezone = this.selectedService.member.member_user.timezone;
+			let selectedServiceTimezone = this.selectedService.coach.timezone;
 			let timezoneTime;
 			if (selectedServiceTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), selectedServiceTimezone);

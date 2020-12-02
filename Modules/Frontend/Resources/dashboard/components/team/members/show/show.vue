@@ -140,7 +140,7 @@
 								<div class="dropdown-menu timeslots-dropdown-menu overflow-y-auto">
 									<div class="text-center text-gray small px-2 py-1 text-nowrap" v-if="timeslots.length == 0">No available timeslots</div>
 									<template v-else v-for="(timeslot, index) in timeslots">
-										<button type="button" class="btn btn-primary btn-block mb-1" :key="index" xv-if="timeslot.is_available" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
+										<button type="button" class="btn btn-primary btn-block mb-1" :key="index" @click="selectedBooking.start = dayjs(`${dayjs(selectedBooking.date).format('Y-m-d')} ${timeslot.time}`).toDate()">
 											{{ timeslot.label }}
 										</button>
 									</template>
@@ -239,7 +239,7 @@
 				<div class="form-group">
 					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
 					<template v-for="service in services">
-						<div v-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
+						<div :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
 							<div>
 								<h6 class="font-heading mb-0">{{ service.name }}</h6>
 								<small class="text-gray d-block">{{ service.duration }} minutes</small>

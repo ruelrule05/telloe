@@ -203,7 +203,7 @@
 								</div>
 								<div class="flex-grow-1 pl-2">
 									<label class="form-label">Currency</label>
-									<vue-select v-model="clonedService.currency" :options="currencies" data-required placeholder="Select currency"></vue-select>
+									<vue-select v-model="clonedService.currency" button_class="form-control" :options="currencies" data-required placeholder="Select currency"></vue-select>
 								</div>
 							</div>
 							<div class="form-group">
