@@ -167,6 +167,7 @@ class ContactController extends Controller
     public function show(Request $request, Contact $contact)
     {
         $this->authorize('show', $contact);
+        $order = $request->order ?? 'DESC';
         $authUser = Auth::user();
         $serviceIds = Service::where('user_id', $authUser->id)->orWhereHas('parentService', function ($parentService) use ($authUser) {
             $parentService->where('user_id', $authUser->id);
@@ -187,7 +188,7 @@ class ContactController extends Controller
         })->whereIn('service_id', $serviceIds);
         $upcoming_bookings = clone $bookings;
         $contact->upcoming_bookings = $upcoming_bookings->orderBy('date', 'DESC')->limit(5)->get();
-        $contact->bookings = $bookings->orderBy('date', 'DESC')->paginate(10);
+        $contact->bookings = $bookings->orderBy('date', $order)->paginate(10);
         return response($contact->load('contactUser', 'contactNotes'));
     }
 

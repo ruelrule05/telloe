@@ -248,11 +248,12 @@
 
 							<div class="rounded bg-white shadow-sm">
 								<!-- Bookings -->
-								<div class="d-flex mb-2 px-3 pt-3">
+								<div class="d-flex mb-3 px-3 pt-3">
 									<h5 class="font-heading mb-3">Bookings</h5>
 									<div class="ml-auto d-flex align-items-center">
 										<div class="d-inline-flex align-items-center">
-											<vue-select :options="servicesList" multiple button_class="border-0 bg-light shadow-none" v-model="filterServices" label="Services" placeholder="All" @input="filterByServices"></vue-select>
+											<vue-select :options="servicesList" multiple button_class="border-0 bg-light shadow-none" v-model="filterServices" label="Services" placeholder="All" @input="filterBookings"></vue-select>
+											<vue-select :options="orders" button_class="ml-2 border-0 bg-light shadow-none" v-model="order" label="Date" placeholder="Order by" @input="filterBookings"></vue-select>
 										</div>
 									</div>
 								</div>

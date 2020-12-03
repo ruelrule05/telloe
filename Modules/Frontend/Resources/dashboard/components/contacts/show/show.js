@@ -73,7 +73,18 @@ export default {
 			service_id: null,
 			date: new Date(),
 			timeslot: null
-		}
+		},
+		orders: [
+			{
+				text: 'Descending',
+				value: 'desc'
+			},
+			{
+				text: 'Ascending',
+				value: 'asc'
+			}
+		],
+		order: 'desc'
 	}),
 
 	computed: {
@@ -316,9 +327,9 @@ export default {
 			return dayjs(date).format('MMM D, YYYY');
 		},
 
-		async filterByServices(services) {
-			let serviceIds = services.map(x => x.id);
-			let response = await axios.get(`/contacts/${this.contact.id}?page=${this.contact.bookings.current_page}&services=${serviceIds}`);
+		async filterBookings() {
+			let serviceIds = this.filterServices.map(x => x.id);
+			let response = await axios.get(`/contacts/${this.contact.id}?page=${this.contact.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
 			this.contact.bookings = response.data.bookings;
 		},
 
