@@ -39,7 +39,15 @@ export default {
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		newBreaktime: null,
-		newHoliday: null,
+		newHoliday: {
+			dates: []
+		},
+		holidayDateAttrs: [
+			{
+				highlight: true,
+				dates: []
+			}
+		],
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		paginate: ['bookings'],
@@ -194,6 +202,14 @@ export default {
 			assignService: 'members/store_service',
 			deleteService: 'services/delete'
 		}),
+
+		addHolidayDate(date) {
+			let newDate = dayjs(date).toDate();
+			let index = this.newHoliday.dates.findIndex(x => x == newDate);
+			console.log(index);
+			this.newHoliday.dates.push(date);
+			this.holidayDateAttrs[0].dates.push(dayjs(date).toDate());
+		},
 
 		update() {
 			this.updateService(this.clonedService).then(service => {
@@ -356,12 +372,12 @@ export default {
 		},
 
 		addHoliday() {
-			if (this.newHoliday && this.newHoliday.date) {
+			if (this.newHoliday.dates.length > 0) {
 				if (!this.service.holidays) this.$set(this.service, 'holidays', []);
 				const formattedDate = dayjs(this.newHoliday.date).format('YYYY-MM-DD');
 				this.service.holidays.push(formattedDate);
-				this.newHoliday = null;
-				this.updateService(this.service);
+				this.newHoliday.dates = [];
+				//this.updateService(this.service);
 			}
 		},
 

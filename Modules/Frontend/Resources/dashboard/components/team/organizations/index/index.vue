@@ -228,6 +228,10 @@
 					</div>
 				</div>
 
+				<div class="form-group mt-4">
+					<vue-checkbox v-model="clonedOrganization.show_user_services" label="Include my services in this organization"></vue-checkbox>
+				</div>
+
 				<div class="d-flex mt-4">
 					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
 						Cancel

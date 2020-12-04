@@ -7,6 +7,7 @@ use App\Http\StripeAPI;
 use App\Models\Booking;
 use App\Models\BookingNote;
 use App\Models\Contact;
+use App\Models\ContactNote;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
 use App\Models\Message;
@@ -187,9 +188,9 @@ class ContactController extends Controller
             $query->where('user_id', $contact->contact_user_id)->orWhere('contact_id', $contact->id);
         })->whereIn('service_id', $serviceIds);
         $upcoming_bookings = clone $bookings;
-        $contact->upcoming_bookings = $upcoming_bookings->orderBy('date', 'DESC')->limit(5)->get();
+        $contact->upcoming_bookings = $upcoming_bookings->whereDate('date', '>=', $now)->orderBy('date', 'DESC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', $order)->paginate(10);
-        return response($contact->load('contactUser', 'contactNotes'));
+        return response($contact->load('contactUser'));
     }
 
     public function update(Request $request, Contact $contact)
@@ -449,5 +450,14 @@ class ContactController extends Controller
         })->orderBy('created_at', 'DESC')->take(3)->get();
 
         return response($recent_notes);
+    }
+
+    public function contactNotes($id, Request $request)
+    {
+        $contact = Contact::findOrFail($id);
+        $this->authorize('show', $contact);
+
+        $order = $request->order ?? 'desc';
+        return response(ContactNote::where('contact_id', $contact->id)->orderBy('created_at', $order)->get());
     }
 }

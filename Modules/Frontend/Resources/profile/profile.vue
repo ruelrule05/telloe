@@ -135,9 +135,8 @@
 						</div>
 
 						<div class="ml-auto" :class="{ 'hide-tooltip': selectedTimeslots.length > 0 }" v-tooltip.left="'Select at least one (1) timeslot'">
-							<button class="btn d-flex align-items-center" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">
-								Next
-								<arrow-right-icon width="20" height="20" transform="scale(1.2)"></arrow-right-icon>
+							<button class="btn" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">
+								Continue
 							</button>
 						</div>
 					</div>
@@ -256,14 +255,14 @@
 									</div>
 
 									<div class="mb-3">
-										<div class="font-weight-normal text-secondary mb-n3">Timeslots</div>
-										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-4">
+										<div class="font-weight-normal text-secondary">Timeslots</div>
+										<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-2">
 											<div class="d-flex">
 												<div>
 													<h6 class="font-heading mb-1">{{ formatDate(timeslot.date.date) }} ({{ dayjs(timeslot.date.date).format('dddd') }})</h6>
 													<div class="text-muted">{{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}</div>
 												</div>
-												<div class="dropleft ml-auto mr-n2 mt-n2 d-none">
+												<div class="dropleft ml-auto mr-n2 mt-n2">
 													<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
 														<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
 													</button>
@@ -283,6 +282,7 @@
 																				.toDate()
 																		);
 																		$set(timeslot, 'frequency', recurringFrequencies[0].value);
+																		setTimeslotDefaultDay('week', timeslot);
 																	}
 																"
 																active-class="bg-primary"
@@ -305,16 +305,23 @@
 												</div>
 											</div>
 											<div v-if="timeslot.is_recurring">
-												<div class="form-group mb-0 mt-3">
-													Every {{ dayjs(timeslot.date.date).format('dddd') }} of the {{ timeslot.frequency.replace('ly', '').toLowerCase() }}
-													<vue-select button_class="btn btn-white btn-block shadow-none border-0 mt-2" :options="recurringFrequencies" v-model="timeslot.frequency"></vue-select>
+												<div class="mb-2">
+													<vue-select dropdown_class="w-100" button_class="form-control mt-2" :options="recurringFrequencies" v-model="timeslot.frequency" label="Repeat every" @input="setTimeslotDefaultDay($event, timeslot)"></vue-select>
 												</div>
-												<div class="form-group mt-3 mb-0">
-													<label class="text-muted">Ends at</label>
-													<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.endDate">
+												<div v-if="timeslot.frequency == 'week'" class="mb-2">
+													<div v-tooltip.top="day" @click="timeslotToggleDay(timeslot, dayIndex)" v-for="(day, dayIndex) in days" class="badge badge-pill badge-day ml-1 cursor-pointer position-relative shadow-sm p-3" :class="[timeslot.days.indexOf(dayIndex) == -1 ? 'badge-white' : 'badge-primary']" :key="dayIndex">
+														<span>{{ day.substring(0, 1) }}</span>
+													</div>
+												</div>
+												<div v-else-if="timeslot.frequency == 'month'" class="form-group mb-2">
+													<vue-select dropdown_class="w-100" button_class="form-control" :options="daysInMonth(timeslot)" v-model="timeslot.dayInMonth" label="On"></vue-select>
+												</div>
+												<div class="form-group mb-0">
+													<v-date-picker :min-date="new Date()" class="flex-grow-1" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.endDate" :masks="masks">
 														<template v-slot="{ inputValue, inputEvents }">
-															<button type="button" class="btn btn-white btn-block shadow-none" v-on="inputEvents">
-																{{ formatDate(inputValue) }}
+															<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
+																<span class="text-secondary mr-2">Until</span>
+																{{ inputValue }}
 															</button>
 														</template>
 													</v-date-picker>

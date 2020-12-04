@@ -136,12 +136,12 @@ export default {
 		selectedTimeslots: [],
 		recurringFrequencies: [
 			{
-				text: 'Weekly',
-				value: 'weekly'
+				text: 'Week',
+				value: 'week'
 			},
 			{
-				text: 'Monthly',
-				value: 'monthly'
+				text: 'Month',
+				value: 'month'
 			}
 		],
 		bookings: [],
@@ -334,12 +334,50 @@ export default {
 	},
 
 	methods: {
-		timeslotToggleDay(timeslotIndex, dayIndex) {
-			let index = this.selectedTimeslots[timeslotIndex].days.indexOf(dayIndex);
+		daysInMonth(timeslot) {
+			return [
+				{
+					text: `First ${timeslot.date.dayName} of the month`,
+					value: 'first_week'
+				},
+				{
+					text: `Second ${timeslot.date.dayName} of the month`,
+					value: 'second_week'
+				},
+				{
+					text: `Third ${timeslot.date.dayName} of the month`,
+					value: 'third_week'
+				},
+				{
+					text: `Last ${timeslot.date.dayName} of the month`,
+					value: 'last_week'
+				}
+			];
+		},
+
+		setTimeslotDefaultDay(frequency, timeslot) {
+			if (frequency == 'week') {
+				let dayIndex = this.days.indexOf(timeslot.date.dayName);
+				let index = timeslot.days.indexOf(dayIndex);
+				if (index == -1 || timeslot.days.length == 1) {
+					timeslot.days.push(dayIndex);
+				}
+			} else if (frequency == 'month') {
+				timeslot.dayInMonth = 'first_week';
+			}
+		},
+
+		timeslotToggleDay(timeslot, dayIndex) {
+			let index = timeslot.days.indexOf(dayIndex);
 			if (index == -1) {
-				this.selectedTimeslots[timeslotIndex].days.push(dayIndex);
+				timeslot.days.push(dayIndex);
 			} else {
-				this.selectedTimeslots[timeslotIndex].days.splice(index, 1);
+				timeslot.days.splice(index, 1);
+			}
+
+			if (timeslot.days.length == 0) {
+				let dayIndex = this.days.indexOf(timeslot.date.dayName);
+				timeslot.days.push(dayIndex);
 			}
 		},
 
@@ -743,8 +781,8 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				// this.selectedServiceForTimeline = this.services[0];
-				// this.selectedService = this.selectedServiceForTimeline;
+				this.selectedServiceForTimeline = this.services[0];
+				this.selectedService = this.selectedServiceForTimeline;
 
 				this.ready = true;
 			});

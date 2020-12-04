@@ -76,15 +76,16 @@ export default {
 		},
 		orders: [
 			{
-				text: 'Descending',
+				text: 'Newest',
 				value: 'desc'
 			},
 			{
-				text: 'Ascending',
+				text: 'Oldest',
 				value: 'asc'
 			}
 		],
-		order: 'desc'
+		order: 'desc',
+		notesOrder: 'desc'
 	}),
 
 	computed: {
@@ -218,22 +219,22 @@ export default {
 
 		async confirmUpdateNote(contactNote) {
 			let response = await axios.put(`/contact_notes/${contactNote.id}`, { note: contactNote.new_note });
-			let index = this.contact.contact_notes.findIndex(x => x.id == contactNote.id);
+			let index = this.contact.contactNotes.findIndex(x => x.id == contactNote.id);
 			if (index > -1) {
-				this.contact.contact_notes[index] = response.data;
+				this.contact.contactNotes[index] = response.data;
 			}
 			this.selectedNote = null;
 		},
 
 		deleteContactNote(contactNote, index) {
-			this.contact.contact_notes.splice(index, 1);
+			this.contact.contactNotes.splice(index, 1);
 			axios.delete(`/contact_notes/${contactNote.id}`);
 		},
 
 		async confirmAddNote() {
 			if (this.newNote) {
 				let response = await axios.post('/contact_notes', { contact_id: this.contact.id, note: this.newNote });
-				this.contact.contact_notes.unshift(response.data);
+				this.contact.contactNotes.unshift(response.data);
 				this.addingNote = false;
 				this.newNote = '';
 			}
@@ -349,6 +350,14 @@ export default {
 			this.clonedContact = clonedContact;
 			this.$root.contentloading = false;
 			this.getRecentNotes();
+			this.getContactNotes();
+		},
+
+		async getContactNotes(order = 'desc') {
+			if (this.contact) {
+				let response = await axios.get(`/contacts/${this.contact.id}/contact_notes?order=${order}`);
+				this.$set(this.contact, 'contactNotes', response.data);
+			}
 		},
 
 		async getRecentNotes() {

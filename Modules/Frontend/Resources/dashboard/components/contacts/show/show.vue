@@ -126,24 +126,36 @@
 							</div>
 
 							<div class="rounded bg-white shadow-sm p-3 mb-4">
-								<div class="d-flex">
+								<div class="d-flex mb-3">
 									<h5 class="font-heading mb-0">Notes</h5>
-									<button
-										class="ml-auto btn btn-light p-1 badge-pill line-height-0 shadow-none"
-										type="button"
-										@click="
-											addingNote = true;
-											selectedNote = null;
-										"
-									>
-										<plus-icon width="18" height="18" transform="scale(1.4)"></plus-icon>
-									</button>
+									<div class="ml-auto d-flex align-items-center">
+										<vue-select v-if="(contact.contactNotes || []).length > 0" :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="notesOrder" label="Date" placeholder="Order by" @input="getContactNotes"></vue-select>
+										<button
+											class="btn btn-light p-1 badge-pill line-height-0 shadow-none"
+											type="button"
+											@click="
+												addingNote = true;
+												selectedNote = null;
+											"
+										>
+											<plus-icon width="18" height="18" transform="scale(1.4)"></plus-icon>
+										</button>
+									</div>
 								</div>
 
 								<vue-form-validate v-if="addingNote && !selectedNote" class="mt-2 mb-3" @submit="confirmAddNote()">
 									<textarea placeholder="Write note..." v-model="newNote" data-required rows="3" class="form-control resize-none"></textarea>
 									<div class="d-flex align-items-center mt-2">
-										<button class="btn btn-light shadow-none" type="button" @click="addingNote = false">Cancel</button>
+										<button
+											class="btn btn-light shadow-none"
+											type="button"
+											@click="
+												newNote = '';
+												addingNote = false;
+											"
+										>
+											Cancel
+										</button>
 										<button class="ml-auto btn btn-primary" type="submit">Add</button>
 									</div>
 								</vue-form-validate>
@@ -156,31 +168,40 @@
 									</div>
 								</vue-form-validate>
 
-								<template v-for="(contact_note, index) in contact.contact_notes">
-									<div :key="contact_note.id" v-if="!selectedNote || selectedNote.id != contact_note.id" class="d-flex align-items-center rounded bg-light px-3 py-2 mt-2">
-										{{ contact_note.note }}
-
-										<div class="ml-auto mr-n2">
-											<div class="dropleft">
-												<button class="btn btn-light p-1 line-height-0" data-toggle="dropdown">
-													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-												</button>
-												<div class="dropdown-menu dropdown-menu-right">
-													<span
-														class="dropdown-item cursor-pointer"
-														@click="
-															selectedNote = contact_note;
-															selectedNote.new_note = selectedNote.note;
-														"
-													>
-														Edit
-													</span>
-													<span class="dropdown-item cursor-pointer" @click="deleteContactNote(contact_note, index)">
-														Delete
-													</span>
+								<template v-if="contact.contactNotes">
+									<template v-if="contact.contactNotes.length > 0">
+										<template v-for="(contact_note, index) in contact.contactNotes">
+											<div :key="contact_note.id" v-if="!selectedNote || selectedNote.id != contact_note.id" class="d-flex rounded bg-light px-3 py-2 mt-2">
+												<div>
+													<p class="mb-0">{{ contact_note.note }}</p>
+													<small class="text-muted">{{ formatDate(contact_note.created_at) }}</small>
+												</div>
+												<div class="ml-auto mr-n2">
+													<div class="dropleft">
+														<button class="btn btn-light p-1 line-height-0" data-toggle="dropdown">
+															<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+														</button>
+														<div class="dropdown-menu dropdown-menu-right">
+															<span
+																class="dropdown-item cursor-pointer"
+																@click="
+																	selectedNote = contact_note;
+																	selectedNote.new_note = selectedNote.note;
+																"
+															>
+																Edit
+															</span>
+															<span class="dropdown-item cursor-pointer" @click="deleteContactNote(contact_note, index)">
+																Delete
+															</span>
+														</div>
+													</div>
 												</div>
 											</div>
-										</div>
+										</template>
+									</template>
+									<div v-else class="text-center py-3 text-muted">
+										No notes added.
 									</div>
 								</template>
 							</div>
@@ -371,7 +392,7 @@
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">
 						<div class="font-weight-normal text-secondary w-25">Coach</div>
-						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedService.coach.full_name }}</div>
+						<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ selectedBooking.service.coach.full_name }}</div>
 						<vue-select button_class="border-0 shadow-none btn btn-light bg-light" v-else v-model="selectedBooking.service_id" :options="serviceMembers"></vue-select>
 					</div>
 					<div class="d-flex align-items-center text-left mb-3">

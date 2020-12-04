@@ -19,14 +19,17 @@ class OrganizationController extends Controller
         $organization = Organization::where('slug', $organization)->firstOrfail();
         $data = ['services' => []];
         $userServices = $organization->user->services()->where('is_available', true)->get();
-        foreach ($userServices as $userService) {
-            $data['services'][$userService->id]['id'] = $userService->id;
-            $data['services'][$userService->id]['name'] = $userService->name;
-            $data['services'][$userService->id]['description'] = $userService->description;
-            $data['services'][$userService->id]['duration'] = $userService->duration;
-            $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
-            $data['services'][$userService->id]['currency'] = $userService->currency;
-            $data['services'][$userService->id]['member_services'][] = $userService;
+
+        if ($organization->show_user_services) {
+            foreach ($userServices as $userService) {
+                $data['services'][$userService->id]['id'] = $userService->id;
+                $data['services'][$userService->id]['name'] = $userService->name;
+                $data['services'][$userService->id]['description'] = $userService->description;
+                $data['services'][$userService->id]['duration'] = $userService->duration;
+                $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
+                $data['services'][$userService->id]['currency'] = $userService->currency;
+                $data['services'][$userService->id]['member_services'][] = $userService;
+            }
         }
         if ($request->ajax() || $request->wantsJson()) {
             foreach ($organization->members as $member) {
@@ -133,7 +136,8 @@ class OrganizationController extends Controller
 
         $organization->update([
             'name' => $request->name,
-            'slug' => $request->slug
+            'slug' => $request->slug,
+            'show_user_services' => $request->show_user_services,
         ]);
 
         return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));

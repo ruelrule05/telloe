@@ -7,7 +7,10 @@ use Carbon\Carbon;
 class Organization extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'name', 'slug'];
+    protected $fillable = ['user_id', 'name', 'slug', 'show_user_services'];
+    protected $casts = [
+        'show_user_services' => 'boolean',
+    ];
 
     public function user()
     {

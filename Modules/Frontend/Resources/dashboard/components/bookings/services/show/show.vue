@@ -184,7 +184,7 @@
 		<modal ref="availabilityModal" @hide="getTimeslots()">
 			<div id="availability-modal">
 				<h5 class="font-heading mb-3">Manage Availability</h5>
-				<div class="d-flex mb-2">
+				<div class="d-flex mb-2 rounded overflow-hidden">
 					<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">
 						Availability
 					</button>
@@ -234,34 +234,18 @@
 						</div>
 					</div>
 				</div>
-				<div v-else-if="serviceDetailsTab == 'holidays'" class="mt-3 px-3">
-					<button class="btn btn-sm btn-outline-primary mb-2" @click="newHoliday = {}">
-						+ Add Holiday
-					</button>
-					<div v-if="newHoliday">
-						<div class="d-flex border rounded align-items-stretch mb-2 overflow-hidden">
-							<div class="text-gray bg-gray-300 p-2">Date</div>
-							<div class="flex-grow-1">
-								<v-date-picker is-required :disabled-dates="formattedHolidays" :min-date="new Date()" :popover="{ visibility: 'click' }" v-model="newHoliday.date" class="d-block h-100">
-									<template v-slot="{ inputValue, inputEvents }">
-										<button type="button" class="btn btn-white rounded-0 btn-block shadow-none border-0 h-100" :class="{ 'text-gray': !inputValue }" v-on="inputEvents">
-											{{ inputValue ? formatDate(inputValue) : 'Set date' }}
-										</button>
-									</template>
-								</v-date-picker>
-							</div>
-						</div>
-						<div class="d-flex align-items-center mt-1">
-							<div class="ml-auto">
-								<button type="button" class="btn btn-sm btn-link text-body pl-0" @click="newHoliday = null">
-									Cancel
-								</button>
-								<button type="button" class="btn btn-sm btn-primary ml-auto" :disabled="!newHoliday.date" @click="addHoliday">
-									Add
-								</button>
+				<div v-else-if="serviceDetailsTab == 'holidays'" class="mt-3 position-relative">
+					<div class="dropright">
+						<button type="button" class="btn btn-light shadow-none mb-2 d-flex align-items-center" data-toggle="dropdown"><plus-icon class="btn-icon"></plus-icon> Add Holidays</button>
+						<div class="dropdown-menu p-0">
+							<v-date-picker @click.native.stop :disabled-dates="formattedHolidays" :value="null" :min-date="new Date()" :attributes="holidayDateAttrs" class="border-0" @input="addHolidayDate"></v-date-picker>
+							<div class="d-flex px-2 pb-2">
+								<button class="btn btn-light shadow-none" type="button">Cancel</button>
+								<button class="ml-auto btn btn-primary shadow-none" type="button">Add</button>
 							</div>
 						</div>
 					</div>
+
 					<div>
 						<div v-for="(holiday, index) in service.holidays" :key="index" class="border-bottom py-2 d-flex">
 							{{ formatDate(holiday) }}
