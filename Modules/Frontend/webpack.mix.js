@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const ESLintPlugin = require('eslint-webpack-plugin');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const argv = JSON.parse(process.env.npm_config_argv).original;
@@ -122,12 +123,24 @@ if (argv.indexOf('--css') > -1) {
 			hmrOptions: {
 				host: 'telloe.test',
 				port: 8080
-			}
+			},
+			postCss: [require('autoprefixer')]
 		});
 		mix.webpackConfig({
 			watchOptions: {
 				aggregateTimeout: 300,
 				poll: 1000
+			},
+			plugins: [new ESLintPlugin()],
+			module: {
+				rules: [
+					{
+						enforce: 'pre',
+						exclude: /node_modules/,
+						loader: 'eslint-loader',
+						test: /\.(js|vue)?$/
+					}
+				]
 			}
 		});
 	}

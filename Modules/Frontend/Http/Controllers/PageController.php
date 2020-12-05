@@ -3,14 +3,12 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Models\Member;
-use App\Models\Plan;
 use App\Models\PasswordReset;
-use App\Models\Conversation;
-use App\Models\ConversationMember;
+use App\Models\Plan;
 use Auth;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
@@ -18,27 +16,29 @@ class PageController extends Controller
 
     public function homepage(Request $request)
     {
-    	if (Auth::check()) :
+        if (Auth::check()) {
             $params = '';
             $authUser = Auth::user();
-            if($request->invite_token) :
+            if ($request->invite_token) {
                 $params = $request->invite_token ? "?invite_token={$request->invite_token}" : '';
                 checkInviteToken($authUser, $request);
-            elseif($request->member_invite_token) :
+            } elseif ($request->member_invite_token) {
                 $params = $request->member_invite_token ? "?member_invite_token={$request->member_invite_token}" : '';
                 checkMemberInviteToken($authUser, $request);
-            endif;
-    		return redirect('/dashboard/bookings/services' . $params);
-    	endif;
+            }
+            return redirect('/dashboard/bookings/services' . $params);
+        }
 
-        if($request->auth == 'reset' && $request->token) :
+        if ($request->auth == 'reset' && $request->token) {
             $passwordReset = PasswordReset::where('token', $request->token)->first();
-            if(!$passwordReset) return redirect('/');
-        endif;
+            if (! $passwordReset) {
+                return redirect('/');
+            }
+        }
 
         $plans = Plan::orderBy('id', 'ASC')->get();
 
-    	return view('frontend::pages.homepage', [
+        return view('frontend::pages.homepage', [
             'contact' => $this->getContact($request),  
             'member' => $this->getMember($request),  
             'plans' => $plans
@@ -58,9 +58,9 @@ class PageController extends Controller
     public function getContact(Request $request)
     {
         $contact = null;
-        if($request->invite_token) :
+        if ($request->invite_token) {
             $contact = Contact::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
-        endif;
+        }
 
         return $contact;
     }
@@ -68,9 +68,9 @@ class PageController extends Controller
     public function getMember(Request $request)
     {
         $member = null;
-        if($request->member_invite_token) :
+        if ($request->member_invite_token) {
             $member = Member::where('invite_token', $request->member_invite_token)->where('is_pending', true)->first();
-        endif;
+        }
 
         return $member;
     }

@@ -2,7 +2,6 @@
 
 namespace Modules\Frontend\Mail;
 
-use App\Models\Booking;
 use App\Models\User;
 use Auth;
 use Carbon\Carbon;
@@ -10,16 +9,16 @@ use Spatie\CalendarLinks\Link;
 
 class NewBooking extends Mailer
 {
-    public $booking;
+    public $bookings;
     public $actionText = 'Manage Booking';
     public $actionUrl;
     public $email;
     public $emailMessage;
-    public $link;
 
-    public function __construct(Booking $booking, User $authUser = null, $target)
+    public function __construct(array $bookings, User $authUser = null, $target)
     {
-        $this->booking = $booking;
+        $this->bookings = $bookings;
+        $booking = $this->bookings[0];
         $authUser = $authUser ?? Auth::user();
         if ($target == 'client') { // if contact - send to client
             $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
@@ -37,11 +36,11 @@ class NewBooking extends Mailer
 
         $this->actionUrl = config('app.url') . '?auth=login';
 
-        $from = Carbon::parse("$booking->date $booking->start");
-        $to = $from->clone()->addMinute($booking->service->duration);
+        // $from = Carbon::parse("$booking->date $booking->start");
+        // $to = $from->clone()->addMinute($booking->service->duration);
 
-        $this->link = Link::create($booking->service->name, $from, $to)
-            ->description($booking->service->description);
+        // $this->link = Link::create($booking->service->name, $from, $to)
+        //     ->description($booking->service->description);
         // ->address('Kruikstraat 22, 2018 Antwerpen');
     }
 

@@ -6,7 +6,6 @@
  */
 
 Route::get('test', function () {
-    echo Carbon\Carbon::parse('2020-12-01 15:30')->toIso8601ZuluString();
 });
 
 Route::get('widget', function () {
@@ -31,7 +30,7 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    $email = new Modules\Frontend\Mail\NewBooking(App\Models\Booking::first(), App\Models\User::first(), 'contact');
+    $email = new Modules\Frontend\Mail\NewBooking([App\Models\Booking::first(), App\Models\Booking::first()], App\Models\User::first(), 'contact');
     //$email = new Modules\Frontend\Mail\UpcomingBooking(App\Models\Booking::find(170), 'dwada');
     //$email = new Modules\Frontend\Mail\UpdateBooking(App\Models\Booking::first(),'client');
     //\Mail::to('cleidoscope@gmail.com')->send($email);

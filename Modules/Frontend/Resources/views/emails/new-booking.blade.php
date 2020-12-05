@@ -4,14 +4,17 @@
 
 
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
-    {!! $emailMessage !!}
-    <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 0.02rem 1rem; text-align-last: left; margin-top: 10px">
-        <h1 style="font-size: 26px; margin-bottom: 10px">{{ $booking->service->user->full_name }}</h1>
-        <table style="width: 100%; margin-bottom: 10px">
-            <tr>
-                <td style="width: 25%">Service</td>
-                <td><strong>{{ $booking->service->name }}</strong></td>
-            </tr>
+{!! $emailMessage !!}
+</p>
+<div style="text-align: xleft; margin-top: 30px; margin-bottom: 30px">
+    <h1 style="font-size: 26px; margin-bottom: 0; margin-top: 0">{{ $bookings[0]->service->name }}</h1>
+    {{ $bookings[0]->service->coach->full_name }}
+</div>
+
+
+@foreach($bookings as $booking) 
+    <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 10px 1rem; text-align-last: left; margin-top: 10px">
+        <table style="width: 100%;">
             <tr>
                 <td style="width: 25%">Date</td>
                 <td><strong>{{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }}</strong></td>
@@ -35,21 +38,18 @@
             </tr>
             @endif
         </table>
+        <div>
+        Add calendar to: 
+        <u><a target="_blank" href="{{ $booking->google_link}}">Google Calendar</a></u>
+        &nbsp;|&nbsp;
+        <u><a target="_blank" href="{{ $booking->outlook_link }}">Outlook</a></u>
+        &nbsp;|&nbsp;
+        <u><a target="_blank" href="{{ $booking->yahoo_link }}">Yahoo!</a></u>
+        &nbsp;|&nbsp;
+        <u><a target="_blank" href="{{ $booking->ical_link }}">iCal</a></u>
+        </div>
     </div>
-</p>
-
-<div style="margin-top: 20px;">
-Add this booking to: 
-<u><a target="_blank" href="{{ $link->google() }}">Google Calendar</a></u>
-&nbsp;|&nbsp;
-<!-- <u><a target="_blank" href="{{ str_replace(['&rru=addevent', '+'], ['', '%20'], $link->webOutlook()) }}">Outlook</a></u>
-&nbsp;|&nbsp; -->
-<u><a target="_blank" href="{{ url('/ics?name='.$booking->service->name.'&data=' . $link->ics()) }}">Outlook</a></u>
-&nbsp;|&nbsp;
-<u><a target="_blank" href="{{ $link->yahoo() }}">Yahoo!</a></u>
-&nbsp;|&nbsp;
-<u><a target="_blank" href="{{ url('/ics?name='.$booking->service->name.'&data=' . $link->ics()) }}">iCal</a></u>
-</div>
+@endforeach
 
 @if($actionUrl)
 <a href="{{ $actionUrl }}"

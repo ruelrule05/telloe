@@ -1,3 +1,8 @@
+/* global PROFILE */
+/* global AUTH */
+/* global gapi */
+/* global FB */
+
 require('../js/bootstrap');
 
 import Vue from 'vue';
@@ -222,19 +227,9 @@ export default {
 			let options = [];
 
 			let dateForWeekView = dayjs();
-			//if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
-			let daysBefore = [];
 			let daysAfter = [];
 			for (var i = 1; i <= 90; i++) {
-				let before = dateForWeekView.subtract(i, 'day');
 				let after = dateForWeekView.add(i, 'day');
-				/* daysBefore.unshift({
-                    date: before.toDate(),
-                    title: before.format('ddd'),
-                    description: before.format('D MMM'),
-                    label: before.format('YYYY-MM-DD'),
-                    id: before.format('MMMDYYYY'),
-                });*/
 				daysAfter.push({
 					date: after.toDate(),
 					title: after.format('ddd'),
@@ -254,7 +249,6 @@ export default {
 				label: dateForWeekView.format('YYYY-MM-DD'),
 				id: dateForWeekView.format('MMMDYYYY')
 			};
-			//options = [...daysBefore, ...[dateForWeekView], ...daysAfter];
 			options = [...[dateForWeekView], ...daysAfter];
 
 			return options;
@@ -281,7 +275,7 @@ export default {
 	},
 
 	watch: {
-		selectedCoachId: function(value) {
+		selectedCoachId: function() {
 			this.selectedTimeslots = [];
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
@@ -291,7 +285,7 @@ export default {
 			});
 		},
 
-		'selectedService.id': function(value) {
+		'selectedService.id': function() {
 			this.getTimeslots();
 		},
 
@@ -444,7 +438,6 @@ export default {
 
 		availableTimeslots(service, timeslot) {
 			let startParts = timeslot.split(':');
-			let timeslotEls = '';
 			let availableTimeslots = (service.timeslots || []).filter(x => {
 				let serviceStartParts = x.time.split(':');
 				return startParts[0] == serviceStartParts[0];
@@ -456,7 +449,6 @@ export default {
 		moveSelector(e) {
 			let selector = this.$refs['selector'];
 			let rect = e.target.getBoundingClientRect();
-			let selectorWidth = selector.offsetWidth / 2;
 			let x = e.clientX - rect.left;
 			console.log(x);
 			if (x >= 0 && x <= e.srcElement.offsetWidth - selector.offsetWidth) {
@@ -552,7 +544,8 @@ export default {
 		adjustSlider(step) {
 			let weekdaySlider = this.$refs['weekday-slider'];
 
-			let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - this.sliderItemSize;
+			//let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - this.sliderItemSize;
+			let translateX = weekdaySlider.style.width;
 			if ((step == -1 && translateX < this.sliderItemSize * -1) || step == 1) {
 				this.sliderNavIndex += step;
 			}
@@ -600,7 +593,7 @@ export default {
 						timeslots: this.selectedTimeslots,
 						timezone: this.timezone
 					};
-					axios
+					window.axios
 						.post(`/@${this.profile.username}/${service.id}/signup_and_book`, data, { toasted: true })
 						.then(response => {
 							this.bookingSuccess = true;
@@ -608,7 +601,7 @@ export default {
 							this.selectedTimeslots = [];
 							this.bookings = response.data;
 						})
-						.catch(e => {
+						.catch(() => {
 							setTimeout(() => {
 								this.$refs['bookingModal'].hide().then(() => {
 									this.loginForm.loading = false;
@@ -621,6 +614,16 @@ export default {
 		},
 
 		LoginAndBook() {
+			/* eslint-disable */
+			let timeslots = this.selectedTimeslots.map(timeslot => {
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+				}
+				return timeslot;
+			});
+			console.log(timeslots);
+			return;
+
 			let service = this.assignedService || this.selectedService;
 			if (service && this.selectedTimeslots.length > 0) {
 				this.$refs['bookingModal'].show().then(() => {
@@ -631,7 +634,7 @@ export default {
 						password: this.loginForm.password,
 						timeslots: this.selectedTimeslots
 					};
-					axios
+					window.axios
 						.post(`/@${this.profile.username}/${service.id}/login_and_book`, data, { toasted: true })
 						.then(response => {
 							this.bookingSuccess = true;
@@ -640,7 +643,7 @@ export default {
 							this.selectedTimeslots = [];
 							this.bookings = response.data;
 						})
-						.catch(e => {
+						.catch(() => {
 							setTimeout(() => {
 								this.$refs['bookingModal'].hide().then(() => {
 									this.loginForm.loading = false;
@@ -659,13 +662,13 @@ export default {
 					this.loginForm.loading = true;
 					this.isBooking = true;
 					FB.login(
-						e => {
+						() => {
 							FB.api('/me', { fields: 'first_name, last_name, email' }, data => {
 								if (data && !data.error) {
 									data.timezone = this.timezone;
 									data.timeslots = this.selectedTimeslots;
 
-									axios
+									window.axios
 										.post(`/@${this.profile.username}/${service.id}/facebook_login_and_book`, data, { toasted: true })
 										.then(response => {
 											this.bookingSuccess = true;
@@ -674,7 +677,7 @@ export default {
 											this.selectedTimeslots = [];
 											this.bookings = response.data;
 										})
-										.catch(e => {
+										.catch(() => {
 											setTimeout(() => {
 												this.$refs['bookingModal'].hide().then(() => {
 													this.loginForm.loading = false;
@@ -718,7 +721,7 @@ export default {
 								timeslots: this.selectedTimeslots
 							};
 
-							axios
+							window.axios
 								.post(`/@${this.profile.username}/${service.id}/google_login_and_book`, data, { toasted: true })
 								.then(response => {
 									this.bookingSuccess = true;
@@ -727,7 +730,7 @@ export default {
 									this.selectedTimeslots = [];
 									this.bookings = response.data;
 								})
-								.catch(e => {
+								.catch(() => {
 									setTimeout(() => {
 										this.$refs['bookingModal'].hide().then(() => {
 											this.loginForm.loading = false;
@@ -767,22 +770,20 @@ export default {
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
 				this.selectedTimeslot = null;
-				let response = await axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
+				let response = await window.axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
 				this.timeslots = response.data;
 				this.timeslotsLoading = false;
 			}
 		},
 
-		setService(service) {},
-
 		getData() {
-			axios.get(window.location.pathname).then(response => {
+			window.axios.get(window.location.pathname).then(response => {
 				this.services = response.data.services;
 				this.packages = response.data.packages;
 
 				// testing
-				// this.selectedServiceForTimeline = this.services[0];
-				// this.selectedService = this.selectedServiceForTimeline;
+				this.selectedServiceForTimeline = this.services[0];
+				this.selectedService = this.selectedServiceForTimeline;
 
 				this.ready = true;
 			});

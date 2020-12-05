@@ -276,9 +276,9 @@
 																	if (timeslot.is_recurring) {
 																		$set(
 																			timeslot,
-																			'endDate',
+																			'end_date',
 																			dayjs(new Date())
-																				.add(1, 'year')
+																				.add(1, 'week')
 																				.toDate()
 																		);
 																		$set(timeslot, 'frequency', recurringFrequencies[0].value);
@@ -317,7 +317,7 @@
 													<vue-select dropdown_class="w-100" button_class="form-control" :options="daysInMonth(timeslot)" v-model="timeslot.dayInMonth" label="On"></vue-select>
 												</div>
 												<div class="form-group mb-0">
-													<v-date-picker :min-date="new Date()" class="flex-grow-1" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.endDate" :masks="masks">
+													<v-date-picker :min-date="new Date()" class="flex-grow-1" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.end_date" :masks="masks">
 														<template v-slot="{ inputValue, inputEvents }">
 															<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
 																<span class="text-secondary mr-2">Until</span>

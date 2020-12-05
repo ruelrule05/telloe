@@ -68,7 +68,7 @@ export default {
 		},
 
 		async show() {
-			return new Promise((resolve, reject) => {
+			return new Promise(resolve => {
 				$(this.$refs['modal'])
 					.modal({ keyboard: false, backdrop: 'static' })
 					.modal('show');
@@ -79,7 +79,7 @@ export default {
 		},
 
 		async hide() {
-			return new Promise((resolve, reject) => {
+			return new Promise(resolve => {
 				$(this.$refs['modal']).modal('hide');
 				setTimeout(() => {
 					resolve();
