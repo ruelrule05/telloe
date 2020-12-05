@@ -39,7 +39,7 @@
             @endif
         </table>
         <div>
-        Add calendar to: 
+        Add to: 
         <u><a target="_blank" href="{{ $booking->google_link}}">Google Calendar</a></u>
         &nbsp;|&nbsp;
         <u><a target="_blank" href="{{ $booking->outlook_link }}">Outlook</a></u>
