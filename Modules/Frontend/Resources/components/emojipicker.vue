@@ -1,10 +1,10 @@
 <template>
 	<div class="">
 		<emoji-picker @emoji="insert">
-			<div class="emoji-invoker" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{events: {click: clickEvent}}" @click.stop="clickEvent">
+			<div class="emoji-invoker" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent">
 				<emoticon-icon height="20" width="20"></emoticon-icon>
 			</div>
-			<div class="emoji-picker" slot="emoji-picker" slot-scope="{emojis, insert, display}">
+			<div class="emoji-picker" slot="emoji-picker" slot-scope="{ emojis, insert }">
 				<div>
 					<div>
 						<div v-for="(emojiGroup, category) in emojis" :key="category">
@@ -24,17 +24,16 @@
 import EmoticonIcon from '../icons/emoticon';
 import EmojiPicker from 'vue-emoji-picker';
 export default {
-	components: {EmojiPicker, EmoticonIcon},
+	components: { EmojiPicker, EmoticonIcon },
 
-	data: () => ({
-	}),
+	data: () => ({}),
 
 	methods: {
 		insert(emoji) {
 			this.$refs['emoji-invoker'].click();
 			this.$emit('select', emoji);
-		},
-	},
+		}
+	}
 };
 </script>
 
@@ -42,11 +41,11 @@ export default {
 @import '../sass/variables';
 .emoji-invoker svg {
 	transition: $transition-base;
-    opacity: 0.4;
+	opacity: 0.4;
 }
-.emoji-invoker svg:hover{
+.emoji-invoker svg:hover {
 	transform: scale(1.1);
-    opacity: 1;
+	opacity: 1;
 }
 .emoji-picker {
 	bottom: 80px;

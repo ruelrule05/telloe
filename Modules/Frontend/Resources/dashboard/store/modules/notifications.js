@@ -1,44 +1,45 @@
 const name = 'notifications';
 
 const state = () => ({
-    ready: false,
-    index: [],
+	ready: false,
+	index: []
 });
 
 const mutations = {
-    index(state, data) {
-        state.index = [];
-        state.index.push.apply(state.index, data);
-        state.ready = true;
-    },
+	index(state, data) {
+		state.index = [];
+		state.index.push.apply(state.index, data);
+		state.ready = true;
+	},
 
-    clear(state) {
-        state.index = [];
-    },
+	clear(state) {
+		state.index = [];
+	}
 };
 
 const actions = {
-    async index({commit}) {
-        let response = await axios.get(`/${name}`);
-        commit('index', response.data);
-    },
+	async index({ commit }) {
+		let response = await window.axios.get(`/${name}`);
+		commit('index', response.data);
+	},
 
-    update({ commit }, data) {
-        axios.put(`/${name}/${data.id}`, data);
-    },
+	update({ commit }, data) {
+		commit('update');
+		window.axios.put(`/${name}/${data.id}`, data);
+	},
 
-    clear({ commit }) {
-        axios.post(`/${name}/clear`);
-        commit('clear');
-    },
+	clear({ commit }) {
+		window.axios.post(`/${name}/clear`);
+		commit('clear');
+	}
 };
 
 const getters = {};
 
 export default {
-    namespaced: true,
-    state,
-    mutations,
-    actions,
-    getters,
+	namespaced: true,
+	state,
+	mutations,
+	actions,
+	getters
 };

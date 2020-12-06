@@ -1,11 +1,9 @@
 import { mapState, mapActions } from 'vuex';
-import VueCardFormat from '../../../components/vue-credit-card-validation/src/index';
 import VueButton from '../../../components/vue-button.vue';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Stripe from 'stripe-client';
 import CheckmarkIcon from '../../../icons/checkmark';
-import { times } from 'lodash';
 export default {
 	components: {
 		VueButton,
@@ -73,7 +71,7 @@ export default {
 
 		unsubscribe() {
 			this.loading = true;
-			axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then(response => {
+			window.axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then(() => {
 				this.$root.auth.subscription = null;
 				this.$refs['cancelSubscription'].hide();
 				this.loading = false;
@@ -124,7 +122,7 @@ export default {
 				};
 				let card = await this.stripe.createToken(cardData);
 				card.json().then(token => {
-					axios
+					window.axios
 						.post(`/dashboard/subscriptions`, { card: this.cardForm, card_token: token.id, plan_id: this.selectedPlan.id })
 						.then(response => {
 							this.$refs['paymentModal'].hide();
@@ -138,7 +136,7 @@ export default {
 		},
 
 		async getData() {
-			let stripe = await axios.get('/dashboard/stripe_publishable_key');
+			let stripe = await window.axios.get('/dashboard/stripe_publishable_key');
 			this.publishableKey = stripe.data;
 			this.stripe = Stripe(this.publishableKey);
 		}

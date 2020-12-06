@@ -3,10 +3,19 @@
 		<div class="border-bottom bg-white p-3 d-flex align-items-center">
 			<h5 class="font-heading mb-0">Calendar</h5>
 			<div class="ml-auto d-flex align-items-center">
-                <button :data-intro='$root.intros.calendar_settings.intro' :data-step="$root.intros.calendar_settings.step"  class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="selectedDate = null; infoTab = 'settings'">
-                    <cog-icon class="btn-icon"></cog-icon>
-                    Settings
-                </button>
+				<button
+					:data-intro="$root.intros.calendar_settings.intro"
+					:data-step="$root.intros.calendar_settings.step"
+					class="btn btn-light shadow-none d-flex align-items-center"
+					type="button"
+					@click="
+						selectedDate = null;
+						infoTab = 'settings';
+					"
+				>
+					<cog-icon class="btn-icon"></cog-icon>
+					Settings
+				</button>
 			</div>
 		</div>
 
@@ -26,9 +35,17 @@
 						<!-- <FullCalendar ref="fullCalendar" themeSystem="bootstrap" :header="header" :buttonText="buttonText" eventColor="#FBBC1B" :displayEventTime="false" @dateClick="dateClick" defaultView="dayGridMonth" :plugins="calendarPlugins" height="parent" :dayRender="dayRender"></FullCalendar> -->
 
 						<v-calendar class="v-calendar h-100 border-0" is-expanded :attributes="calendarAttributes" ref="v-calendar">
-							<div slot="day-content" slot-scope="{day, dayEvents, attributes}">
+							<div slot="day-content" slot-scope="{ day, dayEvents, attributes }">
+								{{ dayEvents }}
 								<div class="day-content text-center">
-									<div class="day-label" :class="{active: selectedDate && selectedDate.toString() == day.date.toString(), 'is-today': day.isToday}" @click="dayclick(day.date); infoTab = 'bookings'">
+									<div
+										class="day-label"
+										:class="{ active: selectedDate && selectedDate.toString() == day.date.toString(), 'is-today': day.isToday }"
+										@click="
+											dayclick(day.date);
+											infoTab = 'bookings';
+										"
+									>
 										<span>{{ day.label }}</span>
 										<div v-if="attributes" class="d-flex align-items-center vc-badge-container">
 											<div class="vc-badge vc-bookings">{{ countBookings(attributes) }}</div>
@@ -45,7 +62,6 @@
 
 		<timetable v-else :date="selectedDate"></timetable>
 
-
 		<modal ref="deleteBooking" :close-button="false" @hidden="resetBookingForm">
 			<div class="text-center">
 				<h5 class="font-heading">Delete Booking</h5>
@@ -53,11 +69,18 @@
 			</div>
 			<div class="d-flex mt-4">
 				<button type="button" class="btn btn-white border" @click="$refs['deleteBooking'].hide()">Cancel</button>
-				<button type="button" class="ml-auto btn btn-danger" @click="deleteBooking(selectedBooking); $refs['deleteBooking'].hide()">Delete Booking</button>
+				<button
+					type="button"
+					class="ml-auto btn btn-danger"
+					@click="
+						deleteBooking(selectedBooking);
+						$refs['deleteBooking'].hide();
+					"
+				>
+					Delete Booking
+				</button>
 			</div>
 		</modal>
-
-
 
 		<modal ref="confirmBooking" :close-button="false">
 			<template v-if="selectedBooking && selectedTimeslot">
@@ -77,36 +100,50 @@
 							<strong>{{ selectedTimeslot.label }}</strong>
 						</div>
 					</div>
-					<div class="text-danger text-center mt-2">
-						&nbsp; {{ error }} &nbsp;
-					</div>
-
+					<div class="text-danger text-center mt-2">&nbsp; {{ error }} &nbsp;</div>
 
 					<div class="d-flex mt-3">
-						<button type="button" :disabled="loading" class="btn btn-white border" @click="$refs['confirmBooking'].hide(); error = ''">Cancel</button>
+						<button
+							type="button"
+							:disabled="loading"
+							class="btn btn-white border"
+							@click="
+								$refs['confirmBooking'].hide();
+								error = '';
+							"
+						>
+							Cancel
+						</button>
 						<vue-button type="button" :loading="loading" button_class="ml-auto btn btn-primary" @click="submit()">Update</vue-button>
 					</div>
 				</div>
 
-
 				<div v-else class="py-5 text-center">
 					<checkmark-circle-icon class="fill-success" width="50" height="50"></checkmark-circle-icon>
 					<h5 class="font-heading text-center mb-4 mt-2">Booking has been successfully {{ selectedBooking ? 'updated' : 'placed' }}</h5>
-					<button type="button" class="btn btn-white border" @click="$refs['confirmBooking'].hide(); resetBookingForm()">Close</button>
+					<button
+						type="button"
+						class="btn btn-white border"
+						@click="
+							$refs['confirmBooking'].hide();
+							resetBookingForm();
+						"
+					>
+						Close
+					</button>
 				</div>
 			</template>
 		</modal>
-
 
 		<modal ref="removeCalendar" :close-button="false">
 			<div class="text-center">
 				<info-circle-icon fill="red" width="50" height="50" class="d-inline-block"></info-circle-icon>
 				<p class="mb-0 mt-2">
-					Are you sure to remove <strong>{{ calendarToRemove }} Calendar</strong>? 
+					Are you sure to remove <strong>{{ calendarToRemove }} Calendar</strong>?
 					<br />
 					This action will delete all booking events from this calendar.
 				</p>
-				
+
 				<div class="d-flex align-items-center mt-5">
 					<button class="btn btn-white border mr-2" type="button" data-dismiss="modal" :disabled="removeCalendarLoading">Cancel</button>
 					<vue-button button_class="btn btn-primary ml-auto" type="button" :loading="removeCalendarLoading" @click.native="removeCalendar()">Continue</vue-button>
@@ -118,11 +155,12 @@
 			<div class="text-center" v-if="newGoogleCalendarId">
 				<info-circle-icon fill="#ffc107" width="50" height="50" class="d-inline-block"></info-circle-icon>
 				<p class="mb-0 mt-2">
-					Are you sure to use Google Calendar <strong>{{ $root.auth.google_calendars.find((x) => x.id == newGoogleCalendarId).summary }}</strong>? 
+					Are you sure to use Google Calendar <strong>{{ $root.auth.google_calendars.find(x => x.id == newGoogleCalendarId).summary }}</strong
+					>?
 					<br />
 					This action will populate your existing bookings to the selected calendar as events.
 				</p>
-				
+
 				<div class="d-flex align-items-center mt-5">
 					<button class="btn btn-white border mr-2" type="button" data-dismiss="modal" :disabled="confirmCalendarLoading">Cancel</button>
 					<vue-button button_class="btn btn-primary ml-auto" type="button" :loading="confirmCalendarLoading" @click.native="setGoogleCalendar">Continue</vue-button>
@@ -134,11 +172,12 @@
 			<div class="text-center" v-if="newOutlookCalendarId">
 				<info-circle-icon fill="#ffc107" width="50" height="50" class="d-inline-block"></info-circle-icon>
 				<p class="mb-0 mt-2">
-					Are you sure to use Outlook Calendar <strong>{{ $root.auth.outlook_calendars.find((x) => x.id == newOutlookCalendarId).name }}</strong>? 
+					Are you sure to use Outlook Calendar <strong>{{ $root.auth.outlook_calendars.find(x => x.id == newOutlookCalendarId).name }}</strong
+					>?
 					<br />
 					This action will populate your existing bookings to the selected calendar as events.
 				</p>
-				
+
 				<div class="d-flex align-items-center mt-5">
 					<button class="btn btn-white border mr-2" type="button" data-dismiss="modal" :disabled="confirmCalendarLoading">Cancel</button>
 					<vue-button button_class="btn btn-primary ml-auto" type="button" :loading="confirmCalendarLoading" @click.native="setOutlookCalendar">Continue</vue-button>

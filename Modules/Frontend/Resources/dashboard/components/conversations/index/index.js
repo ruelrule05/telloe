@@ -1,5 +1,5 @@
+/* global APP_NAME */
 import { mapState, mapActions } from 'vuex';
-import dayjs from 'dayjs';
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate';
 import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
@@ -210,7 +210,7 @@ export default {
 			if (!chatTarget['searchingMembers']) {
 				chatTarget['searchingMembers'] = true;
 				setTimeout(() => {
-					axios.get(`/dashboard/contacts?search=${e.target.value.trim()}`).then(response => {
+					window.axios.get(`/dashboard/contacts?search=${e.target.value.trim()}`).then(response => {
 						chatTarget['groupMembersResults'] = response.data;
 					});
 					chatTarget['searchingMembers'] = false;

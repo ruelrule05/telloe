@@ -238,7 +238,18 @@
 					<div class="dropright">
 						<button type="button" class="btn btn-light shadow-none mb-2 d-flex align-items-center" data-toggle="dropdown"><plus-icon class="btn-icon"></plus-icon> Add Holidays</button>
 						<div class="dropdown-menu p-0">
-							<v-date-picker @click.native.stop :disabled-dates="formattedHolidays" :value="null" :min-date="new Date()" :attributes="holidayDateAttrs" class="border-0" @input="addHolidayDate"></v-date-picker>
+							<v-date-picker @click.native.stop :disabled-dates="formattedHolidays" :value="null" :min-date="new Date()" :attributes="holidayDateAttrs" class="border-0">
+								<template slot="day-content" slot-scope="{ day }">
+									<div class="custom-day-content" :class="{ active: holidayDateAttrs[0].dates.find(x => dayjs(x).format('YYYY-MM-DD') == day.id) }">
+										<div class="vc-highlights vc-day-layer">
+											<div class="vc-day-layer vc-day-box-center-center"><div class="vc-highlight bg-primary rounded-circle"></div></div>
+										</div>
+										<span class="vc-day-content vc-focusable" :class="{ 'is-disabled': day.isDisabled }" @click="addHolidayDate(day.date)">
+											{{ day.label }}
+										</span>
+									</div>
+								</template>
+							</v-date-picker>
 							<div class="d-flex px-2 pb-2">
 								<button class="btn btn-light shadow-none" type="button">Cancel</button>
 								<button class="ml-auto btn btn-primary shadow-none" type="button">Add</button>
@@ -278,8 +289,8 @@
 						<div class="font-weight-normal text-secondary w-25">Date</div>
 						<div v-if="selectedTimeslot.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedTimeslot.bookings[0].date) }}</div>
 						<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedTimeslot.bookings[0].date" @input="getSelectedBookingNewTimeslots">
-							<template v-slot="{ inputValue, inputEvents }">
-								<button type="button" class="btn btn-light shadow-none" v-on="inputEvents">{{ formatDate(selectedTimeslot.bookings[0].date) }}</button>
+							<template v-slot="slot">
+								<button type="button" class="btn btn-light shadow-none" v-on="slot.inputEvents">{{ formatDate(selectedTimeslot.bookings[0].date) }}</button>
 							</template>
 						</v-date-picker>
 					</div>

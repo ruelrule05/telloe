@@ -194,3 +194,17 @@
 		line-height: 0 !important;
 	}
 }
+.custom-day-content {
+	.vc-highlights {
+		display: none;
+	}
+	&.active {
+		.vc-highlights {
+			display: block !important;
+		}
+		.vc-day-content {
+			color: white !important;
+			font-weight: bold !important;
+		}
+	}
+}

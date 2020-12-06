@@ -314,7 +314,7 @@
 													</div>
 												</div>
 												<div v-else-if="timeslot.frequency == 'month'" class="form-group mb-2">
-													<vue-select dropdown_class="w-100" button_class="form-control" :options="daysInMonth(timeslot)" v-model="timeslot.dayInMonth" label="On"></vue-select>
+													<vue-select dropdown_class="w-100" button_class="form-control" :options="daysInMonth(timeslot)" v-model="timeslot.day_in_month" label="On"></vue-select>
 												</div>
 												<div class="form-group mb-0">
 													<v-date-picker :min-date="new Date()" class="flex-grow-1" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.end_date" :masks="masks">

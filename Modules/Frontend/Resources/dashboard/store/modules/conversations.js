@@ -16,23 +16,23 @@ const mutations = {
 	},
 
 	async show(state, data) {
-		return new Promise((resolve, reject) => {
+		return new Promise(resolve => {
 			let conversation = state.index.find(x => x.id == data.id);
 			if (conversation) {
 				if (!conversation.paginated_messages) {
-					Vue.set(conversation, 'paginated_messages', data.paginated_messages);
+					window.Vue.set(conversation, 'paginated_messages', data.paginated_messages);
 				} else {
 					if (data.page == 1) conversation.paginated_messages.data = [];
 					conversation.paginated_messages.data = conversation.paginated_messages.data.concat(data.paginated_messages.data);
 					conversation.paginated_messages.next_page_url = data.paginated_messages.next_page_url;
 				}
-				Vue.set(conversation, 'user', data.user);
-				Vue.set(conversation, 'contact', data.contact);
-				Vue.set(conversation, 'ready', true);
-				Vue.set(conversation.last_message, 'is_read', true);
+				window.Vue.set(conversation, 'user', data.user);
+				window.Vue.set(conversation, 'contact', data.contact);
+				window.Vue.set(conversation, 'ready', true);
+				window.Vue.set(conversation.last_message, 'is_read', true);
 			} else {
-				Vue.set(data, 'ready', true);
-				Vue.set(data.last_message, 'is_read', true);
+				window.Vue.set(data, 'ready', true);
+				window.Vue.set(data.last_message, 'is_read', true);
 				state.index.push(data);
 			}
 			resolve();
@@ -49,7 +49,7 @@ const mutations = {
 
 const actions = {
 	async index({ commit }) {
-		let response = await axios.get(`/${name}`);
+		let response = await window.axios.get(`/${name}`);
 		commit('index', response.data);
 	},
 
@@ -57,21 +57,22 @@ const actions = {
 		let conversation = state.index.find(x => x.id == data.id);
 		const page = data.page || 1;
 		if (conversation && page == 1) {
-			Vue.set(conversation, 'files', null);
-			Vue.set(conversation, 'ready', false);
+			window.Vue.set(conversation, 'files', null);
+			window.Vue.set(conversation, 'ready', false);
 		}
-		let response = await axios.get(`/${name}/${data.id}?page=${page}`);
+		let response = await window.axios.get(`/${name}/${data.id}?page=${page}`);
 		response.data.page = page;
 		await commit('show', response.data);
 	},
 
 	async store({ commit }, data) {
-		let response = await axios.post(`/${name}`, data, { toasted: true });
+		commit('store');
+		let response = await window.axios.post(`/${name}`, data, { toasted: true });
 		return response.data;
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
 		await commit('update', response.data);
 	}
 };

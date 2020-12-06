@@ -1,3 +1,5 @@
+/* global WS_URL */
+/* global FB */
 require('../js/bootstrap');
 window.Vue = require('vue');
 
@@ -10,14 +12,14 @@ import 'bootstrap/js/dist/collapse';
 import Toasted from 'vue-toasted';
 const introJS = require('intro.js');
 
-Vue.use(VueRouter);
-Vue.use(Toasted, {
+window.Vue.use(VueRouter);
+window.Vue.use(Toasted, {
 	position: 'bottom-center',
 	duration: 3000,
 	className: 'bg-primary rounded shadow-none',
 	singleton: true
 });
-//Vue.component('vue-button', require('../components/vue-button.vue').default);
+//window.Vue.component('vue-button', require('../components/vue-button.vue').default);
 const router = new VueRouter({
 	linkActiveClass: 'active',
 	mode: 'history',
@@ -95,7 +97,6 @@ const router = new VueRouter({
 						}
 					]
 				},
-
 
 				{
 					name: 'team',
@@ -223,7 +224,7 @@ import Modal from '../components/modal/modal.vue';
 
 import store from './store';
 import intros from './intros.js';
-window.app = new Vue({
+window.app = new window.Vue({
 	router: router,
 	store: store,
 	el: '#app',
@@ -296,7 +297,8 @@ window.app = new Vue({
 		},
 		jQuery: $,
 		muted: false,
-		intros: intros
+		intros: intros,
+		introJS: introJS
 	},
 
 	computed: {
@@ -362,7 +364,7 @@ window.app = new Vue({
 	},
 
 	watch: {
-		'$route.name': function(value) {
+		'$route.name': function() {
 			this.contentloading = true;
 			$('.leader-line').remove();
 		},
@@ -374,7 +376,7 @@ window.app = new Vue({
 	},
 
 	created() {
-		axios.get('/auth').then(response => {
+		window.axios.get('/auth').then(response => {
 			this.auth = response.data;
 			this.socket.emit('user_online', this.auth.id);
 		});
@@ -439,7 +441,7 @@ window.app = new Vue({
 		if (!window.localStorage.getItem('telloe_has_logged_in')) {
 			window.localStorage.setItem('telloe_has_logged_in', true);
 			window.onload = () => {
-				//this.introJS.start();
+				this.introJS.start();
 			};
 		} else {
 			Object.values(this.intros).map(intro => {
@@ -462,13 +464,13 @@ window.app = new Vue({
 			//     intro.enabled = true;
 			// });
 
-			let step = 0;
 			console.log(this.$route.name);
 			let intro = this.intros[this.$route.name];
 			if (intro) {
 				intro.intro.start();
 			}
 
+			// let step = 0;
 			// switch () {
 			// 	case 'services_index':
 			// 		step = this.intros.services.index.step;
@@ -550,7 +552,7 @@ window.app = new Vue({
 				}
 				if (page) {
 					this.$set(conversation, 'filesLoading', true);
-					axios.get(`/conversations/${conversation.id}/files?page=${page}`).then(response => {
+					window.axios.get(`/conversations/${conversation.id}/files?page=${page}`).then(response => {
 						conversation.files.data = conversation.files.data.concat(response.data.data);
 						conversation.files.next_page_url = response.data.next_page_url;
 						conversation.filesLoading = false;
@@ -629,7 +631,7 @@ window.app = new Vue({
 		},
 
 		async getNotificationByID(data) {
-			let notification = await axios.get(`/notifications/${data.id}`).catch(e => {});
+			let notification = await window.axios.get(`/notifications/${data.id}`).catch(() => {});
 			if (notification) {
 				this.$refs['notification'].show(notification.data);
 				this.notifications.unshift(notification.data);
@@ -648,7 +650,7 @@ window.app = new Vue({
 		},
 
 		async getMessageByID(data) {
-			let message = await axios.get(`/messages/${data.id}`).catch(e => {});
+			let message = await window.axios.get(`/messages/${data.id}`).catch(() => {});
 			if (message) return message.data;
 		},
 
@@ -688,7 +690,7 @@ window.app = new Vue({
 					this.callWindow = window.open(url, 'telloe_call_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
 
 					this.callWindow.onload = () => {
-						this.callWindow.onunload = e => {
+						this.callWindow.onunload = () => {
 							this.callWindow = this.caller = this.callUser = this.callConversation = null;
 						};
 					};
@@ -733,7 +735,7 @@ window.app = new Vue({
 		},
 
 		FBParse() {
-			return new Promise((resolve, reject) => {
+			return new Promise(resolve => {
 				FB.XFBML.parse(null, () => {
 					resolve();
 				});

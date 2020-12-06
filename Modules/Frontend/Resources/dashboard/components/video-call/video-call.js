@@ -238,8 +238,8 @@ export default {
 			}
 		});
 
-		window.onbeforeunload = e => {
-			e = e || window.event;
+		window.onbeforeunload = () => {
+			//e = e || window.event;
 			this.endCall();
 		};
 	},
@@ -521,7 +521,7 @@ export default {
 				}
 			};
 			connection.oniceconnectionstatechange = () => {};
-			connection.onnegotiationneeded = e => {
+			connection.onnegotiationneeded = () => {
 				this.createOffer(connection);
 			};
 			connection.onicecandidateerror = error => {
@@ -575,7 +575,7 @@ export default {
 				Object.keys(message).map(k => {
 					bodyFormData.set(k, message[k]);
 				});
-				axios.post(`/dashboard/messages`, bodyFormData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(response => {
+				window.axios.post(`/dashboard/messages`, bodyFormData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(response => {
 					this.$root.socket.emit('message_sent', { id: response.data.message.id, conversation_id: response.data.conversation.id });
 				});
 			}
@@ -602,7 +602,6 @@ export default {
 				const mixer = new MultiStreamsMixer(streams);
 				mixer.frameInterval = 1;
 				mixer.startDrawingFrames();
-				let stream = mixer.getMixedStream();
 
 				let localVideo = this.$refs['cameraPreview'];
 				let remoteVideo = this.$refs['remotePreview'];
@@ -610,7 +609,7 @@ export default {
 				canvas.width = $('.video-call').width();
 				canvas.height = $('.video-call').height();
 				let canvasContext = canvas.getContext('2d');
-				this.localStream.onRender = (context, x, y, width, height, idx) => {
+				this.localStream.onRender = () => {
 					canvasContext.save();
 					canvasContext.beginPath();
 					canvasContext.arc(60, canvas.height - 60, 50, 0, 6.28, false); //draw the circle
@@ -622,7 +621,7 @@ export default {
 				};
 
 				let position = this.setCenterPosition(remoteVideo, canvas);
-				this.remoteStream.onRender = (context, x, y, width, height, idx) => {
+				this.remoteStream.onRender = () => {
 					canvasContext.drawImage(remoteVideo, position.x, position.y, position.width, position.height);
 				};
 
@@ -690,7 +689,7 @@ export default {
 			this.localStream.getVideoTracks().forEach(function(track) {
 				track.stop();
 			});
-			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(e => {});
+			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
 			if (this.localStream) {
 				let cameraTrack = this.localStream.getVideoTracks()[0];
 				this.connections.forEach(connection => {

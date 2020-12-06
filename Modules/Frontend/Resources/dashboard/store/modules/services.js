@@ -36,30 +36,30 @@ const mutations = {
 
 const actions = {
 	async index({ commit }) {
-		let response = await axios.get(`/${name}`);
+		let response = await window.axios.get(`/${name}`);
 		commit('index', response.data);
 	},
 
 	store({ commit }, data) {
-		axios.post(`/${name}`, data).then(response => {
+		window.axios.post(`/${name}`, data).then(response => {
 			commit('store', response.data);
 		});
 	},
 
 	async show({ commit }, service_id) {
-		let response = await axios.get(`/${name}/${service_id}`);
+		let response = await window.axios.get(`/${name}/${service_id}`);
 		commit('show', response.data);
 		return response.data;
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
 		commit('update', response.data);
 		return response.data;
 	},
 
 	async delete({ commit }, data) {
-		await axios.delete(`/${name}/${data.id}`, data);
+		await window.axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
 	}
 };

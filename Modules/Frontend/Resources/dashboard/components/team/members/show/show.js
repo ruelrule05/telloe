@@ -16,7 +16,7 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import VueButton from '../../../../../components/vue-button.vue';
 import VCalendar from 'v-calendar';
-Vue.use(VCalendar);
+window.Vue.use(VCalendar);
 import ZoomIcon from '../../../../../icons/zoom';
 import ShortcutIcon from '../../../../../icons/shortcut';
 
@@ -157,7 +157,7 @@ export default {
 		async createZoomLink(booking) {
 			this.createZoomLoading = true;
 			if (this.$root.auth.zoom_token) {
-				let response = await axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
+				let response = await window.axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
 				this.createZoomLoading = false;
 
 				let index = this.member.bookings.data.findIndex(x => x.id == booking.id);
@@ -182,18 +182,18 @@ export default {
 		},
 
 		async getSelectedBookingNewTimeslots(date) {
-			let response = await axios.get(`/services/${this.selectedBooking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+			let response = await window.axios.get(`/services/${this.selectedBooking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
 			this.timeslots = response.data;
 		},
 
 		async filterByServices(services) {
 			let serviceIds = services.map(x => x.id);
-			let response = await axios.get(`/members/${this.member.id}?page=${this.member.bookings.current_page}&services=${serviceIds}`);
+			let response = await window.axios.get(`/members/${this.member.id}?page=${this.member.bookings.current_page}&services=${serviceIds}`);
 			this.member.bookings = response.data.bookings;
 		},
 
 		async getData(page) {
-			let response = await axios.get(`/members/${this.member.id}?page=${page}`);
+			let response = await window.axios.get(`/members/${this.member.id}?page=${page}`);
 			this.member.bookings = response.data.bookings;
 		},
 
@@ -233,7 +233,7 @@ export default {
 					id: this.member.id,
 					service_id: service.id
 				};
-				await this.storeMemberService(data).then(data => {
+				await this.storeMemberService(data).then(() => {
 					if (assigned_service) assigned_service.deleted_at = null;
 				});
 			}
@@ -241,7 +241,7 @@ export default {
 		},
 
 		async getMember() {
-			let response = await axios.get(`/members/${this.$route.params.id}`);
+			let response = await window.axios.get(`/members/${this.$route.params.id}`);
 			this.member = response.data;
 			let clonedMember = JSON.parse(JSON.stringify(response.data));
 			clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);

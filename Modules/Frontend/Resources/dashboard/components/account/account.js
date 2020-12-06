@@ -48,7 +48,7 @@ export default {
 			this.tab = value;
 		},
 
-		'user.timezone': function(value) {
+		'user.timezone': function() {
 			this.user.dial_code = countryCodes.customArray(
 				{ text: '{countryCode}', value: '+{countryCallingCode}' },
 				{
@@ -122,23 +122,25 @@ export default {
 		},
 
 		routingNumber() {
+			let routingNumber = '';
 			switch (this.stripeAccountForm.country) {
 				case 'AU':
-					return 'BSB';
+					routingNumber = 'BSB';
 					break;
 
 				case 'US':
-					return 'Routing Number';
+					routingNumber = 'Routing Number';
 					break;
 
 				case 'UK':
-					return 'Sort Code';
+					routingNumber = 'Sort Code';
 					break;
 
 				case 'CA':
-					return 'Institution Number';
+					routingNumber = 'Institution Number';
 					break;
 			}
+			return routingNumber;
 		}
 	},
 
@@ -184,14 +186,14 @@ export default {
 			Object.keys(this.user).map(k => {
 				bodyFormData.append(k, this.user[k]);
 			});
-			let response = await axios.post('/auth', bodyFormData, { toasted: true, headers: { 'Content-Type': 'multipart/form-data' } });
+			let response = await window.axios.post('/auth', bodyFormData, { toasted: true, headers: { 'Content-Type': 'multipart/form-data' } });
 			this.$root.auth = response.data;
 			this.loading = false;
 			this.$toasted.show('Account has been updated successfully.');
 		},
 
 		password() {
-			axios.put('/auth/password', this.securityForm, { toasted: true }).then(() => {
+			window.axios.put('/auth/password', this.securityForm, { toasted: true }).then(() => {
 				this.$toasted.show('Password has been updated successfully.');
 			});
 			this.securityForm = {
@@ -208,7 +210,7 @@ export default {
 		async updateStripeAccount() {
 			this.stripeAccountForm.loading = true;
 
-			let response = await axios.put('/auth/update_stripe_account', this.stripeAccountForm, { toasted: true }).catch(e => {
+			let response = await window.axios.put('/auth/update_stripe_account', this.stripeAccountForm, { toasted: true }).catch(e => {
 				console.log(e.message.errors);
 			});
 			if (response) {

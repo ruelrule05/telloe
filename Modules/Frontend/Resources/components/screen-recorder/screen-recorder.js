@@ -5,8 +5,6 @@ import CameraIcon from '../../icons/camera.vue';
 import CloseIcon from '../../icons/close.vue';
 import PauseAltIcon from '../../icons/pause-alt';
 import CommentIcon from '../../icons/comment';
-const loadImage = require('blueimp-load-image');
-const mime = require('mime-types');
 export default {
 	components: { CameraIcon, CloseIcon, PauseAltIcon, CommentIcon },
 
@@ -18,7 +16,6 @@ export default {
 		fileOutput: null,
 		preview: '',
 		streams: [],
-		streams: null,
 		isRecording: false,
 		shutter: null,
 		hasFlash: false, //false
@@ -64,7 +61,7 @@ export default {
 		async submit() {
 			this.videoRecorder.stop();
 
-			return new Promise((resolve, reject) => {
+			return new Promise(resolve => {
 				if (this.blobs.length > 0) {
 					const timestamp = dayjs().valueOf();
 					let file = new File(this.blobs, timestamp, {
@@ -161,7 +158,7 @@ export default {
 		async initDevices() {
 			this.cameraReady = false;
 			let finalStream = new MediaStream();
-			let audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(e => {
+			let audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {
 				this.close();
 			});
 			if (!audioStreams) {
@@ -172,7 +169,7 @@ export default {
 				finalStream.addTrack(track);
 			});
 
-			let displayStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(e => {
+			let displayStreams = await navigator.mediaDevices.getDisplayMedia({ video: true }).catch(() => {
 				this.close();
 			});
 			if (!displayStreams) {

@@ -14,9 +14,8 @@ import XeroIcon from '../../../../icons/xero';
 import CheckmarkIcon from '../../../../icons/checkmark';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
-import Vue from 'vue';
 import VuePaginate from 'vue-paginate';
-Vue.use(VuePaginate);
+window.Vue.use(VuePaginate);
 const format = require('format-number');
 import getSymbolFromCurrency from 'currency-symbol-map';
 export default {
@@ -185,10 +184,10 @@ export default {
 	},
 
 	watch: {
-		ready: function(value) {
+		ready: function() {
 			//this.$root.contentloading = !value;
 		},
-		invoiceStatus: function(value) {
+		invoiceStatus: function() {
 			if (this.$refs['paginate']) this.$refs['paginate'].goToPage(1);
 		}
 	},
@@ -238,7 +237,7 @@ export default {
 		async updateInvoice(invoiceToUpdate) {
 			this.$refs['editModal'].hide();
 			this.$set(invoiceToUpdate, 'statusLoading', true);
-			let response = await axios.put('/xero/invoices', { invoice_id: invoiceToUpdate.InvoiceID, status: invoiceToUpdate.newStatus, description: invoiceToUpdate.description, tenantId: this.tenantId }).catch(() => {});
+			let response = await window.axios.put('/xero/invoices', { invoice_id: invoiceToUpdate.InvoiceID, status: invoiceToUpdate.newStatus, description: invoiceToUpdate.description, tenantId: this.tenantId }).catch(() => {});
 			if (response) {
 				if (response.data.Status == 'DELETED' || response.data.Status == 'VOIDED') {
 					let index = this.invoices.findIndex(x => x.InvoiceID == response.data.InvoiceID);
@@ -276,7 +275,7 @@ export default {
 
 		async saveXeroTenant(tenantId) {
 			this.$root.contentloading = true;
-			let response = await axios.post('/xero/tenants_save', { tenant_id: tenantId });
+			let response = await window.axios.post('/xero/tenants_save', { tenant_id: tenantId });
 			this.$root.auth.xero_tenant_id = response.data;
 			this.chooseXeroTenant = false;
 			this.getXeroInvoices();
@@ -284,7 +283,7 @@ export default {
 
 		async getTenants() {
 			if (this.$root.auth.xero_token) {
-				let response = await axios.get('/xero/tenants');
+				let response = await window.axios.get('/xero/tenants');
 				this.xeroTenants = response.data;
 				this.xeroTenantsLoading = false;
 				if (response) {
@@ -306,7 +305,7 @@ export default {
 					this.chooseXeroTenant = true;
 					this.$root.contentloading = false;
 				} else {
-					let response = await axios.get(`/xero/invoices?tenantId=${tenantId}`, { toasted: true }).catch(e => {});
+					let response = await window.axios.get(`/xero/invoices?tenantId=${tenantId}`, { toasted: true }).catch(() => {});
 					if (response) {
 						this.invoices = response.data;
 					}
@@ -320,7 +319,7 @@ export default {
 		},
 
 		async authenticateXero() {
-			let response = await axios.get('/xero_authenticate');
+			let response = await window.axios.get('/xero_authenticate');
 			this.goToXeroAuthUrl(response.data.authUrl);
 		},
 
@@ -387,7 +386,7 @@ export default {
 			this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
 
 			if (this.$root.auth.xero_token) {
-				let response = await axios.post('/xero/invoices', this.newInvoiceForm, { toasted: true }).catch(() => {
+				let response = await window.axios.post('/xero/invoices', this.newInvoiceForm, { toasted: true }).catch(() => {
 					this.newInvoiceForm.loading = false;
 				});
 				if (response) {

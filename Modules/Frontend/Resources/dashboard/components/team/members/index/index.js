@@ -1,3 +1,4 @@
+/* global APP_NAME */
 import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../../components/vue-form-validate.vue';
@@ -47,7 +48,6 @@ export default {
 		addField: false,
 		newField: '',
 		resendLoading: false,
-		selectedMember: null,
 		clonedMember: null
 	}),
 
@@ -109,7 +109,7 @@ export default {
 
 		resendEmail(member) {
 			this.resendLoading = true;
-			axios.post(`/members/${member.id}/resend`).then(() => {
+			window.axios.post(`/members/${member.id}/resend`).then(() => {
 				this.resendLoading = false;
 				this.$refs['resendModal'].hide();
 				this.$toasted.show('Invitation email has been sent successfully.');

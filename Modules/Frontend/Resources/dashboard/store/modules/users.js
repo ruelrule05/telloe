@@ -1,33 +1,32 @@
 const name = 'users';
 
 const state = () => ({
-    ready: false,
-    index: [],
+	ready: false,
+	index: []
 });
 
 const mutations = {
-    index(state, data) {
-        state.index = [];
-        state.index.push.apply(state.index, data);
-        state.ready = true;
-    },
+	index(state, data) {
+		state.index = [];
+		state.index.push.apply(state.index, data);
+		state.ready = true;
+	}
 };
 
 const actions = {
-    index({ commit }) {
-        axios.get(`/${name}`).then((response) => {
-            commit('index', response.data);
-        });
-    },
+	index({ commit }) {
+		window.axios.get(`/${name}`).then(response => {
+			commit('index', response.data);
+		});
+	}
 };
 
-const getters = {
-};
+const getters = {};
 
 export default {
-    namespaced: true,
-    state,
-    mutations,
-    actions,
-    getters,
+	namespaced: true,
+	state,
+	mutations,
+	actions,
+	getters
 };

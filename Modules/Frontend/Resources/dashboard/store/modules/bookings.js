@@ -58,13 +58,13 @@ const actions = {
 				queryString = `?contact_id=${conversation.member.contact.id}`;
 			}
 		}
-		let response = await axios.get(`/${name}${queryString}`);
+		let response = await window.axios.get(`/${name}${queryString}`);
 		commit('index', response.data);
 		return response;
 	},
 
 	async store({ commit }, data) {
-		let response = await axios.post(`/${name}`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}`, data, { toasted: true });
 		commit('store', response.data);
 		if (response.data.notification) window.app.socket.emit('new_notification', { user_id: response.data.notification.user_id, id: response.data.notification.id });
 
@@ -72,7 +72,7 @@ const actions = {
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data, { toasted: true });
+		let response = await window.axios.put(`/${name}/${data.id}`, data, { toasted: true });
 		commit('update', response.data);
 		if (response.data.notification) window.app.socket.emit('new_notification', { user_id: response.data.notification.user_id, id: response.data.notification.id });
 
@@ -80,24 +80,25 @@ const actions = {
 	},
 
 	async delete({ commit }, data) {
-		await axios.delete(`/${name}/${data.id}`, data);
+		await window.axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
 	},
 
-	googleCalendars({ commit }, data) {
-		axios.get(`/google_calendar_list`).then(response => {
+	googleCalendars({ commit }) {
+		window.axios.get(`/google_calendar_list`).then(response => {
 			commit('googleCalendars', response.data);
 		});
 	},
 
-	outlookCalendars({ commit }, data) {
-		axios.get(`/outlook_calendar_list`).then(response => {
+	outlookCalendars({ commit }) {
+		window.axios.get(`/outlook_calendar_list`).then(response => {
 			commit('outlookCalendars', response.data);
 		});
 	},
 
 	assignToMember({ commit }, data) {
-		axios.post(`/${name}/${data.id}/assign_to_member`, data);
+		commit('assignToMember');
+		window.axios.post(`/${name}/${data.id}/assign_to_member`, data);
 	}
 };
 

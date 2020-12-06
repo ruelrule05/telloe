@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueButton from '../../../../components/vue-button';
@@ -21,7 +20,7 @@ const utcPlugin = require('dayjs/plugin/utc');
 const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
 dayjs.extend(utcPlugin);
 dayjs.extend(IsSameOrAfter);
-Vue.use(VCalendar);
+window.Vue.use(VCalendar);
 import dayjs from 'dayjs';
 import Timetable from './timetable/timetable.vue';
 export default {
@@ -117,10 +116,10 @@ export default {
 
 			let dateForWeekView = dayjs();
 			//if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
-			let daysBefore = [];
+			//let daysBefore = [];
 			let daysAfter = [];
 			for (var i = 1; i <= 15; i++) {
-				let before = dateForWeekView.subtract(i, 'day');
+				//let before = dateForWeekView.subtract(i, 'day');
 				let after = dateForWeekView.add(i, 'day');
 				/*daysBefore.unshift({
                     date: before.toDate(),
@@ -224,7 +223,6 @@ export default {
 					dot: {
 						color: 'red'
 					},
-					customData: 'event',
 					customData: 'google-event',
 					dates: eventDate
 				});
@@ -246,7 +244,7 @@ export default {
 	},
 
 	watch: {
-		'$route.query.date': function(value) {
+		'$route.query.date': function() {
 			this.goToDate();
 		},
 		bookings: function(value) {
@@ -254,7 +252,7 @@ export default {
 				let now = this.dayjs();
 				let nextBooking = value.find(x => this.dayjs(x.date).isSameOrAfter(now));
 				if (nextBooking) {
-					let date = this.dayjs(nextBooking.date).toDate();
+					//let date = this.dayjs(nextBooking.date).toDate();
 					// this.selectedDate = date;
 					// this.infoTab = 'bookings';
 				}
@@ -451,6 +449,7 @@ export default {
 		},
 
 		adjustSlider(step) {
+			/* eslint-disable */
 			let weekdaySlider = this.$refs['weekday-slider'];
 
 			let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - 95;

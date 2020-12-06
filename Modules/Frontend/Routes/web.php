@@ -6,6 +6,7 @@
  */
 
 Route::get('test', function () {
+    echo \Carbon\Carbon::now()->weekOfMonth;
 });
 
 Route::get('widget', function () {
@@ -30,7 +31,18 @@ Route::get('email', function () {
 
     //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
     //$booking = App\Models\Booking::find(40);
-    $email = new Modules\Frontend\Mail\NewBooking([App\Models\Booking::first(), App\Models\Booking::find(16)], App\Models\User::first(), 'contact');
+    $booking = App\Models\Booking::find(40);
+
+    $from = \Carbon\Carbon::parse("$booking->date $booking->start");
+    $to = $from->clone()->addMinute($booking->service->duration);
+    $link = \Spatie\CalendarLinks\Link::create($booking->service->name, $from, $to)
+        ->description($booking->service->description);
+
+    $booking->google_link = $link->google();
+    $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+    $booking->yahoo_link = $link->yahoo();
+    $booking->ical_link = $booking->outlook_link;
+    $email = new Modules\Frontend\Mail\NewBooking([$booking, App\Models\Booking::find(16)], App\Models\User::first(), 'contact');
     //$email = new Modules\Frontend\Mail\UpcomingBooking(App\Models\Booking::find(170), 'dwada');
     //$email = new Modules\Frontend\Mail\UpdateBooking(App\Models\Booking::first(),'client');
     //\Mail::to('cleidoscope@gmail.com')->send($email);

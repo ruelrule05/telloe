@@ -36,7 +36,6 @@ export default {
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		clonedService: null,
-		selectedService: null,
 		currencies: [
 			{
 				text: 'AUD',
@@ -96,7 +95,7 @@ export default {
 		ready: function(value) {
 			this.$root.contentloading = !value;
 		},
-		selectedService: function(value) {
+		selectedService: function() {
 			if (this.$root.intros.add_service.enabled) {
 				setTimeout(() => {
 					if (!document.querySelector('.introjs-overlay')) {

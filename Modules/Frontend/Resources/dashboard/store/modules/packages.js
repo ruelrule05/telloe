@@ -38,32 +38,32 @@ const mutations = {
 };
 
 const actions = {
-	async index({ commit }, conversation) {
-		let response = await axios.get(`/${name}`);
+	async index({ commit }) {
+		let response = await window.axios.get(`/${name}`);
 		commit('index', response.data);
 		return response;
 	},
 
 	async store({ commit }, data) {
-		let response = await axios.post(`/${name}`, data);
+		let response = await window.axios.post(`/${name}`, data);
 		commit('store', response.data);
 	},
 
 	async show({ commit }, package_id) {
-		let response = await axios.get(`/${name}/${package_id}`);
+		let response = await window.axios.get(`/${name}/${package_id}`);
 		commit('show', response.data);
 		return response.data;
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
 		commit('update', response.data);
 
 		return response;
 	},
 
 	delete({ commit }, data) {
-		axios.delete(`/${name}/${data.id}`, data);
+		window.axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
 	}
 };

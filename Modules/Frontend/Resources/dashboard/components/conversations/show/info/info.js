@@ -63,7 +63,6 @@ export default {
 
 	data: () => ({
 		newTag: '',
-		fileType: 'all',
 		newNote: '',
 		customFieldForm: {
 			name: '',
@@ -158,13 +157,10 @@ export default {
 	},
 
 	watch: {
-		'$root.profileTab': function(value) {
+		'$root.profileTab': function() {
 			this.tagSearch = '';
 		},
 		'conversation.id': function() {
-			if (this.conversation.members.length == 1) {
-				let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
-			}
 			if (this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
 			$('#info-items > div').show();
 		},
@@ -176,11 +172,7 @@ export default {
 		}
 	},
 
-	created() {
-		if (this.conversation.members.length == 1) {
-			let user_id = this.$root.auth.id == this.conversation.user_id ? this.conversation.member.id : this.$root.auth.id;
-		}
-	},
+	created() {},
 
 	methods: {
 		...mapActions({

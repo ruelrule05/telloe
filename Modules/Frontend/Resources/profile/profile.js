@@ -357,7 +357,7 @@ export default {
 					timeslot.days.push(dayIndex);
 				}
 			} else if (frequency == 'month') {
-				timeslot.dayInMonth = 'first_week';
+				timeslot.day_in_month = 'first_week';
 			}
 		},
 
@@ -621,8 +621,6 @@ export default {
 				}
 				return timeslot;
 			});
-			console.log(timeslots);
-			return;
 
 			let service = this.assignedService || this.selectedService;
 			if (service && this.selectedTimeslots.length > 0) {

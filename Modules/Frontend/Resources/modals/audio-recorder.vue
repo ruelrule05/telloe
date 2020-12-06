@@ -1,10 +1,10 @@
 <template>
 	<div class="modal fade" tabindex="-1" role="dialog" ref="audioRecorderModal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="h-100">
-                        <div class="audio-recorder overflow-hidden">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="h-100">
+						<div class="audio-recorder overflow-hidden">
 							<div class="d-flex flex-column h-100">
 								<div class="d-flex w-100">
 									<button type="button" class="btn ml-auto shadow-none" data-dismiss="modal" @click="close">
@@ -13,7 +13,6 @@
 								</div>
 
 								<div class="flex-grow-1 h-100 d-flex flex-column position-relative text-center">
-
 									<div v-if="!hasRecorded" class="text-center position-absolute-center w-100">
 										<div class="h6 mb-0">Click to start recording</div>
 									</div>
@@ -46,8 +45,6 @@
 									</div>
 								</div>
 
-								
-
 								<!-- Controls -->
 								<div v-if="micReady" class="flex-fill w-100 text-center px-5 pb-5">
 									<div class="d-flex align-items-center text-center">
@@ -69,27 +66,26 @@
 								</div>
 							</div>
 						</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
-
 
 <script>
 import dayjs from 'dayjs';
 import WaveSurfer from 'wavesurfer.js';
 import WaveSurferMicrophone from '../js/plugins/wavesurfer.microphone.min.js';
-import WaveSurferCursor from '../js/plugins/wavesurfer.cursor.min.js';
-import CameraIcon from '../icons/camera.vue';
+// import WaveSurferCursor from '../js/plugins/wavesurfer.cursor.min.js';
+// import CameraIcon from '../icons/camera.vue';
 import CloseIcon from '../icons/close.vue';
-import PauseAltIcon from '../icons/pause-alt';
+// import PauseAltIcon from '../icons/pause-alt';
 import MicrophoneIcon from '../icons/microphone';
 import PlayIcon from '../icons/play';
 import PauseIcon from '../icons/pause';
 export default {
-	components: {CameraIcon, CloseIcon, PauseAltIcon, MicrophoneIcon, PlayIcon, PauseIcon},
+	components: { CloseIcon, MicrophoneIcon, PlayIcon, PauseIcon },
 
 	data: () => ({
 		audioRecorder: null,
@@ -104,8 +100,7 @@ export default {
 		timer: null
 	}),
 
-	created() {
-	},
+	created() {},
 
 	beforeDestroy() {
 		if (this.streams) {
@@ -119,21 +114,19 @@ export default {
 		$(this.$refs['audioRecorderModal']).modal('show');
 		this.initMic();
 		this.wavesurfer = WaveSurfer.create({
-		    container: document.querySelector('#wavesurfer'),
-		    //backend: 'MediaElement',
-		    height: 200,
-		    barWidth: 3,
-    		barHeight: 1,
-    		barRadius: 3,
-  			interact: true,
-  			cursorWidth: 1,
-  			cursorColor: 'transparent',
-  			hideScrollbar: true,
-		    plugins: [
-			    WaveSurferMicrophone.create(),
-			]
+			container: document.querySelector('#wavesurfer'),
+			//backend: 'MediaElement',
+			height: 200,
+			barWidth: 3,
+			barHeight: 1,
+			barRadius: 3,
+			interact: true,
+			cursorWidth: 1,
+			cursorColor: 'transparent',
+			hideScrollbar: true,
+			plugins: [WaveSurferMicrophone.create()]
 		});
-		this.wavesurfer.on('finish', (progress) => {
+		this.wavesurfer.on('finish', () => {
 			this.playerStatus = 'paused';
 			this.wavesurfer.seekTo(0);
 		});
@@ -173,25 +166,25 @@ export default {
 		},
 
 		submit() {
-			if(this.blobs.length > 0) {
+			if (this.blobs.length > 0) {
 				$(this.$refs['audioRecorderModal']).modal('hide');
 				setTimeout(() => {
-	                const timestamp = dayjs().valueOf();
-				    let file = new File(this.blobs, timestamp, {
-				        type: this.blobs[0].type
-				    });
-				    let audio = {
-				    	source: file,
-				    	duration: this.secondsToDuration(this.wavesurfer.getDuration(), 14, 5)
-				    };
-				  	this.$emit('submit', audio);
-				  	this.reset();
+					const timestamp = dayjs().valueOf();
+					let file = new File(this.blobs, timestamp, {
+						type: this.blobs[0].type
+					});
+					let audio = {
+						source: file,
+						duration: this.secondsToDuration(this.wavesurfer.getDuration(), 14, 5)
+					};
+					this.$emit('submit', audio);
+					this.reset();
 				}, 150);
-		  	}
+			}
 		},
 
 		togglePlayer() {
-			switch(this.playerStatus) {
+			switch (this.playerStatus) {
 				case 'paused':
 					this.playerStatus = 'playing';
 					this.wavesurfer.play();
@@ -212,14 +205,14 @@ export default {
 		},
 
 		pauseRecord() {
-			if(this.audioRecorder) {
+			if (this.audioRecorder) {
 				clearInterval(this.timer);
 				this.recorderStatus = 'paused';
 				this.audioRecorder.requestData();
 				this.audioRecorder.pause();
-			    let blob = new Blob(this.blobs, {
-			        type: 'audio/mp3'
-			    });
+				let blob = new Blob(this.blobs, {
+					type: 'audio/mp3'
+				});
 				this.wavesurfer.microphone.stop();
 				this.wavesurfer.setCursorColor('#aaa');
 				this.wavesurfer.setProgressColor('#6e82ea');
@@ -229,11 +222,11 @@ export default {
 		},
 
 		startRecord() {
-			if(this.audioRecorder) {
+			if (this.audioRecorder) {
 				this.timer = setInterval(() => {
 					this.duration += 0.01;
-				}, 10)
-				if(this.hasRecorded) {
+				}, 10);
+				if (this.hasRecorded) {
 					this.audioRecorder.resume();
 				} else {
 					this.audioRecorder.start(30);
@@ -249,12 +242,12 @@ export default {
 
 		initMic() {
 			navigator.mediaDevices
-				.getUserMedia({audio: true})
-				.then((streams) => {
+				.getUserMedia({ audio: true })
+				.then(streams => {
 					this.streams = streams;
 
 					this.audioRecorder = new MediaRecorder(streams);
-    				this.audioRecorder.ondataavailable = e => this.blobs.push(e.data);
+					this.audioRecorder.ondataavailable = e => this.blobs.push(e.data);
 					this.micReady = true;
 					/*this.$refs['audioFile'].muted = true;
 					this.$refs['audioFile'].volume = 0;
@@ -268,8 +261,8 @@ export default {
 					alert('Unable to detect your microphone.');
 					console.error(error);
 				});
-		},
-	},
+		}
+	}
 };
 </script>
 
@@ -278,7 +271,7 @@ export default {
 	.btn {
 		opacity: 0;
 	}
-	&:hover{
+	&:hover {
 		.btn {
 			opacity: 1;
 		}
@@ -287,22 +280,22 @@ export default {
 .audio-recorder {
 	height: 500px;
 }
-.player-control{
+.player-control {
 	z-index: 10;
 	button {
 		line-height: 1 !important;
 		padding: 15px !important;
 		position: relative;
-		svg{
+		svg {
 			position: absolute;
-		line-height: 1 !important;
+			line-height: 1 !important;
 			top: 50%;
 			left: 50%;
 			transform: translate(-50%, -50%);
 		}
 	}
 }
-.audio-control{
+.audio-control {
 	border: 0 !important;
 	outline: 0 !important;
 	width: 50px;
@@ -311,8 +304,8 @@ export default {
 	background-color: #4a4a4a;
 	position: relative;
 	vertical-align: top;
-	&.audio-pause{
-		&:before{
+	&.audio-pause {
+		&:before {
 			content: '';
 			position: absolute;
 			top: 50%;
@@ -323,7 +316,7 @@ export default {
 			background-color: #fff;
 			border-radius: 5px;
 		}
-		&:after{
+		&:after {
 			content: '';
 			position: absolute;
 			top: 50%;

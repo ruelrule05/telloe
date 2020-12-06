@@ -45,37 +45,37 @@ const mutations = {
 };
 
 const actions = {
-	async index({ commit, rootState }, user_id) {
+	async index({ commit }, user_id) {
 		const user_query = user_id ? `?user_id=${user_id}` : '';
-		let response = await axios.get(`/${name}${user_query}`);
+		let response = await window.axios.get(`/${name}${user_query}`);
 		commit('index', response.data);
 	},
 
 	async store({ commit }, data) {
-		let response = await axios.post(`/${name}`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}`, data, { toasted: true });
 		commit('store', response.data);
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
 		commit('update', response.data);
 
 		return response.data;
 	},
 
 	async store_service({ commit }, data) {
-		let response = await axios.post(`/${name}/${data.id}/assign_service`, data);
+		let response = await window.axios.post(`/${name}/${data.id}/assign_service`, data);
 		commit('store_service', response.data);
 		return response.data;
 	},
 
 	async delete({ commit }, data) {
-		await axios.delete(`/${name}/${data.id}`, data);
+		await window.axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
 	},
 
 	get_member_from_invite_token({ commit }, invite_token) {
-		axios.post(`/${name}/get_member_from_invite_token`, { invite_token: invite_token }).then(response => {
+		window.axios.post(`/${name}/get_member_from_invite_token`, { invite_token: invite_token }).then(response => {
 			commit('get_member_from_invite_token', response.data);
 		});
 	}

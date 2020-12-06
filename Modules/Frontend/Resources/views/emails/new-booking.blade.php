@@ -31,6 +31,18 @@
                 <td style="width: 25%">Timezone</td>
                 <td><strong>{{ $booking->user->timezone ?? config('app.timezone') }}</strong></td>
             </tr>
+            <tr>
+                <td style="width: 25%">Add to</td>
+                <td>
+                    <u><a target="_blank" href="{{ $booking->google_link}}">Google Calendar</a></u>
+                    &nbsp;|&nbsp;
+                    <u><a target="_blank" href="{{ $booking->outlook_link }}">Outlook</a></u>
+                    &nbsp;|&nbsp;
+                    <u><a target="_blank" href="{{ $booking->yahoo_link }}">Yahoo!</a></u>
+                    &nbsp;|&nbsp;
+                    <u><a target="_blank" href="{{ $booking->ical_link }}">iCal</a></u>
+                </td>
+            </tr>
             @if($booking->zoom_link)
             <tr>
                 <td style="width: 25%; vertical-align: top">Zoom link</td>
@@ -38,16 +50,6 @@
             </tr>
             @endif
         </table>
-        <div>
-        Add to: 
-        <u><a target="_blank" href="{{ $booking->google_link}}">Google Calendar</a></u>
-        &nbsp;|&nbsp;
-        <u><a target="_blank" href="{{ $booking->outlook_link }}">Outlook</a></u>
-        &nbsp;|&nbsp;
-        <u><a target="_blank" href="{{ $booking->yahoo_link }}">Yahoo!</a></u>
-        &nbsp;|&nbsp;
-        <u><a target="_blank" href="{{ $booking->ical_link }}">iCal</a></u>
-        </div>
     </div>
 @endforeach
 

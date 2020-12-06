@@ -154,23 +154,50 @@ class UserController extends Controller
             $bookings[] = $booking;
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
+                $timeslotDayName = Carbon::parse($timeslot['date']['format'])->format('l');
                 $currentDate = Carbon::now()->addDay(1);
                 $endDate = Carbon::parse($timeslot['end_date']);
-                if ($timeslot['frequency'] == 'week') {
-                    while ($currentDate->lessThan($endDate)) {
+                $weekOfMonth = 0;
+                if (isset($timeslot['day_in_month'])) {
+                    switch ($timeslot['day_in_month']) {
+                    case 'first_week';
+                        $weekOfMonth = 1;
+                        break;
+                    case 'second_week';
+                        $weekOfMonth = 2;
+                        break;
+                    case 'third_week';
+                        $weekOfMonth = 3;
+                        break;
+                    case 'las_week';
+                        $weekOfMonth = 4;
+                        break;
+                }
+                }
+                while ($currentDate->lessThan($endDate)) {
+                    $createBooking = false;
+                    if ($timeslot['frequency'] == 'week') {
                         $dayIndex = array_search($currentDate->clone()->format('l'), $days);
                         if (in_array($dayIndex, $timeslot['days'])) {
-                            $booking = $this->createBooking($service, [
-                                'user_id' => $authUser->id,
-                                'service_id' => $service->id,
-                                'date' => $currentDate->clone()->format('Y-m-d'),
-                                'start' => $start->format('H:i'),
-                                'end' => $end->format('H:i'),
-                            ]);
-                            $bookings[] = $booking;
+                            $createBooking = true;
                         }
-                        $currentDate->addDay(1);
+                    } elseif ($timeslot['frequency'] == 'month' && isset($timeslot['day_in_month'])) {
+                        $dayName = $currentDate->clone()->format('l');
+                        if ($dayName == $timeslotDayName && $weekOfMonth == $currentDate->clone()->weekOfMonth) {
+                            $createBooking = true;
+                        }
                     }
+                    if ($createBooking) {
+                        $booking = $this->createBooking($service, [
+                            'user_id' => $authUser->id,
+                            'service_id' => $service->id,
+                            'date' => $currentDate->clone()->format('Y-m-d'),
+                            'start' => $start->format('H:i'),
+                            'end' => $end->format('H:i'),
+                        ]);
+                        $bookings[] = $booking;
+                    }
+                    $currentDate->addDay(1);
                 }
             }
         }

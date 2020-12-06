@@ -1,9 +1,9 @@
 import { mapGetters, mapActions } from 'vuex';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
-const mime = require('mime');
+//const mime = require('mime');
 const loadImage = require('blueimp-load-image');
-import Compressor from 'compressorjs';
+//import Compressor from 'compressorjs';
 
 import VueFormValidate from '../../../../components/vue-form-validate';
 import Emojipicker from '../../../../components/emojipicker';
@@ -37,7 +37,7 @@ import ScreenRecordIcon from '../../../../icons/screen-record';
 import DownloadIcon from '../../../../icons/download';
 
 import Tooltip from '../../../../js/directives/tooltip';
-import toggleFullscreen from 'toggle-fullscreen';
+//import toggleFullscreen from 'toggle-fullscreen';
 
 const emojiRegex = require('emoji-regex');
 export default {
@@ -114,7 +114,7 @@ export default {
 				});
 			}, 50);
 		},
-		'conversation.id': function(value) {
+		'conversation.id': function() {
 			this.ready = false;
 			if (this.$refs['messageInput']) this.$refs['messageInput'].focus();
 			this.scrollDown();
@@ -173,6 +173,7 @@ export default {
 		},
 
 		grouped_messages() {
+			/* eslint-disable */
 			const grouped_messages = [];
 			// sort messages by timestamp
 			const messages = ((this.conversation.paginated_messages || {}).data || []).sort((a, b) => {
@@ -596,7 +597,7 @@ export default {
 						{ maxWidth: 200, canvas: true }
 					);
 				} else {
-					let fileBase64 = await this.fileToBase64(fileInput.files[0]);
+					await this.fileToBase64(fileInput.files[0]);
 					let messageData = {
 						filename: fileInput.value.split(/(\\|\/)/g).pop(),
 						extension: fileExtension,

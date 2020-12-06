@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import VuePaginate from 'vue-paginate';
 Vue.use(VuePaginate);
 import tooltip from '../../../../js/directives/tooltip.js';
-const convertTime = require('convert-time');
+//const convertTime = require('convert-time');
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 
 export default {
@@ -36,7 +36,7 @@ export default {
 	}),
 
 	watch: {
-		'selectedService.id': function(value) {
+		'selectedService.id': function() {
 			this.$nextTick(() => {
 				let activeService = document.querySelector('.service-container.active');
 				if (activeService) {
@@ -44,15 +44,7 @@ export default {
 				}
 			});
 		},
-		selectedCoachId: function(value) {
-			this.$nextTick(() => {
-				let activeUser = document.querySelector('.user-container.active');
-				if (activeUser) {
-					this.activeServicePosition = activeUser.offsetTop + 1;
-				}
-			});
-		},
-		selectedCoachId: function(value) {
+		selectedCoachId: function() {
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
 				if (activeUser) {
@@ -61,7 +53,7 @@ export default {
 			});
 		},
 
-		packageItem: function(value) {
+		packageItem: function() {
 			if (this.$root.intros.packages_show.enabled) {
 				setTimeout(() => {
 					if (!document.querySelector('.introjs-overlay')) {
@@ -125,15 +117,6 @@ export default {
 			this.newPackage.expiration_date = dayjs(this.newPackage.expiration_date).format('YYYY-MM-DD');
 			this.storePackage(this.newPackage);
 			this.$refs['addModal'].hide();
-		},
-
-		submit() {
-			this.updateService(this.clonedService).then(service => {
-				Object.keys(service).map(key => {
-					this.service[key] = service[key];
-				});
-			});
-			this.$refs['editModal'].hide();
 		},
 
 		formatDate(date) {

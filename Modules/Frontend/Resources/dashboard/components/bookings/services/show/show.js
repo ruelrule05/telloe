@@ -154,7 +154,7 @@ export default {
 		ready: function(value) {
 			this.$root.contentloading = !value;
 		},
-		service: function(value) {
+		service: function() {
 			if (this.$root.intros.services_show.enabled) {
 				setTimeout(() => {
 					if (!document.querySelector('.introjs-overlay')) {
@@ -164,7 +164,7 @@ export default {
 			}
 		},
 
-		selectedCoachId: function(value) {
+		selectedCoachId: function() {
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
 				if (activeUser) {
@@ -173,11 +173,11 @@ export default {
 			});
 		},
 
-		'selectedService.id': function(value) {
+		'selectedService.id': function() {
 			this.getTimeslots();
 		},
 
-		startDate: function(value) {
+		startDate: function() {
 			this.getTimeslots();
 		}
 	},
@@ -199,16 +199,19 @@ export default {
 			assignBookingToMember: 'bookings/assignToMember',
 			updateBooking: 'bookings/update',
 			deleteBooking: 'bookings/delete',
-			assignService: 'members/store_service',
-			deleteService: 'services/delete'
+			assignService: 'members/store_service'
 		}),
 
 		addHolidayDate(date) {
 			let newDate = dayjs(date).toDate();
-			let index = this.newHoliday.dates.findIndex(x => x == newDate);
-			console.log(index);
-			this.newHoliday.dates.push(date);
-			this.holidayDateAttrs[0].dates.push(dayjs(date).toDate());
+			let index = this.newHoliday.dates.findIndex(x => dayjs(x).format('YYYY-MM-DD') == dayjs(newDate).format('YYYY-MM-DD'));
+			if (index > -1) {
+				this.newHoliday.dates.splice(index, 1);
+				this.holidayDateAttrs[0].dates.splice(index, 1);
+			} else {
+				this.holidayDateAttrs[0].dates.push(dayjs(date).toDate());
+				this.newHoliday.dates.push(date);
+			}
 		},
 
 		update() {
@@ -226,7 +229,7 @@ export default {
 			if (this.$root.auth.zoom_token) {
 				let booking = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index].bookings[0];
 				if (booking) {
-					let response = await axios.get(`/zoom/create_meeting?booking_id=${this.selectedTimeslot.bookings[0].id}`);
+					let response = await window.axios.get(`/zoom/create_meeting?booking_id=${this.selectedTimeslot.bookings[0].id}`);
 					this.selectedTimeslot.bookings[0].zoom_link = response.data;
 					booking.zoom_link = response.data;
 				}
@@ -241,7 +244,7 @@ export default {
 		async getSelectedBookingNewTimeslots(date) {
 			let timeslot = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index];
 			if (timeslot) {
-				let response = await axios.get(`/services/${this.selectedService.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+				let response = await window.axios.get(`/services/${this.selectedService.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
 				this.selectedTimeslot.timeslots = response.data;
 			}
 		},
@@ -318,7 +321,7 @@ export default {
 		async getTimeslots() {
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
-				let response = await axios.get(`/services/${this.selectedService.id}?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
+				let response = await window.axios.get(`/services/${this.selectedService.id}?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
 				this.timeslots = response.data.timeslots;
 				this.timeslotsLoading = false;
 			}

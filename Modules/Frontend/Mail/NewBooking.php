@@ -35,6 +35,9 @@ class NewBooking extends Mailer
         }
 
         $this->actionUrl = config('app.url') . '?auth=login';
+        if (count($bookings) > 1) {
+            $this->actionText = 'Manage Bookings';
+        }
 
         // $from = Carbon::parse("$booking->date $booking->start");
         // $to = $from->clone()->addMinute($booking->service->duration);

@@ -14,7 +14,7 @@ import Paginate from '../../../../components/paginate/paginate.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const convertTime = require('convert-time');
 import VCalendar from 'v-calendar';
-Vue.use(VCalendar);
+window.Vue.use(VCalendar);
 import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 import VueButton from '../../../../components/vue-button.vue';
@@ -23,7 +23,6 @@ import ShortcutIcon from '../../../../icons/shortcut';
 import NoteIcon from '../../../../icons/note';
 import PencilIcon from '../../../../icons/pencil';
 import MoveIcon from '../../../../icons/move';
-import draggable from 'vuedraggable';
 import PlusIcon from '../../../../icons/plus';
 
 export default {
@@ -57,12 +56,10 @@ export default {
 		newField: '',
 		addField: false,
 		selectedBooking: null,
-		timeslots: [],
 		bookingModalLoading: false,
 		createZoomLoading: false,
 		recentNotes: [],
 		editFields: false,
-		addField: false,
 		new_field: {},
 		serviceMembers: [],
 		addingNote: false,
@@ -148,15 +145,15 @@ export default {
 		selectedBooking: function(value) {
 			this.getServiceMembers(value);
 		},
-		'newBooking.service': function(value) {
+		'newBooking.service': function() {
 			this.newBooking.service_id = null;
 			this.newBooking.timeslot = null;
 			this.timeslots = [];
 		},
-		'newBooking.service_id': function(value) {
+		'newBooking.service_id': function() {
 			this.getNewBookingServiceTimeslots();
 		},
-		'newBooking.date': function(value) {
+		'newBooking.date': function() {
 			this.getNewBookingServiceTimeslots();
 		}
 	},
@@ -203,7 +200,7 @@ export default {
 				data.start = this.newBooking.timeslot;
 				data.contact_id = this.contact.id;
 				data.date = dayjs(this.newBooking.date).format('YYYY-MM-DD');
-				let booking = await this.storeBooking(data);
+				await this.storeBooking(data);
 				this.getContact();
 				this.$refs['addBookingModal'].hide();
 			}
@@ -211,14 +208,14 @@ export default {
 
 		async getNewBookingServiceTimeslots() {
 			if (this.newBooking.service_id && this.newBooking.date) {
-				let response = await axios.get(`/services/${this.newBooking.service_id}?date=${dayjs(this.newBooking.date).format('YYYY-MM-DD')}&single=1`);
+				let response = await window.axios.get(`/services/${this.newBooking.service_id}?date=${dayjs(this.newBooking.date).format('YYYY-MM-DD')}&single=1`);
 				this.newBooking.timeslot = null;
 				this.timeslots = response.data;
 			}
 		},
 
 		async confirmUpdateNote(contactNote) {
-			let response = await axios.put(`/contact_notes/${contactNote.id}`, { note: contactNote.new_note });
+			let response = await window.axios.put(`/contact_notes/${contactNote.id}`, { note: contactNote.new_note });
 			let index = this.contact.contactNotes.findIndex(x => x.id == contactNote.id);
 			if (index > -1) {
 				this.contact.contactNotes[index] = response.data;
@@ -228,12 +225,12 @@ export default {
 
 		deleteContactNote(contactNote, index) {
 			this.contact.contactNotes.splice(index, 1);
-			axios.delete(`/contact_notes/${contactNote.id}`);
+			window.axios.delete(`/contact_notes/${contactNote.id}`);
 		},
 
 		async confirmAddNote() {
 			if (this.newNote) {
-				let response = await axios.post('/contact_notes', { contact_id: this.contact.id, note: this.newNote });
+				let response = await window.axios.post('/contact_notes', { contact_id: this.contact.id, note: this.newNote });
 				this.contact.contactNotes.unshift(response.data);
 				this.addingNote = false;
 				this.newNote = '';
@@ -280,7 +277,7 @@ export default {
 			selectedBooking = JSON.parse(JSON.stringify(selectedBooking));
 			selectedBooking.date = dayjs(selectedBooking.date).format('YYYY-MM-DD');
 			selectedBooking.start = dayjs(selectedBooking.start).format('HH:mm');
-			let updatedBooking = await this.updateBooking(selectedBooking).catch(() => {});
+			await this.updateBooking(selectedBooking).catch(() => {});
 			this.bookingModalLoading = false;
 			this.$refs['bookingModal'].hide();
 			this.getContact();
@@ -289,7 +286,7 @@ export default {
 		async createZoomLink(booking) {
 			this.createZoomLoading = true;
 			if (this.$root.auth.zoom_token) {
-				let response = await axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
+				let response = await window.axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
 				this.createZoomLoading = false;
 
 				booking.zoom_link = response.data;
@@ -320,7 +317,7 @@ export default {
 		},
 
 		async getSelectedBookingNewTimeslots(booking, date) {
-			let response = await axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+			let response = await window.axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
 			this.timeslots = response.data;
 		},
 
@@ -330,17 +327,17 @@ export default {
 
 		async filterBookings() {
 			let serviceIds = this.filterServices.map(x => x.id);
-			let response = await axios.get(`/contacts/${this.contact.id}?page=${this.contact.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
+			let response = await window.axios.get(`/contacts/${this.contact.id}?page=${this.contact.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
 			this.contact.bookings = response.data.bookings;
 		},
 
 		async getData(page) {
-			let response = await axios.get(`/contacts/${this.contact.id}?page=${page}`);
+			let response = await window.axios.get(`/contacts/${this.contact.id}?page=${page}`);
 			this.contact.bookings = response.data.bookings;
 		},
 
 		async getContact() {
-			let response = await axios.get(`/contacts/${this.$route.params.id}`);
+			let response = await window.axios.get(`/contacts/${this.$route.params.id}`);
 			let contact = response.data;
 			contact.upcoming_bookings.forEach(booking => {
 				booking.startDate = dayjs(`${booking.date} ${booking.start}`).toDate();
@@ -355,21 +352,21 @@ export default {
 
 		async getContactNotes(order = 'desc') {
 			if (this.contact) {
-				let response = await axios.get(`/contacts/${this.contact.id}/contact_notes?order=${order}`);
+				let response = await window.axios.get(`/contacts/${this.contact.id}/contact_notes?order=${order}`);
 				this.$set(this.contact, 'contactNotes', response.data);
 			}
 		},
 
 		async getRecentNotes() {
 			if (this.contact) {
-				let response = await axios.get(`/contacts/${this.contact.id}/recent_notes`);
+				let response = await window.axios.get(`/contacts/${this.contact.id}/recent_notes`);
 				this.recentNotes = response.data;
 			}
 		},
 
 		resendEmail(contact) {
 			this.resendLoading = true;
-			axios.post(`/contacts/${contact.id}/resend`).then(() => {
+			window.axios.post(`/contacts/${contact.id}/resend`).then(() => {
 				this.resendLoading = false;
 				this.$refs['resendModal'].hide();
 				this.$toasted.show('Invitation email has been sent successfully.');

@@ -202,7 +202,7 @@ export default {
 
 		getInvoice(invoice_id) {
 			this.invoiceLoading = true;
-			axios.get(`/get_invoice?invoice_id=${invoice_id}`).then(response => {
+			window.axios.get(`/get_invoice?invoice_id=${invoice_id}`).then(response => {
 				this.invoiceLoading = false;
 				if (this.selectedSubscription) {
 					console.log(response.data);

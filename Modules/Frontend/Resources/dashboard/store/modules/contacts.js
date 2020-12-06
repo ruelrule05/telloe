@@ -86,52 +86,52 @@ const mutations = {
 };
 
 const actions = {
-	index({ commit, rootState }, params) {
+	index({ commit }, params) {
 		params = queryString.stringify(params);
-		axios.get(`/${name}?${params}`).then(response => {
+		window.axios.get(`/${name}?${params}`).then(response => {
 			commit('index', response.data);
 		});
 	},
 
 	async store({ commit }, data) {
-		let response = await axios.post(`/${name}`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}`, data, { toasted: true });
 		commit('store', response.data);
 		return response.data;
 	},
 
 	async update({ commit }, data) {
-		let response = await axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
 		commit('update', response.data);
 		return response.data;
 	},
 
 	delete({ commit }, data) {
-		axios.delete(`/${name}/${data.id}`, data);
+		window.axios.delete(`/${name}/${data.id}`, data);
 		commit('delete', data);
 	},
 
 	async create_invoice({ commit }, data) {
-		let response = await axios.post(`/${name}/${data.id}/create_invoice`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}/${data.id}/create_invoice`, data, { toasted: true });
 		commit('create_invoice', response.data);
 	},
 
 	async finalize_invoice({ commit }, data) {
-		let response = await axios.post(`/${name}/${data.contact.id}/finalize_invoice`, { invoice_id: data.id });
+		let response = await window.axios.post(`/${name}/${data.contact.id}/finalize_invoice`, { invoice_id: data.id });
 		commit('finalize_invoice', response.data);
 	},
 
 	async create_subscription({ commit }, data) {
-		let response = await axios.post(`/${name}/${data.id}/create_subscription`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}/${data.id}/create_subscription`, data, { toasted: true });
 		commit('create_subscription', response.data);
 	},
 
 	async cancel_subscription({ commit }, data) {
-		let response = await axios.post(`/${name}/${data.contact.id}/cancel_subscription?subscription_id=${data.id}`, null, { toasted: true });
+		let response = await window.axios.post(`/${name}/${data.contact.id}/cancel_subscription?subscription_id=${data.id}`, null, { toasted: true });
 		commit('cancel_subscription', response.data);
 	},
 
 	get_contact_from_invite_token({ commit }, invite_token) {
-		axios.post(`/${name}/get_contact_from_invite_token`, { invite_token: invite_token }).then(response => {
+		window.axios.post(`/${name}/get_contact_from_invite_token`, { invite_token: invite_token }).then(response => {
 			commit('get_contact_from_invite_token', response.data);
 		});
 	}

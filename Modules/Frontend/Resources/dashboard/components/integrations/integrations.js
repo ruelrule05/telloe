@@ -19,7 +19,7 @@ export default {
 	methods: {
 		async integrateXero() {
 			this.xeroLoading = true;
-			let response = await axios.get('/xero/authenticate');
+			let response = await window.axios.get('/xero/authenticate');
 			this.openAuthWindow(response.data.authUrl, async () => {
 				await this.getXeroToken();
 				this.xeroLoading = false;
@@ -27,20 +27,20 @@ export default {
 		},
 
 		async getXeroToken() {
-			let response = await axios.get('/xero/token');
+			await window.axios.get('/xero/token');
 			this.$root.auth.xero_token = 1;
 		},
 
 		async removeXero() {
 			this.xeroLoading = true;
-			await axios.get('/xero/remove');
+			await window.axios.get('/xero/remove');
 			this.$root.auth.xero_token = null;
 			this.xeroLoading = false;
 		},
 
 		async integrateOutlook() {
 			this.outlookLoading = true;
-			let response = await axios.get('/outlook/client');
+			let response = await window.axios.get('/outlook/client');
 			this.openAuthWindow(response.data.authUrl, async () => {
 				await this.getOutlookToken();
 				this.outlookLoading = false;
@@ -48,20 +48,20 @@ export default {
 		},
 
 		async getOutlookToken() {
-			let response = await axios.get('/outlook/token');
+			let response = await window.axios.get('/outlook/token');
 			this.$root.auth.outlook_token = response.data;
 		},
 
 		async removeOutlook() {
 			this.outlookLoading = true;
-			await axios.get('/outlook/remove');
+			await window.axios.get('/outlook/remove');
 			this.$root.auth.outlook_token = null;
 			this.outlookLoading = false;
 		},
 
 		async integrateGoogleCalendar() {
 			this.googleCalendarLoading = true;
-			let response = await axios.get('/google_calendar/client');
+			let response = await window.axios.get('/google_calendar/client');
 			this.openAuthWindow(response.data.authUrl, async () => {
 				await this.getGoogleCalendarToken();
 				this.googleCalendarLoading = false;
@@ -69,32 +69,32 @@ export default {
 		},
 
 		async getGoogleCalendarToken() {
-			let response = await axios.get('/google_calendar/token');
+			let response = await window.axios.get('/google_calendar/token');
 			this.$root.auth.google_calendar_token = response.data;
 		},
 
 		async removeGoogleCalendar() {
 			this.googleCalendarLoading = true;
-			await axios.get('/google_calendar/remove');
+			await window.axios.get('/google_calendar/remove');
 			this.$root.auth.google_calendar_token = null;
 			this.googleCalendarLoading = false;
 		},
 
 		async removeZoom() {
 			this.zoomLoading = true;
-			await axios.get('/zoom/remove');
+			await window.axios.get('/zoom/remove');
 			this.$root.auth.zoom_token = null;
 			this.zoomLoading = false;
 		},
 
 		async getZoomToken() {
-			let response = await axios.get('/zoom/token');
+			let response = await window.axios.get('/zoom/token');
 			this.$root.auth.zoom_token = response.data;
 		},
 
 		async integrateZoom() {
 			this.zoomLoading = true;
-			let response = await axios.get('/zoom/install');
+			let response = await window.axios.get('/zoom/install');
 			let zoomInstallLink = response.data;
 			this.openAuthWindow(zoomInstallLink, async () => {
 				this.zoomLoading = false;

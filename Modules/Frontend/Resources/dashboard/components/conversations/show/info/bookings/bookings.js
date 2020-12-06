@@ -2,7 +2,6 @@ import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
 import dayjs from 'dayjs';
 import VCalendar from 'v-calendar';
-import convertTime from 'convert-time';
 Vue.use(VCalendar);
 import ToggleSwitch from '../../../../../../components/toggle-switch/toggle-switch.vue';
 import VueFormValidate from '../../../../../../components/vue-form-validate';
@@ -55,7 +54,6 @@ export default {
 		selectedDate: null,
 		dateForWeekView: null,
 		selectedTimeslot: '',
-		selectedService: '',
 		timeslots: [],
 		timeslotsLoading: false,
 		days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -96,7 +94,7 @@ export default {
 		}),
 
 		userBookings() {
-			let now = dayjs();
+			//let now = dayjs();
 			let bookings = [];
 			this.bookings.forEach(booking => {
 				let parts = booking.date.split('-');
@@ -152,10 +150,10 @@ export default {
 
 			let dateForWeekView = dayjs();
 			// if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
-			let daysBefore = [];
+			//let daysBefore = [];
 			let daysAfter = [];
 			for (var i = 1; i <= 15; i++) {
-				let before = dateForWeekView.subtract(i, 'day');
+				//let before = dateForWeekView.subtract(i, 'day');
 				let after = dateForWeekView.add(i, 'day');
 				/*daysBefore.unshift({
                     date: before.toDate(),
@@ -229,6 +227,7 @@ export default {
 		},
 
 		adjustSlider(step) {
+			/* eslint-disable */
 			let weekdaySlider = this.$refs['weekday-slider'];
 
 			let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - 95;
@@ -349,7 +348,7 @@ export default {
 					this.timeslots = [];
 					this.selectedTimeslot = null;
 					let dateFormat = dayjs(date).format('YYYY-MM-DD');
-					axios.get(`/@${this.conversation.user.username}/${service_id}/timeslots?date=${dateFormat}&single=true`).then(response => {
+					window.axios.get(`/@${this.conversation.user.username}/${service_id}/timeslots?date=${dateFormat}&single=true`).then(response => {
 						let timeslots = response.data;
 						if (this.selectedBooking && dayjs(this.selectedBooking.date).format('YYYY-MM-DD') == dateFormat) {
 							let parts = this.selectedBooking.start.split(':');

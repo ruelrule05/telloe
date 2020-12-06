@@ -70,7 +70,7 @@
                                     </div> -->
 								</div>
 
-								<div class="media border-top py-2 px-2 member-item position-relative" v-for="member in conversation.members">
+								<div class="media border-top py-2 px-2 member-item position-relative" v-for="member in conversation.members" :key="member.index">
 									<trash-icon fill="red" class="position-absolute cursor-pointer delete-member opacity-0" height="18" width="18" @click.native="deleteMember(member)"></trash-icon>
 									<div class="user-profile-image user-profile-image-sm align-self-center" :style="{ backgroundImage: 'url(' + member.user.profile_image + ')' }">
 										<span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
@@ -112,7 +112,7 @@
 						<template v-if="files.length > 0">
 							<div class="d-flex flex-wrap mx-n1">
 								<template v-if="fileType != 'file'">
-									<div v-for="file in files" class="position-relative file-thumbnail p-1 overflow-hidden">
+									<div v-for="(file, fileIndex) in files" :key="fileIndex" class="position-relative file-thumbnail p-1 overflow-hidden">
 										<div class="position-relative rounded bg-light h-100 cursor-pointer" @click="$parent.openFile(file)" :style="{ backgroundImage: 'url(' + file.preview + ')' }">
 											<div v-if="file.type == 'image' || file.type == 'video'">
 												<div class="position-absolute-center preview-video-play" v-if="file.type == 'video'">
@@ -130,7 +130,7 @@
 									</div>
 								</template>
 
-								<div v-else v-for="file in files" class="flex-grow-1 p-2 mb-2 d-flex align-items-center border bg-white rounded position-relative cursor-pointer overflow-hidden" @click="$root.downloadMedia(file)">
+								<div v-else v-for="(file, fileIndex) in files" :key="fileIndex" class="flex-grow-1 p-2 mb-2 d-flex align-items-center border bg-white rounded position-relative cursor-pointer overflow-hidden" @click="$root.downloadMedia(file)">
 									<div class="flex-1">
 										<div class="doc-thumbnail position-relative rounded overflow-hidden bg-light file-thumbnail">
 											<component height="30" width="30" class="position-absolute-center" :is="$root.fileIcon(file.metadata.extension)"></component>
@@ -174,14 +174,14 @@
 									<input type="text" class="form-control form-control-sm shadow-none" placeholder="Search for tags..." v-model="tagSearch" />
 								</div>
 								<div v-if="(tagsData.tags || []).length > 0" class="my-2">
-									<small v-for="tag in tagsData.tags" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
+									<small v-for="(tag, tagIndex) in tagsData.tags" :key="tagIndex" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
 								</div>
 
 								<div class="overflow-y-only mt-2">
 									<div v-if="tagsData.length == 0" class="text-center text-muted py-2">
 										No results found.
 									</div>
-									<div v-else v-for="data in tagsData.data" class="mb-3">
+									<div v-else v-for="(data, dataIndex) in tagsData.data" :key="dataIndex" class="mb-3">
 										<div class="rounded bg-white border py-2 px-3">
 											<div v-if="data.type == 'message'" class="message-group mb-0">
 												<div class="d-flex align-items-center mb-2">
@@ -196,7 +196,7 @@
 												<message-type :click="false" :square-thumbnail="true" :message="data.data" :outgoing="data.data.outgoing"></message-type>
 
 												<div class="mb-1">
-													<div v-for="(tag, index) in data.data.tags" class="d-inline-block badge badge-orange line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
+													<div v-for="(tag, dataTagIndex) in data.data.tags" :key="dataTagIndex" class="d-inline-block badge badge-orange line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
 														{{ tag }}&nbsp;
 														<close-icon
 															height="8"

@@ -46,7 +46,6 @@ export default {
 			members: []
 		},
 		clonedOrganization: null,
-		selectedOrganization: null,
 		slugify: slugify,
 		newMembers: []
 	}),

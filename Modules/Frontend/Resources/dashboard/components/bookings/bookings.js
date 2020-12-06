@@ -149,7 +149,7 @@ export default {
 		},
 
 		async getSelectedBookingNewTimeslots(booking, date) {
-			let response = await axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
+			let response = await window.axios.get(`/services/${booking.service.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
 			this.timeslots = response.data;
 		},
 
@@ -174,12 +174,6 @@ export default {
 			}
 		},
 
-		formatDate(date) {
-			let formatDate = '';
-			if (date) formatDate = dayjs(date).format('MMMM DD, YYYY');
-			return formatDate;
-		},
-
 		nextStep() {
 			if (!this.nextDisabled) this.step++;
 		},
@@ -188,7 +182,7 @@ export default {
 			if (this.selectedBooking && this.selectedDate) {
 				this.selectedTimeslot = null;
 				let dateFormat = dayjs(this.selectedDate).format('YYYY-MM-DD');
-				axios.get(`/@${this.selectedBooking.service.user.username}/${this.selectedBooking.service.id}/timeslots?date=${dateFormat}`).then(response => {
+				window.axios.get(`/@${this.selectedBooking.service.user.username}/${this.selectedBooking.service.id}/timeslots?date=${dateFormat}`).then(response => {
 					let timeslots = response.data;
 					if (this.selectedBooking.date == dateFormat) {
 						let parts = this.selectedBooking.start.split(':');
@@ -227,7 +221,7 @@ export default {
 		destroy(booking) {
 			if (booking) {
 				this.$refs['deleteModal'].hide();
-				axios.delete(`/dashboard/bookings/${booking.id}`);
+				window.axios.delete(`/dashboard/bookings/${booking.id}`);
 				this.$delete(
 					this.bookings,
 					this.bookings.findIndex(x => x.id == booking.id)

@@ -1,3 +1,4 @@
+/* global APP_NAME */
 import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
@@ -194,7 +195,7 @@ export default {
 
 		resendEmail(contact) {
 			this.resendLoading = true;
-			axios.post(`/contacts/${contact.id}/resend`).then(() => {
+			window.axios.post(`/contacts/${contact.id}/resend`).then(() => {
 				this.resendLoading = false;
 				this.$refs['resendModal'].hide();
 				this.$toasted.show('Invitation email has been sent successfully.');

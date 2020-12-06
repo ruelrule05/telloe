@@ -59,8 +59,8 @@
 								<div class="font-weight-normal text-secondary w-25">Date</div>
 								<div v-if="selectedBooking.isPrevious" class="h6 font-heading mb-0">{{ formatDate(selectedBooking.date) }}</div>
 								<v-date-picker v-else :min-date="new Date()" :popover="{ placement: 'right', visibility: 'click' }" v-model="selectedBooking.date" @input="getSelectedBookingNewTimeslots(selectedBooking, $event)">
-									<template v-slot="{ inputValue, inputEvents }">
-										<button type="button" class="btn btn-light shadow-none" v-on="inputEvents">{{ formatDate(selectedBooking.date) }}</button>
+									<template v-slot="slot">
+										<button type="button" class="btn btn-light shadow-none" v-on="slot.inputEvents">{{ formatDate(selectedBooking.date) }}</button>
 									</template>
 								</v-date-picker>
 							</div>
