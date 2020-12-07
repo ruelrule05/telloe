@@ -47,10 +47,8 @@
 	background-clip: padding-box;
 	border: 10px solid transparent;
 }
-*:hover {
-	&::-webkit-scrollbar-thumb {
-		background: #888;
-	}
+*::-webkit-scrollbar-thumb {
+	background: #888;
 }
 .modal {
 	.modal-dialog {

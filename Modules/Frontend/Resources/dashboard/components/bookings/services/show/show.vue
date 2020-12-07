@@ -238,13 +238,13 @@
 					<div class="dropright">
 						<button type="button" class="btn btn-light shadow-none mb-2 d-flex align-items-center" data-toggle="dropdown"><plus-icon class="btn-icon"></plus-icon> Add Holidays</button>
 						<div class="dropdown-menu p-0">
-							<v-date-picker @click.native.stop :disabled-dates="formattedHolidays" :value="null" :min-date="new Date()" :attributes="holidayDateAttrs" class="border-0">
+							<v-date-picker @click.native.stop :disabled-dates="formattedHolidays" :value="null" :min-date="new Date()" class="border-0">
 								<template slot="day-content" slot-scope="{ day }">
-									<div class="custom-day-content" :class="{ active: holidayDateAttrs[0].dates.find(x => dayjs(x).format('YYYY-MM-DD') == day.id) }">
+									<div class="custom-day-content" :class="{ 'is-disabled': day.isDisabled, active: newHoliday.dates.find(x => dayjs(x).format('YYYY-MM-DD') == day.id) }">
 										<div class="vc-highlights vc-day-layer">
 											<div class="vc-day-layer vc-day-box-center-center"><div class="vc-highlight bg-primary rounded-circle"></div></div>
 										</div>
-										<span class="vc-day-content vc-focusable" :class="{ 'is-disabled': day.isDisabled }" @click="addHolidayDate(day.date)">
+										<span class="vc-day-content vc-focusable" :class="{ 'is-disabled': day.isDisabled }" @click="addHolidayDate(day.id)">
 											{{ day.label }}
 										</span>
 									</div>
@@ -252,7 +252,7 @@
 							</v-date-picker>
 							<div class="d-flex px-2 pb-2">
 								<button class="btn btn-light shadow-none" type="button">Cancel</button>
-								<button class="ml-auto btn btn-primary shadow-none" type="button">Add</button>
+								<button class="ml-auto btn btn-primary shadow-none" type="button" @click="addHolidays">Add</button>
 							</div>
 						</div>
 					</div>

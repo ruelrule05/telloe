@@ -203,14 +203,14 @@ export default {
 		}),
 
 		addHolidayDate(date) {
-			let newDate = dayjs(date).toDate();
-			let index = this.newHoliday.dates.findIndex(x => dayjs(x).format('YYYY-MM-DD') == dayjs(newDate).format('YYYY-MM-DD'));
-			if (index > -1) {
-				this.newHoliday.dates.splice(index, 1);
-				this.holidayDateAttrs[0].dates.splice(index, 1);
-			} else {
-				this.holidayDateAttrs[0].dates.push(dayjs(date).toDate());
-				this.newHoliday.dates.push(date);
+			let existingIndex = this.service.holidays.findIndex(x => x == date);
+			if (existingIndex == -1) {
+				let index = this.newHoliday.dates.findIndex(x => x == date);
+				if (index > -1) {
+					this.newHoliday.dates.splice(index, 1);
+				} else {
+					this.newHoliday.dates.push(date);
+				}
 			}
 		},
 
@@ -374,13 +374,14 @@ export default {
 			this.updateService(this.service);
 		},
 
-		addHoliday() {
+		addHolidays() {
 			if (this.newHoliday.dates.length > 0) {
 				if (!this.service.holidays) this.$set(this.service, 'holidays', []);
-				const formattedDate = dayjs(this.newHoliday.date).format('YYYY-MM-DD');
-				this.service.holidays.push(formattedDate);
+				this.newHoliday.dates.forEach(date => {
+					this.service.holidays.push(date);
+				});
+				this.updateService(this.service);
 				this.newHoliday.dates = [];
-				//this.updateService(this.service);
 			}
 		},
 

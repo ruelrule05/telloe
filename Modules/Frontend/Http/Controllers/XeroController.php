@@ -114,12 +114,15 @@ class XeroController extends Controller
         if ($contact->xero_guid) {
             $xeroContact = $xero->loadByGUID(\XeroPHP\Models\Accounting\Contact::class, $contact->xero_guid);
         } else {
-            $xeroContact = new \XeroPHP\Models\Accounting\Contact($xero);
-            $xeroContact->setName($contact->contactUser->full_name);
-            $xeroContact->setFirstName($contact->contactUser->first_name);
-            $xeroContact->setLastName($contact->contactUser->last_name);
-            $xeroContact->setEmailAddress($contact->contactUser->email);
-            $xeroContact->save();
+            $xeroContact = $xero->load(\XeroPHP\Models\Accounting\Contact::class)->where('Name', $contact->contactUser->full_name)->first();
+            if (! $xeroContact) {
+                $xeroContact = new \XeroPHP\Models\Accounting\Contact($xero);
+                $xeroContact->setName($contact->contactUser->full_name);
+                $xeroContact->setFirstName($contact->contactUser->first_name);
+                $xeroContact->setLastName($contact->contactUser->last_name);
+                $xeroContact->setEmailAddress($contact->contactUser->email);
+                $xeroContact->save();
+            }
 
             $contact->update([
                 'xero_guid' => $xeroContact->getGUID()

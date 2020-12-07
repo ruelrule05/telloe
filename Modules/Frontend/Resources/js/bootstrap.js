@@ -8,8 +8,14 @@ window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.interceptors.request.use(
 	function(config) {
+		let ajax = true;
+		if (config.ajax == false) {
+			ajax = false;
+		}
 		config.headers['Cache-Control'] = 'no-cache';
-		config.url = `/ajax${config.url}`;
+		if (ajax) {
+			config.url = `/ajax${config.url}`;
+		}
 		return config;
 	},
 	function(error) {

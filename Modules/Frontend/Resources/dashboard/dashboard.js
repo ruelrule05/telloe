@@ -271,6 +271,8 @@ window.app = new window.Vue({
 		Notification,
 		Modal,
 
+		'knowledge-base': () => import(/* webpackChunkName: "knowledge-base" */ './components/knowledge-base/knowledge-base.vue'),
+
 		'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue')
 	},
 	data: {

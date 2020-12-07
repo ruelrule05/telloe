@@ -3,7 +3,6 @@
 namespace Modules\Frontend\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Str;
 
 class WidgetCors
 {
@@ -15,7 +14,7 @@ class WidgetCors
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {   
+    {
         $widgetRouteNames = [
             'profile', 
             'profile.service.timeslots',
@@ -26,18 +25,18 @@ class WidgetCors
             'profile.google_login_and_book',
             'profile.facebook_login_and_book',
         ];
-        
+
         $next = $next($request);
         $route = $request->route();
         $routeName = $route ? $route->getName() : '';
         $inRoute = in_array($routeName, $widgetRouteNames);
 
-        if ($request->isMethod('OPTIONS') || $inRoute) :
+        if ($request->isMethod('OPTIONS') || $inRoute) {
             $next->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Allow-Headers', '*')
             ->header('Access-Control-Allow-Methods', 'GET, POST');
-        endif;
-        
+        }
+
         return $next;
     }
 }

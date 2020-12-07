@@ -281,6 +281,8 @@
 					</div>
 				</div>
 			</modal>
+
+			<knowledge-base></knowledge-base>
 		</div>
 
 

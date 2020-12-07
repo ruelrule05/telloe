@@ -207,4 +207,7 @@
 			font-weight: bold !important;
 		}
 	}
+	&.is-disabled {
+		pointer-events: none !important;
+	}
 }
