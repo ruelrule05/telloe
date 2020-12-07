@@ -75,25 +75,10 @@
  */
 
 /*!
- * mime-db
- * Copyright(c) 2014 Jonathan Ong
- * MIT Licensed
- */
-
-/*!
- * mime-types
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015 Douglas Christopher Wilson
- * MIT Licensed
- */
-
-/*!
  * vuex v3.5.1
  * (c) 2020 Evan You
  * @license MIT
  */
-
-/*! PlainDraggable v2.5.12 (c) anseki https://anseki.github.io/plain-draggable/ */
 
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 
