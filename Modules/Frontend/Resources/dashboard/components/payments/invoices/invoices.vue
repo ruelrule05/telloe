@@ -67,17 +67,17 @@
 												<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
 													<template v-for="invoice in paginated('invoices')">
 														<tr :key="invoice.InvoiceID" v-if="invoiceStatus == 'all' || invoice.Status.toLowerCase() == invoiceStatus.toLowerCase()">
-															<td>{{ invoice.InvoiceNumber }}</td>
-															<td>{{ invoice.Contact.Name }}</td>
-															<td>{{ invoice.Date }}</td>
-															<td>{{ invoice.DueDate || '-' }}</td>
-															<td>{{ getSymbolFromCurrency(invoice.CurrencyCode) }}{{ format({ padRight: 2 })(invoice.AmountPaid) }}</td>
-															<td>{{ getSymbolFromCurrency(invoice.CurrencyCode) }}{{ format({ padRight: 2 })(invoice.AmountDue) }}</td>
-															<td>
+															<td class="align-middle">{{ invoice.InvoiceNumber }}</td>
+															<td class="align-middle">{{ invoice.Contact.Name }}</td>
+															<td class="align-middle">{{ invoice.Date }}</td>
+															<td class="align-middle">{{ invoice.DueDate || '-' }}</td>
+															<td class="align-middle">{{ getSymbolFromCurrency(invoice.CurrencyCode) }}{{ format({ padRight: 2 })(invoice.AmountPaid) }}</td>
+															<td class="align-middle">{{ getSymbolFromCurrency(invoice.CurrencyCode) }}{{ format({ padRight: 2 })(invoice.AmountDue) }}</td>
+															<td class="align-middle">
 																<div v-if="invoice.statusLoading" class="spinner-border spinner-border-sm text-primary"></div>
 																<span v-else>{{ invoice.Status }}</span>
 															</td>
-															<td><checkmark-icon v-if="invoice.SentToContact && invoice.SentToContact != 'false'" class="fill-success"></checkmark-icon></td>
+															<td class="align-middle"><checkmark-icon v-if="invoice.SentToContact && invoice.SentToContact != 'false'" class="fill-success"></checkmark-icon></td>
 
 															<td class="text-right align-middle">
 																<div class="dropleft">

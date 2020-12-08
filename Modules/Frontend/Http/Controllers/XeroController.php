@@ -110,10 +110,14 @@ class XeroController extends Controller
 
         $XeroClient = new XeroClient($request);
         $xero = new \XeroPHP\Application($XeroClient->accessToken, $authUser->xero_tenant_id);
-
+        $xeroContact = null;
         if ($contact->xero_guid) {
-            $xeroContact = $xero->loadByGUID(\XeroPHP\Models\Accounting\Contact::class, $contact->xero_guid);
-        } else {
+            try {
+                $xeroContact = $xero->loadByGUID(\XeroPHP\Models\Accounting\Contact::class, $contact->xero_guid);
+            } catch (\Exception $e) {
+            }
+        }
+        if (! $xeroContact) {
             $xeroContact = $xero->load(\XeroPHP\Models\Accounting\Contact::class)->where('Name', $contact->contactUser->full_name)->first();
             if (! $xeroContact) {
                 $xeroContact = new \XeroPHP\Models\Accounting\Contact($xero);

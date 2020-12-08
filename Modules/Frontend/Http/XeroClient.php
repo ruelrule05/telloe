@@ -27,7 +27,7 @@ class XeroClient
         ]);
         if (! $this->authUser->xero_token) {
             $this->client->authUrl = $this->client->getAuthorizationUrl([
-                'scope' => 'offline_access accounting.transactions'
+                'scope' => 'offline_access accounting.transactions accounting.contacts accounting.settings'
             ]);
         }
         $this->setAccessToken();
