@@ -8,8 +8,8 @@ import CheckmarkIcon from '../icons/checkmark';
 
 window.Vue = require('vue');
 
-Vue.component('pageloader', require('../components/pageloader.vue').default);
-new Vue({
+window.Vue.component('pageloader', require('../components/pageloader.vue').default);
+new window.Vue({
 	el: '#app',
 	components: {
 		RangeSlider,
@@ -27,7 +27,7 @@ new Vue({
 	},
 
 	watch: {
-		action: function(value) {
+		action: function() {
 			if (this.$refs['authForm']) this.$refs['authForm'].error = '';
 		}
 	},
@@ -59,10 +59,16 @@ new Vue({
 
 	methods: {
 		checkAuth() {
-			axios
+			window.axios
 				.get('/auth')
 				.then(response => {
-					window.location.replace('/dashboard/bookings/services');
+					if (response) {
+						if (response.data.role_id == 2) {
+							window.location.replace('/dashboard/bookings/services');
+						} else if (response.data.role_id == 3) {
+							window.location.replace('/dashboard/bookings');
+						}
+					}
 				})
 				.catch(() => {});
 		}

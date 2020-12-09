@@ -1,3 +1,6 @@
+/* global FB */
+/* global WS_URL */
+/* global gapi */
 import Login from './login.vue';
 import Signup from './signup.vue';
 import Recover from './recover.vue';
@@ -55,7 +58,7 @@ export default {
 			if (typeof FB != 'undefined') {
 				this.pageloading = true;
 				FB.login(
-					e => {
+					() => {
 						FB.api('/me', { fields: 'first_name, last_name, email' }, response => {
 							if (response && !response.error) {
 								response.action = this.$root.action;
@@ -64,13 +67,17 @@ export default {
 								response.timezone = this.timezone;
 								response.invite_token = invite_token;
 								response.member_invite_token = member_invite_token;
-								axios
+								window.axios
 									.post('/login/facebook', response)
 									.then(response => {
 										this.socket.emit('invite_token', invite_token);
 										this.socket.emit('member_invite_token', member_invite_token);
 										setTimeout(() => {
-											window.location.href = '/dashboard/bookings/services';
+											if (response.data.role_id == 2) {
+												window.location.replace('/dashboard/bookings/services');
+											} else if (response.data.role_id == 3) {
+												window.location.replace('/dashboard/bookings');
+											}
 										}, 150);
 									})
 									.catch(e => {
@@ -107,13 +114,17 @@ export default {
 							invite_token: invite_token,
 							member_invite_token: member_invite_token
 						};
-						axios
+						window.axios
 							.post('/login/google', user)
 							.then(response => {
 								this.socket.emit('invite_token', invite_token);
 								this.socket.emit('member_invite_token', member_invite_token);
 								setTimeout(() => {
-									window.location.href = '/dashboard/bookings/services';
+									if (response.data.role_id == 2) {
+										window.location.replace('/dashboard/bookings/services');
+									} else if (response.data.role_id == 3) {
+										window.location.replace('/dashboard/bookings');
+									}
 								}, 150);
 							})
 							.catch(e => {

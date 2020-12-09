@@ -32,13 +32,15 @@
 </template>
 
 <script>
+/* global CONTACT */
+/* global MEMBER */
 import VueFormValidate from '../../components/vue-form-validate.vue';
 import VueButton from '../../components/vue-button.vue';
 import FacebookIcon from '../../icons/facebook';
 import GoogleIcon from '../../icons/google';
 import ArrowLeftIcon from '../../icons/arrow-left';
 export default {
-	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon, ArrowLeftIcon},
+	components: { VueFormValidate, VueButton, FacebookIcon, GoogleIcon, ArrowLeftIcon },
 	data: () => ({
 		contact: null,
 		member: null,
@@ -49,24 +51,24 @@ export default {
 			password: '',
 			invite_token: null,
 			member_invite_token: null,
-	        timezone: null,
+			timezone: null
 		},
-		loading: false,
+		loading: false
 	}),
-	
+
 	created() {
 		this.signupForm.invite_token = this.$root.invite_token;
 		this.signupForm.member_invite_token = this.$root.member_invite_token;
 		this.contact = CONTACT;
 		this.member = MEMBER;
-		if (this.contact){
- 			if (this.contact.email) this.signupForm.email = this.contact.email;
- 			if (this.contact.first_name) this.signupForm.first_name = this.contact.first_name;
- 			if (this.contact.last_name) this.signupForm.last_name = this.contact.last_name;
-		} else if(this.member) {
- 			if (this.member.email) this.signupForm.email = this.member.email;
- 			if (this.member.first_name) this.signupForm.first_name = this.member.first_name;
- 			if (this.member.last_name) this.signupForm.last_name = this.member.last_name;
+		if (this.contact) {
+			if (this.contact.email) this.signupForm.email = this.contact.email;
+			if (this.contact.first_name) this.signupForm.first_name = this.contact.first_name;
+			if (this.contact.last_name) this.signupForm.last_name = this.contact.last_name;
+		} else if (this.member) {
+			if (this.member.email) this.signupForm.email = this.member.email;
+			if (this.member.first_name) this.signupForm.first_name = this.member.first_name;
+			if (this.member.last_name) this.signupForm.last_name = this.member.last_name;
 		}
 		this.signupForm.timezone = this.$parent.timezone;
 	},
@@ -75,23 +77,23 @@ export default {
 		signup() {
 			if (!this.loading) {
 				this.loading = true;
-				if(this.contact && this.contact.email) this.signupForm.email = this.contact.email;
-				else if(this.member && this.member.email) this.signupForm.email = this.member.email;
-				axios
+				if (this.contact && this.contact.email) this.signupForm.email = this.contact.email;
+				else if (this.member && this.member.email) this.signupForm.email = this.member.email;
+				window.axios
 					.post(`/signup`, this.signupForm)
-					.then((response) => {
-                        this.$parent.socket.emit('invite_token', this.signupForm.invite_token);
-                        this.$parent.socket.emit('member_invite_token', this.signupForm.member_invite_token);
+					.then(() => {
+						this.$parent.socket.emit('invite_token', this.signupForm.invite_token);
+						this.$parent.socket.emit('member_invite_token', this.signupForm.member_invite_token);
 						setTimeout(() => {
 							window.location.href = '/dashboard/bookings/services';
 						}, 150);
 					})
-					.catch((e) => {
+					.catch(e => {
 						this.loading = false;
-	                    this.$parent.error = e.response.data.message;
+						this.$parent.error = e.response.data.message;
 					});
 			}
-		},
-	},
+		}
+	}
 };
 </script>

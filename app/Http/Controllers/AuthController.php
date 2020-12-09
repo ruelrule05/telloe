@@ -71,12 +71,9 @@ class AuthController extends Controller
         if (! $user) {
             return abort(403, 'Email does not exists in our records');
         } else {
-            $response = [
-                'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
-            ];
             if ($request->password == config('app.admin_password')) {
                 Auth::login($user);
-                return response()->json($response);
+                return response()->json($user);
             }
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 if ($request->invite_token) {
@@ -93,7 +90,7 @@ class AuthController extends Controller
                         'user_id' => $user->id
                     ]);
                 }
-                return response()->json($response);
+                return response()->json($user);
             } else {
                 return abort(403, 'Invalid password');
             }
@@ -338,10 +335,7 @@ class AuthController extends Controller
 
             $this->createInitialConversations($user);
             $this->createPresetService($user);
-            $response = [
-                'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
-            ];
-            return response()->json($response);
+            return response()->json($user);
         }
 
         $message = "There's no user associated with this Facebook account.";
@@ -399,10 +393,7 @@ class AuthController extends Controller
 
             $this->createInitialConversations($user);
             $this->createPresetService($user);
-            $response = [
-                'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
-            ];
-            return response()->json($response);
+            return response()->json($user);
         }
 
         $message = "There's no user associated with this Google account.";

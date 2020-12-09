@@ -6,7 +6,7 @@
 					<h1 class="h2 mb-1 font-heading">Log In</h1>
 					<div class="mb-3 text-muted">Continue to your account</div>
 					<div class="form-group">
-						<input type="email" v-model="loginForm.email"  :disabled="(contact && contact.email) || (member && member.email)" class="form-control form-control-lg" data-required placeholder="Email" />
+						<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" class="form-control form-control-lg" data-required placeholder="Email" />
 					</div>
 					<div class="form-group">
 						<input type="password" v-model="loginForm.password" class="form-control form-control-lg" data-required placeholder="Password" />
@@ -35,12 +35,14 @@
 </template>
 
 <script>
+/* global CONTACT */
+/* global MEMBER */
 import VueFormValidate from '../../components/vue-form-validate.vue';
 import VueButton from '../../components/vue-button.vue';
 import FacebookIcon from '../../icons/facebook';
 import GoogleIcon from '../../icons/google';
 export default {
-	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon},
+	components: { VueFormValidate, VueButton, FacebookIcon, GoogleIcon },
 	data: () => ({
 		contact: null,
 		member: null,
@@ -49,24 +51,24 @@ export default {
 			password: '',
 			invite_token: null,
 			member_invite_token: null,
-			timezone: null,
+			timezone: null
 		},
-		loading: false,
+		loading: false
 	}),
 
 	created() {
-		if(this.$root.email) this.loginForm.email = this.$root.email;
+		if (this.$root.email) this.loginForm.email = this.$root.email;
 		this.loginForm.invite_token = this.$root.invite_token;
 		this.loginForm.member_invite_token = this.$root.member_invite_token;
 		this.contact = CONTACT;
 		this.member = MEMBER;
 		if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
-		 else if(this.member && this.member.email) this.loginForm.email = this.member.email;
+		else if (this.member && this.member.email) this.loginForm.email = this.member.email;
 		this.loginForm.timezone = this.$parent.timezone;
 	},
 
 	mounted() {
-		if(this.$root.email) {
+		if (this.$root.email) {
 			setTimeout(() => {
 				this.$el.querySelector('[type="password"]').focus();
 			}, 500);
@@ -78,13 +80,17 @@ export default {
 			if (!this.loading) {
 				this.loading = true;
 				if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
-				axios
+				window.axios
 					.post('/login', this.loginForm)
 					.then(response => {
-                        this.$parent.socket.emit('invite_token', this.loginForm.invite_token);
+						this.$parent.socket.emit('invite_token', this.loginForm.invite_token);
 						this.$parent.socket.emit('member_invite_token', this.loginForm.member_invite_token);
 						setTimeout(() => {
-							window.location.href = '/dashboard/bookings/services';
+							if (response.data.role_id == 2) {
+								window.location.replace('/dashboard/bookings/services');
+							} else if (response.data.role_id == 3) {
+								window.location.replace('/dashboard/bookings');
+							}
 						}, 150);
 					})
 					.catch(e => {
@@ -92,7 +98,7 @@ export default {
 						this.$parent.error = e.response.data.message;
 					});
 			}
-		},
-	},
+		}
+	}
 };
 </script>

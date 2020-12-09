@@ -23,18 +23,16 @@
 <script>
 import VueFormValidate from '../../components/vue-form-validate.vue';
 import VueButton from '../../components/vue-button.vue';
-import FacebookIcon from '../../icons/facebook';
-import GoogleIcon from '../../icons/google';
 import ArrowLeftIcon from '../../icons/arrow-left';
 import CheckmarkIcon from '../../icons/checkmark';
 export default {
-	components: {VueFormValidate, VueButton, FacebookIcon, GoogleIcon, ArrowLeftIcon, CheckmarkIcon},
+	components: { VueFormValidate, VueButton, ArrowLeftIcon, CheckmarkIcon },
 	data: () => ({
 		recoverForm: {
 			email: '',
-			success: false,
+			success: false
 		},
-		loading: false,
+		loading: false
 	}),
 
 	created() {},
@@ -42,9 +40,9 @@ export default {
 	methods: {
 		recover() {
 			this.loading = true;
-			axios
+			window.axios
 				.post('/recover', this.recoverForm)
-				.then(response => {
+				.then(() => {
 					this.loading = false;
 					this.recoverForm.success = true;
 					this.$parent.error = '';
@@ -53,7 +51,7 @@ export default {
 					this.loading = false;
 					this.$parent.error = e.response.data.message;
 				});
-		},
-	},
+		}
+	}
 };
 </script>
