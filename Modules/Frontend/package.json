@@ -7,7 +7,8 @@
         "watch-poll": "npm run watch -- --watch-poll",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --https --key=/Users/cleidoscope/.config/valet/Certificates/telloe.test.key --cert=/Users/cleidoscope/.config/valet/Certificates/telloe.test.crt  --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "production:all": "npm run production --page && npm run production --dashboard && npm run production --profile && npm run production --organization && npm run production --widget && npm run production --css"
     },
     "devDependencies": {
         "axios": "^0.19.2",

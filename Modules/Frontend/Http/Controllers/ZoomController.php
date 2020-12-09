@@ -45,14 +45,15 @@ class ZoomController extends Controller
             'redirect_uri' => config('zoom.redirect_uri')
         ]);
         $token = json_decode($response->getBody());
+        if ($token->error) {
+            return $token->reason;
+        }
         $authUser->zoom_token = $token;
         $authUser->save();
-        echo '
+        return '
             <script>
                 window.close();
             </script>';
-
-        return;
     }
 
     public function createMeeting(Request $request)
