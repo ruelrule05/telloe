@@ -190,7 +190,9 @@ export default {
 		},
 
 		goToContact(contact) {
-			this.$router.push(`/dashboard/contacts/${contact.id}`);
+			if (this.$root.auth.role.role == 'client') {
+				this.$router.push(`/dashboard/contacts/${contact.id}`);
+			}
 		},
 
 		resendEmail(contact) {

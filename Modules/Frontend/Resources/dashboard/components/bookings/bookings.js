@@ -11,6 +11,7 @@ import MoreIcon from '../../../icons/more';
 import VueButton from '../../../components/vue-button.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import ShortcutIcon from '../../../icons/shortcut';
+import PlusIcon from '../../../icons/plus';
 export default {
 	components: {
 		VCalendar,
@@ -19,7 +20,8 @@ export default {
 		MoreIcon,
 		VueButton,
 		VueSelect,
-		ShortcutIcon
+		ShortcutIcon,
+		PlusIcon
 	},
 
 	data: () => ({

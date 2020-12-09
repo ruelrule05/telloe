@@ -32,7 +32,6 @@ export default {
 		selectedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		newBreaktime: null,
-		newHoliday: null,
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		clonedService: null,
@@ -69,7 +68,11 @@ export default {
 				text: 'NZD',
 				value: 'NZD'
 			}
-		]
+		],
+		newHoliday: {
+			dates: []
+		},
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -94,16 +97,16 @@ export default {
 	watch: {
 		ready: function(value) {
 			this.$root.contentloading = !value;
-		},
-		selectedService: function() {
-			if (this.$root.intros.add_service.enabled) {
-				setTimeout(() => {
-					if (!document.querySelector('.introjs-overlay')) {
-						this.$root.introJS.start().goToStepNumber(this.$root.intros.add_service.step);
-					}
-				}, 500);
-			}
 		}
+		// selectedService: function() {
+		// 	if (this.$root.intros.add_service.enabled) {
+		// 		setTimeout(() => {
+		// 			if (!document.querySelector('.introjs-overlay')) {
+		// 				this.$root.introJS.start().goToStepNumber(this.$root.intros.add_service.step);
+		// 			}
+		// 		}, 500);
+		// 	}
+		// }
 	},
 
 	created() {
@@ -128,6 +131,29 @@ export default {
 			updateService: 'services/update',
 			deleteService: 'services/delete'
 		}),
+
+		addHolidayDate(date) {
+			let existingIndex = this.selectedService.holidays.findIndex(x => x == date);
+			if (existingIndex == -1) {
+				let index = this.newHoliday.dates.findIndex(x => x == date);
+				if (index > -1) {
+					this.newHoliday.dates.splice(index, 1);
+				} else {
+					this.newHoliday.dates.push(date);
+				}
+			}
+		},
+
+		addHolidays() {
+			if (this.newHoliday.dates.length > 0) {
+				if (!this.selectedService.holidays) this.$set(this.selectedService, 'holidays', []);
+				this.newHoliday.dates.forEach(date => {
+					this.selectedService.holidays.push(date);
+				});
+				this.updateService(this.selectedService);
+				this.newHoliday.dates = [];
+			}
+		},
 
 		updateServiceStatus(state, service) {
 			// if (state) {

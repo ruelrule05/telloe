@@ -42,12 +42,6 @@ export default {
 		newHoliday: {
 			dates: []
 		},
-		holidayDateAttrs: [
-			{
-				highlight: true,
-				dates: []
-			}
-		],
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		paginate: ['bookings'],

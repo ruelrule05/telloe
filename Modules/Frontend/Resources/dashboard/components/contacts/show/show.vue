@@ -1,5 +1,5 @@
 <template>
-	<div v-if="contact" class="w-100 h-100 overflow-hidden">
+	<div v-if="contact && $root.auth.role.role == 'client'" class="w-100 h-100 overflow-hidden">
 		<div class="overflow-auto h-100 pb-4">
 			<div class="p-4 d-flex align-items-center">
 				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/contacts')">

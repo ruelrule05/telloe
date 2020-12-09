@@ -116,7 +116,7 @@
 										</div>
 									</template>
 
-									<router-link v-else to="/dashboard/bookings" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
+									<router-link v-else to="/dashboard/bookings" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4">
 										<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
 										<span class="pl-3">Bookings</span>
 									</router-link>
@@ -128,13 +128,13 @@
 									</router-link>
 									<div class="d-none" id="item-messages" data-parent="#sidebar"></div>
 
+									<router-link to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4">
+										<contact-alt-icon height="18" width="18" class="sidebar-icon"></contact-alt-icon>
+										<span class="pl-3">Contacts</span>
+									</router-link>
+									
 
 									<template v-if="auth.role.role == 'client'">
-										<router-link to="/dashboard/contacts" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
-											<contact-alt-icon height="18" width="18" class="sidebar-icon"></contact-alt-icon>
-											<span class="pl-3">Contacts</span>
-										</router-link>
-										
 										<router-link to="/dashboard/integrations" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 m-0 px-4" exact>
 											<tray-stack-icon height="18" width="18" transform="scale(1.2)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></tray-stack-icon>
 											<span class="pl-3">Integrations</span>

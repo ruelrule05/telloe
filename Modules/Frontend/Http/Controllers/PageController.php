@@ -26,7 +26,11 @@ class PageController extends Controller
                 $params = $request->member_invite_token ? "?member_invite_token={$request->member_invite_token}" : '';
                 checkMemberInviteToken($authUser, $request);
             }
-            return redirect('/dashboard/bookings/services' . $params);
+            if ($authUser->role_id == 2) {
+                return redirect('/dashboard/bookings/services' . $params);
+            } else {
+                return redirect('/dashboard/bookings' . $params);
+            }
         }
 
         if ($request->auth == 'reset' && $request->token) {

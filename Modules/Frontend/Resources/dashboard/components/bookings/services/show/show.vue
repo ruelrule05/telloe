@@ -1,5 +1,6 @@
 <template>
 	<div class="h-100" v-if="service">
+		<div class="active-service" :class="{ show: service.is_available }"></div>
 		<div class="d-flex h-100 overflow-hidden">
 			<div class="p-4 flex-grow-1 overflow-auto">
 				<div class="d-flex justify-content-between mb-5">
@@ -19,6 +20,13 @@
 							<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
 						</button>
 						<div class="dropdown-menu">
+							<div class="d-flex align-items-center px-2 py-1">
+								<span>Available</span>
+								<toggle-switch class="ml-auto" @click.native.stop @input="updateService(service)" active-class="bg-primary" v-model="service.is_available"></toggle-switch>
+							</div>
+							<span class="dropdown-item cursor-pointer" @click="$refs['availabilityModal'].show()">
+								Availability
+							</span>
 							<span
 								class="dropdown-item cursor-pointer"
 								@click="
@@ -27,9 +35,6 @@
 								"
 							>
 								Edit
-							</span>
-							<span class="dropdown-item cursor-pointer" @click="$refs['availabilityModal'].show()">
-								Availability
 							</span>
 							<span class="dropdown-item cursor-pointerr" @click="$refs['deleteModal'].show()">Delete</span>
 						</div>
@@ -407,7 +412,7 @@
 		</modal>
 
 		<modal ref="editModal" :close-button="false" size="modal-lg">
-			<h5 class="font-heading mb-3">Edit Service</h5>
+			<h5 class="font-heading mb-3">Edit Booking Type</h5>
 			<vue-form-validate @submit="update" v-if="clonedService">
 				<div class="row mx-0 mb-2">
 					<div class="col-md-7 px-0">
@@ -447,7 +452,7 @@
 
 					<div class="col-md-5 border-left border-gray-200 px-0">
 						<div class="pl-3">
-							<h6 class="font-heading mb-3">Service Settings</h6>
+							<h6 class="font-heading mb-3">Settings</h6>
 							<div class="form-group">
 								<vue-checkbox v-model="clonedService.in_widget" label="Available in widget"></vue-checkbox>
 							</div>

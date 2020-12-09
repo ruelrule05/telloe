@@ -151,7 +151,9 @@ class UserController extends Controller
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
             ]);
-            $bookings[] = $booking;
+            if ($booking) {
+                $bookings[] = $booking;
+            }
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
                 $timeslotDayName = Carbon::parse($timeslot['date']['format'])->format('l');
@@ -195,15 +197,19 @@ class UserController extends Controller
                             'start' => $start->format('H:i'),
                             'end' => $end->format('H:i'),
                         ]);
-                        $bookings[] = $booking;
+                        if ($booking) {
+                            $bookings[] = $booking;
+                        }
                     }
                     $currentDate->addDay(1);
                 }
             }
         }
 
-        Mail::queue(new NewBooking($bookings, $authUser, 'client'));
-        Mail::queue(new NewBooking($bookings, $authUser, 'contact'));
+        if (count($bookings) > 0) {
+            Mail::queue(new NewBooking($bookings, $authUser, 'client'));
+            Mail::queue(new NewBooking($bookings, $authUser, 'contact'));
+        }
 
         if (! Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) {
             Contact::create([
@@ -219,6 +225,18 @@ class UserController extends Controller
 
     protected function createBooking($service, $data)
     {
+        $availableTimeslots = $service->timeslots($data['date']);
+        $timeslotAvailable = false;
+        foreach ($availableTimeslots as $availableTimeslot) {
+            if ($availableTimeslot['time'] == $data['start'] && $availableTimeslot['is_available']) {
+                $timeslotAvailable = true;
+                break;
+            }
+        }
+        if (! $timeslotAvailable) {
+            return false;
+        }
+
         $booking = Booking::create($data);
         if ($service->create_zoom_link && $service->user->zoom_token) {
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());

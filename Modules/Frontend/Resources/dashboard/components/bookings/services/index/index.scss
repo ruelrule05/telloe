@@ -237,3 +237,25 @@
 		line-height: 0 !important;
 	}
 }
+
+#availability-modal {
+	min-height: 500px;
+}
+
+.custom-day-content {
+	.vc-highlights {
+		display: none;
+	}
+	&.active {
+		.vc-highlights {
+			display: block !important;
+		}
+		.vc-day-content {
+			color: white !important;
+			font-weight: bold !important;
+		}
+	}
+	&.is-disabled {
+		pointer-events: none !important;
+	}
+}

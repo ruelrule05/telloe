@@ -17,9 +17,11 @@ use Google_Service_Calendar_Event;
 use Illuminate\Http\Request;
 use Mail;
 use Modules\Frontend\Http\GoogleCalendarClient;
+use Modules\Frontend\Http\Zoom;
 use Modules\Frontend\Mail\DeleteBooking;
 use Modules\Frontend\Mail\NewBooking;
 use Modules\Frontend\Mail\UpdateBooking;
+use Spatie\CalendarLinks\Link;
 
 class BookingController extends Controller
 {
@@ -132,8 +134,28 @@ class BookingController extends Controller
         }
 
         $booking = Booking::create($data);
-        Mail::queue(new NewBooking($booking, null, 'client'));
-        Mail::queue(new NewBooking($booking, null, 'contact'));
+
+        if ($service->create_zoom_link && $service->user->zoom_token) {
+            $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+            if ($zoomLink) {
+                $booking->update([
+                    'zoom_link' => $zoomLink
+                ]);
+            }
+        }
+
+        $from = Carbon::parse("$booking->date $booking->start");
+        $to = $from->clone()->addMinute($booking->service->duration);
+        $link = Link::create($booking->service->name, $from, $to)
+            ->description($booking->service->description);
+
+        $booking->google_link = $link->google();
+        $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+        $booking->yahoo_link = $link->yahoo();
+        $booking->ical_link = $booking->outlook_link;
+
+        Mail::queue(new NewBooking([$booking], null, 'client'));
+        Mail::queue(new NewBooking([$booking], null, 'contact'));
 
         $user_id = null;
         $description = '';

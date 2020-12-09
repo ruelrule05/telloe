@@ -25,7 +25,7 @@
 					<div class="row px-2">
 						<div class="col-md-4 px-2" v-for="(service, index) in services" :key="service.id">
 							<div class="px-1 mb-4">
-								<router-link :data-intro="index == 0 ? $root.intros.services_index.steps[0] : null" :data-step="index == 0 ? 1 : null" class="card rounded service p-3 shadow-sm w-100 overflow-hidden cursor-pointer" :to="`/dashboard/bookings/services/${service.id}`" :class="{ active: service.is_available }" tag="div">
+								<router-link :data-intro="index == 0 ? $root.intros.services_index.steps[0] : null" :data-step="index == 0 ? 1 : null" class="card rounded service p-3 shadow-sm w-100 cursor-pointer" :to="`/dashboard/bookings/services/${service.id}`" :class="{ active: service.is_available }" tag="div">
 									<div class="service-buttons position-absolute">
 										<div class="dropdown ml-2" @click.prevent>
 											<button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0" :data-intro="index == 0 ? $root.intros.services_index.steps[1] : null" :data-step="index == 0 ? 2 : null">
@@ -37,6 +37,15 @@
 													<span>Available</span>
 													<toggle-switch class="ml-auto" @click.native.stop @input="updateServiceStatus($event, service)" active-class="bg-primary" v-model="service.is_available"></toggle-switch>
 												</div>
+												<span
+													class="dropdown-item cursor-pointer"
+													@click="
+														selectedService = service;
+														$refs['availabilityModal'].show();
+													"
+												>
+													Availability
+												</span>
 												<span
 													class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
 													@click="
@@ -146,6 +155,92 @@
 			</div>
 		</div>
 
+		<modal ref="availabilityModal">
+			<div id="availability-modal" v-if="selectedService">
+				<h5 class="font-heading mb-3">Manage Availability</h5>
+				<div class="d-flex mb-2 rounded overflow-hidden">
+					<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'">
+						Availability
+					</button>
+					<button class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'">
+						Holidays
+					</button>
+				</div>
+
+				<div v-if="serviceDetailsTab == 'availability'" id="service-days">
+					<div v-for="(day, index) in days" :key="index" class="service-day py-2 border-bottom">
+						<div class="service-day-heading py-2 d-flex align-items-center cursor-pointer" data-toggle="collapse" :data-target="`#day-${day}`">
+							<toggle-switch class="mr-2" active-class="bg-primary" @click.native.stop @input="updateService(selectedService)" v-model="selectedService.days[day].isOpen"></toggle-switch>
+							<div class="h6 mb-0">{{ day.toUpperCase() }}</div>
+							<chevron-down-icon class="ml-auto chevron-down"></chevron-down-icon>
+						</div>
+						<div class="collapse" data-parent="#service-days" :id="`day-${day}`">
+							<div class="py-2 px-3">
+								<div class="">
+									<label class="mb-1 text-gray">Available Time</label>
+									<timerangepicker @update="updateAvailableHours($event, day)" :start="selectedService.days[day].start" :end="selectedService.days[day].end"></timerangepicker>
+
+									<label class="mb-1 mt-3 text-gray">Break Times</label>
+									<div class="d-flex align-items-center mb-1" v-for="(breaktime, index) in selectedService.days[day].breaktimes" :key="index">
+										<timerangepicker @update="updateBreaktime($event, index, day)" :start="breaktime.start" :end="breaktime.end" class="flex-grow-1"></timerangepicker>
+										<trash-icon class="ml-auto cursor-pointer" width="20" height="20" fill="red" @click.native="removeBreaktime(index, day)"></trash-icon>
+									</div>
+
+									<timerangepicker v-if="newBreaktime" :start="newBreaktime.start" :end="newBreaktime.end" @update="updateNewBreaktime($event, day)" class="mt-1"></timerangepicker>
+									<div class="mt-2 d-flex align-items-center">
+										<button type="button" class="btn btn-primary btn-sm" :disabled="newBreaktime && (!newBreaktime.start || !newBreaktime.end)" @click="newBreaktime = {}">
+											+ Add breaktime
+										</button>
+										<button
+											v-if="(selectedService.days[day].breaktimes || []).length > 0"
+											type="button"
+											class="btn btn-white border btn-sm ml-auto"
+											@click="
+												selectedDay = day;
+												$refs['applyBreaktimeToAllModal'].show();
+											"
+										>
+											Apply to all days
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-else-if="serviceDetailsTab == 'holidays'" class="mt-3 position-relative">
+					<div class="dropright">
+						<button type="button" class="btn btn-light shadow-none mb-2 d-flex align-items-center" data-toggle="dropdown"><plus-icon class="btn-icon"></plus-icon> Add Holidays</button>
+						<div class="dropdown-menu p-0">
+							<v-date-picker @click.native.stop :disabled-dates="formattedHolidays" :value="null" :min-date="new Date()" class="border-0">
+								<template slot="day-content" slot-scope="{ day }">
+									<div class="custom-day-content" :class="{ 'is-disabled': day.isDisabled, active: newHoliday.dates.find(x => dayjs(x).format('YYYY-MM-DD') == day.id) }">
+										<div class="vc-highlights vc-day-layer">
+											<div class="vc-day-layer vc-day-box-center-center"><div class="vc-highlight bg-primary rounded-circle"></div></div>
+										</div>
+										<span class="vc-day-content vc-focusable" :class="{ 'is-disabled': day.isDisabled }" @click="addHolidayDate(day.id)">
+											{{ day.label }}
+										</span>
+									</div>
+								</template>
+							</v-date-picker>
+							<div class="d-flex px-2 pb-2">
+								<button class="btn btn-light shadow-none" type="button">Cancel</button>
+								<button class="ml-auto btn btn-primary shadow-none" type="button" @click="addHolidays">Add</button>
+							</div>
+						</div>
+					</div>
+
+					<div>
+						<div v-for="(holiday, index) in selectedService.holidays" :key="index" class="border-bottom py-2 d-flex">
+							{{ formatDate(holiday) }}
+							<trash-icon class="ml-auto cursor-pointer" width="20" height="20" fill="red" @click.native="removeHoliday(index)"></trash-icon>
+						</div>
+					</div>
+				</div>
+			</div>
+		</modal>
+
 		<modal ref="deleteModal" :close-button="false">
 			<template v-if="selectedService">
 				<h5 class="font-heading text-center">Delete Service</h5>
@@ -175,7 +270,7 @@
 		</modal>
 
 		<modal ref="editModal" :close-button="false" size="modal-lg">
-			<h5 class="font-heading mb-3">Edit Service</h5>
+			<h5 class="font-heading mb-3">Edit Booking Type</h5>
 			<vue-form-validate @submit="update" v-if="clonedService">
 				<div class="row mx-0 mb-2">
 					<div class="col-md-7 px-0">
@@ -215,7 +310,7 @@
 
 					<div class="col-md-5 border-left border-gray-200 px-0">
 						<div class="pl-3">
-							<h6 class="font-heading mb-3">Service Settings</h6>
+							<h6 class="font-heading mb-3">Settings</h6>
 							<div class="form-group">
 								<vue-checkbox v-model="clonedService.in_widget" label="Available in widget"></vue-checkbox>
 							</div>

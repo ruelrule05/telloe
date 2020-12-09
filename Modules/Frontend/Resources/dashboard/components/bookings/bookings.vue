@@ -6,7 +6,15 @@
 					You don't have any bookings yet.
 				</h6>
 				<div v-else>
-					<h1 class="font-heading h3 mb-3">Bookings</h1>
+					<div class="d-flex mb-3">
+						<h1 class="font-heading h3 mb-0">Bookings</h1>
+						<div class="ml-auto d-flex align-items-center">
+							<button class="btn btn-primary d-flex align-items-center" type="button" @click="$refs['addBookingModal'].show()">
+								<plus-icon class="btn-icon fill-white" style="stroke: white"></plus-icon>
+								Add Booking
+							</button>
+						</div>
+					</div>
 					<table class="table table-borderless mb-0">
 						<thead>
 							<tr>
@@ -42,6 +50,12 @@
 						</tbody>
 					</table>
 				</div>
+
+				<modal ref="addBookingModal" :close-button="false" :scrollable="false" @hidden="resetNewBooking()">
+					<vue-form-validate>
+						<h5 class="font-heading">Add Booking</h5>
+					</vue-form-validate>
+				</modal>
 
 				<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
 					<div v-if="selectedBooking">

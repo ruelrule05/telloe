@@ -22,7 +22,6 @@ import DocumentIcon from '../../../../../icons/document';
 import MoveIcon from '../../../../../icons/move';
 import VueScrollTo from 'vue-scrollto';
 import Tooltip from '../../../../../js/directives/tooltip';
-import draggable from 'vuedraggable';
 
 export default {
 	components: {
@@ -45,8 +44,7 @@ export default {
 		ClockIcon,
 		PlannerIcon,
 		DocumentIcon,
-		MoveIcon,
-		draggable
+		MoveIcon
 	},
 
 	directives: { VueScrollTo, Tooltip },
