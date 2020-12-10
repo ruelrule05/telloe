@@ -82,7 +82,8 @@ export default {
 				if (!search.length) {
 					return true;
 				} else {
-					let keywords = conversation.name;
+					let keywords = conversation.name || '';
+					keywords += ` ${conversation.user.full_name} ${conversation.user.email}`;
 					conversation.members.forEach(member => {
 						keywords += ` ${member.user.full_name} ${member.user.email}`;
 					});

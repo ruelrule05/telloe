@@ -29,7 +29,7 @@
 				<div v-if="conversations.length == 0" class="position-absolute-center w-100 text-center text-muted">
 					You don't have any conversations yet.
 				</div>
-				<template v-else>
+				<template v-else-if="orderedConversations.length > 0">
 					<template v-for="conversation in orderedConversations">
 						<div :key="conversation.id" class="conversation-preview mb-1 position-relative rounded-lg" :class="{ active: conversation.id == $route.params.id }">
 							<div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
@@ -92,6 +92,7 @@
 						</div>
 					</template>
 				</template>
+				<div v-else class="position-absolute-center text-muted">No conversations found.</div>
 			</div>
 		</div>
 

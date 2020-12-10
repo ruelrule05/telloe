@@ -5,3 +5,7 @@ sudo supervisorctl update
 sudo supervisorctl restart laravel-worker-staging:*
 
 sudo supervisorctl restart laravel-worker-production:*
+
+sudo supervisorctl stop laravel-worker-staging:*
+
+sudo supervisorctl start laravel-worker-production:*
