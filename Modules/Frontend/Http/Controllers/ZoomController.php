@@ -45,7 +45,7 @@ class ZoomController extends Controller
             'redirect_uri' => config('zoom.redirect_uri')
         ]);
         $token = json_decode($response->getBody());
-        if ($token->error) {
+        if (isset($token->error)) {
             return $token->reason;
         }
         $authUser->zoom_token = $token;
