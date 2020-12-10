@@ -14,9 +14,10 @@
 						</button>
 					</div>
 				</div>
-				<div class="d-flex align-items-center border-bottom btn-tab mt-1">
-					<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{ active: conversationTab == 'active' }" @click="conversationTab = 'active'">Chats</button>
-					<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{ active: conversationTab == 'archive' }" @click="conversationTab = 'archive'">Archive</button>
+				<div class="d-flex align-items-center btn-tab mt-3 px-3">
+					<input type="text" class="form-control border shadow-none" placeholder="Search conversations" v-model="search" />
+					<!-- <button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{ active: conversationTab == 'active' }" @click="conversationTab = 'active'">Chats</button>
+					<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{ active: conversationTab == 'archive' }" @click="conversationTab = 'archive'">Archive</button> -->
 					<!-- <button class="ml-auto btn badge-pill line-height-0 p-0 mr-2 shadow-none" type="button" @click="$root.muted = !$root.muted">
                         <bell-icon width="22" height="22" v-if="!$root.muted"></bell-icon>
                         <bell-slash-icon width="22" height="22" v-else class="fill-gray-500"></bell-slash-icon>
@@ -30,7 +31,7 @@
 				</div>
 				<template v-else>
 					<template v-for="conversation in orderedConversations">
-						<div v-if="!conversation.deleted_at" :key="conversation.id" class="conversation-preview mb-1 position-relative rounded-lg" :class="{ active: conversation.id == $route.params.id }">
+						<div :key="conversation.id" class="conversation-preview mb-1 position-relative rounded-lg" :class="{ active: conversation.id == $route.params.id }">
 							<div v-if="$root.callConversation && $root.callConversation.id == conversation.id" class="conversation-oncall position-absolute pr-3">
 								<video-icon width="24" height="24"></video-icon>
 							</div>
@@ -122,7 +123,7 @@
 						No results found.
 					</div>
 					<div v-else-if="filteredUsers.length > 0">
-						<div v-for="result in filteredUsers" :key="result.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{ active: newConversation.members.find(x => x.user.id == result.user.id), disabled: result.is_pending }">
+						<div v-for="result in filteredUsers" :key="result.user.id" @click="addNewConversationMember(result)" class="media member-result align-items-center rounded mb-2 p-2 cursor-pointer" :class="{ active: newConversation.members.find(x => x.user.id == result.user.id), disabled: result.is_pending }">
 							<div class="user-profile-image user-profile-image-md align-self-center" :style="{ backgroundImage: 'url(' + result.user.profile_image + ')' }">
 								<span v-if="!result.user.profile_image">{{ result.user.initials }}</span>
 							</div>

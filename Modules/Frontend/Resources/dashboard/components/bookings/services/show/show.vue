@@ -5,7 +5,7 @@
 			<div class="p-4 flex-grow-1 overflow-auto">
 				<div class="d-flex justify-content-between mb-5">
 					<div>
-						<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/bookings/services')">
+						<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.go(-1)">
 							<arrow-left-icon width="30" height="30"></arrow-left-icon>
 						</button>
 					</div>

@@ -9,7 +9,7 @@
 					<div class="d-flex mb-3">
 						<h1 class="font-heading h3 mb-0">Bookings</h1>
 						<div class="ml-auto d-flex align-items-center">
-							<button class="btn btn-primary d-flex align-items-center" type="button" @click="$refs['addBookingModal'].show()">
+							<button class="btn btn-primary d-flex align-items-center" type="button" @click="$refs['add'].show()">
 								<plus-icon class="btn-icon fill-white" style="stroke: white"></plus-icon>
 								Add Booking
 							</button>
@@ -50,12 +50,6 @@
 						</tbody>
 					</table>
 				</div>
-
-				<modal ref="addBookingModal" :close-button="false" :scrollable="false" @hidden="resetNewBooking()">
-					<vue-form-validate>
-						<h5 class="font-heading">Add Booking</h5>
-					</vue-form-validate>
-				</modal>
 
 				<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
 					<div v-if="selectedBooking">
@@ -158,6 +152,7 @@
 					</template>
 				</modal>
 			</div>
+			<add ref="add"></add>
 		</div>
 		<router-view v-else></router-view>
 	</div>

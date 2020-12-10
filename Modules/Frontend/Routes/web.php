@@ -6,7 +6,20 @@
  */
 
 Route::get('test', function () {
-    echo \Carbon\Carbon::now()->weekOfMonth;
+    $currentDate = \Carbon\Carbon::now()->addDay(1);
+    $endDate = \Carbon\Carbon::parse('2020-12-31');
+
+    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    $timeslotDays = [3, 5];
+
+    while ($currentDate->lessThan($endDate)) {
+        $dayIndex = array_search($currentDate->clone()->format('l'), $days);
+        if (in_array($dayIndex, $timeslotDays)) {
+            echo $currentDate->clone()->format('Y-m-d') . '<br />';
+        }
+
+        $currentDate->addDay(1);
+    }
 });
 
 Route::get('widget', function () {
@@ -96,6 +109,7 @@ Route::group(
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
                 Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
                 Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
+                Route::get('services/contact_services', 'ServiceController@contactsServices');
                 Route::apiResource('services', 'ServiceController');
                 Route::apiResource('notes', 'NoteController');
                 Route::apiResource('bookings', 'BookingController');

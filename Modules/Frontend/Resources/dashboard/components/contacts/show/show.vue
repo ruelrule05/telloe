@@ -339,7 +339,7 @@
 				<h5 class="font-heading">Add Booking</h5>
 				<div class="form-group">
 					<label class="form-label">Booking Type</label>
-					<vue-select :options="servicesList" required button_class="form-control" v-model="newBooking.service" placeholder="Select booking type"></vue-select>
+					<vue-select :options="availableServices" required button_class="form-control" v-model="newBooking.service" placeholder="Select booking type"></vue-select>
 				</div>
 				<div class="form-group">
 					<label class="form-label">Coach</label>
@@ -437,8 +437,7 @@
 					</div>
 					<div class="text-left mt-3 d-flex align-items-start">
 						<div class="font-weight-normal text-secondary w-25 mb-2">Notes</div>
-						<input v-if="!selectedBooking.isPrevious" type="text" class="form-control resize-none flex-1" v-model="selectedBooking.booking_note.note" placeholder="Write notes.." />
-						<div v-else class="flex-1">{{ selectedBooking.booking_note.note }}</div>
+						<input type="text" class="form-control resize-none flex-1" v-model="selectedBooking.booking_note.note" placeholder="Write notes.." />
 					</div>
 					<div v-if="!selectedBooking.isPrevious" class="text-left">
 						<div class="mt-3" v-if="Object.keys(selectedBooking.zoom_link).length > 0">
@@ -459,12 +458,12 @@
 					</div>
 				</div>
 
-				<div v-if="!selectedBooking.isPrevious" class="d-flex justify-content-between mt-4">
-					<div class="d-flex align-items-center">
+				<div class="d-flex justify-content-between mt-4">
+					<div v-if="!selectedBooking.isPrevious" class="d-flex align-items-center">
 						<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
 						<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>
 					</div>
-					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
+					<vue-button type="button" button_class="btn btn-primary shadow-sm border ml-auto" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedBooking)">Update</vue-button>
 				</div>
 			</div>
 		</modal>

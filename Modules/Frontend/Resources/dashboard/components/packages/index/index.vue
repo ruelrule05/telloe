@@ -218,7 +218,7 @@
 
 					<div class="col-md-6 border-left pr-0 border-gray-200">
 						<h6 class="font-heading">Services</h6>
-						<vue-select v-model="newPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
+						<vue-select v-model="newPackage.services" :options="servicesList" button_class="form-control" multiple data-required placeholder="Select service"></vue-select>
 						<div v-for="(service, index) in newPackage.services" :key="service.id" class="rounded bg-light p-3 mt-2 d-flex align-items-center">
 							<h6 class="mb-1">{{ service.name }}</h6>
 							<input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="newPackage.services[index].bookings" value="1" />

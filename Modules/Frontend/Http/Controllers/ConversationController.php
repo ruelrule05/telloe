@@ -15,7 +15,7 @@ class ConversationController extends Controller
 {
     public function index(Request $request)
     {
-        $conversations = Conversation::withTrashed()->with('user', 'members.user')
+        $conversations = Conversation::with('user', 'members.user')
             ->where(function ($query) {
                 $query->where('user_id', Auth::user()->id)
                     ->orWhereHas('members', function ($members) {

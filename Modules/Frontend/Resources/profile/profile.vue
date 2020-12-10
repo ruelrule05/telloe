@@ -213,7 +213,7 @@
 															<span class="selected-checkmark position-absolute">
 																<checkmark-icon v-if="selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time)" height="30" width="30" class="fill-green"></checkmark-icon>
 															</span>
-															<span class="text-nowrap">{{ convertTime(timeslot.time, 'hh:mmA') }}</span>
+															<span class="text-nowrap">{{ timezoneTime(timeslot.time) }}</span>
 														</div>
 													</div>
 												</template>

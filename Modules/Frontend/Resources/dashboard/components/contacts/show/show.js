@@ -24,6 +24,7 @@ import NoteIcon from '../../../../icons/note';
 import PencilIcon from '../../../../icons/pencil';
 import MoveIcon from '../../../../icons/move';
 import PlusIcon from '../../../../icons/plus';
+import draggable from 'vuedraggable';
 
 export default {
 	components: {
@@ -43,7 +44,8 @@ export default {
 		NoteIcon,
 		PencilIcon,
 		MoveIcon,
-		PlusIcon
+		PlusIcon,
+		draggable
 	},
 
 	data: () => ({
@@ -90,6 +92,20 @@ export default {
 			services: state => state.services.index,
 			user_custom_fields: state => state.user_custom_fields.fields
 		}),
+
+		availableServices() {
+			let servicesList = [];
+			this.services.forEach(service => {
+				let blacklisted = this.contact.blacklisted_services.find(x => x == service.id);
+				if (!blacklisted) {
+					servicesList.push({
+						text: service.name,
+						value: service
+					});
+				}
+			});
+			return servicesList;
+		},
 
 		servicesList() {
 			let servicesList = [];
@@ -196,13 +212,17 @@ export default {
 
 		async addNewBooking() {
 			if (this.newBooking.service_id && this.newBooking.date && this.newBooking.timeslot) {
-				let data = this.newBooking;
+				this.bookingModalLoading = true;
+				let data = Object.assign({}, this.newBooking);
 				data.start = this.newBooking.timeslot;
 				data.contact_id = this.contact.id;
 				data.date = dayjs(this.newBooking.date).format('YYYY-MM-DD');
-				await this.storeBooking(data);
-				this.getContact();
-				this.$refs['addBookingModal'].hide();
+				let booking = await this.storeBooking(data).catch(() => {});
+				if (booking) {
+					this.getContact();
+					this.$refs['addBookingModal'].hide();
+				}
+				this.bookingModalLoading = false;
 			}
 		},
 

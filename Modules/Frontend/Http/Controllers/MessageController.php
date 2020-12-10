@@ -112,9 +112,8 @@ class MessageController extends Controller
     public function update($id, Request $request)
     {
         $message = Message::findOrFail($id);
-        $this->authorize('update', $message);
+        //$this->authorize('update', $message);
         $message->update([
-            'is_history' => $request->is_history ?? false,
             'tags' => $request->tags,
         ]);
         return response()->json($message);

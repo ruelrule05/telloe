@@ -54,7 +54,8 @@ export default {
 		newContact: {
 			custom_fields: {},
 			blacklisted_services: []
-		}
+		},
+		search: ''
 	}),
 
 	computed: {
@@ -76,10 +77,17 @@ export default {
 				return a_timestamp > b_timestamp ? -1 : 1;
 			});
 
+			let search = this.search.trim().toLowerCase();
 			return conversations.filter(conversation => {
-				let is_archived = conversation.archive_users.find(x => x == this.$root.auth.id);
-				conversation.archive = is_archived;
-				return (this.conversationTab == 'active' && !is_archived) || (this.conversationTab == 'archive' && is_archived);
+				if (!search.length) {
+					return true;
+				} else {
+					let keywords = conversation.name;
+					conversation.members.forEach(member => {
+						keywords += ` ${member.user.full_name} ${member.user.email}`;
+					});
+					return keywords.toLowerCase().includes(search);
+				}
 			});
 		},
 
@@ -101,21 +109,25 @@ export default {
 			let users = [];
 
 			this.contacts.forEach(contact => {
-				let exists = users.find(x => x.user_id == contact.contact_user_id);
-				if (!exists) {
-					users.push({
-						type: 'contact',
-						user: contact.contact_user
-					});
+				if (!contact.is_pending) {
+					let exists = users.find(x => x.user.id == contact.contact_user_id);
+					if (!exists) {
+						users.push({
+							type: 'contact',
+							user: contact.contact_user
+						});
+					}
 				}
 			});
 			this.members.forEach(member => {
-				let exists = users.find(x => x.user_id == member.member_user_id);
-				if (!exists) {
-					users.push({
-						type: 'member',
-						user: member.member_user
-					});
+				if (!member.is_pending) {
+					let exists = users.find(x => x.user.id == member.member_user_id);
+					if (!exists) {
+						users.push({
+							type: 'member',
+							user: member.member_user
+						});
+					}
 				}
 			});
 

@@ -36,6 +36,8 @@
 						<div id="overview" class="collapse" data-parent="#info-items">
 							<!-- Fields -->
 							<div v-if="conversation.members.length == 1" class="form-group">
+								<span class="text-muted d-block">Timezone</span>
+								{{ conversation.member.timezone }}
 								<div v-for="(custom_field, index) in (conversation.contact || {}).custom_fields" :key="index" class="my-2 custom-field position-relative">
 									<span class="text-ellipsis text-muted">{{ custom_field.name }}</span>
 									<div class="text-ellipsis">
@@ -47,35 +49,12 @@
 
 							<!-- Conversation members -->
 							<div v-else>
-								<div class="my-2">
-									<!-- <div class="form-group form-icon mb-0">
-                                        <search-icon height="20" width="20" fill="#999"></search-icon>
-                                        <input type="text" v-model="memberSearch" placeholder="Add members" @input="searchMembers($event, false)" class="form-control shadow-none form-control-sm">
-                                    </div>
-                                    <div class="position-relative mt-1 overflow-auto members-search-container">
-                                        <div v-if="searchingMembers" class="text-center">
-                                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                        </div>
-                                        <div v-if="groupMembersResults.length > 0">
-                                            <div class="media cursor-pointer border-top p-1 member-result" v-for="member in groupMembersResults" v-if="member.id != $root.auth.id && !conversation.members.find((x) => x.user_id == member.id)" @click="addMember(member)">
-                                                <div class="user-profile-image user-profile-image-sm align-self-center" :style="{backgroundImage: 'url('+member.profile_image+')'}">
-                                                    <span v-if="!member.profile_image">{{ member.initials }}</span>
-                                                </div>
-                                                <div class="media-body pl-2">
-                                                    <div class="font-weight-bold mb-n1">{{ member.full_name }}</div>
-                                                    <small class="ml-auto text-muted text-nowrap">{{ member.email }}</small>           
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> -->
-								</div>
-
-								<div class="media border-top py-2 px-2 member-item position-relative" v-for="member in conversation.members" :key="member.index">
+								<div class="d-flex align-items-center py-2 member-item position-relative" v-for="member in conversation.members" :key="member.index">
 									<trash-icon fill="red" class="position-absolute cursor-pointer delete-member opacity-0" height="18" width="18" @click.native="deleteMember(member)"></trash-icon>
 									<div class="user-profile-image user-profile-image-sm align-self-center" :style="{ backgroundImage: 'url(' + member.user.profile_image + ')' }">
 										<span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
 									</div>
-									<div class="media-body pl-2">
+									<div class="pl-2">
 										<div class="font-weight-bold mb-n1">{{ member.user.full_name }}</div>
 										<small class="ml-auto text-muted text-nowrap">{{ member.user.email }}</small>
 									</div>
@@ -174,7 +153,7 @@
 									<input type="text" class="form-control form-control-sm shadow-none" placeholder="Search for tags..." v-model="tagSearch" />
 								</div>
 								<div v-if="(tagsData.tags || []).length > 0" class="my-2">
-									<small v-for="(tag, tagIndex) in tagsData.tags" :key="tagIndex" class="badge badge-orange mr-1 mb-1">{{ tag }}</small>
+									<small v-for="(tag, tagIndex) in tagsData.tags" :key="tagIndex" class="badge badge-warning mr-1 mb-1">{{ tag }}</small>
 								</div>
 
 								<div class="overflow-y-only mt-2">
@@ -196,15 +175,15 @@
 												<message-type :click="false" :square-thumbnail="true" :message="data.data" :outgoing="data.data.outgoing"></message-type>
 
 												<div class="mb-1">
-													<div v-for="(tag, dataTagIndex) in data.data.tags" :key="dataTagIndex" class="d-inline-block badge badge-orange line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
+													<div v-for="(tag, dataTagIndex) in data.data.tags" :key="dataTagIndex" class="d-inline-block badge badge-warning line-height-sm mb-1 small py-1 px-2 mr-1 mt-1">
 														{{ tag }}&nbsp;
 														<close-icon
 															height="8"
 															width="8"
 															transform="scale(2.5)"
-															class="cursor-pointer no-action fill-white"
+															class="cursor-pointer"
 															@click.native="
-																data.data.tags.splice(index, 1);
+																data.data.tags.splice(dataTagIndex, 1);
 																$parent.updateMessageTags(data.data);
 															"
 														></close-icon>

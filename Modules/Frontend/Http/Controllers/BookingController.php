@@ -99,7 +99,10 @@ class BookingController extends Controller
         if (! $request->user_id && ! $request->contact_id) {
             return abort(403, 'User ID or Contact ID is required.');
         }
-        //if(Carbon::now()->gt(Carbon::parse($request->date . ' ' . $request->start))) return abort(403, 'Invalid date.');
+
+        if (Carbon::now()->greaterThan(Carbon::parse($request->date . ' ' . $request->start))) {
+            return abort(403, 'Invalid date.');
+        }
         if ($request->user_id == Auth::user()->id) {
             return abort(403, 'Action is not allowed.');
         }
@@ -108,10 +111,17 @@ class BookingController extends Controller
         $this->authorize('addBooking', $service);
         $timeslots = $service->timeslots($request->date);
 
+        if ($request->contact_id) {
+            $contact = Contact::findOrFail($request->contact_id);
+            $this->authorize('show', $contact);
+            if (in_array($service->id, $contact->blacklisted_services)) {
+                return abort(403, 'The selected service is blacklisted for this contact.');
+            }
+        }
+
         $timeslotAvailable = false;
         foreach ($timeslots as $timeslot) {
-            // if ($timeslot['time'] == $request->start && $timeslot['is_available'] == true) {
-            if ($timeslot['time'] == $request->start) {
+            if ($timeslot['time'] == $request->start && $timeslot['is_available'] == true) {
                 $timeslotAvailable = true;
                 break;
             }
@@ -198,7 +208,20 @@ class BookingController extends Controller
         $this->authorize('update', $booking);
         $this->authorize('show', $service);
 
-        if (Carbon::parse(Carbon::now()->format('Y-m-d'))->gt(Carbon::parse($request->date))) {
+        $now = Carbon::now();
+        $startDate = Carbon::parse("$booking->date $booking->start");
+
+        if ($now->greaterThan($startDate)) {
+            if (isset($request->booking_note['note'])) {
+                BookingNote::updateOrCreate(
+                    ['booking_id' => $booking->id],
+                    ['note' => $request->booking_note['note']]
+                );
+            }
+            return response($booking);
+        }
+
+        if (Carbon::parse($now->format('Y-m-d'))->greaterThan(Carbon::parse($request->date))) {
             return abort(403, 'Invalid date.');
         }
 

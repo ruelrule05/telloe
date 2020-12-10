@@ -126,7 +126,7 @@
 																</div>
 															</vue-form-validate>
 
-															<div class="text-left tags-container" v-if="message.tags.length > 0">
+															<div class="text-left" v-if="message.tags.length > 0">
 																<div v-for="(tag, index) in message.tags" :key="tag.id" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
 																	{{ tag }}&nbsp;
 																	<close-icon

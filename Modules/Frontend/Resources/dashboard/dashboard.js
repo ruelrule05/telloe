@@ -314,6 +314,13 @@ window.app = new window.Vue({
 			getConversation: 'conversations/show'
 		}),
 
+		currentConversationID() {
+			if (this.$route.name == 'conversations' && this.$route.params.id) {
+				return this.$route.params.id;
+			}
+			return '';
+		},
+
 		conversation() {
 			return this.getConversation(this.$route.params.id);
 		},

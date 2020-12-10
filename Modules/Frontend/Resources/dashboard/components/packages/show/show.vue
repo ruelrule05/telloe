@@ -78,7 +78,7 @@
 					</div>
 					<div class="p-3 flex-1 bg-white shadow-sm position-relative rounded">
 						<div class="px-1 mb-2 d-inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings))" :key="index">
-							<div class="bg-primary rounded text-white py-3 px-4 cursor-pointer">
+							<div class="bg-primary rounded text-white py-3 px-4 cursor-pointerx">
 								<h6 class="font-heading mb-0">{{ selectedService.duration }} min</h6>
 							</div>
 						</div>

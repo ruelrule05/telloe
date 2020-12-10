@@ -1,0 +1,27 @@
+@import '../../../../sass/variables';
+
+#add {
+	top: 0;
+	left: 0;
+	z-index: 100;
+	opacity: 1;
+	transition: $transition-base;
+}
+.user-profile-image {
+	height: 40px;
+	width: 40px;
+	span {
+		font-size: 16px;
+	}
+}
+
+.timeslot-button {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	.selected-checkmark {
+		right: -2px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}

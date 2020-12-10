@@ -121,7 +121,7 @@
 										<span class="pl-3">Bookings</span>
 									</router-link>
 
-									<router-link data-position="right" :to="`/dashboard/conversations/${$route.params.id || ''}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
+									<router-link data-position="right" :to="`/dashboard/conversations/${currentConversationID}`" class="list-group-item list-group-item-action border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
 										<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></messages-icon>
 										<span class="ml-3">Messages</span>
 										<small class="badge badge-orange badge-pill text-white ml-auto message-count">@{{ newMessagesCount }}</small>

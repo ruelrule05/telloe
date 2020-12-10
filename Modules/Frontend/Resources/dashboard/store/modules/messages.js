@@ -3,7 +3,10 @@ const getUrls = require('get-urls');
 
 const state = () => ({});
 
-const mutations = {};
+const mutations = {
+	update() {},
+	delete() {}
+};
 
 const actions = {
 	async store({ commit, rootState }, data) {

@@ -247,7 +247,7 @@ export default {
 	methods: {
 		goToConversation() {
 			this.isShrinked = true;
-			let conversationUrl = `/dashboard/bookings/services/${this.$root.callConversation.id}`;
+			let conversationUrl = `/dashboard/conversations/${this.$root.callConversation.id}`;
 			if (this.$route.path != conversationUrl) {
 				conversationUrl = `${conversationUrl}?focus=message_input`;
 				this.$router.push(conversationUrl);

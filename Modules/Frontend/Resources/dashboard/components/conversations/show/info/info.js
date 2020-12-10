@@ -159,7 +159,7 @@ export default {
 			this.tagSearch = '';
 		},
 		'conversation.id': function() {
-			if (this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
+			//if (this.conversation.user_id == this.$root.auth.id) this.getNotes(this.conversation.id);
 			$('#info-items > div').show();
 		},
 		'customFieldForm.name': function(value) {

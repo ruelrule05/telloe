@@ -3,6 +3,7 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Contact;
 use App\Models\Member;
 use App\Models\Service;
 use Auth;
@@ -94,5 +95,11 @@ class ServiceController extends Controller
         $service->delete();
 
         return response()->json(['deleted' => true]);
+    }
+
+    public function contactsServices()
+    {
+        $contactUserIds = Contact::where('user_id', Auth::user()->id)->whereNotNull('contact_user_id')->pluck('contact_user_id')->toArray();
+        return response(Service::with('user')->whereIn('user_id', $contactUserIds)->where('is_available', true)->get());
     }
 }
