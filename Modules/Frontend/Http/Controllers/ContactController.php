@@ -185,6 +185,7 @@ class ContactController extends Controller
         }
         $now = Carbon::now()->format('Y-m-d H:i');
         $bookings = Booking::with('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices')->where(function ($query) use ($contact) {
+            $contact_user_id = $contact->contact_user_id ?? 0;
             $query->where('user_id', $contact->contact_user_id)->orWhere('contact_id', $contact->id);
         })->whereIn('service_id', $serviceIds);
         $upcoming_bookings = clone $bookings;
