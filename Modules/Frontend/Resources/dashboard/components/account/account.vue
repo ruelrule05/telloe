@@ -54,7 +54,7 @@
 								</div>
 								<div class="form-group">
 									<label class="form-label">Timezone</label>
-									<vue-select :options="availableTimezones" searchable v-model="user.timezone"></vue-select>
+									<vue-select :options="availableTimezones" searchable v-model="user.timezone" button_class="form-control"></vue-select>
 								</div>
 								<div class="form-group">
 									<label class="form-label">Mobile No.</label>
@@ -65,7 +65,7 @@
 												{{ user.dial_code }}
 											</button>
 										</div>
-										<input type="tel" class="form-control" placeholder="Mobile No." v-model="user.phone" />
+										<input type="tel" ref="phone" @keydown="numbersOnly" class="form-control" placeholder="Mobile No." v-model="user.phone" />
 									</div>
 								</div>
 								<div class="text-right">
@@ -167,10 +167,10 @@
 									</div>
 									<div class="col">
 										<label class="form-label">Date of birth</label>
-										<v-date-picker is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob">
+										<v-date-picker is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob" :masks="masks">
 											<template v-slot="{ inputValue, inputEvents }">
 												<button type="button" class="form-control text-left" v-on="inputEvents">
-													<span v-if="inputValue">{{ formatDate(inputValue) }}</span>
+													<span v-if="inputValue">{{ inputValue }}</span>
 													<span v-else class="text-gray">Date of birth</span>
 												</button>
 											</template>

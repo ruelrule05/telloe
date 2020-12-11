@@ -11,6 +11,8 @@ const toBlob = require('data-uri-to-blob');
 const countryCodes = require('country-codes-list');
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 const ct = require('countries-and-timezones');
+import numbersOnly from 'numbers-only';
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
 export default {
 	components: {
@@ -40,7 +42,12 @@ export default {
 		},
 		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US'],
 		selectedAreaCode: { text: 'AU', value: '+61' },
-		getUnicodeFlagIcon: null
+		getUnicodeFlagIcon: null,
+		masks: {
+			input: 'MMMM D, YYYY'
+		},
+		numbersOnly: numbersOnly,
+		phoneUtil: phoneUtil
 	}),
 
 	watch: {
@@ -182,14 +189,39 @@ export default {
 	methods: {
 		async save() {
 			this.loading = true;
-			let bodyFormData = new FormData();
-			Object.keys(this.user).map(k => {
-				bodyFormData.append(k, this.user[k]);
-			});
-			let response = await window.axios.post('/auth', bodyFormData, { toasted: true, headers: { 'Content-Type': 'multipart/form-data' } });
+			let phoneValid = false;
+
+			if (this.user.phone) {
+				let userTimezone = ct.getTimezone(this.user.timezone);
+				phoneValid = phoneUtil.isValidNumberForRegion(phoneUtil.parse(this.user.phone, userTimezone.country), userTimezone.country);
+				if (phoneValid) {
+					let phone = phoneUtil.parse(this.user.phone, userTimezone.country).getNationalNumber();
+					this.user.phone = phone;
+				}
+			} else {
+				phoneValid = true;
+			}
+			if (!phoneValid) {
+				this.loading = false;
+				this.$refs['phone'].focus();
+				return this.$toasted.error('Phone number is invalid for the selected country.', { className: 'bg-danger rounded shadow-none' });
+			}
+			if (this.user.profile_image_file) {
+				this.user.profile_image_file = await this.fileToBase64(this.user.profile_image_file);
+			}
+			let response = await window.axios.post('/auth', this.user, { toasted: true });
 			this.$root.auth = response.data;
 			this.loading = false;
 			this.$toasted.show('Account has been updated successfully.');
+		},
+
+		async fileToBase64(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = () => resolve(reader.result);
+				reader.onerror = error => reject(error);
+			});
 		},
 
 		password() {

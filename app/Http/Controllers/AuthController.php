@@ -220,8 +220,8 @@ class AuthController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
-            'profile_image_file' => 'nullable|mimes:jpeg,png',
             'timezone' => 'required',
+            'phone' => 'nullable|numeric',
         ]);
         $emailExists = User::where('email', $request->email)->where('id', '<>', Auth::user()->id)->first();
         if ($emailExists) {
@@ -241,10 +241,9 @@ class AuthController extends Controller
             $data['timezone'] = $request->timezone;
         }
 
-        if ($request->hasFile('profile_image_file') && $request->file('profile_image_file')->isValid()) {
+        if ($request->profile_image_file) {
             $destinationPath = 'storage/profile-images/';
-            $extension = $request->profile_image_file->extension();
-            $fileName = time() . '.' . $extension;
+            $fileName = time();
 
             $img = Image::make($request->profile_image_file);
             if ($img->width() > 350) {

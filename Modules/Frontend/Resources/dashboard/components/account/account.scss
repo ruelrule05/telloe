@@ -1,7 +1,14 @@
-.user-profile-image-lg{
+@import '../../../sass/variables';
+.user-profile-image-lg {
 	width: 80px;
 	height: 80px;
 }
-.flag-icon{
+.flag-icon {
 	font-size: 24px;
+}
+.input-group {
+	.form-control {
+		border-top-right-radius: $border-radius !important;
+		border-bottom-right-radius: $border-radius !important;
+	}
 }

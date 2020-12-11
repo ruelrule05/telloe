@@ -3,19 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
-use App\Models\Conversation;
-use App\Models\Message;
+use App\Http\Conversations\OnboardingConversation;
 use App\Models\Chatbot;
 use App\Models\Chatbox;
-use File;
-use Nesk\Puphpeteer\Puppeteer;
+use App\Models\Conversation;
+use App\Models\Message;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Drivers\DriverManager;
-use App\Http\Conversations\OnboardingConversation;
 use BotMan\BotMan\Cache\LaravelCache;
+use File;
+use Illuminate\Http\Request;
+use Nesk\Puphpeteer\Puppeteer;
 
 class MessageController extends Controller
 {
@@ -27,11 +25,10 @@ class MessageController extends Controller
     public function index(Request $request)
     {
         $conversation = null;
-        if(auth()->check()) :
-
-        elseif($request->guest) :
+        if (auth()->check()) {
+        } elseif ($request->guest) {
             $conversation = Conversation::with('messages')->where('metadata->guest_cookie', $request->guest)->first();
-        endif;
+        }
 
         return response()->json($conversation);
     }
@@ -48,22 +45,22 @@ class MessageController extends Controller
 
         $time = time();
         $sourceFile = null;
-        if ($request->hasFile('source')) :
+        if ($request->hasFile('source')) {
             $filename = $time . '-source';
             $srcDestination = 'storage/message-media/' . $filename;
             $request->file('source')->storeAs('public/message-media/', $filename);
             $sourceFile = '/' . $srcDestination;
-        endif;
+        }
 
         $previewFile = null;
-        if ($request->preview) :
+        if ($request->preview) {
             $source = $request->preview;
             $filename = $time . '-preview';
             $previewDestination = 'storage/message-media/' . $filename;
             $preview = base64_decode(substr($source, strpos($source, ',') + 1));
             File::put($previewDestination, $preview);
             $previewFile = '/' . $previewDestination;
-        endif;
+        }
 
         $message = Message::create([
             'conversation_id' => $conversation->id,
@@ -106,7 +103,6 @@ class MessageController extends Controller
         return response(1);
     }
 
-
     public function getPagePreview(Request $request)
     {
         $this->validate($request, [
@@ -124,19 +120,21 @@ class MessageController extends Controller
         $page->goto($request->url);
         $data['title'] = $page->title(); 
         $metaDescription = $page->querySelector("head > meta[name*='description']");
-        if ($metaDescription) $data['description'] = $metaDescription->getProperty('content')->jsonValue();
+        if ($metaDescription) {
+            $data['description'] = $metaDescription->getProperty('content')->jsonValue();
+        }
         $favicon = $page->querySelector("link[rel*='icon']");
-        if ($favicon) $data['favicon'] = $favicon->getProperty('href')->jsonValue();
-        $browser->close();
-
-        ?>
+        if ($favicon) {
+            $data['favicon'] = $favicon->getProperty('href')->jsonValue();
+        }
+        $browser->close(); ?>
         <a class="snapturebox-my-2 snapturebox-d-block snapturebox-text-decoration-none" href="<?php echo $data['url']; ?>" target="_blank">
             <div class="snapturebox-bg-light snapturebox-rounded snapturebox-p-2">
-                <?php if($data['favicon']) : ?>
+                <?php if ($data['favicon']) { ?>
                 <div class="snapturebox-text-center snapturebox-mb-2">
                     <img src="<?php echo $data['favicon']; ?>" height="20" />
                 </div>
-                <?php endif; ?>
+                <?php } ?>
                 <h6 class="snapturebox-text-dark snapturebox-mb-0 snapturebox-font-weight-bold"><?php echo $data['title']; ?></h6>
                 <div class="snapturebox-line-height-sm">
                     <small class="snapturebox-text-gray"><?php echo $data['description']; ?></small>
@@ -148,8 +146,6 @@ class MessageController extends Controller
         return;
     }
 
-
-
     public function botman(Request $request)
     {
         $config = [
@@ -159,20 +155,20 @@ class MessageController extends Controller
             // ]
         ];
         $chatbot = null;
-        if($request->bot_id) :
+        if ($request->bot_id) {
             $chatbot = Chatbot::where('bot_id', $request->bot_id)->firstOrFail();
             $this->authorize('show', $chatbot);
-        else :
+        } else {
             $chatbot = $request->widget->defaultChatbot;
-        endif;
+        }
 
-        if($chatbot) :
+        if ($chatbot) {
             /*if(!$request->chatbox_id) :
             endif;*/
 
             // Create an instance
             $botman = BotManFactory::create($config, new LaravelCache());
-            $botman->hears('(.*?)', function(BotMan $bot) use($chatbot) {
+            $botman->hears('(.*?)', function (BotMan $bot) use ($chatbot) {
                 $bot->startConversation(new OnboardingConversation($chatbot));
             });
 
@@ -183,11 +179,8 @@ class MessageController extends Controller
 
             // Start listening
             $botman->listen();
-        endif;
-    }
-
-
-    
+        }
+    }    
 
     public function show($id, Request $request)
     {

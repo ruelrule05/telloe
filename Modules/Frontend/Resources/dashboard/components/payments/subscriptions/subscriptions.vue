@@ -127,7 +127,7 @@
 						<div v-for="(service, index) in newSubscriptionForm.services" :key="service.id" class="my-2 bg-light rounded p-2 position-relative">
 							<button type="button" class="btn close p-0 line-height-0 mr-n1" @click="newSubscriptionForm.services.splice(index, 1)"><close-icon></close-icon></button>
 							<strong class="d-block mb-1">{{ service.name }}</strong>
-							<label class="form-label">Rate per session (Default pricing: ${{ newSubscriptionForm.services[index].default_rate }})</label>
+							<label class="form-label">Rate per session (Default pricing: {{ newSubscriptionForm.services[index].currency }} {{ newSubscriptionForm.services[index].default_rate }})</label>
 							<input type="number" min="1" step="0.01" v-model="newSubscriptionForm.services[index].rate" class="form-control" placeholder="Rate per session" data-required />
 
 							<label class="form-label d-block mt-2">Booking frequency</label>

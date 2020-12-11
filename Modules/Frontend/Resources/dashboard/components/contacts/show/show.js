@@ -84,7 +84,10 @@ export default {
 			}
 		],
 		order: 'desc',
-		notesOrder: 'desc'
+		notesOrder: 'desc',
+		masks: {
+			input: 'MMMM D, YYYY'
+		}
 	}),
 
 	computed: {

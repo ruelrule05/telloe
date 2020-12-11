@@ -347,9 +347,9 @@
 				</div>
 				<div class="form-group">
 					<label class="form-label">Date</label>
-					<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="newBooking.date">
+					<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" :masks="masks" v-model="newBooking.date">
 						<template v-slot="{ inputValue, inputEvents }">
-							<input class="form-control bg-white cursor-pointer" readonly v-on="inputEvents" :value="formatDate(inputValue)" />
+							<input class="form-control bg-white cursor-pointer" readonly v-on="inputEvents" :value="inputValue" />
 						</template>
 					</v-date-picker>
 				</div>
