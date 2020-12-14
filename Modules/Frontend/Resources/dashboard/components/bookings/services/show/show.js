@@ -89,7 +89,10 @@ export default {
 				text: 'NZD',
 				value: 'NZD'
 			}
-		]
+		],
+		masks: {
+			input: 'MMMM D, YYYY'
+		}
 	}),
 
 	computed: {

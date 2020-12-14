@@ -13,6 +13,7 @@ import VueSelect from '../../../components/vue-select/vue-select.vue';
 import ShortcutIcon from '../../../icons/shortcut';
 import PlusIcon from '../../../icons/plus';
 import Add from './add/add.vue';
+import Paginate from '../../../components/paginate/paginate.vue';
 export default {
 	components: {
 		VCalendar,
@@ -23,7 +24,8 @@ export default {
 		VueSelect,
 		ShortcutIcon,
 		PlusIcon,
-		Add
+		Add,
+		Paginate
 	},
 
 	data: () => ({
@@ -48,7 +50,7 @@ export default {
 	computed: {
 		...mapState({
 			ready: state => state.bookings.ready,
-			bookings: state => state.bookings.index
+			bookings: state => state.bookings.paginated
 		}),
 
 		formattedHolidays() {
@@ -122,14 +124,23 @@ export default {
 
 	created() {
 		this.$root.contentloading = !this.ready;
-		this.getBookings();
+		this.getBookings({ paginate: true });
 	},
 
 	methods: {
 		...mapActions({
 			getBookings: 'bookings/index',
-			updateBooking: 'bookings/update'
+			updateBooking: 'bookings/update',
+			deleteBooking: 'bookings/delete'
 		}),
+
+		async confirmDeleteBooking(booking) {
+			await this.deleteBooking(booking);
+		},
+
+		async getData(page) {
+			this.getBookings({ page: page, paginate: true });
+		},
 
 		async updateSelectedBooking(selectedBooking) {
 			this.bookingModalLoading = true;

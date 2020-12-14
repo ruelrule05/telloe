@@ -12,7 +12,7 @@
 			</div>
 			<div class="col-md-6 pr-md-0">
 				<h1 class="font-heading font-weight-bold mb-0 display-4">It's time to Telloe...</h1>
-				<h2 class="font-heading mb-4">Scheduling a meeting has never been easy!</h2>
+				<h2 class="font-heading mb-4">Scheduling a meeting has never been so easy!</h2>
 				<p class="text-muted h5 font-weight-light mb-5">Control your available meeting times and empower your contacts to schedule meetings with you at a time that works for you both. <br /><br /> No more ping pong back and forth setting dates and times.</p>
 				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
 				<button class="btn btn-outline-primary btn-lg px-4 btn-sm-block">Watch video</button>

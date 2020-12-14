@@ -6,7 +6,7 @@
 					<span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
 				</div>
 				<div class="ml-2">
-					<h5 class="font-heading mb-0">{{ conversation.member.full_name || conversation.name }}</h5>
+					<h5 class="font-heading mb-0" @click="goToContact(conversation.member)" :class="{ 'hover-underline cursor-pointer': contact(conversation.member) }">{{ conversation.member.full_name || conversation.name }}</h5>
 					<small v-if="conversation.member.is_pending" class="d-block text-warning">Pending account</small>
 					<div class="d-flex align-items-center" v-else-if="conversation.member.id && conversation.member.last_online">
 						<span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span>

@@ -1,8 +1,10 @@
 const name = 'bookings';
+const queryString = require('query-string');
 
 const state = () => ({
 	ready: false,
 	index: [],
+	paginated: { data: [] },
 
 	googleClient: {},
 	googleCalendarsReady: false,
@@ -13,11 +15,11 @@ const state = () => ({
 
 const mutations = {
 	index(state, data) {
-		state.index = [];
-		data.sort((a, b) => {
-			return a.date > b.date ? 1 : b.date > a.date ? -1 : 0;
-		});
-		state.index.push.apply(state.index, data);
+		if (data.data) {
+			state.paginated = data;
+		} else {
+			state.index = data;
+		}
 		state.ready = true;
 	},
 
@@ -35,6 +37,10 @@ const mutations = {
 			state.index.findIndex(x => x.id == data.id),
 			1
 		);
+		state.paginated.data.splice(
+			state.paginated.data.findIndex(x => x.id == data.id),
+			1
+		);
 	},
 
 	googleCalendars(state, data) {
@@ -49,16 +55,9 @@ const mutations = {
 };
 
 const actions = {
-	async index({ commit }, conversation) {
-		let queryString = '';
-		if (conversation) {
-			if (conversation.id) {
-				queryString = `?conversation_id=${conversation.id}`;
-			} else if (conversation.members.length > 0 && conversation.member.contact) {
-				queryString = `?contact_id=${conversation.member.contact.id}`;
-			}
-		}
-		let response = await window.axios.get(`/${name}${queryString}`);
+	async index({ commit }, params) {
+		params = queryString.stringify(params);
+		let response = await window.axios.get(`/${name}?${params}`);
 		commit('index', response.data);
 		return response;
 	},

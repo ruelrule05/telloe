@@ -39,7 +39,7 @@ export default {
 
 		async getTopics() {
 			this.loading = true;
-			let response = await fetch(`https://blog.telloe.com/wp-json/wp/v2/docs?search=${this.search}`);
+			let response = await fetch(`https://docs.telloe.com/wp-json/wp/v2/docs?search=${this.search}`);
 			let data = await response.json();
 			this.topics = data;
 			this.loading = false;

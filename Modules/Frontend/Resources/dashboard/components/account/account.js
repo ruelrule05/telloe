@@ -12,7 +12,8 @@ const countryCodes = require('country-codes-list');
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 const ct = require('countries-and-timezones');
 import numbersOnly from 'numbers-only';
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+
+const phone = require('phone');
 
 export default {
 	components: {
@@ -47,7 +48,7 @@ export default {
 			input: 'MMMM D, YYYY'
 		},
 		numbersOnly: numbersOnly,
-		phoneUtil: phoneUtil
+		phone: phone
 	}),
 
 	watch: {
@@ -189,28 +190,24 @@ export default {
 	methods: {
 		async save() {
 			this.loading = true;
-			let phoneValid = false;
+			let user = Object.assign({}, this.user);
+			if (user.phone) {
+				let userTimezone = ct.getTimezone(user.timezone);
+				let validatePhone = phone(user.phone, userTimezone.country);
 
-			if (this.user.phone) {
-				let userTimezone = ct.getTimezone(this.user.timezone);
-				phoneValid = phoneUtil.isValidNumberForRegion(phoneUtil.parse(this.user.phone, userTimezone.country), userTimezone.country);
-				if (phoneValid) {
-					let phone = phoneUtil.parse(this.user.phone, userTimezone.country).getNationalNumber();
-					this.user.phone = phone;
+				if (validatePhone.length == 0) {
+					this.loading = false;
+					this.$refs['phone'].focus();
+					return this.$toasted.error('Phone number is invalid for the selected country.', { className: 'bg-danger rounded shadow-none' });
 				}
-			} else {
-				phoneValid = true;
+				user.phone = validatePhone[0].replace(user.dial_code, '');
 			}
-			if (!phoneValid) {
-				this.loading = false;
-				this.$refs['phone'].focus();
-				return this.$toasted.error('Phone number is invalid for the selected country.', { className: 'bg-danger rounded shadow-none' });
+			if (user.profile_image_file) {
+				user.profile_image_file = await this.fileToBase64(this.user.profile_image_file);
 			}
-			if (this.user.profile_image_file) {
-				this.user.profile_image_file = await this.fileToBase64(this.user.profile_image_file);
-			}
-			let response = await window.axios.post('/auth', this.user, { toasted: true });
+			let response = await window.axios.post('/auth', user, { toasted: true });
 			this.$root.auth = response.data;
+			this.user = Object.assign({}, this.$root.auth);
 			this.loading = false;
 			this.$toasted.show('Account has been updated successfully.');
 		},

@@ -3,7 +3,7 @@
 #add {
 	top: 0;
 	left: 0;
-	z-index: 100;
+	z-index: 1040;
 	opacity: 1;
 	transition: $transition-base;
 }
@@ -23,5 +23,22 @@
 		right: -2px;
 		top: 50%;
 		transform: translateY(-50%);
+	}
+}
+.badge-day {
+	width: 25px;
+	height: 25px;
+	span {
+		position: absolute;
+		top: 49%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+}
+
+#bookingModal {
+	.disabled {
+		opacity: 0 !important;
+		pointer-events: none !important;
 	}
 }

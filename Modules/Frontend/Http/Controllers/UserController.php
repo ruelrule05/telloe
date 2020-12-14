@@ -276,16 +276,26 @@ class UserController extends Controller
     public function loginAndBook($username, $service_id, Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'nullable|email',
+            'password' => 'nullable',
             'timeslots' => 'required|array',
         ]);
-        $user = User::where('email', $request->email)->first();
-        if (! $user) {
-            return abort(403, 'Email does not exists in our records');
+
+        $user = null;
+        if ($request->auth) {
+            $user = Auth::user();
+        } else {
+            $user = User::where('email', $request->email)->first();
+            if (! $user) {
+                return abort(403, 'Email does not exists in our records');
+            }
+            if (! Hash::check($request->password, $user->password)) {
+                return abort(403, 'Invalid password');
+            }
         }
-        if (! Hash::check($request->password, $user->password)) {
-            return abort(403, 'Invalid password');
+
+        if (! $user) {
+            return abort(404, 'No user found.');
         }
 
         return $this->book($username, $service_id, $request, $user);

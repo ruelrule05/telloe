@@ -1,12 +1,12 @@
 <template>
 	<div class="h-100">
-		<div class="p-4" v-if="$root.auth.role.role == 'customer'">
-			<div v-if="ready">
+		<div class="h-100" v-if="$root.auth.role.role == 'customer'">
+			<div class="overflow-hidden h-100" v-if="ready">
 				<h6 v-if="bookings.length == 0" class="text-center text-gray position-absolute-center font-weight-lighter">
 					You don't have any bookings yet.
 				</h6>
-				<div v-else>
-					<div class="d-flex mb-3">
+				<div v-else class="d-flex flex-column h-100">
+					<div class="d-flex mb-3 px-4 pt-4">
 						<h1 class="font-heading h3 mb-0">Bookings</h1>
 						<div class="ml-auto d-flex align-items-center">
 							<button class="btn btn-primary d-flex align-items-center" type="button" @click="$refs['add'].show()">
@@ -15,40 +15,43 @@
 							</button>
 						</div>
 					</div>
-					<table class="table table-borderless mb-0">
-						<thead>
-							<tr>
-								<th class="border-0">Service</th>
-								<th class="border-0">Date</th>
-								<th class="border-0">Start</th>
-								<th class="border-0">End</th>
-								<th class="border-0"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="booking in bookings" :key="booking.vue">
-								<td class="align-middle">
-									<strong class="d-block">{{ booking.service.name }}</strong>
-									<small class="d-block text-muted">{{ booking.service.coach.full_name }}</small>
-								</td>
-								<td class="align-middle">{{ formatDate(booking.date) }}</td>
-								<td class="align-middle">{{ formatTime(booking.start) }}</td>
-								<td class="align-middle">{{ formatTime(booking.end) }}</td>
-								<td class="text-right align-middle" style="width:50px">
-									<div class="dropdown">
-										<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
-											<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-										</button>
-										<div class="dropdown-menu dropdown-menu-right">
-											<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="editBooking(booking)">
-												Edit
-											</span>
+					<div class="overflow-auto flex-grow-1 px-4 pb-4">
+						<paginate @change="getData" :data="bookings"></paginate>
+						<table class="table table-borderless mb-0">
+							<thead>
+								<tr>
+									<th class="border-0">Service</th>
+									<th class="border-0">Date</th>
+									<th class="border-0">Start</th>
+									<th class="border-0">End</th>
+									<th class="border-0"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="booking in bookings.data" :key="booking.vue">
+									<td class="align-middle">
+										<strong class="d-block">{{ booking.service.name }}</strong>
+										<small class="d-block text-muted">{{ booking.service.coach.full_name }}</small>
+									</td>
+									<td class="align-middle">{{ formatDate(booking.date) }}</td>
+									<td class="align-middle">{{ formatTime(booking.start) }}</td>
+									<td class="align-middle">{{ formatTime(booking.end) }}</td>
+									<td class="text-right align-middle" style="width:50px">
+										<div class="dropdown">
+											<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
+												<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+											</button>
+											<div class="dropdown-menu dropdown-menu-right">
+												<span class="dropdown-item d-flex align-items-center cursor-pointer" @click="editBooking(booking)">
+													Edit
+												</span>
+											</div>
 										</div>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 
 				<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
@@ -152,9 +155,9 @@
 					</template>
 				</modal>
 			</div>
-			<add ref="add"></add>
 		</div>
 		<router-view v-else></router-view>
+		<add ref="add" @hide="getData(1)"></add>
 	</div>
 </template>
 

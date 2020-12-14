@@ -19,15 +19,23 @@ window.Vue.use(Toasted, {
 	duration: 3000,
 	className: 'bg-primary rounded shadow-none'
 });
+import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
+import MoreIcon from '../../../../icons/more-h';
+import VueFormValidate from '../../../../components/vue-form-validate';
+import VueSelect from '../../../../components/vue-select/vue-select.vue';
+import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
+import Modal from '../../../../components/modal/modal.vue';
+import jstz from 'jstz';
+const timezone = jstz.determine();
 
 export default {
-	components: { ClockIcon, CloseIcon, ChevronLeftIcon, ChevronRightIcon, ArrowLeftIcon, MapMarkerIcon, CheckmarkIcon },
+	components: { ClockIcon, CloseIcon, ChevronLeftIcon, ChevronRightIcon, ArrowLeftIcon, MapMarkerIcon, CheckmarkIcon, ToggleSwitch, MoreIcon, VueFormValidate, VueSelect, CheckmarkCircleIcon, Modal },
 	directives: { tooltip },
 	data: () => ({
 		services: [],
 		selectedService: null,
-		open: true,
-		opacity: 1,
+		open: false,
+		opacity: 0,
 		startDate: null,
 		selectedTimeslots: [],
 		selectedTimeslot: false,
@@ -37,7 +45,21 @@ export default {
 			input: 'MMM D, YYYY'
 		},
 		timeslotsLoading: false,
-		timeslots: []
+		timeslots: [],
+		dayjs: dayjs,
+		recurringFrequencies: [
+			{
+				text: 'Week',
+				value: 'week'
+			},
+			{
+				text: 'Month',
+				value: 'month'
+			}
+		],
+		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+		bookingSuccess: false,
+		bookings: []
 	}),
 
 	computed: {
@@ -74,11 +96,110 @@ export default {
 	},
 
 	created() {
+		this.timezone = timezone.name();
 		this.startDate = dayjs().toDate();
 		this.getServices();
 	},
 
 	methods: {
+		formatTime(time) {
+			let parts = time.split(':');
+			let formatTime = dayjs()
+				.hour(parts[0])
+				.minute(parts[1])
+				.format('hh:mmA');
+			return formatTime;
+		},
+
+		submit() {
+			let service = this.assignedService || this.selectedService;
+			if (service && this.selectedTimeslots.length > 0) {
+				this.$refs['bookingModal'].show().then(() => {
+					this.isBooking = true;
+					let data = {
+						timeslots: this.selectedTimeslots
+					};
+					window.axios
+						.post(`/@${service.user.username}/${service.id}/login_and_book?auth=true`, data, { toasted: true })
+						.then(response => {
+							this.bookingSuccess = true;
+							this.authForm = false;
+							this.selectedTimeslots = [];
+							this.bookings = response.data;
+						})
+						.catch(() => {
+							setTimeout(() => {
+								this.$refs['bookingModal'].hide().then(() => {
+									this.isBooking = false;
+								});
+							}, 150);
+						});
+				});
+			}
+		},
+
+		daysInMonth(timeslot) {
+			return [
+				{
+					text: `First ${timeslot.date.dayName} of the month`,
+					value: 'first_week'
+				},
+				{
+					text: `Second ${timeslot.date.dayName} of the month`,
+					value: 'second_week'
+				},
+				{
+					text: `Third ${timeslot.date.dayName} of the month`,
+					value: 'third_week'
+				},
+				{
+					text: `Last ${timeslot.date.dayName} of the month`,
+					value: 'last_week'
+				}
+			];
+		},
+
+		setTimeslotDefaultDay(frequency, timeslot) {
+			if (frequency == 'week') {
+				let dayIndex = this.days.indexOf(timeslot.date.dayName);
+				let index = timeslot.days.indexOf(dayIndex);
+				if (index == -1 || timeslot.days.length == 1) {
+					timeslot.days.push(dayIndex);
+				}
+			} else if (frequency == 'month') {
+				timeslot.day_in_month = 'first_week';
+			}
+		},
+
+		timeslotToggleDay(timeslot, dayIndex) {
+			let index = timeslot.days.indexOf(dayIndex);
+			if (index == -1) {
+				timeslot.days.push(dayIndex);
+			} else {
+				timeslot.days.splice(index, 1);
+			}
+
+			if (timeslot.days.length == 0) {
+				let dayIndex = this.days.indexOf(timeslot.date.dayName);
+				timeslot.days.push(dayIndex);
+			}
+		},
+
+		endTime(time) {
+			let endTime = '';
+			if (this.selectedService && this.startDate) {
+				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
+				endTime = dayjs(startDate)
+					.add(this.selectedService.duration, 'minute')
+					.format('hh:mmA');
+			}
+			return endTime;
+		},
+
+		formatDate(date) {
+			return dayjs(date).format('MMMM D, YYYY');
+		},
+
 		summary() {
 			if (this.selectedTimeslots.length > 0) {
 				this.selectedTimeslot = true;
@@ -191,6 +312,7 @@ export default {
 
 		hide() {
 			this.opacity = 0;
+			this.$emit('hide');
 			setTimeout(() => {
 				this.open = false;
 				this.reset();

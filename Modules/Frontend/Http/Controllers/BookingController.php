@@ -56,7 +56,7 @@ class BookingController extends Controller
                 });
             })->whereHas('service', function ($service) use ($conversation) {
                 $service->where('user_id', $conversation->user_id);
-            })->orderBy('date', 'DESC')->get();
+            })->orderBy('date', 'DESC');
         } elseif ($request->contact_id) {
             $bookings = Booking::where(function ($query) {
                 $query->has('user')->orHas('contact');
@@ -64,23 +64,29 @@ class BookingController extends Controller
                 $query->where('id', $request->contact_id)->where('user_id', $user->id);
             })->whereHas('service', function ($service) use ($user) {
                 $service->where('user_id', $user->id);
-            })->orderBy('date', 'DESC')->get();
+            });
         } else {
             if ($role == 'client') {
                 $bookings = Booking::where(function ($query) {
                     $query->has('user')->orHas('contact');
                 })->with('user', 'contact', 'service')->whereHas('service', function ($service) {
                     $service->where('user_id', Auth::user()->id);
-                })->orderBy('date', 'DESC');
+                });
                 if ($request->user_id) {
                     $bookings = $bookings->where('user_id', $request->user_id);
                 }
-                $bookings = $bookings->get();
+                $bookings = $bookings;
             } elseif ($role == 'customer') {
                 $bookings = Booking::with('bookingNote', 'service.user')->where('user_id', $user->id)->orWhereHas('contact', function ($contact) use ($user) {
                     $contact->where('contact_user_id', $user->id);
-                })->orderBy('date', 'DESC')->get();
+                });
             }
+        }
+        $bookings = $bookings->orderBy('date', 'DESC');
+        if ($request->paginate) {
+            $bookings = $bookings->paginate(20);
+        } else {
+            $bookings = $bookings->get();
         }
 
         return response()->json($bookings);

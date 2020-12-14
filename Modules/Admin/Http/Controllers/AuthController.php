@@ -1,15 +1,14 @@
 <?php
+
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Auth;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-   
-
     // Attempt login
     public function store(Request $request)
     {
@@ -18,23 +17,19 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->whereHas('role', function($role) {
+        $user = User::where('email', $request->email)->whereHas('role', function ($role) {
             $role->where('role', 'administrator');
         })->first();
-        if (!$user) return redirect()->back()->withInput()->withErrors(['auth_error' => 'Email does not exists in our records.']);
+        if (! $user) {
+            return redirect()->back()->withInput()->withErrors(['auth_error' => 'Email does not exists in our records.']);
+        }
 
-        if( Auth::attempt(['email' => $request->email, 'password' => $request->password]) ) :
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             return redirect()->back();
-        else :
+        } else {
             return redirect()->back()->withInput()->withErrors(['auth_error' => 'Wrong password.']);
-        endif;
+        }
     }
-
-
-
-
-
-
 
     // Logout user
     public function logout()
@@ -46,5 +41,4 @@ class AuthController extends Controller
         Auth::logout();
         return redirect(url(''));
     }
-
 }

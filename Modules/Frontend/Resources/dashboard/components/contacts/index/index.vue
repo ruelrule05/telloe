@@ -35,7 +35,7 @@
 							<div v-if="contacts.data.length == 0" class="text-gray position-absolute-center">
 								No contacts found with your search query.
 							</div>
-							<table v-else class="table table-borderless mb-0 mt-2" :class="{ 'table-hover': $root.auth.role.role == 'client' }">
+							<table v-else class="table table-borderless mb-0 mt-2">
 								<thead>
 									<tr>
 										<th>Name</th>
@@ -45,8 +45,8 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="(contact, index) in contacts.data" :key="contact.id" :class="{ 'cursor-pointer': $root.auth.role.role == 'client' }">
-										<td class="align-middle" @click="goToContact(contact)">
+									<tr v-for="(contact, index) in contacts.data" :key="contact.id">
+										<td class="align-middle">
 											<div class="d-flex align-items-center">
 												<div class="user-profile-image user-profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
 													<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
@@ -57,7 +57,7 @@
 												</div>
 											</div>
 										</td>
-										<td class="align-middle" @click="goToContact(contact)">
+										<td class="align-middle">
 											<div class="flex-grow-1">
 												<div class="badge badge-icon d-inline-flex align-items-center" :class="[contact.is_pending ? 'bg-warning-light text-warning' : 'bg-primary-light text-primary']">
 													<clock-icon v-if="contact.is_pending" height="12" width="12"></clock-icon>
@@ -66,7 +66,7 @@
 												</div>
 											</div>
 										</td>
-										<td class="align-middle" @click="goToContact(contact)">
+										<td class="align-middle">
 											<div class="flex-grow-1 text-muted">{{ contact.created_at_format }}</div>
 										</td>
 										<td class="align-middle">
@@ -76,6 +76,9 @@
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">
+														<span class="dropdown-item cursor-pointer" @click="goToContact(contact)">
+															Details
+														</span>
 														<span v-if="!contact.is_pending" class="dropdown-item cursor-pointer" @click="goToConversation(contact)">
 															Send Message
 														</span>

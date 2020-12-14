@@ -1,4 +1,4 @@
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
 //const mime = require('mime');
@@ -158,6 +158,10 @@ export default {
 			getConversation: 'conversations/show'
 		}),
 
+		...mapState({
+			contacts: state => state.contacts.index
+		}),
+
 		conversation() {
 			return this.getConversation(this.$route.params.id);
 		},
@@ -250,6 +254,17 @@ export default {
 			updateMessage: 'messages/update',
 			deleteMessage: 'messages/delete'
 		}),
+
+		contact(member) {
+			return this.contacts.find(x => x.contact_user_id == member.id);
+		},
+
+		goToContact(member) {
+			let contact = this.contacts.find(x => x.contact_user_id == member.id);
+			if (contact) {
+				this.$router.push(`/dashboard/contacts/${contact.id}`);
+			}
+		},
 
 		getText(e) {
 			let clearText = e.clipboardData.getData('text/plain');

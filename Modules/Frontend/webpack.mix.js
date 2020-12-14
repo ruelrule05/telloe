@@ -3,8 +3,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const argv = JSON.parse(process.env.npm_config_argv).original;
-const fs = require('fs');
-//const LiveReloadPlugin = require('webpack-livereload-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 mix.setPublicPath('../../public').mergeManifest();
 
@@ -117,7 +116,21 @@ if (argv.indexOf('--css') > -1) {
 		});
 	}
 	if (mix.config.production) {
-		mix.version();
+		mix.webpackConfig({
+			optimization: {
+				usedExports: true,
+				minimize: true,
+				minimizer: [
+					new TerserPlugin({
+						terserOptions: {
+							compress: {
+								passes: 3
+							}
+						}
+					})
+				]
+			}
+		}).version();
 	} else {
 		mix.options({
 			hmrOptions: {
