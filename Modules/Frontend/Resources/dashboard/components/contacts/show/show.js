@@ -25,6 +25,7 @@ import PencilIcon from '../../../../icons/pencil';
 import MoveIcon from '../../../../icons/move';
 import PlusIcon from '../../../../icons/plus';
 import draggable from 'vuedraggable';
+import Add from '../../../../dashboard/components/bookings/add/add.vue';
 
 export default {
 	components: {
@@ -45,7 +46,8 @@ export default {
 		PencilIcon,
 		MoveIcon,
 		PlusIcon,
-		draggable
+		draggable,
+		Add
 	},
 
 	data: () => ({
@@ -97,17 +99,9 @@ export default {
 		}),
 
 		availableServices() {
-			let servicesList = [];
-			this.services.forEach(service => {
-				let blacklisted = this.contact.blacklisted_services.find(x => x == service.id);
-				if (!blacklisted) {
-					servicesList.push({
-						text: service.name,
-						value: service
-					});
-				}
+			return this.services.filter(service => {
+				return this.contact.blacklisted_services.find(x => x == service.id) ? false : true && service.is_available;
 			});
-			return servicesList;
 		},
 
 		servicesList() {
@@ -223,7 +217,7 @@ export default {
 				let booking = await this.storeBooking(data).catch(() => {});
 				if (booking) {
 					this.getContact();
-					this.$refs['addBookingModal'].hide();
+					this.$refs['add'].hide();
 				}
 				this.bookingModalLoading = false;
 			}

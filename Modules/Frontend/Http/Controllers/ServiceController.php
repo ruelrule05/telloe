@@ -97,9 +97,16 @@ class ServiceController extends Controller
         return response()->json(['deleted' => true]);
     }
 
-    public function contactsServices()
+    public function contactServices()
     {
-        $contactUserIds = Contact::where('user_id', Auth::user()->id)->whereNotNull('contact_user_id')->pluck('contact_user_id')->toArray();
-        return response(Service::with('user')->whereIn('user_id', $contactUserIds)->where('is_available', true)->get());
+        $services = [];
+        foreach (Contact::where('contact_user_id', Auth::user()->id)->get() as $contact) {
+            foreach ($contact->user->services as $service) {
+                if ($service->is_available && ! in_array($service->id, $contact->blacklisted_services)) {
+                    $services[] = $service;
+                }
+            }
+        }
+        return response($services);
     }
 }

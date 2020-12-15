@@ -31,8 +31,23 @@ const timezone = jstz.determine();
 export default {
 	components: { ClockIcon, CloseIcon, ChevronLeftIcon, ChevronRightIcon, ArrowLeftIcon, MapMarkerIcon, CheckmarkIcon, ToggleSwitch, MoreIcon, VueFormValidate, VueSelect, CheckmarkCircleIcon, Modal },
 	directives: { tooltip },
+
+	props: {
+		auth: {
+			type: Boolean,
+			default: false
+		},
+		contactID: {
+			type: Number,
+			default: 0
+		},
+		services: {
+			type: Array,
+			default: []
+		}
+	},
+
 	data: () => ({
-		services: [],
 		selectedService: null,
 		open: false,
 		opacity: 0,
@@ -98,7 +113,6 @@ export default {
 	created() {
 		this.timezone = timezone.name();
 		this.startDate = dayjs().toDate();
-		this.getServices();
 	},
 
 	methods: {
@@ -119,21 +133,30 @@ export default {
 					let data = {
 						timeslots: this.selectedTimeslots
 					};
-					window.axios
-						.post(`/@${service.user.username}/${service.id}/login_and_book?auth=true`, data, { toasted: true })
-						.then(response => {
-							this.bookingSuccess = true;
-							this.authForm = false;
-							this.selectedTimeslots = [];
-							this.bookings = response.data;
-						})
-						.catch(() => {
-							setTimeout(() => {
-								this.$refs['bookingModal'].hide().then(() => {
-									this.isBooking = false;
-								});
-							}, 150);
-						});
+					let target = null;
+					if (this.auth) {
+						target = 'auth=true';
+					} else if (this.contactID) {
+						target = `contact_id=${this.contactID}`;
+					}
+					if (target) {
+						let url = `/@${service.user.username}/${service.id}/login_and_book?${target}`;
+						window.axios
+							.post(url, data, { toasted: true })
+							.then(response => {
+								this.bookingSuccess = true;
+								this.authForm = false;
+								this.selectedTimeslots = [];
+								this.bookings = response.data;
+							})
+							.catch(() => {
+								setTimeout(() => {
+									this.$refs['bookingModal'].hide().then(() => {
+										this.isBooking = false;
+									});
+								}, 150);
+							});
+					}
 				});
 			}
 		},
@@ -296,11 +319,6 @@ export default {
 			this.startDate = dayjs(this.startDate)
 				.add(7, 'day')
 				.toDate();
-		},
-
-		async getServices() {
-			let response = await window.axios.get('/services/contact_services');
-			this.services = response.data;
 		},
 
 		show() {

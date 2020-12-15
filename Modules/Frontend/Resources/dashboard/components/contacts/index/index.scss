@@ -60,3 +60,12 @@
 	top: 10px;
 	right: 10px;
 }
+.btn-details {
+	opacity: 0;
+	transition: $transition-base;
+}
+.contact-data:hover {
+	.btn-details {
+		opacity: 1;
+	}
+}

@@ -7,7 +7,7 @@
 				</button>
 
 				<div class="ml-auto d-flex align-items-center">
-					<button class="btn btn-white shadow-sm mr-2" type="button" @click="$refs['addBookingModal'].show()">
+					<button class="btn btn-white shadow-sm mr-2" type="button" @click="$refs['add'].show()">
 						Add Booking
 					</button>
 					<div class="dropdown">
@@ -334,48 +334,6 @@
 			</div>
 		</div>
 
-		<modal ref="addBookingModal" :close-button="false" :scrollable="false" @hidden="resetNewBooking()">
-			<vue-form-validate @submit="addNewBooking">
-				<h5 class="font-heading">Add Booking</h5>
-				<div class="form-group">
-					<label class="form-label">Booking Type</label>
-					<vue-select :options="availableServices" required button_class="form-control" v-model="newBooking.service" placeholder="Select booking type"></vue-select>
-				</div>
-				<div class="form-group">
-					<label class="form-label">Coach</label>
-					<vue-select :disabled="!newBooking.service" :options="newBookingServicesList" required button_class="form-control" v-model="newBooking.service_id" placeholder="Select coach"></vue-select>
-				</div>
-				<div class="form-group">
-					<label class="form-label">Date</label>
-					<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" :masks="masks" v-model="newBooking.date">
-						<template v-slot="{ inputValue, inputEvents }">
-							<input class="form-control bg-white cursor-pointer" readonly v-on="inputEvents" :value="inputValue" />
-						</template>
-					</v-date-picker>
-				</div>
-				<div class="form-group">
-					<label class="form-label">Timeslot</label>
-					<div class="border rounded bg-light p-1 overflow-auto position-relative" id="timeslots-container">
-						<div v-if="availableTimeslots.length == 0" class="position-absolute-center text-gray">No available timeslots.</div>
-
-						<div v-else class="d-flex flex-wrap">
-							<template v-for="(timeslot, index) in availableTimeslots">
-								<div class="w-25 p-1" v-if="timeslot.is_available" :key="index">
-									<button type="button" class="btn btn-block" :class="[newBooking.timeslot == timeslot.time ? 'btn-primary' : 'btn-white shadow-sm']" :key="index" @click="newBooking.timeslot = timeslot.time">
-										{{ timeslot.label }}
-									</button>
-								</div>
-							</template>
-						</div>
-					</div>
-				</div>
-				<div class="d-flex justify-content-between mt-3">
-					<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
-					<vue-button type="submit" :disabled="!newBooking.service_id || !newBooking.date || !newBooking.timeslot" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading">Add</vue-button>
-				</div>
-			</vue-form-validate>
-		</modal>
-
 		<modal ref="bookingModal" :close-button="(selectedBooking || {}).isPrevious" :scrollable="false">
 			<div v-if="selectedBooking" class="text-center">
 				<div class="profile-image profile-image-md d-inline-block mb-2" :style="{ 'background-image': `url(${contact.contact_user.profile_image})` }">
@@ -530,6 +488,8 @@
 				</div>
 			</vue-form-validate>
 		</modal>
+
+		<add ref="add" :services="availableServices" @hide="getContact()" :contactID="contact.id"></add>
 	</div>
 </template>
 

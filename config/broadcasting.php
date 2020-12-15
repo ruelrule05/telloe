@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Broadcaster
@@ -29,7 +28,6 @@ return [
     */
 
     'connections' => [
-
         'pusher' => [
             'driver' => 'pusher',
             'key' => env('PUSHER_APP_KEY'),
@@ -38,6 +36,9 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
+                'host' => 'telloe.test',
+                'port' => 6001,
+                'scheme' => 'https'
             ],
         ],
 
@@ -53,7 +54,5 @@ return [
         'null' => [
             'driver' => 'null',
         ],
-
     ],
-
 ];

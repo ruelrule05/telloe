@@ -25,17 +25,6 @@ use Spatie\CalendarLinks\Link;
 
 class BookingController extends Controller
 {
-    public function serviceTimeslots($service_id, Request $request)
-    {
-        $this->validate($request, [
-            'date' => 'required|date'
-        ]);
-        $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
-        $timeslots = $service->timeslots($request->date);
-
-        return response()->json($timeslots);
-    }
-
     public function index(Request $request)
     {
         $this->validate($request, [

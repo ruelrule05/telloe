@@ -44,7 +44,8 @@ export default {
 		dayjs: dayjs,
 		serviceMembers: [],
 		timeslots: [],
-		bookingModalLoading: false
+		bookingModalLoading: false,
+		services: []
 	}),
 
 	computed: {
@@ -125,6 +126,7 @@ export default {
 	created() {
 		this.$root.contentloading = !this.ready;
 		this.getBookings({ paginate: true });
+		this.getServices();
 	},
 
 	methods: {
@@ -133,6 +135,11 @@ export default {
 			updateBooking: 'bookings/update',
 			deleteBooking: 'bookings/delete'
 		}),
+
+		async getServices() {
+			let response = await window.axios.get('/services/contact_services');
+			this.services = response.data;
+		},
 
 		async confirmDeleteBooking(booking) {
 			await this.deleteBooking(booking);

@@ -45,7 +45,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="(contact, index) in contacts.data" :key="contact.id">
+									<tr v-for="(contact, index) in contacts.data" :key="contact.id" class="contact-data">
 										<td class="align-middle">
 											<div class="d-flex align-items-center">
 												<div class="user-profile-image user-profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
@@ -70,15 +70,15 @@
 											<div class="flex-grow-1 text-muted">{{ contact.created_at_format }}</div>
 										</td>
 										<td class="align-middle">
-											<div class="flex-grow-1 text-right">
+											<div class="flex-grow-1 text-right d-flex align-items-center justify-content-end">
+												<button class="btn btn-sm btn-light shadow-none mr-2 btn-details" @click="goToContact(contact)">
+													Details
+												</button>
 												<div class="dropleft">
 													<button :data-intro="index == 0 ? $root.intros.contacts_index.steps[3] : null" :data-step="index == 0 ? 4 : null" class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
 														<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
 													</button>
 													<div class="dropdown-menu dropdown-menu-right">
-														<span class="dropdown-item cursor-pointer" @click="goToContact(contact)">
-															Details
-														</span>
 														<span v-if="!contact.is_pending" class="dropdown-item cursor-pointer" @click="goToConversation(contact)">
 															Send Message
 														</span>

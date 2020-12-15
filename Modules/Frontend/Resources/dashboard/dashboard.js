@@ -224,6 +224,8 @@ import Modal from '../components/modal/modal.vue';
 
 import store from './store';
 import intros from './intros.js';
+import Echo from 'laravel-echo';
+
 window.app = new window.Vue({
 	router: router,
 	store: store,
@@ -751,4 +753,20 @@ window.app = new window.Vue({
 			});
 		}
 	}
+});
+
+window.Pusher = require('pusher-js');
+window.Echo = new Echo({
+	broadcaster: 'pusher',
+	key: 'mykey',
+	forceTLS: true,
+	wsPort: 6001
+});
+
+window.Echo.join('test').here(user => {
+	console.log(user);
+	alert('sds');
+});
+window.Echo.channel('test').listen('eww', () => {
+	console.log('sds');
 });

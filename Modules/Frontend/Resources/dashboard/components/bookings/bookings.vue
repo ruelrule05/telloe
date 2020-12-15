@@ -157,7 +157,7 @@
 			</div>
 		</div>
 		<router-view v-else></router-view>
-		<add ref="add" @hide="getData(1)"></add>
+		<add ref="add" :services="services" @hide="getData(1)" :auth="true"></add>
 	</div>
 </template>
 

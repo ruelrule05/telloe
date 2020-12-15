@@ -284,6 +284,10 @@ class UserController extends Controller
         $user = null;
         if ($request->auth) {
             $user = Auth::user();
+        } elseif ($request->contact_id) {
+            $contact = Contact::findOrFail($request->contact_id);
+            $this->authorize('show', $contact);
+            $user = $contact->contactUser;
         } else {
             $user = User::where('email', $request->email)->first();
             if (! $user) {

@@ -109,7 +109,7 @@ Route::group(
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
                 Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
                 Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
-                Route::get('services/contact_services', 'ServiceController@contactsServices');
+                Route::get('services/contact_services', 'ServiceController@contactServices');
                 Route::apiResource('services', 'ServiceController');
                 Route::apiResource('notes', 'NoteController');
                 Route::apiResource('bookings', 'BookingController');
