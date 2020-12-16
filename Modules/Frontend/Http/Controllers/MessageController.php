@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Image;
 use Mail;
+use Modules\Frontend\Events\NewMessageEvent;
 use Modules\Frontend\Mail\NewMessage;
 
 class MessageController extends Controller
@@ -86,6 +87,7 @@ class MessageController extends Controller
             'metadata' => $metadata,
             'timestamp' => $timestamp
         ]);
+        broadcast(new NewMessageEvent($message))->toOthers();
 
         if (! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;

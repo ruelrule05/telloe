@@ -225,6 +225,7 @@ import Modal from '../components/modal/modal.vue';
 import store from './store';
 import intros from './intros.js';
 import Echo from 'laravel-echo';
+window.Pusher = require('pusher-js');
 
 window.app = new window.Vue({
 	router: router,
@@ -334,7 +335,7 @@ window.app = new window.Vue({
 		newMessagesCount() {
 			let count;
 			this.conversations.forEach(conversation => {
-				if (conversation.last_message.user_id != this.auth.id && !conversation.last_message.is_read) {
+				if (conversation.last_message.user_id != this.auth.id && conversation.has_new_message) {
 					if (!count) count = 0;
 					count++;
 				}
@@ -389,7 +390,24 @@ window.app = new window.Vue({
 	created() {
 		window.axios.get('/auth').then(response => {
 			this.auth = response.data;
-			this.socket.emit('user_online', this.auth.id);
+			//this.socket.emit('user_online', this.auth.id);
+			this.$echo
+				.join('onlineUsers')
+				.here(userIds => {
+					this.online_users = userIds;
+				})
+				.joining(userId => {
+					let exists = this.online_users.find(x => x == userId);
+					if (!exists) {
+						this.online_users.push(userId);
+					}
+				})
+				.leaving(userId => {
+					let index = this.online_users.findIndex(x => x == userId);
+					if (index > -1) {
+						this.online_users.splice(index, 1);
+					}
+				});
 		});
 
 		this.notifyIncomingBookings();
@@ -408,18 +426,18 @@ window.app = new window.Vue({
 			if (member_invite_token) this.socket.emit('member_invite_token', member_invite_token);
 		}
 
-		this.socket.on('new_message', data => {
-			let conversation = this.conversations.find(x => x.id == data.conversation_id);
-			if (conversation) {
-				// check if message does not exists by ID
-				this.getMessageByID(data).then(message => {
-					if (message && message.conversation_id == conversation.id) {
-						conversation.last_message = message;
-						if (!this.muted) this.message_sound.play();
-					}
-				});
-			}
-		});
+		// this.socket.on('new_message', data => {
+		// 	let conversation = this.conversations.find(x => x.id == data.conversation_id);
+		// 	if (conversation) {
+		// 		// check if message does not exists by ID
+		// 		this.getMessageByID(data).then(message => {
+		// 			if (message && message.conversation_id == conversation.id) {
+		// 				conversation.last_message = message;
+		// 				if (!this.muted) this.message_sound.play();
+		// 			}
+		// 		});
+		// 	}
+		// });
 
 		this.socket.on('new_notification', data => {
 			if (data.user_id == this.auth.id) this.getNotificationByID(data.id);
@@ -660,11 +678,6 @@ window.app = new window.Vue({
 			return imageExtensions.indexOf(extension) > -1;
 		},
 
-		async getMessageByID(data) {
-			let message = await window.axios.get(`/messages/${data.id}`).catch(() => {});
-			if (message) return message.data;
-		},
-
 		focusCallWindow() {
 			if (this.callWindow) {
 				this.callWindow.focus();
@@ -755,18 +768,34 @@ window.app = new window.Vue({
 	}
 });
 
-window.Pusher = require('pusher-js');
-window.Echo = new Echo({
+window.Vue.prototype.$echo = new Echo({
 	broadcaster: 'pusher',
-	key: 'mykey',
-	forceTLS: true,
-	wsPort: 6001
+	key: 'anyKey',
+	wsHost: window.location.hostname,
+	wsPort: 6001,
+	wssPort: 6001,
+	disableStats: true,
+	encrypted: true,
+	namespace: 'Modules.Frontend.Events',
+	auth: {
+		headers: {
+			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		}
+	}
 });
-
-window.Echo.join('test').here(user => {
-	console.log(user);
-	alert('sds');
+window.app.$echo.private('AppChannel').listen('NewMessageEvent', e => {
+	let conversation = window.app.conversations.find(x => x.id == e.message.conversation_id);
+	if (conversation) {
+		conversation.has_new_message = true;
+		if (!window.app.muted) window.app.message_sound.play();
+	}
 });
-window.Echo.channel('test').listen('eww', () => {
-	console.log('sds');
-});
+// window.Echo.private('chat').listenForWhisper('typing', e => {
+// 	alert(e);
+// });
+// setTimeout(() => {
+// 	window.Echo.private('chat').whisper('typing', {
+// 		user: 'eww',
+// 		typing: true
+// 	});
+// }, 3000);

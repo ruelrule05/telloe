@@ -142,8 +142,7 @@ export default {
 		this.$root.contentloading = !this.ready;
 		this.getConversations().then(() => {
 			if (!this.$route.params.id && this.conversations.length > 0 && this.$route.name == 'conversations') {
-				let firstConversation = this.orderedConversations.find(c => !c.deleted_at);
-				if (firstConversation) this.setConversation(firstConversation);
+				this.setConversation(this.orderedConversations[0]);
 			}
 		});
 		this.getContacts({ nopaginate: true });

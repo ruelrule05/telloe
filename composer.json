@@ -26,6 +26,7 @@
         "nexmo/client": "^2.0",
         "nwidart/laravel-modules": "^7.1",
         "pbmedia/laravel-ffmpeg": "^7.0",
+        "pusher/pusher-php-server": "~3.0",
         "rinvex/countries": "^7.0",
         "spatie/calendar-links": "^1.4",
         "spatie/laravel-image-optimizer": "^1.5",

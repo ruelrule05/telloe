@@ -190,14 +190,16 @@
 							</div>
 
 							<template>
-								<div class="d-flex align-items-center text-secondary" v-if="conversation.user.is_typing">
-									<div class="typing-indicator mr-1">
-										<span></span>
-										<span></span>
-										<span></span>
+								<template v-for="typingUser in typingUsers">
+									<div class="d-flex align-items-center text-secondary mb-2" v-if="typingUser.typing" :key="typingUser.userId">
+										<div class="typing-indicator mr-1">
+											<span></span>
+											<span></span>
+											<span></span>
+										</div>
+										<small>{{ typingUser.name }} is typing</small>
 									</div>
-									<small>{{ conversation.user.first_name }} is typing</small>
-								</div>
+								</template>
 								<div v-for="member in conversation.members" :key="member.id">
 									<div class="d-flex align-items-center text-secondary" v-if="member.is_typing">
 										<div class="typing-indicator mr-1">
@@ -232,7 +234,7 @@
 						</div>
 						<div class="d-flex align-items-center message-form-inputs">
 							<vue-form-validate @submit="sendText" class="flex-1" ref="messageForm" @mounted="messageFormMounted">
-								<div class="form-control border-0 shadow-none message-input bg-gray-200 text-wrap h-auto overflow-auto" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keydown="messageInput" @paste.prevent="inputPaste"></div>
+								<div class="form-control border-0 shadow-none message-input bg-gray-200 text-wrap h-auto overflow-auto" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
 							</vue-form-validate>
 
 							<div class="px-1 text-nowrap overflow-hidden" :class="{ expand: moreActions }">

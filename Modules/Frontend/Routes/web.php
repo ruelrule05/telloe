@@ -6,20 +6,21 @@
  */
 
 Route::get('test', function () {
-    $currentDate = \Carbon\Carbon::now()->addDay(1);
-    $endDate = \Carbon\Carbon::parse('2020-12-31');
+    broadcast(new Modules\Frontend\Events\TestEvent())->toOthers();
+    // $currentDate = \Carbon\Carbon::now()->addDay(1);
+    // $endDate = \Carbon\Carbon::parse('2020-12-31');
 
-    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    $timeslotDays = [3, 5];
+    // $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    // $timeslotDays = [3, 5];
 
-    while ($currentDate->lessThan($endDate)) {
-        $dayIndex = array_search($currentDate->clone()->format('l'), $days);
-        if (in_array($dayIndex, $timeslotDays)) {
-            echo $currentDate->clone()->format('Y-m-d') . '<br />';
-        }
+    // while ($currentDate->lessThan($endDate)) {
+    //     $dayIndex = array_search($currentDate->clone()->format('l'), $days);
+    //     if (in_array($dayIndex, $timeslotDays)) {
+    //         echo $currentDate->clone()->format('Y-m-d') . '<br />';
+    //     }
 
-        $currentDate->addDay(1);
-    }
+    //     $currentDate->addDay(1);
+    // }
 });
 
 Route::get('widget', function () {

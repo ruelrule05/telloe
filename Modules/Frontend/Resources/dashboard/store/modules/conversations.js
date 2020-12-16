@@ -30,6 +30,7 @@ const mutations = {
 				window.Vue.set(conversation, 'contact', data.contact);
 				window.Vue.set(conversation, 'ready', true);
 				window.Vue.set(conversation.last_message, 'is_read', true);
+				window.Vue.set(conversation, 'has_new_message', false);
 			} else {
 				window.Vue.set(data, 'ready', true);
 				window.Vue.set(data.last_message, 'is_read', true);

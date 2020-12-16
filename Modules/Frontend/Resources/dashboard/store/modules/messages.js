@@ -4,6 +4,7 @@ const getUrls = require('get-urls');
 const state = () => ({});
 
 const mutations = {
+	store() {},
 	update() {},
 	delete() {}
 };

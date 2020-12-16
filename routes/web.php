@@ -5,7 +5,7 @@ Route::group([
     'domain' => config('app.url'),
     'prefix' => 'ajax',
     'middleware' => 'ajax'
-], function() {
+], function () {
     Route::get('auth', 'AuthController@get');
     Route::post('auth', 'AuthController@update');
     Route::put('auth', 'AuthController@update');
@@ -22,8 +22,7 @@ Route::group([
 
 Route::post('logout', 'AuthController@logout')->middleware('auth');
 
-
-Route::get('laravel.log', function() {
+Route::get('laravel.log', function () {
     echo '<pre>';
     echo file_get_contents('../storage/logs/laravel.log');
 });

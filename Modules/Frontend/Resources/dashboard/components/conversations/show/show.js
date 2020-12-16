@@ -98,7 +98,9 @@ export default {
 		typingTimeout: null,
 		pendingFiles: [],
 		messagePaginateLoading: false,
-		isScreenRecordDownloading: false
+		isScreenRecordDownloading: false,
+		channel: null,
+		typingUsers: {}
 	}),
 
 	watch: {
@@ -141,6 +143,7 @@ export default {
 			if (value) {
 				this.showConversation({ id: value });
 				this.checkScreenRecorder();
+				this.initChannel();
 			}
 		},
 		'$root.screenRecorder.status': function(value) {
@@ -168,11 +171,6 @@ export default {
 
 		isOnline() {
 			let is_online = this.$root.online_users.find(x => x == this.conversation.member.id);
-			if (!is_online) {
-				/*axios.get(`/conversations/${this.conversation.id}`).then((response) => {
-                    this.$set(this.conversation.member, 'last_online_format', response.data.member.last_online_format);
-                });*/
-			}
 			return is_online || 0;
 		},
 
@@ -220,30 +218,11 @@ export default {
 				if (message) this.$set(message, 'is_read', true);
 			}
 		});
-		``;
-
-		this.$root.socket.on('is_typing', data => {
-			if (this.conversation && this.conversation.id == data.conversation_id) {
-				if (this.conversation.user.id == data.user_id) {
-					this.$set(this.conversation.user, 'is_typing', data.typing);
-				} else {
-					for (let member of this.conversation.members) {
-						if (member.user_id == data.user_id) {
-							this.$set(member, 'is_typing', data.typing);
-							break;
-						}
-					}
-				}
-				if (data.typing) this.scrollDown();
-			}
-		});
-		window.onbeforeunload = () => {
-			if (this.conversation) this.$root.socket.emit('is_typing', { typing: false, conversation_id: this.conversation.id, user_id: this.$root.auth.id });
-		};
 	},
 
 	mounted() {
 		this.checkScreenRecorder();
+		this.initChannel();
 	},
 
 	methods: {
@@ -254,6 +233,36 @@ export default {
 			updateMessage: 'messages/update',
 			deleteMessage: 'messages/delete'
 		}),
+
+		async getMessageByID(messageID) {
+			let message = await window.axios.get(`/messages/${messageID}`).catch(() => {});
+			if (message) return message.data;
+		},
+
+		initChannel() {
+			if (!this.$route.params.id) return;
+			this.typingUsers = {};
+			if (this.channel) {
+				this.$echo.leaveChannel(this.channel.name);
+			}
+			this.channel = this.$echo.join(`conversations.${this.$route.params.id}`);
+			this.channel.listen('NewMessageEvent', e => {
+				this.getMessageByID(e.message.id).then(message => {
+					if (message) {
+						let conversation = this.$root.conversations.find(x => x.id == message.conversation_id);
+						if (conversation) {
+							conversation.last_message = message;
+						}
+						if (!this.$root.muted) this.$root.message_sound.play();
+					}
+				});
+			});
+			this.channel.listenForWhisper('typing', e => {
+				if (this.$root.auth.id != e.userId) {
+					this.$set(this.typingUsers, e.userId, e);
+				}
+			});
+		},
 
 		contact(member) {
 			return this.contacts.find(x => x.contact_user_id == member.id);
@@ -361,25 +370,35 @@ export default {
 		},
 
 		typing() {
-			if (!this.isTyping) {
-				this.isTyping = true;
-				this.$root.socket.emit('is_typing', { typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id });
-			} else {
-				clearTimeout(this.typingTimeout);
-			}
+			if (this.channel) {
+				if (!this.isTyping) {
+					this.isTyping = true;
+					this.channel.whisper('typing', {
+						userId: this.$root.auth.id,
+						name: this.$root.auth.full_name,
+						typing: true
+					});
+				} else {
+					clearTimeout(this.typingTimeout);
+				}
 
-			this.typingTimeout = setTimeout(() => {
-				this.isTyping = false;
-				this.$root.socket.emit('is_typing', { typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id });
-			}, 5000);
+				this.typingTimeout = setTimeout(() => {
+					this.isTyping = false;
+					this.channel.whisper('typing', {
+						userId: this.$root.auth.id,
+						name: this.$root.auth.full_name,
+						typing: false
+					});
+				}, 5000);
+			}
 		},
 
 		messageInput(e) {
 			let isEnter = false;
+			this.textMessage = e.target.innerText;
 			if ((e.keyCode ? e.keyCode : e.which) == 13) {
 				e.preventDefault();
 				isEnter = true;
-				this.textMessage = e.target.innerText;
 				this.$refs['messageForm'].submit();
 				this.$refs['messageInput'].innerHTML = '';
 			}
@@ -573,14 +592,17 @@ export default {
 				}
 
 				this.isTyping = false;
-				this.$root.socket.emit('is_typing', { typing: this.isTyping, conversation_id: this.conversation.id, user_id: this.$root.auth.id });
+				this.channel.whisper('typing', {
+					userId: this.$root.auth.id,
+					name: this.$root.auth.full_name,
+					typing: false
+				});
 				message.is_online = this.isOnline;
 				let response = await this.storeMessage(message);
 
 				if (!['text', 'emoji'].find(x => x == response.type)) {
 					this.conversation.files.data.unshift(response);
 				}
-				this.$root.socket.emit('message_sent', { id: response.id, conversation_id: this.conversation.id });
 			}
 		},
 
