@@ -35,7 +35,7 @@ return [
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
-                'host' => 'telloe.test',
+                'host' => env('PUSHER_APP_HOST'),
                 'port' => 6001,
                 'scheme' => 'https',
                 'encrypted' => true,
