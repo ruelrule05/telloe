@@ -782,6 +782,7 @@ window.Vue.prototype.$echo = new Echo({
 	disableStats: true,
 	encrypted: true,
 	namespace: 'Modules.Frontend.Events',
+	enabledTransports: ['ws', 'wss'],
 	auth: {
 		headers: {
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
