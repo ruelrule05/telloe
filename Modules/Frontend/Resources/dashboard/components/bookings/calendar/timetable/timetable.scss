@@ -1,0 +1,93 @@
+@import '../../../../../sass/variables';
+.active-user {
+	transition: $transition-base;
+	border-top-left-radius: $border-radius;
+	border-bottom-left-radius: $border-radius;
+	top: 72px;
+	left: 0;
+	height: 69px;
+	background-color: white;
+	box-shadow: $box-shadow-sm;
+	z-index: 0;
+	&:after {
+		content: '';
+		height: 100%;
+		width: 5px;
+		background-color: white;
+		top: 0;
+		right: -5px;
+		position: absolute;
+	}
+}
+
+.user-profile-image-sm {
+	width: 30px;
+	height: 30px;
+	span {
+		font-size: 11px;
+	}
+}
+
+.profile-image {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-size: cover;
+	background-size: no-repeat;
+	background-position: center;
+	background-color: $gray-400;
+	position: relative;
+	span {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-500;
+		font-size: 24px;
+	}
+	&.profile-image-md {
+		width: 60px;
+		height: 60px;
+		span {
+			font-size: 24px;
+		}
+	}
+	&.profile-image-sm {
+		width: 45px;
+		height: 45px;
+		span {
+			font-size: 20px;
+		}
+	}
+	&.profile-image-xs {
+		width: 30px;
+		height: 30px;
+		span {
+			font-size: 12px;
+		}
+	}
+	&.profile-image-xxs {
+		width: 24px;
+		height: 24px;
+		span {
+			font-size: 10px;
+		}
+	}
+}
+
+.timeslots-wrapper table td > div:last-child .timeslot-button {
+	margin-bottom: 0 !important;
+}
+
+.table-layout-fixed {
+	table-layout: fixed !important;
+}
+
+.timeslots-wrapper .timeslot-button.disabled {
+	opacity: 0.85;
+	color: $dark;
+}
+
+.coaches-container {
+	z-index: 2;
+}

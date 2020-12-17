@@ -59,7 +59,9 @@ class BookingController extends Controller
                 $bookings = Booking::where(function ($query) {
                     $query->has('user')->orHas('contact');
                 })->with('user', 'contact', 'service')->whereHas('service', function ($service) {
-                    $service->where('user_id', Auth::user()->id);
+                    $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function($parentService) {
+                        $parentService->where('user_id', Auth::user()->id);
+                    });
                 });
                 if ($request->user_id) {
                     $bookings = $bookings->where('user_id', $request->user_id);
@@ -71,7 +73,11 @@ class BookingController extends Controller
                 });
             }
         }
-        $bookings = $bookings->orderBy('date', 'DESC');
+
+        if($request->from && $request->to) {
+            $bookings = $bookings->whereBetween('date', [$request->from, $request->to]);
+        }
+        $bookings = $bookings->with('bookingNote', 'service.assignedServices', 'service.parentService.assignedServices')->orderBy('date', 'DESC');
         if ($request->paginate) {
             $bookings = $bookings->paginate(20);
         } else {

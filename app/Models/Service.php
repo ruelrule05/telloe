@@ -31,7 +31,7 @@ class Service extends BaseModel
 
     public function getCoachAttribute()
     {
-        return $this->user ?? $this->member->memberUser;
+        return $this->user ?? $this->member;
     }
 
     public static function boot()

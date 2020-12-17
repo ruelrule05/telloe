@@ -1,22 +1,7 @@
 <template>
 	<div class="h-100 d-flex flex-column overflow-hidden" ref="calendar">
-		<div class="border-bottom bg-white p-3 d-flex align-items-center">
+		<div class="border-bottom bg-white px-3 py-4 d-flex align-items-center">
 			<h5 class="font-heading mb-0">Calendar</h5>
-			<div class="ml-auto d-flex align-items-center">
-				<button
-					:data-intro="$root.intros.calendar_settings.intro"
-					:data-step="$root.intros.calendar_settings.step"
-					class="btn btn-light shadow-none d-flex align-items-center"
-					type="button"
-					@click="
-						selectedDate = null;
-						infoTab = 'settings';
-					"
-				>
-					<cog-icon class="btn-icon"></cog-icon>
-					Settings
-				</button>
-			</div>
 		</div>
 
 		<div v-if="!selectedDate" class="h-100 d-flex overflow-auto">
@@ -35,21 +20,13 @@
 						<!-- <FullCalendar ref="fullCalendar" themeSystem="bootstrap" :header="header" :buttonText="buttonText" eventColor="#FBBC1B" :displayEventTime="false" @dateClick="dateClick" defaultView="dayGridMonth" :plugins="calendarPlugins" height="parent" :dayRender="dayRender"></FullCalendar> -->
 
 						<v-calendar class="v-calendar h-100 border-0" is-expanded :attributes="calendarAttributes" ref="v-calendar">
-							<div slot="day-content" slot-scope="{ day, dayEvents, attributes }">
-								{{ dayEvents }}
+							<div slot="day-content" slot-scope="data">
 								<div class="day-content text-center">
-									<div
-										class="day-label"
-										:class="{ active: selectedDate && selectedDate.toString() == day.date.toString(), 'is-today': day.isToday }"
-										@click="
-											dayclick(day.date);
-											infoTab = 'bookings';
-										"
-									>
-										<span>{{ day.label }}</span>
-										<div v-if="attributes" class="d-flex align-items-center vc-badge-container">
-											<div class="vc-badge vc-bookings">{{ countBookings(attributes) }}</div>
-											<div class="vc-badge vc-events">{{ countEvents(attributes) }}</div>
+									<div class="day-label" :class="{ active: selectedDate && selectedDate.toString() == data.day.date.toString(), 'is-today': data.day.isToday }" @click="dayclick(data.day.date)">
+										<span>{{ data.day.label }}</span>
+										<div v-if="data.attributes" class="d-flex align-items-center vc-badge-container">
+											<div class="vc-badge vc-bookings">{{ countBookings(data.attributes) }}</div>
+											<div class="vc-badge vc-events">{{ countEvents(data.attributes) }}</div>
 										</div>
 									</div>
 								</div>

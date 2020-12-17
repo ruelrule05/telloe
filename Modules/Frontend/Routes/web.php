@@ -64,17 +64,6 @@ Route::get('email', function () {
     return $email;
 });
 
-Route::get('events', function () {
-    /*echo '<pre>';
-    $service = App\Models\Service::find(23);
-    $timeslots = $service->timeslots('2020-06-30');
-
-    print_r($timeslots);*/
-    $date = \Carbon\Carbon::now();
-});
-
-//Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@outlookCalendarEvents');
-//Route::get('/msoutlook', '\Modules\Frontend\Http\Controllers\BookingController@updateOutlookCalendarEvents');
 
 Route::group(
     [
@@ -91,8 +80,6 @@ Route::group(
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
         Route::get('/{organization}', 'OrganizationController@profile');
-        //Route::get('/@{username}/{service_id}', 'UserController@showService');
-        //Route::get('/conversations/{conversation_id}/call', 'ConversationController@call')->middleware('auth');
         Route::get('/callback/zoom', 'ZoomController@callback')->middleware('auth');
         Route::get('/callback/googlecalendar', 'GoogleCalendarController@callback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'OutlookController@callback')->middleware('auth');

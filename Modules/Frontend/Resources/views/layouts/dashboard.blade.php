@@ -107,9 +107,9 @@
 											</div>
 										</button>
 										<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index', 'packages_index', 'services_show','packages_show'].find((x) => x == $route.name) }" id="item-bookings">
-											<!-- <router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
+											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 												<span class="pl-3">Calendar</span>
-											</router-link> -->
+											</router-link>
 											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item list-group-item-action border-0 rounded-0 pl-5 m-0">
 												<span class="pl-3">Types</span>
 											</router-link>

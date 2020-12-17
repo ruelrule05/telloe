@@ -58,7 +58,7 @@ export default {
 			left: 'title',
 			right: ''
 		},
-		dayjs: null,
+		dayjs: dayjs,
 		selectedBooking: null,
 		selectedService: null,
 		selectConstraint: {
@@ -266,7 +266,6 @@ export default {
 		this.getBookings();
 		this.getConversations();
 		this.$root.heading = 'Bookings';
-		this.dayjs = require('dayjs');
 
 		let days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 		let business_hours = [];
@@ -304,18 +303,16 @@ export default {
 		if (date) {
 			date = this.dayjs(date).toDate();
 			if (date != 'Invalid Date') {
-				this.$refs['v-calendar'].focusDate(date);
 				this.selectedDate = date;
-				this.infoTab = 'bookings';
 			}
 		}
-		if (this.$root.intros.calendar_settings.enabled) {
-			setTimeout(() => {
-				if (!document.querySelector('.introjs-overlay')) {
-					this.$root.introJS.start().goToStepNumber(this.$root.intros.calendar_settings.step);
-				}
-			}, 500);
-		}
+		// if (this.$root.intros.calendar_settings.enabled) {
+		// 	setTimeout(() => {
+		// 		if (!document.querySelector('.introjs-overlay')) {
+		// 			this.$root.introJS.start().goToStepNumber(this.$root.intros.calendar_settings.step);
+		// 		}
+		// 	}, 500);
+		// }
 	},
 
 	methods: {
@@ -373,10 +370,11 @@ export default {
 			if (date) {
 				date = this.dayjs(date).toDate();
 				if (date != 'Invalid Date') {
-					this.$refs['v-calendar'].focusDate(date);
 					this.selectedDate = date;
 					this.infoTab = 'bookings';
 				}
+			} else {
+				this.selectedDate = null;
 			}
 		},
 
@@ -555,7 +553,7 @@ export default {
 		},
 
 		getGoogleClient() {
-			axios.get('/google_client').then(response => {
+			axios.get('/google_calendar/client').then(response => {
 				this.googleAuthUrl = response.data.authUrl;
 			});
 		},
@@ -573,7 +571,7 @@ export default {
 		},
 
 		getOutlookClient() {
-			axios.get('/outlook_client').then(response => {
+			axios.get('/outlook/client').then(response => {
 				this.outlookAuthUrl = response.data.authUrl;
 			});
 		},
@@ -722,26 +720,6 @@ export default {
 			axios.put('/dashboard/widget', this.$root.auth.widget).then(response => {
 				this.$root.auth.widget = response.data;
 			});
-		},
-
-		goToDate(date) {
-			switch (date) {
-				case 'today':
-					this.fullCalendar.today();
-					let now = this.dayjs(this.fullCalendar.getDate()).format('YYYY-MM-D');
-					this.selectedDate = now;
-					$('.fc-day').removeClass('fc-active');
-					$(`.fc-day[data-date=${now}]`).addClass('fc-active');
-					break;
-
-				case 'next':
-					this.fullCalendar.next();
-					break;
-
-				case 'prev':
-					this.fullCalendar.prev();
-					break;
-			}
 		}
 	}
 };

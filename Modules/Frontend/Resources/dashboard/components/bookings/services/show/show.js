@@ -269,19 +269,6 @@ export default {
 				await this.getTimeslots();
 				this.$refs['bookingModal'].hide();
 			}
-			//this.updateSelectedBooking(selectedTimeslot.bookings[0]);
-			// if (timeslot) {
-			// 	// let newDayName = dayjs(selectedTimeslot.bookings[0].date).format('dddd');
-			// 	// timeslot.bookings[0].date = dayjs(selectedTimeslot.bookings[0].date).format('YYYY-MM-DD');
-			// 	// timeslot.bookings[0].start = dayjs(selectedTimeslot.bookings[0].start).format('HH:mm');
-			// 	// //console.log(timeslot);
-			// 	// //this.timeslots[newDayName].push(timeslot);
-			// 	// let targetTimeslot = this.timeslots[newDayName].find(x => x.time == timeslot.bookings[0].start);
-			// 	// if (targetTimeslot) {
-			// 	// 	this.$set(targetTimeslot, 'bookings', timeslot.bookings);
-			// 	// }
-			// 	// this.timeslots[selectedTimeslot.dayName].splice(selectedTimeslot.index, 1);
-			// }
 		},
 
 		viewTimeslotBookings(timeslot, dayName, index) {

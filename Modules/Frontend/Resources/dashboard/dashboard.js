@@ -335,7 +335,7 @@ window.app = new window.Vue({
 		newMessagesCount() {
 			let count;
 			this.conversations.forEach(conversation => {
-				if (conversation.last_message.user_id != this.auth.id && conversation.has_new_message) {
+				if (conversation.last_message.user_id != this.auth.id && !conversation.last_message.is_read) {
 					if (!count) count = 0;
 					count++;
 				}
@@ -487,6 +487,11 @@ window.app = new window.Vue({
 			clearNotifications: 'notifications/clear',
 			getBookings: 'bookings/index'
 		}),
+
+		async getMessageByID(messageID) {
+			let message = await window.axios.get(`/messages/${messageID}`).catch(() => {});
+			if (message) return message.data;
+		},
 
 		toggleIntros() {
 			// Object.values(this.intros).map(intro => {
@@ -786,8 +791,16 @@ window.Vue.prototype.$echo = new Echo({
 window.app.$echo.private('AppChannel').listen('NewMessageEvent', e => {
 	let conversation = window.app.conversations.find(x => x.id == e.message.conversation_id);
 	if (conversation) {
-		conversation.has_new_message = true;
-		if (!window.app.muted) window.app.message_sound.play();
+		//window.app.$set(conversation.last_message, 'is_read', false);
+		window.app.getMessageByID(e.message.id).then(message => {
+			if (message) {
+				let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
+				if (conversation) {
+					conversation.last_message = message;
+				}
+				if (!window.app.$root.muted) window.app.$root.message_sound.play();
+			}
+		});
 	}
 });
 // window.Echo.private('chat').listenForWhisper('typing', e => {
