@@ -132,6 +132,10 @@ export default {
 			deleteService: 'services/delete'
 		}),
 
+		goToBookingPage(service) {
+			window.open(`/@${service.user.username}/${service.id}`);
+		},
+
 		addHolidayDate(date) {
 			let existingIndex = this.selectedService.holidays.findIndex(x => x == date);
 			if (existingIndex == -1) {

@@ -191,7 +191,6 @@ export default {
 				booking.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(start));
 			});
 			this.bookings = bookings;
-			this.selectedBooking = this.bookings[0];
 		},
 		viewTimeslotBookings(booking, dayName, bookingIndex) {
 			let selectedBooking = JSON.parse(JSON.stringify(booking));

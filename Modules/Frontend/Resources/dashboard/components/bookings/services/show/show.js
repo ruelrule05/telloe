@@ -27,9 +27,10 @@ const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
 const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
+import EditBooking from '../../edit/edit.vue';
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton, ZoomIcon, ShortcutIcon, VueSelect },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, ChevronLeftIcon, ChevronRightIcon, VueButton, ZoomIcon, ShortcutIcon, VueSelect, EditBooking },
 
 	directives: { tooltip },
 
@@ -92,7 +93,8 @@ export default {
 		],
 		masks: {
 			input: 'MMMM D, YYYY'
-		}
+		},
+		selectedBooking: null,
 	}),
 
 	computed: {
@@ -258,28 +260,9 @@ export default {
 			this.selectedCoachId = this.$root.auth.id;
 		},
 
-		async updateSelectedBooking(selectedTimeslot) {
-			this.bookingModalLoading = true;
-			let booking = JSON.parse(JSON.stringify(selectedTimeslot.bookings[0]));
-			booking.date = dayjs(booking.date).format('YYYY-MM-DD');
-			booking.start = dayjs(booking.start).format('HH:mm');
-			let response = await this.updateBooking(booking).catch(() => {});
-			this.bookingModalLoading = false;
-			if (response) {
-				await this.getTimeslots();
-				this.$refs['bookingModal'].hide();
-			}
-		},
-
-		viewTimeslotBookings(timeslot, dayName, index) {
+		viewTimeslotBookings(timeslot) {
 			if (timeslot.bookings && timeslot.bookings.length > 0) {
-				let selectedTimeslot = JSON.parse(JSON.stringify(timeslot));
-				selectedTimeslot.bookings[0].start = dayjs(`${selectedTimeslot.bookings[0].date} ${selectedTimeslot.bookings[0].start}`).toDate();
-				selectedTimeslot.index = index;
-				selectedTimeslot.dayName = dayName;
-				selectedTimeslot.timeslots = this.timeslots[dayName];
-				selectedTimeslot.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(selectedTimeslot.bookings[0].start));
-				this.selectedTimeslot = selectedTimeslot;
+				this.selectedBooking = timeslot.bookings[0];
 				this.$refs['bookingModal'].show();
 			}
 		},

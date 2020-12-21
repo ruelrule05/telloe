@@ -23,9 +23,16 @@
 		right: -2px;
 		top: 50%;
 		transform: translateY(-50%);
+		opacity: 0;
 	}
 	&.disabled .text-nowrap {
 		opacity: 0.5;
+	}
+	&.selected {
+		background-color: $warning !important;
+		.selected-checkmark{
+			opacity: 1
+		}
 	}
 }
 .badge-day {

@@ -1,4 +1,5 @@
 /* global PROFILE */
+/* global SERVICE */
 /* global AUTH */
 /* global gapi */
 /* global FB */
@@ -93,6 +94,7 @@ export default {
 
 	data: () => ({
 		profile: PROFILE,
+		service: SERVICE,
 		auth: AUTH,
 		ready: false,
 		services: [],
@@ -309,7 +311,13 @@ export default {
 	},
 
 	created() {
-		this.getData();
+		if(this.service) {
+			this.selectedServiceForTimeline = this.service;
+			this.selectedService = this.selectedServiceForTimeline;
+			this.ready = true;
+		} else {
+			this.getData();
+		}
 		this.timezone = timezone.name();
 		this.startDate = dayjs().toDate();
 
@@ -768,7 +776,7 @@ export default {
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
 				this.selectedTimeslot = null;
-				let response = await window.axios.get(`${window.location.pathname}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
+				let response = await window.axios.get(`/@${this.profile.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
 				this.timeslots = response.data;
 				this.timeslotsLoading = false;
 			}

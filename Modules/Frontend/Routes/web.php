@@ -79,6 +79,7 @@ Route::group(
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/@{username}', 'UserController@profile');
+        Route::get('/@{username}/{service_id}', 'UserController@profile');
         Route::get('/{organization}', 'OrganizationController@profile');
         Route::get('/callback/zoom', 'ZoomController@callback')->middleware('auth');
         Route::get('/callback/googlecalendar', 'GoogleCalendarController@callback')->middleware('auth')->name('googlecalendarcallback');

@@ -192,6 +192,11 @@ export default {
 				timeslotClass.push.apply(timeslotClass, ['cursor-pointer']);
 			}
 
+			if(this.selectedTimeslot.service_id == this.selectedService.id && date.format == this.selectedTimeslot.date && this.selectedTimeslot.time == timeslot.time) {
+				timeslotClass.push.apply(timeslotClass, ['selected']);
+
+			}
+
 			return timeslotClass.join(' ');
 		},
 

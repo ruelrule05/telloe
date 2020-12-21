@@ -71,7 +71,7 @@
 										</td>
 										<td class="align-middle">
 											<div class="flex-grow-1 text-right d-flex align-items-center justify-content-end">
-												<button class="btn btn-sm btn-light shadow-none mr-2 btn-details" @click="goToContact(contact)">
+												<button class="btn btn-sm btn-light shadow-none mr-2" @click="goToContact(contact)">
 													Details
 												</button>
 												<div class="dropleft">

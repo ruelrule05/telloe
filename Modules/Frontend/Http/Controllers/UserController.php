@@ -57,7 +57,12 @@ class UserController extends Controller
             return response()->json($data);
         }
 
-        return view('frontend::profile', compact('profile'));
+        $service = null;
+        if($request->service_id) {
+            $service = Service::with('user', 'assignedServices.member.memberUser')->where('id', $request->service_id)->where('user_id', $profile->id)->firstOrFail();
+        }
+
+        return view('frontend::profile', compact('profile', 'service'));
     }
 
     public function showService($username, $service_id)

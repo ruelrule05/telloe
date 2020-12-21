@@ -46,6 +46,13 @@
 												>
 													Availability
 												</span>
+
+												<span
+													class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
+													@click="goToBookingPage(service)"
+												>
+													Booking Page
+												</span>
 												<span
 													class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
 													@click="

@@ -110,7 +110,7 @@
 					</div>
 
 					<div class="d-flex align-items-center pt-3">
-						<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null">
+						<button v-if="!service" class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null">
 							<arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon>
 						</button>
 						<div class="pl-5 ml-5">
@@ -209,9 +209,9 @@
 											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
 												<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
 													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-														<div v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none']" @click="setSelectedDateAndTimeslot(date, timeslot)">
+														<div v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none', {'selected': selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time)}]" @click="setSelectedDateAndTimeslot(date, timeslot)">
 															<span class="selected-checkmark position-absolute">
-																<checkmark-icon v-if="selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time)" height="30" width="30" class="fill-green"></checkmark-icon>
+																<checkmark-icon height="30" width="30" class="fill-green"></checkmark-icon>
 															</span>
 															<span class="text-nowrap">{{ timezoneTime(timeslot.time) }}</span>
 														</div>

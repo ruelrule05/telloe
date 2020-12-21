@@ -26,6 +26,7 @@ import MoveIcon from '../../../../icons/move';
 import PlusIcon from '../../../../icons/plus';
 import draggable from 'vuedraggable';
 import Add from '../../../../dashboard/components/bookings/add/add.vue';
+import EditBooking from '../../bookings/edit/edit.vue';
 
 export default {
 	components: {
@@ -47,7 +48,8 @@ export default {
 		MoveIcon,
 		PlusIcon,
 		draggable,
-		Add
+		Add,
+		EditBooking
 	},
 
 	data: () => ({
@@ -312,10 +314,7 @@ export default {
 
 		editBooking(booking) {
 			let selectedBooking = JSON.parse(JSON.stringify(booking));
-			selectedBooking.start = dayjs(`${selectedBooking.date} ${selectedBooking.start}`).toDate();
-			selectedBooking.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(selectedBooking.start));
 			this.selectedBooking = selectedBooking;
-			this.getSelectedBookingNewTimeslots(booking, selectedBooking.date);
 			this.$refs['bookingModal'].show();
 		},
 

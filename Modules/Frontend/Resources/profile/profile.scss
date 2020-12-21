@@ -249,6 +249,13 @@ $timeCount: 15;
 		right: -2px;
 		top: 50%;
 		transform: translateY(-50%);
+		opacity: 0;
+	}
+	&.selected {
+		background-color: $warning !important;
+		.selected-checkmark{
+			opacity: 1
+		}
 	}
 }
 @media only screen and (max-width: 991px) {
