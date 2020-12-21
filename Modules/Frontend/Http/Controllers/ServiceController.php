@@ -44,7 +44,7 @@ class ServiceController extends Controller
     public function show(Request $request, Service $service)
     {
         $this->authorize('show', $service);
-        $service->load('assignedServices', 'user');
+        $service->load('assignedServices.user', 'user');
         if ($request->single) {
             return response($service->timeslots($request->date));
         }

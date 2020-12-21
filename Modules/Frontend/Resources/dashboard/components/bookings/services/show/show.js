@@ -312,7 +312,7 @@ export default {
 		},
 
 		async getData() {
-			let service = await this.getService(`${this.$route.params.id}`);
+			let service = await this.getService({ service_id: `${this.$route.params.id}` });
 			this.$root.contentloading = false;
 			this.service = service;
 			this.selectedService = service;

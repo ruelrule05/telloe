@@ -1,4 +1,5 @@
 const name = 'services';
+const queryString = require('query-string');
 
 const state = () => ({
 	ready: false,
@@ -46,8 +47,9 @@ const actions = {
 		});
 	},
 
-	async show({ commit }, service_id) {
-		let response = await window.axios.get(`/${name}/${service_id}`);
+	async show({ commit }, { service_id, params }) {
+		params = queryString.stringify(params);
+		let response = await window.axios.get(`/${name}/${service_id}?${params}`);
 		commit('show', response.data);
 		return response.data;
 	},

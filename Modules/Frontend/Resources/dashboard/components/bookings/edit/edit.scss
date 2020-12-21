@@ -1,0 +1,132 @@
+@import '../../../../sass/variables';
+
+#edit {
+	top: 0;
+	left: 0;
+	z-index: 1040;
+	opacity: 1;
+	transition: $transition-base;
+}
+.user-profile-image {
+	height: 40px;
+	width: 40px;
+	span {
+		font-size: 16px;
+	}
+}
+
+.timeslot-button {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	.selected-checkmark {
+		right: -2px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	&.disabled .text-nowrap {
+		opacity: 0.5;
+	}
+}
+.badge-day {
+	width: 25px;
+	height: 25px;
+	span {
+		position: absolute;
+		top: 49%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+}
+
+#bookingModal {
+	.disabled {
+		opacity: 0 !important;
+		pointer-events: none !important;
+	}
+}
+.table-layout-fixed {
+	table-layout: fixed !important;
+}
+
+.hide-tooltip {
+	.tooltip {
+		display: none !important;
+		opacity: 0 !important;
+		visibility: hidden !important;
+	}
+}
+
+.user-container {
+	z-index: 2;
+}
+
+.active-user {
+	transition: $transition-base;
+	border-top-left-radius: $border-radius;
+	border-bottom-left-radius: $border-radius;
+	top: 72px;
+	left: 0;
+	height: 70px;
+	background-color: white;
+	box-shadow: $box-shadow-sm;
+	z-index: 1;
+	&:after {
+		content: '';
+		height: 100%;
+		width: 5px;
+		background-color: white;
+		top: 0;
+		right: -5px;
+		position: absolute;
+	}
+}
+
+.profile-image {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-size: cover;
+	background-size: no-repeat;
+	background-position: center;
+	background-color: $gray-400 !important;
+	position: relative;
+	span {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-500;
+		font-size: 24px;
+	}
+	&.profile-image-md {
+		width: 80px;
+		height: 80px;
+		span {
+			font-size: 24px;
+		}
+	}
+	&.profile-image-sm {
+		width: 60px;
+		height: 60px;
+		span {
+			font-size: 20px;
+		}
+	}
+	&.profile-image-xs {
+		width: 45px;
+		height: 45px;
+		span {
+			font-size: 16px;
+		}
+	}
+	&.profile-image-xxs {
+		margin-right: -7px;
+		border: solid 2px white;
+		width: 32px;
+		height: 32px;
+		span {
+			font-size: 10px;
+		}
+	}
+}

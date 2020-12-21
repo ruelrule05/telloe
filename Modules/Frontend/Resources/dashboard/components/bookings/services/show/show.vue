@@ -334,8 +334,7 @@
 
 					<div class="text-left mt-3 d-flex align-items-start">
 						<div class="font-weight-normal text-secondary w-25 mb-2">Notes</div>
-						<input v-if="!selectedTimeslot.isPrevious" type="text" class="form-control resize-none flex-1" v-model="selectedTimeslot.bookings[0].booking_note.note" placeholder="Write notes.." />
-						<div v-else class="flex-1">{{ selectedTimeslot.bookings[0].booking_note.note }}</div>
+						<textarea type="text" rows="3" class="form-control resize-none flex-1" v-model="selectedTimeslot.bookings[0].booking_note.note" placeholder="Write notes.."></textarea>
 					</div>
 
 					<div v-if="!selectedTimeslot.isPrevious" class="mt-3 text-left">
@@ -357,12 +356,12 @@
 					</div>
 				</div>
 
-				<div v-if="!selectedTimeslot.isPrevious" class="d-flex justify-content-between mt-4">
-					<div class="d-flex align-items-center">
+				<div class="d-flex justify-content-between mt-4">
+					<div v-if="!selectedTimeslot.isPrevious" class="d-flex align-items-center">
 						<button type="button" class="btn btn-light shadow-none" data-dismiss="modal" :disabled="bookingModalLoading">Cancel</button>
 						<button type="button" class="btn btn-link text-danger" data-dismiss="modal" @click="$refs['deleteBookingModal'].show()" :disabled="bookingModalLoading">Delete</button>
 					</div>
-					<vue-button type="button" button_class="btn btn-primary shadow-sm border" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedTimeslot)">Update</vue-button>
+					<vue-button type="button" button_class="btn btn-primary shadow-sm border ml-auto" :loading="bookingModalLoading" @click.native="updateSelectedBooking(selectedTimeslot)">Update</vue-button>
 				</div>
 			</div>
 		</modal>

@@ -1,3 +1,4 @@
+import { mapActions } from 'vuex';
 import ClockIcon from '../../../../icons/clock';
 import CloseIcon from '../../../../icons/close';
 import tooltip from '../../../../js/directives/tooltip.js';
@@ -33,27 +34,18 @@ export default {
 	directives: { tooltip },
 
 	props: {
-		auth: {
-			type: Boolean,
-			default: false
-		},
-		contactID: {
-			type: Number,
-			default: 0
-		},
-		services: {
-			type: Array,
-			default: []
+		booking: {
+			type: Object
 		}
 	},
 
 	data: () => ({
 		selectedService: null,
-		open: false,
-		opacity: 0,
+		open: true,
+		opacity: 1,
 		startDate: null,
 		selectedTimeslots: [],
-		selectedTimeslot: false,
+		selectedTimeslot: null,
 		authError: '',
 		error: null,
 		masks: {
@@ -73,8 +65,12 @@ export default {
 			}
 		],
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-		bookingSuccess: false,
-		bookings: []
+		bookings: [],
+		continueButton: false,
+		selectedCoachId: null,
+		activeUserBgPosition: 0,
+		assignedServices: [],
+		getAssignedServices: true
 	}),
 
 	computed: {
@@ -95,161 +91,117 @@ export default {
 			}
 
 			return tabDates;
+		},
+
+		isPrevious() {
+			let start = dayjs(`${this.booking.date} ${this.booking.start}`).toDate();
+			return dayjs(new Date()).isSameOrAfter(dayjs(start));
 		}
 	},
 
 	watch: {
-		'selectedService.id': function() {
+		booking: function(value) {
+			if (value) {
+				this.startDate = dayjs(value.date).toDate();
+				this.selectedService = value.service;
+				this.selectedTimeslot = { date: value.date, time: value.start, service_id: value.service_id };
+			}
+		},
+
+		selectedCoachId: function() {
+			this.$nextTick(() => {
+				let activeUser = document.querySelector('#edit .user-container.active');
+				if (activeUser) {
+					this.activeUserBgPosition = activeUser.offsetTop;
+				}
+			});
 			this.getServiceTimeslots();
 		},
 
-		startDate: function(value) {
-			if (value) this.error = null;
-			this.authError = '';
+		startDate: function() {
 			this.getServiceTimeslots();
 		}
 	},
 
 	created() {
 		this.timezone = timezone.name();
-		this.startDate = dayjs().toDate();
 	},
 
 	methods: {
-		formatTime(time) {
-			let parts = time.split(':');
-			let formatTime = dayjs()
-				.hour(parts[0])
-				.minute(parts[1])
-				.format('hh:mmA');
-			return formatTime;
+		...mapActions({
+			getService: 'services/show',
+			updateBooking: 'bookings/update'
+		}),
+
+		async confirmUpdateBooking() {
+			let data = this.booking;
+			data.date = this.selectedTimeslot.date;
+			data.start = this.selectedTimeslot.time;
+			await this.$refs['bookingModal'].show();
+			let booking = await this.updateBooking(data);
+			setTimeout(async () => {
+				await this.$refs['bookingModal'].hide();
+				this.hide();
+				this.$emit('update', booking);
+			}, 150);
 		},
 
-		submit() {
-			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedTimeslots.length > 0) {
-				this.$refs['bookingModal'].show().then(() => {
-					this.isBooking = true;
-					let data = {
-						timeslots: this.selectedTimeslots
-					};
-					let target = null;
-					if (this.auth) {
-						target = 'auth=true';
-					} else if (this.contactID) {
-						target = `contact_id=${this.contactID}`;
-					}
-					if (target) {
-						let url = `/@${service.user.username}/${service.id}/login_and_book?${target}`;
-						window.axios
-							.post(url, data, { toasted: true })
-							.then(response => {
-								this.bookingSuccess = true;
-								this.authForm = false;
-								this.selectedTimeslots = [];
-								this.bookings = response.data;
-							})
-							.catch(() => {
-								setTimeout(() => {
-									this.$refs['bookingModal'].hide().then(() => {
-										this.isBooking = false;
-									});
-								}, 150);
-							});
-					}
-				});
+		setSelectedService(service) {
+			this.selectedCoachId = service.coach.id;
+			this.selectedService = service;
+		},
+
+		submit() {},
+
+		summary() {},
+
+		previousWeek() {
+			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
+			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = previousWeek.toDate();
+			} else if (!dayjs(dayjs(this.startDate).format('YYYY-MM-DD')).isSame(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = dayjs().toDate();
 			}
 		},
 
-		daysInMonth(timeslot) {
-			return [
-				{
-					text: `First ${timeslot.date.dayName} of the month`,
-					value: 'first_week'
-				},
-				{
-					text: `Second ${timeslot.date.dayName} of the month`,
-					value: 'second_week'
-				},
-				{
-					text: `Third ${timeslot.date.dayName} of the month`,
-					value: 'third_week'
-				},
-				{
-					text: `Last ${timeslot.date.dayName} of the month`,
-					value: 'last_week'
+		nextWeek() {
+			this.startDate = dayjs(this.startDate)
+				.add(7, 'day')
+				.toDate();
+		},
+
+		timeslotClass(timeslot, date) {
+			let timeslotClass = [];
+			let active = false;
+			if (date.format == this.selectedTimeslot.date) {
+				if ((this.selectedTimeslot.time == timeslot.time || timeslot.time == this.booking.start) && this.selectedTimeslot.service_id == this.selectedService.id) {
+					active = true;
 				}
-			];
-		},
-
-		setTimeslotDefaultDay(frequency, timeslot) {
-			if (frequency == 'week') {
-				let dayIndex = this.days.indexOf(timeslot.date.dayName);
-				let index = timeslot.days.indexOf(dayIndex);
-				if (index == -1 || timeslot.days.length == 1) {
-					timeslot.days.push(dayIndex);
+				if (timeslot.time == this.booking.start && this.selectedTimeslot.service_id == this.selectedService.id) {
+					timeslot.is_available = true;
 				}
-			} else if (frequency == 'month') {
-				timeslot.day_in_month = 'first_week';
 			}
-		},
-
-		timeslotToggleDay(timeslot, dayIndex) {
-			let index = timeslot.days.indexOf(dayIndex);
-			if (index == -1) {
-				timeslot.days.push(dayIndex);
-			} else {
-				timeslot.days.splice(index, 1);
+			if (timeslot.is_available || active) {
+				timeslotClass.push.apply(timeslotClass, ['bg-primary', 'text-white']);
+			} else if (!timeslot.is_available && !active) {
+				timeslotClass.push.apply(timeslotClass, ['bg-gray-400', 'disabled']);
+			}
+			if (this.isPrevious) {
+				timeslotClass.push.apply(timeslotClass, ['disabled']);
+			} else if (timeslot.is_available) {
+				timeslotClass.push.apply(timeslotClass, ['cursor-pointer']);
 			}
 
-			if (timeslot.days.length == 0) {
-				let dayIndex = this.days.indexOf(timeslot.date.dayName);
-				timeslot.days.push(dayIndex);
-			}
-		},
-
-		endTime(time) {
-			let endTime = '';
-			if (this.selectedService && this.startDate) {
-				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
-				endTime = dayjs(startDate)
-					.add(this.selectedService.duration, 'minute')
-					.format('hh:mmA');
-			}
-			return endTime;
-		},
-
-		formatDate(date) {
-			return dayjs(date).format('MMMM D, YYYY');
-		},
-
-		summary() {
-			if (this.selectedTimeslots.length > 0) {
-				this.selectedTimeslot = true;
-			}
+			return timeslotClass.join(' ');
 		},
 
 		setSelectedDateAndTimeslot(date, timeslot) {
-			if (timeslot.is_available) {
-				// this.selectedDate = date.date;
-				// this.selectedTimeslot = timeslot;
-				let index = this.selectedTimeslots.findIndex(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time);
-				if (index > -1) {
-					this.selectedTimeslots.splice(index, 1);
-				} else {
-					this.selectedTimeslots.push({
-						date: date,
-						timeslot: timeslot,
-						days: []
-					});
-				}
+			if (!this.isPrevious && timeslot.is_available) {
+				timeslot.date = date.format;
+				timeslot.service_id = this.selectedService.id;
+				this.selectedTimeslot = timeslot;
 			}
-		},
-
-		reset() {
-			this.startDate = dayjs().toDate();
-			this.selectedService = null;
-			this.selectedTimeslots = [];
+			this.continueButton = timeslot.date != this.booking.date || timeslot.time != this.booking.start;
 		},
 
 		getTimeZoneOffset(date, timeZone) {
@@ -275,7 +227,7 @@ export default {
 		},
 
 		timezoneTime(time) {
-			let profileTimezone = this.selectedService.user.timezone;
+			let profileTimezone = this.selectedService.coach.timezone;
 			let timezoneTime;
 			if (profileTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
@@ -300,25 +252,20 @@ export default {
 		async getServiceTimeslots() {
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
-				this.selectedTimeslot = null;
-				let response = await window.axios.get(`${window.location.origin}/ajax/@${this.selectedService.user.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`, { ajax: false });
-				this.timeslots = response.data;
+				let service = await this.getService({ service_id: this.selectedService.id, params: { date: dayjs(this.startDate).format('YYYY-MM-DD') } });
+				if (this.getAssignedServices) {
+					this.assignedServices = service.assigned_services;
+					this.getAssignedServices = false;
+				}
+				this.timeslots = service.timeslots;
 				this.timeslotsLoading = false;
 			}
 		},
-		previousWeek() {
-			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
-			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
-				this.startDate = previousWeek.toDate();
-			} else if (!dayjs(dayjs(this.startDate).format('YYYY-MM-DD')).isSame(dayjs(dayjs().format('YYYY-MM-DD')))) {
-				this.startDate = dayjs().toDate();
-			}
-		},
 
-		nextWeek() {
-			this.startDate = dayjs(this.startDate)
-				.add(7, 'day')
-				.toDate();
+		reset() {
+			this.startDate = dayjs().toDate();
+			this.selectedService = null;
+			this.selectedTimeslots = [];
 		},
 
 		show() {

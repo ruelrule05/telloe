@@ -11,8 +11,11 @@ import convertTime from '../../../../../js/plugins/convert-time.js';
 import Modal from '../../../../../components/modal/modal.vue';
 import VueButton from '../../../../../components/vue-button.vue';
 import VueSelect from '../../../../../components/vue-select/vue-select.vue';
+import MoreIcon from '../../../../../icons/more';
+import ArrowLeftIcon from '../../../../../icons/arrow-left';
+import Edit from '../../edit/edit.vue';
 export default {
-	components: { ChevronLeftIcon, ChevronRightIcon, Modal, VueButton, VueSelect },
+	components: { ChevronLeftIcon, ChevronRightIcon, Modal, VueButton, VueSelect, MoreIcon, ArrowLeftIcon, Edit },
 	props: {
 		date: {
 			required: true,
@@ -32,7 +35,9 @@ export default {
 		selectedBooking: null,
 		dayjs: dayjs,
 		timeslots: [],
-		bookingModalLoading: false
+		bookingModalLoading: false,
+		startDate: null,
+		ready: false
 	}),
 	watch: {
 		selectedCoachId: function() {
@@ -49,7 +54,7 @@ export default {
 		tabDates() {
 			let tabDates = [];
 			let i = 7;
-			let startDate = dayjs(this.date);
+			let startDate = dayjs(this.startDate);
 			while (i > 0) {
 				tabDates.push({
 					name: startDate.format('ddd'),
@@ -92,7 +97,7 @@ export default {
 				}
 			});
 			filteredBookings = filteredBookings.sort((a, b) => {
-				return a.start > b.start ? 1 : -1;
+				return a.date > b.date ? -1 : 1;
 			});
 			return filteredBookings;
 		},
@@ -125,7 +130,8 @@ export default {
 	},
 
 	created() {
-		this.getBookingsDateRange();
+		this.startDate = this.date;
+		this.getDateBookings();
 	},
 
 	methods: {
@@ -134,12 +140,33 @@ export default {
 			deleteBooking: 'bookings/delete'
 		}),
 
-		getBookingsDateRange() {
-			let from = dayjs(this.date).format('YYYY-MM-DD');
-			let to = dayjs(this.date)
-				.add(6, 'day')
-				.format('YYYY-MM-DD');
-			this.getBookings({ from: from, to: to });
+		bookingUpdated(booking) {
+			this.startDate = dayjs(booking.date).toDate();
+			this.getDateBookings();
+		},
+
+		previousDay() {
+			let previousDay = dayjs(this.startDate).subtract(1, 'day');
+			this.startDate = previousDay.toDate();
+			this.getDateBookings();
+		},
+
+		nextDay() {
+			let nextDay = dayjs(this.startDate).add(1, 'day');
+			this.startDate = nextDay.toDate();
+			this.getDateBookings();
+		},
+
+		editBooking(booking) {
+			let selectedBooking = JSON.parse(JSON.stringify(booking));
+			this.selectedBooking = selectedBooking;
+			this.$refs['bookingModal'].show();
+		},
+
+		getDateBookings() {
+			let date = dayjs(this.startDate).format('YYYY-MM-DD');
+			this.getBookings({ date: date });
+			window.history.replaceState(null, null, `?date=${date}`);
 		},
 
 		async updateSelectedBooking(selectedBooking) {
@@ -150,7 +177,7 @@ export default {
 			let response = await this.updateBooking(booking).catch(() => {});
 			this.bookingModalLoading = false;
 			if (response) {
-				this.getBookingsDateRange();
+				this.getDateBookings();
 				this.$refs['bookingModal'].hide();
 			}
 		},
@@ -164,6 +191,7 @@ export default {
 				booking.isPrevious = dayjs(new Date()).isSameOrAfter(dayjs(start));
 			});
 			this.bookings = bookings;
+			this.selectedBooking = this.bookings[0];
 		},
 		viewTimeslotBookings(booking, dayName, bookingIndex) {
 			let selectedBooking = JSON.parse(JSON.stringify(booking));

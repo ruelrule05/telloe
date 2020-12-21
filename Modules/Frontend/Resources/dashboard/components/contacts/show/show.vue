@@ -395,7 +395,7 @@
 					</div>
 					<div class="text-left mt-3 d-flex align-items-start">
 						<div class="font-weight-normal text-secondary w-25 mb-2">Notes</div>
-						<input type="text" class="form-control resize-none flex-1" v-model="selectedBooking.booking_note.note" placeholder="Write notes.." />
+						<textarea type="text" rows="3" class="form-control resize-none flex-1" v-model="selectedBooking.booking_note.note" placeholder="Write notes.."></textarea>
 					</div>
 					<div v-if="!selectedBooking.isPrevious" class="text-left">
 						<div class="mt-3" v-if="Object.keys(selectedBooking.zoom_link).length > 0">

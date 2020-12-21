@@ -42,3 +42,15 @@
 		pointer-events: none !important;
 	}
 }
+
+.table-layout-fixed {
+	table-layout: fixed !important;
+}
+
+.hide-tooltip {
+	.tooltip {
+		display: none !important;
+		opacity: 0 !important;
+		visibility: hidden !important;
+	}
+}
