@@ -106,7 +106,7 @@
 												<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
 											</div>
 										</button>
-										<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index', 'packages_index', 'services_show','packages_show'].find((x) => x == $route.name) }" id="item-bookings">
+										<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index',  'services_show'].find((x) => x == $route.name) }" id="item-bookings">
 											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
 												<span class="pl-3">Calendar</span>
 											</router-link>
@@ -159,7 +159,7 @@
 										</template>
 										
 										<template xv-if="auth.has_team">
-											<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'team')}" data-toggle="collapse" data-target="#item-team">
+											<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-team">
 												<div class="d-flex align-items-center pl-4 pr-2">
 													<member-icon height="18" width="18" stroke="black" stroke-width="13" class="sidebar-icon sidebar-icon-stroke"></member-icon>
 													<span class="ml-3">Team</span>
@@ -177,14 +177,14 @@
 										</template>
 
 										<template xv-if="auth.has_payments">
-											<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" :class="{'active': $route.matched.some((m) => m.name == 'payments')}" data-toggle="collapse" data-target="#item-payments">
+											<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-payments">
 												<div class="d-flex align-items-center pl-4 pr-2">
 													<payments-icon height="18" width="18" class="sidebar-icon"></payments-icon>
 													<span class="ml-3">Payments</span>
 													<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
 												</div>
 											</button>
-											<div class="collapse showx" data-parent="#sidebar" :class="{'show': ['calendar', 'services', 'customers'].find((x) => x == $route.name) }" id="item-payments">
+											<div class="collapse" data-parent="#sidebar" :class="{'show': ['invoices_index', 'subscriptions_index'].find((x) => x == $route.name) }" id="item-payments">
 												<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0" exact>
 													<span class="pl-3">Invoices</span>
 												</router-link>
