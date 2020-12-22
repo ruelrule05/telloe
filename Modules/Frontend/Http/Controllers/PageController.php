@@ -27,7 +27,7 @@ class PageController extends Controller
                 checkMemberInviteToken($authUser, $request);
             }
             if ($authUser->role_id == 2) {
-                return redirect('/dashboard/bookings/services' . $params);
+                return redirect('/dashboard/bookings/calendar' . $params);
             } else {
                 return redirect('/dashboard/bookings' . $params);
             }

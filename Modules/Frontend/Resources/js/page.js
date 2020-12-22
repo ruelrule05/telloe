@@ -64,7 +64,7 @@ new window.Vue({
 				.then(response => {
 					if (response) {
 						if (response.data.role_id == 2) {
-							window.location.replace('/dashboard/bookings/services');
+							window.location.replace('/dashboard/bookings/calendar');
 						} else if (response.data.role_id == 3) {
 							window.location.replace('/dashboard/bookings');
 						}

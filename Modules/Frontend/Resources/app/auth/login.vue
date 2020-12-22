@@ -87,7 +87,7 @@ export default {
 						this.$parent.socket.emit('member_invite_token', this.loginForm.member_invite_token);
 						setTimeout(() => {
 							if (response.data.role_id == 2) {
-								window.location.replace('/dashboard/bookings/services');
+								window.location.replace('/dashboard/bookings/calendar');
 							} else if (response.data.role_id == 3) {
 								window.location.replace('/dashboard/bookings');
 							}

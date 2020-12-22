@@ -9,19 +9,13 @@
 							<edit-square-icon></edit-square-icon>
 						</button>
 						<button :data-intro="$root.intros.conversations.steps[1]" data-step="2" class="btn btn-light badge-pill line-height-0 p-1 ml-1" type="button" @click="$root.muted = !$root.muted">
-							<bell-icon v-if="!$root.muted"></bell-icon>
-							<bell-slash-icon v-else class="fill-gray-500"></bell-slash-icon>
+							<volume-max-icon v-if="!$root.muted"></volume-max-icon>
+							<volume-min-icon v-else class="fill-gray-500"></volume-min-icon>
 						</button>
 					</div>
 				</div>
 				<div class="d-flex align-items-center btn-tab mt-3 px-3">
 					<input type="text" class="form-control border shadow-none" placeholder="Search conversations" v-model="search" />
-					<!-- <button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{ active: conversationTab == 'active' }" @click="conversationTab = 'active'">Chats</button>
-					<button class="btn px-3 py-2 font-heading font-weight-bold rounded-0" :class="{ active: conversationTab == 'archive' }" @click="conversationTab = 'archive'">Archive</button> -->
-					<!-- <button class="ml-auto btn badge-pill line-height-0 p-0 mr-2 shadow-none" type="button" @click="$root.muted = !$root.muted">
-                        <bell-icon width="22" height="22" v-if="!$root.muted"></bell-icon>
-                        <bell-slash-icon width="22" height="22" v-else class="fill-gray-500"></bell-slash-icon>
-                    </button> -->
 				</div>
 			</div>
 

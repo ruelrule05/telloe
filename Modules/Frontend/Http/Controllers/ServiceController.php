@@ -83,6 +83,13 @@ class ServiceController extends Controller
         $this->authorize('update', $service);
 
         unset($service->user);
+
+        if ($request->in_widget) {
+            Service::where('id', '<>', $service->id)->where('in_widget', true)->update([
+                'in_widget' => false
+            ]);
+        }
+
         $service->update($request->all());
 
         return response()->json($service);

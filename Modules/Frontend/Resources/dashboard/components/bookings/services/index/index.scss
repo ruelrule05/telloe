@@ -64,12 +64,13 @@
 	.chevron-down {
 		fill: $gray-500;
 		transition: $transition-base;
+		transform: scale(1.5);
 	}
 
 	.service-day-heading {
 		&[aria-expanded='true'] {
 			svg {
-				transform: rotate(-180deg);
+				transform: rotate(-180deg) scale(1.5);
 				fill: black;
 			}
 		}
@@ -236,10 +237,6 @@
 		transform: translate(-50%, -50%);
 		line-height: 0 !important;
 	}
-}
-
-#availability-modal {
-	min-height: 500px;
 }
 
 .custom-day-content {

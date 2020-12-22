@@ -53,6 +53,9 @@
 .sidebar {
 	.sidebar-menu {
 		.list-group-item {
+			color: white !important;
+			transition: $transition-base !important;
+			text-decoration: none !important;
 			svg {
 				transition: $transition-base;
 			}
@@ -65,21 +68,24 @@
 				svg {
 					opacity: 1;
 				}
+				background-color: rgba(white, 0.15) !important;
 			}
 			&.active {
-				.sidebar-icon {
-					path,
-					#path,
-					.path {
-						fill: $primary !important;
-					}
+				background-color: rgba(white, 0.35) !important;
+			}
+			.sidebar-icon {
+				path,
+				#path,
+				ellipse,
+				.path {
+					fill: white !important;
 				}
-				.sidebar-icon-stroke {
-					path,
-					#path,
-					.path {
-						stroke: $primary !important;
-					}
+			}
+			.sidebar-icon-stroke {
+				path,
+				#path,
+				.path {
+					stroke: white !important;
 				}
 			}
 		}
@@ -475,7 +481,7 @@ hr.hr-text::before {
 	transition: $transition-base;
 	&.show,
 	&:hover {
-		background: $gray-200;
+		background-color: rgba(white, 0.15) !important;
 	}
 }
 .table-fixed-header {

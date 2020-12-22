@@ -5,65 +5,9 @@
  *
  */
 
-Route::get('test', function () {
-    broadcast(new Modules\Frontend\Events\TestEvent())->toOthers();
-    // $currentDate = \Carbon\Carbon::now()->addDay(1);
-    // $endDate = \Carbon\Carbon::parse('2020-12-31');
-
-    // $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    // $timeslotDays = [3, 5];
-
-    // while ($currentDate->lessThan($endDate)) {
-    //     $dayIndex = array_search($currentDate->clone()->format('l'), $days);
-    //     if (in_array($dayIndex, $timeslotDays)) {
-    //         echo $currentDate->clone()->format('Y-m-d') . '<br />';
-    //     }
-
-    //     $currentDate->addDay(1);
-    // }
-});
-
 Route::get('widget', function () {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
 });
-
-Route::get('phpinfo', function () {
-    return phpinfo();
-});
-
-Route::get('email', function () {
-    /*$now = \Carbon\Carbon::now();
-    $bookings = App\Models\Booking::where('date', '>=', $now->format('Y-m-d'))->get();
-    foreach($bookings as $booking) :
-        $diffInMinutes = $now->diffInMinutes(\Carbon\Carbon::parse($booking->date . ' ' . $booking->start), false);
-        if($diffInMinutes <= 120 && !$booking->notified_2) : // 2 hours notif
-            echo 'notify 2 hours';
-        elseif ($diffInMinutes <= 1440 && !$booking->notified_24 && $diffInMinutes > 120) : // 24 hours notif
-            echo 'notify 24 hours'.'<br />';
-        endif;
-    endforeach;*/
-
-    //$user = App\Models\User::where('email', 'cleidoscope@gmail.com')->first();
-    //$booking = App\Models\Booking::find(40);
-    $booking = App\Models\Booking::find(40);
-
-    $from = \Carbon\Carbon::parse("$booking->date $booking->start");
-    $to = $from->clone()->addMinute($booking->service->duration);
-    $link = \Spatie\CalendarLinks\Link::create($booking->service->name, $from, $to)
-        ->description($booking->service->description);
-
-    $booking->google_link = $link->google();
-    $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
-    $booking->yahoo_link = $link->yahoo();
-    $booking->ical_link = $booking->outlook_link;
-    $email = new Modules\Frontend\Mail\NewBooking([$booking, App\Models\Booking::find(16)], App\Models\User::first(), 'contact');
-    //$email = new Modules\Frontend\Mail\UpcomingBooking(App\Models\Booking::find(170), 'dwada');
-    //$email = new Modules\Frontend\Mail\UpdateBooking(App\Models\Booking::first(),'client');
-    //\Mail::to('cleidoscope@gmail.com')->send($email);
-
-    return $email;
-});
-
 
 Route::group(
     [

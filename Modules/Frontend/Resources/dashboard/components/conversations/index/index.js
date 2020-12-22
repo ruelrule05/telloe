@@ -17,7 +17,8 @@ import HeadphoneIcon from '../../../../icons/headphone';
 import LockIcon from '../../../../icons/lock';
 import ListBulletIcon from '../../../../icons/list-bullet';
 import MoreIcon from '../../../../icons/more';
-import BellIcon from '../../../../icons/bell';
+import VolumeMaxIcon from '../../../../icons/volume-max';
+import VolumeMinIcon from '../../../../icons/volume-min';
 import BellSlashIcon from '../../../../icons/bell-slash';
 import EditSquareIcon from '../../../../icons/edit-square';
 
@@ -40,7 +41,8 @@ export default {
 		LockIcon,
 		ListBulletIcon,
 		MoreIcon,
-		BellIcon,
+		VolumeMaxIcon,
+		VolumeMinIcon,
 		BellSlashIcon,
 		EditSquareIcon
 	},

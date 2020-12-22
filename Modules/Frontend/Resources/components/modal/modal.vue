@@ -14,7 +14,7 @@
 					<h5 class="modal-title font-heading">{{ title }}</h5>
 				</div>
 
-				<div class="modal-body position-relative">
+				<div class="modal-body position-relative overflow-y-only">
 					<slot></slot>
 				</div>
 

@@ -412,7 +412,7 @@ export default {
 		async checkConversation() {
 			if (this.$route.params.id) {
 				await this.showConversation({ id: this.$route.params.id }).catch(e => {
-					this.$router.push('/dashboard/bookings/services');
+					this.$router.push('/dashboard/bookings/calendar');
 				});
 			}
 		},

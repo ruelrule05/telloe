@@ -31,7 +31,7 @@ export default {
 		newService: {},
 		selectedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-		newBreaktime: null,
+		newBreaktime: {},
 		serviceDetailsTab: 'availability',
 		selectedDay: '',
 		clonedService: null,
@@ -91,6 +91,15 @@ export default {
 				});
 			}
 			return formattedHolidays;
+		},
+
+		orderedServices() {
+			let orderedServices = this.services;
+			orderedServices.sort((a, b) => {
+				return a.in_widget > b.in_widget ? -1 : 1;
+			});
+
+			return orderedServices;
 		}
 	},
 
@@ -167,10 +176,9 @@ export default {
 		},
 
 		update() {
-			this.updateService(this.clonedService).then(service => {
-				Object.keys(service).map(key => {
-					this.services[this.clonedService.index][key] = service[key];
-				});
+			this.clonedService.in_widget = this.clonedService.in_widget ? true : false;
+			this.updateService(this.clonedService).then(() => {
+				this.getServices();
 			});
 			this.$refs['editModal'].hide();
 		},
@@ -218,10 +226,7 @@ export default {
 			this.$set(this.newBreaktime, 'start', (time.start || {}).time);
 			this.$set(this.newBreaktime, 'end', (time.end || {}).time);
 			if (this.newBreaktime.start && this.newBreaktime.end) {
-				if (!this.selectedService.days[day].breaktimes) this.$set(this.selectedService.days[day], 'breaktimes', []);
-				this.selectedService.days[day].breaktimes.push(this.newBreaktime);
-				this.newBreaktime = null;
-				this.updateService(this.selectedService);
+				if (!this.clonedService.days[day].breaktimes) this.$set(this.clonedService.days[day], 'breaktimes', []);
 			}
 		},
 

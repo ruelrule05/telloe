@@ -103,11 +103,19 @@ export default {
 		},
 
 		openAuthWindow(url, callback) {
-			const width = 450;
-			const height = 650;
-			const left = screen.width / 2 - width / 2;
-			const top = screen.height / 2 - height / 2;
-			let authWindow = window.open(url, 'telloe_auth_window', `width=${width}, height=${height}, top=${top}, left=${left}`);
+			const w = 450;
+			const h = 650;
+			const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+			const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+			const width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+			const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+			const systemZoom = width / window.screen.availWidth;
+			const left = (width - w) / 2 / systemZoom + dualScreenLeft;
+			const top = (height - h) / 2 / systemZoom + dualScreenTop;
+
+			let authWindow = window.open(url, 'telloe_auth_window', `width=${w}, height=${h}, top=${top}, left=${left}`);
 			let callbackInterval = setInterval(() => {
 				if (authWindow.closed) {
 					clearInterval(callbackInterval);
