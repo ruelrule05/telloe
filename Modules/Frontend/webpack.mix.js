@@ -3,7 +3,6 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
 const argv = JSON.parse(process.env.npm_config_argv).original;
-const TerserPlugin = require('terser-webpack-plugin');
 
 mix.setPublicPath('../../public').mergeManifest();
 
@@ -115,46 +114,33 @@ if (argv.indexOf('--css') > -1) {
 			}
 		});
 	}
-	if (mix.config.production) {
-		mix.webpackConfig({
-			optimization: {
-				usedExports: true,
-				minimize: true,
-				minimizer: [
-					new TerserPlugin({
-						terserOptions: {
-							compress: {
-								passes: 3
-							}
-						}
-					})
-				]
-			}
-		}).version();
-	} else {
-		mix.options({
-			hmrOptions: {
-				host: 'telloe.test',
-				port: 8080
-			},
-			postCss: [require('autoprefixer')]
-		});
-		mix.webpackConfig({
-			watchOptions: {
-				aggregateTimeout: 300,
-				poll: 1000
-			},
-			plugins: [new ESLintPlugin()],
-			module: {
-				rules: [
-					{
-						enforce: 'pre',
-						exclude: /node_modules/,
-						loader: 'eslint-loader',
-						test: /\.(js|vue)?$/
-					}
-				]
-			}
-		});
-	}
+}
+
+if (mix.config.production) {
+	mix.version();
+} else {
+	mix.options({
+		hmrOptions: {
+			host: 'telloe.test',
+			port: 8080
+		},
+		postCss: [require('autoprefixer')]
+	});
+	mix.webpackConfig({
+		watchOptions: {
+			aggregateTimeout: 300,
+			poll: 1000
+		},
+		plugins: [new ESLintPlugin()],
+		module: {
+			rules: [
+				{
+					enforce: 'pre',
+					exclude: /node_modules/,
+					loader: 'eslint-loader',
+					test: /\.(js|vue)?$/
+				}
+			]
+		}
+	});
 }
