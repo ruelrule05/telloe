@@ -37,15 +37,6 @@
 													<span>Available</span>
 													<toggle-switch class="ml-auto" @click.native.stop @input="updateServiceStatus($event, service)" active-class="bg-primary" v-model="service.is_available"></toggle-switch>
 												</div>
-												<span
-													class="dropdown-item cursor-pointer"
-													@click="
-														clonedService = service;
-														$refs['availabilityModal'].show();
-													"
-												>
-													Availability
-												</span>
 
 												<span class="dropdown-item d-flex align-items-center px-2 cursor-pointer" @click="goToBookingPage(service)">
 													Booking Page
