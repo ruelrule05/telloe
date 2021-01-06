@@ -6,7 +6,6 @@ import Signup from './signup.vue';
 import Recover from './recover.vue';
 import Reset from './reset.vue';
 import CloseIcon from '../../icons/close.vue';
-import io from 'socket.io-client';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 
@@ -31,7 +30,6 @@ export default {
 	}),
 
 	created() {
-		this.socket = io(WS_URL);
 		this.timezone = timezone.name();
 		if (typeof gapi != 'undefined') {
 			gapi.load('auth2', () => {
@@ -70,8 +68,6 @@ export default {
 								window.axios
 									.post('/login/facebook', response)
 									.then(response => {
-										this.socket.emit('invite_token', invite_token);
-										this.socket.emit('member_invite_token', member_invite_token);
 										setTimeout(() => {
 											if (response.data.role_id == 2) {
 												window.location.replace('/dashboard/bookings/calendar');
@@ -117,8 +113,6 @@ export default {
 						window.axios
 							.post('/login/google', user)
 							.then(response => {
-								this.socket.emit('invite_token', invite_token);
-								this.socket.emit('member_invite_token', member_invite_token);
 								setTimeout(() => {
 									if (response.data.role_id == 2) {
 										window.location.replace('/dashboard/bookings/calendar');

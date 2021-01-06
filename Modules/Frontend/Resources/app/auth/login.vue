@@ -83,8 +83,6 @@ export default {
 				window.axios
 					.post('/login', this.loginForm)
 					.then(response => {
-						this.$parent.socket.emit('invite_token', this.loginForm.invite_token);
-						this.$parent.socket.emit('member_invite_token', this.loginForm.member_invite_token);
 						setTimeout(() => {
 							if (response.data.role_id == 2) {
 								window.location.replace('/dashboard/bookings/calendar');

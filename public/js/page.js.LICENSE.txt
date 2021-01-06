@@ -22,13 +22,6 @@
  */
 
 /*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <http://feross.org>
- * @license  MIT
- */
-
-/*!
  * Vue.js v2.6.12
  * (c) 2014-2020 Evan You
  * Released under the MIT License.
@@ -57,7 +50,3 @@
  * Released under the MIT license
  * https://github.com/ktsn/vue-range-slider/blob/master/LICENSE
  */
-
-/*! https://mths.be/utf8js v2.1.2 by @mathias */
-
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
