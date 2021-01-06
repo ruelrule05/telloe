@@ -68,6 +68,8 @@
 													}"
 												>
 													<span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
+
+													<i v-if="$root.isOnline(member.member_user_id)" class="online-status bg-success">&nbsp;</i>
 												</div>
 											</div>
 											<h5 class="font-heading mb-0">{{ member.member_user.full_name }}</h5>

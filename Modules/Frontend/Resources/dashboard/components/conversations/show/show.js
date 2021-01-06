@@ -124,7 +124,9 @@ export default {
 		'conversation.ready': function(value) {
 			if (value) {
 				this.scrollDown();
-				this.$root.socket.emit('last_message_read', { conversation_id: this.conversation.id, message_id: this.conversation.last_message.id });
+				if (this.channel) {
+					this.channel.whisper('readLastMessage', { conversation_id: this.conversation.id, message_id: this.conversation.last_message.id });
+				}
 			}
 		},
 		'conversation.last_message': function(value) {
@@ -169,11 +171,6 @@ export default {
 			return this.getConversation(this.$route.params.id);
 		},
 
-		isOnline() {
-			let is_online = this.$root.online_users.find(x => x == this.conversation.member.id);
-			return is_online || 0;
-		},
-
 		grouped_messages() {
 			/* eslint-disable */
 			const grouped_messages = [];
@@ -212,12 +209,6 @@ export default {
 
 	created() {
 		this.checkConversation();
-		this.$root.socket.on('last_message_read', data => {
-			if (this.conversation && this.conversation.id == data.conversation_id && this.conversation.paginated_messages) {
-				let message = this.conversation.paginated_messages.data.find(x => x.id == data.message_id);
-				if (message) this.$set(message, 'is_read', true);
-			}
-		});
 	},
 
 	mounted() {
@@ -246,20 +237,17 @@ export default {
 				this.$echo.leaveChannel(this.channel.name);
 			}
 			this.channel = this.$echo.join(`conversations.${this.$route.params.id}`);
-			this.channel.listen('NewMessageEvent', e => {
-				this.getMessageByID(e.message.id).then(message => {
-					if (message) {
-						let conversation = this.$root.conversations.find(x => x.id == message.conversation_id);
-						if (conversation) {
-							conversation.last_message = message;
-						}
-						if (!this.$root.muted) this.$root.message_sound.play();
-					}
-				});
-			});
+
 			this.channel.listenForWhisper('typing', e => {
 				if (this.$root.auth.id != e.userId) {
 					this.$set(this.typingUsers, e.userId, e);
+				}
+			});
+
+			this.channel.listenForWhisper('readLastMessage', e => {
+				if (this.conversation && this.conversation.id == e.conversation_id && this.conversation.paginated_messages) {
+					let message = this.conversation.paginated_messages.data.find(x => x.id == e.message_id);
+					if (message) this.$set(message, 'is_read', true);
 				}
 			});
 		},
@@ -599,6 +587,11 @@ export default {
 				});
 				message.is_online = this.isOnline;
 				let response = await this.storeMessage(message);
+				this.$root.appChannel.whisper('newMessage', {
+					id: response.id,
+					conversation_id: response.conversation_id,
+					timestamp: response.timestamp
+				});
 
 				if (!['text', 'emoji'].find(x => x == response.type)) {
 					this.conversation.files.data.unshift(response);

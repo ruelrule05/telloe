@@ -44,6 +44,7 @@
 										<span v-if="!contact.contact_user.profile_image">
 											{{ contact.contact_user.initials }}
 										</span>
+										<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status bg-success">&nbsp;</i>
 									</div>
 									<h1 class="h3 font-heading mt-2 mb-0">{{ contact.contact_user.full_name }}</h1>
 									<div class="text-muted mb-1">{{ contact.contact_user.email }}</div>

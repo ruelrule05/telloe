@@ -4,13 +4,13 @@
 			<div class="d-flex align-items-center">
 				<div class="user-profile-image" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 					<span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
+					<i v-if="$root.isOnline(conversation.member.id)" class="online-status bg-success">&nbsp;</i>
 				</div>
 				<div class="ml-2">
 					<h5 class="font-heading mb-0" @click="goToContact(conversation.member)" :class="{ 'hover-underline cursor-pointer': contact(conversation.member) }">{{ conversation.member.full_name || conversation.name }}</h5>
 					<small v-if="conversation.member.is_pending" class="d-block text-warning">Pending account</small>
 					<div class="d-flex align-items-center" v-else-if="conversation.member.id && conversation.member.last_online">
-						<span class="chat-status mr-1" :class="[isOnline ? 'bg-success' : 'bg-gray']">&nbsp;</span>
-						<small class="text-secondary">{{ isOnline ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
+						<small class="text-secondary">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
 					</div>
 					<small v-else class="d-block text-secondary">
 						<template v-if="(conversation.member.role || {}).role != 'support'">{{ conversation.members.length }} members</template>
@@ -189,7 +189,7 @@
 								</small>
 							</div>
 
-							<template>
+							<div class="typing-users position-absolute pl-2">
 								<template v-for="typingUser in typingUsers">
 									<div class="d-flex align-items-center text-secondary mb-2" v-if="typingUser.typing" :key="typingUser.userId">
 										<div class="typing-indicator mr-1">
@@ -200,17 +200,7 @@
 										<small>{{ typingUser.name }} is typing</small>
 									</div>
 								</template>
-								<div v-for="member in conversation.members" :key="member.id">
-									<div class="d-flex align-items-center text-secondary" v-if="member.is_typing">
-										<div class="typing-indicator mr-1">
-											<span></span>
-											<span></span>
-											<span></span>
-										</div>
-										<small>{{ member.user.first_name }} is typing</small>
-									</div>
-								</div>
-							</template>
+							</div>
 						</div>
 					</div>
 

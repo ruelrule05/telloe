@@ -74,6 +74,7 @@
 				background-color: rgba(white, 0.35) !important;
 			}
 			.sidebar-icon {
+				#path-payments,
 				path,
 				#path,
 				ellipse,
@@ -260,11 +261,13 @@
 		right: 0;
 	}
 }
-.chat-status {
-	line-height: 0;
-	display: inline-block;
-	width: 8px;
-	height: 8px;
+.online-status {
+	width: 13px;
+	height: 13px;
+	border: solid 2px white;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 	border-radius: 50%;
 }
 

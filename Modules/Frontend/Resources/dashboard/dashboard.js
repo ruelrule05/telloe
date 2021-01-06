@@ -1,4 +1,3 @@
-/* global WS_URL */
 /* global FB */
 require('../js/bootstrap');
 window.Vue = require('vue');
@@ -174,7 +173,6 @@ const router = new VueRouter({
 		}
 	]
 });
-import io from 'socket.io-client';
 import dayjs from 'dayjs';
 import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
 
@@ -283,8 +281,7 @@ window.app = new window.Vue({
 		pageloading: false,
 		heading: '',
 		contentloading: true,
-		socket: null,
-		online_users: [],
+		onlineUsers: [],
 		detailsTab: '',
 		profileTab: 'overview', //overview
 
@@ -303,7 +300,8 @@ window.app = new window.Vue({
 		jQuery: $,
 		muted: false,
 		intros: intros,
-		introJS: introJS
+		introJS: introJS,
+		appChannel: null
 	},
 
 	computed: {
@@ -390,62 +388,60 @@ window.app = new window.Vue({
 	created() {
 		window.axios.get('/auth').then(response => {
 			this.auth = response.data;
-			//this.socket.emit('user_online', this.auth.id);
 			this.$echo
 				.join('onlineUsers')
 				.here(userIds => {
-					this.online_users = userIds;
+					this.onlineUsers = userIds;
 				})
 				.joining(userId => {
-					let exists = this.online_users.find(x => x == userId);
+					let exists = this.onlineUsers.find(x => x == userId);
 					if (!exists) {
-						this.online_users.push(userId);
+						this.onlineUsers.push(userId);
 					}
 				})
 				.leaving(userId => {
-					let index = this.online_users.findIndex(x => x == userId);
+					let index = this.onlineUsers.findIndex(x => x == userId);
 					if (index > -1) {
-						this.online_users.splice(index, 1);
+						this.onlineUsers.splice(index, 1);
 					}
 				});
+
+			this.appChannel = this.$echo.private('AppChannel');
+			this.appChannel.listenForWhisper('newMessage', message => {
+				let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
+				if (conversation) {
+					//window.app.$set(conversation.last_message, 'is_read', false);
+					window.app.getMessageByID(message.id).then(message => {
+						if (message) {
+							let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
+							if (conversation) {
+								conversation.last_message = message;
+							}
+							if (!window.app.$root.muted) window.app.$root.message_sound.play();
+						}
+					});
+				}
+			});
 		});
 
 		this.notifyIncomingBookings();
 		if (this.$route.name != 'conversations') this.getConversations();
 		this.call_sound = new Audio(`/notifications/call.mp3`);
 		this.message_sound = new Audio('/notifications/new_message.mp3');
-		this.socket = io(WS_URL);
 
 		// https://telloe.app?invite_token=ry36DJxbh3EomBAWk151gizVmCT1MB
-		let location = JSON.parse(JSON.stringify(window.location));
-		if (location.search) {
-			let searchParams = new URLSearchParams(location.search);
-			let invite_token = searchParams.get('invite_token');
-			let member_invite_token = searchParams.get('member_invite_token');
-			if (invite_token) this.socket.emit('invite_token', invite_token);
-			if (member_invite_token) this.socket.emit('member_invite_token', member_invite_token);
-		}
+		// let location = JSON.parse(JSON.stringify(window.location));
+		// if (location.search) {
+		// 	let searchParams = new URLSearchParams(location.search);
+		// 	let invite_token = searchParams.get('invite_token');
+		// 	let member_invite_token = searchParams.get('member_invite_token');
+		// 	if (invite_token) this.socket.emit('invite_token', invite_token);
+		// 	if (member_invite_token) this.socket.emit('member_invite_token', member_invite_token);
+		// }
 
-		// this.socket.on('new_message', data => {
-		// 	let conversation = this.conversations.find(x => x.id == data.conversation_id);
-		// 	if (conversation) {
-		// 		// check if message does not exists by ID
-		// 		this.getMessageByID(data).then(message => {
-		// 			if (message && message.conversation_id == conversation.id) {
-		// 				conversation.last_message = message;
-		// 				if (!this.muted) this.message_sound.play();
-		// 			}
-		// 		});
-		// 	}
+		// this.socket.on('new_notification', data => {
+		// 	if (data.user_id == this.auth.id) this.getNotificationByID(data.id);
 		// });
-
-		this.socket.on('new_notification', data => {
-			if (data.user_id == this.auth.id) this.getNotificationByID(data.id);
-		});
-
-		this.socket.on('online_users', data => {
-			this.online_users = data;
-		});
 
 		(function(d) {
 			var js,
@@ -487,6 +483,10 @@ window.app = new window.Vue({
 			clearNotifications: 'notifications/clear',
 			getBookings: 'bookings/index'
 		}),
+
+		isOnline(userId) {
+			return this.onlineUsers.find(x => x.id == userId);
+		},
 
 		async getMessageByID(messageID) {
 			let message = await window.axios.get(`/messages/${messageID}`).catch(() => {});
@@ -692,9 +692,9 @@ window.app = new window.Vue({
 		rejectCall() {
 			this.call_sound.pause();
 			this.call_sound.currentTime = 0;
-			this.socket.emit('live_call_reject', {
-				conversation_id: this.callConversation.id
-			});
+			// this.socket.emit('live_call_reject', {
+			// 	conversation_id: this.callConversation.id
+			// });
 			this.$refs['videoCall'].endCall();
 			this.callWindow = this.caller = this.callConversation = null;
 		},
@@ -775,41 +775,14 @@ window.app = new window.Vue({
 
 window.Vue.prototype.$echo = new Echo({
 	broadcaster: 'pusher',
-	key: 'anyKey',
-	wsHost: window.location.hostname,
-	wsPort: 6001,
-	wssPort: 6001,
+	key: '7f5c422b76e0eb6981a8',
 	disableStats: true,
 	encrypted: true,
 	namespace: 'Modules.Frontend.Events',
-	enabledTransports: ['ws', 'wss'],
+	cluster: 'ap4',
 	auth: {
 		headers: {
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
 	}
 });
-window.app.$echo.private('AppChannel').listen('NewMessageEvent', e => {
-	let conversation = window.app.conversations.find(x => x.id == e.message.conversation_id);
-	if (conversation) {
-		//window.app.$set(conversation.last_message, 'is_read', false);
-		window.app.getMessageByID(e.message.id).then(message => {
-			if (message) {
-				let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
-				if (conversation) {
-					conversation.last_message = message;
-				}
-				if (!window.app.$root.muted) window.app.$root.message_sound.play();
-			}
-		});
-	}
-});
-// window.Echo.private('chat').listenForWhisper('typing', e => {
-// 	alert(e);
-// });
-// setTimeout(() => {
-// 	window.Echo.private('chat').whisper('typing', {
-// 		user: 'eww',
-// 		typing: true
-// 	});
-// }, 3000);

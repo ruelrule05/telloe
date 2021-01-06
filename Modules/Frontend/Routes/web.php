@@ -116,6 +116,11 @@ Route::group(
                 Route::get('zoom/install', 'ZoomController@install')->name('zoominstall');
                 Route::get('zoom/remove', 'ZoomController@remove')->name('zoomremove');
                 Route::get('zoom/create_meeting', 'ZoomController@createMeeting')->name('zoomcreateMeeting');
+
+                // Xirsys
+                Route::get('xirsys/ice', 'XirsysController@getIceServers');
+                Route::get('xirsys/token', 'XirsysController@getToken');
+                Route::get('xirsys/host', 'XirsysController@gethost');
             });
 
             // Booking page

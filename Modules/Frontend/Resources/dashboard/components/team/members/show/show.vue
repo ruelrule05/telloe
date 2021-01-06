@@ -31,6 +31,8 @@
 					<span v-if="!member.member_user.profile_image">
 						{{ member.member_user.initials }}
 					</span>
+
+					<i v-if="$root.isOnline(member.member_user_id)" class="online-status bg-success">&nbsp;</i>
 				</div>
 				<h1 class="h3 font-heading mt-2 mb-0">{{ member.full_name }}</h1>
 				<div class="text-muted mb-1">{{ member.email }}</div>

@@ -98,7 +98,7 @@ export default {
 			let filteredUsers = [];
 			let trimmedQuery = this.userSearch.trim().toLowerCase();
 			this.users.forEach(user => {
-				if (user.user.full_name.toLowerCase().includes(trimmedQuery)) filteredUsers.push(user);
+				if (user.user.full_name.toLowerCase().includes(trimmedQuery) || user.user.email.toLowerCase().includes(trimmedQuery)) filteredUsers.push(user);
 			});
 
 			return filteredUsers;
@@ -149,7 +149,7 @@ export default {
 		});
 		this.getContacts({ nopaginate: true });
 		this.getMembers();
-		this.$root.socket.on('new_conversation', data => {
+		this.$root.appChannel.listenForWhisper('newConversation', data => {
 			if (data.member_ids.find(x => x == this.$root.auth.id)) {
 				let conversation = this.conversations.find(x => x.id == data.conversation_id);
 				if (!conversation) this.getConversation(data.conversation_id);
@@ -195,7 +195,7 @@ export default {
 		},
 
 		async getConversation(conversation_id) {
-			await this.showConversation(conversation_id);
+			await this.showConversation({ id: conversation_id });
 			let conversation = this.conversations.find(x => x.id == conversation_id);
 			if (conversation) this.setConversation(conversation);
 		},
@@ -213,7 +213,7 @@ export default {
 
 				this.storeConversation({ members: member_ids }).then(conversation => {
 					if (conversation.id != this.$route.params.id) this.setConversation(conversation);
-					this.$root.socket.emit('new_conversation', { member_ids: member_ids, conversation_id: conversation.id });
+					this.$root.appChannel.whisper('newConversation', { member_ids: member_ids, conversation_id: conversation.id });
 				});
 				this.$refs['newConversationModal'].hide();
 			}

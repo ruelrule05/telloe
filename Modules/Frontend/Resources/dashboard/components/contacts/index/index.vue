@@ -50,6 +50,7 @@
 											<div class="d-flex align-items-center">
 												<div class="user-profile-image user-profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
 													<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
+													<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status bg-success">&nbsp;</i>
 												</div>
 												<div class="ml-2 overflow-hidden flex-1">
 													<h6 class="font-heading mb-0 text-ellipsis">{{ contact.contact_user.full_name }}</h6>

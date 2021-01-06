@@ -134,9 +134,9 @@ export default {
 		});
 		this.getServices();
 		this.getContacts();
-		this.$root.socket.on('invite_token', invite_token => {
-			if (invite_token) this.getContactFromInviteToken(invite_token);
-		});
+		// this.$root.socket.on('invite_token', invite_token => {
+		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
+		// });
 	},
 
 	mounted() {

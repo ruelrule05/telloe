@@ -26,8 +26,8 @@ import CallMenuIcon from '../../../icons/call-menu';
 import CommentIcon from '../../../icons/comment';
 
 import Tooltip from '../../../js/directives/tooltip.js';
-// import io from 'socket.io-client';
-// window.io = io;
+import io from 'socket.io-client';
+window.io = io;
 
 require('../../../js/xirsys/xirsys-signal.js');
 require('../../../js/xirsys/xirsys-p2group.js');
@@ -99,8 +99,7 @@ export default {
 		peer: null,
 		username: '',
 		token: '',
-		host: '',
-		isLoading: false
+		host: ''
 	}),
 
 	watch: {
@@ -125,67 +124,46 @@ export default {
 					this.incomingCall(conversation);
 				}
 			});
+			this.$root.appChannel.listenForWhisper('liveCallAnswer', data => {
+				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
+				if (conversation) {
+					this.status = 'ongoing';
+				}
+			});
 			this.$root.appChannel.listenForWhisper('liveCallEnd', data => {
-				if (this.peer) {
-					this.deleteRemoteStream(data.uid);
-					this.peer.hangup(data.uid);
-					if (this.peer.length() == 0) {
-						this.endCall(false);
-					}
+				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
+				if (conversation) {
+					this.endCall(false);
 				}
 			});
-			this.$root.appChannel.listenForWhisper('liveCallPresenter', data => {
-				if (data.presenter) {
-					let remoteVideo = document.querySelector(`#${data.username}`);
-					if (remoteVideo) {
-						this.presenter = data.presenter;
-						document.querySelector('#presenter-container').append(remoteVideo);
-						let member;
-						if (data.presenter == this.$root.conversation.user_id) {
-							member = this.$root.conversation.user;
-						} else {
-							member = this.$root.conversation.members.find(x => x.user_id == data.presenter).user;
-						}
-						if (member) {
-							this.presenterUser = member;
-						}
-					}
-				} else {
-					this.presenterUser = {};
-					this.presenter = null;
-					let remoteStreams = document.querySelector('#remote-streams');
-					let presenterContainerNodes = [...document.querySelectorAll('#presenter-container > .remote-video')];
-					presenterContainerNodes.forEach(el => {
-						remoteStreams.append(el);
-					});
-				}
-			});
+		},
+
+		'$root.auth': function(value) {
+			if (value) {
+				this.username = this.guid();
+				this.getXirsys();
+			}
 		}
 	},
 
 	created() {
 		this.notification_sound = new Audio(`/notifications/call.mp3`);
+		window.onbeforeunload = () => {
+			//e = e || window.event;
+			this.endCall();
+		};
 	},
 
 	methods: {
-		async getXirsys() {
-			return new Promise(resolve => {
-				let completeCount = 0;
-				window.axios.get('/xirsys/ice').then(response => {
-					this.iceServers = response.data.v.iceServers;
-					completeCount++;
-					if (completeCount == 3) resolve();
-				});
-				window.axios.get(`/xirsys/token?id=${this.username}`).then(response => {
-					this.token = response.data.v;
-					completeCount++;
-					if (completeCount == 3) resolve();
-				});
-				window.axios.get(`/xirsys/host?id=${this.username}`).then(response => {
-					this.host = response.data.v;
-					completeCount++;
-					if (completeCount == 3) resolve();
-				});
+		getXirsys() {
+			window.axios.get('/xirsys/ice').then(response => {
+				this.iceServers = response.data.v.iceServers;
+			});
+			window.axios.get(`/xirsys/token?id=${this.username}`).then(response => {
+				this.token = response.data.v;
+			});
+			window.axios.get(`/xirsys/host?id=${this.username}`).then(response => {
+				this.host = response.data.v;
 			});
 		},
 
@@ -196,7 +174,7 @@ export default {
 					.toString(16)
 					.substring(1);
 			}
-			return s + s4() + s4() + this.$root.auth.id;
+			return s + s4() + s4();
 		},
 
 		callRemotePeer() {
@@ -213,18 +191,17 @@ export default {
 			videoContainer.classList.add('video-container');
 			videoContainer.classList.add('position-relative');
 			videoContainer.classList.add('remote-video');
-			videoContainer.id = uid;
 			let videoEl = document.createElement('video');
 			videoEl.srcObject = stream;
 			videoEl.classList.add('w-100');
 			videoEl.classList.add('h-auto');
-			videoEl.classList.add('position-absolute-center');
 			videoEl.controls = false;
 			videoEl.autoplay = true;
 			videoEl.playsinline = true;
 			videoEl.disablePictureInPicture = true;
+			videoEl.id = uid;
 			videoContainer.appendChild(videoEl);
-			this.$refs['remoteStreams'].appendChild(videoContainer);
+			this.$refs['remoteStreams'].appendChild(videoEl);
 		},
 
 		onStartCall(evt) {
@@ -238,23 +215,8 @@ export default {
 			this.peer.on(this.peer.peerConnSuccess, this.onStartCall);
 		},
 
-		deleteRemoteStream(uid) {
-			let remoteVideo = document.querySelector(`.video-container#${uid}`);
-			if (remoteVideo) {
-				remoteVideo.remove();
-			}
-		},
-
-		onStopCall(uid) {
-			this.deleteRemoteStream(uid);
-			this.peer.hangup(uid);
-			if (this.peer.length() == 0) {
-				this.endCall(false);
-			}
-		},
-
 		async xirsys() {
-			await this.addLocalStream();
+			this.addLocalStream();
 
 			this.signal = new window.$xirsys.signal(this.host + '/v2/' + this.token, this.username);
 			this.signal.on('message', msg => {
@@ -278,24 +240,18 @@ export default {
 								var user = users[i];
 								if (user === this.remoteCallID) {
 									this.callRemotePeer();
+									break;
 								}
 							}
 						}
 						break;
-
-					// new peer connected
-					case 'peer_connected':
-						if (fromPeer != this.username) {
-							this.notification_sound.pause();
-							this.status = 'ongoing';
-						}
-						break;
-
 					//peer gone.
 					case 'peer_removed':
+						//if(fromPeer == remoteCallID) onStopCall();
+						//todo - ceck if peer is one that is connected to us and stop that call.
 						var p = this.peer.getLivePeer(fromPeer);
 						if (!!p) {
-							this.onStopCall(p.id);
+							//onStopCall(p.id);
 						}
 						break;
 				}
@@ -405,10 +361,6 @@ export default {
 
 		async initConnection() {
 			// Xirsys
-			this.isLoading = true;
-			this.username = this.guid();
-			await this.getXirsys();
-			this.isLoading = false;
 			this.xirsys();
 
 			// RTCMultiConnection
@@ -466,12 +418,16 @@ export default {
 
 		toggleVideo() {
 			this.isVideoStopped = !this.isVideoStopped;
+			this.connections.forEach(connection => {
+				connection.videoSender.track.enabled = !this.isVideoStopped;
+			});
 			if (this.localStream) this.localStream.getVideoTracks()[0].enabled = !this.isVideoStopped;
 		},
 
-		async outgoingCall(conversation, camera = true) {
+		outgoingCall(conversation, camera = true) {
 			this.open = true;
 			this.conversation = conversation;
+			this.initConnection();
 			this.action = 'outgoing';
 			$(this.$refs['modal'])
 				.modal({ keyboard: false, backdrop: 'static' })
@@ -479,8 +435,6 @@ export default {
 			this.isVideoStopped = !camera;
 			this.isIncoming = false;
 			clearTimeout(this.callTimeout);
-
-			await this.initConnection();
 			if (!this.$root.muted) this.notification_sound.play();
 			this.$root.appChannel.whisper('liveCallIncoming', {
 				conversation_id: conversation.id,
@@ -504,15 +458,15 @@ export default {
 			this.action = 'incoming';
 		},
 
-		answerCall() {
+		async answerCall() {
 			this.isIncoming = false;
 			this.status = 'ongoing';
-			// this.$root.appChannel.whisper('liveCallAnswer', {
-			// 	conversation_id: this.$root.callConversation.id,
-			// 	user_id: this.$root.auth.id
-			// });
+			this.$root.appChannel.whisper('liveCallAnswer', {
+				conversation_id: this.$root.callConversation.id,
+				user_id: this.$root.auth.id
+			});
 			this.notification_sound.pause();
-			this.initConnection();
+			await this.initConnection();
 		},
 
 		rejectCall() {
@@ -524,6 +478,7 @@ export default {
 		},
 
 		endCall(emit = true) {
+			console.log('endCall');
 			this.caller = null;
 			this.localCameraReady = false;
 			this.remoteCameraReady = false;
@@ -542,15 +497,8 @@ export default {
 			this.isShrinked = false;
 			if (emit) {
 				this.$root.appChannel.whisper('liveCallEnd', {
-					uid: this.username
+					conversation_id: this.conversation.id
 				});
-			}
-
-			if (this.peer) {
-				this.peer.close();
-			}
-			if (this.signal) {
-				this.signal.close();
 			}
 
 			this.stopLocalStream();
@@ -730,13 +678,19 @@ export default {
 			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
 			if (this.localStream) {
 				let cameraTrack = this.localStream.getVideoTracks()[0];
-				this.peer.updateLocalStream(cameraTrack);
+				this.connections.forEach(connection => {
+					if (connection.videoSender) {
+						connection.videoSender.replaceTrack(cameraTrack);
+					}
+				});
 				this.$refs['cameraPreview'].srcObject = null;
 				this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
 				this.$refs['cameraPreview'].play();
 				this.isScreenSharing = false;
 				this.presenter = null;
-				this.$root.appChannel.whisper('liveCallPresenter', {
+
+				this.$root.socket.emit('live_call_presenter', {
+					conversation_id: this.$root.callConversation.id,
 					presenter: this.presenter
 				});
 			}
@@ -754,7 +708,11 @@ export default {
 				});
 				this.localStream = screenStreams;
 				let screenTrack = this.localStream.getVideoTracks()[0];
-				this.peer.updateLocalStream(screenTrack);
+				this.connections.forEach(connection => {
+					if (connection.videoSender) {
+						connection.videoSender.replaceTrack(screenTrack);
+					}
+				});
 				this.$refs['cameraPreview'].srcObject = null;
 				this.$refs['cameraPreview'].srcObject = new MediaStream(screenStreams.getVideoTracks());
 				this.$refs['cameraPreview'].play();
@@ -764,9 +722,9 @@ export default {
 				});
 				this.presenter = this.$root.auth.id;
 
-				this.$root.appChannel.whisper('liveCallPresenter', {
-					presenter: this.presenter,
-					username: this.username
+				this.$root.socket.emit('live_call_presenter', {
+					conversation_id: this.$root.callConversation.id,
+					presenter: this.presenter
 				});
 			}
 		},

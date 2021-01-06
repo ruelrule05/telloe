@@ -73,6 +73,7 @@
 												</div>
 											</template>
 										</div>
+										<i v-if="$root.isOnline(conversation.member.id)" class="online-status bg-success">&nbsp;</i>
 									</div>
 									<div class="media-body pl-3 overflow-hidden">
 										<div class="h6 mb-0 font-heading" :class="{ 'font-weight-normal': conversation.last_message.is_read }">{{ conversation.member.full_name || conversation.name }}</div>
@@ -137,64 +138,6 @@
 				<div class="d-flex justify-content-between w-100">
 					<button class="btn btn-light shadow-none" type="button" @click="$refs['newConversationModal'].hide()">Cancel</button>
 					<button class="btn btn-primary" type="button" :disabled="newConversation.members.length == 0" @click="createConversation()">Create</button>
-				</div>
-			</template>
-		</modal>
-
-		<!-- Add contact modal -->
-		<modal ref="addContactModal" title="Add Contact" :form="true" @submit="createContact" @hidden="resetNewContact()" :close-button="false">
-			<div class="form-group">
-				<label class="form-label">Email</label>
-				<input type="email" class="form-control" v-model="newContact.email" data-required />
-			</div>
-			<div class="form-row form-group">
-				<div class="col">
-					<label class="form-label">First Name (Optional)</label>
-					<input type="text" class="form-control" v-model="newContact.first_name" />
-				</div>
-				<div class="col">
-					<label class="form-label">Last Name (Optional)</label>
-					<input type="text" class="form-control" v-model="newContact.last_name" />
-				</div>
-			</div>
-			<div class="form-group">
-				<strong>Available services</strong>
-				<div class="d-flex flex-wrap mx-n1">
-					<template v-for="service in services">
-						<div :key="service.id" v-if="service.is_available" class="mt-2 w-50 px-1">
-							<div class="border rounded shadow-sm py-2 px-3 d-flex">
-								<div>
-									<h6 class="font-heading mb-0">{{ service.name }}</h6>
-									<small class="text-gray d-block">{{ service.duration }} minutes</small>
-								</div>
-								<div class="ml-auto">
-									<toggle-switch :value="newContact.blacklisted_services.find(x => x == service.id) ? false : true" @input="toggleServiceBlacklist($event, service)"></toggle-switch>
-								</div>
-							</div>
-						</div>
-					</template>
-				</div>
-			</div>
-
-			<div class="form-group" v-if="($root.auth.custom_fields || []).length > 0">
-				<strong>Fields (Optional)</strong>
-				<div class="form-row">
-					<div class="col-6" v-for="field in $root.auth.custom_fields" :key="field">
-						<label class="form-label">{{ field }}</label>
-						<input type="text" class="form-control" v-model="newContact.custom_fields[field]" />
-					</div>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<strong class="mb-1 d-block">Invitation Message (Optional)</strong>
-				<textarea cols="10" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
-			</div>
-
-			<template v-slot:footer>
-				<div class="d-flex w-100 justify-content-between">
-					<button class="btn btn-light shadow-sm" type="button" data-dismiss="modal">Cancel</button>
-					<button class="btn btn-primary" type="submit">Add</button>
 				</div>
 			</template>
 		</modal>

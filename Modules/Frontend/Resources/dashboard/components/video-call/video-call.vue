@@ -4,8 +4,17 @@
 			<div v-if="open" class="video-call-modal-container position-fixed w-100 h-100">
 				<div class="modal video-call-modal show d-block" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', { 'is-fullscreen show': status == 'ongoing' }]">
 					<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-						<div class="modal-content rounded h-100">
+						<div class="modal-content rounded h-100 overflow-hidden">
 							<div v-if="$root.callConversation" class="modal-body p-0 h-100 rounded" :class="{ 'overflow-hidden': isShrinked }">
+								<div v-if="isLoading" class="position-absolute-center w-100 h-100 bg-white" id="loader">
+									<span class="spinner position-absolute-center text-center">
+										<span class="spinner-border text-primary align-middle" role="status" aria-hidden="true"></span>
+										<div class="mt-3 h5 font-weight-light mb-0">
+											Connecting..
+										</div>
+									</span>
+								</div>
+
 								<div class="video-call w-100 position-relative rounded" v-cloak>
 									<div v-if="!status" class="caller position-absolute-center text-center bg-white">
 										<!-- Outgoing -->

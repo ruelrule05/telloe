@@ -73,9 +73,9 @@ export default {
 		this.$root.contentloading = !this.ready;
 		this.getServices();
 		this.getMembers();
-		this.$root.socket.on('member_invite_token', invite_token => {
-			if (invite_token) this.getMemberFromInviteToken(invite_token);
-		});
+		// this.$root.socket.on('member_invite_token', invite_token => {
+		// 	if (invite_token) this.getMemberFromInviteToken(invite_token);
+		// });
 	},
 
 	mounted() {
