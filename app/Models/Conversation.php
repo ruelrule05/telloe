@@ -72,8 +72,10 @@ class Conversation extends BaseModel
         if ($last_message) {
             $last_message = $last_message->load('user')->toArray();
 
-            if ($last_message['type'] != 'text') {
+            if ($last_message['type'] != 'text' && $last_message['type'] != 'call_ended' && $last_message['type'] != 'call_failed') {
                 $last_message['message'] = $last_message['type'];
+            } elseif ($last_message['type'] == 'call_failed') {
+                $last_message['message'] = $last_message['user_id'] == Auth::user()->id ? 'Call failed' : 'You missed a call';
             }
             if (Auth::check() && $last_message['user_id'] == Auth::user()->id) {
                 $last_message['message'] = 'You: ' . $last_message['message'];

@@ -110,7 +110,7 @@
 															<close-icon class="fill-white position-absolute-center"></close-icon>
 														</button>
 													</template>
-													<button v-else type="button" class="btn btn-danger btn-lg badge-pill position-relative" :class="[isShrinked ? 'p-1 mx-1' : 'px-2']" @click="endCall()">
+													<button v-else type="button" class="btn btn-danger btn-lg badge-pill position-relative" :class="[isShrinked ? 'p-1 mx-1' : 'px-2']" @click="endCall(true, true)">
 														<call-menu-icon fill="white" class="position-absolute-center"></call-menu-icon>
 													</button>
 												</template>

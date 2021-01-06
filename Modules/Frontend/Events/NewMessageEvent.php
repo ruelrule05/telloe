@@ -4,12 +4,12 @@ namespace Modules\Frontend\Events;
 
 use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewMessageEvent implements ShouldBroadcast
+class NewMessageEvent implements ShouldBroadcastNow
 {
     use SerializesModels, Dispatchable, InteractsWithSockets;
 
@@ -32,9 +32,7 @@ class NewMessageEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return [
-            new PresenceChannel("conversations.{$this->message->conversation_id}"),
-        ];
+        return new PrivateChannel("conversations.{$this->message->conversation_id}");
     }
 
     public function broadcastWith()

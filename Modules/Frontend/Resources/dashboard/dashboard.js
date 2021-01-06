@@ -408,19 +408,7 @@ window.app = new window.Vue({
 
 			this.appChannel = this.$echo.private('AppChannel');
 			this.appChannel.listenForWhisper('newMessage', message => {
-				let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
-				if (conversation) {
-					//window.app.$set(conversation.last_message, 'is_read', false);
-					window.app.getMessageByID(message.id).then(message => {
-						if (message) {
-							let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
-							if (conversation) {
-								conversation.last_message = message;
-							}
-							if (!window.app.$root.muted) window.app.$root.message_sound.play();
-						}
-					});
-				}
+				this.newMessage(message);
 			});
 		});
 
@@ -428,16 +416,6 @@ window.app = new window.Vue({
 		if (this.$route.name != 'conversations') this.getConversations();
 		this.call_sound = new Audio(`/notifications/call.mp3`);
 		this.message_sound = new Audio('/notifications/new_message.mp3');
-
-		// https://telloe.app?invite_token=ry36DJxbh3EomBAWk151gizVmCT1MB
-		// let location = JSON.parse(JSON.stringify(window.location));
-		// if (location.search) {
-		// 	let searchParams = new URLSearchParams(location.search);
-		// 	let invite_token = searchParams.get('invite_token');
-		// 	let member_invite_token = searchParams.get('member_invite_token');
-		// 	if (invite_token) this.socket.emit('invite_token', invite_token);
-		// 	if (member_invite_token) this.socket.emit('member_invite_token', member_invite_token);
-		// }
 
 		// this.socket.on('new_notification', data => {
 		// 	if (data.user_id == this.auth.id) this.getNotificationByID(data.id);
@@ -483,6 +461,22 @@ window.app = new window.Vue({
 			clearNotifications: 'notifications/clear',
 			getBookings: 'bookings/index'
 		}),
+
+		newMessage(message) {
+			let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
+			if (conversation) {
+				//window.app.$set(conversation.last_message, 'is_read', false);
+				window.app.getMessageByID(message.id).then(message => {
+					if (message) {
+						let conversation = window.app.conversations.find(x => x.id == message.conversation_id);
+						if (conversation) {
+							conversation.last_message = message;
+						}
+						if (!window.app.$root.muted) window.app.$root.message_sound.play();
+					}
+				});
+			}
+		},
 
 		isOnline(userId) {
 			return this.onlineUsers.find(x => x.id == userId);
@@ -692,9 +686,6 @@ window.app = new window.Vue({
 		rejectCall() {
 			this.call_sound.pause();
 			this.call_sound.currentTime = 0;
-			// this.socket.emit('live_call_reject', {
-			// 	conversation_id: this.callConversation.id
-			// });
 			this.$refs['videoCall'].endCall();
 			this.callWindow = this.caller = this.callConversation = null;
 		},

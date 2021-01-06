@@ -100,93 +100,107 @@
 								<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
 							</div>
 							<div v-for="(grouped_message, index) in grouped_messages" :key="index" class="w-100 message-group">
-								<small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{ 'text-right': grouped_message.outgoing }">{{ grouped_message.sender.full_name }}</small>
-								<div class="d-flex align-items-end message-body" :class="{ 'outgoing-message text-right flex-row-reverse': grouped_message.outgoing }">
-									<div>
-										<div class="user-profile-image" :style="{ backgroundImage: 'url(' + grouped_message.sender.profile_image + ')' }">
-											<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
-										</div>
+								<div v-if="grouped_message.type == 'call_ended'" class="text-center text-gray">
+									<div v-for="message in grouped_message.messages" :key="message.id" class="position-relative hrule">
+										<small class="bg-white position-relative px-2 font-weight-light"> {{ message.message }} </small>
 									</div>
-									<div class="px-1 flex-1">
-										<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item">
-											<div class="text-wrap position-relative message-content" :class="{ 'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type) }">
-												<div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
-													<div class="action-content position-relative line-height-1">
-														<div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
-															<span v-if="message.tags.length > 0" class="action-label">{{ message.tags.length }}</span>
-															<bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
-														</div>
-														<div class="dropdown-menu dropdown-menu-x-center p-1 bg-light" @click.stop>
-															<vue-form-validate class="input-group border rounded overflow-hidden" @submit="updateMessageTags(message)">
-																<input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add tag" data-required v-model="message.newTag" />
-																<div class="input-group-append border-left">
-																	<button type="submit" class="btn btn-light border-0 p-1 btn-sm line-height-1">
-																		<plus-icon width="20" height="20" class="no-action"></plus-icon>
-																	</button>
-																</div>
-															</vue-form-validate>
+								</div>
+								<div v-else-if="grouped_message.type == 'call_failed'" class="text-center text-gray">
+									<div v-for="message in grouped_message.messages" :key="message.id" class="position-relative hrule">
+										<small class="bg-white position-relative px-2 font-weight-light">
+											{{ message.user_id == $root.auth.id ? 'Call failed' : 'You missed a call' }}
+										</small>
+									</div>
+								</div>
+								<template v-else>
+									<small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{ 'text-right': grouped_message.outgoing }">{{ grouped_message.sender.full_name }}</small>
+									<div class="d-flex align-items-end message-body" :class="{ 'outgoing-message text-right flex-row-reverse': grouped_message.outgoing }">
+										<div>
+											<div class="user-profile-image" :style="{ backgroundImage: 'url(' + grouped_message.sender.profile_image + ')' }">
+												<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
+											</div>
+										</div>
+										<div class="px-1 flex-1">
+											<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item">
+												<div class="text-wrap position-relative message-content" :class="{ 'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type) }">
+													<div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
+														<div class="action-content position-relative line-height-1">
+															<div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
+																<span v-if="message.tags.length > 0" class="action-label">{{ message.tags.length }}</span>
+																<bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
+															</div>
+															<div class="dropdown-menu dropdown-menu-x-center p-1 bg-light" @click.stop>
+																<vue-form-validate class="input-group border rounded overflow-hidden" @submit="updateMessageTags(message)">
+																	<input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add tag" data-required v-model="message.newTag" />
+																	<div class="input-group-append border-left">
+																		<button type="submit" class="btn btn-light border-0 p-1 btn-sm line-height-1">
+																			<plus-icon width="20" height="20" class="no-action"></plus-icon>
+																		</button>
+																	</div>
+																</vue-form-validate>
 
-															<div class="text-left" v-if="message.tags.length > 0">
-																<div v-for="(tag, index) in message.tags" :key="tag.id" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
-																	{{ tag }}&nbsp;
-																	<close-icon
-																		height="8"
-																		width="8"
-																		transform="scale(2.5)"
-																		class="cursor-pointer no-action"
-																		@click.native="
-																			message.tags.splice(index, 1);
-																			updateMessageTags(message);
-																		"
-																	></close-icon>
+																<div class="text-left" v-if="message.tags.length > 0">
+																	<div v-for="(tag, index) in message.tags" :key="tag.id" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
+																		{{ tag }}&nbsp;
+																		<close-icon
+																			height="8"
+																			width="8"
+																			transform="scale(2.5)"
+																			class="cursor-pointer no-action"
+																			@click.native="
+																				message.tags.splice(index, 1);
+																				updateMessageTags(message);
+																			"
+																		></close-icon>
+																	</div>
 																</div>
 															</div>
 														</div>
-													</div>
-													<!-- <div v-tooltip.top="'History'" class="action-content mx-1 cursor-pointer line-height-1">
+														<!-- <div v-tooltip.top="'History'" class="action-content mx-1 cursor-pointer line-height-1">
                                                         <div class="action-button">
                                                             <history-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''" :class="{'active': message.is_history}" @click.native="markHistory(message)"></history-icon>
                                                         </div>
                                                     </div> -->
-													<div v-if="grouped_message.outgoing" v-tooltip.top="'Delete'" class="action-content cursor-pointer line-height-1">
-														<div class="action-button">
-															<trash-icon
-																height="20"
-																width="20"
-																@click.native="
-																	selectedMessage = message;
-																	$refs['deleteMessageModal'].show();
-																"
-															></trash-icon>
+														<div v-if="grouped_message.outgoing" v-tooltip.top="'Delete'" class="action-content cursor-pointer line-height-1">
+															<div class="action-button">
+																<trash-icon
+																	height="20"
+																	width="20"
+																	@click.native="
+																		selectedMessage = message;
+																		$refs['deleteMessageModal'].show();
+																	"
+																></trash-icon>
+															</div>
 														</div>
-													</div>
 
-													<div class="message-metalabel text-nowrap text-secondary small position-absolute">
-														<div v-if="message.is_history">
-															<history-icon height="16" width="16" class="no-action"></history-icon>
+														<div class="message-metalabel text-nowrap text-secondary small position-absolute">
+															<div v-if="message.is_history">
+																<history-icon height="16" width="16" class="no-action"></history-icon>
+															</div>
+															<div>{{ message.tags.join(', ') }}</div>
 														</div>
-														<div>{{ message.tags.join(', ') }}</div>
-													</div>
 
-													<div v-if="['image', 'video', 'audio', 'file'].find(x => x == message.type)" v-tooltip.top="'Download'" class="action-content cursor-pointer line-height-1">
-														<div class="action-button">
-															<download-icon height="20" width="20" @click.native="$root.downloadMedia(message)"></download-icon>
+														<div v-if="['image', 'video', 'audio', 'file'].find(x => x == message.type)" v-tooltip.top="'Download'" class="action-content cursor-pointer line-height-1">
+															<div class="action-button">
+																<download-icon height="20" width="20" @click.native="$root.downloadMedia(message)"></download-icon>
+															</div>
 														</div>
 													</div>
+													<message-type :message="message" :outgoing="grouped_message.outgoing"></message-type>
 												</div>
-												<message-type :message="message" :outgoing="grouped_message.outgoing"></message-type>
 											</div>
 										</div>
 									</div>
-								</div>
-								<small v-if="index == grouped_messages.length - 1" class="text-secondary d-flex align-items-center" :class="{ 'justify-content-end': grouped_message.outgoing }">
-									<template v-if="grouped_message.outgoing && grouped_message.is_read">
-										Seen&nbsp;
-										<eye-icon width="14" height="14" class="fill-primary"></eye-icon>
-										&nbsp;•
-									</template>
-									{{ messageTimezoneTime(grouped_message) }}
-								</small>
+									<small v-if="index == grouped_messages.length - 1" class="text-secondary d-flex align-items-center" :class="{ 'justify-content-end': grouped_message.outgoing }">
+										<template v-if="grouped_message.outgoing && grouped_message.is_read">
+											Seen&nbsp;
+											<eye-icon width="14" height="14" class="fill-primary"></eye-icon>
+											&nbsp;•
+										</template>
+										{{ messageTimezoneTime(grouped_message) }}
+									</small>
+								</template>
 							</div>
 
 							<div class="typing-users position-absolute pl-2">

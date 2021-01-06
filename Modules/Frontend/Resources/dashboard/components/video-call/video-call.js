@@ -26,6 +26,7 @@ import CallMenuIcon from '../../../icons/call-menu';
 import CommentIcon from '../../../icons/comment';
 
 import Tooltip from '../../../js/directives/tooltip.js';
+import { mapActions } from 'vuex';
 // import io from 'socket.io-client';
 // window.io = io;
 
@@ -100,7 +101,10 @@ export default {
 		username: '',
 		token: '',
 		host: '',
-		isLoading: false
+		isLoading: false,
+		duration: 0,
+		timer: null,
+		isCalling: false
 	}),
 
 	watch: {
@@ -132,6 +136,8 @@ export default {
 					if (this.peer.length() == 0) {
 						this.endCall(false);
 					}
+				} else {
+					this.endCall(false);
 				}
 			});
 			this.$root.appChannel.listenForWhisper('liveCallPresenter', data => {
@@ -165,9 +171,35 @@ export default {
 
 	created() {
 		this.notification_sound = new Audio(`/notifications/call.mp3`);
+		window.onbeforeunload = () => {
+			//e = e || window.event;
+			this.endCall(true, true, true);
+		};
 	},
 
 	methods: {
+		...mapActions({
+			storeMessage: 'messages/store'
+		}),
+
+		startTimer() {
+			this.timer = setInterval(() => {
+				this.duration++;
+			}, 1000);
+		},
+
+		secondsToHms(d) {
+			d = Number(d);
+			var h = Math.floor(d / 3600);
+			var m = Math.floor((d % 3600) / 60);
+			var s = Math.floor((d % 3600) % 60);
+
+			var hDisplay = h > 0 ? h + 'hr' : '';
+			var mDisplay = m > 0 ? m + 'm' : '';
+			var sDisplay = s > 0 ? s + 's' : '';
+			return hDisplay + ' ' + mDisplay + ' ' + sDisplay;
+		},
+
 		async getXirsys() {
 			return new Promise(resolve => {
 				let completeCount = 0;
@@ -208,6 +240,7 @@ export default {
 		},
 
 		setRemoteStream(stream, uid) {
+			// check if exists
 			let videoContainer = document.createElement('div');
 			videoContainer.classList.add('flex-grow-1');
 			videoContainer.classList.add('video-container');
@@ -287,7 +320,10 @@ export default {
 					case 'peer_connected':
 						if (fromPeer != this.username) {
 							this.notification_sound.pause();
-							this.status = 'ongoing';
+							if (this.status != 'ongoing') {
+								this.status = 'ongoing';
+								this.startTimer();
+							}
 						}
 						break;
 
@@ -470,6 +506,7 @@ export default {
 		},
 
 		async outgoingCall(conversation, camera = true) {
+			this.isCalling = true;
 			this.open = true;
 			this.conversation = conversation;
 			this.action = 'outgoing';
@@ -489,8 +526,22 @@ export default {
 			});
 			this.$root.callConversation = conversation;
 			this.callTimeout = setTimeout(() => {
-				//if (!this.status) this.endCall();
+				if (!this.status) {
+					this.endCall();
+				}
 			}, 15000);
+		},
+
+		async sendMessage(message, broadcast = false) {
+			message.tags = [];
+			message.user_id = this.$root.auth.id;
+			message.broadcast = broadcast;
+			let response = await this.storeMessage(message);
+			this.$root.appChannel.whisper('newMessage', {
+				id: response.id,
+				conversation_id: response.conversation_id,
+				timestamp: response.timestamp
+			});
 		},
 
 		incomingCall(conversation) {
@@ -523,8 +574,30 @@ export default {
 			this.endCall(false);
 		},
 
-		endCall(emit = true) {
+		endCall(emit = true, message = false, broadcast = false) {
+			if (message && this.isCalling) {
+				if (this.status == 'ongoing') {
+					clearInterval(this.timer);
+					this.sendMessage({
+						message: `Call ${this.secondsToHms(this.duration)}`,
+						type: 'call_ended',
+						conversation_id: this.conversation.id
+					});
+				} else if (!this.status) {
+					this.sendMessage(
+						{
+							message: 'Call failed',
+							type: 'call_failed',
+							conversation_id: this.conversation.id
+						},
+						broadcast
+					);
+				}
+			}
+			this.isCalling = false;
+			this.duration = 0;
 			this.caller = null;
+			this.timer = null;
 			this.localCameraReady = false;
 			this.remoteCameraReady = false;
 			this.isAnswered = false;
@@ -540,6 +613,7 @@ export default {
 			this.isFullScreen = false;
 			this.isIncoming = false;
 			this.isShrinked = false;
+
 			if (emit) {
 				this.$root.appChannel.whisper('liveCallEnd', {
 					uid: this.username

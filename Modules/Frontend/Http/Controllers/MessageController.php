@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Image;
 use Mail;
+use Modules\Frontend\Events\NewMessageEvent;
 use Modules\Frontend\Mail\NewMessage;
 
 class MessageController extends Controller
@@ -24,7 +25,7 @@ class MessageController extends Controller
         $timestamp = Carbon::now()->getPreciseTimestamp(3);
         $this->validate($request, [
             'conversation_id' => 'required|exists:conversations,id',
-            'type' => 'required|in:text,emoji,image,audio,video,file',
+            'type' => 'required|in:text,emoji,image,audio,video,file,call_ended,call_failed',
             'message' => 'required',
         ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
@@ -86,6 +87,10 @@ class MessageController extends Controller
             'metadata' => $metadata,
             'timestamp' => $timestamp
         ]);
+
+        if ($request->broadcast == 'true') {
+            broadcast(new NewMessageEvent($message))->toOthers();
+        }
 
         if (! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;

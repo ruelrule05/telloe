@@ -100,7 +100,8 @@ export default {
 		messagePaginateLoading: false,
 		isScreenRecordDownloading: false,
 		channel: null,
-		typingUsers: {}
+		typingUsers: {},
+		duration: 0
 	}),
 
 	watch: {
@@ -181,15 +182,20 @@ export default {
 
 			for (var i = 0; i <= messages.length - 1; i++) {
 				let message_group = { sender: Object.assign({}, messages[i].user) || (messages[i].metadata.is_chatbot ? { id: 'chatbot' } : ''), messages: [messages[i]] };
-				groupMessage();
-				let message = message_group.messages[message_group.messages.length - 1];
 
-				function groupMessage() {
-					const next_message = messages[i + 1];
-					if (next_message && next_message.user && next_message.user.id == message_group.sender.id) {
-						message_group.messages.push(messages[i + 1]);
-						i++;
-						groupMessage();
+				let message = message_group.messages[message_group.messages.length - 1];
+				if (messages[i].type == 'call_ended' || messages[i].type == 'call_failed') {
+					message_group.type = messages[i].type;
+				} else {
+					groupMessage();
+
+					function groupMessage() {
+						const next_message = messages[i + 1];
+						if (next_message && next_message.user && next_message.user.id == message_group.sender.id && next_message.type != 'call_ended' && next_message.type != 'call_failed') {
+							message_group.messages.push(messages[i + 1]);
+							i++;
+							groupMessage();
+						}
 					}
 				}
 
@@ -236,7 +242,7 @@ export default {
 			if (this.channel) {
 				this.$echo.leaveChannel(this.channel.name);
 			}
-			this.channel = this.$echo.join(`conversations.${this.$route.params.id}`);
+			this.channel = this.$echo.private(`conversations.${this.$route.params.id}`);
 
 			this.channel.listenForWhisper('typing', e => {
 				if (this.$root.auth.id != e.userId) {
@@ -249,6 +255,10 @@ export default {
 					let message = this.conversation.paginated_messages.data.find(x => x.id == e.message_id);
 					if (message) this.$set(message, 'is_read', true);
 				}
+			});
+
+			this.channel.listen('NewMessageEvent', message => {
+				this.$root.newMessage(message.message);
 			});
 		},
 
