@@ -5,6 +5,13 @@
  *
  */
 
+ Route::get('/test', function () {
+     App\Models\Notification::create([
+         'user_id' => 120,
+         'description' => '<strong>has accepted your member invitation.',
+         'link' => '/dashboard/team/members/12'
+     ]);
+ });
 Route::get('widget', function () {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
 });

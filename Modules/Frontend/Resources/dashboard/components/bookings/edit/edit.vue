@@ -1,6 +1,6 @@
 <template>
 	<div v-if="booking && selectedService">
-		<div v-show="open" id="edit" class="position-fixed w-100 h-100 bg-gray p-4 overflow-auto" :class="`opacity-${opacity}`">
+		<div v-show="open" id="edit" class="position-fixed w-100 h-100 p-4 overflow-auto" :class="`opacity-${opacity}`">
 			<div class="rounded p-4 w-100 h-10x0 bg-light position-relative">
 				<button type="button" class="btn btn-light shadow-none p-1 badge-pill btn-close" @click="hide()">
 					<close-icon width="30" height="30" transform="scale(1.2)"></close-icon>
@@ -107,7 +107,7 @@
 														<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
 															<div v-tooltip.top="timezoneTooltip(selectedService.coach.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="timeslotClass(timeslot, date)" @click="setSelectedDateAndTimeslot(date, timeslot)">
 																<span class="selected-checkmark position-absolute">
-																	<checkmark-icon  height="30" width="30" class="fill-green"></checkmark-icon>
+																	<checkmark-icon height="30" width="30" class="fill-green"></checkmark-icon>
 																</span>
 																<span class="text-nowrap">{{ timezoneTime(timeslot.time) }}</span>
 															</div>

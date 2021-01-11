@@ -21,14 +21,15 @@ import MicrophoneIcon from '../../../icons/microphone';
 import ArrowBottomLeftIcon from '../../../icons/arrow-bottom-left';
 import ArrowTopRightIcon from '../../../icons/arrow-top-right';
 import MicrophoneAltIcon from '../../../icons/microphone-alt';
+import MicrophoneMute from '../../../icons/microphone-mute';
 import VideocamIcon from '../../../icons/videocam';
 import CallMenuIcon from '../../../icons/call-menu';
 import CommentIcon from '../../../icons/comment';
 
 import Tooltip from '../../../js/directives/tooltip.js';
 import { mapActions } from 'vuex';
-// import io from 'socket.io-client';
-// window.io = io;
+import WaveSurfer from 'wavesurfer.js';
+import WaveSurferMicrophone from '../../../js/plugins/wavesurfer.microphone.min.js';
 
 require('../../../js/xirsys/xirsys-signal.js');
 require('../../../js/xirsys/xirsys-p2group.js');
@@ -50,7 +51,8 @@ export default {
 		MicrophoneAltIcon,
 		VideocamIcon,
 		CallMenuIcon,
-		CommentIcon
+		CommentIcon,
+		MicrophoneMute
 	},
 
 	directives: {
@@ -177,6 +179,8 @@ export default {
 		};
 	},
 
+	mounted() {},
+
 	methods: {
 		...mapActions({
 			storeMessage: 'messages/store'
@@ -256,8 +260,42 @@ export default {
 			videoEl.autoplay = true;
 			videoEl.playsinline = true;
 			videoEl.disablePictureInPicture = true;
+
+			let wavesurferEl = document.createElement('div');
+			wavesurferEl.classList.add('position-absolute-center');
+			wavesurferEl.classList.add('w-50');
+			wavesurferEl.classList.add('d-none');
+			wavesurferEl.id = `wavesurfer-${uid}`;
+
+			let microphoneMute = this.$refs['microphoneMute'].$el.cloneNode(true);
+			microphoneMute.id = `microphone-mute-${uid}`;
+			microphoneMute.classList.add('microphone-mute');
+
 			videoContainer.appendChild(videoEl);
+			videoContainer.appendChild(wavesurferEl);
+			videoContainer.appendChild(microphoneMute);
 			this.$refs['remoteStreams'].appendChild(videoContainer);
+
+			let wavesurfer = WaveSurfer.create({
+				container: document.querySelector(`#wavesurfer-${uid}`),
+				height: 200,
+				barWidth: 3,
+				barHeight: 1,
+				barRadius: 3,
+				interact: true,
+				cursorWidth: 1,
+				cursorColor: 'transparent',
+				hideScrollbar: true,
+				plugins: [WaveSurferMicrophone.create()]
+			});
+			wavesurfer.setCursorColor('transparent');
+			wavesurfer.setProgressColor('#6e82ea');
+			wavesurfer.setWaveColor('#6e82ea');
+			wavesurfer.microphone.start(stream);
+
+			stream.getVideoTracks()[0].onended = () => {
+				console.log('ended');
+			};
 		},
 
 		onStartCall(evt) {
@@ -494,15 +532,28 @@ export default {
 
 		toogleMic() {
 			this.isMuted = !this.isMuted;
-			this.connections.forEach(connection => {
-				connection.audioSender.track.enabled = !this.isMuted;
-			});
-			if (this.localStream) this.localStream.getAudioTracks()[0].enabled = !this.isMuted;
+			if (this.localStream) {
+				this.localStream.getAudioTracks()[0].enabled = !this.isMuted;
+
+				this.conversation.channel.whisper('isMuted', {
+					username: this.username,
+					isMuted: this.isMuted
+				});
+			}
 		},
 
 		toggleVideo() {
 			this.isVideoStopped = !this.isVideoStopped;
-			if (this.localStream) this.localStream.getVideoTracks()[0].enabled = !this.isVideoStopped;
+			if (this.localStream) {
+				this.localStream.getVideoTracks().forEach(track => {
+					track.enabled = !this.isVideoStopped;
+				});
+
+				this.conversation.channel.whisper('toggleVideo', {
+					username: this.username,
+					isVideoStopped: this.isVideoStopped
+				});
+			}
 		},
 
 		async outgoingCall(conversation, camera = true) {
@@ -627,8 +678,6 @@ export default {
 				this.signal.close();
 			}
 
-			this.stopLocalStream();
-
 			this.notification_sound.pause();
 			this.notification_sound.currentTime = 0;
 			this.$root.callConversation = null;
@@ -639,19 +688,9 @@ export default {
 				if (this.draggable) this.draggable.remove();
 				this.draggable = null;
 			}
-			//setTimeout(() => {
 			$(this.$refs['remoteStreams']).empty();
 			if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
-			this.connections.forEach(connection => {
-				connection.localStream.getTracks().forEach(function(track) {
-					track.stop();
-				});
-				connection.close();
-				connection = null;
-			});
-
-			this.connections = [];
-			//}, 150);
+			this.stopLocalStream();
 		},
 
 		fullScreen(state) {

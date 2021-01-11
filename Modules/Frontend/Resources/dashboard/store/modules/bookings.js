@@ -65,7 +65,6 @@ const actions = {
 	async store({ commit }, data) {
 		let response = await window.axios.post(`/${name}`, data, { toasted: true });
 		commit('store', response.data);
-		if (response.data.notification) window.app.socket.emit('new_notification', { user_id: response.data.notification.user_id, id: response.data.notification.id });
 
 		return response.data;
 	},
@@ -73,7 +72,6 @@ const actions = {
 	async update({ commit }, data) {
 		let response = await window.axios.put(`/${name}/${data.id}`, data, { toasted: true });
 		commit('update', response.data);
-		if (response.data.notification) window.app.socket.emit('new_notification', { user_id: response.data.notification.user_id, id: response.data.notification.id });
 
 		return response.data;
 	},

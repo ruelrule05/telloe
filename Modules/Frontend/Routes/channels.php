@@ -11,8 +11,14 @@
 |
 */
 use App\Models\Conversation;
+use App\Models\User;
+
 Broadcast::channel('AppChannel', function () {
     return ['connected' => true];
+});
+Broadcast::channel('users.{user}', function ($auth, $userId) {
+    $user = User::where('id', $userId)->first();
+    return $auth->id == $user->id ? ['id' => $user->id] : ['error' => 'unauthorized'];
 });
 Broadcast::channel('conversations.{conversation}', function ($user, Conversation $conversation) {
     return $user->can('show', $conversation) ? ['id' => $user->id] : ['error' => 'unauthorized'];

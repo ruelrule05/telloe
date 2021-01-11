@@ -2,6 +2,7 @@
 	<div>
 		<transition name="fade">
 			<div v-if="open" class="video-call-modal-container position-fixed w-100 h-100">
+				<microphone-mute class="d-none fill-danger" ref="microphoneMute"></microphone-mute>
 				<div class="modal video-call-modal show d-block" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', { 'is-fullscreen show': status == 'ongoing' }]">
 					<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 						<div class="modal-content rounded h-100 overflow-hidden">
@@ -58,9 +59,7 @@
 												<close-icon width="36" height="36"></close-icon>
 											</button> -->
 										</div>
-										<!-- <button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center">
-											<i :class="{'bg-gray': !isRecording}"></i>&nbsp;{{ isRecording ? 'Stop recording' : 'Record this call' }}</span>
-										</button> -->
+										<button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center"><i :class="{ 'bg-gray': !isRecording }"></i>&nbsp;{{ isRecording ? 'Stop recording' : 'Record this call' }}</button>
 
 										<!-- Local camera -->
 										<div class="preview-wrapper preview-thumb" :class="{ 'd-none': isShrinked || status != 'ongoing', 'profile-image': isVideoStopped }">

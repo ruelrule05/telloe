@@ -14,7 +14,9 @@ const mutations = {
 
 	clear(state) {
 		state.index = [];
-	}
+	},
+
+	update() {}
 };
 
 const actions = {

@@ -70,7 +70,8 @@ export default {
 		selectedCoachId: null,
 		activeUserBgPosition: 0,
 		assignedServices: [],
-		getAssignedServices: true
+		getAssignedServices: true,
+		createZoomLoading: false
 	}),
 
 	computed: {
@@ -133,6 +134,16 @@ export default {
 			updateBooking: 'bookings/update'
 		}),
 
+		async createZoomLink(booking) {
+			this.createZoomLoading = true;
+			if (this.$root.auth.zoom_token) {
+				let response = await window.axios.get(`/zoom/create_meeting?booking_id=${booking.id}`);
+				this.createZoomLoading = false;
+
+				booking.zoom_link = response.data;
+			}
+		},
+
 		async confirmUpdateBooking() {
 			let data = this.booking;
 			data.date = this.selectedTimeslot.date;
@@ -192,9 +203,8 @@ export default {
 				timeslotClass.push.apply(timeslotClass, ['cursor-pointer']);
 			}
 
-			if(this.selectedTimeslot.service_id == this.selectedService.id && date.format == this.selectedTimeslot.date && this.selectedTimeslot.time == timeslot.time) {
+			if (this.selectedTimeslot.service_id == this.selectedService.id && date.format == this.selectedTimeslot.date && this.selectedTimeslot.time == timeslot.time) {
 				timeslotClass.push.apply(timeslotClass, ['selected']);
-
 			}
 
 			return timeslotClass.join(' ');

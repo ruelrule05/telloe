@@ -167,8 +167,8 @@ class BookingController extends Controller
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
 
-        Mail::queue(new NewBooking([$booking], null, 'client'));
-        Mail::queue(new NewBooking([$booking], null, 'contact'));
+        Mail::queue(new NewBooking([$booking], 'client'));
+        Mail::queue(new NewBooking([$booking], 'contact'));
 
         $user_id = null;
         $description = '';
@@ -186,12 +186,11 @@ class BookingController extends Controller
                 $description = 'A booking has been placed for your account.';
             }
 
-            $notification = Notification::create([
+            Notification::create([
                 'user_id' => $user_id,
                 'description' => $description,
                 'link' => $link
             ]);
-            $booking->notification = $notification;
         }
 
         return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote'));
@@ -289,12 +288,11 @@ class BookingController extends Controller
                 $description = 'A booking you made has been modified.';
             }
 
-            $notification = Notification::create([
+            Notification::create([
                 'user_id' => $user_id,
                 'description' => $description,
                 'link' => $link
             ]);
-            $booking->notification = $notification;
         }
 
         return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices'));
@@ -318,7 +316,7 @@ class BookingController extends Controller
             }
 
             if ($user_id) {
-                $notification = Notification::create([
+                Notification::create([
                     'user_id' => $user_id,
                     'description' => $description,
                 ]);

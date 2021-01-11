@@ -35,6 +35,7 @@ import MicrophoneAltIcon from '../../../../icons/microphone-alt';
 import DocumentAltIcon from '../../../../icons/document-alt';
 import ScreenRecordIcon from '../../../../icons/screen-record';
 import DownloadIcon from '../../../../icons/download';
+import VueChatScroll from 'vue-chat-scroll';
 
 import Tooltip from '../../../../js/directives/tooltip';
 //import toggleFullscreen from 'toggle-fullscreen';
@@ -72,6 +73,7 @@ export default {
 		DocumentAltIcon,
 		ScreenRecordIcon,
 		DownloadIcon,
+		VueChatScroll,
 
 		info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
 		gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
@@ -111,7 +113,6 @@ export default {
 				this.$root.getFiles(this.conversation);
 			}
 			setTimeout(() => {
-				this.scrollDown();
 				this.$nextTick(() => {
 					this.$emit('ready');
 				});
@@ -120,11 +121,10 @@ export default {
 		'conversation.id': function() {
 			this.ready = false;
 			if (this.$refs['messageInput']) this.$refs['messageInput'].focus();
-			this.scrollDown();
 		},
 		'conversation.ready': function(value) {
 			if (value) {
-				this.scrollDown();
+				this.ready = true;
 				if (this.channel) {
 					this.channel.whisper('readLastMessage', { conversation_id: this.conversation.id, message_id: this.conversation.last_message.id });
 				}
@@ -138,15 +138,15 @@ export default {
 					if (!['text', 'emoji'].find(x => x == value.type)) {
 						this.conversation.files.data.unshift(value);
 					}
-					this.scrollDown();
 				}
 			}
 		},
 		'$route.params.id': function(value) {
 			if (value) {
-				this.showConversation({ id: value });
+				this.showConversation({ id: value }).then(() => {
+					this.initChannel();
+				});
 				this.checkScreenRecorder();
-				this.initChannel();
 			}
 		},
 		'$root.screenRecorder.status': function(value) {
@@ -192,7 +192,10 @@ export default {
 					function groupMessage() {
 						const next_message = messages[i + 1];
 						if (next_message && next_message.user && next_message.user.id == message_group.sender.id && next_message.type != 'call_ended' && next_message.type != 'call_failed') {
-							message_group.messages.push(messages[i + 1]);
+							let message = messages[i + 1];
+							if (!message_group.messages.find(x => x.id == message.id)) {
+								message_group.messages.push(message);
+							}
 							i++;
 							groupMessage();
 						}
@@ -214,12 +217,13 @@ export default {
 	},
 
 	created() {
-		this.checkConversation();
+		this.checkConversation().then(() => {
+			this.initChannel();
+		});
 	},
 
 	mounted() {
 		this.checkScreenRecorder();
-		this.initChannel();
 	},
 
 	methods: {
@@ -243,6 +247,7 @@ export default {
 				this.$echo.leaveChannel(this.channel.name);
 			}
 			this.channel = this.$echo.private(`conversations.${this.$route.params.id}`);
+			this.conversation.channel = this.channel;
 
 			this.channel.listenForWhisper('typing', e => {
 				if (this.$root.auth.id != e.userId) {
@@ -254,6 +259,28 @@ export default {
 				if (this.conversation && this.conversation.id == e.conversation_id && this.conversation.paginated_messages) {
 					let message = this.conversation.paginated_messages.data.find(x => x.id == e.message_id);
 					if (message) this.$set(message, 'is_read', true);
+				}
+			});
+
+			this.channel.listenForWhisper('toggleVideo', e => {
+				let video = document.querySelector(`#wavesurfer-${e.username}`);
+				if (video) {
+					if (e.isVideoStopped) {
+						video.classList.remove('d-none');
+					} else {
+						video.classList.add('d-none');
+					}
+				}
+			});
+
+			this.channel.listenForWhisper('isMuted', e => {
+				let microphoneMute = document.querySelector(`#microphone-mute-${e.username}`);
+				if (microphoneMute) {
+					if (e.isMuted) {
+						microphoneMute.classList.remove('d-none');
+					} else {
+						microphoneMute.classList.add('d-none');
+					}
 				}
 			});
 
@@ -350,17 +377,15 @@ export default {
 		},
 
 		async messageScroll(e) {
-			if (e.target.scrollTop == 0 && !this.messagePaginateLoading && this.conversation && (this.conversation.paginated_messages || {}).next_page_url) {
+			if (!this.messagePaginateLoading && this.conversation && (this.conversation.paginated_messages || {}).next_page_url) {
 				let initialHeight = this.$refs['message-group-container'].scrollHeight;
 				this.messagePaginateLoading = true;
-				this.$refs['message-group-container'].classList.add('overflow-hidden', 'pr-2');
 				const url = new URL(window.location.origin + this.conversation.paginated_messages.next_page_url);
 				const urlParams = new URLSearchParams(url.search);
 				const page = urlParams.get('page') || 1;
 
 				await this.showConversation({ id: this.$route.params.id, page: page }).catch(e => {});
 				this.messagePaginateLoading = false;
-				this.$refs['message-group-container'].classList.remove('overflow-hidden', 'pr-2');
 				this.$nextTick(() => {
 					this.$refs['message-group-container'].scrollTop = this.$refs['message-group-container'].scrollHeight - initialHeight;
 				});
@@ -553,16 +578,6 @@ export default {
 			}
 		},
 
-		scrollDown() {
-			setTimeout(() => {
-				const message_container = this.$refs['message-group-container'];
-				if (message_container) message_container.scrollTop = message_container.scrollHeight;
-				setTimeout(() => {
-					this.ready = true;
-				}, 200);
-			}, 50);
-		},
-
 		fileToBase64(file) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
@@ -580,7 +595,6 @@ export default {
 				message.tags = [];
 				message.conversation_id = this.conversation.id;
 				message.timestamp = dayjs().valueOf();
-				this.scrollDown();
 
 				if (message.type == 'text' && message.message.trim().length == 2) {
 					let regex = emojiRegex();

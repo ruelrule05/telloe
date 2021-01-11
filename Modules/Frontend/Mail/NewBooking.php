@@ -2,7 +2,6 @@
 
 namespace Modules\Frontend\Mail;
 
-use App\Models\User;
 use Auth;
 use Carbon\Carbon;
 use Spatie\CalendarLinks\Link;
@@ -15,15 +14,14 @@ class NewBooking extends Mailer
     public $email;
     public $emailMessage;
 
-    public function __construct(array $bookings, User $authUser = null, $target)
+    public function __construct(array $bookings, $target)
     {
         $this->bookings = $bookings;
         $booking = $this->bookings[0];
         $authUser = $authUser ?? Auth::user();
         if ($target == 'client') { // if contact - send to client
-            $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
             $this->email = $booking->service->coach->email;
-            $this->emailMessage = "<strong>{$full_name}</strong> has made a booking with the following details:";
+            $this->emailMessage = 'A booking has been made with the following details:';
         } elseif ($target == 'contact') { // if client - send to contact
             $this->email = $booking->customer->email;
             $this->emailMessage = 'A booking has been made for your account with the following details:';

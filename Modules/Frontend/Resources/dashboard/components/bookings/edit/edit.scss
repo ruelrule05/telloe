@@ -6,6 +6,7 @@
 	z-index: 1040;
 	opacity: 1;
 	transition: $transition-base;
+	background-color: rgba($black, 0.5);
 }
 .user-profile-image {
 	height: 40px;
@@ -30,8 +31,8 @@
 	}
 	&.selected {
 		background-color: $warning !important;
-		.selected-checkmark{
-			opacity: 1
+		.selected-checkmark {
+			opacity: 1;
 		}
 	}
 }

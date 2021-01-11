@@ -308,7 +308,7 @@ function checkMemberInviteToken(App\Models\User $user, Illuminate\Http\Request $
             App\Models\Notification::create([
                 'user_id' => $member->user_id,
                 'description' => "<strong>{$member->memberUser->full_name}</strong> has accepted your member invitation.",
-                'link' => "/dashboard/members/$member->id"
+                'link' => "/dashboard/team/members/$member->id"
             ]);
         }
     }

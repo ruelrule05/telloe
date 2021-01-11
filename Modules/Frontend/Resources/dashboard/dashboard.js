@@ -301,7 +301,8 @@ window.app = new window.Vue({
 		muted: false,
 		intros: intros,
 		introJS: introJS,
-		appChannel: null
+		appChannel: null,
+		userChannel: null
 	},
 
 	computed: {
@@ -410,16 +411,17 @@ window.app = new window.Vue({
 			this.appChannel.listenForWhisper('newMessage', message => {
 				this.newMessage(message);
 			});
+
+			this.userChannel = this.$echo.private(`users.${this.auth.id}`);
+			this.userChannel.listen('NewNotificationEvent', data => {
+				this.getNotificationByID(data.notification.id);
+			});
 		});
 
 		this.notifyIncomingBookings();
 		if (this.$route.name != 'conversations') this.getConversations();
 		this.call_sound = new Audio(`/notifications/call.mp3`);
 		this.message_sound = new Audio('/notifications/new_message.mp3');
-
-		// this.socket.on('new_notification', data => {
-		// 	if (data.user_id == this.auth.id) this.getNotificationByID(data.id);
-		// });
 
 		(function(d) {
 			var js,
@@ -658,8 +660,8 @@ window.app = new window.Vue({
 			return s.join(dec);
 		},
 
-		async getNotificationByID(data) {
-			let notification = await window.axios.get(`/notifications/${data.id}`).catch(() => {});
+		async getNotificationByID(id) {
+			let notification = await window.axios.get(`/notifications/${id}`).catch(() => {});
 			if (notification) {
 				this.$refs['notification'].show(notification.data);
 				this.notifications.unshift(notification.data);

@@ -95,7 +95,7 @@
 								<div class="spinner-border spinner-border-sm text-primary"></div>
 							</div>
 						</div>
-						<div class="p-3 h-100 overflow-y-auto" :class="{ 'opacity-0': !ready }" ref="message-group-container" @scroll="messageScroll">
+						<div class="p-3 h-100 overflow-y-auto" :class="{ 'opacity-0': !ready }" v-chat-scroll="{ always: true, smooth: false }" ref="message-group-container" @v-chat-scroll-top-reached="messageScroll">
 							<div class="text-center mb-3" :class="{ 'opacity-0': !messagePaginateLoading }">
 								<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
 							</div>

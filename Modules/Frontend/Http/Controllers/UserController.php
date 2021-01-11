@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\StripeAPI;
 use App\Models\Booking;
 use App\Models\Contact;
+use App\Models\Notification;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Widget;
@@ -58,7 +59,7 @@ class UserController extends Controller
         }
 
         $service = null;
-        if($request->service_id) {
+        if ($request->service_id) {
             $service = Service::with('user', 'assignedServices.member.memberUser')->where('id', $request->service_id)->where('user_id', $profile->id)->firstOrFail();
         }
 
@@ -107,7 +108,7 @@ class UserController extends Controller
         return response()->json($timeslots);
     }
 
-    public function book($username, $service_id, Request $request, User $authUser = null)
+    public function book($username, $service_id, Request $request, $authUser = null, $contact = false)
     {
         $this->validate($request, [
             'timeslots' => 'required|array',
@@ -146,11 +147,12 @@ class UserController extends Controller
         }
 
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $userField = $contact ? 'contact_id' : 'user_id';
         foreach ($request->timeslots as $timeslot) {
             $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}");
             $end = $start->copy()->add('minute', $service->duration);
             $booking = $this->createBooking($service, [
-                'user_id' => $authUser->id,
+                $userField => $authUser->id,
                 'service_id' => $service->id,
                 'date' => $timeslot['date']['format'],
                 'start' => $start->format('H:i'),
@@ -210,15 +212,39 @@ class UserController extends Controller
                 }
             }
         }
-
         if (count($bookings) > 0) {
-            Mail::queue(new NewBooking($bookings, $authUser, 'client'));
-            Mail::queue(new NewBooking($bookings, $authUser, 'contact'));
+            Mail::queue(new NewBooking($bookings, 'client'));
+            Mail::queue(new NewBooking($bookings, 'contact'));
+
+            if ($bookings[0]->customer) {
+                $description = '';
+                $link = '';
+                $user_id = null;
+                if (Auth::user()->id == $bookings[0]->customer->id) { // if contact - notify client
+                    $user_id = $bookings[0]->service->user->id;
+                    $description = "<strong>{$bookings[0]->user->full_name}</strong> has placed a booking.";
+                    $contact = $bookings[0]->contact ?? Contact::where('user_id', $bookings[0]->service->user_id)->where('contact_user_id', $bookings[0]->customer->id)->first() ?? null;
+                    if ($contact) {
+                        $link = "/dashboard/contacts/$contact->id";
+                    }
+                } elseif (Auth::user()->id == $bookings[0]->service->user_id) { // if client - notify contact
+                    $user_id = $bookings[0]->customer->id;
+                    $description = 'A booking has been placed for your account.';
+                }
+
+                if ($user_id) {
+                    Notification::create([
+                        'user_id' => $user_id,
+                        'description' => $description,
+                        'link' => $link
+                    ]);
+                }
+            }
         }
 
-        if (! Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) {
+        if (! $contact && ! Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) {
             Contact::create([
-                'user_id' => $user->id,
+                $userField => $user->id,
                 'email' => $authUser->email,
                 'contact_user_id' => $authUser->id,
                 'is_pending' => false,
@@ -243,6 +269,7 @@ class UserController extends Controller
         }
 
         $booking = Booking::create($data);
+
         if ($service->create_zoom_link && $service->user->zoom_token) {
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
@@ -292,7 +319,7 @@ class UserController extends Controller
         } elseif ($request->contact_id) {
             $contact = Contact::findOrFail($request->contact_id);
             $this->authorize('show', $contact);
-            $user = $contact->contactUser;
+            $user = $contact;
         } else {
             $user = User::where('email', $request->email)->first();
             if (! $user) {
@@ -307,7 +334,7 @@ class UserController extends Controller
             return abort(404, 'No user found.');
         }
 
-        return $this->book($username, $service_id, $request, $user);
+        return $this->book($username, $service_id, $request, $user, true);
     }
 
     public function signupAndBook($username, $service_id, Request $request)

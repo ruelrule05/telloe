@@ -236,7 +236,7 @@ export default {
 				this.wavesurfer.setCursorColor('transparent');
 				this.wavesurfer.setProgressColor('#6e82ea');
 				this.wavesurfer.setWaveColor('#6e82ea');
-				this.wavesurfer.microphone.start();
+				this.wavesurfer.microphone.start(this.streams);
 			}
 		},
 
