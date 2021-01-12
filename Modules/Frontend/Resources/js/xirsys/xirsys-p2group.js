@@ -193,9 +193,12 @@ _p2group.prototype.createPeerConnection = function(peerID) {
 				); //own.remotePeerID);
 			}
 		};
-		pc.onaddstream = evt => {
-			own.addStream(evt.stream, peerID); //remoteStreams
+		pc.ontrack = evt => {
+			own.addTrack(evt.track, peerID); //remoteStreams
 		};
+		// pc.onaddstream = evt => {
+		// 	own.addStream(evt.stream, peerID); //remoteStreams
+		// };
 		// pc.onremovestream = evt => console.log('*p2group* ' + peerID + ' onremovestream ', evt);
 		//pc.onconnectionstatechange = evt => console.log('*p2group* ' + peerID + ' onconnectionstatechange: ' + pc.connectionState);
 		pc.oniceconnectionstatechange = evt => {
@@ -262,6 +265,22 @@ _p2group.prototype.addStream = function(remoteStream, peerID) {
 	} catch (e) {}
 	this.isCaller = false;
 	this.emit(this.peerConnSuccess, peerID);
+};
+
+_p2group.prototype.addTrack = function(remoteTrack, peerID) {
+	let emit = false;
+	var peerInfo = this.getLivePeer(peerID);
+	try {
+		if (!peerInfo.stream) {
+			emit = true;
+			peerInfo.stream = new MediaStream();
+		}
+		peerInfo.stream.addTrack(remoteTrack);
+	} catch (e) {}
+	this.isCaller = false;
+	if (emit) {
+		this.emit(this.peerConnSuccess, peerID);
+	}
 };
 
 _p2group.prototype.getLiveStream = function(peerID) {

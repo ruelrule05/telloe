@@ -30,9 +30,12 @@ import Tooltip from '../../../js/directives/tooltip.js';
 import { mapActions } from 'vuex';
 import WaveSurfer from 'wavesurfer.js';
 import WaveSurferMicrophone from '../../../js/plugins/wavesurfer.microphone.min.js';
+import domtoimage from 'dom-to-image';
 
 require('../../../js/xirsys/xirsys-signal.js');
 require('../../../js/xirsys/xirsys-p2group.js');
+
+const videoCanvas = require('video-canvas');
 
 export default {
 	components: {
@@ -251,15 +254,17 @@ export default {
 			videoContainer.classList.add('position-relative');
 			videoContainer.classList.add('remote-video');
 			videoContainer.id = uid;
+
 			let videoEl = document.createElement('video');
 			videoEl.srcObject = stream;
-			videoEl.classList.add('w-100');
-			videoEl.classList.add('h-auto');
-			videoEl.classList.add('position-absolute-center');
 			videoEl.controls = false;
 			videoEl.autoplay = true;
 			videoEl.playsinline = true;
 			videoEl.disablePictureInPicture = true;
+			let canvas = videoCanvas(videoEl);
+			canvas.classList.add('w-100');
+			canvas.classList.add('h-auto');
+			canvas.classList.add('position-absolute-center');
 
 			let wavesurferEl = document.createElement('div');
 			wavesurferEl.classList.add('position-absolute-center');
@@ -271,7 +276,7 @@ export default {
 			microphoneMute.id = `microphone-mute-${uid}`;
 			microphoneMute.classList.add('microphone-mute');
 
-			videoContainer.appendChild(videoEl);
+			videoContainer.appendChild(canvas);
 			videoContainer.appendChild(wavesurferEl);
 			videoContainer.appendChild(microphoneMute);
 			this.$refs['remoteStreams'].appendChild(videoContainer);
@@ -292,10 +297,6 @@ export default {
 			wavesurfer.setProgressColor('#6e82ea');
 			wavesurfer.setWaveColor('#6e82ea');
 			wavesurfer.microphone.start(stream);
-
-			stream.getVideoTracks()[0].onended = () => {
-				console.log('ended');
-			};
 		},
 
 		onStartCall(evt) {
@@ -748,50 +749,22 @@ export default {
 		recordCall() {
 			if (!this.isRecording) {
 				this.isRecording = true;
-				let streams = [this.remoteStream, this.localStream];
-				if (this.localStream) streams.push(this.localStream);
-				const mixer = new MultiStreamsMixer(streams);
-				mixer.frameInterval = 1;
-				mixer.startDrawingFrames();
-
-				let localVideo = this.$refs['cameraPreview'];
-				let remoteVideo = this.$refs['remotePreview'];
-				let canvas = this.$refs['preview'];
-				canvas.width = $('.video-call').width();
-				canvas.height = $('.video-call').height();
-				let canvasContext = canvas.getContext('2d');
-				this.localStream.onRender = () => {
-					canvasContext.save();
-					canvasContext.beginPath();
-					canvasContext.arc(60, canvas.height - 60, 50, 0, 6.28, false); //draw the circle
-					canvasContext.clip(); //call the clip method so the next render is clipped in last path
-					canvasContext.closePath();
-					canvasContext.stroke();
-					canvasContext.drawImage(localVideo, -7, canvas.height - 110, localVideo.offsetWidth, localVideo.offsetHeight);
-					canvasContext.restore();
-				};
-
-				let position = this.setCenterPosition(remoteVideo, canvas);
-				this.remoteStream.onRender = () => {
-					canvasContext.drawImage(remoteVideo, position.x, position.y, position.width, position.height);
-				};
-
-				let finalStream = new MediaStream();
-				let audioStream = new MediaStream(this.localStream.getAudioTracks());
-				audioStream.getTracks('audio').forEach(track => {
-					finalStream.addTrack(track);
-				});
-				let remoteAudioStream = new MediaStream(this.remoteStream.getAudioTracks());
-				remoteAudioStream.getTracks('audio').forEach(track => {
-					finalStream.addTrack(track);
-				});
-				canvas
-					.captureStream()
-					.getTracks('video')
-					.forEach(track => {
-						finalStream.addTrack(track);
+				let modalBody = this.$refs['modalBody'];
+				let canvas = document.createElement('canvas');
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				let ctx = canvas.getContext('2d');
+				let interval = setInterval(() => {
+					domtoimage.toJpeg(modalBody).then(dataUrl => {
+						let img = new Image();
+						img.src = dataUrl;
+						img.onload = () => {
+							ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+						};
 					});
-				this.callRecorder = new MediaRecorder(finalStream);
+				}, 25);
+				let canvasStream = canvas.captureStream();
+				this.callRecorder = new MediaRecorder(canvasStream);
 				this.callRecorder.start(30);
 				this.callRecorder.ondataavailable = e => this.blobs.push(e.data);
 			} else {

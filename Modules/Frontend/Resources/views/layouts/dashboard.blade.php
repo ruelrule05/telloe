@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		@include('frontend::partials.meta_tags')
-		<link rel="stylesheet" href="{{ mix('css/dashboard.css') }}">
+		<link rel="stylesheet" href="{{ mix('css/dashboard.css') }}" crossorigin="anonymous">
 	</head>
 	<body>
 		<div id="app" class="d-flex flex-column overflow-hidden" v-cloak>

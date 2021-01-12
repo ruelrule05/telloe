@@ -6,7 +6,7 @@
 				<div class="modal video-call-modal show d-block" role="dialog" ref="modal" :class="[isShrinked ? 'is-shrinked shadow-sm rounded show' : 'cursor-auto', { 'is-fullscreen show': status == 'ongoing' }]">
 					<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 						<div class="modal-content rounded h-100 overflow-hidden">
-							<div v-if="$root.callConversation" class="modal-body p-0 h-100 rounded" :class="{ 'overflow-hidden': isShrinked }">
+							<div v-if="$root.callConversation" class="modal-body p-0 h-100 rounded" :class="{ 'overflow-hidden': isShrinked }" ref="modalBody">
 								<div v-if="isLoading" class="position-absolute-center w-100 h-100 bg-white" id="loader">
 									<span class="spinner position-absolute-center text-center">
 										<span class="spinner-border text-primary align-middle" role="status" aria-hidden="true"></span>
@@ -72,7 +72,6 @@
 										</div>
 
 										<!-- Remote camera -->
-										<canvas ref="preview" class="position-absolute-center opacity-0 bg-black"></canvas>
 										<div class="d-flex flex-grow-1 overflow-hidden" :class="{ 'has-presenter': presenter }" id="remote-streams-container">
 											<div id="presenter-container" class="bg-dark" :class="{ 'flex-grow-1': presenter && presenter != $root.auth.id }"></div>
 											<div ref="remoteStreams" id="remote-streams" class="overflow-hidden" :class="{ 'opacity-0': !status, 'shrink-right': presenter && presenter != $root.auth.id }">

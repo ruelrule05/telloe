@@ -135,6 +135,10 @@
 
 /*! no static exports found */
 
+/*! npm.im/intervalometer */
+
+/*! npm.im/video-canvas */
+
 /*!***********************!*\
   !*** ./src/drawer.js ***!
   \***********************/

@@ -2,7 +2,8 @@ const mix = require('laravel-mix');
 const ESLintPlugin = require('eslint-webpack-plugin');
 require('laravel-mix-purgecss');
 require('laravel-mix-merge-manifest');
-const argv = JSON.parse(process.env.npm_config_argv).original;
+
+const target = process.env.npm_config_target;
 
 mix.setPublicPath('../../public').mergeManifest();
 
@@ -13,7 +14,7 @@ if (mix.config.production) {
 }
 
 // CSS
-if (argv.indexOf('--css') > -1) {
+if (target == 'css') {
 	console.log('Running css...');
 	mix.sass(__dirname + '/Resources/dashboard/dashboard.scss', 'css')
 		.sass(__dirname + '/Resources/app/auth/auth.scss', 'css')
@@ -23,7 +24,7 @@ if (argv.indexOf('--css') > -1) {
 		.sass(__dirname + '/Resources/sass/widget.scss', 'css')
 		.sass(__dirname + '/Resources/sass/call.scss', 'css');
 } else {
-	if (argv.indexOf('--dashboard') > -1) {
+	if (target == 'dashboard') {
 		console.log('Running dashboard...');
 		mix.js(__dirname + '/Resources/dashboard/dashboard.js', 'js').webpackConfig({
 			output: {
@@ -38,7 +39,7 @@ if (argv.indexOf('--css') > -1) {
 				}
 			}
 		});
-	} else if (argv.indexOf('--page') > -1) {
+	} else if (target == 'page') {
 		console.log('Running page...');
 		mix.js(__dirname + '/Resources/js/page.js', 'js').webpackConfig({
 			output: {
@@ -53,7 +54,7 @@ if (argv.indexOf('--css') > -1) {
 				}
 			}
 		});
-	} else if (argv.indexOf('--call') > -1) {
+	} else if (target == 'call') {
 		console.log('Running call...');
 		mix.js(__dirname + '/Resources/js/call.js', 'js').webpackConfig({
 			output: {
@@ -68,7 +69,7 @@ if (argv.indexOf('--css') > -1) {
 				}
 			}
 		});
-	} else if (argv.indexOf('--profile') > -1) {
+	} else if (target == 'profile') {
 		console.log('Running profile...');
 		mix.js(__dirname + '/Resources/js/profile.js', 'js').webpackConfig({
 			output: {
@@ -83,7 +84,7 @@ if (argv.indexOf('--css') > -1) {
 				}
 			}
 		});
-	} else if (argv.indexOf('--widget') > -1) {
+	} else if (target == 'widget') {
 		console.log('Running widget...');
 		mix.js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js').webpackConfig({
 			/*output: {
@@ -98,7 +99,7 @@ if (argv.indexOf('--css') > -1) {
 				}
 			}
 		});
-	} else if (argv.indexOf('--organization') > -1) {
+	} else if (target == 'organization') {
 		console.log('Running organization...');
 		mix.js(__dirname + '/Resources/js/organization.js', 'js').webpackConfig({
 			output: {
