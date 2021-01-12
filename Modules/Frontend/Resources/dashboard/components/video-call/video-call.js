@@ -666,7 +666,7 @@ export default {
 			this.isIncoming = false;
 			this.isShrinked = false;
 
-			if (emit) {
+			if (emit && this.$root.appChannel) {
 				this.$root.appChannel.whisper('liveCallEnd', {
 					uid: this.username
 				});
