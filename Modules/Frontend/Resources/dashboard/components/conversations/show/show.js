@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { mapGetters, mapActions, mapState } from 'vuex';
 import dayjs from 'dayjs';
 import filesize from 'filesize';
@@ -36,6 +37,7 @@ import DocumentAltIcon from '../../../../icons/document-alt';
 import ScreenRecordIcon from '../../../../icons/screen-record';
 import DownloadIcon from '../../../../icons/download';
 import VueChatScroll from 'vue-chat-scroll';
+Vue.use(VueChatScroll);
 
 import Tooltip from '../../../../js/directives/tooltip';
 //import toggleFullscreen from 'toggle-fullscreen';
@@ -73,7 +75,6 @@ export default {
 		DocumentAltIcon,
 		ScreenRecordIcon,
 		DownloadIcon,
-		VueChatScroll,
 
 		info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
 		gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),

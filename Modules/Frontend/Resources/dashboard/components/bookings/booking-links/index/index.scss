@@ -1,0 +1,75 @@
+@import '../../../../../sass/variables';
+.timeslots-wrapper {
+	height: 50vh;
+}
+.contact-container {
+	width: 220px;
+}
+
+.profile-image {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-size: cover;
+	background-size: no-repeat;
+	background-position: center;
+	background-color: $gray-400;
+	position: relative;
+	span {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-500;
+		font-size: 24px;
+	}
+	&.profile-image-sm {
+		width: 45px;
+		height: 45px;
+		span {
+			font-size: 20px;
+		}
+	}
+	&.profile-image-xs {
+		width: 30px;
+		height: 30px;
+		span {
+			font-size: 12px;
+		}
+	}
+}
+.timeslot-button {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	.selected-checkmark {
+		top: -5px;
+		left: 50%;
+		transform: translateX(-50%);
+		opacity: 0;
+	}
+	&.selected {
+		background-color: $warning !important;
+		.selected-checkmark {
+			opacity: 1;
+		}
+		color: black !important;
+	}
+	&.available {
+		color: white;
+	}
+}
+
+.table-layout-fixed {
+	table-layout: fixed !important;
+}
+
+.contact-dropdown {
+	opacity: 0;
+	transition: $transition-base;
+}
+.contact-container:hover {
+	.contact-dropdown {
+		opacity: 1;
+	}
+}

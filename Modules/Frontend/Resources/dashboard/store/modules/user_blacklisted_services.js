@@ -1,3 +1,4 @@
+import Vue from 'vue';
 const name = 'user_blacklisted_services';
 
 const state = () => ({
@@ -6,7 +7,7 @@ const state = () => ({
 
 const mutations = {
 	index(state, data) {
-		window.Vue.set(state.index, data.user_id, data.data);
+		Vue.set(state.index, data.user_id, data.data);
 	},
 
 	store(state, data) {
@@ -14,7 +15,7 @@ const mutations = {
 		if (user) {
 			let index = user.findIndex(x => x.id == data.id);
 			if (index > -1) {
-				window.Vue.set(user, index, data);
+				Vue.set(user, index, data);
 			} else {
 				user.push(data);
 			}

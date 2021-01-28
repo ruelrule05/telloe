@@ -1,5 +1,4 @@
 /* global FB */
-/* global WS_URL */
 /* global gapi */
 import Login from './login.vue';
 import Signup from './signup.vue';

@@ -30,7 +30,8 @@
         "spatie/calendar-links": "^1.4",
         "spatie/laravel-image-optimizer": "^1.5",
         "stripe/stripe-php": "^7.21",
-        "tymon/jwt-auth": "^1.0.0"
+        "tymon/jwt-auth": "^1.0.0",
+        "webpatser/laravel-uuid": "2.*"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.4",

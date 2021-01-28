@@ -6,10 +6,10 @@ import 'vue-range-slider/dist/vue-range-slider.css';
 import Auth from '../app/auth/auth.vue';
 import CheckmarkIcon from '../icons/checkmark';
 
-window.Vue = require('vue');
+import Vue from 'vue';
 
-window.Vue.component('pageloader', require('../components/pageloader.vue').default);
-new window.Vue({
+Vue.component('pageloader', require('../components/pageloader.vue').default);
+new Vue({
 	el: '#app',
 	components: {
 		RangeSlider,

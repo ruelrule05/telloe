@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -29,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\PendingSubscription' => 'App\Policies\PendingSubscriptionPolicy',
         'App\Models\PendingInvoice' => 'App\Policies\PendingInvoicePolicy',
         'App\Models\Notification' => 'App\Policies\NotificationPolicy',
-
+        'App\Models\BookingLink' => 'App\Policies\BookingLinkPolicy',
     ];
 
     /**

@@ -1,6 +1,6 @@
 /* global FB */
 require('../js/bootstrap');
-window.Vue = require('vue');
+import Vue from 'vue';
 
 import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
@@ -11,8 +11,8 @@ import 'bootstrap/js/dist/collapse';
 import Toasted from 'vue-toasted';
 const introJS = require('intro.js');
 
-window.Vue.use(VueRouter);
-window.Vue.use(Toasted, {
+Vue.use(VueRouter);
+Vue.use(Toasted, {
 	position: 'bottom-center',
 	duration: 3000,
 	className: 'bg-primary rounded shadow-none',
@@ -55,6 +55,16 @@ const router = new VueRouter({
 							path: 'services/:id',
 							name: 'services_show',
 							component: () => import(/* webpackChunkName: "dashboard-bookings-services-show" */ './components/bookings/services/show/show.vue')
+						},
+						{
+							path: 'booking-links',
+							name: 'booking-links',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ './components/bookings/booking-links/index/index.vue')
+						},
+						{
+							path: 'booking-links/:id',
+							name: 'booking-links_show',
+							component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ './components/bookings/booking-links/show/show.vue')
 						}
 					]
 				},
@@ -222,10 +232,9 @@ import Modal from '../components/modal/modal.vue';
 
 import store from './store';
 import intros from './intros.js';
-import Echo from 'laravel-echo';
-window.Pusher = require('pusher-js');
+import echo from '../js/echo.js';
 
-window.app = new window.Vue({
+window.app = new Vue({
 	router: router,
 	store: store,
 	el: '#app',
@@ -766,16 +775,4 @@ window.app = new window.Vue({
 	}
 });
 
-window.Vue.prototype.$echo = new Echo({
-	broadcaster: 'pusher',
-	key: '7f5c422b76e0eb6981a8',
-	disableStats: true,
-	encrypted: true,
-	namespace: 'Modules.Frontend.Events',
-	cluster: 'ap4',
-	auth: {
-		headers: {
-			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-		}
-	}
-});
+Vue.prototype.$echo = echo;

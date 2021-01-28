@@ -155,7 +155,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function organizations()
     {
-        return $this->hasMany(Organization::class)->orderBy('created_at', 'DESC');
+        return $this->hasMany(Organization::class)->latest();
+    }
+
+    public function bookingLinks()
+    {
+        return $this->hasMany(BookingLink::class)->latest();
     }
 
     public function getCreatedAtFormatAttribute()

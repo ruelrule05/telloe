@@ -1,5 +1,5 @@
 <template>
-	<div class="auth-container position-fixed w-100 h-100 d-flex justify-content-end overflow-hidden" :class="{'open': open}">
+	<div class="auth-container position-fixed w-100 h-100 d-flex justify-content-end overflow-hidden" :class="{ open: open }">
 		<div class="h-100 bg-white auth-body position-absolute">
 			<div class="d-flex flex-column w-100 h-100">
 				<div>
@@ -17,5 +17,5 @@
 	</div>
 </template>
 
-<style scoped lang="scss" src="./auth.scss"></style>
 <script src="./auth.js"></script>
+<style scoped lang="scss" src="./auth.scss"></style>

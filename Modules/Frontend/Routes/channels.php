@@ -12,17 +12,21 @@
 */
 use App\Models\Conversation;
 use App\Models\User;
+use App\Models\BookingLink;
 
 Broadcast::channel('AppChannel', function () {
     return ['connected' => true];
 });
 Broadcast::channel('users.{user}', function ($auth, $userId) {
     $user = User::where('id', $userId)->first();
-    return $auth->id == $user->id ? ['id' => $user->id] : ['error' => 'unauthorized'];
+    return $auth->id == $user->id ? ['id' => $user->id] : false;
 });
 Broadcast::channel('conversations.{conversation}', function ($user, Conversation $conversation) {
-    return $user->can('show', $conversation) ? ['id' => $user->id] : ['error' => 'unauthorized'];
+    return $user->can('show', $conversation) ? ['id' => $user->id] : false;
 });
 Broadcast::channel('onlineUsers', function () {
     return ['id' => Auth::user()->id] ?? false;
+});
+Broadcast::channel('bookingLinks.{bookingLink}', function ($user, BookingLink $bookingLink) {
+    return $user->can('show', $bookingLink) ? ['name' => $user->full_name] : false;
 });

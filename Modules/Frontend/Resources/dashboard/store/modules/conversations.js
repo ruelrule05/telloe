@@ -1,3 +1,4 @@
+import Vue from 'vue';
 const name = 'conversations';
 
 const state = () => ({
@@ -20,20 +21,20 @@ const mutations = {
 			let conversation = state.index.find(x => x.id == data.id);
 			if (conversation) {
 				if (!conversation.paginated_messages) {
-					window.Vue.set(conversation, 'paginated_messages', data.paginated_messages);
+					Vue.set(conversation, 'paginated_messages', data.paginated_messages);
 				} else {
 					if (data.page == 1) conversation.paginated_messages.data = [];
 					conversation.paginated_messages.data = conversation.paginated_messages.data.concat(data.paginated_messages.data);
 					conversation.paginated_messages.next_page_url = data.paginated_messages.next_page_url;
 				}
-				window.Vue.set(conversation, 'user', data.user);
-				window.Vue.set(conversation, 'contact', data.contact);
-				window.Vue.set(conversation, 'ready', true);
-				window.Vue.set(conversation.last_message, 'is_read', true);
-				window.Vue.set(conversation, 'has_new_message', false);
+				Vue.set(conversation, 'user', data.user);
+				Vue.set(conversation, 'contact', data.contact);
+				Vue.set(conversation, 'ready', true);
+				Vue.set(conversation.last_message, 'is_read', true);
+				Vue.set(conversation, 'has_new_message', false);
 			} else {
-				window.Vue.set(data, 'ready', true);
-				window.Vue.set(data.last_message, 'is_read', true);
+				Vue.set(data, 'ready', true);
+				Vue.set(data.last_message, 'is_read', true);
 				state.index.push(data);
 			}
 			resolve();
@@ -58,8 +59,8 @@ const actions = {
 		let conversation = state.index.find(x => x.id == data.id);
 		const page = data.page || 1;
 		if (conversation && page == 1) {
-			window.Vue.set(conversation, 'files', null);
-			window.Vue.set(conversation, 'ready', false);
+			Vue.set(conversation, 'files', null);
+			Vue.set(conversation, 'ready', false);
 		}
 		let response = await window.axios.get(`/${name}/${data.id}?page=${page}`);
 		response.data.page = page;

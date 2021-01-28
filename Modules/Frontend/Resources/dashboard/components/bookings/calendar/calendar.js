@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
 import Modal from '../../../../components/modal/modal.vue';
 import VueButton from '../../../../components/vue-button';
@@ -20,7 +21,7 @@ const utcPlugin = require('dayjs/plugin/utc');
 const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
 dayjs.extend(utcPlugin);
 dayjs.extend(IsSameOrAfter);
-window.Vue.use(VCalendar);
+Vue.use(VCalendar);
 import dayjs from 'dayjs';
 import Timetable from './timetable/timetable.vue';
 export default {

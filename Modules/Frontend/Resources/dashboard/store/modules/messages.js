@@ -1,3 +1,4 @@
+import Vue from 'vue';
 const name = 'messages';
 const getUrls = require('get-urls');
 
@@ -18,7 +19,7 @@ const actions = {
 			newMessage.message = escapeHTML(newMessage.message);
 			conversation.paginated_messages.data.push(newMessage);
 
-			window.Vue.set(conversation, 'last_message', newMessage);
+			Vue.set(conversation, 'last_message', newMessage);
 
 			data.metadata = JSON.stringify(data.metadata);
 			let bodyFormData = new FormData();
@@ -26,21 +27,21 @@ const actions = {
 				bodyFormData.append(k, data[k]);
 			});
 			let response = await window.axios.post(`/${name}`, bodyFormData, { headers: { 'Content-Type': 'multipart/form-data' } });
-			window.Vue.set(newMessage, 'id', response.data.id);
-			window.Vue.set(newMessage, 'message', response.data.message);
-			window.Vue.set(newMessage, 'preview', response.data.preview);
-			window.Vue.set(newMessage, 'link_preview', response.data.link_preview);
-			window.Vue.set(newMessage, 'source', response.data.source);
-			window.Vue.set(newMessage, 'updated_at', response.data.updated_at);
-			window.Vue.set(newMessage, 'metadata', response.data.metadata);
-			window.Vue.set(newMessage, 'timestamp', response.data.timestamp);
-			window.Vue.set(newMessage, 'created_at_format', response.data.created_at_format);
-			window.Vue.set(newMessage, 'sending', false);
+			Vue.set(newMessage, 'id', response.data.id);
+			Vue.set(newMessage, 'message', response.data.message);
+			Vue.set(newMessage, 'preview', response.data.preview);
+			Vue.set(newMessage, 'link_preview', response.data.link_preview);
+			Vue.set(newMessage, 'source', response.data.source);
+			Vue.set(newMessage, 'updated_at', response.data.updated_at);
+			Vue.set(newMessage, 'metadata', response.data.metadata);
+			Vue.set(newMessage, 'timestamp', response.data.timestamp);
+			Vue.set(newMessage, 'created_at_format', response.data.created_at_format);
+			Vue.set(newMessage, 'sending', false);
 
 			let links = [...getUrls(response.data.message)];
 			if (links.length > 0) {
 				window.axios.get(`/messages/${response.data.id}/generate_link_preview`).then(response => {
-					window.Vue.set(newMessage, 'link_preview', response.data);
+					Vue.set(newMessage, 'link_preview', response.data);
 				});
 			}
 

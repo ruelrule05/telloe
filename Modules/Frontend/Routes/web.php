@@ -6,11 +6,8 @@
  */
 
  Route::get('/test', function () {
-     App\Models\Notification::create([
-         'user_id' => 120,
-         'description' => '<strong>has accepted your member invitation.',
-         'link' => '/dashboard/team/members/12'
-     ]);
+     $request = request();
+     return app()->call('Modules\Frontend\Http\Controllers\BookingLinkController@getAllTimeslots', ['request' => $request]);
  });
 Route::get('widget', function () {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
@@ -23,6 +20,8 @@ Route::group(
     ],
     function () {
         Route::get('/', 'PageController@homepage');
+
+        Route::get('booking-links/{uuid}', 'BookingLinkController@public')->middleware('auth');
 
         Route::get('/ics', 'BookingController@downloadIcs');
 
@@ -128,6 +127,9 @@ Route::group(
                 Route::get('xirsys/ice', 'XirsysController@getIceServers');
                 Route::get('xirsys/token', 'XirsysController@getToken');
                 Route::get('xirsys/host', 'XirsysController@gethost');
+
+                Route::get('booking-links/get_all_timeslots', 'BookingLinkController@getAllTimeslots');
+                Route::apiResource('booking-links', 'BookingLinkController');
             });
 
             // Booking page

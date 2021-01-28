@@ -6,7 +6,6 @@ const format = require('format-duration');
 import MultiStreamsMixer from 'multistreamsmixer';
 import toggleFullscreen, { fullscreenChange, isFullscreen } from 'toggle-fullscreen';
 import PlainDraggable from '../../../js/plugins/plain-draggable.min';
-import RTCMultiConnection from 'rtcmulticonnection';
 
 import VideoIcon from '../../../icons/video';
 import PhoneIcon from '../../../icons/phone';
@@ -113,7 +112,7 @@ export default {
 	}),
 
 	watch: {
-		isShrinked: function(value) {
+		isShrinked: function (value) {
 			if (value) {
 				document.querySelector('.modal-backdrop').style.display = 'none';
 			} else {
@@ -124,7 +123,7 @@ export default {
 				this.$refs['modal'].style.visibility = 'visible';
 			}
 		},
-		'$root.appChannel': function() {
+		'$root.appChannel': function () {
 			this.$root.appChannel.listenForWhisper('liveCallIncoming', data => {
 				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
 				if (conversation) {
@@ -377,107 +376,6 @@ export default {
 			});
 		},
 
-		async rtcmc() {
-			if (this.connection) {
-				this.connection.close();
-			}
-			let response = await window.axios.get('/xirsys/ice');
-			this.connection = new RTCMultiConnection();
-			this.connection.enableLogs = false;
-			this.connection.iceServers = response.data.v;
-			this.connection.socketURL = WS_URL;
-			this.connection.session = {
-				audio: true,
-				video: true
-			};
-			this.connection.sdpConstraints.mandatory = {
-				OfferToReceiveAudio: true,
-				OfferToReceiveVideo: true
-			};
-			let bitrates = 512;
-			let resolutions = 'Ultra-HD';
-			let videoConstraints = {};
-			if (resolutions == 'HD') {
-				videoConstraints = {
-					width: {
-						ideal: 1280
-					},
-					height: {
-						ideal: 720
-					},
-					frameRate: 30
-				};
-			}
-			if (resolutions == 'Ultra-HD') {
-				videoConstraints = {
-					width: {
-						ideal: 1920
-					},
-					height: {
-						ideal: 1080
-					},
-					frameRate: 30
-				};
-			}
-			this.connection.mediaConstraints = {
-				video: videoConstraints,
-				audio: true
-			};
-			let CodecsHandler = this.connection.CodecsHandler;
-			this.connection.processSdp = function(sdp) {
-				let codecs = 'vp8';
-				if (codecs.length) {
-					sdp = CodecsHandler.preferCodec(sdp, codecs.toLowerCase());
-				}
-				if (resolutions == 'HD') {
-					sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
-						audio: 128,
-						video: bitrates,
-						screen: bitrates
-					});
-					sdp = CodecsHandler.setVideoBitrates(sdp, {
-						min: bitrates * 8 * 1024,
-						max: bitrates * 8 * 1024
-					});
-				}
-				if (resolutions == 'Ultra-HD') {
-					sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, {
-						audio: 128,
-						video: bitrates,
-						screen: bitrates
-					});
-					sdp = CodecsHandler.setVideoBitrates(sdp, {
-						min: bitrates * 8 * 1024,
-						max: bitrates * 8 * 1024
-					});
-				}
-				return sdp;
-			};
-			this.connection.onstream = event => {
-				console.log(event.streamid);
-				let videoContainer = document.createElement('div');
-				videoContainer.classList.add('flex-grow-1');
-				videoContainer.classList.add('video-container');
-				videoContainer.classList.add('position-relative');
-				videoContainer.classList.add('remote-video');
-				event.mediaElement.classList.add('w-100');
-				event.mediaElement.classList.add('h-auto');
-				event.mediaElement.classList.add('position-absolute-center');
-				event.mediaElement.controls = false;
-				event.mediaElement.autoplay = true;
-				event.mediaElement.playsinline = true;
-				event.mediaElement.disablePictureInPicture = true;
-				videoContainer.appendChild(event.mediaElement);
-				this.$refs['remoteStreams'].appendChild(event.mediaElement);
-			};
-			this.connection.open(this.conversation.id, (isRoomOpened, roomid, error) => {
-				console.log('isRoomOpened', isRoomOpened);
-				console.log('roomid', roomid);
-				console.log('error', error);
-			});
-			this.addLocalStream();
-		},
-
 		async initConnection() {
 			// Xirsys
 			this.isLoading = true;
@@ -485,13 +383,10 @@ export default {
 			await this.getXirsys();
 			this.isLoading = false;
 			this.xirsys();
-
-			// RTCMultiConnection
-			//await this.rtcmc();
 		},
 
 		async addLocalStream() {
-			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(function(error) {
+			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(function (error) {
 				alert('Unable to capture your camera.');
 				console.error(error);
 			});
@@ -562,9 +457,7 @@ export default {
 			this.open = true;
 			this.conversation = conversation;
 			this.action = 'outgoing';
-			$(this.$refs['modal'])
-				.modal({ keyboard: false, backdrop: 'static' })
-				.modal('show');
+			$(this.$refs['modal']).modal({ keyboard: false, backdrop: 'static' }).modal('show');
 			this.isVideoStopped = !camera;
 			this.isIncoming = false;
 			clearTimeout(this.callTimeout);
@@ -601,9 +494,7 @@ export default {
 			this.open = true;
 			if (!this.$root.muted) this.notification_sound.play();
 			this.isIncoming = true;
-			$(this.$refs['modal'])
-				.modal({ keyboard: false, backdrop: 'static' })
-				.modal('show');
+			$(this.$refs['modal']).modal({ keyboard: false, backdrop: 'static' }).modal('show');
 			this.action = 'incoming';
 		},
 
@@ -810,7 +701,7 @@ export default {
 		},
 
 		async stopShareScreen() {
-			this.localStream.getVideoTracks().forEach(function(track) {
+			this.localStream.getVideoTracks().forEach(function (track) {
 				track.stop();
 			});
 			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
@@ -835,7 +726,7 @@ export default {
 				console.log(e);
 			});
 			if (screenStreams) {
-				this.localStream.getVideoTracks().forEach(function(track) {
+				this.localStream.getVideoTracks().forEach(function (track) {
 					track.stop();
 				});
 				this.localStream = screenStreams;
@@ -892,7 +783,7 @@ export default {
 
 		stopLocalStream() {
 			if (this.localStream) {
-				this.localStream.getTracks().forEach(function(track) {
+				this.localStream.getTracks().forEach(function (track) {
 					track.stop();
 				});
 				this.localStream = null;

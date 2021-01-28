@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import ClockIcon from '../../../../icons/clock';
 import CloseIcon from '../../../../icons/close';
 import tooltip from '../../../../js/directives/tooltip.js';
@@ -13,8 +14,8 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import VCalendar from 'v-calendar';
 import Toasted from 'vue-toasted';
-window.Vue.use(VCalendar);
-window.Vue.use(Toasted, {
+Vue.use(VCalendar);
+Vue.use(Toasted, {
 	position: 'bottom-center',
 	duration: 3000,
 	className: 'bg-primary rounded shadow-none'

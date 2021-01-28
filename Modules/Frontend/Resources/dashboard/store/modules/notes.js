@@ -1,3 +1,4 @@
+import Vue from 'vue';
 const name = 'notes';
 
 const state = () => ({});
@@ -10,7 +11,7 @@ const actions = {
 		let conversation = rootState.conversations.index.find(x => x.id == conversation_id);
 		if (conversation) {
 			window.axios.get(`/${name}?conversation_id=${conversation_id}`).then(response => {
-				window.Vue.set(conversation, 'notes', response.data);
+				Vue.set(conversation, 'notes', response.data);
 			});
 		}
 	},

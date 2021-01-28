@@ -1,137 +1,82 @@
+const host = 'telloe.codes';
+const port = 8080;
+const key = `/Users/cleidoscope/.config/valet/Certificates/${host}.key`;
+const cert = `/Users/cleidoscope/.config/valet/Certificates/${host}.crt`;
+
+const args = process.argv;
 const mix = require('laravel-mix');
 const ESLintPlugin = require('eslint-webpack-plugin');
-require('laravel-mix-purgecss');
-require('laravel-mix-merge-manifest');
-
-const target = process.env.npm_config_target;
-
-mix.setPublicPath('../../public').mergeManifest();
-
+//require('laravel-mix-purgecss');
+//require('laravel-mix-merge-manifest');
 let timestamp = '';
 
-if (mix.config.production) {
+if (mix.inProduction()) {
 	timestamp = '-' + new Date().valueOf();
 }
 
-// CSS
-if (target == 'css') {
-	console.log('Running css...');
-	mix.sass(__dirname + '/Resources/dashboard/dashboard.scss', 'css')
-		.sass(__dirname + '/Resources/app/auth/auth.scss', 'css')
-		.sass(__dirname + '/Resources/sass/page.scss', 'css')
-		.sass(__dirname + '/Resources/sass/profile.scss', 'css')
-		.sass(__dirname + '/Resources/sass/organization.scss', 'css')
-		.sass(__dirname + '/Resources/sass/widget.scss', 'css')
-		.sass(__dirname + '/Resources/sass/call.scss', 'css');
+mix.setPublicPath('../../public');
+mix.vue({ version: 2 });
+mix.webpackConfig({
+	output: {
+		chunkFilename: `js/chunks/[name]${timestamp}.js`
+	},
+	optimization: {
+		splitChunks: {
+			chunks: 'all',
+			cacheGroups: {
+				vendors: false
+			}
+		}
+	}
+});
+
+mix.sass(__dirname + '/Resources/dashboard/dashboard.scss', 'css')
+	.sass(__dirname + '/Resources/sass/page.scss', 'css')
+	.sass(__dirname + '/Resources/sass/profile.scss', 'css')
+	.sass(__dirname + '/Resources/sass/organization.scss', 'css')
+	//.sass(__dirname + '/Resources/sass/widget.scss', 'css')
+	.sass(__dirname + '/Resources/sass/booking-link.scss', 'css');
+
+mix.js(__dirname + '/Resources/dashboard/dashboard.js', 'js')
+	.js(__dirname + '/Resources/js/page.js', 'js')
+	.js(__dirname + '/Resources/js/profile.js', 'js')
+	//.js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js')
+	//.js(__dirname + '/Resources/js/organization.js', 'js')
+	.js(__dirname + '/Resources/js/booking-link.js', 'js');
+
+if (mix.inProduction()) {
+	mix.version();
 } else {
-	if (target == 'dashboard') {
-		console.log('Running dashboard...');
-		mix.js(__dirname + '/Resources/dashboard/dashboard.js', 'js').webpackConfig({
+	if (args.includes('--hot')) {
+		mix.webpackConfig({
 			output: {
-				chunkFilename: `js/chunks/[name]${timestamp}.js`
+				publicPath: `https://${host}:${port}/`
 			},
-			optimization: {
-				splitChunks: {
-					chunks: 'all',
-					cacheGroups: {
-						vendors: false
-					}
+			devServer: {
+				http2: true,
+				https: {
+					key: key,
+					cert: cert
 				}
 			}
 		});
-	} else if (target == 'page') {
-		console.log('Running page...');
-		mix.js(__dirname + '/Resources/js/page.js', 'js').webpackConfig({
-			output: {
-				chunkFilename: `js/chunks/[name]${timestamp}.js`
+		mix.options({
+			hmrOptions: {
+				host: host,
+				port: port
 			},
-			optimization: {
-				splitChunks: {
-					chunks: 'all',
-					cacheGroups: {
-						vendors: false
-					}
-				}
-			}
+			postCss: [require('autoprefixer')]
 		});
-	} else if (target == 'call') {
-		console.log('Running call...');
-		mix.js(__dirname + '/Resources/js/call.js', 'js').webpackConfig({
-			output: {
-				chunkFilename: `js/chunks/[name]${timestamp}.js`
-			},
-			optimization: {
-				splitChunks: {
-					chunks: 'all',
-					cacheGroups: {
-						vendors: false
-					}
-				}
-			}
-		});
-	} else if (target == 'profile') {
-		console.log('Running profile...');
-		mix.js(__dirname + '/Resources/js/profile.js', 'js').webpackConfig({
-			output: {
-				chunkFilename: `js/chunks/[name]${timestamp}.js`
-			},
-			optimization: {
-				splitChunks: {
-					chunks: 'all',
-					cacheGroups: {
-						vendors: false
-					}
-				}
-			}
-		});
-	} else if (target == 'widget') {
-		console.log('Running widget...');
-		mix.js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js').webpackConfig({
-			/*output: {
-                    chunkFilename: `js/chunks/[name].js`
-                },*/
-			optimization: {
-				splitChunks: {
-					chunks: 'all',
-					cacheGroups: {
-						vendors: false
-					}
-				}
-			}
-		});
-	} else if (target == 'organization') {
-		console.log('Running organization...');
-		mix.js(__dirname + '/Resources/js/organization.js', 'js').webpackConfig({
-			output: {
-				chunkFilename: `js/chunks/[name]${timestamp}.js`
-			},
-			optimization: {
-				splitChunks: {
-					chunks: 'all',
-					cacheGroups: {
-						vendors: false
-					}
-				}
+	} else if (args.includes('--watch')) {
+		mix.webpackConfig({
+			watchOptions: {
+				aggregateTimeout: 300,
+				poll: 1000
 			}
 		});
 	}
-}
 
-if (mix.config.production) {
-	mix.version();
-} else {
-	mix.options({
-		hmrOptions: {
-			host: 'telloe.test',
-			port: 8080
-		},
-		postCss: [require('autoprefixer')]
-	});
 	mix.webpackConfig({
-		watchOptions: {
-			aggregateTimeout: 300,
-			poll: 1000
-		},
 		plugins: [new ESLintPlugin()],
 		module: {
 			rules: [
