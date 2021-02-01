@@ -29,7 +29,7 @@
 								<thead>
 									<tr>
 										<th>Date</th>
-										<th>Timeslots</th>
+										<th>Dates</th>
 										<th>Contacts</th>
 									</tr>
 								</thead>
@@ -39,7 +39,7 @@
 											{{ formatDate(booking_link.date) }}
 										</td>
 										<td class="align-middle">
-											<span class="badge badge-secondary mr-1" v-for="(timeslot, timeslotIndex) in booking_link.selected_timeslots" :key="timeslotIndex">{{ convertTime(timeslot, 'hh:mmA') }}</span>
+											<span class="badge badge-secondary mr-1" v-for="(date, dateKey) in booking_link.dates" :key="dateKey">{{ formatDate(dateKey) }}</span>
 										</td>
 										<td class="align-middle">
 											{{ booking_link.booking_link_contacts_count }}
@@ -82,9 +82,9 @@
 							<button type="button" class="btn btn-light" v-on="data.inputEvents">Add Date</button>
 						</template>
 					</v-date-picker>
-					<div v-for="(date, dateIndex) in dates" :key="dateIndex" class="border rounded pl-3 pr-2 py-2 mx-1">
-						{{ dayjs(date).format('MMMM D, YYYY') }} <button class="btn btn-sm btn-light shadow-none rounded-circle p-0" type="button" @click="dates.splice(dateIndex, 1)"><close-icon></close-icon></button>
-					</div>
+					<button v-for="(date, dateKey) in dates" :key="dateKey" class="btn mx-1" :class="[dateKey == selectedDate ? 'btn-primary' : 'border']" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
+						{{ dayjs(dateKey).format('MMMM D, YYYY') }} <button class="btn btn-sm btn-light shadow-none rounded-circle p-0" type="button" @click.stop="removeDate(dateKey)"><close-icon></close-icon></button>
+					</button>
 				</div>
 
 				<div class="d-flex bg-light rounded my-3 overflow-auto h-100">
@@ -117,7 +117,7 @@
 											</div>
 										</td>
 
-										<td v-for="(timeslot, timeslotIndex) in timeslots" :data-index="timeslotIndex" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden cursor-pointer" :class="[timeslot.is_available ? 'cursor-pointer bg-primary available' : 'disabled text-secondary pointer-events-none', { selected: selectedTimeslots.find(x => x.time == timeslot.time) }]" @click="addTimeslot(timeslot)">
+										<td v-for="(timeslot, timeslotIndex) in (dates[selectedDate] || {}).timeslots" :data-index="timeslotIndex" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden cursor-pointer" :class="[timeslot.is_available ? 'cursor-pointer bg-primary available' : 'disabled text-secondary pointer-events-none', { selected: (dates[selectedDate].selectedTimeslots || []).find(x => x.time == timeslot.time) }]" @click="addTimeslot(timeslot)">
 											<small>{{ timezoneTime(contact.contact_user.timezone, timeslot.time) }}</small>
 										</td>
 									</tr>
@@ -162,7 +162,7 @@
 				</div>
 				<div class="d-flex">
 					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal" :disabled="timeslotsLoading">Cancel</button>
-					<button class="ml-auto btn btn-primary" type="submit" :disabled="!selectedContacts.length || timeslotsLoading || !selectedTimeslots.length || !name.trim().length">Add</button>
+					<button class="ml-auto btn btn-primary" type="submit" :disabled="!selectedContacts.length || timeslotsLoading || !Object.keys(dates).length || !name.trim().length">Add</button>
 				</div>
 			</vue-form-validate>
 		</modal>

@@ -28,9 +28,7 @@ class BookingLinkController extends Controller
         $this->validate($request, [
             'name' => 'required|string|max:50',
             'contacts' => 'required|array',
-            'date' => 'required|date',
-            'selected_timeslots' => 'required|array',
-            'timeslots' => 'required|array',
+            'dates' => 'required|array',
         ]);
 
         $contacts = [];
@@ -43,9 +41,7 @@ class BookingLinkController extends Controller
         $bookingLink = BookingLink::create([
             'name' => $request->name,
             'user_id' => Auth::user()->id,
-            'date' => $request->date,
-            'selected_timeslots' => $request->selected_timeslots,
-            'timeslots' => $request->timeslots,
+            'dates' => $request->dates,
             'uuid' => Uuid::generate()
         ]);
 
@@ -77,19 +73,16 @@ class BookingLinkController extends Controller
     public function getAllTimeslots(Request $request)
     {
         $this->validate($request, [
-            'dates' => 'required'
+            'date' => 'required|date'
         ]);
 
-        $dates = explode(',', $request->dates);
         $allTimeslots = [];
         $services = Auth::user()->services()->where('is_available', true)->get();
         foreach ($services as $service) {
-            foreach ($dates as $date) {
-                $serviceTimeslots = $service->timeslots($date);
-                foreach ($serviceTimeslots as $serviceTimeslot) {
-                    if (! isset($allTimeslots[$serviceTimeslot['label']]) || ! $serviceTimeslot['is_available']) {
-                        $allTimeslots[$serviceTimeslot['label']] = $serviceTimeslot;
-                    }
+            $serviceTimeslots = $service->timeslots($request->date);
+            foreach ($serviceTimeslots as $serviceTimeslot) {
+                if (! isset($allTimeslots[$serviceTimeslot['label']]) || ! $serviceTimeslot['is_available']) {
+                    $allTimeslots[$serviceTimeslot['label']] = $serviceTimeslot;
                 }
             }
         }

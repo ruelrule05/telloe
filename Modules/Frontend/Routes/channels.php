@@ -10,9 +10,9 @@
 | used to check if an authenticated user can listen to the channel.
 |
 */
+use App\Models\BookingLink;
 use App\Models\Conversation;
 use App\Models\User;
-use App\Models\BookingLink;
 
 Broadcast::channel('AppChannel', function () {
     return ['connected' => true];
@@ -28,5 +28,5 @@ Broadcast::channel('onlineUsers', function () {
     return ['id' => Auth::user()->id] ?? false;
 });
 Broadcast::channel('bookingLinks.{bookingLink}', function ($user, BookingLink $bookingLink) {
-    return $user->can('show', $bookingLink) ? ['name' => $user->full_name] : false;
+    return $user->can('show', $bookingLink) ? ['id' => $user->id, 'name' => $user->full_name] : false;
 });

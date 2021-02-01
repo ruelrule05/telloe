@@ -24,7 +24,7 @@ class NewBooking extends Mailer
             $this->emailMessage = 'A booking has been made with the following details:';
         } elseif ($target == 'contact') { // if client - send to contact
             $this->email = $booking->customer->email;
-            $this->emailMessage = 'A booking has been made for your account with the following details:';
+            $this->emailMessage = "<strong>{$booking->service->user->full_name}</strong> made a booking for you.";
             if (! $booking->user && $booking->contact && $booking->contact->is_pending) {
                 $this->emailMessage = 'A booking has been made for your email with the following details:';
                 $this->actionUrl = url("/?invite_token={$booking->contact->invite_token}&auth=signup");

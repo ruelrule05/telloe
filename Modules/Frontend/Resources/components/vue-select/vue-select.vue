@@ -4,7 +4,7 @@
 			<button type="button" :disabled="disabled" class="btn dropdown-toggle text-left d-inline-flex align-items-center" :class="toggle_button_class" data-toggle="dropdown" ref="dropdown-toggle">
 				<span v-if="label" class="text-secondary mr-2">{{ label }}</span>
 				<template v-if="searchable">
-					<input type="text" spellcheck="false" @focus="inputFocused" @blur="inputBlurred" v-model="search" class="p-0 form-control shadow-none border-0 outline-0 input-searchable w-100 bg-transparent line-height-1 font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :data-required="required" />
+					<input type="text" spellcheck="false" @focus="inputFocused" @blur="inputBlurred" v-model="search" class="p-0 shadow-none border-0 outline-0 input-searchable w-100 bg-transparent line-height-1 font-smoothing-auto" :placeholder="select_placeholder" ref="input-searchable" :data-required="required" />
 				</template>
 				<template v-else>
 					<input type="text" class="select_hidden_value d-none" @focus="inputFocused" v-model="selected_value" :data-required="required" data-parent=".dropdown-toggle" />

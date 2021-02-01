@@ -39,7 +39,7 @@ export default {
 		selectedService: null,
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-		newBreaktime: null,
+		newBreaktime: {},
 		newHoliday: {
 			dates: []
 		},
@@ -94,7 +94,7 @@ export default {
 		masks: {
 			input: 'MMMM D, YYYY'
 		},
-		selectedBooking: null,
+		selectedBooking: null
 	}),
 
 	computed: {
@@ -218,6 +218,7 @@ export default {
 				Object.keys(service).map(key => {
 					this.service[key] = service[key];
 				});
+				this.getTimeslots();
 			});
 			this.$refs['editModal'].hide();
 		},
@@ -233,18 +234,6 @@ export default {
 					booking.zoom_link = response.data;
 				}
 				this.createZoomLoading = false;
-			}
-		},
-
-		filterAvailableTimeslots(timeslots) {
-			return timeslots.filter(x => x.is_available);
-		},
-
-		async getSelectedBookingNewTimeslots(date) {
-			let timeslot = this.timeslots[this.selectedTimeslot.dayName][this.selectedTimeslot.index];
-			if (timeslot) {
-				let response = await window.axios.get(`/services/${this.selectedService.id}?date=${dayjs(date).format('YYYY-MM-DD')}&single=1`);
-				this.selectedTimeslot.timeslots = response.data;
 			}
 		},
 
@@ -300,12 +289,6 @@ export default {
 			this.service = service;
 			this.selectedService = service;
 			this.timeslots = service.timeslots;
-			this.clonedService = Object.assign({}, service);
-		},
-
-		getResults(page) {
-			this.page = page;
-			this.getData();
 		},
 
 		async assignMember(booking, member = null) {
@@ -324,71 +307,67 @@ export default {
 		},
 
 		applyBreaktimeToAll() {
-			if (this.service && this.selectedDay) {
-				this.$refs['applyBreaktimeToAllModal'].hide();
-				this.$toasted.show('Breaktimes has been applied to all days successfully.');
-				Object.keys(this.service.days).forEach(key => {
-					if (key != this.selectedDay) {
-						this.service.days[key].breaktimes = this.service.days[this.selectedDay].breaktimes;
-					}
-				});
-				this.updateService(this.service);
+			if (this.clonedService) {
+				if (this.clonedService && this.selectedDay) {
+					this.$refs['applyBreaktimeToAllModal'].hide();
+					this.$toasted.show('Breaktimes has been applied to all days successfully.');
+					Object.keys(this.clonedService.days).forEach(key => {
+						if (key != this.selectedDay) {
+							this.clonedService.days[key].breaktimes = this.clonedService.days[this.selectedDay].breaktimes;
+						}
+					});
+				}
 			}
 		},
 
 		removeHoliday(index) {
-			this.$delete(this.service.holidays, index);
-			this.updateService(this.service);
+			if (this.clonedService) {
+				this.$delete(this.clonedService.holidays, index);
+			}
 		},
 
 		addHolidays() {
-			if (this.newHoliday.dates.length > 0) {
-				if (!this.service.holidays) this.$set(this.service, 'holidays', []);
-				this.newHoliday.dates.forEach(date => {
-					this.service.holidays.push(date);
-				});
-				this.updateService(this.service);
-				this.newHoliday.dates = [];
+			if (this.clonedService) {
+				if (this.newHoliday.dates.length > 0) {
+					if (!this.clonedService.holidays) this.$set(this.clonedService, 'holidays', []);
+					this.newHoliday.dates.forEach(date => {
+						this.clonedService.holidays.push(date);
+					});
+					this.newHoliday.dates = [];
+				}
 			}
 		},
 
 		removeBreaktime(index, day) {
-			this.$delete(this.service.days[day].breaktimes, index);
-			this.updateService(this.service);
+			if (this.clonedService) {
+				this.$delete(this.clonedService.days[day].breaktimes, index);
+			}
 		},
 
 		updateBreaktime(time, index, day) {
-			this.service.days[day].breaktimes[index].start = time.start.time;
-			this.service.days[day].breaktimes[index].end = time.end.time;
-			this.updateService(this.service);
+			if (this.clonedService) {
+				this.clonedService.days[day].breaktimes[index].start = time.start.time;
+				this.clonedService.days[day].breaktimes[index].end = time.end.time;
+			}
 		},
 
 		updateNewBreaktime(time, day) {
-			this.$set(this.newBreaktime, 'start', (time.start || {}).time);
-			this.$set(this.newBreaktime, 'end', (time.end || {}).time);
-			if (this.newBreaktime.start && this.newBreaktime.end) {
-				if (!this.service.days[day].breaktimes) this.$set(this.service.days[day], 'breaktimes', []);
-				this.service.days[day].breaktimes.push(this.newBreaktime);
-				this.newBreaktime = null;
-				this.updateService(this.service);
+			if (this.clonedService) {
+				this.$set(this.newBreaktime, 'start', (time.start || {}).time);
+				this.$set(this.newBreaktime, 'end', (time.end || {}).time);
+				if (this.newBreaktime.start && this.newBreaktime.end) {
+					if (!this.clonedService.days[day].breaktimes) this.$set(this.clonedService.days[day], 'breaktimes', []);
+					this.clonedService.days[day].breaktimes.push(this.newBreaktime);
+					this.newBreaktime = null;
+				}
 			}
 		},
 
 		updateAvailableHours(time, day) {
-			if (this.service) {
-				this.$set(this.service.days[day], 'start', time.start.time);
-				this.$set(this.service.days[day], 'end', time.end.time);
-				this.updateService(this.service);
+			if (this.clonedService) {
+				this.$set(this.clonedService.days[day], 'start', time.start.time);
+				this.$set(this.clonedService.days[day], 'end', time.end.time);
 			}
-		},
-
-		submit() {
-			this.updateService(this.clonedService).then(service => {
-				Object.keys(service).map(key => {
-					this.service[key] = service[key];
-				});
-			});
-			this.$refs['editModal'].hide();
 		},
 
 		formatDate(date) {

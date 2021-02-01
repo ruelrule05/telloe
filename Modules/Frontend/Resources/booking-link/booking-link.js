@@ -9,8 +9,9 @@ const timezone = jstz.determine();
 import CheckmarkIcon from '../icons/checkmark';
 import echo from '../js/echo.js';
 import { debounce } from 'throttle-debounce';
+import VueSelect from '../components/vue-select/vue-select.vue';
 export default {
-	components: { CheckmarkIcon },
+	components: { CheckmarkIcon, VueSelect },
 
 	directives: { tooltip },
 
@@ -24,44 +25,67 @@ export default {
 		channel: null,
 		users: {},
 		highlighterWidth: 0,
-		debounceFunc: null
+		debounceFunc: null,
+		selectedDate: null,
+		currentTarget: null
 	}),
 
 	computed: {
-		tabDates() {
-			let tabDates = [];
-			let i = 7;
-			let startDate = dayjs(this.startDate);
-			while (i > 0) {
-				tabDates.push({
-					name: startDate.format('ddd'),
-					dayName: startDate.format('dddd'),
-					date: startDate.toDate(),
-					label: startDate.format('MMM DD'),
-					format: startDate.format('YYYY-MM-DD')
+		dateOptions() {
+			let dateOptions = [];
+			if (this.bookingLink) {
+				Object.keys(this.bookingLink.dates).forEach(key => {
+					dateOptions.push({
+						text: this.formatDate(key),
+						value: key
+					});
 				});
-				startDate = startDate.add(1, 'day');
-				i--;
 			}
+			return dateOptions;
+		}
+	},
 
-			return tabDates;
+	watch: {
+		selectedDate: function() {
+			if (this.currentTarget) {
+				this.channel.whisper('move', {
+					user: this.auth,
+					index: this.currentTarget.dataset.index,
+					selectedDate: this.selectedDate
+				});
+			}
 		}
 	},
 
 	created() {
 		this.timezone = timezone.name();
 		this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
+		this.channel.leaving(user => {
+			let highlighter = document.querySelector(`.highlighter[data-id="${user.id}"]`);
+			if (highlighter) {
+				highlighter.style.left = '-100%';
+			}
+		});
 		this.channel.listenForWhisper('move', data => {
-			this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
-			data.user.left = `${document.querySelector('.timeslot-button[data-index="' + data.index + '"]').offsetLeft}px`;
+			if (data.selectedDate == this.selectedDate) {
+				this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
+				data.user.left = `${document.querySelector('.timeslot-button[data-index="' + data.index + '"]').offsetLeft}px`;
+				this.$set(this.users, data.user.id, data.user);
+			} else {
+				data.user.left = '-100%';
+			}
 			this.$set(this.users, data.user.id, data.user);
 		});
 		this.debounceFunc = debounce(350, false, e => {
+			this.currentTarget = e.target;
 			this.channel.whisper('move', {
 				user: this.auth,
-				index: e.target.dataset.index
+				index: e.target.dataset.index,
+				selectedDate: this.selectedDate
 			});
 		});
+
+		this.selectedDate = Object.keys(this.bookingLink.dates)[0];
 	},
 
 	mounted() {

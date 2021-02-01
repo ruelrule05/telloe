@@ -29,13 +29,13 @@ export default {
 		},
 		selectedContacts: [],
 		timeslots: [],
-		selectedTimeslots: [],
 		timezone: '',
 		timeslotsLoading: false,
 		convertTime: convertTime,
-		dates: [],
+		dates: {},
 		dayjs: dayjs,
-		name: ''
+		name: '',
+		selectedDate: null
 	}),
 
 	computed: {
@@ -72,13 +72,14 @@ export default {
 		startDate: function(value) {
 			if (value) {
 				let dateFormat = dayjs(value).format('YYYY-MM-DD');
-				let exists = this.dates.find(x => x == dateFormat);
+				let exists = this.dates[dateFormat];
 				if (!exists) {
-					this.dates.push(dateFormat);
+					this.$set(this.dates, dateFormat, { timeslots: [], selectedTimeslots: [] });
 				}
+				this.selectedDate = dateFormat;
 			}
 		},
-		dates: function() {
+		selectedDate: function() {
 			this.getAllTimeslots();
 		}
 	},
@@ -89,15 +90,11 @@ export default {
 		this.startDate = dayjs()
 			.add(1, 'day')
 			.toDate();
-		this.dates.push(dayjs(this.startDate).format('YYYY-MM-DD'));
+		let formatDate = dayjs(this.startDate).format('YYYY-MM-DD');
+		this.selectedDate = formatDate;
+		this.dates[formatDate] = { timeslots: [], selectedTimeslots: [] };
 		this.getBookingLinks({ paginate: true });
 		this.getContacts({ nopaginate: true });
-	},
-
-	mounted() {
-		setTimeout(() => {
-			this.$refs['addModal'].show();
-		}, 150);
 	},
 
 	methods: {
@@ -109,11 +106,19 @@ export default {
 
 		addTimeslot(timeslot) {
 			if (!timeslot.is_available) return false;
-			let index = this.selectedTimeslots.findIndex(x => x.time == timeslot.time);
+
+			let index = this.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
 			if (index == -1) {
-				this.selectedTimeslots.push(timeslot);
+				this.dates[this.selectedDate].selectedTimeslots.push(timeslot);
 			} else {
-				this.selectedTimeslots.splice(index, 1);
+				this.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
+			}
+		},
+
+		removeDate(date) {
+			this.$delete(this.dates, date);
+			if (date == this.selectedDate) {
+				this.selectedDate = Object.keys(this.dates)[0];
 			}
 		},
 
@@ -131,21 +136,16 @@ export default {
 			}
 		},
 
-		setSelectedDateAndTimeslot(date, timeslot) {
-			if (timeslot.is_available) {
-				let index = this.selectedTimeslots.findIndex(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time);
-				if (index > -1) {
-					this.selectedTimeslots.splice(index, 1);
-				} else {
-					this.selectedTimeslots.push({
-						date: date,
-						timeslot: timeslot,
-						days: []
-					});
+		async getAllTimeslots() {
+			if (this.selectedDate && Object.keys(this.dates).length) {
+				this.timeslotsLoading = true;
+				let response = await window.axios.get(`/booking-links/get_all_timeslots?date=${this.selectedDate}`);
+				if (response) {
+					this.dates[this.selectedDate].timeslots = response.data;
 				}
+				this.timeslotsLoading = false;
 			}
 		},
-
 		timezoneTime(timezone, time) {
 			let timezoneTime;
 			if (timezone != this.timezone) {
@@ -191,27 +191,12 @@ export default {
 			`;
 		},
 
-		async getAllTimeslots() {
-			if (this.dates.length > 0) {
-				this.timeslotsLoading = true;
-				let response = await window.axios.get(`/booking-links/get_all_timeslots?dates=${this.dates.join(',')}`);
-				if (response) {
-					this.timeslots = response.data;
-				}
-				this.timeslotsLoading = false;
-			}
-		},
-
 		async storeLink() {
 			this.timeslotsLoading = true;
 			let data = {
 				name: this.name,
 				contacts: this.selectedContacts.map(c => c.id),
-				date: dayjs(this.startDate).format('YYYY-MM-DD'),
-				selected_timeslots: this.selectedTimeslots.map(timeslot => {
-					return timeslot.time;
-				}),
-				timeslots: this.timeslots
+				dates: this.dates
 			};
 			await window.axios.post('/booking-links', data);
 			this.getBookingLinks({ paginate: true });

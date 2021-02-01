@@ -16,7 +16,6 @@ class Booking extends BaseModel
         'metadata' => 'array',
         'notified_2' => 'boolean',
         'notified_24' => 'boolean',
-        'zoom_link' => 'array',
     ];
 
     public function getCustomerAttribute()

@@ -209,7 +209,7 @@ export default {
 					message_group.is_read = message.is_read;
 				}
 				message_group.created_at = message.created_at;
-				message_group.timestamp = message.timestamp;
+				message_group.timestamp = message_group.messages[message_group.messages.length - 1].timestamp;
 				grouped_messages.push(message_group);
 			}
 
@@ -313,17 +313,7 @@ export default {
 		},
 
 		messageTimezoneTime(message) {
-			let timezone = this.$root.auth.timezone;
-			let timezoneTime;
-			if (timezone != message.sender.timezone) {
-				let messageTZ = this.getTimeZoneOffset(new Date(), message.sender.timezone);
-				let localTZ = this.getTimeZoneOffset(new Date(), timezone);
-				timezoneTime = dayjs(parseFloat(message.timestamp)).add(messageTZ - localTZ, 'minute');
-			} else {
-				timezoneTime = dayjs(parseFloat(message.timestamp));
-			}
-
-			return timezoneTime.format('hh:mmA on ddd');
+			return dayjs(parseFloat(message.timestamp)).format('hh:mmA on ddd');
 		},
 
 		getTimeZoneOffset(date, timeZone) {

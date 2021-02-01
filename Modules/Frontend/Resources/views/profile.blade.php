@@ -13,7 +13,7 @@
 	<script>
 		const PROFILE = {!! json_encode($profile) !!};
 		const SERVICE = {!! json_encode($service) !!};
-		const AUTH = null;
+		const TIMEZONE = {!! $timezone ? '"'.$timezone.'"' : 'null' !!};
 	</script>
 	<script src="{{ mix('js/profile.js') }}" async defer></script>
 </body>

@@ -63,7 +63,12 @@ class UserController extends Controller
             $service = Service::with('user', 'assignedServices.member.memberUser')->where('id', $request->service_id)->where('user_id', $profile->id)->firstOrFail();
         }
 
-        return view('frontend::profile', compact('profile', 'service'));
+        $timezone = null;
+        if (Auth::check() && Auth::user()->id == $profile->id) {
+            $timezone = $profile->timezone;
+        }
+
+        return view('frontend::profile', compact('profile', 'service', 'timezone'));
     }
 
     public function showService($username, $service_id)
@@ -274,7 +279,7 @@ class UserController extends Controller
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
                 $booking->update([
-                    'zoom_link' => $zoomLink
+                    'zoom_link' => $zoomLink['join_url']
                 ]);
             }
         }

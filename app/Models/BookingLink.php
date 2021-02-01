@@ -6,11 +6,9 @@ class BookingLink extends BaseModel
 {
     //
 
-    protected $fillable = ['name', 'user_id', 'date', 'selected_timeslots', 'timeslots', 'uuid'];
+    protected $fillable = ['name', 'user_id', 'dates', 'uuid'];
     protected $casts = [
-        'date' => 'date',
-        'selected_timeslots' => 'array',
-        'timeslots' => 'array',
+        'dates' => 'array',
     ];
 
     public function user()

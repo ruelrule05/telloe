@@ -1,6 +1,6 @@
 /* global PROFILE */
 /* global SERVICE */
-/* global AUTH */
+/* global TIMEZONE */
 /* global gapi */
 /* global FB */
 
@@ -58,6 +58,8 @@ import tooltip from '../js/directives/tooltip.js';
 import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
 import VueSelect from '../components/vue-select/vue-select.vue';
 
+const ct = require('countries-and-timezones');
+
 export default {
 	components: {
 		VueFormValidate,
@@ -95,7 +97,7 @@ export default {
 	data: () => ({
 		profile: PROFILE,
 		service: SERVICE,
-		auth: AUTH,
+		timezone: TIMEZONE,
 		ready: false,
 		services: [],
 		packages: [],
@@ -133,7 +135,6 @@ export default {
 		bookingSuccess: false,
 		authAction: 'signup',
 		GoogleAuth: null,
-		timezone: '',
 		assignedService: null,
 		tab: 'services',
 		convertTime: convertTime,
@@ -154,7 +155,8 @@ export default {
 		bookings: [],
 		masks: {
 			input: 'MMM D, YYYY'
-		}
+		},
+		timezonesOptions: []
 	}),
 
 	computed: {
@@ -311,14 +313,16 @@ export default {
 	},
 
 	created() {
-		if(this.service) {
+		if (this.service) {
 			this.selectedServiceForTimeline = this.service;
 			this.selectedService = this.selectedServiceForTimeline;
 			this.ready = true;
 		} else {
 			this.getData();
 		}
-		this.timezone = timezone.name();
+		if (!this.timezone) {
+			this.timezone = timezone.name();
+		}
 		this.startDate = dayjs().toDate();
 
 		if (typeof gapi != 'undefined') {
@@ -326,6 +330,12 @@ export default {
 				this.GoogleAuth = gapi.auth2.init({ client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com' });
 			});
 		}
+		Object.keys(ct.getAllTimezones()).forEach(timezone => {
+			this.timezonesOptions.push({
+				text: timezone,
+				value: timezone
+			});
+		});
 	},
 
 	mounted() {

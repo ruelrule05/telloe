@@ -55,11 +55,8 @@
 									<div class="bg-white w-100 h-100 position-relative ongoing-body d-flex flex-column rounded overflow-hidden">
 										<div class="py-3 px-3 call-topbar position-absolute w-100" v-if="status == 'ongoing' && !isShrinked">
 											<h5 class="font-heading mb-0 text-white">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h5>
-											<!-- <button @click="endCall()" class="btn btn-sm btn-close p-0 position-absolute">
-												<close-icon width="36" height="36"></close-icon>
-											</button> -->
 										</div>
-										<button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center"><i :class="{ 'bg-gray': !isRecording }"></i>&nbsp;{{ isRecording ? 'Stop recording' : 'Record this call' }}</button>
+										<!-- <button v-if="status == 'ongoing'" @click="recordCall" class="btn btn-sm btn-white border btn-record position-absolute d-flex align-items-center"><i :class="{ 'bg-gray': !isRecording }"></i>&nbsp;{{ isRecording ? 'Stop recording' : 'Record this call' }}</button> -->
 
 										<!-- Local camera -->
 										<div class="preview-wrapper preview-thumb" :class="{ 'd-none': isShrinked || status != 'ongoing', 'profile-image': isVideoStopped }">

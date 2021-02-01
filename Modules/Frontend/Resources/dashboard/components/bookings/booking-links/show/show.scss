@@ -95,6 +95,7 @@ small,
 .highlighter {
 	left: -100%;
 	transition: $transition-base;
+	z-index: 10;
 }
 .overflow-visible {
 	overflow: visible;

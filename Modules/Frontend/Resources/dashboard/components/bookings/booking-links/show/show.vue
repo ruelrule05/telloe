@@ -4,8 +4,8 @@
 			<arrow-left-icon width="30" height="30"></arrow-left-icon>
 		</button>
 		<div class="overflow-hidden">
-			<h1 class="font-heading h3 mb-0">{{ bookingLink.name }}</h1>
-			<span class="text-muted">{{ formatDate(bookingLink.date) }}</span>
+			<h1 class="font-heading h3">{{ bookingLink.name }}</h1>
+			<vue-select :options="dateOptions" button_class="btn btn-light shadow-none" v-model="selectedDate"></vue-select>
 
 			<div class="d-flex h-100 my-3">
 				<div class="flex-grow-1 d-flex bg-light rounded position-relative">
@@ -35,10 +35,11 @@
 											</div>
 										</div>
 									</td>
-
-									<td v-for="(timeslot, timeslotIndex) in bookingLink.timeslots" :data-index="timeslotIndex" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden" :class="{ 'bg-primary text-white border': bookingLink.selected_timeslots.find(x => x == timeslot.time) }">
-										<small>{{ timezoneTime(bookingLinkContact.contact.contact_user.timezone, timeslot.time) }}</small>
-									</td>
+									<template v-if="selectedDate">
+										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+											<small>{{ timezoneTime(bookingLinkContact.contact.contact_user.timezone, timeslot.time) }}</small>
+										</td>
+									</template>
 								</tr>
 							</tbody>
 						</table>

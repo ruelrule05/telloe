@@ -129,13 +129,15 @@
 											<chevron-right-icon height="25" width="25" transform="scale(1.4)"></chevron-right-icon>
 										</button>
 									</div>
-									<div v-if="selectedTimeslots.length == 0" class="ml-3 text-muted">Select at least one (1) timeslot</div>
+
+									<vue-select :options="timezonesOptions" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
 								</div>
 							</div>
 						</div>
 
 						<div class="ml-auto" :class="{ 'hide-tooltip': selectedTimeslots.length > 0 }" v-tooltip.left="'Select at least one (1) timeslot'">
-							<button class="btn" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">
+							<div v-if="selectedTimeslots.length == 0" class="ml-3 text-muted">Select at least one (1) timeslot</div>
+							<button v-else class="btn btn-white shadow-sm" type="button" @click="summary()">
 								Continue
 							</button>
 						</div>

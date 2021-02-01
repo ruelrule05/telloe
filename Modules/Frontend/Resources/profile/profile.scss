@@ -177,16 +177,16 @@ $timeCount: 15;
 }
 .timeline-container {
 	min-height: 33px;
-	.selector {
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 100%;
-		border: dashed 1px #aaa;
-		border-radius: 5px;
-		pointer-events: none !important;
-		transform: calc(mx - 50%, my - 50%);
-	}
+	// .selector {
+	// 	position: absolute;
+	// 	top: 0;
+	// 	left: 0;
+	// 	height: 100%;
+	// 	border: dashed 1px #aaa;
+	// 	border-radius: 5px;
+	// 	pointer-events: none !important;
+	// 	transform: calc(mx - 50%, my - 50%);
+	// }
 	.timeline:last-child {
 		margin-bottom: 0 !important;
 	}
@@ -253,8 +253,8 @@ $timeCount: 15;
 	}
 	&.selected {
 		background-color: $warning !important;
-		.selected-checkmark{
-			opacity: 1
+		.selected-checkmark {
+			opacity: 1;
 		}
 	}
 }
