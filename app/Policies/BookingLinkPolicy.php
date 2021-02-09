@@ -29,5 +29,15 @@ class BookingLinkPolicy
         })->exists();
         return $user->id == $bookingLink->user_id || $bookingLinkContact;
     }
+
+    public function update(User $user, BookingLink $bookingLink)
+    {
+        return $user->id == $bookingLink->user_id;
+    }
+
+    public function destroy(User $user, BookingLink $bookingLink)
+    {
+        return $user->id == $bookingLink->user_id;
+    }
 }
 

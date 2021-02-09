@@ -16,8 +16,10 @@ import MoreIcon from '../../../../../icons/more';
 import ArrowLeftIcon from '../../../../../icons/arrow-left';
 import { debounce } from 'throttle-debounce';
 import echo from '../../../../../js/echo.js';
+import Chatroom from '../chatroom/chatroom.vue';
+import VueButton from '../../../../../components/vue-button.vue';
 export default {
-	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon },
+	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton },
 
 	directives: { tooltip },
 
@@ -29,7 +31,9 @@ export default {
 		highlighterWidth: 0,
 		debounceFunc: null,
 		selectedDate: null,
-		currentTarget: null
+		currentTarget: null,
+		sendingEmail: false,
+		hoveredTimeslot: null
 	}),
 
 	computed: {
@@ -44,6 +48,18 @@ export default {
 				});
 			}
 			return dateOptions;
+		},
+
+		bookingLinkUrl() {
+			return window.location.origin + '/booking-links/' + this.bookingLink.uuid;
+		},
+
+		timeslotStatusText() {
+			let status = 'Enable';
+			if (this.hoveredTimeslot && this.bookingLink && this.selectedDate && this.bookingLink.dates[this.selectedDate].selectedTimeslots.find(x => x.time == this.hoveredTimeslot.time)) {
+				status = 'Disable';
+			}
+			return status;
 		}
 	},
 
@@ -91,10 +107,83 @@ export default {
 
 	methods: {
 		...mapActions({
-			getBookingLink: 'booking_links/show'
+			getBookingLink: 'booking_links/show',
+			updateBookingLink: 'booking_links/update',
+			deleteBookingLink: 'booking_links/delete'
 		}),
 
+		async destroy() {
+			await this.deleteBookingLink(this.bookingLink);
+			this.$refs['deleteModal'].hide();
+			this.$router.push(`/dashboard/bookings/booking-links`);
+		},
+
+		async toggleTimeslot() {
+			if (this.hoveredTimeslot) {
+				let timeslot = this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == this.hoveredTimeslot.time);
+				if (timeslot) {
+					let index = this.bookingLink.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
+					if (index == -1) {
+						this.bookingLink.dates[this.selectedDate].selectedTimeslots.push(timeslot);
+					} else {
+						this.bookingLink.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
+					}
+
+					// update bookingLink
+					await this.updateBookingLink(this.bookingLink);
+
+					this.channel.whisper('selectedTimeslots', {
+						selectedDate: this.selectedDate,
+						selectedTimeslots: this.bookingLink.dates[this.selectedDate].selectedTimeslots
+					});
+				}
+			}
+		},
+
+		copyToClipboard() {
+			this.$toasted.show('Copied to clipboard');
+			let element = this.$refs['link'];
+			let $temp = $('<input>');
+			$('body').append($temp);
+			$temp.val($(element).text()).select();
+			document.execCommand('copy');
+			$temp.remove();
+			this.selectElementText(element);
+		},
+
+		selectElementText(el) {
+			let win = window;
+			var doc = win.document,
+				sel,
+				range;
+			if (win.getSelection && doc.createRange) {
+				sel = win.getSelection();
+				range = doc.createRange();
+				range.selectNodeContents(el);
+				sel.removeAllRanges();
+				sel.addRange(range);
+			} else if (doc.body.createTextRange) {
+				range = doc.body.createTextRange();
+				range.moveToElementText(el);
+				range.select();
+			}
+		},
+
+		async sendEmail() {
+			this.sendingEmail = true;
+			let response = await window.axios.post(`/booking-links/${this.bookingLink.id}/send_invitation`);
+			if (response) {
+				this.$refs['sendModal'].hide();
+				this.$toasted.success('Invitation emails has been sent successfully.');
+			}
+			this.sendingEmail = false;
+		},
+
 		showHighlight(e) {
+			let timeslot = e.target.dataset.timeslot;
+			if (timeslot) {
+				this.hoveredTimeslot = JSON.parse(timeslot);
+			}
 			let x = `${e.target.offsetLeft}px`;
 			this.$refs['highlighter'].style.left = x;
 			setTimeout(() => {

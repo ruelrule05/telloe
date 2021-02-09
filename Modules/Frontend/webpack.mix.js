@@ -40,7 +40,7 @@ mix.sass(__dirname + '/Resources/dashboard/dashboard.scss', 'css')
 mix.js(__dirname + '/Resources/dashboard/dashboard.js', 'js')
 	.js(__dirname + '/Resources/js/page.js', 'js')
 	.js(__dirname + '/Resources/js/profile.js', 'js')
-	//.js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js')
+	.js(__dirname + '/Resources/widget/index.js', 'js/widget/widget.js')
 	//.js(__dirname + '/Resources/js/organization.js', 'js')
 	.js(__dirname + '/Resources/js/booking-link.js', 'js');
 

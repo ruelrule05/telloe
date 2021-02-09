@@ -16,6 +16,7 @@ import MoreIcon from '../../../../../icons/more';
 import convertTime from '../../../../../js/plugins/convert-time.js';
 import PlusIcon from '../../../../../icons/plus';
 import CloseIcon from '../../../../../icons/close';
+const ct = require('countries-and-timezones');
 export default {
 	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, PlusIcon, CloseIcon },
 
@@ -35,7 +36,11 @@ export default {
 		dates: {},
 		dayjs: dayjs,
 		name: '',
-		selectedDate: null
+		selectedDate: null,
+		addEmail: false,
+		newEmail: '',
+		newTimezone: '',
+		timezonesOptions: []
 	}),
 
 	computed: {
@@ -81,6 +86,13 @@ export default {
 		},
 		selectedDate: function() {
 			this.getAllTimeslots();
+		},
+		addEmail: function(value) {
+			if (value) {
+				this.$nextTick(() => {
+					this.$refs['newEmailInput'].focus();
+				});
+			}
 		}
 	},
 
@@ -95,6 +107,12 @@ export default {
 		this.dates[formatDate] = { timeslots: [], selectedTimeslots: [] };
 		this.getBookingLinks({ paginate: true });
 		this.getContacts({ nopaginate: true });
+		Object.keys(ct.getAllTimezones()).forEach(timezone => {
+			this.timezonesOptions.push({
+				text: timezone,
+				value: timezone
+			});
+		});
 	},
 
 	methods: {
@@ -103,6 +121,19 @@ export default {
 			storeBookingLink: 'booking_links/store',
 			getContacts: 'contacts/index'
 		}),
+		addNewEmail() {
+			if (this.newEmail && this.newTimezone) {
+				this.selectedContacts.push({
+					type: 'email',
+					id: this.newEmail,
+					contact_user: {
+						timezone: this.newTimezone,
+						full_name: this.newEmail
+					}
+				});
+				this.addEmail = false;
+			}
+		},
 
 		addTimeslot(timeslot) {
 			if (!timeslot.is_available) return false;
@@ -195,7 +226,13 @@ export default {
 			this.timeslotsLoading = true;
 			let data = {
 				name: this.name,
-				contacts: this.selectedContacts.map(c => c.id),
+				contacts: this.selectedContacts.map(c => {
+					return {
+						id: c.id,
+						type: c.type,
+						timezone: c.contact_user.timezone
+					};
+				}),
 				dates: this.dates
 			};
 			await window.axios.post('/booking-links', data);

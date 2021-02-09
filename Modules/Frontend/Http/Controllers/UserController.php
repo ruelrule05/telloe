@@ -52,8 +52,7 @@ class UserController extends Controller
             }])->services->load('user', 'assignedServices.member.memberUser');
 
             $data = [];
-            $data['services'] = $services;
-            $data['packages'] = $profile->packages()->where('is_available', true)->get();
+            $data['services'] = $profile->services()->where('is_available', true)->where('in_widget', true)->get()->load('user', 'assignedServices.member.memberUser');
 
             return response()->json($data);
         }
@@ -221,27 +220,25 @@ class UserController extends Controller
             Mail::queue(new NewBooking($bookings, 'client'));
             Mail::queue(new NewBooking($bookings, 'contact'));
 
-            if ($bookings[0]->customer) {
-                $description = '';
-                $link = '';
-                $user_id = null;
-                if (Auth::user()->id == $bookings[0]->customer->id) { // if contact - notify client
-                    $user_id = $bookings[0]->service->user->id;
-                    $description = "<strong>{$bookings[0]->user->full_name}</strong> has placed a booking.";
-                    $contact = $bookings[0]->contact ?? Contact::where('user_id', $bookings[0]->service->user_id)->where('contact_user_id', $bookings[0]->customer->id)->first() ?? null;
-                    if ($contact) {
-                        $link = "/dashboard/contacts/$contact->id";
-                    }
-                } elseif (Auth::user()->id == $bookings[0]->service->user_id) { // if client - notify contact
-                    $user_id = $bookings[0]->customer->id;
-                    $description = 'A booking has been placed for your account.';
-                }
+            $user_id = $bookings[0]->service->user->id ?? null;
+            if ($user_id) {
+                $fullname = $bookings[0]->customer->full_name ?? 'Someone';
+                $description = "<strong>{$fullname}</strong> has placed a booking.";
+                Notification::create([
+                    'user_id' => $user_id,
+                    'description' => $description,
+                    'link' => ''
+                ]);
+            }
 
+            if ($bookings[0]->customer) {
+                $user_id = $bookings[0]->customer->id;
                 if ($user_id) {
+                    $description = 'A booking has been placed for your account.';
                     Notification::create([
                         'user_id' => $user_id,
                         'description' => $description,
-                        'link' => $link
+                        'link' => ''
                     ]);
                 }
             }

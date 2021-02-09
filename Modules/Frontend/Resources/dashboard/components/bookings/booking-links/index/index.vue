@@ -28,7 +28,7 @@
 							<table class="table table-borderless table-hover mb-0 mt-2">
 								<thead>
 									<tr>
-										<th>Date</th>
+										<th>Name</th>
 										<th>Dates</th>
 										<th>Contacts</th>
 									</tr>
@@ -36,7 +36,7 @@
 								<tbody>
 									<router-link tag="tr" :to="`/dashboard/bookings/booking-links/${booking_link.id}`" v-for="booking_link in booking_links.data" :key="booking_link.id" class="cursor-pointer">
 										<td class="align-middle">
-											{{ formatDate(booking_link.date) }}
+											{{ booking_link.name }}
 										</td>
 										<td class="align-middle">
 											<span class="badge badge-secondary mr-1" v-for="(date, dateKey) in booking_link.dates" :key="dateKey">{{ formatDate(dateKey) }}</span>
@@ -125,7 +125,7 @@
 
 								<tr>
 									<td class="contact-container">
-										<div class="dropdown">
+										<div v-if="!addEmail" class="dropdown">
 											<div class="rounded py-2 border bg-white cursor-pointer add-member d-flex align-items-center justify-content-center text-muted" data-toggle="dropdown">
 												<plus-icon class="fill-gray" transform="scale(0.9)"></plus-icon>
 												Add Contact
@@ -141,8 +141,21 @@
 														</div>
 													</div>
 												</template>
+												<div class="dropdown-item d-flex align-items-center cursor-pointer text-center text-muted" @click="addEmail = true; newEmail = newTimezone = ''"><plus-icon class="fill-gray" transform="scale(0.8)"></plus-icon> Invite email</div>
 											</div>
 										</div>
+										<vue-form-validate @submit="addNewEmail" class="pl-2" v-else>
+											<div class="form-group mb-1">
+												<input type="email" ref="newEmailInput" class="form-control form-control-sm" placeholder="Email" v-model="newEmail">
+											</div>
+											<div class="form-group mb-2">
+												<vue-select placeholder="Timezone" :options="timezonesOptions" searchable button_class="form-control form-control-sm" v-model="newTimezone"></vue-select>
+											</div>
+											<div class="d-flex align-items-center">
+												<button class="btn btn-sm btn-white" type="button" @click="addEmail = false">Cancel</button>
+												<button class="ml-auto btn btn-sm btn-primary" type="submit">Add</button>
+											</div>
+										</vue-form-validate>
 									</td>
 									<td>
 										<div v-if="!selectedContacts.length" class="text-gray py-2">Please add at least one contact.</div>

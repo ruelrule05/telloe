@@ -1,5 +1,6 @@
 /* global AUTH */
 /* global BOOKING_LINK */
+/* global IN_EMAILS */
 require('../js/bootstrap');
 
 import dayjs from 'dayjs';
@@ -10,14 +11,18 @@ import CheckmarkIcon from '../icons/checkmark';
 import echo from '../js/echo.js';
 import { debounce } from 'throttle-debounce';
 import VueSelect from '../components/vue-select/vue-select.vue';
+import Modal from '../components/modal/modal.vue';
+import VueFormValidate from '../components/vue-form-validate.vue';
+import 'bootstrap/js/dist/modal';
 export default {
-	components: { CheckmarkIcon, VueSelect },
+	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate },
 
 	directives: { tooltip },
 
 	data: () => ({
 		auth: AUTH,
 		bookingLink: BOOKING_LINK,
+		in_emails: IN_EMAILS,
 		echo: echo,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		selectedTimeslots: [],
@@ -27,7 +32,17 @@ export default {
 		highlighterWidth: 0,
 		debounceFunc: null,
 		selectedDate: null,
-		currentTarget: null
+		currentTarget: null,
+		email: '',
+		loginForm: {
+			password: ''
+		},
+		signupForm: {
+			firstName: '',
+			lastName: '',
+			password: ''
+		},
+		authAction: 'login'
 	}),
 
 	computed: {
@@ -76,6 +91,12 @@ export default {
 			}
 			this.$set(this.users, data.user.id, data.user);
 		});
+
+		this.channel.listenForWhisper('selectedTimeslots', data => {
+			if (data.selectedDate == this.selectedDate) {
+				this.bookingLink.dates[data.selectedDate].selectedTimeslots = data.selectedTimeslots;
+			}
+		});
 		this.debounceFunc = debounce(350, false, e => {
 			this.currentTarget = e.target;
 			this.channel.whisper('move', {
@@ -86,13 +107,29 @@ export default {
 		});
 
 		this.selectedDate = Object.keys(this.bookingLink.dates)[0];
+
+		if (this.in_emails) {
+			let url = new URL(window.location.href);
+			this.email = url.searchParams.get('email');
+		}
 	},
 
 	mounted() {
 		this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
+		if (this.in_emails) {
+			this.$refs['loginModal'].show();
+		}
 	},
 
 	methods: {
+		login() {
+			this.$refs['loginModal'].hide();
+		},
+
+		register() {
+			this.$refs['loginModal'].hide();
+		},
+
 		showHighlight(e) {
 			let x = `${e.target.offsetLeft}px`;
 			this.$refs['highlighter'].style.left = x;

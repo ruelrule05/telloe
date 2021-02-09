@@ -38,12 +38,67 @@
 										</td>
 									</template>
 								</tr>
+								<tr v-for="email in bookingLink.emails" :key="email.email" @mouseover="showHighlight">
+									<td class="contact-container">
+										<div class="d-flex align-items-center py-2 pl-2 mr-n2">
+											<div class="profile-image profile-image-sm cursor-pointer">
+											</div>
+											<div class="flex-1 text-left pl-2">
+												<h6 class="font-heading text-nowrap mb-0">
+													{{ email.email }}
+												</h6>
+												<small class="text-secondary">{{ email.timezone }}</small>
+											</div>
+										</div>
+									</td>
+
+									<template v-if="selectedDate">
+										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+											<small>{{ timezoneTime(email.timezone, timeslot.time) }}</small>
+										</td>
+									</template>
+								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<modal ref="loginModal" size="modal-sm" :close-button="false">
+			<h4 class="font-heading mb-3"><span class="text-capitalize">{{ authAction }}</span> to continue</h4>
+			<vue-form-validate @submit="login" v-if="authAction == 'login'">
+				<div class="form-group mb-2">
+					<input type="email" disabled readonly class="form-control" :value="email" data-required>
+				</div>
+				<div class="form-group">
+					<input type="password" class="form-control" v-model="loginForm.password" placeholder="Password" data-required>
+				</div>
+				<button class="btn-block btn btn-primary" type="submit">Log In</button>
+				<div class="text-center">
+					<button class="btn" type="button" @click="authAction = 'register'">Sign Up</button>
+				</div>
+			</vue-form-validate>
+
+			<vue-form-validate @submit="register" v-else-if="authAction == 'register'">
+				<div class="form-group mb-2">
+					<input type="email" disabled readonly class="form-control" :value="email" data-required>
+				</div>
+				<div class="form-group">
+					<input type="text" class="form-control" v-model="signupForm.firstName" placeholder="First Name" data-required>
+				</div>
+				<div class="form-group">
+					<input type="text" class="form-control" v-model="signupForm.lastName" placeholder="Last Name" data-required>
+				</div>
+				<div class="form-group">
+					<input type="password" class="form-control" v-model="signupForm.password" placeholder="Password" data-required>
+				</div>
+				<button class="btn-block btn btn-primary" type="submit">Sign Up</button>
+				<div class="text-center">
+					<button class="btn" type="button" @click="authAction = 'login'">Log In</button>
+				</div>
+			</vue-form-validate>
+		</modal>
 	</div>
 </template>
 

@@ -106,7 +106,7 @@
 												<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
 											</div>
 										</button>
-										<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index',  'services_show'].find((x) => x == $route.name) }" id="item-bookings">
+										<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index',  'services_show', 'booking-links', 'booking-links_show'].find((x) => x == $route.name) }" id="item-bookings">
 											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
 												<span class="pl-3">Calendar</span>
 											</router-link>

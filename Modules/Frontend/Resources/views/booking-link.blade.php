@@ -13,6 +13,7 @@
 	<script>
 		const AUTH = {!! json_encode($user) !!};
 		const BOOKING_LINK = {!! json_encode($bookingLink) !!};
+		const IN_EMAILS = {!! $inEmails ? 1 : 0 !!};
 	</script>
 	<script src="{{ mix('js/booking-link.js') }}" async defer></script>
 </body>

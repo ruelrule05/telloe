@@ -6,8 +6,8 @@
  */
 
  Route::get('/test', function () {
-     $request = request();
-     return app()->call('Modules\Frontend\Http\Controllers\BookingLinkController@getAllTimeslots', ['request' => $request]);
+     $email = new Modules\Frontend\Mail\SendBookingLinkInvitation(App\Models\BookingLink::first());
+     return $email;
  });
 Route::get('widget', function () {
     return view('frontend::widget', ['profile' => App\Models\User::find(3)]);
@@ -21,7 +21,7 @@ Route::group(
     function () {
         Route::get('/', 'PageController@homepage');
 
-        Route::get('booking-links/{uuid}', 'BookingLinkController@public')->middleware('auth');
+        Route::get('booking-links/{uuid}', 'BookingLinkController@public');
 
         Route::get('/ics', 'BookingController@downloadIcs');
 
@@ -129,6 +129,7 @@ Route::group(
                 Route::get('xirsys/host', 'XirsysController@gethost');
 
                 Route::get('booking-links/get_all_timeslots', 'BookingLinkController@getAllTimeslots');
+                Route::post('booking-links/{id}/send_invitation', 'BookingLinkController@sendInvitation');
                 Route::apiResource('booking-links', 'BookingLinkController');
             });
 
