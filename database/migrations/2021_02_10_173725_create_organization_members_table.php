@@ -24,7 +24,7 @@ class CreateOrganizationMembersTable extends Migration
             $table->bigInteger('organization_id')->nullable();
 
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_unicode_ci';
+            $table->collation = 'utf8_unicode_ci';
         });
         
     }

@@ -27,7 +27,7 @@ class CreateOrdersTable extends Migration
             $table->index('package_id', 'service_id');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_unicode_ci';
+            $table->collation = 'utf8_unicode_ci';
         });
         
     }
