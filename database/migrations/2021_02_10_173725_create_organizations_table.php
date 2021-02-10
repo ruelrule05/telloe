@@ -27,7 +27,7 @@ class CreateOrganizationsTable extends Migration
             $table->unique('slug', 'slug');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_unicode_ci';
         });
         
     }
