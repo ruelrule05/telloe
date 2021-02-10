@@ -47,7 +47,7 @@ class CreateServicesTable extends Migration
             $table->index('user_id', 'user_id');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_general';
         });
         
     }

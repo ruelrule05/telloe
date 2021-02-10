@@ -31,7 +31,7 @@ class CreatePlansTable extends Migration
             $table->unique('name', 'name');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_general';
         });
         
     }

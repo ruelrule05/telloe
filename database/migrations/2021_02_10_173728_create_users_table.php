@@ -57,7 +57,7 @@ class CreateUsersTable extends Migration
             $table->index('role_id', 'role_id');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_0900_ai_ci';
+            $table->collation = 'utf8mb4_general';
         });
         
     }
