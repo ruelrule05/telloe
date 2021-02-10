@@ -28,7 +28,7 @@ class CreateJobsTable extends Migration
             $table->index('queue', 'jobs_queue_index');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8_unicode_ci';
+            $table->collation = 'utf8mb4_0900_ai_ci';
         });
         
     }

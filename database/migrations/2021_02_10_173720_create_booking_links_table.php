@@ -28,7 +28,7 @@ class CreateBookingLinksTable extends Migration
             $table->unique('uuid', 'uuid');
 
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8_unicode_ci';
+            $table->collation = 'utf8mb4_0900_ai_ci';
         });
     }
 
