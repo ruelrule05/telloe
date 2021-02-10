@@ -25,7 +25,7 @@ class CreateContactNotesTable extends Migration
             $table->index('contact_id', 'contact_id');
             
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_general';
+            $table->collation = 'utf8mb4_unicode_ci';
         });
         
     }

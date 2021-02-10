@@ -24,7 +24,7 @@ class CreatePasswordResetsTable extends Migration
             $table->string('token', 30)->charset('latin1')->collation('latin1_swedish_ci')->default('');
 
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_general';
+            $table->collation = 'utf8mb4_unicode_ci';
         });
         
     }

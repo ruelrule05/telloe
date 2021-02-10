@@ -22,7 +22,7 @@ class CreateRolesTable extends Migration
             $table->string('role', 100)->nullable();
 
             $table->charset = 'utf8mb4';
-            $table->collation = 'utf8mb4_general';
+            $table->collation = 'utf8mb4_unicode_ci';
         });
         
     }
