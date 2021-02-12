@@ -11,7 +11,6 @@ use App\Models\PasswordReset;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\UserCustomField;
-use App\Models\Widget;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -85,11 +84,7 @@ class AuthController extends Controller
                 $this->createPresetService($user);
                 $this->createInitialConversations($user);
                 $this->createDefaultField($user);
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
+
                 return response()->json($user);
             } else {
                 return abort(403, 'Invalid password');
@@ -121,9 +116,6 @@ class AuthController extends Controller
         ]);
         $user->password = bcrypt($request->password);
         $user->save();
-        $widget = Widget::create([
-            'user_id' => $user->id
-        ]);
 
         Auth::login($user);
 
@@ -310,20 +302,10 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
 
                 Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
-            }
-
+            } 
             Auth::login($user);
 
             if ($request->invite_token) {
@@ -370,17 +352,9 @@ class AuthController extends Controller
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
+
                 Mail::queue(new Welcome($user));
                 $this->createDefaultField($user);
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
             }
             Auth::login($user);
 
