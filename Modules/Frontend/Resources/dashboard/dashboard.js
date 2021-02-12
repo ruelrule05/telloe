@@ -311,7 +311,8 @@ window.app = new Vue({
 		intros: intros,
 		introJS: introJS,
 		appChannel: null,
-		userChannel: null
+		userChannel: null,
+		showHelpWidget: true
 	},
 
 	computed: {

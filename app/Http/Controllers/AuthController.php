@@ -27,7 +27,7 @@ class AuthController extends Controller
 {
     public function get(Request $request, $last_online = true)
     {
-        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription', 'role')->makeVisible([
+        $user = Auth::check() ? Auth::user()->load('subscription', 'role')->makeVisible([
             'google_calendars',
             'google_calendars',
             'google_calendar_id',

@@ -24,7 +24,7 @@ import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import convertTime from '../../../../../js/plugins/convert-time.js';
 Vue.component('pagination', require('laravel-vue-pagination'));
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import EditBooking from '../../edit/edit.vue';

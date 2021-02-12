@@ -7,7 +7,7 @@ import ClockIcon from '../../../../icons/clock';
 import TrashIcon from '../../../../icons/trash';
 import dayjs from 'dayjs';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import Paginate from '../../../../components/paginate/paginate.vue';

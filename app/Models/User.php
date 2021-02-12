@@ -81,11 +81,6 @@ class User extends Authenticatable implements JWTSubject
         'phone' => 'nullable|int',
     ];
 
-    public function widget()
-    {
-        return $this->hasOne(Widget::class);
-    }
-
     public function subscription()
     {
         return $this->hasOne(Subscription::class);

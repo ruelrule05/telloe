@@ -18,7 +18,7 @@ import ChevronLeftIcon from '../../../../icons/chevron-left';
 import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
 import VCalendar from 'v-calendar';
 const utcPlugin = require('dayjs/plugin/utc');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(utcPlugin);
 dayjs.extend(IsSameOrAfter);
 Vue.use(VCalendar);

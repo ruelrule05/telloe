@@ -1,7 +1,57 @@
+@import '../../../../../sass/variables';
+.btn-toggle,
 .chatroom {
 	bottom: 60px;
 	right: 25px;
-	height: 300px;
-	width: 300px;
 	z-index: 100;
+	box-shadow: 0 0 0.5rem rgba($dark, 0.35) !important;
+}
+
+.chatroom {
+	bottom: 60px;
+	height: 350px;
+	width: 300px;
+}
+.btn-close {
+	svg {
+		transition: $transition-base;
+	}
+	&:not(:hover) {
+		svg {
+			fill: $gray-400;
+		}
+	}
+}
+.profile-image {
+	border: solid 2px white;
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-size: cover;
+	background-size: no-repeat;
+	background-position: center;
+	background-color: $gray-400;
+	position: relative;
+	span {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: $gray-500;
+		font-size: 14px;
+	}
+}
+.message-input {
+	border-radius: 10px;
+	font-size: 14px;
+	max-height: 120px;
+	word-break: break-all;
+	&[data-placeholder]:empty:before {
+		content: attr(data-placeholder);
+		color: #888;
+	}
+}
+.user-profile-image {
+	width: 30px;
+	height: 30px;
 }

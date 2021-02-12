@@ -21,4 +21,9 @@ class BookingLink extends BaseModel
     {
         return $this->hasMany(BookingLinkContact::class);
     }
+
+    public function bookingLinkMessages()
+    {
+        return $this->hasMany(BookingLinkMessage::class);
+    }
 }

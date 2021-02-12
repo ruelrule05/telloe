@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 const convertTime = require('convert-time');
 import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import VueButton from '../../../../../components/vue-button.vue';

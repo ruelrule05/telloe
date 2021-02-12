@@ -37,7 +37,7 @@ import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 
@@ -304,8 +304,8 @@ export default {
 			if (availableTimeslots.length > 0) {
 				availableTimeslots.forEach(availableTimeslot => {
 					let availableTimeslotParts = availableTimeslot.time.split(':');
-					let width = service.duration / 60 * 100;
-					let left = parseInt(availableTimeslotParts[1]) / 60 * 100;
+					let width = (service.duration / 60) * 100;
+					let left = (parseInt(availableTimeslotParts[1]) / 60) * 100;
 					let style = `height: 18px; width: ${width}%; left: ${left}%`;
 					timeslotEls += `<div class="small position-absolute bg-primary d-inline-block position-relative text-white cursor-pointer rounded border border-white overflow-hidden" style="${style}"><span class="position-absolute-center d-nxone text-nowrap" style="font-size: 10px">${convertTime(availableTimeslot.time, 'hh:mmA')}</span></div>`;
 				});

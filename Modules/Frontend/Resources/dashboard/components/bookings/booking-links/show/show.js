@@ -76,6 +76,7 @@ export default {
 	},
 
 	created() {
+		this.$root.showHelpWidget = false;
 		this.timezone = timezone.name();
 		this.getBookingLink(this.$route.params.id).then(data => {
 			this.bookingLink = data;
@@ -92,6 +93,12 @@ export default {
 				}
 				this.$set(this.users, data.user.id, data.user);
 			});
+			this.channel.listenForWhisper('suggestTimeslot', data => {
+				let timeslot = this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == data.timeslot.time);
+				if (timeslot) {
+					this.$set(timeslot, 'isSuggested', data.timeslot.isSuggested);
+				}
+			});
 			this.debounceFunc = debounce(350, false, e => {
 				this.channel.whisper('move', {
 					user: this.$root.auth,
@@ -103,6 +110,10 @@ export default {
 				this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
 			});
 		});
+	},
+
+	destroyed: function() {
+		this.$root.showHelpWidget = true;
 	},
 
 	methods: {

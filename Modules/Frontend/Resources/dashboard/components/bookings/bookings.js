@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import VCalendar from 'v-calendar';

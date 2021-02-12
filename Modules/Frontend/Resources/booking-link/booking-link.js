@@ -13,9 +13,10 @@ import { debounce } from 'throttle-debounce';
 import VueSelect from '../components/vue-select/vue-select.vue';
 import Modal from '../components/modal/modal.vue';
 import VueFormValidate from '../components/vue-form-validate.vue';
+import MoreIcon from '../icons/more';
 import 'bootstrap/js/dist/modal';
 export default {
-	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate },
+	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon },
 
 	directives: { tooltip },
 
@@ -42,10 +43,18 @@ export default {
 			lastName: '',
 			password: ''
 		},
-		authAction: 'login'
+		authAction: 'login',
+		hoveredTimeslot: null
 	}),
 
 	computed: {
+		timeslotStatusText() {
+			let status = 'Suggest';
+			if (this.hoveredTimeslot && this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == this.hoveredTimeslot.time && x.isSuggested)) {
+				status = 'Unsuggest';
+			}
+			return status;
+		},
 		dateOptions() {
 			let dateOptions = [];
 			if (this.bookingLink) {
@@ -122,6 +131,18 @@ export default {
 	},
 
 	methods: {
+		async toggleTimeslot() {
+			if (this.hoveredTimeslot) {
+				let timeslot = this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == this.hoveredTimeslot.time);
+				if (timeslot) {
+					this.$set(timeslot, 'isSuggested', !timeslot.isSuggested);
+					this.channel.whisper('suggestTimeslot', {
+						timeslot: timeslot
+					});
+				}
+			}
+		},
+
 		login() {
 			this.$refs['loginModal'].hide();
 		},
@@ -131,6 +152,10 @@ export default {
 		},
 
 		showHighlight(e) {
+			let timeslot = e.target.dataset.timeslot;
+			if (timeslot) {
+				this.hoveredTimeslot = JSON.parse(timeslot);
+			}
 			let x = `${e.target.offsetLeft}px`;
 			this.$refs['highlighter'].style.left = x;
 			this.debounceFunc(e);

@@ -9,7 +9,7 @@ import ArrowLeftIcon from '../../../../icons/arrow-left';
 import MapMarkerIcon from '../../../../icons/map-marker';
 import CheckmarkIcon from '../../../../icons/checkmark';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 import dayjs from 'dayjs';
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);

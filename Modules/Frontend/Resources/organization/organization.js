@@ -40,7 +40,7 @@ import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const IsSameOrAfter = require('dayjs/plugin/IsSameOrAfter');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';

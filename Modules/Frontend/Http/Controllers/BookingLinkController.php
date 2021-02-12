@@ -73,7 +73,7 @@ class BookingLinkController extends Controller
     {
         $bookingLink = BookingLink::findOrFail($id);
         $this->authorize('show', $bookingLink);
-        return response($bookingLink->load('bookingLinkContacts.contact.contactUser'));
+        return response($bookingLink->load('bookingLinkContacts.contact.contactUser', 'bookingLinkMessages.user'));
     }
 
     public function update($id, Request $request)

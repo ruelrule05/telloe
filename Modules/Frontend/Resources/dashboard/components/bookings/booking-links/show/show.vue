@@ -73,7 +73,7 @@
 										</div>
 									</td>
 									<template v-if="selectedDate">
-										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time), 'bg-warning': timeslot.isSuggested }">
 											<small>{{ timezoneTime(bookingLinkContact.contact.contact_user.timezone, timeslot.time) }}</small>
 										</td>
 									</template>
@@ -81,8 +81,7 @@
 								<tr v-for="email in bookingLink.emails" :key="email.email" @mouseover="showHighlight">
 									<td class="contact-container">
 										<div class="d-flex align-items-center py-2 pl-2 mr-n2">
-											<div class="profile-image profile-image-sm cursor-pointer">
-											</div>
+											<div class="profile-image profile-image-sm cursor-pointer"></div>
 											<div class="flex-1 text-left pl-2">
 												<h6 class="font-heading text-nowrap mb-0">
 													{{ email.email }}
@@ -92,7 +91,7 @@
 										</div>
 									</td>
 									<template v-if="selectedDate">
-										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time), 'bg-warning': timeslot.isSuggested }">
 											<small>{{ timezoneTime(email.timezone, timeslot.time) }}</small>
 										</td>
 									</template>
@@ -113,11 +112,7 @@
 				<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
 					Cancel
 				</button>
-				<button
-					class="btn btn-danger ml-auto"
-					type="button"
-					@click="destroy"
-				>
+				<button class="btn btn-danger ml-auto" type="button" @click="destroy">
 					Delete
 				</button>
 			</div>
@@ -138,7 +133,7 @@
 			</div>
 		</modal>
 
-		<!-- <chatroom :booking-link="bookingLink"></chatroom> -->
+		<chatroom :booking-link="bookingLink"></chatroom>
 	</div>
 </template>
 

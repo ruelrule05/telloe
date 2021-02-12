@@ -96,6 +96,21 @@ small,
 	left: -100%;
 	transition: $transition-base;
 	z-index: 10;
+	.timeslot-action {
+		opacity: 0;
+		transform: translateX(-50%);
+		transition: $transition-base;
+		top: -20px;
+		left: 50%;
+		svg {
+			transform: rotate(90deg);
+		}
+	}
+	&:hover {
+		.timeslot-action {
+			opacity: 1;
+		}
+	}
 }
 [data-tooltip-wrapper] {
 	.tooltip {

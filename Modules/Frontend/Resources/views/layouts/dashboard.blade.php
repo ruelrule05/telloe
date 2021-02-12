@@ -285,7 +285,7 @@
 				</div>
 			</modal>
 
-			<knowledge-base></knowledge-base>
+			<knowledge-base v-if="showHelpWidget"></knowledge-base>
 		</div>
 
 
