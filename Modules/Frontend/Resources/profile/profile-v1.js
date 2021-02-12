@@ -1,5 +1,4 @@
 require('../js/bootstrap');
-
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'bootstrap/js/dist/modal';
