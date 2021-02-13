@@ -196,15 +196,6 @@ class AuthController extends Controller
         }
     }
 
-    public function FBMessengerWebhook(Request $request)
-    {
-        echo $request->challenge;
-        $data = json_encode($request->all());
-        Mail::raw($data, function ($message) {
-            $message->subject('message subject')->to('cleidoscope@gmail.com');
-        });
-    }
-
     public function update(Request $request)
     {
         $this->validate($request, [
@@ -274,106 +265,6 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json(['success' => true]);
-    }
-
-    public function loginFacebook(Request $request)
-    {
-        $this->validate($request, [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'id' => 'required'
-        ]);
-        $user = User::where('email', $request->email)->first();
-        if (! $user || $user->facebook_id == $request->id) {
-            $isNew = false;
-            if (! $user) {
-                $isNew = true;
-                $time = time();
-                $profile_image = 'http://graph.facebook.com/' . $request->id . '/picture?type=normal';
-                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $username = $this->generateUsername($request);
-                $user = User::create([
-                    'username' => $username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                ]);
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->facebook_id = $request->id;
-                $user->save();
-
-                Mail::queue(new Welcome($user));
-                $this->createDefaultField($user);
-            } 
-            Auth::login($user);
-
-            if ($request->invite_token) {
-                checkInviteToken($user, $request, $isNew);
-            } elseif ($request->member_invite_token) {
-                checkMemberInviteToken($user, $request);
-            }
-
-            $this->createInitialConversations($user);
-            $this->createPresetService($user);
-            return response()->json($user);
-        }
-
-        $message = "There's no user associated with this Facebook account.";
-        if ($request->action == 'signup' && $user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
-    }
-
-    public function loginGoogle(Request $request)
-    {
-        $this->validate($request, [
-            'id' => 'required',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'image_url' => 'required'
-        ]);
-        $user = User::where('email', $request->email)->first();
-        if (! $user || $user->google_id == $request->id) {
-            $isNew = false;
-            if (! $user) {
-                $isNew = true;
-                $time = time();
-                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $username = $this->generateUsername($request);
-                $user = User::create([
-                    'username' => $username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                ]);
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->google_id = $request->id;
-                $user->save();
-
-                Mail::queue(new Welcome($user));
-                $this->createDefaultField($user);
-            }
-            Auth::login($user);
-
-            if ($request->invite_token) {
-                checkInviteToken($user, $request, $isNew);
-            } elseif ($request->member_invite_token) {
-                checkMemberInviteToken($user, $request);
-            }
-
-            $this->createInitialConversations($user);
-            $this->createPresetService($user);
-            return response()->json($user);
-        }
-
-        $message = "There's no user associated with this Google account.";
-        if ($request->action == 'signup' && $user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
     }
 
     public function updateStripeAccount(Request $request)
