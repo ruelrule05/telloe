@@ -70,24 +70,28 @@ class AuthController extends Controller
 
     public function createInitialConversations(User $user)
     {
-        $support = User::where('role_id', 5)->first();
-        $conversation = Conversation::where('user_id', $support->id)->whereHas('members', function ($members) use ($user) {
-            $members->where('user_id', $user->id);
-        })->has('members', 1)->first();
-        if (! $conversation) {
-            $conversation = Conversation::create([
-                'user_id' => $support->id
-            ]);
-            ConversationMember::create([
-                'conversation_id' => $conversation->id,
-                'user_id' => $user->id
-            ]);
-            Message::create([
-                'conversation_id' => $conversation->id,
-                'user_id' => $support->id,
-                'message' => 'Hi my name is Harry, welcome to telloe.  Take a look around and if you need any help send me a message and I will get back to you as soon as I can',
-                'type' => 'text'
-            ]);
+        $support = User::whereHas('role', function ($role) {
+            $role->where('role', 'support');
+        })->first();
+        if ($support) {
+            $conversation = Conversation::where('user_id', $support->id)->whereHas('members', function ($members) use ($user) {
+                $members->where('user_id', $user->id);
+            })->has('members', 1)->first();
+            if (! $conversation) {
+                $conversation = Conversation::create([
+                    'user_id' => $support->id
+                ]);
+                ConversationMember::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $user->id
+                ]);
+                Message::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $support->id,
+                    'message' => 'Hi my name is Harry, welcome to telloe.  Take a look around and if you need any help send me a message and I will get back to you as soon as I can',
+                    'type' => 'text'
+                ]);
+            }
         }
     }
 }

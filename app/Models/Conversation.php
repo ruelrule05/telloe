@@ -11,12 +11,11 @@ class Conversation extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'contact_id', 'metadata', 'source', 'name', 'tags', 'custom_fields'];
+    protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags'];
     public $appends = ['member', 'last_message', 'timestamp', 'notes'];
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
-        'custom_fields' => 'array',
         'archive_users' => 'array',
     ];
 
