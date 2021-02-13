@@ -4,6 +4,8 @@
  *
  *
  */
+use  Modules\Frontend\Http\Controllers\AuthController;
+use  Modules\Frontend\Http\SocialiteHelper;
 
  Route::get('/test', function () {
      $email = new Modules\Frontend\Mail\SendBookingLinkInvitation(App\Models\BookingLink::first());
@@ -16,7 +18,6 @@ Route::get('widget', function () {
 Route::group(
     [
         'domain' => config('app.url'),
-        'namespace' => '\Modules\Frontend\Http\Controllers'
     ],
     function () {
         Route::get('/', 'PageController@homepage');
@@ -167,15 +168,26 @@ Route::group(
             });
         });
 
-        // Dashboard wildcard
-        Route::get('/dashboard{any}', function () {
-            return view('frontend::layouts.dashboard');
-        })->where('any', '.*')->middleware('auth');
+        // Dashboard
+        Route::group([
+            'prefix' => 'dashboard',
+            'middleware' => 'auth'
+        ], function () {
+            Route::fallback(function () {
+                return view('frontend::layouts.dashboard');
+            });
+        });
 
         Route::any('/facebook_page_tab', 'WidgetController@facebookPageTab');
         Route::get('/{slug}', 'WidgetController@showPublic');
         Route::get('/{slug}/customer-information', 'WidgetController@customerInformation');
 
-        Route::post('/fb_messenger_webhook', 'AuthController@FBMessengerWebhook');
+        // Socialite
+        Route::group([
+            'middleware' => 'guest'
+        ], function () {
+            Route::get('/ajax/auth/{driver}/redirect', [SocialiteHelper::class, 'getRedirectUrl'])->middleware('ajax');
+            Route::get('/auth/{driver}/callback', [AuthController::class, 'socialiteCallback']);
+        });
     }
 );

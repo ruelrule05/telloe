@@ -1,5 +1,4 @@
-/* global FB */
-/* global gapi */
+/* global axios */
 import Login from './login.vue';
 import Signup from './signup.vue';
 import Recover from './recover.vue';
@@ -24,17 +23,11 @@ export default {
 		open: false,
 		error: '',
 
-		GoogleAuth: null,
 		timezone: ''
 	}),
 
 	created() {
 		this.timezone = timezone.name();
-		if (typeof gapi != 'undefined') {
-			gapi.load('auth2', () => {
-				this.GoogleAuth = gapi.auth2.init({ client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com' });
-			});
-		}
 	},
 
 	mounted() {
@@ -51,85 +44,62 @@ export default {
 			}, 150);
 		},
 
-		FacebookLogin() {
-			if (typeof FB != 'undefined') {
-				this.pageloading = true;
-				FB.login(
-					() => {
-						FB.api('/me', { fields: 'first_name, last_name, email' }, response => {
-							if (response && !response.error) {
-								response.action = this.$root.action;
-								let invite_token = this.$root.invite_token;
-								let member_invite_token = this.$root.member_invite_token;
-								response.timezone = this.timezone;
-								response.invite_token = invite_token;
-								response.member_invite_token = member_invite_token;
-								window.axios
-									.post('/login/facebook', response)
-									.then(response => {
-										setTimeout(() => {
-											if (response.data.role_id == 2) {
-												window.location.replace('/dashboard/bookings/calendar');
-											} else if (response.data.role_id == 3) {
-												window.location.replace('/dashboard/bookings');
-											}
-										}, 150);
-									})
-									.catch(e => {
-										this.pageloading = false;
-										this.error = e.response.data.message;
-									});
-							} else {
-								this.pageloading = false;
-								this.error = 'Facebook API went wrong.';
-							}
-						});
-					},
-					{ scope: 'email' }
-				);
+		openAuthWindow(url, callback) {
+			const w = 600;
+			const h = 700;
+			const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+			const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+			const width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+			const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+			const systemZoom = width / window.screen.availWidth;
+			const left = (width - w) / 2 / systemZoom + dualScreenLeft;
+			const top = (height - h) / 2 / systemZoom + dualScreenTop;
+
+			let authWindow = window.open(url, 'telloe_socialite_auth_window', `width=${w}, height=${h}, top=${top}, left=${left}`);
+			let eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
+			let eventer = window[eventMethod];
+			let messageEvent = eventMethod == 'attachEvent' ? 'onmessage' : 'message';
+			eventer(
+				messageEvent,
+				function(e) {
+					if (e.data.authorized) {
+						window.location.replace('/dashboard/bookings/calendar');
+					}
+				},
+				false
+			);
+
+			let callbackInterval = setInterval(() => {
+				if (authWindow.closed) {
+					clearInterval(callbackInterval);
+					callback();
+				}
+			}, 500);
+		},
+
+		async FacebookLogin() {
+			this.pageloading = true;
+			let response = await axios.get('/auth/facebook/redirect').catch(() => {
+				this.pageloading = false;
+			});
+			if (response.data) {
+				this.openAuthWindow(response.data, async () => {
+					this.pageloading = false;
+				});
 			}
 		},
 
-		Googlesignin() {
-			if (this.GoogleAuth) {
-				this.pageloading = true;
-				this.GoogleAuth.signIn({ scope: 'profile email' })
-					.then(googleUser => {
-						let profile = googleUser.getBasicProfile();
-						let invite_token = this.$root.invite_token;
-						let member_invite_token = this.$root.member_invite_token;
-						let user = {
-							id: profile.getId(),
-							first_name: profile.getGivenName(),
-							last_name: profile.getFamilyName(),
-							email: profile.getEmail(),
-							image_url: profile.getImageUrl(),
-							action: this.$root.action,
-							timezone: this.timezone,
-							invite_token: invite_token,
-							member_invite_token: member_invite_token
-						};
-						window.axios
-							.post('/login/google', user)
-							.then(response => {
-								setTimeout(() => {
-									if (response.data.role_id == 2) {
-										window.location.replace('/dashboard/bookings/calendar');
-									} else if (response.data.role_id == 3) {
-										window.location.replace('/dashboard/bookings');
-									}
-								}, 150);
-							})
-							.catch(e => {
-								this.pageloading = false;
-								this.error = e.response.data.message;
-							});
-					})
-					.catch(e => {
-						console.log(e);
-						this.pageloading = false;
-						//this.error = 'Google API went wrong.';
-					});
+		async Googlesignin() {
+			this.pageloading = true;
+			let response = await axios.get('/auth/google/redirect').catch(() => {
+				this.pageloading = false;
+			});
+			if (response.data) {
+				this.openAuthWindow(response.data, async () => {
+					this.pageloading = false;
+				});
 			}
 		}
 	}
