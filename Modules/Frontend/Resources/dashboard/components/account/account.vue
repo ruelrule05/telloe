@@ -4,7 +4,7 @@
 			<ul class="nav nav-tabs">
 				<li v-for="t in tabs" :key="t" class="nav-item">
 					<router-link exact :to="`/dashboard/account?tab=${t}`" class="nav-link cursor-pointer d-flex align-items-center text-capitalize text-body" @click.native="tab = t">
-						<exclamation-circle-icon v-if="t == 'payout' && $root.auth.role.role == 'client' && !$root.payoutComplete" class="fill-warning rounded-circle mr-2" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
+						<exclamation-circle-icon v-if="t == 'payout' && !$root.payoutComplete" class="fill-warning rounded-circle mr-2" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 						{{ t }}
 					</router-link>
 				</li>
@@ -31,7 +31,7 @@
 									</div>
 								</div>
 
-								<template v-if="$root.auth.role.role == 'client'">
+								<template>
 									<div class="form-group">
 										<label class="form-label">Username</label>
 										<input type="text" class="form-control" data-required placeholder="Username" v-model="user.username" @keydown="nospace" />
@@ -106,7 +106,7 @@
 			</div>
 
 			<!-- Payout -->
-			<div v-else-if="tab == 'payout' && $root.auth.role.role == 'client'" class="row">
+			<div v-else-if="tab == 'payout'" class="row">
 				<div class="col-md-8">
 					<div class="card shadow-sm">
 						<div class="card-body">

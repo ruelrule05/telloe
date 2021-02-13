@@ -10,11 +10,6 @@
 				<h4 class="h5 font-heading conversation-title mb-0 rounded" @keydown="disableNewline" spellcheck="false" @blur="updateConversationName" :contenteditable="conversation.members.length > 1">{{ conversation.member.full_name || conversation.name }}</h4>
 				<div class="text-muted">{{ conversation.member.email || `${conversation.members.length} members` }}</div>
 				<div v-if="(conversation.member.contact || {}).is_pending" class="mt-1 badge badge-icon d-inline-flex align-items-center bg-warning-light text-warning"><clock-icon class="fill-warning" height="12" width="12"></clock-icon>&nbsp;Pending</div>
-				<!-- <div v-else-if="(conversation.member.role || {}).role != 'support' && conversation.members.length == 1" class="mt-1">
-                    <button v-if="$root.auth.role.role == 'client'" v-tooltip.bottom="'Bookings'" class="btn btn-white badge-pill p-1" @click="$root.detailsTab = 'bookings'" :class="{'active': $root.detailsTab == 'bookings'}">
-                        <planner-icon width="24" height="24"></planner-icon>
-                    </button>
-                </div> -->
 			</div>
 
 			<div id="info-items" class="mt-3 d-flex flex-column">

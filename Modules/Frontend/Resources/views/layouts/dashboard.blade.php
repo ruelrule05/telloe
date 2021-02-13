@@ -15,18 +15,18 @@
 					</div>
 
 					<div class="d-flex h-100 overflow-hidden align-items-stretch w-100">
-						<div class="sidebar border-right border-gray-200 align-self-stretch text-center bg-dark text-white" :class="{'sidebar-customer': auth.role.role == 'customer'}" id="sidebar">
+						<div class="sidebar border-right border-gray-200 align-self-stretch text-center bg-dark text-white sidebar-customer" id="sidebar">
 							<div class="d-flex flex-column h-100">
 								<div class="dropright profile-dropdown cursor-pointer">
 									<div class="px-4 py-3" data-toggle="dropdown" data-offset="-10, 5">
 										<div class="cursor-pointer dropdown-toggle d-flex align-items-center justify-content-center">
 											<div class="user-profile user-profile-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
 												<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
-												<exclamation-circle-icon v-if="auth.role.role == 'client' && !payoutComplete" class="fill-warning bg-white rounded-circle" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
+												<exclamation-circle-icon v-if="!payoutComplete" class="fill-warning bg-white rounded-circle" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 											</div>
 											<div class="pl-2 text-left line-height-sm overflow-hidden flex-1">
 												<h6 class="font-heading mb-0 text-ellipsis text-white ">@{{ auth.full_name }}</h6>
-												<small class="text-secondary d-block text-ellipsis">@{{ auth.role.role == 'client' ? '@' + auth.username : auth.email }}</small>
+												<small class="text-secondary d-block text-ellipsis">@{{ '@' + auth.username  }}</small>
 											</div>
 										</div>
 									</div>
@@ -40,7 +40,7 @@
 								    		<password-icon height="18" width="18" class="dropdown-item-icon"></password-icon>
 								    		Security
 								    	</router-link>
-								    	<template v-if="auth.role.role == 'client'">
+								    	<template>
 								    		<router-link exact to="/dashboard/account?tab=payout" class="dropdown-item d-flex align-items-center">
 									    		<credit-card-icon height="18" width="18" class="dropdown-item-icon"></credit-card-icon>
 									    		Payout
@@ -67,10 +67,6 @@
 								    		<info-circle-icon height="18" width="18" class="dropdown-item-icon"></info-circle-icon>
 								    		Help Center
 								    	</router-link> -->
-								    	<router-link :to="supportLink" class="dropdown-item d-flex align-items-center">
-								    		<headphone-icon height="18" width="18" class="dropdown-item-icon"></headphone-icon>
-								    		Support
-								    	</router-link>
 
 	  									<div class="dropdown-divider mx-n2"></div>
 
@@ -86,7 +82,7 @@
 
 	  									<div class="dropdown-divider mx-n2"></div>
 
-	  									<a target="_blank" v-if="auth.role.role == 'client'" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
+	  									<a target="_blank" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
 								    		<shortcut-icon height="18" width="18" class="dropdown-item-icon"></shortcut-icon>
 								    		Booking Page
 								    	</a>
@@ -98,31 +94,24 @@
 								</div>
 
 								<div class="list-group mt-3 font-heading sidebar-menu">
-									<template v-if="auth.role.role == 'client'">
-										<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-bookings">
-											<div class="d-flex align-items-center pl-4 pr-2">
-												<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
-												<span class="ml-3 text-white">Bookings</span>
-												<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
-											</div>
-										</button>
-										<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index',  'services_show', 'booking-links', 'booking-links_show'].find((x) => x == $route.name) }" id="item-bookings">
-											<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
-												<span class="pl-3">Calendar</span>
-											</router-link>
-											<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
-												<span class="pl-3">Types</span>
-											</router-link>
-											<router-link to="/dashboard/bookings/booking-links" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
-												<span class="pl-3">Custom Links</span>
-											</router-link>
+									<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-bookings">
+										<div class="d-flex align-items-center pl-4 pr-2">
+											<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
+											<span class="ml-3 text-white">Bookings</span>
+											<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
 										</div>
-									</template>
-
-									<router-link v-else to="/dashboard/bookings" class="d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4">
-										<monthview-icon height="18" width="18" class="sidebar-icon"></monthview-icon>
-										<span class="pl-3">Bookings</span>
-									</router-link>
+									</button>
+									<div class="collapse" data-parent="#sidebar" :class="{'show': ['calendar', 'services_index',  'services_show', 'booking-links', 'booking-links_show'].find((x) => x == $route.name) }" id="item-bookings">
+										<router-link to="/dashboard/bookings/calendar" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
+											<span class="pl-3">Calendar</span>
+										</router-link>
+										<router-link to="/dashboard/bookings/services" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
+											<span class="pl-3">Types</span>
+										</router-link>
+										<router-link to="/dashboard/bookings/booking-links" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
+											<span class="pl-3">Custom Links</span>
+										</router-link>
+									</div>
 
 									<router-link data-position="right" :to="`/dashboard/conversations/${currentConversationID}`" class="list-group-item border-0 rounded-0 d-flex align-items-center m-0 px-4" data-toggle="collapse" data-target="#item-messages">
 										<messages-icon height="18" width="18" transform="scale(1.3)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></messages-icon>
@@ -137,65 +126,63 @@
 									</router-link>
 									
 
-									<template v-if="auth.role.role == 'client'">
-										<router-link to="/dashboard/integrations" class="d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" exact>
-											<tray-stack-icon height="18" width="18" transform="scale(1.2)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></tray-stack-icon>
-											<span class="pl-3">Integrations</span>
+									<router-link to="/dashboard/integrations" class="d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" exact>
+										<tray-stack-icon height="18" width="18" transform="scale(1.2)" stroke-width="0.5" stroke="black" class="sidebar-icon sidebar-icon-stroke"></tray-stack-icon>
+										<span class="pl-3">Integrations</span>
+									</router-link>
+
+
+									<div class="text-left border-0 mt-2 px-3 py-2 d-flex align-items-center">
+										<span class="text-secondary">APPS</span>
+										<button class="ml-auto btn btn-light p-1 badge-pill line-height-0 shadow-none" type="button" @click="$refs['addAppModal'].show()">
+											<plus-icon width="12" height="12" transform="scale(2)"></plus-icon>
+										</button>
+									</div>
+
+									
+									<template xv-if="auth.has_packages">
+										<router-link to="/dashboard/packages" class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0">
+											<div class="d-flex align-items-center pl-4 pr-2">
+												<package-icon height="18" width="18" transform="scale(1.2)" stroke="black" stroke-width="0.5" class="sidebar-icon sidebar-icon-stroke"></package-icon>
+												<span class="ml-3">Packages</span>
+											</div>
 										</router-link>
-
-
-										<div class="text-left border-0 mt-2 px-3 py-2 d-flex align-items-center">
-											<span class="text-secondary">APPS</span>
-											<button class="ml-auto btn btn-light p-1 badge-pill line-height-0 shadow-none" type="button" @click="$refs['addAppModal'].show()">
-												<plus-icon width="12" height="12" transform="scale(2)"></plus-icon>
-											</button>
-										</div>
-
-										
-										<template xv-if="auth.has_packages">
-											<router-link to="/dashboard/packages" class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0">
-												<div class="d-flex align-items-center pl-4 pr-2">
-													<package-icon height="18" width="18" transform="scale(1.2)" stroke="black" stroke-width="0.5" class="sidebar-icon sidebar-icon-stroke"></package-icon>
-													<span class="ml-3">Packages</span>
-												</div>
+									</template>
+									
+									<template xv-if="auth.has_team">
+										<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-team">
+											<div class="d-flex align-items-center pl-4 pr-2">
+												<member-icon height="18" width="18" stroke="black" stroke-width="13" class="sidebar-icon sidebar-icon-stroke"></member-icon>
+												<span class="ml-3">Team</span>
+												<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
+											</div>
+										</button>
+										<div class="collapse" data-parent="#sidebar" :class="{'show': ['members_index', 'members_show', 'organizations_index', 'organizations_show'].find((x) => x == $route.name) }" id="item-team">
+											<router-link to="/dashboard/team/organizations" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
+												<span class="pl-3">Organizations</span>
 											</router-link>
-										</template>
-										
-										<template xv-if="auth.has_team">
-											<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-team">
-												<div class="d-flex align-items-center pl-4 pr-2">
-													<member-icon height="18" width="18" stroke="black" stroke-width="13" class="sidebar-icon sidebar-icon-stroke"></member-icon>
-													<span class="ml-3">Team</span>
-													<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
-												</div>
-											</button>
-											<div class="collapse" data-parent="#sidebar" :class="{'show': ['members_index', 'members_show', 'organizations_index', 'organizations_show'].find((x) => x == $route.name) }" id="item-team">
-												<router-link to="/dashboard/team/organizations" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
-													<span class="pl-3">Organizations</span>
-												</router-link>
-												<router-link to="/dashboard/team/members" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
-													<span class="pl-3">Members</span>
-												</router-link>
-											</div>
-										</template>
+											<router-link to="/dashboard/team/members" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0">
+												<span class="pl-3">Members</span>
+											</router-link>
+										</div>
+									</template>
 
-										<template xv-if="auth.has_payments">
-											<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-payments">
-												<div class="d-flex align-items-center pl-4 pr-2">
-													<payments-icon height="18" width="18" class="sidebar-icon"></payments-icon>
-													<span class="ml-3">Payments</span>
-													<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
-												</div>
-											</button>
-											<div class="collapse" data-parent="#sidebar" :class="{'show': ['invoices_index', 'subscriptions_index'].find((x) => x == $route.name) }" id="item-payments">
-												<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0" exact>
-													<span class="pl-3">Invoices</span>
-												</router-link>
-												<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0" exact>
-													<span class="pl-3">Subscriptions</span>
-												</router-link>
+									<template xv-if="auth.has_payments">
+										<button class="outline-0 list-group-item border-0 rounded-0 align-items-center m-0 px-0" data-toggle="collapse" data-target="#item-payments">
+											<div class="d-flex align-items-center pl-4 pr-2">
+												<payments-icon height="18" width="18" class="sidebar-icon"></payments-icon>
+												<span class="ml-3">Payments</span>
+												<chevron-down-icon class="ml-auto" fill="white"></chevron-down-icon>
 											</div>
-										</template>
+										</button>
+										<div class="collapse" data-parent="#sidebar" :class="{'show': ['invoices_index', 'subscriptions_index'].find((x) => x == $route.name) }" id="item-payments">
+											<router-link to="/dashboard/payments/invoices" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0" exact>
+												<span class="pl-3">Invoices</span>
+											</router-link>
+											<router-link to="/dashboard/payments/subscriptions" class="d-flex align-items-center list-group-item border-0 rounded-0 pl-5 m-0" exact>
+												<span class="pl-3">Subscriptions</span>
+											</router-link>
+										</div>
 									</template>
 									<div class="d-none" id="item-bookings" data-parent="#sidebar"></div>
 								</div>

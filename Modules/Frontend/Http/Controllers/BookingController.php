@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingNote;
 use App\Models\Contact;
-use App\Models\Conversation;
 use App\Models\Notification;
 use App\Models\Service;
 use Auth;
@@ -27,51 +26,15 @@ class BookingController extends Controller
 {
     public function index(Request $request)
     {
-        $this->validate($request, [
-            'conversation_id' => 'nullable|exists:conversations,id'
-        ]);
-        $user = Auth::user();
-        $role = $user->role->role;
-        $bookings = [];
-
-        if ($request->conversation_id) {
-            $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
-            $this->authorize('show', $conversation);
-            $bookings = Booking::where(function ($query) {
-                $query->has('user')->orHas('contact');
-            })->with('user', 'contact', 'service')->where(function ($query) use ($conversation) {
-                $query->whereIn('user_id', $conversation->members()->pluck('user_id')->toArray())->orWhere(function ($query) use ($conversation) {
-                    $query->whereNotNull('contact_id')->where('contact_id', $conversation->contact_id);
-                });
-            })->whereHas('service', function ($service) use ($conversation) {
-                $service->where('user_id', $conversation->user_id);
-            })->orderBy('date', 'DESC');
-        } elseif ($request->contact_id) {
-            $bookings = Booking::where(function ($query) {
-                $query->has('user')->orHas('contact');
-            })->with('user', 'contact', 'service')->whereHas('contact', function ($query) use ($user, $request) {
-                $query->where('id', $request->contact_id)->where('user_id', $user->id);
-            })->whereHas('service', function ($service) use ($user) {
-                $service->where('user_id', $user->id);
+        $bookings = Booking::where(function ($query) {
+            $query->has('user')->orHas('contact');
+        })->with('user', 'contact', 'service')->whereHas('service', function ($service) {
+            $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
+                $parentService->where('user_id', Auth::user()->id);
             });
-        } else {
-            if ($role == 'client') {
-                $bookings = Booking::where(function ($query) {
-                    $query->has('user')->orHas('contact');
-                })->with('user', 'contact', 'service')->whereHas('service', function ($service) {
-                    $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
-                        $parentService->where('user_id', Auth::user()->id);
-                    });
-                });
-                if ($request->user_id) {
-                    $bookings = $bookings->where('user_id', $request->user_id);
-                }
-                $bookings = $bookings;
-            } elseif ($role == 'customer') {
-                $bookings = Booking::with('bookingNote', 'service.user')->where('user_id', $user->id)->orWhereHas('contact', function ($contact) use ($user) {
-                    $contact->where('contact_user_id', $user->id);
-                });
-            }
+        });
+        if ($request->user_id) {
+            $bookings = $bookings->where('user_id', $request->user_id);
         }
 
         if ($request->date) {

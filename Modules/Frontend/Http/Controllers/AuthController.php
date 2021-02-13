@@ -3,6 +3,9 @@
 namespace Modules\Frontend\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Conversation;
+use App\Models\ConversationMember;
+use App\Models\Message;
 use App\Models\User;
 use Auth;
 use Illuminate\Support\Arr;

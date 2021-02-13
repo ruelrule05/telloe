@@ -352,21 +352,9 @@ window.app = new Vue({
 			return count;
 		},
 
-		supportLink() {
-			let supportLink = '#';
-			for (let conversation of this.conversations) {
-				let role = (conversation.member.role || {}).role;
-				if (role == 'support') {
-					supportLink = `/dashboard/bookings/services/${conversation.id}`;
-					break;
-				}
-			}
-			return supportLink;
-		},
-
 		profileLink() {
 			let profileLink = '/dashboard/account?tab=profile';
-			if (this.auth.role.role == 'client' && !this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
+			if (!this.payoutComplete) profileLink = '/dashboard/account?tab=payout';
 
 			return profileLink;
 		},

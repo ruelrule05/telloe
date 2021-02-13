@@ -96,9 +96,7 @@ export default {
 		},
 
 		tabs() {
-			let tabs = ['profile', 'security'];
-			if (this.$root.auth.role.role == 'client') tabs.push('payout');
-			tabs.push('notifications');
+			let tabs = ['profile', 'security', 'payout', 'notifications'];
 			return tabs;
 		},
 
@@ -156,7 +154,7 @@ export default {
 		this.getUnicodeFlagIcon = getUnicodeFlagIcon;
 		this.user = Object.assign({}, this.$root.auth);
 		this.$root.heading = 'Account';
-		if (this.$root.auth.role.role == 'client' && Object.keys(this.user.stripe_account || {}).length > 0) {
+		if (Object.keys(this.user.stripe_account || {}).length > 0) {
 			let stripe_account = this.user.stripe_account;
 			let dob = null;
 			this.stripeAccountForm.country = stripe_account.country;
@@ -184,7 +182,6 @@ export default {
 
 	mounted() {
 		this.$root.contentloading = false;
-		//if(this.$root.auth.role.role == 'client' && !this.$root.payoutComplete && this.tab != 'payout') this.$router.replace('/dashboard/account?tab=payout');
 	},
 
 	methods: {

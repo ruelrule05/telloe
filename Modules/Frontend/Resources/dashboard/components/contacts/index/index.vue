@@ -5,15 +5,12 @@
 				<div class="d-flex flex-column h-100">
 					<div class="border-bottom bg-white p-3 d-flex align-items-center">
 						<h5 class="font-heading mb-0">Contacts</h5>
-						<div v-if="$root.auth.role.role == 'client'" class="ml-auto d-flex align-items-center">
+						<div class="ml-auto d-flex align-items-center">
 							<button :data-intro="$root.intros.contacts_index.steps[0]" data-step="1" class="btn btn-light shadow-none d-flex align-items-center" type="button" @click="$refs['addModal'].show()">
 								<plus-icon class="btn-icon"></plus-icon>
 								Add Contact
 							</button>
 							<button :data-intro="$root.intros.contacts_index.steps[1]" data-step="2" type="button" class="btn btn-light ml-1 shadow-none" @click="$refs['fieldsModal'].show()">Manage Fields</button>
-						</div>
-						<div v-else class="py-3">
-							<div class="py-1"></div>
 						</div>
 					</div>
 
@@ -94,7 +91,6 @@
 															Resend invitation
 														</span>
 														<span
-															v-if="$root.auth.role.role == 'client'"
 															class="dropdown-item cursor-pointer"
 															@click="
 																clonedContact = Object.assign({}, contact);
@@ -125,7 +121,7 @@
 			</div>
 		</div>
 
-		<template v-if="$root.auth.role.role == 'client'">
+		<template>
 			<modal ref="fieldsModal">
 				<h5 class="font-heading mb-3">Manage Fields</h5>
 				<div v-for="(custom_field, index) in userCustomFields" :key="index" class="d-flex align-items-center custom-field position-relative">

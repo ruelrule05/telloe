@@ -4,7 +4,7 @@
 			<div class="conversations-header">
 				<div class="d-flex px-3 align-items-center mb-2">
 					<h5 class="mb-0 font-heading">Messages</h5>
-					<div v-if="$root.auth.role.role == 'client'" class="ml-auto">
+					<div class="ml-auto">
 						<button :data-intro="$root.intros.conversations.steps[0]" data-step="1" class="btn btn-light badge-pill line-height-0 p-1" type="button" @click="$refs['newConversationModal'].show()">
 							<edit-square-icon></edit-square-icon>
 						</button>
