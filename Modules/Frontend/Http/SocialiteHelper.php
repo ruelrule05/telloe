@@ -2,7 +2,6 @@
 
 namespace Modules\Frontend\Http;
 
-use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteHelper
@@ -41,20 +40,5 @@ class SocialiteHelper
             return false;
         }
         return $socialiteUser;
-    }
-
-    public function generateUsername($first_name, $last_name)
-    {
-        $i = '';
-        $username = strtolower($first_name) . strtolower($last_name);
-        while (true) {
-            if (! User::where('username', $username)->first()) {
-                break;
-            }
-            $i = $i == '' ? 1 : $i++;
-            $username = $username . $i;
-        }
-
-        return $username;
     }
 }
