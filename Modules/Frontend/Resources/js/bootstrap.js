@@ -30,6 +30,15 @@ window.axios.interceptors.response.use(
 		return response;
 	},
 	function(error) {
+		let responseStatus = error.response.status;
+		if ([401, 419].find(x => x == responseStatus)) {
+			let isHomepage = window.location.pathname == '/';
+			if (!isHomepage) {
+				window.location.href = '/';
+			} else if (responseStatus == 419 && window.location.search == '') {
+				window.location.href = '/?auth=login';
+			}
+		}
 		if (error.response.config.toasted && window.app) {
 			window.app.$toasted.show(error.response.data.message, {
 				className: 'bg-danger rounded shadow-none'
