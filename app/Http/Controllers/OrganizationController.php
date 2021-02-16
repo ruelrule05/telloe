@@ -2,219 +2,60 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Models\Member;
+use App\Http\Controllers\Controller;
 use App\Models\Organization;
-use App\Models\OrganizationMember;
-use App\Models\Service;
-use Auth;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use App\Http\Requests\OrganizationAddMembersRequest;
+use App\Http\Requests\OrganizationDestroyMemberRequest;
+use App\Http\Requests\OrganizationServiceTimeslotsRequest;
+use App\Http\Requests\StoreOrganizationRequest;
+use App\Http\Requests\UpdateOrganizationRequest;
+use App\Services\OrgranizationsService;
 
 class OrganizationController extends Controller
 {
     public function profile($organization, Request $request)
     {
-        $organization = Organization::where('slug', $organization)->firstOrfail();
-        $data = ['services' => []];
-        $userServices = $organization->user->services()->where('is_available', true)->get();
-
-        if ($organization->show_user_services) {
-            foreach ($userServices as $userService) {
-                $data['services'][$userService->id]['id'] = $userService->id;
-                $data['services'][$userService->id]['name'] = $userService->name;
-                $data['services'][$userService->id]['description'] = $userService->description;
-                $data['services'][$userService->id]['duration'] = $userService->duration;
-                $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
-                $data['services'][$userService->id]['currency'] = $userService->currency;
-                $data['services'][$userService->id]['member_services'][] = $userService;
-            }
-        }
-        if ($request->ajax() || $request->wantsJson()) {
-            foreach ($organization->members as $member) {
-                $services = $member->member->services()->whereHas('parentService', function ($parentService) use ($organization) {
-                    $parentService->where('user_id', $organization->user_id);
-                })->get();
-                foreach ($services as $service) {
-                    $data['services'][$service->parent_service_id]['id'] = $service->parentService->id;
-                    $data['services'][$service->parent_service_id]['name'] = $service->parentService->name;
-                    $data['services'][$service->parent_service_id]['description'] = $service->parentService->description;
-                    $data['services'][$service->parent_service_id]['duration'] = $service->parentService->duration;
-                    $data['services'][$service->parent_service_id]['default_rate'] = $service->parentService->default_rate;
-                    $data['services'][$service->parent_service_id]['currency'] = $service->parentService->currency;
-                    $data['services'][$service->parent_service_id]['member_services'][] = $service;
-                }
-            }
-
-            return response()->json($data);
-        }
-
-        return view('organization', compact('organization'));
+        return OrgranizationsService::profile($organization, $request);
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        return response()->json(Auth::user()->organizations()->with('members.member.memberUser')->get());
+        return response(OrgranizationsService::index());
     }
 
-    public function store(Request $request)
+    public function store(StoreOrganizationRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string',
-        ]);
-        $authUser = Auth::user();
-
-        if (Organization::where('slug', $request->slug)->first()) {
-            return abort(403, 'Slug is already associated to a different organization');
-        }
-
-        $organization = Organization::create([
-            'user_id' => $authUser->id,
-            'name' => $request->name,
-            'slug' => $request->slug
-        ]);
-        $members_count = 0;
-        foreach ($request->members as $member) {
-            $member = Member::where('id', $member['id'])->where('user_id', $authUser->id)->first();
-            if ($member) {
-                OrganizationMember::create([
-                    'organization_id' => $organization->id,
-                    'member_id' => $member->id
-                ]);
-                $members_count++;
-            }
-        }
-        $organization->members_count = $members_count;
-        return response()->json($organization->load('members.member.memberUser'));
+        return OrgranizationsService::store($request);
     }
 
     public function show(Organization $organization, Request $request)
     {
-        if ($organization->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-        return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));
+        return response(OrgranizationsService::show($organization, $request));
     }
 
-    public function update(Organization $organization, Request $request)
+    public function update(Organization $organization, UpdateOrganizationRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string',
-            'slug' => 'required|string',
-            'members' => 'array',
-        ]);
-
-        if ($organization->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-
-        if (Organization::where('id', '<>', $organization->id)->where('slug', $request->slug)->first()) {
-            return abort(403, 'Slug is already associated to a different organization');
-        }
-
-        if (count($request->members) == 0) {
-            OrganizationMember::where('organization_id', $organization->id)->delete();
-        } else {
-            $member_ids = Arr::pluck($request->members, 'id');
-            foreach ($organization->members as $member) {
-                if (! in_array($member->id, $member_ids)) {
-                    $member->delete();
-                }
-            }
-
-            foreach ($request->members as $member) {
-                $member = Member::where('user_id', Auth::user()->id)->where('id', $member['id'])->first();
-                if ($member) {
-                    OrganizationMember::firstOrCreate([
-                        'organization_id' => $organization->id,
-                        'member_id' => $member->id
-                    ]);
-                }
-            }
-        }
-
-        $organization->update([
-            'name' => $request->name,
-            'slug' => $request->slug,
-            'show_user_services' => $request->show_user_services,
-        ]);
-
-        return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));
+        return OrgranizationsService::update($organization, $request);
     }
 
-    public function deleteMember($id, Request $request)
+    public function deleteMember($id, OrganizationDestroyMemberRequest $request)
     {
-        $this->validate($request, [
-            'id' => 'required|exists:organization_members,id',
-        ]);
-        $organization = Organization::findOrFail($id);
-        if ($organization->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-        OrganizationMember::where('id', $request->id)->where('organization_id', $organization->id)->delete();
-
-        return response(['deleted' => true]);
+        return response(OrgranizationsService::deleteMember($id, $request));
     }
 
-    public function addMembers($id, Request $request)
+    public function addMembers($id, OrganizationAddMembersRequest $request)
     {
-        $this->validate($request, [
-            'member_ids' => 'required|array',
-        ]);
-        $organization = Organization::findOrFail($id);
-        if ($organization->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-
-        foreach ($request->member_ids as $member_id) {
-            $member = Member::where('user_id', Auth::user()->id)->where('id', $member_id)->first();
-            if ($member) {
-                OrganizationMember::firstOrCreate([
-                    'organization_id' => $organization->id,
-                    'member_id' => $member->id
-                ]);
-            }
-        }
-
-        return response($organization->members->load('member.memberUser'));
+        return OrgranizationsService::addMembers($id, $request);
     }
 
-    public function serviceTimeslots($organization, $service_id, Request $request)
+    public function serviceTimeslots($organization, $service_id, OrganizationServiceTimeslotsRequest $request)
     {
-        $this->validate($request, [
-            'date' => 'required|date'
-        ]);
-
-        $organization = Organization::where('slug', $organization)->firstOrfail();
-        $service = Service::where('id', $service_id)->where(function ($query) use ($organization) {
-            $query->where('user_id', $organization->user_id)->orWhereHas('parentService', function ($query) use ($organization) {
-                $query->where('user_id', $organization->user_id);
-            });
-        })->firstOrfail();
-
-        $timeslots = [];
-        $i = 1;
-        $startDate = Carbon::parse($request->date);
-        while ($i <= 7) {
-            $date = $startDate->format('Y-m-d');
-            $dateLabel = $startDate->format('l');
-            $timeslots[$dateLabel] = $service->timeslots($date);
-            $startDate = $startDate->addDays(1);
-            $i++;
-        }
-
-        return response()->json($timeslots);
+        return response(OrgranizationsService::serviceTimeslots($organization, $service_id, $request));
     }
 
     public function destroy($id)
     {
-        $organization = Organization::findOrFail($id);
-        if ($organization->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-        $organization->delete();
-
-        return response()->json(['deleted' => true]);
+        return response(OrganizationService::destroy($id));
     }
 }

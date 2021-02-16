@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
-use App\Models\Member;
-use App\Models\PasswordReset;
-use App\Models\Plan;
-use Auth;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\PageService;
 
 class PageController extends Controller
 {
@@ -15,66 +12,16 @@ class PageController extends Controller
 
     public function homepage(Request $request)
     {
-        if (Auth::check()) {
-            $params = '';
-            $authUser = Auth::user();
-            if ($request->invite_token) {
-                $params = $request->invite_token ? "?invite_token={$request->invite_token}" : '';
-                checkInviteToken($authUser, $request);
-            } elseif ($request->member_invite_token) {
-                $params = $request->member_invite_token ? "?member_invite_token={$request->member_invite_token}" : '';
-                checkMemberInviteToken($authUser, $request);
-            }
-            if ($authUser->role_id == 2) {
-                return redirect('/dashboard/bookings/calendar' . $params);
-            } else {
-                return redirect('/dashboard/bookings' . $params);
-            }
-        }
-
-        if ($request->auth == 'reset' && $request->token) {
-            $passwordReset = PasswordReset::where('token', $request->token)->first();
-            if (! $passwordReset) {
-                return redirect('/');
-            }
-        }
-
-        $plans = Plan::orderBy('id', 'ASC')->get();
-
-        return view('pages.homepage', [
-            'contact' => $this->getContact($request),  
-            'member' => $this->getMember($request),  
-            'plans' => $plans
-        ]);
+        return response(PageService::homepage($request));
     }
 
     public function privacyPolicy(Request $request)
     {
-        return view('pages.privacy-policy', ['contact' => $this->getContact($request)]);
+        return response(PageService::privacyPolicy($request));
     }
 
     public function termsOfService(Request $request)
     {
-        return view('pages.terms-of-service', ['contact' => $this->getContact($request)]);
-    }
-
-    public function getContact(Request $request)
-    {
-        $contact = null;
-        if ($request->invite_token) {
-            $contact = Contact::where('invite_token', $request->invite_token)->where('is_pending', true)->first();
-        }
-
-        return $contact;
-    }
-
-    public function getMember(Request $request)
-    {
-        $member = null;
-        if ($request->member_invite_token) {
-            $member = Member::where('invite_token', $request->member_invite_token)->where('is_pending', true)->first();
-        }
-
-        return $member;
+        return response(PageService::termsOfService($request));
     }
 }

@@ -2,38 +2,28 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\BookingLink;
 use App\Models\BookingLinkContact;
 use App\Models\Contact;
 use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Mail;
+use App\Http\Requests\IndexBookingLinkRequest;
+use App\Http\Requests\StoreBookingLinkRequest;
+use App\Http\Requests\UpdateBookingLinkRequest;
 use App\Mail\SendBookingLinkInvitation;
+use App\Services\BookingLinkService;
 use Webpatser\Uuid\Uuid;
 
 class BookingLinkController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->paginate) {
-            $bookingLinks = Auth::user()->bookingLinks()->withCount('bookingLinkContacts')->paginate(20);
-        } else {
-            $bookingLinks = Auth::user()->bookingLinks()->withCount('bookingLinkContacts')->get();
-        }
-
-        return response()->json($bookingLinks);
+        return response(BookingLinkService::index($request));
     }
 
-    public function store(Request $request)
+    public function store(StoreBookingLinkRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:50',
-            'contacts' => 'required|array',
-            'dates' => 'required|array',
-        ]);
-
         $contacts = [];
         $emails = [];
         foreach ($request->contacts as $contact) {
@@ -73,15 +63,11 @@ class BookingLinkController extends Controller
     {
         $bookingLink = BookingLink::findOrFail($id);
         $this->authorize('show', $bookingLink);
-        return response($bookingLink->load('bookingLinkContacts.contact.contactUser', 'bookingLinkMessages.user'));
+        return response($bookingLink->load('bookingLinkContacts.contact.contactUser'));
     }
 
-    public function update($id, Request $request)
+    public function update($id, UpdateBookingLinkRequest $request)
     {
-        $this->validate($request, [
-            'dates' => 'required|array',
-        ]);
-
         $bookingLink = BookingLink::findOrFail($id);
         $this->authorize('update', $bookingLink);
         $bookingLink->update([
@@ -92,47 +78,12 @@ class BookingLinkController extends Controller
 
     public function public($uuid, Request $request)
     {
-        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser')->firstOrFail();
-        $user = Auth::user();
-        $email = $user->email ?? $request->email;
-        $bookingLinkContact = false;
-        if ($user) {
-            $bookingLinkContact = $bookingLink->whereHas('bookingLinkContacts', function ($bookingLinkContact) use ($user) {
-                $bookingLinkContact->whereHas('contact', function ($contact) use ($user) {
-                    $contact->where('contact_user_id', $user->id);
-                });
-            })->exists();
-        }
-        $inEmails = in_array($email, Arr::pluck($bookingLink->emails, 'email'));
-        if ($email == $bookingLink->user->email || $inEmails || $bookingLinkContact) {
-            return view('booking-link', compact('bookingLink', 'user', 'inEmails'));
-        }
-        return abort(403);
+        return response(BookingLinkService::public($uuid, $request));
     }
 
-    public function getAllTimeslots(Request $request)
+    public function getAllTimeslots(IndexBookingLinkRequest $request)
     {
-        $this->validate($request, [
-            'date' => 'required|date'
-        ]);
-
-        $allTimeslots = [];
-        $services = Auth::user()->services()->where('is_available', true)->get();
-        foreach ($services as $service) {
-            $serviceTimeslots = $service->timeslots($request->date);
-            foreach ($serviceTimeslots as $serviceTimeslot) {
-                if (! isset($allTimeslots[$serviceTimeslot['label']]) || ! $serviceTimeslot['is_available']) {
-                    $allTimeslots[$serviceTimeslot['label']] = $serviceTimeslot;
-                }
-            }
-        }
-
-        $timeslots = [];
-        foreach ($allTimeslots as $key => $timeslot) {
-            $timeslots[] = $timeslot;
-        }
-
-        return response($timeslots);
+        return response(BookingLinkService::getAllTimeslots($request));
     }
 
     public function sendInvitation($id)

@@ -2,27 +2,24 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
-use File;
 use Auth;
+use App\Http\Requests\StoreConversationMemberRequest;
 
 class ConversationMemberController extends Controller
 {
     //
 
-    public function store(Request $request)
+    public function store(StoreConversationMemberRequest $request)
     {
-        $this->validate($request, [
-            'conversation_id' => 'required|exists:conversations,id',
-            'id' => 'required|exists:users,id',
-        ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addMember', $conversation);
 
-        if($request->member == Auth::user()->id) return abort(403);
+        if ($request->member == Auth::user()->id) {
+            return abort(403);
+        }
 
         $member = ConversationMember::firstOrcreate([
             'conversation_id' => $conversation->id,
@@ -32,7 +29,6 @@ class ConversationMemberController extends Controller
         return response()->json($member->load('user'));
     }
 
-
     public function destroy($id)
     {
         $member = ConversationMember::findOrFail($id);
@@ -40,14 +36,13 @@ class ConversationMemberController extends Controller
         $conversation = $member->conversation;
         $member->delete();
         $user = null;
-        if($conversation->members()->count() == 1) :
+        if ($conversation->members()->count() == 1) {
             $user = $conversation->members()->first()->user;
             $conversation->update([
                 'user_id' => $user->id
             ]);
             $conversation->members()->first()->delete();
-        endif;
+        }
         return response()->json(['success' => true, 'user' => $user]);
     }
-
 }

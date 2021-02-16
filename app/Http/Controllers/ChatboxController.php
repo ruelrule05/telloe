@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
-use App\Models\Chatbox;
+use App\Http\Controllers\Controller;
 use App\Models\Chatbot;
+use App\Models\Chatbox;
+use Illuminate\Http\Request;
 
 class ChatboxController extends Controller
 {
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'chatbot_id' => 'required|exists:chatbots,id',
-            'type' => 'required',
-        ]);
         $chatbot = Chatbot::findOrfail($request->chatbot_id);
         $this->authorize('create_chatbox', $chatbot);
 
@@ -36,7 +32,6 @@ class ChatboxController extends Controller
 
         return response()->json($chatbox);
     }
-
 
     public function destroy($id, Request $request)
     {

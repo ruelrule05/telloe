@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\AuthController;
-
-use App\Http\StripeAPI;
+use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Contact;
 use App\Models\Notification;
@@ -13,14 +11,17 @@ use App\Models\User;
 use App\Models\Widget;
 use Auth;
 use Carbon\Carbon;
-use File;
 use Hash;
 use Illuminate\Http\Request;
-use Image;
 use Mail;
+use App\Http\Requests\UserBookRequest;
+use App\Http\Requests\UserFacebookLoginAndBook;
+use App\Http\Requests\UserGoogleLoginRequest;
+use App\Http\Requests\UserServiceTimeslotsRequest;
+use App\Http\Requests\UserSignupAndBookRequest;
 use App\Http\Zoom;
 use App\Mail\NewBooking;
-use App\Mail\Welcome;
+use App\Services\UserService;
 use Response;
 use Spatie\CalendarLinks\Link;
 
@@ -29,91 +30,26 @@ class UserController extends Controller
     //
     public function index(Request $request)
     {
-        $users = [];
-        $query = $request->get('query');
-        $users = User::where('id', '<>', Auth::user()->id);
-        if ($query) {
-            $users = $users->where('email', 'LIKE', '%' . $query . '%');
-        }
-        $users = $users->orderByRaw('CONCAT(first_name, last_name)')->get();
-
-        return response()->json($users);
+        return response(UserService::index($request));
     }
 
     public function profile($username, Request $request)
     {
-        $profile = User::where('username', $username)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
-
-        if ($request->ajax() || $request->wantsJson()) {
-            $services = $profile->load(['services' => function ($service) {
-                $service->where('is_available', true);
-            }])->services->load('user', 'assignedServices.member.memberUser');
-
-            $data = [];
-            $data['services'] = $profile->services()->where('is_available', true)->get()->load('user', 'assignedServices.member.memberUser');
-
-            return response()->json($data);
-        }
-
-        $service = null;
-        if ($request->service_id) {
-            $service = Service::with('user', 'assignedServices.member.memberUser')->where('id', $request->service_id)->where('user_id', $profile->id)->where('is_available', true)->firstOrFail();
-        }
-
-        $timezone = null;
-        if (Auth::check() && Auth::user()->id == $profile->id) {
-            $timezone = $profile->timezone;
-        }
-
-        return view('profile', compact('profile', 'service', 'timezone'));
+        return response(UserService::profile($username, $request));
     }
 
     public function showService($username, $service_id)
     {
-        $user = User::where('username', $username)->whereHas('role', function ($role) {
-            $role->where('role', 'client');
-        })->firstOrfail();
-        $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
-        return view('profile', compact('user'));
+        return UserService::showService($username, $service_id);
     }
 
-    public function serviceTimeslots($username, $service_id, Request $request)
+    public function serviceTimeslots($username, $service_id, UserServiceTimeslotsRequest $request)
     {
-        $this->validate($request, [
-            'date' => 'required|date'
-        ]);
-
-        $user = User::where('username', $username)->firstOrfail();
-        $service = Service::where('id', $service_id)->where('is_available', true)->where(function ($query) use ($user) {
-            $query->where('user_id', $user->id)->orWhereHas('parentService', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            });
-        })->firstOrfail();
-
-        if ($request->single) {
-            return response($service->timeslots($request->date));
-        }
-
-        $timeslots = [];
-        $i = 1;
-        $startDate = Carbon::parse($request->date);
-        while ($i <= 7) {
-            $date = $startDate->format('Y-m-d');
-            $dateLabel = $startDate->format('l');
-            $timeslots[$dateLabel] = $service->timeslots($date);
-            $startDate = $startDate->addDays(1);
-            $i++;
-        }
-
-        return response()->json($timeslots);
+        return response(userService::serviceTimeslots($username, $service_id, $request));
     }
 
-    public function book($username, $service_id, Request $request, $authUser = null, $contact = false)
+    public function book($username, $service_id, UserBookRequest $request, $authUser = null, $contact = false)
     {
-        $this->validate($request, [
-            'timeslots' => 'required|array',
-        ]);
-
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
         $service = Service::where('id', $service_id)->where(function ($query) use ($user) {
@@ -169,16 +105,16 @@ class UserController extends Controller
                 $weekOfMonth = 0;
                 if (isset($timeslot['day_in_month'])) {
                     switch ($timeslot['day_in_month']) {
-                    case 'first_week';
+                    case 'first_week':
                         $weekOfMonth = 1;
                         break;
-                    case 'second_week';
+                    case 'second_week':
                         $weekOfMonth = 2;
                         break;
-                    case 'third_week';
+                    case 'third_week':
                         $weekOfMonth = 3;
                         break;
-                    case 'las_week';
+                    case 'las_week':
                         $weekOfMonth = 4;
                         break;
                 }
@@ -249,7 +185,7 @@ class UserController extends Controller
             ]);
         }
 
-        return response($bookings);
+        return $bookings;
     }
 
     protected function createBooking($service, $data)
@@ -292,25 +228,11 @@ class UserController extends Controller
 
     public function widget(Request $request)
     {
-        $profile = User::with('widget')->where('username', $request->p)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
-        $profile->profile_image = config('app.url') . $profile->profile_image;
-        echo 'const PROFILE = ' . json_encode($profile) . ";\n\n";
-        echo "const ENDPOINT = '" . config('app.url') . "';\n\n";
-
-        $script = File::get(public_path() . '/js/widget/widget.js');
-        $response = Response::make($script);
-        $response->header('Content-Type', 'text/javascript');
-        return $response;
+        return response(UserService::widget($request));
     }
 
-    public function loginAndBook($username, $service_id, Request $request)
+    public function loginAndBook($username, $service_id, UserBookRequest $request)
     {
-        $this->validate($request, [
-            'email' => 'nullable|email',
-            'password' => 'nullable',
-            'timeslots' => 'required|array',
-        ]);
-
         $user = null;
         if ($request->auth) {
             $user = Auth::user();
@@ -335,177 +257,23 @@ class UserController extends Controller
         return $this->book($username, $service_id, $request, $user, true);
     }
 
-    public function signupAndBook($username, $service_id, Request $request)
+    public function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)
     {
-        $exists = User::where('email', $request->email)->first();
-        if ($exists) {
-            return abort(403, 'Email is already registered to another account.');
-        }
-        $this->validate($request, [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required',
-            'date' => 'required|date',
-            'timeslots' => 'required|array',
-        ]);
-
-        $authController = new AuthController();
-        $new_username = $authController->generateUsername($request);
-        $user = User::create([
-            'username' => $new_username,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'last_online' => null,
-        ]);
-        $user->password = bcrypt($request->password);
-        $user->role_id = 3;
-        $user->save();
-        $widget = Widget::create([
-            'user_id' => $user->id
-        ]);
-
-        if (isValidTimezone($request->timezone)) {
-            $user->timezone = $request->timezone;
-            $user->save();
-        }
-
-        $authController->createDefaultField($user);
-        $authController->createInitialConversations($user);
-        $authController->createPresetService($user);
-
-        $user = $user->refresh();
-        if ($user->role->role == 'client') {
-            Mail::queue(new Welcome($user));
-        }
-
-        return $this->book($username, $service_id, $request, $user);
+        return response(UserService::signupAndBook($username, $service_id, $request));
     }
 
-    public function googleLoginAndBook($username, $service_id, Request $request)
+    public function googleLoginAndBook($username, $service_id, UserGoogleLoginRequest $request)
     {
-        $this->validate($request, [
-            'id' => 'required',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'image_url' => 'required',
-            'timeslots' => 'required|array',
-        ]);
-        $user = User::where('email', $request->email)->first();
-        $authController = new AuthController();
-        if (! $user || $user->google_id == $request->id) {
-            if (! $user) {
-                $time = time();
-                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $new_username = $authController->generateUsername($request);
-                $user = User::create([
-                    'username' => $new_username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                ]);
-                $user->role_id = 3;
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->google_id = $request->id;
-                $user->save();
-                if (isValidTimezone($request->timezone)) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
-                Mail::queue(new Welcome($user));
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
-            }
-
-            $authController->createDefaultField($user);
-            $authController->createInitialConversations($user);
-            $authController->createPresetService($user);
-
-            return $this->book($username, $service_id, $request, $user);
-        }
-
-        $message = "There's no user associated with this Google account.";
-        if ($user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
+        return response(UserService::googleLoginAndBook($username, $service_id, $request));
     }
 
-    public function facebookLoginAndBook($username, $service_id, Request $request)
+    public function facebookLoginAndBook($username, $service_id, UserFacebookLoginAndBook $request)
     {
-        $this->validate($request, [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'id' => 'required',
-            'timeslots' => 'required|array',
-        ]);
-        $user = User::where('email', $request->email)->first();
-        $authController = new AuthController();
-        if (! $user || $user->facebook_id == $request->id) {
-            if (! $user) {
-                $time = time();
-                $profile_image = 'http://graph.facebook.com/' . $request->id . '/picture?type=normal';
-                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $new_username = $authController->generateUsername($request);
-                $user = User::create([
-                    'username' => $new_username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                ]);
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->facebook_id = $request->id;
-                $user->save();
-                if (isValidTimezone($request->timezone)) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
-
-                Mail::queue(new Welcome($user));
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
-            }
-
-            $authController->createDefaultField($user);
-            $authController->createInitialConversations($user);
-            $authController->createPresetService($user);
-
-            return $this->book($username, $service_id, $request, $user);
-        }
-
-        $message = "There's no user associated with this Facebook account.";
-        if ($user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
+        return response(UserService::facebookLoginAndBook($username, $service_id, $request));
     }
 
     public function getInvoice(Request $request)
     {
-        if (! $request->invoice_id) {
-            return abort(403);
-        }
-
-        $stripe_api = new StripeAPI();
-        $invoice = $stripe_api->invoice('retrieve', $request->invoice_id, ['stripe_account' => Auth::user()->stripe_account['id']]);
-
-        return response()->json($invoice);
+        return response(UserService::getInvoice($request));
     }
 }

@@ -2,85 +2,37 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Controllers\Controller;
 use App\Models\Package;
-use Auth;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Requests\StorePackageRequest;
+use App\Http\Requests\UpdatePackageRequest;
+use App\Services\PackageService;
 
 class PackageController extends Controller
 {
     public function index(Request $request)
     {
-        return response()->json(Auth::user()->packages);
+        return response(PackageService::index($request));
     }
 
-    public function store(Request $request)
+    public function store(StorePackageRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'description' => 'required',
-            'services' => 'required|array',
-            'expiration_date' => 'required|date',
-            'price' => 'required|numeric'
-        ]);
-
-        $package = Package::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'user_id' => Auth::user()->id,
-            'services' => $request->services,
-            'expiration_date' => Carbon::parse($request->expiration_date)->format('Y-m-d'),
-            'price' => $request->price
-        ]);
-
-        return response($package);
+        return response(PackageService::store($request));
     }
 
     public function show(Package $package, Request $request)
     {
-        if ($package->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-        return response($package->load('orders.user'));
+        return response(PackageService::show($package, $request));
     }
 
-    public function update(Package $package, Request $request)
+    public function update(Package $package, UpdatePackageRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'description' => 'required',
-            'services' => 'required|array',
-            'expiration_date' => 'required|date',
-            'price' => 'required|numeric'
-        ]);
-
-        if ($package->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-
-        $package->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'user_id' => Auth::user()->id,
-            'services' => $request->services,
-            'expiration_date' => Carbon::parse($request->expiration_date)->format('Y-m-d'),
-            'price' => $request->price,
-            'in_widget' => $request->in_widget,
-            'is_available' => $request->is_available,
-        ]);
-
-        return response($package);
+        return response(PackageService::update($package, $request));
     }
 
     public function destroy($id)
     {
-        $package = Package::findOrFail($id);
-        if ($package->user_id != Auth::user()->id) {
-            return abort(403);
-        }
-        $package->delete();
-
-        return response()->json(['deleted' => true]);
+        return response(PackageService::destroy($id));
     }
 }

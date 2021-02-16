@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Models\Plan;
+use App\Http\Controllers\Controller;
+use App\Services\PlanService;
 
 class PlanController extends Controller
 {
     public function index()
     {
-        $plans = Plan::all();
-        return response()->json($plans);
+        return response(PlanService::index());
     }
 }
