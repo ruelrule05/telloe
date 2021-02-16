@@ -7,14 +7,6 @@
 use  App\Http\Controllers\AuthController;
 use  App\Http\SocialiteHelper;
 
-// Authentication
-Route::group([
-    'domain' => config('app.url'),
-    'prefix' => 'ajax',
-    'middleware' => 'ajax'
-], function () {
-});
-
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
 });

@@ -13,20 +13,23 @@ class PageService
 {
     public static function homepage(Request $request)
     {
+        if ($request->invite_token) {
+            $request->session()->put('invite_token', $request->invite_token);
+        } else {
+            $request->session()->forget('invite_token');
+        }
+        if ($request->member_invite_token) {
+            $request->session()->put('member_invite_token', $request->member_invite_token);
+        } else {
+            $request->session()->forget('member_invite_token');
+        }
+
         if (Auth::check()) {
-            $params = '';
             $authUser = Auth::user();
-            if ($request->invite_token) {
-                $params = $request->invite_token ? "?invite_token={$request->invite_token}" : '';
-                checkInviteToken($authUser, $request);
-            } elseif ($request->member_invite_token) {
-                $params = $request->member_invite_token ? "?member_invite_token={$request->member_invite_token}" : '';
-                checkMemberInviteToken($authUser, $request);
-            }
             if ($authUser->role_id == 2) {
-                return redirect('/dashboard/bookings/calendar' . $params);
+                return redirect('/dashboard/bookings/calendar');
             } else {
-                return redirect('/dashboard/bookings' . $params);
+                return redirect('/dashboard/bookings');
             }
         }
 

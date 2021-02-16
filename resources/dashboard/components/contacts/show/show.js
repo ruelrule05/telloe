@@ -14,7 +14,6 @@ import Paginate from '../../../../components/paginate/paginate.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const convertTime = require('convert-time');
 import VCalendar from 'v-calendar';
-window.Vue.use(VCalendar);
 import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 import VueButton from '../../../../components/vue-button.vue';
@@ -30,6 +29,7 @@ import EditBooking from '../../bookings/edit/edit.vue';
 
 export default {
 	components: {
+		VCalendar,
 		Modal,
 		CheckmarkCircleIcon,
 		MoreIcon,
