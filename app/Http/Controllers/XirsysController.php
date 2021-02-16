@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Services\XirsysService;
+use Illuminate\Http\Request;
 
 class XirsysController extends Controller
 {
@@ -16,11 +15,11 @@ class XirsysController extends Controller
 
     public function getToken(Request $request)
     {
-        return response(XirsysService::getToken($request->id));
+        return response(XirsysService::getToken($request));
     }
 
     public function getHost(Request $request)
     {
-        return response(XirsysService::getHost($request->id));
+        return response(XirsysService::getHost($request));
     }
 }
