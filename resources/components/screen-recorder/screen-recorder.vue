@@ -13,7 +13,7 @@
 			</div>
 		</div>
 
-	    <div class="recorder-content p-2 rounded">
+		<div class="recorder-content p-2 rounded">
 			<div class="d-flex flex-row align-items-center">
 				<div class="video-container position-relative rounded overflow-hidden">
 					<video ref="videoPreview" hidden :hxidden="!cameraReady || isRecording || !hasRecorded" class="w-100 h-100 bg-black position-absolute video-preview outline-0" playsinline controls></video>
@@ -33,7 +33,7 @@
 							</div>
 						</div>
 
-					<!-- 	<div class="d-flex">
+						<!-- 	<div class="d-flex">
 							<div class="w-25">
 								<button v-if="hasRecorded" @click="close" class="btn font-weight-bold mr-auto">Cancel</button>
 							</div>
