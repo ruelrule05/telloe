@@ -9,7 +9,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Mail;
-use Modules\Frontend\Mail\UpcomingBooking;
+use App\Mail\UpcomingBooking;
 
 class Kernel extends ConsoleKernel
 {

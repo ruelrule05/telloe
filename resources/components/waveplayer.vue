@@ -1,6 +1,6 @@
 <template>
 	<div class="d-flex align-items-center justify-content-between waveplayer-container">
-		<button class="audio-control shadow-sm position-relative p-0 mr-2" @click="togglePlayer">
+		<button class="audio-control shadow-sm position-relative p-0 mr-2 border btn-white" @click="togglePlayer">
 			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="#999"></play-icon>
 			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="#999"></pause-icon>
 		</button>
@@ -15,16 +15,16 @@ import PlayIcon from '../icons/play';
 import PauseIcon from '../icons/pause';
 export default {
 	props: {
-		source: {File, Blob},
-		duration: {String, Number},
-		theme: ''
+		source: { File, Blob },
+		duration: { String, Number },
+		theme: {}
 	},
 
-	components: {PlayIcon, PauseIcon},
+	components: { PlayIcon, PauseIcon },
 
 	data: () => ({
 		wavesurfer: null,
-		playerStatus: 'paused',
+		playerStatus: 'paused'
 	}),
 
 	beforeDestroy() {
@@ -33,17 +33,17 @@ export default {
 
 	async mounted() {
 		this.wavesurfer = WaveSurfer.create({
-		    container: this.$refs['waveplayer'],
-		    height: 25,
-		    barWidth: 3,
-    		barHeight: 1,
-    		barRadius: 3,
-  			interact: true,
-  			cursorWidth: 1,
-  			hideScrollbar: true,
+			container: this.$refs['waveplayer'],
+			height: 25,
+			barWidth: 3,
+			barHeight: 1,
+			barRadius: 3,
+			interact: true,
+			cursorWidth: 1,
+			hideScrollbar: true
 		});
 
-		if(this.theme == 'light') {
+		if (this.theme == 'light') {
 			this.wavesurfer.setCursorColor('rgba(255,255,255,0.4)');
 			this.wavesurfer.setProgressColor('#fff');
 			this.wavesurfer.setWaveColor('rgba(255,255,255,0.4)');
@@ -53,22 +53,21 @@ export default {
 			this.wavesurfer.setWaveColor('#b5bce5');
 		}
 
-		if(typeof this.source == 'string') {
+		if (typeof this.source == 'string') {
 			this.wavesurfer.load(this.source);
-		} else if(typeof this.source == 'object') {
+		} else if (typeof this.source == 'object') {
 			this.wavesurfer.load(window.URL.createObjectURL(this.source));
 		}
-		
-		this.wavesurfer.on('finish', (progress) => {
+
+		this.wavesurfer.on('finish', () => {
 			this.playerStatus = 'paused';
 			this.wavesurfer.seekTo(0);
 		});
 	},
 
 	methods: {
-
 		togglePlayer() {
-			switch(this.playerStatus) {
+			switch (this.playerStatus) {
 				case 'paused':
 					this.playerStatus = 'playing';
 					this.wavesurfer.play();
@@ -79,27 +78,27 @@ export default {
 					this.wavesurfer.pause();
 					break;
 			}
-		},
+		}
 	}
-}
+};
 </script>
 
 <style scoped lang="scss">
-	.waveplayer-container{
-		width: 220px;
-		max-width: 100%;
+.waveplayer-container {
+	width: 220px;
+	max-width: 100%;
+}
+.audio-control {
+	width: 25px;
+	height: 25px;
+	outline: 0 !important;
+	border: none;
+	border-radius: 50% !important;
+	svg {
+		position: absolute;
+		top: 52%;
+		left: 51%;
+		transform: translate(-50%, -50%);
 	}
-	.audio-control{
-		width: 25px;
-		height: 25px;
-		outline: 0 !important;
-		border: none;
-		border-radius: 50% !important;
-		svg{
-			position: absolute;
-			top: 52%;
-			left: 51%;
-			transform: translate(-50%, -50%);
-		}
-	}
+}
 </style>
