@@ -2,30 +2,36 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\GoogleCalendarClient;
+use App\Http\Requests\IndexBookingRequest;
+use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
+use App\Http\Requests\UpdateGoogleCalendarEventsRequest;
+use App\Http\Requests\UpdateOutlookCalendarEventsRequest;
+use App\Http\Zoom;
+use App\Mail\DeleteBooking;
+use App\Mail\NewBooking;
+use App\Mail\UpdateBooking;
 use App\Models\Booking;
 use App\Models\BookingNote;
 use App\Models\Contact;
 use App\Models\Notification;
 use App\Models\Service;
+use App\Services\BookingService;
 use Auth;
 use Carbon\Carbon;
-use File;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Illuminate\Http\Request;
 use Mail;
-use App\Http\GoogleCalendarClient;
-use App\Http\Zoom;
-use App\Mail\DeleteBooking;
-use App\Mail\NewBooking;
-use App\Mail\UpdateBooking;
 use Spatie\CalendarLinks\Link;
 
 class BookingController extends Controller
 {
-    public function index(Request $request)
+    public function index(IndexBookingRequest $request)
     {
+        $bookings = [];
+
         $bookings = Booking::where(function ($query) {
             $query->has('user')->orHas('contact');
         })->with('user', 'contact', 'service')->whereHas('service', function ($service) {
@@ -33,9 +39,6 @@ class BookingController extends Controller
                 $parentService->where('user_id', Auth::user()->id);
             });
         });
-        if ($request->user_id) {
-            $bookings = $bookings->where('user_id', $request->user_id);
-        }
 
         if ($request->date) {
             $bookings = $bookings->where('date', $request->date);
@@ -52,16 +55,8 @@ class BookingController extends Controller
         return response()->json($bookings);
     }
 
-    public function store(Request $request)
+    public function store(StoreBookingRequest $request)
     {
-        $this->validate($request, [
-            'service_id' => 'required|exists:services,id',
-            'user_id' => 'nullable|exists:users,id',
-            'contact_id' => 'nullable|exists:contacts,id',
-            'date' => 'required|date',
-            'start' => 'required',
-        ]);
-
         if (! $request->user_id && ! $request->contact_id) {
             return abort(403, 'User ID or Contact ID is required.');
         }
@@ -159,14 +154,8 @@ class BookingController extends Controller
         return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote'));
     }
 
-    public function update($id, Request $request)
+    public function update($id, UpdateBookingRequest $request)
     {
-        $this->validate($request, [
-            'date' => 'required|date',
-            'start' => 'required',
-            'service_id' => 'required|exists:services,id'
-        ]);
-
         $booking = Booking::findOrfail($id);
         $service = Service::findOrFail($request->service_id);
 
@@ -291,78 +280,16 @@ class BookingController extends Controller
 
     public function googleCalendarEvents()
     {
-        $events = [];
-        $calendarId = Auth::user()->google_calendar_id;
-        if ($calendarId) {
-            $GoogleCalendarClient = new GoogleCalendarClient();
-            $client = $GoogleCalendarClient->client;
-            $service = new Google_Service_Calendar($client);
-            $eventsList = $service->events->listEvents($calendarId);
-            while (true) {
-                foreach ($eventsList->getItems() as $event) {
-                    if (! isset($event->getExtendedProperties()->private['booking'])) {
-                        $events[] = $event;
-                    }
-                }
-                $pageToken = $eventsList->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $eventsList = $service->events->listEvents($calendarId, $optParams);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        $user = Auth::user();
-        $user->google_calendar_events = $events;
-        $user->save();
-
-        return response()->json($events);
+        return response(BookingService::googleCalendarEvents());
     }
 
     public function googleCalendarList(Request $request)
     {
-        $GoogleCalendarClient = new GoogleCalendarClient();
-        $calendars = [];
-        if (! isset($GoogleCalendarClient->client->authUrl)) {
-            $client = $GoogleCalendarClient->client;
-            $service = new Google_Service_Calendar($client);
-
-            $calendarList = $service->calendarList->listCalendarList([
-                'showHidden' => true,
-                'showDeleted' => true,
-            ]);
-            while (true) {
-                foreach ($calendarList->getItems() as $calendarListEntry) {
-                    $calendars[] = $calendarListEntry;
-                }
-                $pageToken = $calendarList->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $calendarList = $service->calendarList->listCalendarList($optParams);
-                } else {
-                    break;
-                }
-            }
-
-            usort($calendars, function ($a, $b) {
-                return strcmp($a->summary, $b->summary);
-            });
-        }
-        $user = Auth::user();
-        $user->google_calendars = $calendars;
-        $user->save();
-
-        return response()->json($calendars);
+        return response(BookingService::googleCalendarList($request));
     }
 
-    public function updateGoogleCalendarEvents(Request $request)
+    public function updateGoogleCalendarEvents(UpdateGoogleCalendarEventsRequest $request)
     {
-        $this->validate($request, [
-            'google_calendar_id' => 'required'
-        ]);
-
         $GoogleCalendarClient = new GoogleCalendarClient();
         $client = $GoogleCalendarClient->client;
         $service = new Google_Service_Calendar($client);
@@ -441,11 +368,8 @@ class BookingController extends Controller
         return response()->json($events);
     }
 
-    public function updateOutlookCalendarEvents(Request $request)
+    public function updateOutlookCalendarEvents(UpdateOutlookCalendarEventsRequest $request)
     {
-        $this->validate($request, [
-            'outlook_calendar_id' => 'required'
-        ]);
         $extensionName = env('GRAPH_EXTENSION_NAME');
 
         $OutlookClient = new \App\Http\OutlookClient();
@@ -536,140 +460,21 @@ class BookingController extends Controller
 
     public function outlookCalendarEvents(Request $request)
     {
-        $events = [];
-        $extensionName = env('GRAPH_EXTENSION_NAME');
-        $calendarId = Auth::user()->outlook_calendar_id;
-        if ($calendarId) {
-            $OutlookClient = new \App\Http\OutlookClient();
-            $graph = new \Microsoft\Graph\Graph();
-            $graph->setAccessToken($OutlookClient->accessToken);
-
-            $getEventsUrl = "/me/calendars/$calendarId/events";
-            try {
-                $eventsList = $graph->createRequest('GET', $getEventsUrl)
-                    ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                    ->execute();
-                foreach ($eventsList as $event) {
-                    $eventExtensionName = '';
-                    $getExtensionUrl = "/me/calendars/$calendarId/events/{$event->getId()}/extensions/$extensionName";
-                    try {
-                        $eventExtension = $graph->createRequest('GET', $getExtensionUrl)
-                            ->setReturnType(\Microsoft\Graph\Model\Extension::class)
-                            ->execute();
-                        $eventExtensionName = $eventExtension->getProperties()['extensionName'];
-                    } catch (\Exception $e) {
-                    }
-
-                    if ($eventExtensionName != $extensionName) {
-                        $events[] = $event;
-                    }
-                }
-            } catch (\Exception $e) {
-                //echo $e->getResponse()->getBody()->getContents();
-            }
-        }
-
-        $user = Auth::user();
-        $user->outlook_calendar_events = $events;
-        $user->save();
-
-        return response()->json($events);
+        return response(BookingService::outlookCalendarEvents($request));
     }
 
     public function outlookCalendarList(Request $request)
     {
-        $calendars = [];
-        $OutlookClient = new \App\Http\OutlookClient();
-        $graph = new \Microsoft\Graph\Graph();
-        if ($OutlookClient->accessToken) {
-            $graph->setAccessToken($OutlookClient->accessToken);
-
-            $getCalendarsUrl = '/me/calendars';
-            $calendars = $graph->createRequest('GET', $getCalendarsUrl)
-              ->setReturnType(\Microsoft\Graph\Model\Calendar::class)
-              ->execute();
-
-            $user = Auth::user();
-            $user->outlook_calendars = $calendars;
-            $user->save();
-        }
-
-        return response()->json($calendars);
+        return response(BookingService::outlookCalendarList($request));
     }
 
-    public function removeCalendar(Request $request)
+    public function removeCalendar(DestroyCalendarRequest $request)
     {
-        $this->validate($request, [
-            'calendar' => 'required|in:google,outlook'
-        ]);
-        $user = Auth::user();
-
-        switch ($request->calendar) :
-            case 'google':
-                $GoogleCalendarClient = new GoogleCalendarClient();
-        $client = $GoogleCalendarClient->client;
-        $service = new Google_Service_Calendar($client);
-
-        $calendarId = Auth::user()->google_calendar_id;
-        // booking events from previous calendar
-        if ($calendarId) {
-            $calendarEvents = $service->events->listEvents($calendarId, ['privateExtendedProperty' => 'booking=yes']);
-            while (true) {
-                foreach ($calendarEvents->getItems() as $event) {
-                    $evId = $event->getId();
-                    $service->events->delete($calendarId, $evId);
-                }
-                $pageToken = $calendarEvents->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $calendarEvents = $service->events->listEvents('primary', $optParams);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        $user->google_calendar_token = null;
-        $user->google_calendars = null;
-        $user->google_calendar_id = null;
-        $user->google_calendar_events = null;
-        $user->save();
-        break;
-
-        case 'outlook':
-                $extensionName = env('GRAPH_EXTENSION_NAME');
-        $OutlookClient = new \App\Http\OutlookClient();
-        $graph = new \Microsoft\Graph\Graph();
-        $graph->setAccessToken($OutlookClient->accessToken);
-
-        $calendarId = Auth::user()->outlook_calendar_id;
-        if ($calendarId) {
-            $getOldEventsUrl = "/me/calendars/$calendarId/events?\$filter=extensions/any(f:f/id eq '$extensionName')";
-            $eventsList = $graph->createRequest('GET', $getOldEventsUrl)
-                      ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                      ->execute();
-
-            foreach ($eventsList as $event) {
-                $graph->createRequest('DELETE', "/me/calendars/{$calendarId}/events/{$event->getId()}")->execute();
-            }
-        }
-
-        $user->outlook_token = null;
-        $user->outlook_calendars = null;
-        $user->outlook_calendar_id = null;
-        $user->outlook_calendar_events = null;
-        $user->save();
-        break;
-        endswitch;
-
-        return response()->json(['success' => true]);
+        return response(BookingService::removeCalendar($request));
     }
 
-    public function assignToMember($id, Request $request)
+    public function assignToMember($id, AssignServiceToMemberRequest $request)
     {
-        $this->validate($request, [
-            'service_id' => 'required|exists:services,id',
-        ]);
         $booking = Booking::findOrfail($id);
         $this->authorize('update', $booking);
 
@@ -692,9 +497,6 @@ class BookingController extends Controller
 
     public function downloadIcs(Request $request)
     {
-        $base_64_ics = base64_decode(substr($request->data, strpos($request->data, ',') + 1));
-        $path = storage_path('app/private/var/tmp/' . Carbon::now()->timestamp . '.ics');
-        File::put($path, $base_64_ics);
-        return response()->download($path, $request->name . '.ics')->deleteFileAfterSend();
+        return response(BookingService::downloadIcs($request));
     }
 }

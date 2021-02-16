@@ -2,33 +2,26 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Note;
-use File;
 use Auth;
+use App\Http\Requests\IndexNoteRequest;
+use App\Http\Requests\StoreNoteRequest;
 
 class NoteController extends Controller
 {
     //
-    public function index(Request $request)
+    public function index(IndexNoteRequest $request)
     {
-        $this->validate($request, [
-            'conversation_id' => 'required|exists:conversations,id'
-        ]);
         $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
         $this->authorize('getNotes', $conversation);
 
         return response()->json($conversation->notes);
     }
 
-    public function store(Request $request)
+    public function store(StoreNoteRequest $request)
     {
-        $this->validate($request, [
-            'conversation_id' => 'required|exists:conversations,id',
-            'notes' => 'required',
-        ]);
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addNote', $conversation);
 
@@ -42,8 +35,7 @@ class NoteController extends Controller
         return response()->json($note);
     }
 
-
-    public function update($id, Request $request)
+    public function update($id, UpdateNoteRequest $request)
     {
         $note = Note::findOrFail($id);
         $this->authorize('update', $note);
@@ -54,7 +46,6 @@ class NoteController extends Controller
         return response()->json(['success' => true]);
     }
 
-
     public function destroy($id)
     {
         $note = Note::findOrFail($id);
@@ -62,5 +53,4 @@ class NoteController extends Controller
         $note->delete();
         return response()->json(['success' => true]);
     }
-
 }

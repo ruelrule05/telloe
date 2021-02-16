@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Models\Contact;
-use App\Models\Member;
+use App\Http\Controllers\Controller;
 use App\Models\Service;
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreServiceRequest;
+use App\Http\Requests\UpdateServiceRequest;
+use App\Services\ServiceService;
 
 class ServiceController extends Controller
 {
@@ -16,29 +16,12 @@ class ServiceController extends Controller
 
     public function index()
     {
-        $auth_user = Auth::user();
-        $member_ids = Member::where('member_user_id', $auth_user->id)->get()->pluck('id')->toArray();
-        $services = Service::with('user', 'assignedServices.member.memberUser')->where(function ($query) use ($auth_user, $member_ids) {
-            $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
-        })->orderBy('created_at', 'DESC')->get();
-        return response()->json($services);
+        return response(ServiceService::index());
     }
 
-    public function store(Request $request)
+    public function store(StoreServiceRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'description' => 'required',
-            'duration' => 'required|integer',
-            'days' => 'required',
-            'default_rate' => 'nullable|numeric'
-        ]);
-        $data = $request->all();
-        $data['user_id'] = Auth::user()->id;
-        $service = Service::create($data);
-        $service = $service->fresh();
-
-        return response()->json($service);
+        return response(ServiceService::store($request));
     }
 
     public function show(Request $request, Service $service)
@@ -70,15 +53,8 @@ class ServiceController extends Controller
         return response($service);
     }
 
-    public function update($id, Request $request)
+    public function update($id, UpdateServiceRequest $request)
     {
-        $validated = $this->validate($request, [
-            'name' => 'required',
-            'description' => 'required',
-            'duration' => 'required|integer',
-            'days' => 'required',
-            'default_rate' => 'nullable|numeric',
-        ]);
         $service = Service::findOrFail($id);
         $this->authorize('update', $service);
 
@@ -106,14 +82,6 @@ class ServiceController extends Controller
 
     public function contactServices()
     {
-        $services = [];
-        foreach (Contact::where('contact_user_id', Auth::user()->id)->get() as $contact) {
-            foreach ($contact->user->services as $service) {
-                if ($service->is_available && ! in_array($service->id, $contact->blacklisted_services)) {
-                    $services[] = $service;
-                }
-            }
-        }
-        return response($services);
+        return response(ServiceService::contactServices());
     }
 }

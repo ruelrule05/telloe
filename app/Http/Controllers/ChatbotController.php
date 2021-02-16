@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Chatbot;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\ChatBoxService;
 
 class ChatbotController extends Controller
 {
@@ -13,15 +15,11 @@ class ChatbotController extends Controller
 
     public function index(Request $request)
     {
-        $chatbots = Auth::user()->chatbots;
-        return response()->json($chatbots);
+        return response(ChatBoxService::index($request));
     }
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'title' => 'required'
-        ]);
         $chatbot = Chatbot::create([
             'user_id' => Auth::user()->id,
             'title' => $request->title,
@@ -44,9 +42,7 @@ class ChatbotController extends Controller
     public function update($id, Request $request)
     {
         $chatbot = Chatbot::findOrFail($id);
-        $this->validate($request, [
-            'title' => 'required'
-        ]);
+
         $this->authorize('update', $chatbot);
         $chatbot->update([
             'title' => $request->title,

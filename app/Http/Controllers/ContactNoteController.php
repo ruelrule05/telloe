@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use App\Models\ContactNote;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreContactNoteRequest;
+use App\Http\Requests\UpdateContactNoteRequest;
 
 class ContactNoteController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreContactNoteRequest $request)
     {
-        $this->validate($request, [
-            'contact_id' => 'required|exists:contacts,id',
-            'note' => 'required',
-        ]);
         $contact = Contact::findOrFail($request->contact_id);
         $this->authorize('show', $contact);
 
@@ -26,11 +23,8 @@ class ContactNoteController extends Controller
         return response()->json($contactNote);
     }
 
-    public function update($id, Request $request)
+    public function update($id, UpdateContactNoteRequest $request)
     {
-        $this->validate($request, [
-            'note' => 'required',
-        ]);
         $contactNote = ContactNote::findOrFail($id);
         $contact = Contact::findOrFail($contactNote->contact_id);
         $this->authorize('update', $contact);

@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Notification;
-use Auth;
+use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class NotificationController extends Controller
 {
     //
     public function index(Request $request)
     {
-        $notifications = Notification::where('is_read', false)->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
-        return response()->json($notifications);
+        return response(NotificationService::index($request));
     }
-
 
     public function show($id, Request $request)
     {
@@ -23,7 +21,6 @@ class NotificationController extends Controller
         $this->authorize('show', $notification);
         return response()->json($notification);
     }
-
 
     public function update($id, Request $request)
     {
@@ -37,9 +34,6 @@ class NotificationController extends Controller
 
     public function clear(Request $request)
     {
-        Notification::where('user_id', Auth::user()->id)->update([
-            'is_read' => true
-        ]);
-        return response()->json(['success' => true]);
+        return response(NotificationService::clear($request));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
 use Auth;
@@ -14,20 +14,18 @@ use Illuminate\Support\Str;
 use Image;
 use Mail;
 use App\Events\NewMessageEvent;
+use App\Http\Requests\StoreMessageRequest;
 use App\Mail\NewMessage;
+use App\Services\MessageService;
 
 class MessageController extends Controller
 {
     //
 
-    public function store(Request $request)
+    public function store(StoreMessageRequest $request)
     {
         $timestamp = Carbon::now()->getPreciseTimestamp(3);
-        $this->validate($request, [
-            'conversation_id' => 'required|exists:conversations,id',
-            'type' => 'required|in:text,emoji,image,audio,video,file,call_ended,call_failed',
-            'message' => 'required',
-        ]);
+
         $conversation = Conversation::findOrFail($request->conversation_id);
         $this->authorize('addMessage', $conversation);
 
@@ -116,21 +114,11 @@ class MessageController extends Controller
 
     public function update($id, Request $request)
     {
-        $message = Message::findOrFail($id);
-        //$this->authorize('update', $message);
-        $message->update([
-            'tags' => $request->tags,
-        ]);
-        return response()->json($message);
     }
 
     public function destroy($id, Request $request)
     {
-        $message = Message::findOrFail($id);
-        $this->authorize('delete', $message);
-        $message->delete();
-
-        return response()->json(['deleted' => true]);
+        return response(MessageService::update($id, $request));
     }
 
     public function generateLinkPreview($id, Request $request)

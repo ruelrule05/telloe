@@ -2,44 +2,33 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Service;
-use App\Models\UserBlacklistedService;
-use Auth;
+use App\Http\Requests\IndexUserBlackListedServiceRequest;
+use App\Http\Requests\StoreUserBlackListedServiceRequest;
+use App\Services\UserBlacklistedServiceService;
 
 class UserBlacklistedServicesController extends Controller
 {
     //
-    public function index(Request $request)
+    public function index(IndexUserBlackListedServiceRequest $request)
     {
-        $this->validate($request, [
-            'user_id' => 'required|exists:users,id'
-        ]);
-        $userBlacklistedServices = UserBlacklistedService::where('user_id', $request->user_id)->get();
-
-        return response()->json($userBlacklistedServices);
+        return response(UserBlacklistedServiceService::index($request));
     }
 
-    public function store(Request $request)
+    public function store(StoreUserBlackListedServiceRequest $request)
     {
-        $this->validate($request, [
-            'is_blacklisted' => 'required|boolean',
-            'user_id' => 'required|exists:users,id',
-            'service_id' => 'required|exists:services,id',
-        ]);
         $service = Service::find($request->service_id);
         $this->authorize('blacklist', $service);
-        $userBlacklistedService = UserBlacklistedService::updateOrCreate(
-        	[
-        		'service_id' => $service->id,
-        		'user_id' => $request->user_id
-        	],
-        	[
-        		'is_blacklisted' => $request->is_blacklisted
-        	]
+        $userBlacklistedService = UserBlacklistedServiceService::updateOrCreate(
+            [
+                'service_id' => $service->id,
+                'user_id' => $request->user_id
+            ],
+            [
+                'is_blacklisted' => $request->is_blacklisted
+            ]
         );
         return response()->json($userBlacklistedService);
     }
-
 }

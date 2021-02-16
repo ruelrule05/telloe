@@ -2,167 +2,38 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Controllers\Controller;
 use App\Http\StripeAPI;
 use App\Models\Booking;
 use App\Models\BookingNote;
 use App\Models\Contact;
 use App\Models\ContactNote;
-use App\Models\Conversation;
-use App\Models\ConversationMember;
-use App\Models\Message;
 use App\Models\Service;
 use App\Models\User;
 use Auth;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Mail;
+use App\Http\Requests\ContactCancelSubscriptionRequest;
+use App\Http\Requests\ContactCreateInvoiceRequest;
+use App\Http\Requests\ContactCreateSubscriptionRequest;
+use App\Http\Requests\ContactFinalizeInvoiceRequest;
+use App\Http\Requests\ContactGetFromInviteTokenRequest;
+use App\Http\Requests\StoreContactRequest;
 use App\Mail\SendInvitation;
+use App\Services\ContactService;
 
 class ContactController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $request->get('query');
-        $contacts = Contact::with('contactUser')
-            // ->select(['bookings.*', 'contacts.*'])
-            // ->join('bookings', 'contacts.contact_user_id', '=', 'bookings.user_id')
-            ->where('contacts.user_id', Auth::user()->id);
-        if ($query) {
-            $contacts = $contacts->where(function ($q) use ($query) {
-                $q->whereHas('contactUser', function ($contactUser) use ($query) {
-                    $contactUser->where('first_name', 'LIKE', '%' . $query . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $query . '%')
-                        ->orWhere(DB::raw("CONCAT(`first_name`, ' ', `last_name`)"), 'LIKE', '%' . $query . '%')
-                        ->orWhere('email', 'LIKE', '%' . $query . '%');
-                })->orWhere(function ($q) use ($query) {
-                    $q->where('first_name', 'LIKE', '%' . $query . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $query . '%')
-                        ->orWhere(DB::raw("CONCAT(`first_name`, ' ', `last_name`)"), 'LIKE', '%' . $query . '%')
-                        ->orWhere('email', 'LIKE', '%' . $query . '%');
-                });
-            });
-        }
-        $status = ['accepted', 'pending'];
-        if (in_array($request->status, $status)) {
-            switch ($request->status) {
-                case 'accepted':
-                    $contacts = $contacts->where('is_pending', false);
-                    break;
-
-                case 'pending':
-                    $contacts = $contacts->where('is_pending', true);
-                    break;
-            }
-        }
-
-        $contacts = $contacts->orderBy('created_at', 'DESC');
-
-        $contacts = $request->nopaginate ? $contacts->get() : $contacts->paginate(20);
-
-        return response()->json($contacts);
+        return response(ContactService::index($request));
     }
 
-    public function store(Request $request)
+    public function store(StoreContactRequest $request)
     {
-        $this->validate($request, [
-            'email' => 'required|email',
-            'invite_message' => 'nullable|string',
-        ]);
-
-        if ($request->email == Auth::user()->email) {
-            return abort(403, "Can't add your own email as contact");
-        }
-
-        $authTab = 'login';
-        $contactUser = User::where('email', $request->email)->first();
-        if (! $contactUser) {
-            $authTab = 'signup';
-        }
-
-        if ($contactUser && Contact::where('user_id', Auth::user()->id)->where('contact_user_id', $contactUser->id)->first()) {
-            return abort(403, 'This contact already exists.');
-        }
-
-        $invite_token = '';
-        while (true) {
-            $invite_token = Str::random(30);
-            $exists = Contact::where('invite_token', $invite_token)->first();
-            if (! $exists) {
-                break;
-            }
-        }
-        if (Contact::where('user_id', Auth::user()->id)->where('email', $request->email)->first()) {
-            return abort(403, 'This contact already exists.');
-        }
-        $contact = Contact::create([
-            'user_id' => Auth::user()->id,
-            'contact_user_id' => $contactUser->id ?? null,
-            'email' => $request->email,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'is_pending' => true,
-            'invite_token' => $invite_token,
-            'blacklisted_services' => $request->blacklisted_services
-        ]);
-        $contact->load('contactUser');
-
-        $custom_fields = [];
-        foreach ($request->custom_fields as $custom_field => $value) {
-            if ($value) {
-                $custom_fields[] = ['name' => $custom_field, 'value' => $value];
-            }
-        }
-
-        $createMessage = false;
-        if ($contactUser) {
-            $conversation = Conversation::where('user_id', Auth::user()->id)->whereHas('members', function ($member) use ($contactUser) {
-                $member->where('user_id', $contactUser->id);
-            })->has('members', '=', 1)->first();
-            if (! $conversation) {
-                $createMessage = true;
-                $conversation = Conversation::create([
-                    'user_id' => Auth::user()->id,
-                    'custom_fields' => $custom_fields,
-                    'contact_id' => $contact->id,
-                ]);
-            }
-        } else {
-            $createMessage = true;
-            $conversation = Conversation::create([
-                'user_id' => Auth::user()->id,
-                'contact_id' => $contact->id,
-                'custom_fields' => $custom_fields,
-            ]);
-        }
-
-        if ($contactUser && ! in_array($contactUser->id, $conversation->members()->pluck('user_id')->toArray())) {
-            ConversationMember::firstOrCreate([
-                'conversation_id' => $conversation->id,
-                'user_id' => $contactUser->id
-            ]);
-        }
-
-        if ($conversation && $request->invite_message && $createMessage) {
-            Message::create([
-                'conversation_id' => $conversation->id,
-                'user_id' => Auth::user()->id,
-                'message' => $request->invite_message,
-                'type' => 'text'
-            ]);
-        }
-
-        if ($request->sendToEmail) {
-            Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->invite_message));
-        }
-        $contact->conversation = $conversation;
-        if ($createMessage) {
-            $conversation->delete();
-        }
-        return response()->json($contact->load('contactUser'));
+        return ContactService::store($request);
     }
 
     public function show(Request $request, Contact $contact)
@@ -207,13 +78,8 @@ class ContactController extends Controller
         return response()->json(['deleted' => $contact->delete()]);
     }
 
-    public function createInvoice($id, Request $request)
+    public function createInvoice($id, ContactCreateInvoiceRequest $request)
     {
-        $this->validate($request, [
-            'service_ids' => 'nullable|array',
-            'amount' => 'required|numeric',
-        ]);
-
         // check if Auth::user has external accounts
         $external_account = Auth::user()->stripe_account['external_accounts']['data'][0] ?? false;
         if (! $external_account) {
@@ -264,11 +130,8 @@ class ContactController extends Controller
         return response()->json($invoice);
     }
 
-    public function finalizeInvoice($id, Request $request)
+    public function finalizeInvoice($id, ContactFinalizeInvoiceRequest $request)
     {
-        $this->validate($request, [
-            'invoice_id' => 'required',
-        ]);
         $contact = Contact::findOrFail($id)->makeVisible('invoices');
         $this->authorize('finalize_invoice', $contact);
 
@@ -291,7 +154,7 @@ class ContactController extends Controller
         return response()->json($invoice);
     }
 
-    public function createSubscription($id, Request $request)
+    public function createSubscription($id, ContactCreateSubscriptionRequest $request)
     {
         $this->validate($request, [
             'services' => 'required|array',
@@ -376,7 +239,7 @@ class ContactController extends Controller
         return response()->json($subscription);
     }
 
-    public function cancelSubscription($id, Request $request)
+    public function cancelSubscription($id, ContactCancelSubscriptionRequest $request)
     {
         $this->validate($request, [
             'subscription_id' => 'required',
@@ -411,7 +274,7 @@ class ContactController extends Controller
         return response()->json($subscription);
     }
 
-    public function getContactFromInviteToken(Request $request)
+    public function getContactFromInviteToken(ContactGetFromInviteTokenRequest $request)
     {
         $this->validate($request, [
             'invite_token' => 'required'

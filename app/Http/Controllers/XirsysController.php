@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Xirsys;
+use App\Services\XirsysService;
 
 class XirsysController extends Controller
 {
     //
     public function getIceServers()
     {
-        return response((new Xirsys())->getIceServers());
+        return response(XirsysService::getIceServers());
     }
 
     public function getToken(Request $request)
     {
-        return response((new Xirsys())->getToken($request->id));
+        return response(XirsysService::getToken($request->id));
     }
 
     public function getHost(Request $request)
     {
-        return response((new Xirsys())->getHost($request->id));
+        return response(XirsysService::getHost($request->id));
     }
 }

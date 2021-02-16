@@ -2,54 +2,44 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
-use App\Models\PendingSubscription;
+use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Models\PendingSubscription;
 use Auth;
+use App\Http\Requests\StorePendingSubscriptionRequest;
+use App\Services\PendingSubscriptionService;
 
 class PendingSubscriptionController extends Controller
 {
     public function index()
     {
-       $pendingSubscriptions = PendingSubscription::with('contact.contactUser')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
-       return response()->json($pendingSubscriptions);
+        return response(PendingSubscriptionService::index());
     }
 
-    public function store(Request $request) 
+    public function store(StorePendingSubscriptionRequest $request)
     {
-        $this->validate($request, [
-            'contact_id' => 'required|exists:contacts,id',
-            'services' => 'required|array',
-            'date' => 'required|date',
-            'recurring_frequency' => 'required|in:week,month,year',
-            'duration' => 'required|numeric',
-            'duration_frequency' => 'required|in:month,year',
-        ]);
-
         $contact = Contact::findOrFail($request->contact_id);
         $this->authorize('create_subscription', $contact);
 
-    	$data = $request->all();
-    	$data['user_id'] = Auth::user()->id;
+        $data = $request->all();
+        $data['user_id'] = Auth::user()->id;
         $total = 0;
-        foreach($request->services as $service) :
-            if($service['rate'] && $service['frequency'] && $service['frequency_interval']) :
+        foreach ($request->services as $service) {
+            if ($service['rate'] && $service['frequency'] && $service['frequency_interval']) {
                 $total += ($service['frequency'] * $service['rate']);
-            endif;
-        endforeach;
+            }
+        }
         $data['amount'] = $total * 100;
-    	$pendingSubscription = PendingSubscription::create($data);
+        $pendingSubscription = PendingSubscription::create($data);
 
-    	return response()->json($pendingSubscription->load('contact.contactUser'));
+        return response()->json($pendingSubscription->load('contact.contactUser'));
     }
-
 
     public function destroy(PendingSubscription $pendingSubscription)
     {
-    	$this->authorize('delete', $pendingSubscription);
-    	$pendingSubscription->delete();
+        $this->authorize('delete', $pendingSubscription);
+        $pendingSubscription->delete();
 
-    	return response()->json(['deleted' => true]);
+        return response()->json(['deleted' => true]);
     }
 }
