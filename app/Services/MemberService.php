@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
+use App\Http\Requests\MemberFromInviteTokenRequest;
+use App\Http\Requests\StoreMemberRequest;
+use App\Mail\SendMemberInvitation;
 use App\Models\Member;
 use App\Models\Service;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Mail;
-use App\Http\Requests\MemberFromInviteTokenRequest;
-use App\Http\Requests\StoreMemberRequest;
-use App\Mail\SendMemberInvitation;
 
 class MemberService
 {

@@ -16,7 +16,6 @@ dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import VueButton from '../../../../../components/vue-button.vue';
 import VCalendar from 'v-calendar';
-window.Vue.use(VCalendar);
 import ZoomIcon from '../../../../../icons/zoom';
 import ShortcutIcon from '../../../../../icons/shortcut';
 
@@ -33,7 +32,8 @@ export default {
 		VueSelect,
 		VueButton,
 		ZoomIcon,
-		ShortcutIcon
+		ShortcutIcon,
+		VCalendar
 	},
 
 	data: () => ({

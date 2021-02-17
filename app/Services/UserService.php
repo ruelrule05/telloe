@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
+use App\Http\Requests\UserFacebookLoginAndBook;
+use App\Http\Requests\UserGoogleLoginRequest;
+use App\Http\Requests\UserServiceTimeslotsRequest;
+use App\Http\Requests\UserSignupAndBookRequest;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Widget;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserFacebookLoginAndBook;
-use App\Http\Requests\UserGoogleLoginRequest;
-use App\Http\Requests\UserServiceTimeslotsRequest;
-use App\Http\Requests\UserSignupAndBookRequest;
 use Response;
 
 class UserService
@@ -31,9 +31,7 @@ class UserService
 
     public static function serviceTimeslots($username, $service_id, UserServiceTimeslotsRequest $request)
     {
-        $user = User::where('username', $username)->whereHas('role', function ($role) {
-            $role->where('role', 'client');
-        })->firstOrfail();
+        $user = User::where('username', $username)->firstOrfail();
         $service = Service::where('id', $service_id)->where(function ($query) use ($user) {
             $query->where('user_id', $user->id)->orWhereHas('parentService', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -60,9 +58,7 @@ class UserService
 
     public static function profile($username, Request $request)
     {
-        $profile = User::where('username', $username)->whereHas('role', function ($role) {
-            $role->where('role', 'client');
-        })->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
+        $profile = User::where('username', $username)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
 
         if ($request->ajax() || $request->wantsJson()) {
             $services = $profile->load(['services' => function ($service) {
@@ -70,7 +66,7 @@ class UserService
             }])->services->load('user', 'assignedServices.member.memberUser');
 
             $data = [];
-            $data['services'] = $profile->services()->where('is_available', true)->where('in_widget', true)->get()->load('user', 'assignedServices.member.memberUser');
+            $data['services'] = $profile->services()->where('is_available', true)->get()->load('user', 'assignedServices.member.memberUser');
 
             return response()->json($data);
         }
@@ -90,9 +86,7 @@ class UserService
 
     public static function showService($username, $service_id)
     {
-        $user = User::where('username', $username)->whereHas('role', function ($role) {
-            $role->where('role', 'client');
-        })->firstOrfail();
+        $user = User::where('username', $username)->firstOrfail();
         $service = Service::where('id', $service_id)->where('user_id', $user->id)->firstOrfail();
         return view('profile', compact('user'));
     }

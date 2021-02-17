@@ -2,18 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use App\Models\Contact;
-use App\Models\Notification;
-use App\Models\Service;
-use App\Models\User;
-use App\Models\Widget;
-use Auth;
-use Carbon\Carbon;
-use Hash;
-use Illuminate\Http\Request;
-use Mail;
 use App\Http\Requests\UserBookRequest;
 use App\Http\Requests\UserFacebookLoginAndBook;
 use App\Http\Requests\UserGoogleLoginRequest;
@@ -21,7 +9,18 @@ use App\Http\Requests\UserServiceTimeslotsRequest;
 use App\Http\Requests\UserSignupAndBookRequest;
 use App\Http\Zoom;
 use App\Mail\NewBooking;
+use App\Models\Booking;
+use App\Models\Contact;
+use App\Models\Notification;
+use App\Models\Service;
+use App\Models\User;
+use App\Models\Widget;
 use App\Services\UserService;
+use Auth;
+use Carbon\Carbon;
+use Hash;
+use Illuminate\Http\Request;
+use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
 
@@ -35,7 +34,7 @@ class UserController extends Controller
 
     public function profile($username, Request $request)
     {
-        return response(UserService::profile($username, $request));
+        return UserService::profile($username, $request);
     }
 
     public function showService($username, $service_id)

@@ -103,7 +103,7 @@ export default {
 		}),
 
 		activeMembers() {
-			return this.members.map(member => !member.is_pending);
+			return this.members.filter(member => !member.is_pending);
 		},
 
 		formattedHolidays() {
