@@ -16,6 +16,7 @@ class DropContactIdInBookingsTable extends Migration
         Schema::table('bookings', function (Blueprint $table) {
             //
             $table->dropColumn('contact_id');
+            $table->dropForeign(['contact_id']);
         });
     }
 
