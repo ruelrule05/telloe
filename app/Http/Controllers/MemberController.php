@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use App\Models\Member;
-use App\Models\Service;
-use App\Models\User;
-use Auth;
-use Illuminate\Http\Request;
-use Mail;
 use App\Http\Requests\MemberAssignServiceRequest;
 use App\Http\Requests\MemberFromInviteTokenRequest;
 use App\Http\Requests\StoreMemberRequest;
 use App\Mail\SendMemberInvitation;
+use App\Models\Booking;
+use App\Models\Member;
+use App\Models\Service;
+use App\Models\User;
 use App\Services\MemberService;
+use Auth;
+use Illuminate\Http\Request;
+use Mail;
 
 class MemberController extends Controller
 {
@@ -45,9 +44,10 @@ class MemberController extends Controller
                 }
             }
         }
+
         $bookings = Booking::with('bookingNote')->where(function ($query) {
-            $query->whereHas('user')->orWhereHas('contact');
-        })->with('service.assignedServices', 'service.parentService.assignedServices', 'user', 'contact')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
+            $query->whereHas('user');
+        })->with('service.assignedServices', 'service.parentService.assignedServices', 'user')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
         $member->bookings = $bookings;
 
         return response($member);

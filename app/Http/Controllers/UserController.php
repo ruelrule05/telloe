@@ -10,13 +10,11 @@ use App\Http\Requests\UserSignupAndBookRequest;
 use App\Http\Zoom;
 use App\Mail\NewBooking;
 use App\Models\Booking;
-use App\Models\Contact;
 use App\Models\Notification;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Widget;
 use App\Services\UserService;
-use Auth;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Http\Request;
@@ -47,7 +45,7 @@ class UserController extends Controller
         return response(userService::serviceTimeslots($username, $service_id, $request));
     }
 
-    public function book($username, $service_id, UserBookRequest $request, $authUser = null, $contact = false)
+    public function book($username, $service_id, UserBookRequest $request, $customer)
     {
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
@@ -61,33 +59,16 @@ class UserController extends Controller
             });
         })->firstOrfail();
 
-        // $availableTimeslots = $service->timeslots($request->date);
-        // $timeslotAvailable = false;
-        // foreach ($availableTimeslots as $availableTimeslot) {
-        //     foreach ($request->timeslots as $timeslot) {
-        //         if ($availableTimeslot['time'] == $timeslot['time'] && $availableTimeslot['is_available']) {
-        //             $timeslotAvailable = true;
-        //             break;
-        //         }
-        //     }
-        // }
-        // if (! $timeslotAvailable) {
-        //     return abort(403, 'The selected date or time is not anymore available.');
-        // }
-
-        $authUser = $authUser ?? Auth::user();
-
-        if ($authUser->id == $user->id) {
+        if ($customer->id == $user->id) {
             return abort(403, 'You are not allowed to book using your own account.');
         }
 
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        $userField = $contact ? 'contact_id' : 'user_id';
         foreach ($request->timeslots as $timeslot) {
             $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}");
             $end = $start->copy()->add('minute', $service->duration);
             $booking = $this->createBooking($service, [
-                $userField => $authUser->id,
+                'user_id' => $customer->id,
                 'service_id' => $service->id,
                 'date' => $timeslot['date']['format'],
                 'start' => $start->format('H:i'),
@@ -133,7 +114,7 @@ class UserController extends Controller
                     }
                     if ($createBooking) {
                         $booking = $this->createBooking($service, [
-                            'user_id' => $authUser->id,
+                            'user_id' => $customer->id,
                             'service_id' => $service->id,
                             'date' => $currentDate->clone()->format('Y-m-d'),
                             'start' => $start->format('H:i'),
@@ -148,12 +129,12 @@ class UserController extends Controller
             }
         }
         if (count($bookings) > 0) {
-            Mail::queue(new NewBooking($bookings, 'client'));
-            Mail::queue(new NewBooking($bookings, 'contact'));
+            Mail::queue(new NewBooking($bookings, 'serviceUser'));
+            Mail::queue(new NewBooking($bookings, 'customer'));
 
             $user_id = $bookings[0]->service->user->id ?? null;
             if ($user_id) {
-                $fullname = $bookings[0]->customer->full_name ?? 'Someone';
+                $fullname = $bookings[0]->user->full_name ?? 'Someone';
                 $description = "<strong>{$fullname}</strong> has placed a booking.";
                 Notification::create([
                     'user_id' => $user_id,
@@ -163,7 +144,7 @@ class UserController extends Controller
             }
 
             if ($bookings[0]->customer) {
-                $user_id = $bookings[0]->customer->id;
+                $user_id = $bookings[0]->user->id;
                 if ($user_id) {
                     $description = 'A booking has been placed for your account.';
                     Notification::create([
@@ -173,15 +154,6 @@ class UserController extends Controller
                     ]);
                 }
             }
-        }
-
-        if (! $contact && ! Contact::where('user_id', $user->id)->where('contact_user_id', $authUser->id)->first()) {
-            Contact::create([
-                $userField => $user->id,
-                'email' => $authUser->email,
-                'contact_user_id' => $authUser->id,
-                'is_pending' => false,
-            ]);
         }
 
         return $bookings;
@@ -232,23 +204,13 @@ class UserController extends Controller
 
     public function loginAndBook($username, $service_id, UserBookRequest $request)
     {
-        $user = null;
-        if ($request->auth) {
-            $user = Auth::user();
-        } elseif ($request->contact_id) {
-            $contact = Contact::findOrFail($request->contact_id);
-            $this->authorize('show', $contact);
-            $user = $contact;
-        } else {
-            $user = User::where('email', $request->email)->first();
-            if (! $user) {
-                return abort(403, 'Email does not exists in our records');
-            }
-            if (! Hash::check($request->password, $user->password)) {
-                return abort(403, 'Invalid password');
-            }
+        $user = User::where('email', $request->email)->first();
+        if (! $user) {
+            return abort(403, 'Email does not exists in our records');
         }
-
+        if (! Hash::check($request->password, $user->password)) {
+            return abort(403, 'Invalid password');
+        }
         if (! $user) {
             return abort(404, 'No user found.');
         }

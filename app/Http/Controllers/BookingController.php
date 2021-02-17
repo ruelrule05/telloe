@@ -33,8 +33,8 @@ class BookingController extends Controller
         $bookings = [];
 
         $bookings = Booking::where(function ($query) {
-            $query->has('user')->orHas('contact');
-        })->with('user', 'contact', 'service')->whereHas('service', function ($service) {
+            $query->has('user');
+        })->with('user', 'service')->whereHas('service', function ($service) {
             $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
                 $parentService->where('user_id', Auth::user()->id);
             });

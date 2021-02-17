@@ -10,27 +10,17 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
-    protected $appends = ['is_expired', 'customer'];
+    protected $fillable = ['service_id', 'user_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
+    protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
         'notified_2' => 'boolean',
         'notified_24' => 'boolean',
     ];
 
-    public function getCustomerAttribute()
-    {
-        return $this->user ?? $this->contact->contactUser ?? null;
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function contact()
-    {
-        return $this->belongsTo(Contact::class);
     }
 
     public function service()

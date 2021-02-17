@@ -186,7 +186,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $username = $this->generateUsername($request);
+        $username = $this->generateUsername($request->first_name, $request->last_name);
 
         $user = User::create([
             'username' => $username,
@@ -211,9 +211,7 @@ class AuthController extends Controller
         $this->createDefaultField($user);
 
         $user = $user->refresh();
-        if ($user->role->role == 'client') {
-            Mail::queue(new Welcome($user));
-        }
+        Mail::queue(new Welcome($user));
 
         $response = [
             'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
