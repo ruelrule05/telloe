@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
+use App\Http\GoogleCalendarClient;
+use App\Http\Requests\DestroyCalendarRequest;
 use App\Models\Booking;
 use Auth;
 use Carbon\Carbon;
 use File;
 use Google_Service_Calendar;
 use Illuminate\Http\Request;
-use App\Http\GoogleCalendarClient;
-use App\Http\Requests\DestroyCalendarRequest;
 
 class BookingService
 {
@@ -132,7 +132,7 @@ class BookingService
         $user->google_calendar_events = $events;
         $user->save();
 
-        return response()->json($events);
+        return $events;
     }
 
     public static function googleCalendarList(Request $request)
@@ -168,7 +168,7 @@ class BookingService
         $user->google_calendars = $calendars;
         $user->save();
 
-        return response()->json($calendars);
+        return $calendars;
     }
 
     public static function outlookCalendarEvents(Request $request)
@@ -231,7 +231,7 @@ class BookingService
             $user->save();
         }
 
-        return response()->json($calendars);
+        return $calendars;
     }
 
     public static function downloadIcs(Request $request)

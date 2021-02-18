@@ -1,5 +1,25 @@
 <?php
 
+function checkRequestInviteToken(Illuminate\Http\Request $request = null)
+{
+    if ($request) {
+        $request->invite_token ? session()->put('invite_token', $request->invite_token) : session()->forget('invite_token');
+        $request->member_invite_token ? session()->put('member_invite_token', $request->member_invite_token) : $request->session()->forget('member_invite_token');
+    }
+
+    if (Auth::check()) {
+        $user = Auth::user();
+        $invite_token = session()->pull('invite_token');
+        $member_invite_token = session()->pull('member_invite_token');
+        if ($invite_token) {
+            checkInviteToken($user, $invite_token);
+        }
+        if ($member_invite_token) {
+            checkMemberInviteToken($user, $member_invite_token);
+        }
+    }
+}
+
 function countryDialCode($country)
 {
     $countryArray = [
@@ -248,69 +268,62 @@ function compressVideo($source, $ouput)
     // print_r($output);
 }
 
-function checkInviteToken(App\Models\User $user, Illuminate\Http\Request $request, $isNew = false)
+function checkInviteToken(App\Models\User $user, $invite_token)
 {
-    if ($request->invite_token) {
-        $contact = App\Models\Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
-        if ($contact) {
-            if ($isNew) {
-                $user->role_id = 3;
-                $user->save();
-            }
-            $contact->update([
-                'contact_user_id' => $user->id,
+    $contact = App\Models\Contact::where('invite_token', $invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+    if ($contact) {
+        $contact->update([
+            'contact_user_id' => $user->id,
+            'is_pending' => false
+        ]);
+
+        // Create contact of the other person if not existing
+        if (! App\Models\Contact::where('user_id', $user->id)->where('contact_user_id', $contact->user_id)->exists()) {
+            App\Models\Contact::create([
+                'user_id' => $user->id,
+                'contact_user_id' => $contact->user_id,
+                'email' => $contact->user->email,
                 'is_pending' => false
             ]);
+        }
 
-            // Create contact of the other person if not existing
-            if (! App\Models\Contact::where('user_id', $user->id)->where('contact_user_id', $contact->user_id)->exists()) {
-                App\Models\Contact::create([
-                    'user_id' => $user->id,
-                    'contact_user_id' => $contact->user_id,
-                    'email' => $contact->user->email,
-                    'is_pending' => false
+        // restore previous conversations
+        $conversation = App\Models\Conversation::withTrashed()->where('contact_id', $contact->id)->first();
+        if ($conversation) {
+            $conversation->restore();
+            if (! in_array($user->id, $conversation->members()->pluck('user_id')->toArray())) {
+                App\Models\ConversationMember::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $user->id
                 ]);
             }
-
-            $conversation = App\Models\Conversation::withTrashed()->where('contact_id', $contact->id)->first();
-            if ($conversation) {
-                $conversation->restore();
-                if (! in_array($user->id, $conversation->members()->pluck('user_id')->toArray())) {
-                    App\Models\ConversationMember::create([
-                        'conversation_id' => $conversation->id,
-                        'user_id' => $user->id
-                    ]);
-                }
-            }
-
-            if (! $contact->stripe_customer_id) {
-                App\Jobs\CreateStripeCustomer::dispatch($user, $contact);
-            }
-
-            App\Models\Notification::create([
-                'user_id' => $contact->user_id,
-                'description' => "<strong>{$contact->contactUser->full_name}</strong> has accepted your invitation.",
-                'link' => "/dashboard/contacts/$contact->id"
-            ]);
         }
+
+        if (! $contact->stripe_customer_id) {
+            App\Jobs\CreateStripeCustomer::dispatch($user, $contact);
+        }
+
+        App\Models\Notification::create([
+            'user_id' => $contact->user_id,
+            'description' => "<strong>{$contact->contactUser->full_name}</strong> has accepted your invitation.",
+            'link' => "/dashboard/contacts/$contact->id"
+        ]);
     }
 }
 
-function checkMemberInviteToken(App\Models\User $user, Illuminate\Http\Request $request, $isNew = false)
+function checkMemberInviteToken(App\Models\User $user, $member_invite_token)
 {
-    if ($request->member_invite_token) {
-        $member = App\Models\Member::where('invite_token', $request->member_invite_token)->where('email', $user->email)->where('is_pending', true)->first();
-        if ($member) {
-            $member->update([
-                'member_user_id' => $user->id,
-                'is_pending' => false
-            ]);
-            App\Models\Notification::create([
-                'user_id' => $member->user_id,
-                'description' => "<strong>{$member->memberUser->full_name}</strong> has accepted your member invitation.",
-                'link' => "/dashboard/team/members/$member->id"
-            ]);
-        }
+    $member = App\Models\Member::where('invite_token', $member_invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+    if ($member) {
+        $member->update([
+            'member_user_id' => $user->id,
+            'is_pending' => false
+        ]);
+        App\Models\Notification::create([
+            'user_id' => $member->user_id,
+            'description' => "<strong>{$member->memberUser->full_name}</strong> has accepted your member invitation.",
+            'link' => "/dashboard/team/members/$member->id"
+        ]);
     }
 }
 

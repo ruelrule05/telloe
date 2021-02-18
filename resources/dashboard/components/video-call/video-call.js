@@ -112,7 +112,7 @@ export default {
 	}),
 
 	watch: {
-		isShrinked: function (value) {
+		isShrinked: function(value) {
 			if (value) {
 				document.querySelector('.modal-backdrop').style.display = 'none';
 			} else {
@@ -123,7 +123,7 @@ export default {
 				this.$refs['modal'].style.visibility = 'visible';
 			}
 		},
-		'$root.appChannel': function () {
+		'$root.appChannel': function() {
 			this.$root.appChannel.listenForWhisper('liveCallIncoming', data => {
 				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
 				if (conversation) {
@@ -134,14 +134,17 @@ export default {
 				}
 			});
 			this.$root.appChannel.listenForWhisper('liveCallEnd', data => {
-				if (this.peer) {
-					this.deleteRemoteStream(data.uid);
-					this.peer.hangup(data.uid);
-					if (this.peer.length() == 0) {
+				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
+				if (conversation) {
+					if (this.peer) {
+						this.deleteRemoteStream(data.uid);
+						this.peer.hangup(data.uid);
+						if (this.peer.length() == 0) {
+							this.endCall(false);
+						}
+					} else {
 						this.endCall(false);
 					}
-				} else {
-					this.endCall(false);
 				}
 			});
 			this.$root.appChannel.listenForWhisper('liveCallPresenter', data => {
@@ -386,7 +389,7 @@ export default {
 		},
 
 		async addLocalStream() {
-			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(function (error) {
+			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(function(error) {
 				alert('Unable to capture your camera.');
 				console.error(error);
 			});
@@ -457,7 +460,9 @@ export default {
 			this.open = true;
 			this.conversation = conversation;
 			this.action = 'outgoing';
-			$(this.$refs['modal']).modal({ keyboard: false, backdrop: 'static' }).modal('show');
+			$(this.$refs['modal'])
+				.modal({ keyboard: false, backdrop: 'static' })
+				.modal('show');
 			this.isVideoStopped = !camera;
 			this.isIncoming = false;
 			clearTimeout(this.callTimeout);
@@ -494,7 +499,9 @@ export default {
 			this.open = true;
 			if (!this.$root.muted) this.notification_sound.play();
 			this.isIncoming = true;
-			$(this.$refs['modal']).modal({ keyboard: false, backdrop: 'static' }).modal('show');
+			$(this.$refs['modal'])
+				.modal({ keyboard: false, backdrop: 'static' })
+				.modal('show');
 			this.action = 'incoming';
 		},
 
@@ -511,8 +518,7 @@ export default {
 
 		rejectCall() {
 			this.$root.appChannel.whisper('liveCallEnd', {
-				conversation_id: this.conversation.id,
-				broadcast: false
+				conversation_id: this.conversation.id
 			});
 			this.endCall(false);
 		},
@@ -559,6 +565,7 @@ export default {
 
 			if (emit && this.$root.appChannel) {
 				this.$root.appChannel.whisper('liveCallEnd', {
+					conversation_id: this.conversation.id,
 					uid: this.username
 				});
 			}
@@ -701,7 +708,7 @@ export default {
 		},
 
 		async stopShareScreen() {
-			this.localStream.getVideoTracks().forEach(function (track) {
+			this.localStream.getVideoTracks().forEach(function(track) {
 				track.stop();
 			});
 			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
@@ -726,7 +733,7 @@ export default {
 				console.log(e);
 			});
 			if (screenStreams) {
-				this.localStream.getVideoTracks().forEach(function (track) {
+				this.localStream.getVideoTracks().forEach(function(track) {
 					track.stop();
 				});
 				this.localStream = screenStreams;
@@ -783,7 +790,7 @@ export default {
 
 		stopLocalStream() {
 			if (this.localStream) {
-				this.localStream.getTracks().forEach(function (track) {
+				this.localStream.getTracks().forEach(function(track) {
 					track.stop();
 				});
 				this.localStream = null;

@@ -276,7 +276,7 @@ export default {
 		},
 
 		timezoneTime(time) {
-			let profileTimezone = this.selectedService.user.timezone;
+			let profileTimezone = this.selectedService.coach.timezone;
 			let timezoneTime;
 			if (profileTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
@@ -302,7 +302,7 @@ export default {
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
 				this.selectedTimeslot = null;
-				let response = await window.axios.get(`${window.location.origin}/ajax/@${this.selectedService.user.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`, { ajax: false });
+				let response = await window.axios.get(`${window.location.origin}/ajax/@${this.selectedService.coach.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`, { ajax: false });
 				this.timeslots = response.data;
 				this.timeslotsLoading = false;
 			}

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Services\GoogleCalendarService;
+use Illuminate\Http\Request;
 
 class GoogleCalendarController extends Controller
 {
@@ -20,7 +19,7 @@ class GoogleCalendarController extends Controller
 
     public function getClient()
     {
-        return response(GoogleCalendarService::getClient());
+        return response()->json(GoogleCalendarService::getClient());
     }
 
     public function remove()

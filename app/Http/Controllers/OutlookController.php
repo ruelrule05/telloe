@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Services\OutlookService;
+use Illuminate\Http\Request;
 
 class OutlookController extends Controller
 {
@@ -25,6 +24,6 @@ class OutlookController extends Controller
 
     public function getClient()
     {
-        return response(OutlookService::getClient());
+        return response()->json(OutlookService::getClient());
     }
 }

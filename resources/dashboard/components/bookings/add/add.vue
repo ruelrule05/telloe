@@ -15,12 +15,12 @@
 								<div class="card rounded service cursor-pointer mb-3 shadow-sm" @click="selectedService = service">
 									<div class="card-body">
 										<div class="d-flex align-items-center mb-3">
-											<div class="user-profile-image d-inline-block bg-white mb-1" :style="{ 'background-image': `url(${service.user.profile_image})` }">
-												<span v-if="!service.user.profile_image">{{ service.user.initials }}</span>
+											<div class="user-profile-image d-inline-block bg-white mb-1" :style="{ 'background-image': `url(${service.coach.profile_image})` }">
+												<span v-if="!service.coach.profile_image">{{ service.coach.initials }}</span>
 											</div>
 											<div class="pl-1">
-												<h6 class="font-heading mb-0">{{ service.user.full_name }}</h6>
-												<span class="text-muted">@{{ service.user.username }}</span>
+												<h6 class="font-heading mb-0">{{ service.coach.full_name }}</h6>
+												<span class="text-muted">@{{ service.coach.username }}</span>
 											</div>
 										</div>
 										<h3 class="font-heading h5 mb-1">{{ service.name }}</h3>
