@@ -15,7 +15,8 @@ import CheckmarkIcon from '../../../../icons/checkmark';
 import dayjs from 'dayjs';
 import Tooltip from '../../../../js/directives/tooltip';
 import VuePaginate from 'vue-paginate';
-window.Vue.use(VuePaginate);
+import Vue from 'vue';
+Vue.use(VuePaginate);
 const format = require('format-number');
 import getSymbolFromCurrency from 'currency-symbol-map';
 export default {
