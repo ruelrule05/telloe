@@ -6,6 +6,7 @@ use App\Http\StripeAPI;
 use App\Models\Plan;
 use App\Models\Subscription;
 use Auth;
+use Illuminate\Http\Request;
 
 class SubscriptionService
 {

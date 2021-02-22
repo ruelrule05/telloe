@@ -63,6 +63,7 @@
 		"multistreamsmixer": "^1.2.2",
 		"numbers-only": "^1.0.3",
 		"phone": "^2.4.20",
+		"popper.js": "^1.16.1",
 		"pusher-js": "^7.0.3",
 		"query-string": "^6.13.8",
 		"slugify": "^1.4.6",
