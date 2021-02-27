@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Http\Zoom;
+use App\Models\Booking;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class ZoomService
@@ -49,6 +52,27 @@ class ZoomService
             <script>
                 window.close();
             </script>';
+    }
+
+    public static function createMeeting(ZoomCreateMeetingRequest $request)
+    {
+        $booking = Booking::findOrFail($request->booking_id);
+
+        unset($booking->user);
+
+        if ($booking->zoom_link) {
+            return response($booking->zoom_link);
+        }
+
+        $zoomLink = Zoom::createMeeting(Auth::user(), $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+
+        if ($zoomLink) {
+            $booking->update([
+                'zoom_link' => $zoomLink
+            ]);
+        }
+
+        return $zoomLink;
     }
 
     public static function index()

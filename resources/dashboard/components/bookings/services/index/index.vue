@@ -1,6 +1,6 @@
 <template>
-	<div class="row h-100">
-		<div v-if="ready" class="col-md-12 h-100 d-flex flex-column">
+	<div class="h-100">
+		<div v-if="ready" class="d-flex flex-column">
 			<div class="border-bottom bg-white px-3 py-4">
 				<h5 class="font-heading mb-0">Booking Types</h5>
 			</div>
@@ -21,7 +21,7 @@
 			</div>
 
 			<div v-else class="d-flex flex-grow-1 overflow-hidden">
-				<div class="flex-grow-1 py-4 overflow-auto container">
+				<div class="flex-grow-1 py-4 overflow-auto">
 					<div class="row px-2">
 						<div class="col-md-4 px-2" v-for="(service, index) in orderedServices" :key="service.id">
 							<div class="px-1 mb-4">

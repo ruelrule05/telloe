@@ -3,7 +3,6 @@
 	top: 0;
 	left: 0;
 	z-index: 9000;
-	background-color: rgba(#2d2c68, 0.75);
 	transition: $transition-base;
 	visibility: hidden;
 	opacity: 0;
@@ -23,5 +22,11 @@
 		.auth-body {
 			right: 0;
 		}
+	}
+}
+::v-deep {
+	.auth-card {
+		width: 480px;
+		max-width: 90vw;
 	}
 }

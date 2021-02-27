@@ -48,7 +48,7 @@
 					</button>
 					<!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
 				</template>
-				<button :data-intro="$root.intros.conversations.steps[4]" data-step="5" class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="$root.detailsTab = $root.detailsTab ? '' : 'profile'" :class="{ active: $root.detailsTab == 'profile' }"><info-circle-icon width="28" height="28"></info-circle-icon></button>
+				<button :data-intro="$root.intros.conversations.steps[4]" data-step="5" class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="toggleDetailsTab" :class="{ active: $root.detailsTab == 'profile' }"><info-circle-icon width="28" height="28"></info-circle-icon></button>
 			</div>
 		</div>
 

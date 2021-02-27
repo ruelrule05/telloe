@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBookingRequest extends FormRequest
@@ -13,7 +16,11 @@ class StoreBookingRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('show', $contact);
+
+        $service = Service::find($this->user_id);
+        return $this->user()->can('addBooking', $service);
     }
 
     /**

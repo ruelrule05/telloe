@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Requests\XeroSaveTenantRequest;
 use App\Http\Requests\XeroStoreInvoiceRequest;
 use App\Http\Requests\XeroUpdateInvoiceRequest;
 use App\Services\XeroService;
-use Illuminate\Http\Request;
 
 class XeroController extends Controller
 {
@@ -19,7 +20,7 @@ class XeroController extends Controller
 
     public function authenticate(Request $request)
     {
-        return response()->json(XeroService::authenticate($request));
+        return response(XeroService::authenticate($request));
     }
 
     public function callback(Request $request)

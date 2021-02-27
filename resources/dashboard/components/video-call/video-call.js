@@ -389,9 +389,10 @@ export default {
 		},
 
 		async addLocalStream() {
-			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(function(error) {
-				alert('Unable to capture your camera.');
-				console.error(error);
+			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(error => {
+				if (error) {
+					this.$toasted.error('Unable to capture your camera.');
+				}
 			});
 			if (streams && !this.localStream && this.$refs['cameraPreview']) {
 				this.localStream = streams;

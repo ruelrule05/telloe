@@ -218,6 +218,7 @@ export default {
 	},
 
 	created() {
+		this.$root.toggleKnowBase = false;
 		this.checkConversation().then(() => {
 			this.initChannel();
 		});
@@ -715,6 +716,10 @@ export default {
 				this.addFile({ target: { files: [file.file], value: file.file.name } });
 			});
 			this.pendingFiles = [];
+		},
+
+		toggleDetailsTab() {
+			this.$root.detailsTab = this.$root.detailsTab ? '' : 'profile';
 		}
 	}
 };

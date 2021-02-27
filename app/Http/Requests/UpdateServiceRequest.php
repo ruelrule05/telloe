@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateServiceRequest extends FormRequest
@@ -13,7 +15,8 @@ class UpdateServiceRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $service = Service::find($this->id);
+        return $this->user()->can('update', $service);
     }
 
     /**
@@ -28,7 +31,7 @@ class UpdateServiceRequest extends FormRequest
             'description' => 'nullable|string',
             'duration' => 'required|integer',
             'days' => 'required',
-            'default_rate' => 'numeric|numeric',
+            'default_rate' => 'numeric',
         ];
     }
 }

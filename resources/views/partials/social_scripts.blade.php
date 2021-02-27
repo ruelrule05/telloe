@@ -1,4 +1,5 @@
 
+@if(config('app.url') == 'production')
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-176150819-1"></script>
 <script>
@@ -28,3 +29,4 @@ src="https://www.facebook.com/tr?id=621261285253190&ev=PageView
 &noscript=1"/>
 </noscript>
 <!-- End Facebook Pixel Code -->
+@endif

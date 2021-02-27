@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\UserBlacklistedService;
 use App\Http\Requests\IndexUserBlackListedServiceRequest;
+use App\Http\Requests\StoreUserBlackListedServiceRequest;
+use App\Models\Service;
+use App\Models\UserBlacklistedService;
 
 class UserBlacklistedServiceService
 {
@@ -19,9 +21,20 @@ class UserBlacklistedServiceService
         return ;
     }
 
-    public static function store(Request $request)
+    public static function store(StoreUserBlackListedServiceRequest $request)
     {
-        return ;
+        $service = Service::find($request->service_id);
+
+        $userBlacklistedService = UserBlacklistedService::updateOrCreate(
+            [
+                'service_id' => $service->id,
+                'user_id' => $request->user_id
+            ],
+            [
+                'is_blacklisted' => $request->is_blacklisted
+            ]
+        );
+        return $userBlacklistedService;
     }
 
     public static function update($id, Request $request)

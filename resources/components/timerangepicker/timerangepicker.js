@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+
+import ChevronDownIcon from '../../icons/chevron-down';
 export default {
 	props: {
 		start: {
@@ -10,7 +12,9 @@ export default {
 			default: null
 		}
 	},
-
+	components: {
+		ChevronDownIcon
+	},
 	data: () => ({
 		time_start: null,
 		time_end: null

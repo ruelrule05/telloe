@@ -149,7 +149,9 @@ window.app = new Vue({
 		introJS: introJS,
 		appChannel: null,
 		userChannel: null,
-		showHelpWidget: true
+		showHelpWidget: true,
+
+		toggleKnowBase: false
 	},
 
 	computed: {

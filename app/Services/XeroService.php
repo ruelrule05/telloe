@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Contact;
-use Auth;
-use Illuminate\Http\Request;
 use App\Http\Requests\XeroSaveTenantRequest;
 use App\Http\Requests\XeroStoreInvoiceRequest;
 use App\Http\Requests\XeroUpdateInvoiceRequest;
 use App\Http\XeroClient;
+use App\Models\Contact;
+use Auth;
+use Illuminate\Http\Request;
 
 class XeroService
 {

@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use Auth;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Http\Requests\ZoomCreateMeetingRequest;
-use App\Http\Zoom;
 use App\Services\ZoomService;
+use Illuminate\Http\Request;
 
 class ZoomController extends Controller
 {
@@ -36,23 +31,6 @@ class ZoomController extends Controller
 
     public function createMeeting(ZoomCreateMeetingRequest $request)
     {
-        $booking = Booking::findOrFail($request->booking_id);
-        $this->authorize('createZoomLink', $booking);
-
-        unset($booking->user);
-
-        if ($booking->zoom_link) {
-            return response($booking->zoom_link);
-        }
-
-        $zoomLink = Zoom::createMeeting(Auth::user(), $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
-
-        if ($zoomLink) {
-            $booking->update([
-                'zoom_link' => $zoomLink
-            ]);
-        }
-
-        return response($zoomLink);
+        return response(ZoomService::createMeeting($request));
     }
 }

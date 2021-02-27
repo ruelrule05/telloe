@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use App\Http\Requests\WidgetAddRuleRequest;
+use App\Http\Requests\WidgetUpdateIntegrationRequest;
+use App\Models\Widget;
 use App\Models\WidgetRule;
 use Auth;
 use Illuminate\Http\Request;
-use App\Http\Requests\WidgetAddRuleRequest;
-use App\Http\Requests\WidgetUpdateIntegrationRequest;
 
 class WidgetService
 {

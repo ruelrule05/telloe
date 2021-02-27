@@ -1,0 +1,13 @@
+@font-face {
+	font-family: 'Monument Extended';
+	src: url('/fonts/monument-extended/MonumentExtended-Regular.otf') format('opentype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Monument Extended';
+	src: url('/fonts/monument-extended/MonumentExtended-UltraBold.otf') format('opentype');
+	font-weight: bold;
+	font-style: normal;
+}

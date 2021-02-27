@@ -1,32 +1,38 @@
 <template>
 	<div class="h-100 w-100">
-		<div class="row h-100 w-100 justify-content-center align-items-center mx-0" v-cloak>
-			<div class="col-md-10">
-				<vue-form-validate @submit="login">
-					<h1 class="h2 mb-1 font-heading">Log In</h1>
-					<div class="mb-3 text-muted">Continue to your account</div>
-					<div class="form-group">
-						<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" class="form-control form-control-lg" data-required placeholder="Email" />
-					</div>
-					<div class="form-group">
-						<input type="password" v-model="loginForm.password" class="form-control form-control-lg" data-required placeholder="Password" />
-					</div>
+		<div class="d-flex align-items-center h-100 w-100 justify-content-center align-items-center mx-0" v-cloak>
+			<div class="card auth-card">
+				<div class="card-body p-4">
+					<div class="p-2">
+						<img src="/logo.svg" height="18" />
+						<h4 class="text-primary font-heading mt-5 mb-4 font-weight-normal">WELCOME BACK!</h4>
+						<vue-form-validate @submit="login">
+							<div class="form-group mb-3">
+								<label class="small">Enter Your Email Address</label>
+								<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" class="form-control" data-required />
+							</div>
+							<div class="form-group">
+								<div class="d-flex align-items-center">
+									<label class="small">Enter Your Password</label>
+									<label class="small text-primary ml-auto cursor-pointer hover-underline">Forgot password?</label>
+								</div>
+								<input type="password" v-model="loginForm.password" class="form-control" data-required />
+							</div>
 
-					<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none">Log In</vue-button>
-				</vue-form-validate>
+							<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none">Let me in</vue-button>
+						</vue-form-validate>
 
-				<div class="d-flex mx-n1 mt-4">
-					<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.FacebookLogin" data-action="login"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
-					<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center" @click="$parent.Googlesignin"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
-				</div>
-
-				<div class="mt-3 font-size-14">
-					<!-- <button class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button> -->
-					<div>
-						<button type="button" class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'recover'">Forgot password?</button>
-						<div class="mt-1">
-							<button type="button" class="btn btn-link btn-sm text-body p-0" @click="$root.action = 'signup'">Don't have an account?</button>
+						<div class="d-flex align-items-center my-4">
+							<span>Or login with:</span>
+							<div class="ml-auto d-flex">
+								<button class="btn btn-white border border-primary btn-icon btn-rounded" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)"></FacebookAltIcon></button>
+								<button class="btn btn-white border border-primary btn-rounded ml-2" type="button" @click="$parent.Googlesignin" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)"></GoogleAltIcon></button>
+							</div>
 						</div>
+
+						<hr class="mb-4" />
+
+						<div class="text-center">Don't have an account? <span class="text-primary cursor-pointer hover-underline" @click="$root.action = 'signup'">Create one</span></div>
 					</div>
 				</div>
 			</div>
@@ -39,10 +45,10 @@
 /* global MEMBER */
 import VueFormValidate from '../../components/vue-form-validate.vue';
 import VueButton from '../../components/vue-button.vue';
-import FacebookIcon from '../../icons/facebook';
-import GoogleIcon from '../../icons/google';
+import FacebookAltIcon from '../../icons/facebook-alt.vue';
+import GoogleAltIcon from '../../icons/google-alt.vue';
 export default {
-	components: { VueFormValidate, VueButton, FacebookIcon, GoogleIcon },
+	components: { VueFormValidate, VueButton, FacebookAltIcon, GoogleAltIcon },
 	data: () => ({
 		contact: null,
 		member: null,

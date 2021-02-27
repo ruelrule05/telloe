@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +15,8 @@ class StorePendingSubscriptionRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('create_subscription', $contact);
     }
 
     /**

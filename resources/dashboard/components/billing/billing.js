@@ -4,10 +4,6 @@ import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Stripe from 'stripe-client';
 import CheckmarkIcon from '../../../icons/checkmark';
-import VueCardFormat from '../../../components/vue-credit-card-validation';
-import Vue from 'vue';
-Vue.use(VueCardFormat);
-
 export default {
 	components: {
 		VueButton,
@@ -86,14 +82,17 @@ export default {
 			Object.keys(this.cardForm.errors).forEach(k => (this.cardForm.errors[k] = ''));
 			let error = false;
 
+			// validate card number
 			if (!this.$cardFormat.validateCardNumber(this.cardForm.number)) {
 				this.cardForm.errors.number = error = true;
 			}
 
+			// validate card expiry
 			if (!this.$cardFormat.validateCardExpiry(this.cardForm.expiration)) {
 				this.cardForm.errors.expiration = error = true;
 			}
 
+			// validate card CVC
 			if (!this.$cardFormat.validateCardCVC(this.cardForm.cvc)) {
 				this.cardForm.errors.cvc = error = true;
 			}
@@ -101,7 +100,6 @@ export default {
 			if (!error && this.selectedPlan) {
 				this.paymentLoading = true;
 				var expiration = this.cardForm.expiration.split('/');
-				console.log(expiration);
 				this.cardForm.exp_month = parseInt(expiration[0].trim());
 				this.cardForm.exp_year = expiration[1].trim();
 				if (this.cardForm.exp_year.length === 2) {

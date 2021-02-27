@@ -2,24 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\StripeAPI;
-use App\Jobs\CreateStripeCustomer;
-use App\Models\Conversation;
-use App\Models\ConversationMember;
-use App\Models\Message;
-use App\Models\PasswordReset;
-use App\Models\Service;
-use App\Models\User;
-use App\Models\UserCustomField;
-use App\Models\Widget;
-use Auth;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
-use Image;
-use Mail;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginFacebookRequest;
 use App\Http\Requests\Auth\LoginGoogleRequest;
@@ -28,13 +10,69 @@ use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Requests\Auth\UpdateStripeAccountRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Requests\PasswordResetRequest;
+use App\Http\SocialiteHelper;
+use App\Http\StripeAPI;
+use App\Jobs\CreateStripeCustomer;
 use App\Mail\Welcome;
+use App\Models\Conversation;
+use App\Models\ConversationMember;
+use App\Models\Message;
+use App\Models\PasswordReset;
+use App\Models\Service;
+use App\Models\User;
+use App\Models\UserCustomField;
+use Auth;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
+use Mail;
 
 class AuthService
 {
+    public static function socialiteCallback($driver)
+    {
+        $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
+        if ($socialiteUser) {
+            $data = Arr::except($socialiteUser->user, ['id']);
+            $data['first_name'] = $data['first_name'] ?? $data['given_name'];
+            $data['last_name'] = $data['last_name'] ?? $data['family_name'];
+            $user = User::where('email', $data['email'])->first();
+            $driver_id = "{$driver}_id";
+            if ($user) {
+                if (! $user[$driver_id]) {
+                    $user->update([
+                        $driver_id => $socialiteUser->user['id']
+                    ]);
+                }
+            } else {
+                $time = time();
+                $profile_image = 'storage/profile-images/' . $time . '.jpeg';
+                Image::make($socialiteUser->getAvatar())->save(public_path($profile_image));
+                $data['username'] = self::generateUsername($data['first_name'], $data['last_name']);
+                $data[$driver_id] = $socialiteUser->user['id'];
+                $data['profile_image'] = "/$profile_image";
+                $user = User::create($data);
+                self::createInitialConversations($user);
+                Mail::queue(new Welcome($user));
+            }
+            Auth::login($user);
+        }
+
+        $authorized = Auth::check();
+        echo '
+        <script>
+            window.opener.postMessage({user: ' . json_encode(Auth::user()) . '});
+            window.close();
+        </script>';
+    }
+
     public static function get(Request $request, $last_online = true)
     {
-        $user = Auth::check() ? Auth::user()->load('widget.widgetRules', 'subscription', 'role')->makeVisible([
+        $user = Auth::check() ? Auth::user()->load('subscription', 'role')->makeVisible([
             'google_calendars',
             'google_calendars',
             'google_calendar_id',
@@ -89,11 +127,7 @@ class AuthService
                 self::createPresetService($user);
                 self::createInitialConversations($user);
                 self::createDefaultField($user);
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
+
                 return $user;
             } else {
                 return abort(403, 'Invalid password');
@@ -119,9 +153,6 @@ class AuthService
         ]);
         $user->password = bcrypt($request->password);
         $user->save();
-        $widget = Widget::create([
-            'user_id' => $user->id
-        ]);
 
         Auth::login($user);
 
@@ -228,7 +259,11 @@ class AuthService
         }
 
         if ($request->profile_image_file) {
-            $destinationPath = 'storage/profile-images/';
+            $destinationPath = public_path() . '/storage/profile-images/';
+
+            if (! file_exists($destinationPath)) {
+                mkdir($destinationPath, 777, true);
+            }
             $fileName = time();
 
             $img = Image::make($request->profile_image_file);
@@ -284,18 +319,9 @@ class AuthService
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
 
                 Mail::queue(new Welcome($user));
                 self::createDefaultField($user);
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
             }
 
             Auth::login($user);
@@ -337,17 +363,9 @@ class AuthService
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
+
                 Mail::queue(new Welcome($user));
                 self::createDefaultField($user);
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
             }
             Auth::login($user);
 

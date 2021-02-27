@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Note;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateNoteRequest extends FormRequest
@@ -13,7 +14,8 @@ class UpdateNoteRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $note = Note::find($this->user_id);
+        return $this->user()->can('update', $note);
     }
 
     /**

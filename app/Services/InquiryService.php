@@ -3,11 +3,16 @@
 namespace App\Services;
 
 use \Facebook\Facebook;
+use App\Models\Inquiry;
+use App\Models\Message;
 use Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class InquiryService
 {
+    use AuthorizesRequests;
+
     public static function index(Request $request)
     {
         $inquiries = [];
@@ -18,9 +23,45 @@ class InquiryService
         return $inquiries;
     }
 
-    public static function show($id)
+    public function show($id)
     {
-        return ;
+        $inquiry = Inquiry::with('user', 'inquiryMedia', 'inquiryType')->findOrFail($id);
+        $this->authorize('show', $inquiry);
+
+        return $inquiry;
+    }
+
+    public function postMessage($id, Request $request)
+    {
+        $inquiry = Inquiry::findOrFail($id);
+        $this->authorize('postMessage', $inquiry);
+
+        $message = $request->message;
+        $preview = '';
+        if ($request->type == 'video' && $request->hasFile('video') && $request->file('video')->isValid()) {
+            if ($request->hasFile('video') && $request->file('video')->isValid()) {
+                $extension = $request->video->extension();
+                $fileName = 'video-' . time() . '.' . $extension;
+                $request->file('video')->storeAs('public/message-media/', $fileName);
+                $destination = 'storage/message-media/' . $fileName;
+                $message = '/' . $destination;
+            }
+            if ($request->hasFile('videoPreview') && $request->file('videoPreview')->isValid()) {
+                $extension = $request->videoPreview->extension();
+                $fileName = 'preview-' . time() . '.' . $extension;
+                $request->file('videoPreview')->storeAs('public/message-media/', $fileName);
+                $destination = 'storage/message-media/' . $fileName;
+                $preview = '/' . $destination;
+            }
+        }
+        $message = Message::create([
+            'inquiry_id' => $inquiry->id,
+            'user_id' => Auth::user()->id,
+            'message' => $message,
+            'type' => $request->type,
+            'preview' => $preview,
+        ]);
+        return response()->json($message->load('user'));
     }
 
     public static function store(Request $request)

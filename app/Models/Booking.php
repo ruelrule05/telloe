@@ -18,9 +18,9 @@ class Booking extends BaseModel
         'notified_24' => 'boolean',
     ];
 
-    public function user()
+    public function bookingUsers()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(BookingUser::class);
     }
 
     public function service()

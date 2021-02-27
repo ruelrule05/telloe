@@ -400,6 +400,25 @@
 			</vue-form-validate>
 		</modal>
 
+		<modal ref="deleteModal" :close-button="false">
+			<template v-if="contact">
+				<h5 class="font-heading text-center">Delete Contact</h5>
+				<p class="text-center mt-3">
+					Are you sure to delete contact
+					<strong>{{ contact.contact_user.full_name.trim() || $parent.selectedContact.contact_user.email }}</strong>
+					?
+					<br />
+					<span class="text-danger">This action cannot be undone</span>
+				</p>
+				<div class="d-flex justify-content-end">
+					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">Cancel</button>
+					<button class="btn btn-danger ml-auto" type="button" @click="deleteContactMember(contact)">
+						Delete
+					</button>
+				</div>
+			</template>
+		</modal>
+
 		<add ref="add" :services="availableServices" @hide="getContact()" :contactID="contact.id"></add>
 	</div>
 </template>

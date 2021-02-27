@@ -9,16 +9,22 @@
 				<chevron-left-icon width="48" height="48" transform="scale(1.2)" fill="white" class="position-absolute-center"></chevron-left-icon>
 			</div>
 			<div class="flex-grow-1 position-relative">
-				<template v-if="file.type == 'image'">
-					<div v-if="!file.loaded" class="position-absolute-center w-100 h-100 image-loader">
-						<div class="position-absolute-center">
-							<div class="spinner-border spinner-border-sm text-white"></div>
-						</div>
-					</div>
-					<v-lazy-image :src="file.source" class="position-absolute-center" :class="{ 'opacity-0': !file.loaded }" @load="imageLoaded(file)" />
+				<template v-if="fileExtension == 'svg'">
+					<img :src="svg" class="position-absolute-center" />
 				</template>
-				<video controls controlsList="nodownload" disablePictureInPicture v-else-if="file.type == 'video'" :poster="file.preview" :src="file.source" class="position-absolute-center outline-0 mw-100 mh-100"></video>
-				<waveplayer v-else-if="file.type == 'audio'" :source="file.source" :duration="file.metadata.duration" class="position-absolute-center bg-white p-1 rounded"></waveplayer>
+				<div v-else>
+					<template v-if="file.type == 'image'">
+						<div v-if="!file.loaded" class="position-absolute-center w-100 h-100 image-loader">
+							<div class="position-absolute-center">
+								<div class="spinner-border spinner-border-sm text-white"></div>
+							</div>
+						</div>
+
+						<v-lazy-image :src="file.source" class="position-absolute-center" :class="{ 'opacity-0': !file.loaded }" @load="imageLoaded(file)" />
+					</template>
+					<video controls controlsList="nodownload" disablePictureInPicture v-else-if="file.type == 'video'" :poster="file.preview" :src="file.source" class="position-absolute-center outline-0 mw-100 mh-100"></video>
+					<waveplayer v-else-if="file.type == 'audio'" :source="file.source" :duration="file.metadata.duration" class="position-absolute-center bg-white p-1 rounded"></waveplayer>
+				</div>
 			</div>
 			<div class="px-5 position-relative file-arrow cursor-pointer" :class="{ disabled: !hasNext }" @click="goToNext()">
 				<chevron-right-icon width="48" height="48" transform="scale(1.2)" fill="white" class="position-absolute-center"></chevron-right-icon>

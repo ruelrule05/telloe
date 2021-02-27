@@ -2,13 +2,22 @@
 
 namespace App\Services;
 
+use App\Http\Requests\IndexNoteRequest;
+use App\Models\Conversation;
+use App\Models\Note;
+use Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class NoteService
 {
-    public static function index()
+    use AuthorizesRequests;
+
+    public static function index(IndexNoteRequest $request)
     {
-        return ;
+        $conversation = Conversation::withTrashed()->findOrFail($request->conversation_id);
+
+        return $conversation->notes;
     }
 
     public static function show($id)
@@ -18,16 +27,34 @@ class NoteService
 
     public static function store(Request $request)
     {
-        return ;
+        $conversation = Conversation::findOrFail($request->conversation_id);
+
+        $note = Note::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => Auth::user()->id,
+            'notes' => $request->notes,
+            'tags' => []
+        ]);
+
+        return $note;
     }
 
     public static function update($id, Request $request)
     {
-        return ;
+        $note = Note::findOrFail($id);
+
+        $note->update([
+            'notes' => $request->notes,
+            'tags' => $request->tags,
+        ]);
+        return ['success' => true];
     }
 
-    public static function delete($id)
+    public function delete($id)
     {
-        return ;
+        $note = Note::findOrFail($id);
+        $this->authorize('delete', $note);
+        $note->delete();
+        return ['success' => true];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreContactNoteRequest extends FormRequest
@@ -13,7 +15,8 @@ class StoreContactNoteRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('show', $contact);
     }
 
     /**

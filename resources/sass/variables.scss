@@ -11,18 +11,18 @@ $container-max-widths: (
 $grid-gutter-width: 40px;
 
 // Colors
-$primary: #5a5adf;
-$secondary: #818ca1;
+$primary: #3167e3;
+$secondary: #fae6e2;
 $orange: #ff5d47;
 $facebook: #4267b2;
 $google: #dc3e29;
-$light: #f0f2f5;
-$dark: #5c6570;
+$light: #838ea6;
+$dark: #282f3e;
 $blue: #77b0ea;
 $green: #39ceb0;
 
-$border-color: rgba($secondary, 0.3);
-$body-color: $black;
+$border-color: rgba($dark, 0.1);
+$body-color: #39445b;
 $nav-pills-link-active-bg: rgba($primary, 0.15);
 $nav-pills-link-active-color: $primary;
 $theme-colors: map-merge(
@@ -42,16 +42,19 @@ $theme-colors: map-merge(
 		'gray-400': $gray-400,
 		'gray-500': $gray-500,
 		'blue': $blue,
-		'green': $green
+		'green': $green,
+		'dark': $dark
 	)
 );
 
+/* Card */
 $card-border-width: 0;
+$card-border-radius: 1rem;
+
 $link-color: #1e70bf;
 $nav-link-padding-y: 0.85rem;
-$input-height-lg: calc(#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 3} + #{$input-height-border});
+
 $input-font-size-lg: 1rem;
-$font-weight-bold: 600;
 $dropdown-padding-y: 0.45rem;
 $close-font-size: 2rem;
 $close-font-weight: 200;
@@ -61,7 +64,7 @@ $dropdown-divider-margin-y: 0.45rem;
 $enable-caret: false;
 $dropdown-border-width: 0;
 
-$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+$font-family-base: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 $headings-font-weight: 600;
 
 $alert-padding-y: 0.35rem;
@@ -99,12 +102,13 @@ $btn-line-height: $line-height-base;
 $btn-line-height-sm: $line-height-base;
 $btn-default-color: $text-color;
 $btn-padding-x-lg: 1.2rem;
-$btn-font-size-lg: 1.05rem;
+$btn-padding-y-lg: 0.7rem;
+$btn-font-size-lg: 0.75rem;
 $btn-box-shadow: 5px;
 $btn-focus-box-shadow: 0;
-$btn-border-radius-sm: 0.4rem;
-$btn-border-radius: 0.48rem;
-$btn-border-radius-lg: 0.6rem;
+$btn-border-radius-sm: 3rem;
+$btn-border-radius: 3rem;
+$btn-border-radius-lg: 3rem;
 $btn-padding-y: 0.5rem;
 $btn-padding-x: 0.75rem;
 $btn-padding-y-sm: 0.25rem;
@@ -112,11 +116,13 @@ $btn-font-size: $font-size-base;
 $btn-focus-width: 0;
 $btn-transition: color 0.1s ease-in-out, background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 $input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
-$input-btn-font-size: $font-size-base;
+$input-btn-font-size: 0.75rem;
 $input-btn-focus-color: $primary;
 $input-btn-focus-width: 0.05rem;
 $btn-font-weight: 500;
 $btn-border-width: 0;
+$input-btn-padding-y: 0.3rem;
+$input-btn-padding-x: 0.7rem;
 
 // Brands
 $brand-primary: #3f51b5;
@@ -145,29 +151,31 @@ $badge-padding-y: 0.15rem;
 $badge-border-radius: $border-radius;
 
 // Navbar
-$navbar-default-bg: #fff;
+$navbar-default-bg: rgb(58, 45, 45);
 $navbar-brand-padding-y: 0;
 $navbar-light-color: #212b35;
 $navbar-brand-font-size: inherit;
 $enable-validation-icons: false;
 $enable-responsive-font-size: true;
-
 $navbar-nav-link-padding-x: 1.25rem;
 
 // Inputs
+$input-padding-y: 0.3rem;
 $input-color: #000;
 $input-focus-color: #000;
-$input-border: lighten($text-color, 40%);
 $input-border-focus: lighten($brand-primary, 25%);
 $input-color-placeholder: lighten($text-color, 30%);
-$input-border-radius: $border-radius;
+$input-border-radius: 0.4rem;
 $input-border-radius-lg: $border-radius-lg;
 $input-border-radius-sm: $border-radius-sm;
-$input-border-color: $border-color;
+$input-border-color: #caced6;
 $input-focus-border-color: $primary;
 $input-focus-width: 0;
 $input-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
 $input-placeholder-color: $text-muted;
+$input-height: add($input-line-height * 1em, add($input-padding-y * 2.5, $input-height-border, false));
+$input-height-lg: calc(#{$input-line-height-lg * 1em} + #{$input-btn-padding-y-lg * 3} + #{$input-height-border});
+$input-font-size: $font-size-base;
 
 // Spinners
 $spinner-width: 2rem;
@@ -204,4 +212,21 @@ $viewport_heights: (
 	'80vh': 80vh,
 	'90vh': 90vh,
 	'100vh': 100vh
+);
+$spacer: 1.25rem;
+$spacers: (
+	0: 0,
+	1: (
+		$spacer * 0.25
+	),
+	2: (
+		$spacer * 0.5
+	),
+	3: $spacer,
+	4: (
+		$spacer * 1.5
+	),
+	5: (
+		$spacer * 3
+	)
 );

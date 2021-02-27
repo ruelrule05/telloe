@@ -103,7 +103,7 @@ export default {
 	}),
 
 	watch: {
-		isShrinked: function (value) {
+		isShrinked: function(value) {
 			if (value) {
 				document.querySelector('.modal-backdrop').style.display = 'none';
 			} else {
@@ -114,7 +114,7 @@ export default {
 				this.$refs['modal'].style.visibility = 'visible';
 			}
 		},
-		'$root.appChannel': function () {
+		'$root.appChannel': function() {
 			this.$root.appChannel.listenForWhisper('liveCallIncoming', data => {
 				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
 				if (conversation) {
@@ -138,7 +138,7 @@ export default {
 			});
 		},
 
-		'$root.auth': function (value) {
+		'$root.auth': function(value) {
 			if (value) {
 				this.username = this.guid();
 				this.getXirsys();
@@ -267,8 +267,8 @@ export default {
 		},
 
 		async addLocalStream() {
-			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(function (error) {
-				alert('Unable to capture your camera.');
+			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(error => {
+				this.$toasted.error('Unable to capture your camera.');
 				console.error(error);
 			});
 			if (streams && !this.localStream && this.$refs['cameraPreview']) {
@@ -328,7 +328,9 @@ export default {
 			this.conversation = conversation;
 			this.initConnection();
 			this.action = 'outgoing';
-			$(this.$refs['modal']).modal({ keyboard: false, backdrop: 'static' }).modal('show');
+			$(this.$refs['modal'])
+				.modal({ keyboard: false, backdrop: 'static' })
+				.modal('show');
 			this.isVideoStopped = !camera;
 			this.isIncoming = false;
 			clearTimeout(this.callTimeout);
@@ -349,7 +351,9 @@ export default {
 			this.open = true;
 			if (!this.$root.muted) this.notification_sound.play();
 			this.isIncoming = true;
-			$(this.$refs['modal']).modal({ keyboard: false, backdrop: 'static' }).modal('show');
+			$(this.$refs['modal'])
+				.modal({ keyboard: false, backdrop: 'static' })
+				.modal('show');
 			this.action = 'incoming';
 		},
 
@@ -412,7 +416,7 @@ export default {
 			$(this.$refs['remoteStreams']).empty();
 			if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
 			this.connections.forEach(connection => {
-				connection.localStream.getTracks().forEach(function (track) {
+				connection.localStream.getTracks().forEach(function(track) {
 					track.stop();
 				});
 				connection.close();
@@ -567,7 +571,7 @@ export default {
 		},
 
 		async stopShareScreen() {
-			this.localStream.getVideoTracks().forEach(function (track) {
+			this.localStream.getVideoTracks().forEach(function(track) {
 				track.stop();
 			});
 			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
@@ -598,7 +602,7 @@ export default {
 				console.log(e);
 			});
 			if (screenStreams) {
-				this.localStream.getVideoTracks().forEach(function (track) {
+				this.localStream.getVideoTracks().forEach(function(track) {
 					track.stop();
 				});
 				this.localStream = screenStreams;
@@ -659,7 +663,7 @@ export default {
 
 		stopLocalStream() {
 			if (this.localStream) {
-				this.localStream.getTracks().forEach(function (track) {
+				this.localStream.getTracks().forEach(function(track) {
 					track.stop();
 				});
 				this.localStream = null;

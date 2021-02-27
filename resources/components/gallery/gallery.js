@@ -1,4 +1,4 @@
-import VLazyImage from "v-lazy-image";
+import VLazyImage from 'v-lazy-image';
 import Waveplayer from '../../components/waveplayer';
 import CloseIcon from '../../icons/close';
 import ChevronLeftIcon from '../../icons/chevron-left';
@@ -11,33 +11,47 @@ export default {
 		CloseIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
-		VolumeMidIcon,
+		VolumeMidIcon
 	},
 
 	props: {
 		conversation: {
 			type: Object,
-			required: true,
+			required: true
 		},
 
 		file: {
-			type: Object,
-		},
+			type: Object
+		}
 	},
 
 	data: () => ({
+		svg: '',
 		open: false,
+		fileExtension: ''
 	}),
 
 	watch: {
-		file: function(value) {
-			this.open = value ? true : false;
-		},
+		file: async function(value) {
+			if (value) {
+				this.fileExtension = await value.metadata.filename.split('.').pop();
+				this.svg = new Image();
+				if (this.fileExtension == 'svg') {
+					this.svg = value.preview;
+					this.open = this.svg ? true : false;
+				} else {
+					this.svg = '';
+					this.open = value ? true : false;
+				}
+			} else {
+				return;
+			}
+		}
 	},
 
 	computed: {
-		media () {
-			if(!this.conversation.files) return [];
+		media() {
+			if (!this.conversation.files) return [];
 			return this.conversation.files.data.filter(message => {
 				return ['image', 'video', 'audio'].find(x => x == message.type);
 			});
@@ -53,7 +67,7 @@ export default {
 			let media = this.media;
 			let next = media.findIndex(x => x.id == (this.file || {}).id);
 			return next + 1 < media.length;
-		},
+		}
 	},
 
 	mounted() {},
@@ -66,13 +80,13 @@ export default {
 		goToNext() {
 			let media = this.media;
 			let index = media.findIndex(x => x.id == (this.file || {}).id);
-			if(index + 1 < media.length) this.$parent.selectedFile = media[index + 1];
+			if (index + 1 < media.length) this.$parent.selectedFile = media[index + 1];
 		},
 
 		goToPrev() {
 			let media = this.media;
 			let index = media.findIndex(x => x.id == (this.file || {}).id);
-			if(index > 0) this.$parent.selectedFile = media[index - 1];
+			if (index > 0) this.$parent.selectedFile = media[index - 1];
 		},
 
 		close() {
@@ -81,5 +95,5 @@ export default {
 				this.$parent.selectedFile = null;
 			}, 150);
 		}
-	},
+	}
 };

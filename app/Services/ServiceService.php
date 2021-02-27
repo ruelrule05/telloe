@@ -3,14 +3,19 @@
 namespace App\Services;
 
 use App\Http\Requests\StoreServiceRequest;
+use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Contact;
 use App\Models\Member;
 use App\Models\Service;
 use Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class ServiceService
 {
+    use AuthorizesRequests;
+
     public static function index()
     {
         $auth_user = Auth::user();
@@ -21,9 +26,33 @@ class ServiceService
         return $services;
     }
 
-    public static function show($id)
+    public function show(Request $request, Service $service)
     {
-        return ;
+        $this->authorize('show', $service);
+        $service->load('assignedServices.user', 'user');
+        if ($request->single) {
+            return response($service->timeslots($request->date));
+        }
+
+        $timeslots = [];
+        if ($request->date) {
+            $i = 1;
+            $startDate = Carbon::parse($request->date);
+            while ($i <= 7) {
+                $date = $startDate->format('Y-m-d');
+                $dateLabel = $startDate->format('l');
+                $timeslots[$dateLabel] = $service->timeslots($date);
+                $startDate = $startDate->addDays(1);
+                $i++;
+                if ($request->single) {
+                    break;
+                }
+            }
+            $service = $service->toArray();
+        }
+        $service['timeslots'] = $timeslots;
+
+        return $service;
     }
 
     public static function store(StoreServiceRequest $request)
@@ -36,14 +65,30 @@ class ServiceService
         return $service;
     }
 
-    public static function update($id, Request $request)
+    public static function update($id, UpdateServiceRequest $request)
     {
-        return ;
+        $service = Service::findOrFail($id);
+
+        // unset($service->user);
+
+        if ($request->in_widget) {
+            Service::where('id', '<>', $service->id)->where('in_widget', true)->update([
+                'in_widget' => false
+            ]);
+        }
+
+        $service->update($request->all());
+
+        return $service;
     }
 
-    public static function delete($id)
+    public function destroy($id)
     {
-        return ;
+        $service = Service::findOrFail($id);
+        $this->authorize('delete', $service);
+        $service->delete();
+
+        return ['deleted' => true];
     }
 
     public static function contactServices()

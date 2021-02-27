@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Mail\NewUser;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Http;
 use Mail;
-use App\Mail\NewUser;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -34,7 +34,8 @@ class User extends Authenticatable implements JWTSubject
         'dial_code',
         'profile_image',
         'facebook_id',
-        'google_id'
+        'google_id',
+        'default_availability'
     ];
 
     /**
@@ -82,6 +83,7 @@ class User extends Authenticatable implements JWTSubject
         'xero_token' => 'array',
         'zoom_token' => 'array',
         'phone' => 'nullable|int',
+        'default_availability' => 'array'
     ];
 
     public function subscription()
@@ -105,11 +107,6 @@ class User extends Authenticatable implements JWTSubject
         $last_name = $this->attributes['last_name'] ?? $this->first_name;
         $email = $this->attributes['email'] ?? $this->email;
         return $first_name || $last_name ? "$first_name $last_name" : $email;
-    }
-
-    public function chatbots()
-    {
-        return $this->hasMany(Chatbot::class)->orderBy('created_at', 'DESC');
     }
 
     public function bookings()

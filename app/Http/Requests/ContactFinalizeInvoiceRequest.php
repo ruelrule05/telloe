@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContactFinalizeInvoiceRequest extends FormRequest
@@ -13,7 +14,8 @@ class ContactFinalizeInvoiceRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('finalize_invoice', $contact);
     }
 
     /**

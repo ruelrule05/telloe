@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\PendingInvoice;
 use App\Http\Requests\StorePendingInvoiceRequest;
+use App\Models\PendingInvoice;
 use App\Services\PendingInvoiceService;
 
 class PendingInvoiceController extends Controller
@@ -21,9 +20,7 @@ class PendingInvoiceController extends Controller
 
     public function destroy(PendingInvoice $pendingInvoice)
     {
-        $this->authorize('delete', $pendingInvoice);
-        $pendingInvoice->delete();
-
-        return response()->json(['deleted' => true]);
+        $pendingInvoiceService = new NotificationService();
+        return response($pendingInvoiceService->deestroy($pendingInvoice));
     }
 }

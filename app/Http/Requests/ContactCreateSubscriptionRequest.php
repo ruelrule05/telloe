@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
+use App\Models\Service;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContactCreateSubscriptionRequest extends FormRequest
@@ -13,7 +15,11 @@ class ContactCreateSubscriptionRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('create_subscription', $contact);
+
+        $service = Service::find($this->user_id);
+        return $this->user()->can('create_subscription', $service);
     }
 
     /**

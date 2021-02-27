@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Conversation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class IndexNoteRequest extends FormRequest
@@ -13,7 +14,8 @@ class IndexNoteRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Conversation::find($this->user_id);
+        return $this->user()->can('getNotes', $contact);
     }
 
     /**

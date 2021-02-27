@@ -102,7 +102,7 @@
 											<td v-for="(date, dateIndex) in tabDates" :key="dateIndex" class="px-2 py-0 rounded-0 position-relative">
 												<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
 													<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-														<div v-tooltip.top="timezoneTooltip(selectedService.user.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none', { selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }]" @click="setSelectedDateAndTimeslot(date, timeslot)">
+														<div v-tooltip.top="timezoneTooltip(selectedservice.coach.timezone, timeslot)" :key="dateIndex" class="py-2 position-relative rounded my-2 timeslot-button" :class="[timeslot.is_available ? 'cursor-pointer bg-primary text-white' : 'disabled bg-gray-400 pointer-events-none', { selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }]" @click="setSelectedDateAndTimeslot(date, timeslot)">
 															<span class="selected-checkmark position-absolute">
 																<checkmark-icon height="30" width="30" class="fill-green"></checkmark-icon>
 															</span>

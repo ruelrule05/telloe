@@ -4,10 +4,13 @@ namespace App\Services;
 
 use App\Models\Notification;
 use Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class NotificationService
 {
+    use AuthorizesRequests;
+
     public static function index(Request $request)
     {
         $notifications = Notification::where('is_read', false)->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
@@ -15,17 +18,24 @@ class NotificationService
         return $notifications;
     }
 
-    public static function show($id)
+    public function show($id, Request $request)
     {
-        return ;
+        $notification = Notification::findOrFail($id);
+        $this->authorize('show', $notification);
+        return $notification;
+    }
+
+    public function update($id, Request $request)
+    {
+        $notification = Notification::findOrFail($id);
+        $this->authorize('update', $notification);
+        $notification->update([
+            'is_read' => true,
+        ]);
+        return ['success' => true];
     }
 
     public static function store(Request $request)
-    {
-        return ;
-    }
-
-    public static function update($id, Request $request)
     {
         return ;
     }

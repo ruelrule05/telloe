@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBookingLinkRequest extends FormRequest
@@ -11,9 +13,10 @@ class StoreBookingLinkRequest extends FormRequest
      *
      * @return array
      */
-    public function authorize()
+    public function authorize(User $user, Contact $contact)
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('show', $contact);
     }
 
     /**

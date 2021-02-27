@@ -33,11 +33,24 @@ export default {
 	},
 
 	beforeDestroy() {
-		if (this.streams) {
-			this.streams.getTracks().forEach(function(track) {
-				track.stop();
+		navigator.mediaDevices
+			.getUserMedia({ audio: true })
+			.then(stream => {
+				if (stream) {
+					if (this.streams.getTracks) {
+						this.streams.getTracks().forEach(function(track) {
+							track.stop();
+						});
+					} else {
+						this.$toasted.error('User Cancelled...');
+					}
+				}
+			})
+			.catch(error => {
+				if (error) {
+					this.$toasted.error('No Device Found...');
+				}
 			});
-		}
 	},
 
 	mounted() {

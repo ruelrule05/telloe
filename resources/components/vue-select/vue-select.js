@@ -142,6 +142,7 @@ export default {
 
 	created() {
 		this.selected_value = this.value;
+		this.search = this.select_placeholder;
 	},
 
 	mounted() {

@@ -1,12 +1,15 @@
 @import '../../sass/variables';
-.btn-white{
+.btn-white {
 	border-top-right-radius: ($border-radius - 1) !important;
 	border-bottom-right-radius: ($border-radius - 1) !important;
 }
-.label{
+.label {
 	border-top-left-radius: ($border-radius - 1) !important;
 	border-bottom-left-radius: ($border-radius - 1) !important;
 }
-.dropdown-menu{
+.dropdown-menu {
 	max-height: 250px;
+}
+.btn {
+	font-family: $font-family-base;
 }

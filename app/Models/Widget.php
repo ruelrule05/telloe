@@ -19,7 +19,6 @@ class Widget extends BaseModel
         'updated_at'
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -49,7 +48,6 @@ class Widget extends BaseModel
     {
         return $this->belongsTo(WidgetType::class);
     }
-
 
     public function bookings()
     {

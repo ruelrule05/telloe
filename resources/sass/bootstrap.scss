@@ -1,4 +1,5 @@
-@import '../../public/fonts/avenir-next';
+@import '../../public/fonts/monument-extended';
+@import '../../public/fonts/manrope';
 @import 'node_modules/bootstrap/scss/functions';
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
@@ -31,12 +32,13 @@
 
 * {
 	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	font-smoothing: antialiased;
+	// -webkit-font-smoothing: antialiased;
+	// -moz-osx-font-smoothing: grayscale;
+	// font-smoothing: antialiased;
 }
 ::-webkit-scrollbar {
-	width: 7px;
+	width: 5px;
+	padding: 20px;
 }
 ::-webkit-scrollbar-track {
 	background: transparent;
@@ -45,7 +47,7 @@
 	background: #888;
 	border-radius: 15px;
 	background-clip: padding-box;
-	border: 10px solid transparent;
+	border: 8px solid transparent;
 }
 *::-webkit-scrollbar-thumb {
 	background: #888;
@@ -180,10 +182,15 @@
 .opacity-0 {
 	opacity: 0 !important;
 }
+.opacity-40 {
+	opacity: 40% !important;
+}
 [v-cloak] {
 	opacity: 0;
 }
 .btn {
+	text-transform: uppercase;
+	font-family: 'Monument Extended', sans-serif;
 	.spinner {
 		position: absolute;
 		z-index: 1;
@@ -207,8 +214,7 @@
 }
 
 .font-heading {
-	font-family: 'Avenir Next', sans-serif;
-	letter-spacing: -0.025rem;
+	font-family: 'Monument Extended', sans-serif;
 }
 .font-family-base {
 	font-family: $font-family-base !important;
@@ -345,4 +351,10 @@ label {
 }
 .line-height-base {
 	line-height: $line-height-base !important;
+}
+
+.hover-underline {
+	&:hover {
+		text-decoration: underline !important;
+	}
 }

@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Http\Requests\StorePendingInvoiceRequest;
 use App\Models\PendingInvoice;
 use Auth;
-use App\Http\Requests\StorePendingInvoiceRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PendingInvoiceService
 {
+    use AuthorizesRequests;
+
     public static function index()
     {
         $pendingInvoices = PendingInvoice::with('contact.contactUser')->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
@@ -34,8 +37,11 @@ class PendingInvoiceService
         return ;
     }
 
-    public static function delete($id)
+    public function delete(PendingInvoice $pendingInvoice)
     {
-        return ;
+        $this->authorize('delete', $pendingInvoice);
+        $pendingInvoice->delete();
+
+        return ['deleted' => true];
     }
 }

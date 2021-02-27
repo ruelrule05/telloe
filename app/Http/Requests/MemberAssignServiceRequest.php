@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Member;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MemberAssignServiceRequest extends FormRequest
@@ -13,7 +15,8 @@ class MemberAssignServiceRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $member = Member::find($this->member_user_id);
+        return $this->user()->can('assignService', $member);
     }
 
     /**

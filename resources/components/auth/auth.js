@@ -63,9 +63,14 @@ export default {
 			let messageEvent = eventMethod == 'attachEvent' ? 'onmessage' : 'message';
 			eventer(
 				messageEvent,
-				function(e) {
-					if (e.data.authorized) {
-						window.location.replace('/dashboard/bookings/calendar');
+				e => {
+					if (e.data.user) {
+						if (this.$root.action == 'login') {
+							window.location.replace('/dashboard/bookings/calendar');
+						} else if (this.$root.action == 'signup') {
+							this.$root.auth = e.data.user;
+							this.$root.signupStep = 1;
+						}
 					}
 				},
 				false

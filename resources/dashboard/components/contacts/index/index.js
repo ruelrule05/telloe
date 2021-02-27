@@ -123,6 +123,12 @@ export default {
 	watch: {
 		ready: function(value) {
 			this.$root.contentloading = !value;
+		},
+
+		query: function(value) {
+			if (!value) {
+				this.getContacts();
+			}
 		}
 	},
 

@@ -2,17 +2,20 @@
 
 namespace App\Services;
 
+use App\Http\Requests\StoreConversationRequest;
 use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
 use App\Models\Member;
 use App\Models\User;
 use Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreConversationRequest;
 
 class ConversationService
 {
+    use AuthorizesRequests;
+
     public static function index()
     {
         $conversations = Conversation::with('user', 'members.user')
@@ -29,9 +32,27 @@ class ConversationService
         return $conversations;
     }
 
-    public static function show($id)
+    public function show($id)
     {
-        return ;
+        $conversation = Conversation::withTrashed()->with('contact')->where(function ($query) {
+            $query->has('members.user')->orHas('contact');
+        })->with('user.services', 'members.user')->findOrfail($id);
+        $this->authorize('show', $conversation);
+
+        //if ($request->is_read) :
+        // set is_read of opposite sender
+        $conversation->messages()
+                ->where(function ($query) {
+                    $query->where('user_id', '<>', Auth::user()->id)
+                        ->orWhereNull('user_id');
+                })
+                ->where('is_read', 0)
+                ->update(['is_read' => 1]);
+        //endif;
+
+        $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20)->withPath('/dashboard/bookings/services/' . $conversation->id);
+
+        return $conversation;
     }
 
     public static function store(StoreConversationRequest $request)
@@ -96,9 +117,45 @@ class ConversationService
         return $conversation->load('members.user');
     }
 
-    public static function update($id, Request $request)
+    public function update($id, Request $request)
     {
-        return ;
+        $conversation = Conversation::findOrfail($id);
+        $this->authorize('update', $conversation);
+
+        $custom_fields = [];
+        foreach ($request->custom_fields as $custom_field) {
+            if ($custom_field['name'] && $custom_field['value'] && isset($custom_field['is_visible'])) {
+                $custom_fields[] = $custom_field;
+            }
+        }
+
+        $archive_users = $conversation->archive_users;
+        if ($request->archive) {
+            if (! in_array(Auth::user()->id, $archive_users)) {
+                $archive_users[] = Auth::user()->id;
+            }
+        } else {
+            $archive_users = array_values(array_diff($archive_users, [Auth::user()->id]));
+        }
+
+        $conversation->archive_users = $archive_users;
+        $conversation->save();
+
+        $conversation->update([
+            'name' => $request->name,
+            'tags' => $request->tags,
+            'custom_fields' => $custom_fields,
+        ]);
+
+        return $conversation;
+    }
+
+    public function files($id)
+    {
+        $conversation = Conversation::withTrashed()->findOrFail($id);
+        $this->authorize('show', $conversation);
+        $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/bookings/services/' . $conversation->id);
+        return $files;
     }
 
     public static function delete($id)

@@ -1,6 +1,7 @@
 require('./bootstrap');
 
 import 'bootstrap/js/dist/collapse';
+import 'bootstrap/js/dist/dropdown';
 import RangeSlider from 'vue-range-slider';
 import 'vue-range-slider/dist/vue-range-slider.css';
 import Auth from '../components/auth/auth.vue';
@@ -23,7 +24,8 @@ new Vue({
 		seats: 10,
 		invite_token: null,
 		member_invite_token: null,
-		email: ''
+		email: '',
+		signupStep: 0
 	},
 
 	watch: {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Booking;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ZoomCreateMeetingRequest extends FormRequest
@@ -13,7 +14,8 @@ class ZoomCreateMeetingRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $booking = Booking::find($this->user_id);
+        return $this->user()->can('createZoomLink', $booking);
     }
 
     /**

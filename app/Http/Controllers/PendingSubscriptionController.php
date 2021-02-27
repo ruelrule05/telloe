@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Contact;
-use App\Models\PendingSubscription;
-use Auth;
 use App\Http\Requests\StorePendingSubscriptionRequest;
+use App\Models\PendingSubscription;
 use App\Services\PendingSubscriptionService;
 
 class PendingSubscriptionController extends Controller
@@ -18,28 +15,12 @@ class PendingSubscriptionController extends Controller
 
     public function store(StorePendingSubscriptionRequest $request)
     {
-        $contact = Contact::findOrFail($request->contact_id);
-        $this->authorize('create_subscription', $contact);
-
-        $data = $request->all();
-        $data['user_id'] = Auth::user()->id;
-        $total = 0;
-        foreach ($request->services as $service) {
-            if ($service['rate'] && $service['frequency'] && $service['frequency_interval']) {
-                $total += ($service['frequency'] * $service['rate']);
-            }
-        }
-        $data['amount'] = $total * 100;
-        $pendingSubscription = PendingSubscription::create($data);
-
-        return response()->json($pendingSubscription->load('contact.contactUser'));
+        return PendingSubscriptionService::store($request);
     }
 
     public function destroy(PendingSubscription $pendingSubscription)
     {
-        $this->authorize('delete', $pendingSubscription);
-        $pendingSubscription->delete();
-
-        return response()->json(['deleted' => true]);
+        $pendingSubcriptionService = new PendingSubscriptionService();
+        return response($pendingSubcriptionService->destroy($pendingSubscription));
     }
 }

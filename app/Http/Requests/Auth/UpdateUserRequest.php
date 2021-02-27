@@ -27,9 +27,10 @@ class UpdateUserRequest extends FormRequest
             'username' => 'required|max:255',
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'email' => 'required|string|max:100|unique:users,email',
-            'password' => 'required|string|max:255',
+            'email' => 'required|string|max:100|',
+
             'phone' => 'nullable|numeric|max:30',
+            'availability' => 'nullable|array',
             // 'role_id' => 'required|integer',
             // 'profile_image' => 'required|string|max:255',
             // 'stripe_account' => 'json',
@@ -39,7 +40,7 @@ class UpdateUserRequest extends FormRequest
             // 'dial_code' => 'string|max:5',
             // 'facebook_id' => 'string|max:191',
             // 'google_id' => 'string|max:191',
-            'last_online' => 'date_format:Y-m-d H:i:s',
+
             // 'timezone' => 'string|max:191',
             // 'notify_message' => 'integer|max:1',
             // 'notify_sms' => 'integer|max:1',

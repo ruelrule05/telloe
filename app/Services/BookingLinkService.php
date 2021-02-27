@@ -3,13 +3,19 @@
 namespace App\Services;
 
 use App\Http\Requests\IndexBookingLinkRequest;
+use App\Mail\SendBookingLinkInvitation;
 use App\Models\BookingLink;
 use Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Mail;
+use Webpatser\Uuid\Uuid;
 
 class BookingLinkService
 {
+    use AuthorizesRequests;
+
     public static function index(Request $request)
     {
         {
@@ -23,19 +29,58 @@ class BookingLinkService
         }
     }
 
-    public static function show($id)
+    public function show($id)
     {
-        return ;
+        $bookingLink = BookingLink::findOrFail($id);
+        $this->authorize('show', $bookingLink);
+        return response($bookingLink->load('bookingLinkContacts.contact.contactUser'));
     }
 
     public static function store(Request $request)
     {
-        return ;
+        $contacts = [];
+        $emails = [];
+        foreach ($request->contacts as $contact) {
+            if (! isset($contact['type']) || $contact['type'] != 'email') {
+                $contact = Contact::findOrFail($contact['id']);
+
+                $contacts[] = $contact;
+            } else {
+                if (isset($contact['type']) && $contact['type'] == 'email') {
+                    $emails[] = [
+                        'email' => $contact['id'],
+                        'timezone' => $contact['timezone'],
+                    ];
+                }
+            }
+        }
+
+        $bookingLink = BookingLink::create([
+            'name' => $request->name,
+            'user_id' => Auth::user()->id,
+            'dates' => $request->dates,
+            'uuid' => Uuid::generate(),
+            'emails' => $emails
+        ]);
+
+        foreach ($contacts as $contact) {
+            BookingLinkContact::create([
+                'contact_id' => $contact->id,
+                'booking_link_id' => $bookingLink->id
+            ]);
+        }
+
+        return $bookingLink->fresh();
     }
 
     public static function update($id, Request $request)
     {
-        return ;
+        $bookingLink = BookingLink::findOrFail($id);
+
+        $bookingLink->update([
+            'dates' => $request->dates
+        ]);
+        return response($bookingLink->fresh()->load('bookingLinkContacts.contact.contactUser'));
     }
 
     public static function getAllTimeslots(IndexBookingLinkRequest $request)
@@ -79,8 +124,22 @@ class BookingLinkService
         return abort(403);
     }
 
-    public static function delete($id)
+    public function sendInvitation($id)
     {
-        return ;
+        $bookingLink = BookingLink::findOrFail($id);
+        foreach ($bookingLink->bookingLinkContacts as $contact) {
+            Mail::to($contact->contact->contactUser->email)->queue(new SendBookingLinkInvitation($bookingLink));
+        }
+        foreach ($bookingLink->emails as $email) {
+            Mail::to($email['email'])->queue(new SendBookingLinkInvitation($bookingLink, $email['email']));
+        }
+        $this->authorize('show', $bookingLink);
+    }
+
+    public function destroy($id)
+    {
+        $bookingLink = BookingLink::findOrFail($id);
+        $this->authorize('destroy', $bookingLink);
+        return $bookingLink->delete();
     }
 }

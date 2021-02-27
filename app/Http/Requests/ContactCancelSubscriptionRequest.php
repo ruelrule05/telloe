@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContactCancelSubscriptionRequest extends FormRequest
@@ -13,7 +14,8 @@ class ContactCancelSubscriptionRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $contact = Contact::find($this->user_id);
+        return $this->user()->can('cancel_subscription', $contact);
     }
 
     /**

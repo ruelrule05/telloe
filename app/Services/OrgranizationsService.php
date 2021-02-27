@@ -2,14 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Organization;
-use Auth;
-use Illuminate\Http\Request;
 use App\Http\Requests\OrganizationAddMembersRequest;
 use App\Http\Requests\OrganizationDestroyMemberRequest;
 use App\Http\Requests\OrganizationServiceTimeslotsRequest;
 use App\Http\Requests\StoreOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
+use App\Models\Member;
+use App\Models\Organization;
+use App\Models\OrganizationMember;
+use Arr;
+use Auth;
+use Illuminate\Http\Request;
 
 class OrgranizationsService
 {

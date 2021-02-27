@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\BookingLink;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBookingLinkRequest extends FormRequest
@@ -13,7 +14,8 @@ class UpdateBookingLinkRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $bookingLink = BookingLink::find($this->user_id);
+        return $this->user()->can('update', $bookingLink);
     }
 
     /**
