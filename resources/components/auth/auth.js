@@ -6,7 +6,6 @@ import Reset from './reset.vue';
 import CloseIcon from '../../icons/close.vue';
 import jstz from 'jstz';
 const timezone = jstz.determine();
-
 export default {
 	components: {
 		Login,
@@ -22,8 +21,8 @@ export default {
 		loading: false,
 		open: false,
 		error: '',
-
-		timezone: ''
+		timezone: '',
+		heading: ''
 	}),
 
 	created() {

@@ -16,11 +16,11 @@ class PageService
         checkRequestInviteToken($request);
         if (Auth::check()) {
             $authUser = Auth::user();
-            if ($authUser->role_id == 2) {
-                return redirect('/dashboard/bookings/calendar');
-            } else {
-                return redirect('/dashboard/bookings');
-            }
+            // if ($authUser->role_id == 2) {
+            //     return redirect('/dashboard/bookings/calendar');
+            // } else {
+            //     return redirect('/dashboard/bookings');
+            // }
         }
 
         if ($request->auth == 'reset' && $request->token) {

@@ -1,35 +1,44 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white pt-md-2 pt-3">
-    <div class="container">
-      <a class="navbar-brand h1 text-body font-weight-bolder font-heading mb-0" href="/">
-        <img src="{{ asset('logo.svg') }}" alt="" height="35">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse rounded" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto align-items-md-center text-center">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#features">Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#pricing">Pricing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" @click.prevent="auth = true; action = 'login'">Login</a>
-          </li>
-          <li class="nav-item">
-            <div class="nav-link pr-0">
-              <div class="px-3 px-md-0">
-                <a class="btn btn-primary btn-sm-block text-white m-0" href="#" @click.prevent="auth = true; action = 'signup'">Sign Up</a>
-              </div>
+<nav class="bg-secondary">
+    <div class="max-w-7xl mx-auto px-2 py-2 sm:px-6 lg:px-8">
+        <div class="relative flex items-center justify-between h-16">
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                </button>
             </div>
-          </li>
-        </ul>
-      </div>
+            <div class="flex items-center justify-center sm:items-stretch sm:justify-start">
+                <div class="flex-shrink-0 flex items-center">
+                <img class="block lg:hidden h-6 w-auto" src="{{ asset('telloe.svg') }}" alt="{{ config('app.mame') }}">
+                <img class="hidden lg:block h-6 w-auto" src="{{ asset('telloe.svg') }}" alt="{{ config('app.mame') }}">
+                </div>
+            </div>
+            <div class="ml-auto flex items-center">
+                <div class="flex space-x-4">
+                    <button type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none"><span>HOME</span></button>
+                    <a href="#features" class="px-3 py-2 text-xs font-medium font-serif text-gray-500">FEATURES</a>
+                    <a href="#about" type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none"><span>ABOUT</span></a>
+                    <a href="#pricing" type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none"><span>PRICING</span></a>
+                    <button type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none" @click.prevent="auth = true; action = 'login'"><span>LOGIN</span></button>
+                    <button type="button" class="btn btn-primary text-xs font-medium text-white focus:outline-none" @click.prevent="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
+                </div>
+            </div>
+        </div>
     </div>
-</nav>
 
+  <!-- Mobile menu, show/hide based on menu state. -->
+  <div class="sm:hidden" id="mobile-menu">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+      <a href="#" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+      <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Team</a>
+      <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Projects</a>
+      <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Calendar</a>
+    </div>
+  </div>
+</nav>

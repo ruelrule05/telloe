@@ -24,9 +24,8 @@
 		}
 	}
 }
-::v-deep {
-	.auth-card {
-		width: 480px;
-		max-width: 90vw;
-	}
+.auth-card {
+	@apply bg-white rounded-sm p-11 rounded-xl;
+	width: 460px;
+	max-width: 90vw;
 }

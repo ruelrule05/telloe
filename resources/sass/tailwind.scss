@@ -1,0 +1,71 @@
+@import '../../public/fonts/monument-extended';
+@import '../../public/fonts/manrope';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+	@apply text-gray-500;
+	font-size: 0.9rem;
+}
+
+.font-serif {
+	letter-spacing: 0.75px;
+}
+
+.btn {
+	span {
+		position: relative;
+		bottom: -1px;
+	}
+	@apply px-8 py-3 rounded-full transition-all focus:outline-none font-serif uppercase;
+	&.btn-primary {
+		@apply bg-primary hover:bg-primary-dark transition-all text-white;
+	}
+	&:disabled {
+		pointer-events: none;
+	}
+}
+label {
+	@apply text-sm mb-1 block;
+}
+input,
+.input {
+	@apply border border-gray-300 text-base block rounded-md font-medium w-full outline-none px-3 py-2 transition-all ring-primary ring-offset-1 focus:border-gray-500 focus:ring-2;
+}
+.spinner {
+	@apply inline-block ease-linear rounded-full border-2 border-t-2 border-gray-200;
+	width: 40px;
+	height: 40px;
+	border-top-color: theme('colors.primary.DEFAULT');
+	-webkit-animation: spinner 1.5s linear infinite;
+	animation: spinner 0.85s linear infinite;
+	&.spinner-sm {
+		@apply border;
+		width: 20px;
+		height: 20px;
+	}
+	&.spinner-light {
+		@apply border-transparent;
+		border-top-color: white;
+	}
+}
+
+@-webkit-keyframes spinner {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spinner {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}

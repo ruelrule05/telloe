@@ -27,8 +27,8 @@
 	@include('partials.scripts')
 	
 	<script>
-		const CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
-		const MEMBER = {!! isset($member) ? "JSON.parse('".json_encode($member)."');" : 'null' !!};
+		CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
+		MEMBER = {!! isset($member) ? "JSON.parse('".json_encode($member)."');" : 'null' !!};
 	</script>
 	@yield('scripts')
 </body>

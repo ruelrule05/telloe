@@ -1,42 +1,31 @@
 <template>
-	<div class="h-100 w-100">
-		<div class="d-flex align-items-center h-100 w-100 justify-content-center align-items-center mx-0" v-cloak>
-			<div class="card auth-card">
-				<div class="card-body p-4">
-					<div class="p-2">
-						<img src="/logo.svg" height="18" />
-						<h4 class="text-primary font-heading mt-5 mb-4 font-weight-normal">WELCOME BACK!</h4>
-						<vue-form-validate @submit="login">
-							<div class="form-group mb-3">
-								<label class="small">Enter Your Email Address</label>
-								<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" class="form-control" data-required />
-							</div>
-							<div class="form-group">
-								<div class="d-flex align-items-center">
-									<label class="small">Enter Your Password</label>
-									<label class="small text-primary ml-auto cursor-pointer hover-underline">Forgot password?</label>
-								</div>
-								<input type="password" v-model="loginForm.password" class="form-control" data-required />
-							</div>
-
-							<vue-button type="submit" :loading="loading" button_class="btn btn-primary btn-block btn-lg shadow-none">Let me in</vue-button>
-						</vue-form-validate>
-
-						<div class="d-flex align-items-center my-4">
-							<span>Or login with:</span>
-							<div class="ml-auto d-flex">
-								<button class="btn btn-white border border-primary btn-icon btn-rounded" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)"></FacebookAltIcon></button>
-								<button class="btn btn-white border border-primary btn-rounded ml-2" type="button" @click="$parent.Googlesignin" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)"></GoogleAltIcon></button>
-							</div>
-						</div>
-
-						<hr class="mb-4" />
-
-						<div class="text-center">Don't have an account? <span class="text-primary cursor-pointer hover-underline" @click="$root.action = 'signup'">Create one</span></div>
-					</div>
+	<div>
+		<vue-form-validate @submit="login">
+			<div class="mb-5">
+				<label>Enter Your Email Address</label>
+				<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" data-required />
+			</div>
+			<div class="mb-7">
+				<div class="flex align-center">
+					<label>Enter Your Password</label>
+					<label class="small text-primary ml-auto cursor-pointer hover:underline">Forgot password?</label>
 				</div>
+				<input type="password" v-model="loginForm.password" data-required />
+			</div>
+			<vue-button type="submit" :loading="loading" button_class="btn btn-primary w-full"><span>Let me in</span></vue-button>
+		</vue-form-validate>
+
+		<div class="flex items-center my-8">
+			<span>Or login with:</span>
+			<div class="ml-auto flex">
+				<button class="border border-primary rounded-full p-4 focus:outline-none transition-all hover:bg-gray-100" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)" class=" fill-primary"></FacebookAltIcon></button>
+				<button class="border border-primary rounded-full p-4 focus:outline-none transition-all hover:bg-gray-100 ml-3" type="button" @click="$parent.Googlesignin" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)" class=" fill-primary"></GoogleAltIcon></button>
 			</div>
 		</div>
+
+		<hr class="mb-8" />
+
+		<div class="text-center">Don't have an account? <span class="text-primary cursor-pointer hover:underline" @click="$root.action = 'signup'">Create one</span></div>
 	</div>
 </template>
 
@@ -63,6 +52,7 @@ export default {
 	}),
 
 	created() {
+		this.$parent.heading = 'Welcome back!';
 		if (this.$root.email) this.loginForm.email = this.$root.email;
 		this.loginForm.invite_token = this.$root.invite_token;
 		this.loginForm.member_invite_token = this.$root.member_invite_token;

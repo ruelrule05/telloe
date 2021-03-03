@@ -1,7 +1,5 @@
 require('./bootstrap');
 
-import 'bootstrap/js/dist/collapse';
-import 'bootstrap/js/dist/dropdown';
 import RangeSlider from 'vue-range-slider';
 import 'vue-range-slider/dist/vue-range-slider.css';
 import Auth from '../components/auth/auth.vue';
@@ -19,13 +17,13 @@ new Vue({
 	},
 
 	data: {
-		auth: false,
-		action: 'login', // login
+		auth: true, //false
+		action: 'signup', // login
 		seats: 10,
 		invite_token: null,
 		member_invite_token: null,
 		email: '',
-		signupStep: 0
+		signupStep: 3 //0
 	},
 
 	watch: {
@@ -65,11 +63,12 @@ new Vue({
 				.get('/auth')
 				.then(response => {
 					if (response) {
-						if (response.data.role_id == 2) {
-							window.location.replace('/dashboard/bookings/calendar');
-						} else if (response.data.role_id == 3) {
-							window.location.replace('/dashboard/bookings');
-						}
+						this.auth = response.data;
+						// if (response.data.role_id == 2) {
+						// 	window.location.replace('/dashboard/bookings/calendar');
+						// } else if (response.data.role_id == 3) {
+						// 	window.location.replace('/dashboard/bookings');
+						// }
 					}
 				})
 				.catch(() => {});

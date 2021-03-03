@@ -283,7 +283,7 @@ class UserService
         return abort(403, $message);
     }
 
-    public static function book($username, $service_id, UserBookRequest $request, $customer)
+    public static function book($username, $service_id, $request, $customer)
     {
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();

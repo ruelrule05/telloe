@@ -4,19 +4,32 @@
 
 @section('content')
 
-<div class="hero home-content">
+<div class="bg-secondary py-24">
 	<div class="container">
-		<div class="row flex-row-reverse align-items-center justify-content-center">
-			<div class="col-md-6 px-4 px-md-5 mb-5 mb-md-0">
-				<img src="{{ asset('images/home/home_1.svg') }}" alt="" class="w-100">
+		<div class="grid grid-cols-2">
+			<div>
+				<h1 class="font-serif text-primary text-7xl">MONDAY&mdash;FRIDAY SIMPLIFIED.</h1>
+				<p class="text-lg my-12">Organize meetings with people on different video calling platforms across multiple time zones; without needless back and forth.</p>
+				<button type="button" class="px-8 py-3 border-2 border-primary rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark transition-all text-white"><span>START FREE TRIAL</span></button>
+				<button type="button" class="px-8 py-3 rounded transition-all focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary ml-4"><span>WATCH VIDEO</span></button>
 			</div>
-			<div class="col-md-6 pr-md-0">
-				<h1 class="font-heading font-weight-bold mb-0 display-4">It's time to Telloe...</h1>
-				<h2 class="font-heading mb-4">Scheduling a meeting has never been so easy!</h2>
-				<p class="text-muted h5 font-weight-light mb-5">Control your available meeting times and empower your contacts to schedule meetings with you at a time that works for you both. <br /><br /> No more ping pong back and forth setting dates and times.</p>
-				<button class="btn btn-primary btn-lg px-4 btn-sm-block mb-2 mb-md-0" type="button" @click.prevent="auth = true; action = 'signup'">Start Free Trial</button>
-				<button class="btn btn-outline-primary btn-lg px-4 btn-sm-block">Watch video</button>
+			<div>
+				<img src="{{ asset('images/home/home-1.svg') }}" class="w-9/12 mx-auto">
 			</div>
+		</div>
+	</div>
+</div>
+
+ 
+<div class="container py-24">
+	<div class="grid grid-cols-2 items-center">
+		<div class="pr-24">
+			<span class="font-serif">SAVE TIME, FEWER MISTAKES, LESS FRUSTRATION!</span>
+			<h2 class="text-primary text-4xl font-bold mt-4 leading-tight">Monday to Friday meetings just got a whole lot simpler!</h2>
+		</div>
+		<div>
+			<span class="font-bold">Collaborate, Organize, Week Sorted</span>
+			<p>Simplified online scheduling that takes the hassle out of bookings. <br /><br />Your flexible booking calendar displays your daily, weekly and monthly availability so your contacts can self-schedule appointments that work for everyone!</p>
 		</div>
 	</div>
 </div>
