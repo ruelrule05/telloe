@@ -24,7 +24,7 @@ import PencilIcon from '../../../../icons/pencil';
 import MoveIcon from '../../../../icons/move';
 import PlusIcon from '../../../../icons/plus';
 import draggable from 'vuedraggable';
-import Add from '../../../../dashboard/components/bookings/add/add.vue';
+import Add from '../../../../dashboard/pages/bookings/add/add.vue';
 import EditBooking from '../../bookings/edit/edit.vue';
 
 export default {

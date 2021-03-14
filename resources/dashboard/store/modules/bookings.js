@@ -3,6 +3,7 @@ const queryString = require('query-string');
 
 const state = () => ({
 	ready: false,
+	upcoming: [],
 	index: [],
 	paginated: { data: [] },
 
@@ -32,13 +33,13 @@ const mutations = {
 		if (booking) Object.assign(booking, data);
 	},
 
-	delete(state, data) {
+	delete(state, id) {
 		state.index.splice(
-			state.index.findIndex(x => x.id == data.id),
+			state.index.findIndex(x => x.id == id),
 			1
 		);
 		state.paginated.data.splice(
-			state.paginated.data.findIndex(x => x.id == data.id),
+			state.paginated.data.findIndex(x => x.id == id),
 			1
 		);
 	},
@@ -51,6 +52,10 @@ const mutations = {
 	outlookCalendars(state, data) {
 		state.outlookCalendarsReady = true;
 		window.app.auth.outlook_calendars = data;
+	},
+
+	getUpcomingBookings(state, data) {
+		state.upcoming = data;
 	}
 };
 
@@ -76,9 +81,9 @@ const actions = {
 		return response.data;
 	},
 
-	async delete({ commit }, data) {
-		await window.axios.delete(`/${name}/${data.id}`, data);
-		commit('delete', data);
+	async delete({ commit }, id) {
+		await window.axios.delete(`/${name}/${id}`);
+		commit('delete', id);
 	},
 
 	googleCalendars({ commit }) {
@@ -96,6 +101,13 @@ const actions = {
 	assignToMember({ commit }, data) {
 		commit('assignToMember');
 		window.axios.post(`/${name}/${data.id}/assign_to_member`, data);
+	},
+
+	async getUpcomingBookings({ commit }) {
+		let response = await window.axios.get('/bookings/upcoming');
+		if (response) {
+			commit('getUpcomingBookings', response.data);
+		}
 	}
 };
 

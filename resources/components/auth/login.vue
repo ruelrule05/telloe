@@ -2,12 +2,12 @@
 	<div>
 		<vue-form-validate @submit="login">
 			<div class="mb-5">
-				<label>Enter Your Email Address</label>
+				<label class="text-muted">Enter Your Email Address</label>
 				<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" data-required />
 			</div>
 			<div class="mb-7">
 				<div class="flex align-center">
-					<label>Enter Your Password</label>
+					<label class="text-muted">Enter Your Password</label>
 					<label class="small text-primary ml-auto cursor-pointer hover:underline">Forgot password?</label>
 				</div>
 				<input type="password" v-model="loginForm.password" data-required />
@@ -16,22 +16,20 @@
 		</vue-form-validate>
 
 		<div class="flex items-center my-8">
-			<span>Or login with:</span>
+			<span class="text-muted">Or login with:</span>
 			<div class="ml-auto flex">
-				<button class="border border-primary rounded-full p-4 focus:outline-none transition-all hover:bg-gray-100" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)" class=" fill-primary"></FacebookAltIcon></button>
-				<button class="border border-primary rounded-full p-4 focus:outline-none transition-all hover:bg-gray-100 ml-3" type="button" @click="$parent.Googlesignin" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)" class=" fill-primary"></GoogleAltIcon></button>
+				<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></FacebookAltIcon></button>
+				<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100 ml-3" type="button" @click="$parent.Googlesignin" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)" class="fill-current text-primary"></GoogleAltIcon></button>
 			</div>
 		</div>
 
 		<hr class="mb-8" />
 
-		<div class="text-center">Don't have an account? <span class="text-primary cursor-pointer hover:underline" @click="$root.action = 'signup'">Create one</span></div>
+		<div class="text-center text-muted">Don't have an account? <span class="text-primary cursor-pointer hover:underline" @click="$root.action = 'signup'">Create one</span></div>
 	</div>
 </template>
 
 <script>
-/* global CONTACT */
-/* global MEMBER */
 import VueFormValidate from '../../components/vue-form-validate.vue';
 import VueButton from '../../components/vue-button.vue';
 import FacebookAltIcon from '../../icons/facebook-alt.vue';
@@ -56,8 +54,8 @@ export default {
 		if (this.$root.email) this.loginForm.email = this.$root.email;
 		this.loginForm.invite_token = this.$root.invite_token;
 		this.loginForm.member_invite_token = this.$root.member_invite_token;
-		this.contact = CONTACT;
-		this.member = MEMBER;
+		this.contact = window.CONTACT;
+		this.member = window.MEMBER;
 		if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
 		else if (this.member && this.member.email) this.loginForm.email = this.member.email;
 		this.loginForm.timezone = this.$parent.timezone;
@@ -77,7 +75,7 @@ export default {
 				this.loading = true;
 				if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
 				window.axios
-					.post('/login', this.loginForm)
+					.post('/login', this.loginForm, { toasted: true })
 					.then(response => {
 						setTimeout(() => {
 							if (response.data.role_id == 2) {
@@ -87,9 +85,8 @@ export default {
 							}
 						}, 150);
 					})
-					.catch(e => {
+					.catch(() => {
 						this.loading = false;
-						this.$parent.error = e.response.data.message;
 					});
 			}
 		}

@@ -1,0 +1,32 @@
+.booking {
+	@apply absolute top-0  bg-white p-6 shadow-lg h-full overflow-auto transition-all ease-in-out flex flex-col;
+	width: 416px;
+	right: -456px;
+	&.open {
+		@apply right-0;
+	}
+}
+.input-prefix {
+	@apply relative;
+	input {
+		@apply pl-10;
+	}
+	.input-icon {
+		@apply text-gray-300;
+		svg {
+			@apply absolute transform -translate-y-1/2 z-10 left-4 top-1/2 fill-current;
+		}
+	}
+}
+.contact-remove {
+	opacity: 0;
+	@apply p-1 cursor-pointer transition-colors text-gray-400;
+}
+.contact-item {
+	@apply flex justify-between items-center p-2 bg-gray-100 rounded mt-1;
+	&:hover {
+		.contact-remove {
+			opacity: 1;
+		}
+	}
+}

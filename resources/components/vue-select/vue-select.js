@@ -1,16 +1,13 @@
-import VueCheckbox from '../../components/vue-checkbox/vue-checkbox.vue';
 import ChevronDownIcon from '../../icons/chevron-down';
+import ClickOutside from 'vue-click-outside';
 export default {
 	components: {
-		VueCheckbox,
 		ChevronDownIcon
 	},
+	directives: {
+		ClickOutside
+	},
 	props: {
-		drop: {
-			type: String,
-			default: 'dropdown'
-		},
-
 		placeholder: {
 			type: String,
 			default: ''
@@ -21,14 +18,7 @@ export default {
 			default: []
 		},
 
-		value: {
-			type: [Number, String, Array, Object]
-		},
-
-		multiple: {
-			type: Boolean,
-			default: false
-		},
+		value: {},
 
 		searchable: {
 			type: Boolean,
@@ -45,62 +35,30 @@ export default {
 			default: false
 		},
 
-		button_class: {
-			type: String,
-			default: ''
-		},
-
-		dropdown_class: {
-			type: String,
-			default: ''
-		},
-
-		label: {
-			type: String,
-			default: ''
-		},
-
-		caret: {
+		noSetValue: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 
-		container_class: {
-			type: String,
-			default: ''
-		},
-
-		suggestion: {
+		noCaret: {
 			type: Boolean,
 			default: false
 		}
 	},
 
 	data: () => ({
-		selected_value: {},
+		selected_value: null,
 		search: '',
-		show_no_results: true,
 		show: false,
-		focused: false
+		open: false,
+		menuOpen: false,
+		hiddenValue: ''
 	}),
 
 	computed: {
-		select_placeholder() {
-			let placeholder = this.placeholder;
-			if (this.selected_value) {
-				if (this.multiple) {
-					let multiple_texts = [];
-					this.selected_value.forEach(selected => {
-						let value = this.options.find(x => x.value == selected || (x.value.id && selected.id && x.value.id == selected.id));
-						if (value) multiple_texts.push(value.text);
-					});
-					if (multiple_texts.length > 0) placeholder = multiple_texts.join(', ');
-				} else {
-					placeholder = (this.options.find(x => x.value == this.selected_value) || {}).text || this.placeholder;
-				}
-			}
-
-			return placeholder;
+		text_value() {
+			let value = this.options.find(x => x.value == this.selected_value);
+			return (value || {}).text || this.value || this.placeholder;
 		},
 
 		filtered_options() {
@@ -130,68 +88,42 @@ export default {
 		},
 
 		show: function(value) {
+			setTimeout(() => {
+				this.open = value;
+			});
 			if (value) {
 				this.search = '';
-				this.$refs['input-searchable'].focus();
+				this.menuOpen = value;
 			} else {
-				this.search = this.selected_value;
-				this.$refs['input-searchable'].blur();
+				setTimeout(() => {
+					this.menuOpen = value;
+				}, 150);
 			}
 		}
 	},
 
 	created() {
 		this.selected_value = this.value;
+		this.hiddenValue = this.value;
 		//this.search = this.select_placeholder;
 	},
 
 	mounted() {
-		// $(this.$refs['dropdown']).on('show.bs.dropdown', () => {
-		// 	if (this.$refs['input-searchable']) this.$refs['input-searchable'].removeAttribute('readonly');
-		// 	this.show_no_results = true;
-		// 	if (!this.suggestion) this.search = '';
-		// 	if (this.searchable) {
-		// 		setTimeout(() => {
-		// 			this.$refs['input-searchable'].focus();
-		// 		});
-		// 	}
-		// 	/* if (!this.multiple && this.selected_value) {
-		//         setTimeout(() => {
-		//             const pos = document.getElementById('item-' + this.selected_value).offsetTop;
-		//             this.$refs['scrollable-menu'].scrollTop = pos - 36;
-		//         });
-		//     } else if (this.multiple) {
-		//         this.$refs['scrollable-menu'].scrollTop = 0;
-		//     }*/
-		// });
-		// $(this.$refs['dropdown']).on('hide.bs.dropdown', () => {
-		// 	if (this.suggestion) {
-		// 		this.search = this.selected_value;
-		// 	} else {
-		// 		this.search = this.selected_value ? this.select_placeholder : '';
-		// 	}
-		// 	if (this.$refs['input-searchable'] && !this.suggestion) this.$refs['input-searchable'].setAttribute('readonly', true);
-		// });
-		// $(this.$refs['dropdown']).on('hidden.bs.dropdown', () => {
-		// 	this.show_no_results = false;
-		// });
+		this.popupItem = this.$el;
 	},
 
 	methods: {
+		onBlur() {
+			this.show = false;
+		},
+
 		updateValue(option) {
 			this.show = false;
-			if (this.multiple) {
-				this.selected_value = this.selected_value || [];
-				let valueIndex = this.selected_value.findIndex(x => x == option.value || (x.id && option.value.id && x.id == option.value.id));
-				if (valueIndex == -1) this.selected_value.push(option.value);
-				else this.selected_value.splice(valueIndex, 1);
-				this.search = this.placeholder;
-			} else {
+			if (!this.noSetValue) {
 				this.selected_value = option.value;
-				if (!this.suggestion) this.search = option.text;
 			}
-			this.$emit('change', this.selected_value);
-			this.$emit('input', this.selected_value);
+			this.hiddenValue = option.value;
+			this.$emit('input', option.value);
 		}
 	}
 };

@@ -18,14 +18,14 @@
                 <img class="hidden lg:block h-6 w-auto" src="{{ asset('telloe.svg') }}" alt="{{ config('app.mame') }}">
                 </div>
             </div>
-            <div class="ml-auto flex items-center">
-                <div class="flex space-x-4">
-                    <button type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none"><span>HOME</span></button>
-                    <a href="#features" class="px-3 py-2 text-xs font-medium font-serif text-gray-500">FEATURES</a>
-                    <a href="#about" type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none"><span>ABOUT</span></a>
-                    <a href="#pricing" type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none"><span>PRICING</span></a>
-                    <button type="button" class="px-3 py-2 text-xs font-medium font-serif text-gray-500 focus:outline-none" @click.prevent="auth = true; action = 'login'"><span>LOGIN</span></button>
-                    <button type="button" class="btn btn-primary text-xs font-medium text-white focus:outline-none" @click.prevent="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
+            <div class="ml-auto flex">
+                <div class="flex align-middle items-center space-x-3">
+                    <button type="button" class="navbar-item"><span>HOME</span></button>
+                    <a href="#features" class="navbar-item">FEATURES</a>
+                    <a href="#about" type="button" class="navbar-item"><span>ABOUT</span></a>
+                    <a href="#pricing" type="button" class="navbar-item"><span>PRICING</span></a>
+                    <button type="button" class="navbar-item" @click.prevent="auth = true; action = 'login'"><span>LOGIN</span></button>
+                    <button type="button" class="btn btn-primary btn-md" @click.prevent="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
                 </div>
             </div>
         </div>

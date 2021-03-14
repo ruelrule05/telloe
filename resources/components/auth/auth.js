@@ -25,6 +25,18 @@ export default {
 		heading: ''
 	}),
 
+	watch: {
+		open: function(value) {
+			if (value) {
+				document.body.classList.add('overflow-hidden');
+				document.body.classList.add('modal-open');
+			} else {
+				document.body.classList.remove('overflow-hidden');
+				document.body.classList.remove('modal-open');
+			}
+		}
+	},
+
 	created() {
 		this.timezone = timezone.name();
 	},
@@ -40,7 +52,7 @@ export default {
 			this.open = false;
 			setTimeout(() => {
 				this.$root.auth = false;
-			}, 150);
+			}, 1000);
 		},
 
 		openAuthWindow(url, callback) {
@@ -65,7 +77,7 @@ export default {
 				e => {
 					if (e.data.user) {
 						if (this.$root.action == 'login') {
-							window.location.replace('/dashboard/bookings/calendar');
+							window.location.replace('/dashboard/overview');
 						} else if (this.$root.action == 'signup') {
 							this.$root.auth = e.data.user;
 							this.$root.signupStep = 1;

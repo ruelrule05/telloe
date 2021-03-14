@@ -1,10 +1,11 @@
 <template>
-	<div class="auth-container bg-secondary fixed w-screen h-screen flex justify-center overflow-hidden" :class="{ open: open }">
-		<div class="h-full w-full">
-			<div class="flex items-center h-full w-full justify-center mx-auto" v-cloak>
-				<div class="card auth-card">
-					<img src="/logo.svg" class="h-6" />
-					<h4 class="text-primary font-serif text-3xl my-16 mb-8 uppercase">{{ heading }}</h4>
+	<div class="auth-container py-8" :class="{ open: open }">
+		<button type="button" class="fixed hover:bg-gray-200 rounded-full p-2 top-2 right-2 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none" @click="close()"><CloseIcon class="fill-current h-4 w-4"></CloseIcon></button>
+		<div class="flex justify-center items-center min-h-full">
+			<div class="relative">
+				<div class="auth-card">
+					<img src="/logo.svg" class="h-5" />
+					<h4 class="text-primary font-serif auth-heading my-16 mb-8 uppercase">{{ heading }}</h4>
 					<login v-if="$root.action == 'login'"></login>
 					<signup v-else-if="$root.action == 'signup'"></signup>
 					<recover v-else-if="$root.action == 'recover'"></recover>

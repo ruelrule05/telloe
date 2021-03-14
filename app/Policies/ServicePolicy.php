@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Contact;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -40,7 +39,8 @@ class ServicePolicy
 
     public function addBooking(User $user, Service $service)
     {
-        return $user->id == $service->user_id || $user->id == ($service->parentService->user_id ?? null) || $user->id == ($service->member->member_user_id ?? null) || Contact::where('user_id', $service->user->id)->where('contact_user_id', $user->id)->first();
+        return true;
+        return $user->id == $service->user_id || $user->id == ($service->parentService->user_id ?? null) || $user->id == ($service->member->member_user_id ?? null);
     }
 
     public function blacklist(User $user, Service $service)

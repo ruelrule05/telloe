@@ -7,6 +7,7 @@ use App\Http\Requests\AssignServiceToMemberRequest;
 use App\Http\Requests\DestroyCalendarRequest;
 use App\Http\Requests\IndexBookingRequest;
 use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Requests\UpdateOutlookCalendarEventsRequest;
 use App\Http\Zoom;
 use App\Mail\DeleteBooking;
@@ -21,17 +22,20 @@ use Auth;
 use Carbon\Carbon;
 use File;
 use Google_Service_Calendar;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Spatie\CalendarLinks\Link;
+use  Spatie\CalendarLinks\Link;
 
 class BookingService
 {
+    use AuthorizesRequests;
+
     public static function index(IndexBookingRequest $request)
     {
         $bookings = [];
 
-        $bookings = Booking::with('service')->whereHas('service', function ($service) {
+        $bookings = Booking::with(['service', 'bookingUsers.user'])->whereHas('service', function ($service) {
             $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
                 $parentService->where('user_id', Auth::user()->id);
             });
@@ -59,43 +63,29 @@ class BookingService
 
     public static function store(StoreBookingRequest $request)
     {
-        if (! $request->user_id && ! $request->contact_id) {
-            return abort(403, 'User ID or Contact ID is required.');
-        }
-
-        if (Carbon::now()->greaterThan(Carbon::parse($request->date . ' ' . $request->start))) {
-            return abort(403, 'Invalid date.');
-        }
-        if ($request->user_id == Auth::user()->id) {
-            return abort(403, 'Action is not allowed.');
-        }
-
         $service = Service::findOrfail($request->service_id);
 
-        $timeslots = $service->timeslots($request->date);
+        // $timeslots = $service->timeslots($request->date);
+        // if ($request->contact_id) {
+        //     $contact = Contact::findOrFail($request->contact_id);
 
-        if ($request->contact_id) {
-            $contact = Contact::findOrFail($request->contact_id);
+        //     if (in_array($service->id, $contact->blacklisted_services)) {
+        //         return abort(403, 'The selected service is blacklisted for this contact.');
+        //     }
+        // }
+        // $timeslotAvailable = false;
+        // foreach ($timeslots as $timeslot) {
+        //     if ($timeslot['time'] == $request->start && $timeslot['is_available'] == true) {
+        //         $timeslotAvailable = true;
+        //         break;
+        //     }
+        // }
 
-            if (in_array($service->id, $contact->blacklisted_services)) {
-                return abort(403, 'The selected service is blacklisted for this contact.');
-            }
-        }
-
-        $timeslotAvailable = false;
-        foreach ($timeslots as $timeslot) {
-            if ($timeslot['time'] == $request->start && $timeslot['is_available'] == true) {
-                $timeslotAvailable = true;
-                break;
-            }
-        }
-
-        if (! $timeslotAvailable) {
-            return abort(403, 'The selected date or time is not anymore available.');
-        }
+        // if (! $timeslotAvailable) {
+        //     return abort(403, 'The selected date or time is not anymore available.');
+        // }
 
         $data = $request->all();
-
         $parts = explode(':', $request->start);
         $endTime = Carbon::now();
         $endTime->set('hour', $parts[0]);
@@ -156,58 +146,13 @@ class BookingService
         return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote'));
     }
 
-    public static function update($id, Request $request)
+    public static function update($id, UpdateBookingRequest $request)
     {
         $booking = Booking::findOrfail($id);
-        $service = Service::findOrFail($request->service_id);
-
+        $service = $booking->service;
         $now = Carbon::now();
         $startDate = Carbon::parse("$booking->date $booking->start");
-
-        if ($now->greaterThan($startDate)) {
-            if (isset($request->booking_note['note'])) {
-                BookingNote::updateOrCreate(
-                    ['booking_id' => $booking->id],
-                    ['note' => $request->booking_note['note']]
-                );
-            }
-            return response($booking);
-        }
-
-        if (Carbon::parse($now->format('Y-m-d'))->greaterThan(Carbon::parse($request->date))) {
-            return abort(403, 'Invalid date.');
-        }
-
-        $timeslots = $service->timeslots($request->date);
-        $timeslotAvailable = false;
-        if (($service->user_id == Auth::user()->id || $service->id == $booking->service_id) && $request->date == $booking->date && $request->start == $booking->start) {
-            $timeslotAvailable = true;
-        } else {
-            foreach ($timeslots as $timeslot) {
-                if ($timeslot['time'] == $request->start) {
-                    if ($timeslot['is_available']) {
-                        $timeslotAvailable = true;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (! $timeslotAvailable) {
-            return abort(403, 'The selected date or time is not anymore available.');
-        }
-
-        $data = $request->all();
-
-        $parts = explode(':', $request->start);
-        $endTime = Carbon::now();
-        $endTime->set('hour', $parts[0]);
-        $endTime->set('minute', $parts[1]);
-        $endTime->add('minute', $booking->service->duration);
-        $data['end'] = $endTime->format('H:i');
-
-        unset($booking->user);
-        $booking->update($data);
+        $booking->update($request->validated());
 
         if (isset($request->booking_note['note'])) {
             BookingNote::updateOrCreate(
@@ -249,32 +194,17 @@ class BookingService
         return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices'));
     }
 
-    public function destroy($id)
+    public static function destroy($id)
     {
-        $booking = Booking::with('user', 'contact', 'service.user')->where('id', $id)->first();
-        $this->authorize('delete', $booking);
-
-        Mail::queue(new DeleteBooking($booking->toArray()));
-
-        if ($booking->user) {
-            $user_id = null;
-            if (Auth::user()->id == $booking->user_id) { // if contact - notify client
-                $user_id = $booking->service->user->id;
-                $description = "<strong>{$booking->user->full_name}</strong> has deleted their booking.";
-            } elseif (Auth::user()->id == $booking->service->user_id) { // if client - notify contact
-                $user_id = $booking->user->id;
-                $description = 'A booking you made has been deleted.';
-            }
-
-            if ($user_id) {
-                Notification::create([
-                    'user_id' => $user_id,
-                    'description' => $description,
-                ]);
-            }
+        $booking = Booking::where('id', $id)->first();
+        (new self)->authorize('delete', $booking);
+        try {
+            Mail::queue(new DeleteBooking($booking, 'client'));
+            Mail::queue(new DeleteBooking($booking, 'contact'));
+        } catch (\Exception $e) {
         }
         $booking->delete();
-        return ['success' => true];
+        return $booking->delete();
     }
 
     public static function removeCalendar(DestroyCalendarRequest $request)
@@ -590,5 +520,13 @@ class BookingService
         ]);
 
         return $booking;
+    }
+
+    public static function upcoming()
+    {
+        $tomorrow = Carbon::now()->addDay(1);
+        $daysAgo = Carbon::now()->subDays(5);
+        return Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->get()->toArray();
+        return response(Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->get());
     }
 }

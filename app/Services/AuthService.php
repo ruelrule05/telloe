@@ -36,6 +36,7 @@ class AuthService
     public static function socialiteCallback($driver)
     {
         $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
+        $user = null;
         if ($socialiteUser) {
             $data = Arr::except($socialiteUser->user, ['id']);
             $data['first_name'] = $data['first_name'] ?? $data['given_name'];
@@ -60,12 +61,12 @@ class AuthService
                 Mail::queue(new Welcome($user));
             }
             Auth::login($user);
+            $user->makeVisible(['default_availability']);
         }
 
-        $authorized = Auth::check();
         echo '
         <script>
-            window.opener.postMessage({user: ' . json_encode(Auth::user()) . '});
+            window.opener.postMessage({user: ' . json_encode($user) . '});
             window.close();
         </script>';
     }
@@ -171,10 +172,7 @@ class AuthService
             Mail::queue(new Welcome($user));
         }
 
-        $response = [
-            'redirect_url' => $request->redirect ?? redirect()->back()->getTargetUrl(),
-        ];
-        return $response;
+        return $user;
     }
 
     public static function logout()

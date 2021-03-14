@@ -16,11 +16,16 @@ class StoreBookingRequest extends FormRequest
      */
     public function authorize()
     {
-        $contact = Contact::find($this->user_id);
-        return $this->user()->can('show', $contact);
-
-        $service = Service::find($this->user_id);
-        return $this->user()->can('addBooking', $service);
+        $validContacts = true;
+        foreach ($this->contact_ids as $contactID) {
+            $contact = Contact::findOrFail($contactID);
+            if (! $this->user()->can('show', $contact)) {
+                $validContacts = false;
+                break;
+            }
+        }
+        $service = Service::find($this->service_id);
+        return $validContacts && $this->user()->can('addBooking', $service);
     }
 
     /**
@@ -32,8 +37,7 @@ class StoreBookingRequest extends FormRequest
     {
         return [
             'service_id' => 'required|exists:services,id',
-            'user_id' => 'nullable|exists:users,id',
-            'contact_id' => 'nullable|exists:contacts,id',
+            'contact_ids' => 'required|array',
             'date' => 'required|date',
             'start' => 'required|string|max:20',
 

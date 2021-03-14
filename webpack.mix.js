@@ -6,6 +6,7 @@ const cert = `/Users/cleidoscope/.config/valet/Certificates/${host}.crt`;
 const args = process.argv;
 const mix = require('laravel-mix');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const IgnoreVuetifyStylesPlugin = require('./resources/js/plugins/ignoreVuetifyResetCSS');
 //require('laravel-mix-purgecss');
 //require('laravel-mix-merge-manifest');
 let timestamp = '';
@@ -29,19 +30,20 @@ mix.webpackConfig({
 	}
 });
 
-mix.sass('resources/sass/page.scss', 'css');
+mix.sass('resources/sass/tailwind.scss', 'css/vendor.css')
+	.sass('resources/sass/page.scss', 'css')
+	.sass('resources/dashboard/dashboard.scss', 'css');
 //.sass('resources/sass/profile.scss', 'css')
 //.sass('resources/sass/organization.scss', 'css')
 //.sass('resources/sass/widget.scss', 'css')
 //.sass('resources/sass/booking-link.scss', 'css')
-//.sass('resources/dashboard/dashboard.scss', 'css');
+//);
 
-mix.js('resources/js/page.js', 'js');
+mix.js('resources/js/page.js', 'js').js('resources/dashboard/dashboard.js', 'js');
 //.js('resources/js/profile.js', 'js')
 //.js('resources/widget/index.js', 'js/widget/widget.js')
 //.js('resources/js/organization.js', 'js')
 //.js('resources/js/booking-link.js', 'js')
-//.js('resources/dashboard/dashboard.js', 'js');
 
 mix.options({
 	postCss: [require('tailwindcss')]
@@ -79,7 +81,7 @@ if (mix.inProduction()) {
 	}
 
 	mix.webpackConfig({
-		plugins: [new ESLintPlugin()],
+		plugins: [new ESLintPlugin(), new IgnoreVuetifyStylesPlugin()],
 		module: {
 			rules: [
 				{

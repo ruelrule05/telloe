@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-
 import ChevronDownIcon from '../../icons/chevron-down';
+import VueSelect from '../vue-select/vue-select.vue';
+import VueTimepicker from 'vue2-timepicker';
 export default {
 	props: {
 		start: {
@@ -13,7 +14,9 @@ export default {
 		}
 	},
 	components: {
-		ChevronDownIcon
+		ChevronDownIcon,
+		VueSelect,
+		VueTimepicker
 	},
 	data: () => ({
 		time_start: null,
@@ -22,10 +25,10 @@ export default {
 
 	watch: {
 		start: function(value) {
-			if (value) this.time_start = this.hours.find(x => x.time == this.start);
+			this.time_start = value;
 		},
-		end: function(value) {
-			if (value) this.time_end = this.hours.find(x => x.time == this.end);
+		end: function() {
+			this.setTimeRanges();
 		}
 	},
 
@@ -51,8 +54,11 @@ export default {
 		startHours() {
 			let startHours = [];
 			this.hours.forEach(hour => {
-				if (!this.time_end || hour.time < this.time_end.time) {
-					startHours.push(hour);
+				if (!this.time_end || hour.time < this.time_end) {
+					startHours.push({
+						text: hour.label,
+						value: hour.time
+					});
 				}
 			});
 			return startHours;
@@ -61,53 +67,49 @@ export default {
 		endHours() {
 			let endHours = [];
 			this.hours.forEach(hour => {
-				if (!this.time_start || hour.time > this.time_start.time) {
-					endHours.push(hour);
+				if (!this.time_start || hour.time > this.time_start) {
+					endHours.push({
+						text: hour.label,
+						value: hour.time
+					});
 				}
 			});
 			return endHours;
 		}
 	},
 
-	mounted() {
-		$(this.$refs['start']).on('show.bs.dropdown', () => {
-			setTimeout(() => {
-				if (this.time_start) {
-					this.$refs['dropdown-start'].querySelector(`#start-${this.time_start.time.replace(':', '')}`).scrollIntoView({
-						block: 'nearest'
-					});
-				}
-			}, 50);
-		});
-		$(this.$refs['end']).on('show.bs.dropdown', () => {
-			setTimeout(() => {
-				if (this.time_end) {
-					this.$refs['dropdown-end'].querySelector(`#end-${this.time_end.time.replace(':', '')}`).scrollIntoView({
-						block: 'nearest'
-					});
-				}
-			}, 50);
-		});
-	},
-
 	created() {
-		let hours = this.hours;
-		if (this.start) this.time_start = hours.find(x => x.time == this.start);
-		if (this.end) this.time_end = hours.find(x => x.time == this.end);
+		this.setTimeRanges();
 	},
 
 	methods: {
+		setTimeRanges() {
+			if (this.start) this.time_start = this.startTimeValue(this.start);
+			if (this.end) this.time_end = this.endTimeValue(this.end);
+		},
+
 		formatDate(date) {
 			return dayjs(date).format('MMMM D, YYYY');
 		},
 
-		update() {
-			if (!this.time_start) {
-				$(this.$refs['dropdown-start']).dropdown('show');
-			} else if (!this.time_end) {
-				$(this.$refs['dropdown-end']).dropdown('show');
+		emitChange() {
+			this.$emit('change', { start: this.time_start, end: this.time_end });
+		},
+
+		startTimeValue(value) {
+			let time_start = this.startHours.find(x => x.value == value);
+			if (!time_start) {
+				value = dayjs(`0000-00-00 ${value}`).format('HH:mmA');
 			}
-			this.$emit('update', { start: this.time_start, end: this.time_end });
+			return value;
+		},
+
+		endTimeValue(value) {
+			let time_end = this.endHours.find(x => x.value == value);
+			if (!time_end) {
+				value = dayjs(`0000-00-00 ${value}`).format('HH:mmA');
+			}
+			return value;
 		}
 	}
 };

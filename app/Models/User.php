@@ -43,29 +43,16 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'created_at',
-        'created_at_format',
-        'updated_at',
-        'facebook_id',
-        'google_id',
-        'stripe_account',
-        'phone',
-        'google_calendars',
-        'google_calendar_id',
-        'google_calendar_events',
-        'outlook_calendars',
-        'outlook_calendar_id',
-        'outlook_calendar_events',
-        'ignored_calendar_events',
-        'id_documents',
-        'google_calendar_token',
-        'outlook_token',
-        'xero_token',
-        'xero_tenant_id',
-        'zoom_token'
+    protected $visible = [
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'username',
+        'profile_image',
+        'timezone',
+        'initials',
+        'full_name'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];

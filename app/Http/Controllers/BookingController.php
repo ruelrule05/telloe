@@ -30,8 +30,7 @@ class BookingController extends Controller
 
     public function destroy($id)
     {
-        $bookingService = new BookingService();
-        return $bookingService->destroy($id);
+        return BookingService::destroy($id);
     }
 
     public function googleCalendarEvents()
@@ -72,5 +71,10 @@ class BookingController extends Controller
     public function downloadIcs(Request $request)
     {
         return response(BookingService::downloadIcs($request));
+    }
+
+    public function upcoming()
+    {
+        return BookingService::upcoming();
     }
 }

@@ -6,36 +6,43 @@ export default {
 		VueFormValidate
 	},
 
-	props: {
-		closeButton: {
-			type: Boolean,
-			default: true
-		},
+	// props: {
+	// 	closeButton: {
+	// 		type: Boolean,
+	// 		default: true
+	// 	},
 
-		form: {
-			type: Boolean,
-			default: false
-		},
+	// 	form: {
+	// 		type: Boolean,
+	// 		default: false
+	// 	},
 
-		title: {
-			type: String
-		},
+	// 	title: {
+	// 		type: String
+	// 	},
 
-		loading: {
-			type: Boolean,
-			default: false
-		},
+	// 	loading: {
+	// 		type: Boolean,
+	// 		default: false
+	// 	},
 
-		size: {
-			type: String,
-			default: ''
-		},
+	// 	size: {
+	// 		type: String,
+	// 		default: ''
+	// 	},
 
-		scrollable: {
-			type: Boolean,
-			default: true
+	// 	scrollable: {
+	// 		type: Boolean,
+	// 		default: true
+	// 	}
+	// },
+
+	data: () => ({
+		open: false,
+		masks: {
+			input: 'MMM D, YYYY'
 		}
-	},
+	}),
 
 	computed: {
 		contentComponent() {
@@ -48,18 +55,18 @@ export default {
 	},
 
 	mounted() {
-		$(this.$refs['modal']).on('show.bs.modal', () => {
-			this.$emit('show');
-		});
-		$(this.$refs['modal']).on('shown.bs.modal', () => {
-			this.$emit('shown');
-		});
-		$(this.$refs['modal']).on('hide.bs.modal', () => {
-			this.$emit('hide');
-		});
-		$(this.$refs['modal']).on('hidden.bs.modal', () => {
-			this.$emit('hidden');
-		});
+		// $(this.$refs['modal']).on('show.bs.modal', () => {
+		// 	this.$emit('show');
+		// });
+		// $(this.$refs['modal']).on('shown.bs.modal', () => {
+		// 	this.$emit('shown');
+		// });
+		// $(this.$refs['modal']).on('hide.bs.modal', () => {
+		// 	this.$emit('hide');
+		// });
+		// $(this.$refs['modal']).on('hidden.bs.modal', () => {
+		// 	this.$emit('hidden');
+		// });
 	},
 
 	methods: {
@@ -68,23 +75,11 @@ export default {
 		},
 
 		async show() {
-			return new Promise(resolve => {
-				$(this.$refs['modal'])
-					.modal({ keyboard: false, backdrop: 'static' })
-					.modal('show');
-				setTimeout(() => {
-					resolve();
-				}, 150);
-			});
+			this.open = true;
 		},
 
 		async hide() {
-			return new Promise(resolve => {
-				$(this.$refs['modal']).modal('hide');
-				setTimeout(() => {
-					resolve();
-				}, 150);
-			});
+			this.open = false;
 		}
 	}
 };

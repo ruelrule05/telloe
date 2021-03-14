@@ -15,12 +15,7 @@ class PageService
     {
         checkRequestInviteToken($request);
         if (Auth::check()) {
-            $authUser = Auth::user();
-            // if ($authUser->role_id == 2) {
-            //     return redirect('/dashboard/bookings/calendar');
-            // } else {
-            //     return redirect('/dashboard/bookings');
-            // }
+            return redirect('/dashboard/overview');
         }
 
         if ($request->auth == 'reset' && $request->token) {

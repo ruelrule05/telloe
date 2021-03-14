@@ -10,12 +10,15 @@ module.exports = {
 
 		container: {
 			center: true,
-			padding: '2rem'
+			padding: '0.75rem'
 		},
 
 		colors: {
+			body: '#39445B',
+			muted: '#838EA6',
 			primary: {
-				light: '#4f7ff0',
+				ultralight: '#E9EEFC',
+				light: '#718CEF',
 				DEFAULT: '#3167e3',
 				dark: '#1e52c9'
 			},
@@ -34,9 +37,35 @@ module.exports = {
 			pink: colors.pink
 		},
 		fill: theme => ({
-			primary: theme('colors.primary.DEFAULT'),
-			white: theme('colors.white')
+			current: 'currentColor'
 		}),
+
+		fontSize: {
+			xs: ['0.75rem', { lineHeight: '1rem' }],
+			sm: ['0.875rem', { lineHeight: '1.25rem' }],
+			base: ['1rem', { lineHeight: '1.5rem' }],
+			lg: ['1.125rem', { lineHeight: '1.75rem' }],
+			xl: ['1.25rem', { lineHeight: '1.75rem' }],
+			'2xl': ['1.5rem', { lineHeight: '2rem' }],
+			'3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+			'4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+			'5xl': ['3rem', { lineHeight: '3.5rem' }],
+			'6xl': ['3.75rem', { lineHeight: '1' }],
+			'7xl': ['4.5rem', { lineHeight: '1' }],
+			'8xl': ['6rem', { lineHeight: '1' }],
+			'9xl': ['8rem', { lineHeight: '1' }]
+		},
+
+		fontWeight: {
+			light: '300',
+			normal: '500',
+			medium: '600',
+			semibold: '700',
+			bold: '800',
+			extrabold: '900'
+		},
+
+		textColor: theme => theme('colors'),
 		extend: {}
 	},
 	variants: {

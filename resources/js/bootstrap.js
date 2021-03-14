@@ -3,7 +3,6 @@
 // } catch (e) {
 // 	console.log(e);
 // }
-
 window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.interceptors.request.use(
@@ -40,9 +39,7 @@ window.axios.interceptors.response.use(
 			}
 		}
 		if (error.response.config.toasted && window.app) {
-			window.app.$toasted.show(error.response.data.message, {
-				className: 'bg-danger rounded shadow-none'
-			});
+			window.app.$toasted.error(error.response.data.message);
 		}
 		/*if (error.response && error.response.status == 401) {
             window.location.href = '/login';

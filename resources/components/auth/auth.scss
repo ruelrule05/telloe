@@ -1,31 +1,18 @@
-@import '../../sass/variables';
 .auth-container {
-	top: 0;
-	left: 0;
+	@apply transition-all opacity-0 top-0 left-0 bg-secondary fixed w-screen h-screen overflow-hidden;
 	z-index: 9000;
-	transition: $transition-base;
-	visibility: hidden;
-	opacity: 0;
-	.auth-body {
-		width: 50%;
-		transition: $transition-base;
-		right: -100%;
-	}
-	@media (max-width: map-get($grid-breakpoints, 'md')) {
-		.auth-body {
-			width: 100%;
-		}
-	}
+	padding-right: 5px;
 	&.open {
-		visibility: visible;
-		opacity: 1;
-		.auth-body {
-			right: 0;
-		}
+		@apply opacity-100 overflow-auto;
+		padding-right: 0;
 	}
 }
 .auth-card {
-	@apply bg-white rounded-sm p-11 rounded-xl;
-	width: 460px;
+	@apply bg-white rounded-sm p-12 rounded-xl;
+	width: 536px;
 	max-width: 90vw;
+}
+.auth-heading {
+	font-size: 32px;
+	line-height: 32px;
 }

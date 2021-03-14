@@ -4,11 +4,15 @@ import RangeSlider from 'vue-range-slider';
 import 'vue-range-slider/dist/vue-range-slider.css';
 import Auth from '../components/auth/auth.vue';
 import CheckmarkIcon from '../icons/checkmark';
-
+import Toasted from 'vue-toasted';
 import Vue from 'vue';
-
+Vue.use(Toasted, {
+	position: 'bottom-center',
+	duration: 3000,
+	singleton: true
+});
 Vue.component('pageloader', require('../components/pageloader.vue').default);
-new Vue({
+window.app = new Vue({
 	el: '#app',
 	components: {
 		RangeSlider,
@@ -17,13 +21,13 @@ new Vue({
 	},
 
 	data: {
-		auth: true, //false
-		action: 'signup', // login
+		auth: false, //false
+		action: 'login', // login
 		seats: 10,
 		invite_token: null,
 		member_invite_token: null,
 		email: '',
-		signupStep: 3 //0
+		signupStep: 0 //0
 	},
 
 	watch: {
@@ -63,12 +67,7 @@ new Vue({
 				.get('/auth')
 				.then(response => {
 					if (response) {
-						this.auth = response.data;
-						// if (response.data.role_id == 2) {
-						// 	window.location.replace('/dashboard/bookings/calendar');
-						// } else if (response.data.role_id == 3) {
-						// 	window.location.replace('/dashboard/bookings');
-						// }
+						window.location.replace('/dashboard/overview');
 					}
 				})
 				.catch(() => {});

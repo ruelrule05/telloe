@@ -10,7 +10,7 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'user_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
+    protected $fillable = ['service_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
     protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',

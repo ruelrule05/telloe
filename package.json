@@ -77,12 +77,15 @@
 		"v-lazy-image": "^1.4.0",
 		"video-canvas": "^4.0.3",
 		"vue-chat-scroll": "^1.4.0",
+		"vue-click-outside": "^1.1.0",
 		"vue-debounce": "^2.6.0",
 		"vue-emoji-picker": "^1.0.1",
 		"vue-paginate": "^3.6.0",
 		"vue-range-slider": "^0.6.0",
 		"vue-scrollto": "^2.20.0",
+		"vue2-timepicker": "^1.1.6",
 		"vuedraggable": "^2.24.3",
+		"vuetify": "^2.4.5",
 		"wavesurfer.js": "^4.4.0"
 	}
 }

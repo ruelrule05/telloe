@@ -1,4 +1,13 @@
-@import 'tailwind.scss';
+h1 {
+	font-size: 80px;
+	line-height: 64px;
+}
+.navbar-item {
+	@apply px-3 py-2 text-xs font-normal font-serif text-muted hover:text-gray-600 transition-colors focus:outline-none;
+	&.active {
+		@apply font-medium text-gray-600;
+	}
+}
 //@import '../sass/bootstrap';
 // @each $breakpoint, $value in $grid-breakpoints {
 // 	@media screen and (max-width: #{$value}) {

@@ -3,10 +3,6 @@ import Vue from 'vue';
 
 import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
-import 'bootstrap/js/dist/dropdown';
-import 'bootstrap/js/dist/modal';
-import 'bootstrap/js/dist/tooltip';
-import 'bootstrap/js/dist/collapse';
 import Toasted from 'vue-toasted';
 const introJS = require('intro.js');
 
@@ -14,7 +10,6 @@ Vue.use(VueRouter);
 Vue.use(Toasted, {
 	position: 'bottom-center',
 	duration: 3000,
-	className: 'bg-primary rounded shadow-none',
 	singleton: true
 });
 //window.Vue.component('vue-button', require('../components/vue-button.vue').default);
@@ -118,9 +113,7 @@ window.app = new Vue({
 		Notification,
 		Modal,
 
-		'knowledge-base': () => import(/* webpackChunkName: "knowledge-base" */ './components/knowledge-base/knowledge-base.vue'),
-
-		'sidebar-conversations': () => import(/* webpackChunkName: "sidebar-conversations" */ './components/sidebar-conversations/sidebar-conversations.vue')
+		'knowledge-base': () => import(/* webpackChunkName: "knowledge-base" */ './components/knowledge-base/knowledge-base.vue')
 	},
 	data: {
 		auth: null,
@@ -143,7 +136,6 @@ window.app = new Vue({
 			data: null,
 			status: ''
 		},
-		jQuery: $,
 		muted: false,
 		intros: intros,
 		introJS: introJS,
@@ -214,7 +206,7 @@ window.app = new Vue({
 	watch: {
 		'$route.name': function() {
 			this.contentloading = true;
-			$('.leader-line').remove();
+			//$('.leader-line').remove();
 		},
 		muted: function(value) {
 			this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
@@ -356,40 +348,40 @@ window.app = new Vue({
 		},
 
 		notifyIncomingBookings() {
-			let now = dayjs();
-			this.bookings.forEach(booking => {
-				let bookingDate = dayjs(`${booking.date} ${booking.start}`);
-				let hoursDiff = bookingDate.diff(now, 'hours');
-				if (hoursDiff > 0) {
-					let description = '';
-					let link = false;
-					if (booking.user_id == this.auth.id || booking.contact_id == this.auth.id) {
-						description = `You have an upcoming appointment in less than`;
-					} else {
-						description = `You have an upcoming appointment with <strong>${(booking.user || booking.contact).full_name}</strong> in less than`;
-						link = `/dashboard/bookings/calendar?date=${booking.date}`;
-					}
-					if (hoursDiff <= 1 && !booking.notified_1_app) {
-						// 1 hour
-						booking.notified_1_app = true;
-						this.$refs['notification'].show({
-							description: `${description} an hour.`,
-							link: link
-						});
-					}
-					if (hoursDiff > 1 && hoursDiff <= 3 && !booking.notified_3_app) {
-						// 3 hours
-						booking.notified_3_app = true;
-						this.$refs['notification'].show({
-							description: `${description} an hour.`,
-							link: link
-						});
-					}
-				}
-			});
-			setTimeout(() => {
-				this.notifyIncomingBookings();
-			}, 1000);
+			// let now = dayjs();
+			// this.bookings.forEach(booking => {
+			// 	let bookingDate = dayjs(`${booking.date} ${booking.start}`);
+			// 	let hoursDiff = bookingDate.diff(now, 'hours');
+			// 	if (hoursDiff > 0) {
+			// 		let description = '';
+			// 		let link = false;
+			// 		if (booking.user_id == this.auth.id || booking.contact_id == this.auth.id) {
+			// 			description = `You have an upcoming appointment in less than`;
+			// 		} else {
+			// 			description = `You have an upcoming appointment with <strong>${(booking.user || booking.contact).full_name}</strong> in less than`;
+			// 			link = `/dashboard/bookings/calendar?date=${booking.date}`;
+			// 		}
+			// 		if (hoursDiff <= 1 && !booking.notified_1_app) {
+			// 			// 1 hour
+			// 			booking.notified_1_app = true;
+			// 			this.$refs['notification'].show({
+			// 				description: `${description} an hour.`,
+			// 				link: link
+			// 			});
+			// 		}
+			// 		if (hoursDiff > 1 && hoursDiff <= 3 && !booking.notified_3_app) {
+			// 			// 3 hours
+			// 			booking.notified_3_app = true;
+			// 			this.$refs['notification'].show({
+			// 				description: `${description} an hour.`,
+			// 				link: link
+			// 			});
+			// 		}
+			// 	}
+			// });
+			// setTimeout(() => {
+			// 	this.notifyIncomingBookings();
+			// }, 1000);
 		},
 
 		downloadMedia(message) {

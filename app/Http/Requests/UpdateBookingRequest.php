@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Models\Booking;
-use App\Models\Service;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBookingRequest extends FormRequest
@@ -15,10 +14,7 @@ class UpdateBookingRequest extends FormRequest
      */
     public function authorize()
     {
-        $service = Service::find($this->user_id);
-        return $this->user()->can('show', $service);
-
-        $booking = Booking::find($this->user_id);
+        $booking = Booking::findOrFail($this->route('booking'));
         return $this->user()->can('update', $booking);
     }
 
@@ -36,6 +32,7 @@ class UpdateBookingRequest extends FormRequest
             'service_id' => 'required|integer|exists:services,id',
             'date' => 'required|date',
             'start' => 'required|string|max:20',
+            'end' => 'required|string|max:20',
 
             // 'end' => 'required|string|max:20',
             // 'metadata' => 'nullable|json',

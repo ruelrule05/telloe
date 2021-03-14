@@ -13,3 +13,32 @@
 .btn {
 	font-family: $font-family-base;
 }
+::v-deep .time-picker {
+	@apply relative block;
+	input {
+		@apply cursor-pointer;
+	}
+	.dropdown {
+		height: 150px;
+		display: block !important;
+		z-index: -1;
+		@apply transform scale-95  origin-top overflow-hidden absolute right-0 w-full mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-100 transition-all ease-in-out;
+	}
+	&:focus-within {
+		.dropdown {
+			@apply scale-100 opacity-100 z-50;
+		}
+	}
+	.select-list {
+		@apply flex justify-between h-full outline-none;
+		> ul {
+			@apply overflow-auto w-full;
+		}
+	}
+	li {
+		&.hint {
+			@apply uppercase text-muted;
+		}
+		@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+	}
+}

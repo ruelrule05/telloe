@@ -22,7 +22,8 @@ export default {
 					this.valid = false;
 					let parent = input.getAttribute('data-parent');
 					if (parent) {
-						input.closest(parent).focus();
+						document.querySelector(parent).focus();
+						document.querySelector(parent).click();
 					} else {
 						input.focus();
 					}

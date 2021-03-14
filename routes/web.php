@@ -5,6 +5,7 @@
  *
  */
 use  App\Http\Controllers\AuthController;
+use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 
 Route::get('widget', function () {
@@ -54,6 +55,7 @@ Route::group(
                 Route::get('services/contact_services', 'ServiceController@contactServices');
                 Route::apiResource('services', 'ServiceController');
                 Route::apiResource('notes', 'NoteController');
+                Route::get('bookings/upcoming', [BookingController::class, 'upcoming']);
                 Route::apiResource('bookings', 'BookingController');
                 Route::post('bookings/{id}/assign_to_member', 'BookingController@assignToMember');
                 Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');

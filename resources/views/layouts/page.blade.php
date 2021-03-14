@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 	<title>@yield('title') | {{ config('app.name')}}</title>
-	<link rel="stylesheet" href="{{ mix('css/page.css') }}">
+	@include('partials.styles')
 	@include('partials.meta_tags')
 	@yield('metas')
 	@yield('styles')
+	<link rel="stylesheet" href="{{ mix('css/page.css') }}">
 </head>
 <body>
 	<div id="app" class="overflow-hidden">
@@ -27,8 +28,8 @@
 	@include('partials.scripts')
 	
 	<script>
-		CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
-		MEMBER = {!! isset($member) ? "JSON.parse('".json_encode($member)."');" : 'null' !!};
+		window.CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
+		window.MEMBER = {!! isset($member) ? "JSON.parse('".json_encode($member)."');" : 'null' !!};
 	</script>
 	@yield('scripts')
 </body>
