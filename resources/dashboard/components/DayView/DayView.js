@@ -20,7 +20,8 @@ export default {
 	},
 
 	data: () => ({
-		dayjs: dayjs
+		dayjs: dayjs,
+		newEvent: null
 	}),
 
 	watch: {
@@ -65,7 +66,18 @@ export default {
 		},
 
 		eventClick(event) {
-			this.$emit('eventClick', event.event);
+			if (!event.event.newEvent) {
+				this.$emit('eventClick', event.event);
+				this.newEvent = null;
+			}
+		},
+
+		setNewEvent(interval) {
+			let end = dayjs(`${interval.date} ${interval.time}`)
+				.add(1, 'hour')
+				.format('HH:mm');
+			this.newEvent = { date: interval.date, start: interval.time, end: end };
+			this.$emit('newEvent', JSON.parse(JSON.stringify(this.newEvent)));
 		}
 	}
 };

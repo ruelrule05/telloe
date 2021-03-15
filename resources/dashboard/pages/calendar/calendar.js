@@ -15,7 +15,7 @@ export default {
 	data: () => ({
 		dayjs: dayjs,
 		selectedDate: null,
-		view: 'week',
+		view: 'day',
 		selectedBooking: null,
 		newEvent: false
 	}),
@@ -127,7 +127,11 @@ export default {
 
 		eventClick(event) {
 			this.selectedBooking = event.booking;
-			this.$refs.weekView.newEventDate = {};
+			if (this.view == 'day') {
+				this.$refs.dayView.newEventDate = {};
+			} else if (this.view == 'week') {
+				this.$refs.weekView.newEventDate = {};
+			}
 			this.newEvent = false;
 		},
 
@@ -137,14 +141,24 @@ export default {
 		},
 
 		bookingClosed() {
-			this.$refs.weekView.newEvent = null;
+			if (this.view == 'day') {
+				this.$refs.dayView.newEvent = null;
+			} else if (this.view == 'week') {
+				this.$refs.weekView.newEvent = null;
+			}
 			this.selectedBooking = null;
 		},
 
 		newBookingChange(newBooking) {
-			this.$refs.weekView.newEvent.date = newBooking.date;
-			this.$refs.weekView.newEvent.start = newBooking.start;
-			this.$refs.weekView.newEvent.end = newBooking.end;
+			if (this.view == 'day') {
+				this.$refs.dayView.newEvent.date = newBooking.date;
+				this.$refs.dayView.newEvent.start = newBooking.start;
+				this.$refs.dayView.newEvent.end = newBooking.end;
+			} else if (this.view == 'week') {
+				this.$refs.weekView.newEvent.date = newBooking.date;
+				this.$refs.weekView.newEvent.start = newBooking.start;
+				this.$refs.weekView.newEvent.end = newBooking.end;
+			}
 		}
 	}
 };

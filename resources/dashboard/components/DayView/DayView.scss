@@ -10,3 +10,7 @@
 		@apply hidden #{!important};
 	}
 }
+
+.day-interval {
+	@apply w-full h-full transition-colors hover:bg-gray-100;
+}

@@ -6,7 +6,10 @@
 		</div>
 
 		<VCalendar ref="calendar" :value="date" color="primary" type="day" hide-header :interval-format="intervalFormat" :categories="['bookings']" category-show-all :events="parsedBookings" @click:event="eventClick">
-			<template v-slot:event="{ event }">
+			<template #interval="interval">
+				<div class="day-interval" @click="setNewEvent(interval)"></div>
+			</template>
+			<template #event="{ event }">
 				<div>{{ event.name }}</div>
 				<div>{{ dayjs(event.start).format('H:mm') }}&mdash;{{ dayjs(event.end).format('H:mm') }}</div>
 			</template>
