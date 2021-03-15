@@ -8,7 +8,7 @@ class Contact extends BaseModel
 {
     //
     protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields'];
-    protected $appends = ['full_name', 'initials', 'created_at_format'];
+    protected $appends = ['full_name', 'initials', 'created_at_format', 'profile_image'];
     protected $casts = [
         'blacklisted_services' => 'array',
         'invoices' => 'array',
@@ -73,5 +73,10 @@ class Contact extends BaseModel
     public function contactNotes()
     {
         return $this->hasMany(ContactNote::class)->orderBy('created_at', 'DESC');
+    }
+
+    public function getProfileImageAttribute()
+    {
+        return $this->contactUser ? $this->contactUser->profile_image : null;
     }
 }

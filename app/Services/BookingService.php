@@ -15,6 +15,7 @@ use App\Mail\NewBooking;
 use App\Mail\UpdateBooking;
 use App\Models\Booking;
 use App\Models\BookingNote;
+use App\Models\BookingUser;
 use App\Models\Contact;
 use App\Models\Notification;
 use App\Models\Service;
@@ -85,18 +86,19 @@ class BookingService
         //     return abort(403, 'The selected date or time is not anymore available.');
         // }
 
-        $data = $request->all();
-        $parts = explode(':', $request->start);
-        $endTime = Carbon::now();
-        $endTime->set('hour', $parts[0]);
-        $endTime->set('minute', $parts[1]);
-        $endTime->add('minute', $service->duration);
-        $data['end'] = $endTime->format('H:i');
-        if (isset($data['user_id'])) {
-            $data['user_id'] = ($service->user_id == $request->user_id) ? Auth::user()->id : $data['user_id'];
-        }
-
+        $data = $request->validated();
         $booking = Booking::create($data);
+
+        foreach ($data['contact_ids'] as $contactID) {
+            $contact = Contact::findOrFail($contactID);
+            if (Auth::user()->can('show', $contact) && ! $contact->is_pending && $contact->contact_user_id) {
+                BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => $contact->contact_user_id,
+                    'email' => $contact->contactUser->email,
+                ]);
+            }
+        }
 
         if ($service->create_zoom_link && $service->user->zoom_token) {
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
@@ -143,7 +145,7 @@ class BookingService
             ]);
         }
 
-        return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote'));
+        return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user'));
     }
 
     public static function update($id, UpdateBookingRequest $request)

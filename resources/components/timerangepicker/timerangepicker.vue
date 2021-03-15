@@ -3,13 +3,12 @@
 		<div class="flex">
 			<div class="w-1/2 pr-2">
 				<label>From</label>
-				<vue-timepicker format="hh:mm A" class="w-full" hide-clear-button close-on-complete></vue-timepicker>
-				<!-- <vue-select :options="startHours" @input="emitChange" placeholder="Set time" v-model="time_start" required></vue-select> -->
+				<vue-timepicker ref="timeStart" format="hh:mm A" @change="emitChange" :hour-range="[startHourRange]" :minute-range="[startMinuteRange]" class="w-full" v-model="time_start" manual-input hide-clear-button close-on-complete auto-scroll></vue-timepicker>
 			</div>
 
 			<div class="w-1/2 pl-2">
 				<label>To</label>
-				<vue-select :options="endHours" @input="emitChange" placeholder="Set time" v-model="time_end" required></vue-select>
+				<vue-timepicker ref="timeEnd" format="hh:mm A" @change="emitChange" :hour-range="[endHourRange]" :minute-range="[endMinuteRange]" class="w-full" v-model="time_end" manual-input hide-clear-button close-on-complete auto-scroll></vue-timepicker>
 			</div>
 		</div>
 	</div>

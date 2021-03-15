@@ -36,12 +36,12 @@
 						<div v-for="(contact, contactIndex) in selectedContacts" :key="contact.id" class="contact-item">
 							<div class="flex items-center">
 								<div>
-									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.profile_image + ')' }">
-										<span v-if="!contact.profile_image">{{ contact.initials }}</span>
+									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
+										<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
 									</div>
 								</div>
 								<div class="pl-1 text-sm font-semibold leading-tight">
-									{{ contact.full_name }}
+									{{ contact.contact_user.full_name }}
 								</div>
 							</div>
 							<div>

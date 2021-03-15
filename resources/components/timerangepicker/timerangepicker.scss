@@ -32,13 +32,25 @@
 	.select-list {
 		@apply flex justify-between h-full outline-none;
 		> ul {
-			@apply overflow-auto w-full;
+			@apply overflow-auto w-full relative;
+			&:not(:last-child) {
+				border-right: solid 1px theme('colors.gray.200');
+			}
+			li {
+				&.hint {
+					@apply uppercase text-muted;
+				}
+				@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+				&:first-child {
+					@apply pointer-events-none;
+				}
+				&.active {
+					@apply bg-primary text-white;
+				}
+				&[disabled] {
+					@apply pointer-events-none text-gray-300;
+				}
+			}
 		}
-	}
-	li {
-		&.hint {
-			@apply uppercase text-muted;
-		}
-		@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
 	}
 }

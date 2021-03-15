@@ -45,7 +45,7 @@ export default {
 					return !this.selectedContacts.find(x => x.id == contact.id);
 				})
 				.map(contact => {
-					return { text: contact.full_name, value: contact };
+					return { text: contact.contact_user.full_name, value: contact };
 				});
 		}
 	},
@@ -107,6 +107,7 @@ export default {
 			data.contact_ids = this.selectedContacts.map(x => x.id);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			this.storeBooking(data);
+			this.close();
 		},
 
 		update() {
@@ -140,10 +141,10 @@ export default {
 		},
 
 		emitNewBookingDateChange(time) {
+			this.clonedBooking.start = time.start;
+			this.clonedBooking.end = time.end;
 			if (this.newEvent) {
 				let clonedNewBooking = JSON.parse(JSON.stringify(this.clonedBooking));
-				clonedNewBooking.start = time.start;
-				clonedNewBooking.end = time.end;
 				clonedNewBooking.date = dayjs(clonedNewBooking.date).format('YYYY-MM-DD');
 				this.$emit('newBookingChange', clonedNewBooking);
 			}

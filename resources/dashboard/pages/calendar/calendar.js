@@ -76,7 +76,7 @@ export default {
 	},
 
 	created() {
-		//this.selectedDate = dayjs().toDate(); // for testing
+		//this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookings();
 	},
 

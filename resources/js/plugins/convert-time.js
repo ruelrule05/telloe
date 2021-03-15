@@ -41,7 +41,8 @@ function toTwentyFourHourTime(time, format) {
 			.replace('hh', hour)
 			.replace('HH', maybePrependZero(hour))
 			.replace('mm', minute)
-			.replace('MM', maybePrependZero(minute));
+			.replace('MM', maybePrependZero(minute))
+			.replace('12:', '00:');
 	}
 }
 
@@ -74,7 +75,8 @@ function toTwelveHourTime(time, format) {
 			.replace('mm', minute)
 			.replace('MM', maybePrependZero(minute))
 			.replace('a', getPeriod(hour))
-			.replace('A', getPeriod(hour).toUpperCase());
+			.replace('A', getPeriod(hour).toUpperCase())
+			.replace('00:', '12:');
 	}
 }
 

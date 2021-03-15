@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import ChevronDownIcon from '../../icons/chevron-down';
 import VueSelect from '../vue-select/vue-select.vue';
 import VueTimepicker from 'vue2-timepicker';
+import convertTime from '../../js/plugins/convert-time';
 export default {
 	props: {
 		start: {
@@ -24,8 +25,8 @@ export default {
 	}),
 
 	watch: {
-		start: function(value) {
-			this.time_start = value;
+		start: function() {
+			this.setTimeRanges();
 		},
 		end: function() {
 			this.setTimeRanges();
@@ -33,6 +34,49 @@ export default {
 	},
 
 	computed: {
+		startHourRange() {
+			let hourRange = [0];
+			let time_end = dayjs(`1990-09-23 ${this.time_end}`).subtract(1, 'minute');
+			hourRange.push(time_end.get('hour'));
+			return hourRange;
+		},
+
+		startMinuteRange() {
+			let minuteRange = [0];
+			let time_start = dayjs(`1990-09-23 ${this.time_start}`);
+			let time_end = dayjs(`1990-09-23 ${this.time_end}`);
+			if (time_start.get('hour') == time_end.get('hour')) {
+				minuteRange.push(time_end.get('minute') - 1);
+			} else {
+				minuteRange.push(60);
+			}
+			return minuteRange;
+		},
+
+		endHourRange() {
+			let hourRange = [];
+			let time_start = dayjs(`1990-09-23 ${this.time_start}`).add(1, 'minute');
+			let hour = time_start.get('hour');
+			hourRange.push(hour);
+			hourRange.push(24 - hour);
+			return hourRange;
+		},
+
+		endMinuteRange() {
+			let minuteRange = [];
+			let time_start = dayjs(`1990-09-23 ${this.time_start}`);
+			let time_end = dayjs(`1990-09-23 ${this.time_end}`);
+			let minuteRangeDiff = 0;
+			if (time_start.get('hour') == time_end.get('hour')) {
+				minuteRangeDiff = time_start.get('minute') + 1;
+				minuteRange.push(minuteRangeDiff);
+			} else {
+				minuteRange.push(0);
+			}
+			minuteRange.push(60);
+			return minuteRange;
+		},
+
 		hours() {
 			let now = dayjs();
 			now = now.hour(0).minute(0);
@@ -84,8 +128,8 @@ export default {
 
 	methods: {
 		setTimeRanges() {
-			if (this.start) this.time_start = this.startTimeValue(this.start);
-			if (this.end) this.time_end = this.endTimeValue(this.end);
+			if (this.start) this.time_start = convertTime(this.start, 'HH:mm A');
+			if (this.end) this.time_end = convertTime(this.end, 'HH:mm A');
 		},
 
 		formatDate(date) {
@@ -93,23 +137,8 @@ export default {
 		},
 
 		emitChange() {
-			this.$emit('change', { start: this.time_start, end: this.time_end });
-		},
-
-		startTimeValue(value) {
-			let time_start = this.startHours.find(x => x.value == value);
-			if (!time_start) {
-				value = dayjs(`0000-00-00 ${value}`).format('HH:mmA');
-			}
-			return value;
-		},
-
-		endTimeValue(value) {
-			let time_end = this.endHours.find(x => x.value == value);
-			if (!time_end) {
-				value = dayjs(`0000-00-00 ${value}`).format('HH:mmA');
-			}
-			return value;
+			let data = { start: convertTime(this.time_start, 'hh:mm'), end: convertTime(this.time_end, 'hh:mm') };
+			this.$emit('change', data);
 		}
 	}
 };

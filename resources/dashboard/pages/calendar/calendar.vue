@@ -3,7 +3,7 @@
 		<div class="content-header border-bottom">
 			<div class="flex justify-between">
 				CALENDAR
-				<div>
+				<div v-if="selectedDate">
 					<button type="button" class="btn btn-sm btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
 					</button>
@@ -20,7 +20,7 @@
 				<UpcomingBookings :bookings="upcomingBookings"></UpcomingBookings>
 			</div>
 			<div class="w-1/2 py-6 px-3 border-left">
-				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
+				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 					<div slot="day-content" slot-scope="data">
 						<div class="day-content text-center">
 							<div class="day-label" :class="{ active: selectedDate && selectedDate.toString() == data.day.date.toString(), 'is-today': data.day.isToday }" @click="dayClick(data.day.date)">
