@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Modal from '../../../components/modal/modal.vue';
+import convertTime from '../../../js/plugins/convert-time';
 export default {
 	props: {
 		booking: {},
@@ -121,8 +122,8 @@ export default {
 		},
 
 		updateTime(time) {
-			this.clonedBooking.start = time.start;
-			this.clonedBooking.end = time.end;
+			this.clonedBooking.start = convertTime(time.start, 'hh:mm');
+			this.clonedBooking.end = convertTime(time.end, 'hh:mm');
 		},
 
 		close() {
@@ -141,8 +142,8 @@ export default {
 		},
 
 		emitNewBookingDateChange(time) {
-			this.clonedBooking.start = time.start;
-			this.clonedBooking.end = time.end;
+			this.clonedBooking.start = convertTime(time.start, 'hh:mm');
+			this.clonedBooking.end = convertTime(time.end, 'hh:mm');
 			if (this.newEvent) {
 				let clonedNewBooking = JSON.parse(JSON.stringify(this.clonedBooking));
 				clonedNewBooking.date = dayjs(clonedNewBooking.date).format('YYYY-MM-DD');

@@ -5,7 +5,7 @@
 				<input type="checkbox" v-model="state" :disabled="disabled" />
 				<span class="cr"><checkmark-icon></checkmark-icon></span>
 			</div>
-			<span :class="{ 'text-primary font-bold': state }">{{ label }}</span>
+			<span :class="[state ? 'text-primary font-bold' : 'text-body']">{{ label }}</span>
 		</label>
 	</div>
 </template>

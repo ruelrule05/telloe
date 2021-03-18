@@ -1,5 +1,5 @@
 <template>
-	<div class="modal" :class="{ open: open }">
+	<div class="modal" :class="[{ open: open }, size]">
 		<div>
 			<div class="modal-body">
 				<slot></slot>

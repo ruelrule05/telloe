@@ -18,11 +18,29 @@
 	input {
 		@apply cursor-pointer;
 	}
+	.controls {
+		line-height: 0;
+		@apply hidden absolute top-1/2 right-1 p-0;
+		.clear-btn {
+			@apply focus:outline-none block rounded-full  focus:outline-none cursor-pointer leading-none transform -translate-y-1/2 bg-gray-200;
+			padding: 0px 6px;
+			.char {
+				@apply leading-none;
+				font-size: 22px;
+			}
+		}
+	}
+	&.has-controls {
+		.controls {
+			@apply block;
+		}
+	}
 	.dropdown {
+		width: 150px;
 		height: 150px;
 		display: block !important;
 		z-index: -1;
-		@apply transform scale-95  origin-top overflow-hidden absolute right-0 w-full mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-100 transition-all ease-in-out;
+		@apply transform scale-95  origin-top overflow-hidden absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 transition-all ease-in-out;
 	}
 	&:focus-within {
 		.dropdown {
@@ -40,7 +58,7 @@
 				&.hint {
 					@apply uppercase text-muted;
 				}
-				@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+				@apply block cursor-pointer py-2 transition-colors  text-center text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
 				&:first-child {
 					@apply pointer-events-none;
 				}

@@ -80,7 +80,8 @@ export default {
 		getWeekBookings() {
 			this.getBookings({
 				from: this.$refs.calendar.lastStart.date,
-				to: this.$refs.calendar.lastEnd.date
+				to: this.$refs.calendar.lastEnd.date,
+				commit: false
 			});
 		},
 

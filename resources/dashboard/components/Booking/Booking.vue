@@ -50,7 +50,7 @@
 						</div>
 					</div>
 					<div class="flex justify-between">
-						<button type="submit" class="btn btn-outline-primary btn-sm"><span>Add booking</span></button>
+						<button type="submit" class="btn btn-outline-primary btn-md"><span>Add booking</span></button>
 						<button type="button" class="btn" @click="close">Cancel</button>
 					</div>
 				</vue-form-validate>
@@ -92,12 +92,12 @@
 
 					<div>
 						<label>Notes</label>
-						<textarea class="resize-none" rows="3"></textarea>
+						<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 					</div>
 				</div>
 
 				<div class="flex justify-between">
-					<button type="button" class="btn btn-outline-primary btn-sm" @click="update"><span>Save changes</span></button>
+					<button type="button" class="btn btn-outline-primary btn-md" @click="update"><span>Save changes</span></button>
 					<button type="button" class="btn" @click="confirmDelete">DELETE</button>
 				</div>
 			</template>

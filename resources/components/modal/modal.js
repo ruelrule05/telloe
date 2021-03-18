@@ -6,11 +6,12 @@ export default {
 		VueFormValidate
 	},
 
-	// props: {
-	// 	closeButton: {
-	// 		type: Boolean,
-	// 		default: true
-	// 	},
+	props: {
+		size: {
+			type: String,
+			default: ''
+		}
+	},
 
 	// 	form: {
 	// 		type: Boolean,

@@ -3,58 +3,18 @@ import Vue from 'vue';
 
 import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
-import Toasted from 'vue-toasted';
+import VueToast from 'vue-toast-notification';
+Vue.use(VueToast, { position: 'bottom' });
 const introJS = require('intro.js');
 
 Vue.use(VueRouter);
-Vue.use(Toasted, {
-	position: 'bottom-center',
-	duration: 3000,
-	singleton: true
-});
+
 //window.Vue.component('vue-button', require('../components/vue-button.vue').default);
 
 import dayjs from 'dayjs';
 import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
 
 import BellIcon from '../icons/bell';
-import GridIcon from '../icons/grid';
-import ChatIcon from '../icons/chat';
-import NotebookIcon from '../icons/notebook';
-import CogIcon from '../icons/cog';
-import ChevronDownIcon from '../icons/chevron-down';
-import UsersIcon from '../icons/users';
-import UserCircleIcon from '../icons/user-circle';
-import ShortcutIcon from '../icons/shortcut';
-import PlannerIcon from '../icons/planner';
-import VirtualRealityIcon from '../icons/virtual-reality';
-import ColoredBillIcon from '../icons/colored-bill';
-import ContactIcon from '../icons/contact';
-import WalletIcon from '../icons/wallet';
-import LockIcon from '../icons/lock';
-import ExclamationCircleIcon from '../icons/exclamation-circle';
-import PlayAltIcon from '../icons/play-alt';
-import InfoCircleIcon from '../icons/info-circle';
-import HeadphoneIcon from '../icons/headphone';
-import PasswordIcon from '../icons/password';
-import ListBulletIcon from '../icons/list-bullet';
-import CreditCardIcon from '../icons/credit-card';
-import BillIcon from '../icons/bill';
-import ColoredBellIcon from '../icons/colored-bell';
-import FilePdfIcon from '../icons/file-pdf';
-import FileArchiveIcon from '../icons/file-archive';
-import CloseIcon from '../icons/close';
-import TrayIcon from '../icons/tray';
-import TrayStackIcon from '../icons/tray-stack';
-import LighthouseIcon from '../icons/lighthouse';
-
-import ContactAltIcon from '../icons/contact-alt';
-import MonthviewIcon from '../icons/monthview';
-import PaymentsIcon from '../icons/payments';
-import MessagesIcon from '../icons/chat';
-import MemberIcon from '../icons/member';
-import PlusIcon from '../icons/plus';
-import PackageIcon from '../icons/package';
 
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
@@ -72,41 +32,6 @@ window.app = new Vue({
 	el: '#app',
 	components: {
 		BellIcon,
-		GridIcon,
-		ChatIcon,
-		NotebookIcon,
-		CogIcon,
-		VirtualRealityIcon,
-		UsersIcon,
-		UserCircleIcon,
-		ShortcutIcon,
-		PlannerIcon,
-		ChevronDownIcon,
-		ColoredBillIcon,
-		ContactIcon,
-		WalletIcon,
-		LockIcon,
-		ExclamationCircleIcon,
-		PlayAltIcon,
-		InfoCircleIcon,
-		HeadphoneIcon,
-		PasswordIcon,
-		ListBulletIcon,
-		CreditCardIcon,
-		BillIcon,
-		ColoredBellIcon,
-
-		ContactAltIcon,
-		MonthviewIcon,
-		PaymentsIcon,
-		MessagesIcon,
-		CloseIcon,
-		TrayIcon,
-		TrayStackIcon,
-		LighthouseIcon,
-		MemberIcon,
-		PlusIcon,
-		PackageIcon,
 
 		VideoCall,
 		ScreenRecorder,
@@ -116,6 +41,8 @@ window.app = new Vue({
 		'knowledge-base': () => import(/* webpackChunkName: "knowledge-base" */ './components/knowledge-base/knowledge-base.vue')
 	},
 	data: {
+		app_url: window.APP_URL,
+		app_name: window.APP_NAME,
 		auth: null,
 		pageloading: false,
 		heading: '',
@@ -204,9 +131,14 @@ window.app = new Vue({
 	},
 
 	watch: {
-		'$route.name': function() {
+		'$route.name': function(value) {
 			this.contentloading = true;
-			//$('.leader-line').remove();
+			if (value) {
+				document.title = value.charAt(0).toUpperCase() + value.slice(1) + ' | ' + process.env.MIX_APP_NAME;
+			}
+			if (this.$refs.dashboardContent) {
+				this.$refs.dashboardContent.scroll(0, 0);
+			}
 		},
 		muted: function(value) {
 			this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
@@ -430,15 +362,12 @@ window.app = new Vue({
 			} else {
 				switch (extension) {
 					case 'pdf':
-						iconComponent = FilePdfIcon;
 						break;
 
 					case 'zip':
-						iconComponent = FileArchiveIcon;
 						break;
 
 					case 'rar':
-						iconComponent = FileArchiveIcon;
 						break;
 
 					case 'docx':

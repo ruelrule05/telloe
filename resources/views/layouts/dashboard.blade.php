@@ -38,25 +38,19 @@
 						<div class="dropdown-menu overflow-hidden cursor-auto">
 							<span class="dropdown-header">Account</span>
 							<router-link exact to="/dashboard/account?tab=profile" class="dropdown-item d-flex align-items-center">
-								<user-circle-icon height="18" width="18" class="dropdown-item-icon"></user-circle-icon>
 								Profile
 							</router-link>
 							<router-link exact to="/dashboard/account?tab=security" class="dropdown-item d-flex align-items-center">
-								<password-icon height="18" width="18" class="dropdown-item-icon"></password-icon>
 								Security
 							</router-link>
 							<template>
 								<router-link exact to="/dashboard/account?tab=payout" class="dropdown-item d-flex align-items-center">
-									<credit-card-icon height="18" width="18" class="dropdown-item-icon"></credit-card-icon>
 									Payout
-									<exclamation-circle-icon v-if="!payoutComplete" class="fill-warning ml-auto" height="14" width="14" transform="scale(1.2)"></exclamation-circle-icon>
 								</router-link>
 								<router-link to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
-									<bill-icon height="18" width="18" class="dropdown-item-icon"></bill-icon>
 									Billing
 								</router-link>
 								<router-link to="/dashboard/widget" class="dropdown-item d-flex align-items-center">
-									<tray-icon height="18" width="18" class="dropdown-item-icon"></tray-icon>
 									Widget
 								</router-link>
 							</template>
@@ -77,18 +71,15 @@
 
 							<span class="dropdown-header">About</span>
 							<a target="_blank" href="/privacy-policy" class="dropdown-item d-flex align-items-center">
-								<lock-icon height="18" width="18" class="dropdown-item-icon"></lock-icon>
 								Privacy Policy
 							</a>
 							<a target="_blank" href="/terms-of-service" class="dropdown-item d-flex align-items-center">
-								<list-bullet-icon height="18" width="18" class="dropdown-item-icon"></list-bullet-icon>
 								Terms of Service
 							</a>
 
 							  <div class="dropdown-divider mx-n2"></div>
 
 							  <a target="_blank" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
-								<shortcut-icon height="18" width="18" class="dropdown-item-icon"></shortcut-icon>
 								Booking Page
 							</a>
 							<form action="/logout" method="POST">
@@ -162,7 +153,6 @@
 					<!-- Notifications -->
 					<div class="d-none mt-auto mb-2 sidebar-menu " hidden>
 						<div class="cursor-pointer d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" @click="toggleIntros()">
-							<lighthouse-icon stroke="white" stroke-width="8" height="22" width="22" class="fill-white"></lighthouse-icon>
 							<span class="pl-3">Help Tool</span>
 						</div>
 
@@ -198,7 +188,7 @@
 			</div>
 
 			<div class="flex flex-col flex-grow overflow-hidden">
-				<div class="dashboard-content position-relative h-full overflow-auto">
+				<div class="dashboard-content position-relative h-full overflow-auto" ref="dashboardContent">
 					{{-- <div class="contentloader position-absolute w-full h-full bg-light" v-if="$root.contentloading">
 						<div class="position-absolute-center">
 							<div class="spinner-border text-primary" role="status"></div>
@@ -206,8 +196,8 @@
 					</div> --}}
 
 					<router-view></router-view>
-
-					<div class="border-top bg-white p-6 flex justify-between text-muted text-xs">
+					
+					<div v-if="$route.name != 'conversations'" class="border-top bg-white p-6 flex justify-between text-muted text-xs footer">
 						<div>
 							<button class="font-bold" type="button">Help Tool</button>
 							<button class="ml-6 font-bold" type="button">Get Support</button>
@@ -261,9 +251,9 @@
 
 		<!-- <script src="/js/leader-line.min.js"></script> -->
 		<script>
-			const APP_NAME = '{{ config("app.name") }}';
-			const APP_URL = '{{ config("app.url") }}';
-			const WS_URL = '{{ config("app.websocket_url") }}';
+			window.APP_NAME = '{{ config("app.name") }}';
+			window.APP_URL = '{{ config("app.url") }}';
+			window.WS_URL = '{{ config("app.websocket_url") }}';
 		</script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>
 	</body>

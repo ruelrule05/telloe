@@ -4,6 +4,9 @@
 .checkbox label {
 	cursor: pointer;
 	line-height: 20px;
+	span {
+		@apply transition-all;
+	}
 }
 .checkbox label:after {
 	content: '';

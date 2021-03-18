@@ -50,7 +50,7 @@ class Conversation extends BaseModel
         if ($this->members->count() == 1) {
             $member = $this->user->load('role');
             if (Auth::user()->id == $member->id) {
-                $member = $this->members()->first()->user->load('role');
+                $member = $this->members()->first()->user->load('role')->makeVisible(['last_online_format']);
                 if (isset($this->attributes['contact_id'])) {
                     $member->contact = Contact::find($this->attributes['contact_id']);
                 }

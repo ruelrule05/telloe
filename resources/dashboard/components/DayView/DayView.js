@@ -26,7 +26,7 @@ export default {
 
 	watch: {
 		date: function(value) {
-			this.getBookings({ date: dayjs(value).format('YYYY-MM-DD') });
+			this.getBookings({ date: dayjs(value).format('YYYY-MM-DD'), commit: false });
 		}
 	},
 
@@ -54,7 +54,7 @@ export default {
 	},
 
 	created() {
-		this.getBookings({ date: dayjs(this.date).format('YYYY-MM-DD') });
+		this.getBookings({ date: dayjs(this.date).format('YYYY-MM-DD'), commit: false });
 	},
 
 	methods: {

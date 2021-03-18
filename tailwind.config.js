@@ -22,7 +22,10 @@ module.exports = {
 				DEFAULT: '#3167e3',
 				dark: '#1e52c9'
 			},
-			secondary: '#fae6e2',
+			secondary: {
+				light: '#F8F8F9',
+				DEFAULT: '#fae6e2'
+			},
 			transparent: 'transparent',
 			current: 'currentColor',
 			black: colors.black,

@@ -34,9 +34,11 @@ import CallMenuIcon from '../../../../icons/call-menu';
 import VideocamIcon from '../../../../icons/videocam';
 import MicrophoneAltIcon from '../../../../icons/microphone-alt';
 import DocumentAltIcon from '../../../../icons/document-alt';
-import ScreenRecordIcon from '../../../../icons/screen-record';
+import ScreenshareIcon from '../../../../icons/screenshare';
 import DownloadIcon from '../../../../icons/download';
 import VueChatScroll from 'vue-chat-scroll';
+import SendIcon from '../../../../icons/send';
+import AttachmentIcon from '../../../../icons/attachment';
 Vue.use(VueChatScroll);
 
 import Tooltip from '../../../../js/directives/tooltip';
@@ -73,8 +75,10 @@ export default {
 		VideocamIcon,
 		MicrophoneAltIcon,
 		DocumentAltIcon,
-		ScreenRecordIcon,
+		ScreenshareIcon,
 		DownloadIcon,
+		SendIcon,
+		AttachmentIcon,
 
 		info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue'),
 		gallery: () => import(/* webpackChunkName: "gallery" */ '../../../../components/gallery/gallery.vue'),
@@ -415,7 +419,6 @@ export default {
 				e.preventDefault();
 				isEnter = true;
 				this.$refs['messageForm'].submit();
-				this.$refs['messageInput'].innerHTML = '';
 			}
 			setTimeout(() => {
 				if (!isEnter && this.textMessage.trim().length) {
@@ -700,6 +703,7 @@ export default {
 		},
 
 		async sendText() {
+			this.$refs['messageInput'].innerHTML = '';
 			let textMessage = this.textMessage.trim();
 			this.textMessage = '';
 			if (textMessage.length > 0) {

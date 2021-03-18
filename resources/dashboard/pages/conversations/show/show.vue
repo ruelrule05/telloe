@@ -1,16 +1,16 @@
 <template>
-	<div class="flex-grow-1 bg-white d-flex flex-column h-100 overflow-hidden" v-if="conversation">
-		<div class="px-4 py-4 bg-white border-bottom position-relative d-flex align-items-center">
-			<div class="d-flex align-items-center">
-				<div class="user-profile-image" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
+	<div class="h-full flex flex-col overflow-hidden" v-if="conversation">
+		<div class="p-4 border-bottom relative flex items-center">
+			<div class="flex items-center">
+				<div class="profile-image profile-image-md" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 					<span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
-					<i v-if="$root.isOnline(conversation.member.id)" class="online-status bg-success">&nbsp;</i>
+					<i v-if="$root.isOnline(conversation.member.id)" class="online-status">&nbsp;</i>
 				</div>
 				<div class="ml-2">
-					<h5 class="font-heading mb-0" @click="goToContact(conversation.member)" :class="{ 'hover-underline cursor-pointer': contact(conversation.member) }">{{ conversation.member.full_name || conversation.name }}</h5>
-					<small v-if="conversation.member.is_pending" class="d-block text-warning">Pending account</small>
-					<div class="d-flex align-items-center" v-else-if="conversation.member.id && conversation.member.last_online">
-						<small class="text-secondary">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
+					<h5 class="text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
+					<small v-if="conversation.member.is_pending" class="text-warning">Pending account</small>
+					<div class="flex items-center" v-else-if="conversation.member.id && conversation.member.last_online_format">
+						<small class="text-muted">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
 					</div>
 					<small v-else class="d-block text-secondary">
 						<template v-if="(conversation.member.role || {}).role != 'support'">{{ conversation.members.length }} members</template>
@@ -18,49 +18,44 @@
 					</small>
 				</div>
 			</div>
-			<div class="ml-auto btn-circle-actions">
+			<div class="ml-auto btn-actions">
 				<template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
 					<button
 						:data-intro="$root.intros.conversations.steps[2]"
 						data-step="3"
-						class="btn border-0 py-0 px-1"
-						v-tooltip.bottom="'Video call'"
 						@click="
 							$root.callConversation = conversation;
 							$root.$refs['videoCall'].outgoingCall(conversation);
 						"
 						:class="{ 'active disabled': $root.callConversation ? true : false }"
 					>
-						<videocam-icon width="26" height="26"></videocam-icon>
+						<videocam-icon></videocam-icon>
 					</button>
 					<button
 						:data-intro="$root.intros.conversations.steps[3]"
 						data-step="4"
-						class="btn border-0 py-0 px-1 mx-2"
-						v-tooltip.bottom="'Audio call'"
 						@click="
 							$root.callConversation = conversation;
 							$root.$refs['videoCall'].outgoingCall(conversation, false);
 						"
 						:class="{ 'active disabled': $root.callConversation ? true : false }"
 					>
-						<call-menu-icon width="20" height="20"></call-menu-icon>
+						<call-menu-icon></call-menu-icon>
 					</button>
-					<!-- <button class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Voice call'" :class="{'disabled': $root.callConversation ? true : false}"><colored-phone-icon width="24" height="24"></colored-phone-icon></button> -->
 				</template>
-				<button :data-intro="$root.intros.conversations.steps[4]" data-step="5" class="btn shadow-none border-0 py-0 px-1" v-tooltip.bottom="'Details'" @click="toggleDetailsTab" :class="{ active: $root.detailsTab == 'profile' }"><info-circle-icon width="28" height="28"></info-circle-icon></button>
+				<button :data-intro="$root.intros.conversations.steps[4]" data-step="5" @click="toggleDetailsTab" :class="{ active: $root.detailsTab == 'profile' }"><info-circle-icon></info-circle-icon></button>
 			</div>
 		</div>
 
-		<div class="d-flex flex-grow-1 h-100 overflow-hidden">
-			<div class="conversation-messages flex-grow-1 border-right text-nowrap overflow-hidden position-relative h-100" @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="dropFile">
+		<div class="flex flex-grow h-full overflow-hidden">
+			<div class="conversation-messages flex-grow border-right text-nowrap overflow-hidden relative h-full" @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="dropFile">
 				<div v-if="dragOver" class="filedrop position-absolute w-100 h-100 bg-light">
 					<span class="h3 position-absolute-center text-secondary">Drop Files Here</span>
 				</div>
 
-				<div class="d-flex flex-column h-100">
-					<div class="overflow-hidden flex-grow-1 bg-white position-relative">
-						<div v-if="hasScreenRecording" class="position-absolute w-100 h-100 bg-white screen-recorder-data">
+				<div class="flex flex-col h-full">
+					<div class="overflow-hidden flex-grow relative">
+						<!-- <div v-if="hasScreenRecording" class="position-absolute w-100 h-100 bg-white screen-recorder-data">
 							<div class="position-absolute-center w-75 text-center h-100 py-5 d-flex flex-column">
 								<h6 class="font-heading h5">Screen recording</h6>
 								<div class="flex-grow-1 position-relative bg-dark rounded overflow-hidden">
@@ -88,17 +83,21 @@
 									<button type="button" class="btn btn-light border" @click="sendPastedFile()">Send</button>
 								</div>
 							</div>
-						</div>
+						</div> -->
 
 						<div v-if="!ready || !conversation.ready" class="bg-white messages-loader position-absolute-center w-100 h-100">
 							<div class="position-absolute-center">
 								<div class="spinner-border spinner-border-sm text-primary"></div>
 							</div>
 						</div>
-						<div class="p-3 h-100 overflow-y-auto" :class="{ 'opacity-0': !ready }" v-chat-scroll="{ always: true, smooth: false }" ref="message-group-container" @v-chat-scroll-top-reached="messageScroll">
+
+						<div class="p-3 h-full overflow-y-auto" :class="{ 'opacity-0': !ready }" v-chat-scroll="{ always: true, smooth: false }" ref="message-group-container" @v-chat-scroll-top-reached="messageScroll">
+							<!-- Pagination spinner -->
 							<div class="text-center mb-3" :class="{ 'opacity-0': !messagePaginateLoading }">
 								<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
 							</div>
+
+							<!-- Group messages -->
 							<div v-for="(grouped_message, index) in grouped_messages" :key="index" class="w-100 message-group">
 								<div v-if="grouped_message.type == 'call_ended'" class="text-center text-gray">
 									<div v-for="message in grouped_message.messages" :key="message.id" class="position-relative hrule">
@@ -113,17 +112,16 @@
 									</div>
 								</div>
 								<template v-else>
-									<small class="font-heading font-weight-bold font-size-base line-height-1 message-sender d-block" :class="{ 'text-right': grouped_message.outgoing }">{{ grouped_message.sender.full_name }}</small>
-									<div class="d-flex align-items-end message-body" :class="{ 'outgoing-message text-right flex-row-reverse': grouped_message.outgoing }">
+									<div class="flex items-end message-body" :class="{ 'outgoing-message text-right flex-row-reverse': grouped_message.outgoing }">
 										<div>
-											<div class="user-profile-image" :style="{ backgroundImage: 'url(' + grouped_message.sender.profile_image + ')' }">
+											<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + grouped_message.sender.profile_image + ')' }">
 												<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
 											</div>
 										</div>
-										<div class="px-1 flex-1">
+										<div class="px-1 flex-1 -mb-1">
 											<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item">
-												<div class="text-wrap position-relative message-content" :class="{ 'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type) }">
-													<div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
+												<div class="relative message-content" :class="{ 'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type) }">
+													<!-- <div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
 														<div class="action-content position-relative line-height-1">
 															<div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
 																<span v-if="message.tags.length > 0" class="action-label">{{ message.tags.length }}</span>
@@ -156,11 +154,6 @@
 																</div>
 															</div>
 														</div>
-														<!-- <div v-tooltip.top="'History'" class="action-content mx-1 cursor-pointer line-height-1">
-                                                        <div class="action-button">
-                                                            <history-icon height="20" width="20" :fill="message.is_history ? '#6e82ea' : ''" :class="{'active': message.is_history}" @click.native="markHistory(message)"></history-icon>
-                                                        </div>
-                                                    </div> -->
 														<div v-if="grouped_message.outgoing" v-tooltip.top="'Delete'" class="action-content cursor-pointer line-height-1">
 															<div class="action-button">
 																<trash-icon
@@ -186,14 +179,14 @@
 																<download-icon height="20" width="20" @click.native="$root.downloadMedia(message)"></download-icon>
 															</div>
 														</div>
-													</div>
+													</div> -->
 													<message-type :message="message" :outgoing="grouped_message.outgoing"></message-type>
 												</div>
 											</div>
 										</div>
 									</div>
-									<small v-if="index == grouped_messages.length - 1" class="text-secondary d-flex align-items-center" :class="{ 'justify-content-end': grouped_message.outgoing }">
-										<template v-if="grouped_message.outgoing && grouped_message.is_read">
+									<small class="text-muted flex items-center mt-2" :class="{ 'justify-end': grouped_message.outgoing }">
+										<template v-if="index == grouped_messages.length - 1 && grouped_message.outgoing && grouped_message.is_read">
 											Seen&nbsp;
 											<eye-icon width="14" height="14" class="fill-primary"></eye-icon>
 											&nbsp;•
@@ -203,6 +196,7 @@
 								</template>
 							</div>
 
+							<!-- Typing users -->
 							<div class="typing-users position-absolute pl-2">
 								<template v-for="typingUser in typingUsers">
 									<div class="d-flex align-items-center text-secondary mb-2" v-if="typingUser.typing" :key="typingUser.userId">
@@ -218,8 +212,9 @@
 						</div>
 					</div>
 
-					<div v-if="!conversation.member.is_pending" class="border-top shadow-sm p-2 bg-white message-form">
-						<div class="d-flex mb-1">
+					<!-- Message input -->
+					<div v-if="!conversation.member.is_pending" class="border-top p-4">
+						<div class="flex mb-1">
 							<div v-for="(file, index) in pendingFiles" :key="index" class="bg-light rounded overflow-hidden pending-file-preview mr-1 position-relative">
 								<button type="button" class="position-absolute btn badge-pill line-height-0 p-0 btn-white btn-sm remove-file" @click="pendingFiles.splice(index, 1)"><close-icon></close-icon></button>
 								<div v-if="file.file.dataType == 'image' || file.file.dataType == 'video'" :style="{ backgroundImage: 'url(' + file.preview + ')' }" class="file-thumbnail">
@@ -236,23 +231,25 @@
 								</div>
 							</div>
 						</div>
-						<div class="d-flex align-items-center message-form-inputs">
-							<vue-form-validate @submit="sendText" class="flex-1" ref="messageForm" @mounted="messageFormMounted">
-								<div class="form-control border-0 shadow-none message-input bg-gray-200 text-wrap h-auto overflow-auto" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
-							</vue-form-validate>
-
-							<div class="px-1 text-nowrap overflow-hidden" :class="{ expand: moreActions }">
-								<button :data-intro="$root.intros.conversations.steps[5]" data-step="6" data-position="top" type="button" class="line-height-sm ml-2 btn px-0" @blur="emojipicker = false" :class="{ 'emojipicker-open': emojipicker }">
+						<div class="flex items-center">
+							<div class="overflow-hidden flex items-center text-primary pl-2">
+								<button :data-intro="$root.intros.conversations.steps[5]" data-step="6" data-position="top" type="button" class="line-height-sm p-0 focus:outline-none" @blur="emojipicker = false" :class="{ 'emojipicker-open': emojipicker }">
 									<emojipicker @select="selectEmoji"></emojipicker>
 								</button>
-								<!-- <button class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('video')"><video-camera-icon width="24" height="24" class="mt-1"></video-camera-icon></button> -->
-								<button :data-intro="$root.intros.conversations.steps[6]" data-step="7" data-position="top" class="line-height-sm ml-2 btn px-0" type="button" @click="openRecorder('audio')"><microphone-alt-icon width="20" height="20"></microphone-alt-icon></button>
-								<button :data-intro="$root.intros.conversations.steps[7]" data-step="8" data-position="top" class="line-height-sm ml-2 btn px-0" type="button" @click="$refs['fileMedia'].click()"><document-alt-icon width="20" height="20"></document-alt-icon></button>
-								<input type="file" hidden ref="fileMedia" @change="addFile" />
+								<button :data-intro="$root.intros.conversations.steps[7]" data-step="8" data-position="top" class="ml-6" type="button" @click="$refs['fileMedia'].click()"><AttachmentIcon class="fill-current"></AttachmentIcon></button>
 
-								<button :data-intro="$root.intros.conversations.steps[8]" data-step="9" data-position="top" class="line-height-sm ml-2 btn px-0 position-relative" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
-									<screen-record-icon width="20" height="20"></screen-record-icon>
+								<button :data-intro="$root.intros.conversations.steps[6]" data-step="7" data-position="top" class="ml-6" type="button" @click="openRecorder('audio')"><microphone-alt-icon class="fill-current"></microphone-alt-icon></button>
+								<input type="file" ref="fileMedia" class="hidden" @change="addFile" />
+
+								<button :data-intro="$root.intros.conversations.steps[8]" data-step="9" data-position="top" class="ml-6" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
+									<screenshare-icon class="fill-current"></screenshare-icon>
 								</button>
+							</div>
+							<div class="flex-1 pl-4">
+								<vue-form-validate @submit="sendText" class="flex items-center rounded-full bg-gray-200 p-1" ref="messageForm" @mounted="messageFormMounted">
+									<div class="py-2 px-4 message-input h-auto overflow-auto flex-grow focus:outline-none " contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
+									<button type="submit" class="rounded-full bg-white p-3 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current"></SendIcon></button>
+								</vue-form-validate>
 							</div>
 						</div>
 					</div>
@@ -260,7 +257,7 @@
 			</div>
 
 			<!-- Info -->
-			<div class="conversation-details h-100 position-relative bg-white overflow-hidden" :class="{ open: $root.detailsTab }">
+			<!-- <div class="conversation-details h-100 position-relative bg-white overflow-hidden" :class="{ open: $root.detailsTab }">
 				<div class="text-left h-100 overflow-hidden">
 					<info :conversation="conversation"></info>
 				</div>
@@ -268,7 +265,7 @@
 
 			<gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
 
-			<audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
+			<audio-recorder-modal v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal> -->
 
 			<!-- <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal> -->
 		</div>

@@ -1,17 +1,15 @@
 <template>
 	<div class="min-h-full">
 		<div class="content-header border-bottom">
-			<div class="flex justify-between">
-				CALENDAR
-				<div v-if="selectedDate">
-					<button type="button" class="btn btn-sm btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
-						<span>{{ weekToggleText }}</span>
-					</button>
-					<div class="button-date-nav">
-						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-						<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
-						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
-					</div>
+			CALENDAR
+			<div v-if="selectedDate" class="ml-auto">
+				<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
+					<span>{{ weekToggleText }}</span>
+				</button>
+				<div class="button-date-nav">
+					<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
+					<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
+					<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 				</div>
 			</div>
 		</div>

@@ -12,9 +12,9 @@ class ServiceController extends Controller
 {
     //
 
-    public function index()
+    public function index(Request $request)
     {
-        return response(ServiceService::index());
+        return response(ServiceService::index($request));
     }
 
     public function store(StoreServiceRequest $request)

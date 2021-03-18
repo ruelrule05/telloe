@@ -4,13 +4,8 @@ import RangeSlider from 'vue-range-slider';
 import 'vue-range-slider/dist/vue-range-slider.css';
 import Auth from '../components/auth/auth.vue';
 import CheckmarkIcon from '../icons/checkmark';
-import Toasted from 'vue-toasted';
 import Vue from 'vue';
-Vue.use(Toasted, {
-	position: 'bottom-center',
-	duration: 3000,
-	singleton: true
-});
+
 Vue.component('pageloader', require('../components/pageloader.vue').default);
 window.app = new Vue({
 	el: '#app',

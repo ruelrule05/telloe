@@ -65,27 +65,6 @@ class BookingService
     public static function store(StoreBookingRequest $request)
     {
         $service = Service::findOrfail($request->service_id);
-
-        // $timeslots = $service->timeslots($request->date);
-        // if ($request->contact_id) {
-        //     $contact = Contact::findOrFail($request->contact_id);
-
-        //     if (in_array($service->id, $contact->blacklisted_services)) {
-        //         return abort(403, 'The selected service is blacklisted for this contact.');
-        //     }
-        // }
-        // $timeslotAvailable = false;
-        // foreach ($timeslots as $timeslot) {
-        //     if ($timeslot['time'] == $request->start && $timeslot['is_available'] == true) {
-        //         $timeslotAvailable = true;
-        //         break;
-        //     }
-        // }
-
-        // if (! $timeslotAvailable) {
-        //     return abort(403, 'The selected date or time is not anymore available.');
-        // }
-
         $data = $request->validated();
         $booking = Booking::create($data);
 
@@ -156,12 +135,12 @@ class BookingService
         $startDate = Carbon::parse("$booking->date $booking->start");
         $booking->update($request->validated());
 
-        if (isset($request->booking_note['note'])) {
-            BookingNote::updateOrCreate(
-                ['booking_id' => $booking->id],
-                ['note' => $request->booking_note['note']]
-            );
-        }
+        // if (isset($request->booking_note['note'])) {
+        //     BookingNote::updateOrCreate(
+        //         ['booking_id' => $booking->id],
+        //         ['note' => $request->booking_note['note']]
+        //     );
+        // }
 
         try {
             Mail::queue(new UpdateBooking($booking, 'client'));

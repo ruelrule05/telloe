@@ -1,10 +1,10 @@
-.dropdown {
+.select {
 	@apply border border-gray-300 cursor-pointer rounded-md inline-flex justify-center items-center w-full px-3 py-2 transition ring-primary ring-offset-1 focus:outline-none overflow-hidden shadow-inner;
 	&.show {
 		@apply border-gray-500 ring-2;
 	}
 }
-.dropdown-menu {
+.select-menu {
 	> div {
 		max-height: 200px;
 	}
@@ -18,7 +18,7 @@
 	@apply px-3 py-1 font-normal ring-opacity-0;
 	font-size: 15px;
 }
-.dropdown-item {
+.select-item {
 	@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
 	&.active {
 		@apply bg-primary text-white;

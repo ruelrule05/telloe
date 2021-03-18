@@ -1,0 +1,10 @@
+.service-card {
+	@apply rounded-2xl bg-secondary-light p-4;
+}
+.members-container {
+	@apply flex;
+	height: 30px;
+	.profile-image {
+		@apply -mr-1;
+	}
+}

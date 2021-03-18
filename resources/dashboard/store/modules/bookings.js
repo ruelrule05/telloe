@@ -1,5 +1,4 @@
 const name = 'bookings';
-const queryString = require('query-string');
 
 const state = () => ({
 	ready: false,
@@ -30,7 +29,9 @@ const mutations = {
 
 	update(state, data) {
 		let booking = state.index.find(x => x.id == data.id);
-		if (booking) Object.assign(booking, data);
+		if (booking) {
+			Object.assign(booking, data);
+		}
 	},
 
 	delete(state, id) {
@@ -61,9 +62,10 @@ const mutations = {
 
 const actions = {
 	async index({ commit }, params) {
-		params = queryString.stringify(params);
-		let response = await window.axios.get(`/${name}?${params}`);
-		commit('index', response.data);
+		let response = await window.axios.get(`/${name}`, { params: params });
+		if (!params || params.commit !== false) {
+			commit('index', response.data);
+		}
 		return response;
 	},
 

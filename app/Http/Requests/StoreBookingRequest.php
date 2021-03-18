@@ -41,6 +41,7 @@ class StoreBookingRequest extends FormRequest
             'date' => 'required|date',
             'start' => 'required|date_format:H:i',
             'end' => 'required|date_format:H:i',
+            'notes' => 'nullable|string',
 
             // 'end' => 'required|string|max:20',
             // 'metadata' => 'nullable|json',

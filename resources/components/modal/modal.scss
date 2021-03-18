@@ -5,7 +5,7 @@
 		@apply col-start-4 col-span-5 relative z-50;
 	}
 	.modal-body {
-		@apply bg-white rounded-lg p-6 transform scale-95 transition-all ease-in-out shadow-lg;
+		@apply bg-white rounded-xl p-6 transform scale-95 transition-all ease-in-out shadow-lg;
 	}
 	.modal-backdrop {
 		@apply bg-black bg-opacity-50 fixed top-0 left-0 z-40 w-screen h-screen;
@@ -15,6 +15,12 @@
 		z-index: 99999;
 		.modal-body {
 			@apply scale-100;
+		}
+	}
+	&.sm {
+		@apply grid-cols-12;
+		> div:not(.modal-backdrop) {
+			@apply col-start-5 col-span-4;
 		}
 	}
 }

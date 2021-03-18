@@ -16,13 +16,18 @@ class ServiceService
 {
     use AuthorizesRequests;
 
-    public static function index()
+    public static function index(Request $request)
     {
         $auth_user = Auth::user();
         $member_ids = Member::where('member_user_id', $auth_user->id)->get()->pluck('id')->toArray();
         $services = Service::with('user', 'assignedServices.member.memberUser')->where(function ($query) use ($auth_user, $member_ids) {
             $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
-        })->orderBy('created_at', 'DESC')->get();
+        })->orderBy('created_at', 'DESC');
+        if ($request->paginate) {
+            $services = $services->paginate(2);
+        } else {
+            $services = $services->get();
+        }
         return $services;
     }
 

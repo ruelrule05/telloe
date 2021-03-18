@@ -3,13 +3,17 @@ const queryString = require('query-string');
 
 const state = () => ({
 	ready: false,
-	index: []
+	index: [],
+	paginated: { data: [] }
 });
 
 const mutations = {
 	index(state, data) {
-		state.index = [];
-		state.index.push.apply(state.index, data);
+		if (data.data) {
+			state.paginated = data;
+		} else {
+			state.index = data;
+		}
 		state.ready = true;
 	},
 
@@ -24,7 +28,16 @@ const mutations = {
 
 	update(state, data) {
 		let service = state.index.find(x => x.id == data.id);
-		if (service) Object.assign(service, data);
+		if (service) {
+			Object.assign(service, data);
+			if (service.in_widget) {
+				state.index.forEach(s => {
+					if (s.id != service.id) {
+						s.in_widget = false;
+					}
+				});
+			}
+		}
 	},
 
 	delete(state, data) {
@@ -36,8 +49,8 @@ const mutations = {
 };
 
 const actions = {
-	async index({ commit }) {
-		let response = await window.axios.get(`/${name}`);
+	async index({ commit }, params) {
+		let response = await window.axios.get(`/${name}`, { params: params });
 		commit('index', response.data);
 	},
 

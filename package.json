@@ -34,13 +34,13 @@
 		"vue-router": "^3.4.9",
 		"vue-style-loader": "^4.1.2",
 		"vue-template-compiler": "^2.6.12",
-		"vue-toasted": "^1.1.28",
 		"vuex": "^3.6.0"
 	},
 	"dependencies": {
 		"blueimp-load-image": "^5.14.0",
 		"bootstrap": "^4.5.3",
 		"convert-time": "^0.3.0",
+		"copy-text-to-clipboard": "^3.0.1",
 		"countries-and-timezones": "^2.3.1",
 		"country-codes-list": "^1.6.8",
 		"country-flag-icons": "^1.2.8",
@@ -83,6 +83,8 @@
 		"vue-paginate": "^3.6.0",
 		"vue-range-slider": "^0.6.0",
 		"vue-scrollto": "^2.20.0",
+		"vue-toast-notification": "^0.6.1",
+		"vue-toasted": "^1.1.28",
 		"vue2-timepicker": "^1.1.6",
 		"vuedraggable": "^2.24.3",
 		"vuetify": "^2.4.5",

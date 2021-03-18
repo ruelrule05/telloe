@@ -23,20 +23,15 @@ const routes = [
 				component: () => import(/* webpackChunkName: "dashboard-conversations" */ '../pages/conversations/conversations.vue')
 			},
 			{
+				path: 'services',
+				name: 'services',
+				component: () => import(/* webpackChunkName: "dashboard-services" */ '../pages/services/services.vue')
+			},
+			{
 				name: 'bookings',
 				path: 'bookings',
 				component: () => import(/* webpackChunkName: "dashboard-bookings" */ '../pages/bookings/bookings.vue'),
 				children: [
-					{
-						path: 'services',
-						name: 'services_index',
-						component: () => import(/* webpackChunkName: "dashboard-bookings-services" */ '../pages/bookings/services/index/index.vue')
-					},
-					{
-						path: 'services/:id',
-						name: 'services_show',
-						component: () => import(/* webpackChunkName: "dashboard-bookings-services-show" */ '../pages/bookings/services/show/show.vue')
-					},
 					{
 						path: 'booking-links',
 						name: 'booking-links',

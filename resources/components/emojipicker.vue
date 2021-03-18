@@ -1,8 +1,8 @@
 <template>
 	<div class="">
 		<emoji-picker @emoji="insert">
-			<div class="emoji-invoker" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent">
-				<emoticon-icon height="20" width="20"></emoticon-icon>
+			<div class="emoji-invoker text-primary" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent">
+				<emoticon-icon class="fill-current"></emoticon-icon>
 			</div>
 			<div class="emoji-picker" slot="emoji-picker" slot-scope="{ emojis, insert }">
 				<div>
@@ -39,20 +39,13 @@ export default {
 
 <style scoped lang="scss">
 @import '../sass/variables';
-.emoji-invoker svg {
-	transition: $transition-base;
-	opacity: 0.4;
-}
-.emoji-invoker svg:hover {
-	transform: scale(1.1);
-	opacity: 1;
-}
+
 .emoji-picker {
-	bottom: 80px;
-	right: 20px;
+	@apply absolute shadow-md border border-gray-200;
+	bottom: 60px;
+	left: 20px;
 	position: absolute;
 	z-index: 1;
-	border: solid 1px $border-color;
 	width: 350px;
 	height: 400px;
 	overflow-y: scroll;
@@ -60,7 +53,6 @@ export default {
 	box-sizing: border-box;
 	border-radius: 0.5rem;
 	background: #fff;
-	box-shadow: $box-shadow;
 	text-align: left;
 }
 .emoji-picker__search {
