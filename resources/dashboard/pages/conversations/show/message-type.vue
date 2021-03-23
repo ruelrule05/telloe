@@ -1,12 +1,12 @@
 <template>
 	<div class="position-relative">
 		<!-- Emoji -->
-		<div class="mb-0 display-3 line-height-1" v-if="message.type == 'emoji'">{{ message.message }}</div>
+		<div class="mb-0 text-4xl leading-none" v-if="message.type == 'emoji'">{{ message.message }}</div>
 
 		<!-- Image -->
 		<div class="mb-0" v-else-if="message.type == 'image'">
-			<div v-if="message.sending" class="position-absolute-center message-sending w-100 h-100">
-				<div class="position-absolute-center">
+			<div v-if="message.sending" class="absolute-center message-sending w-full h-full">
+				<div class="absolute-center">
 					<div class="spinner-border spinner-border-sm text-primary"></div>
 				</div>
 			</div>
@@ -16,12 +16,12 @@
 
 		<!-- Video -->
 		<div class="mb-0" v-else-if="message.type == 'video'">
-			<div v-if="message.sending" class="position-absolute-center message-sending w-100 h-100">
-				<div class="position-absolute-center">
+			<div v-if="message.sending" class="absolute-center message-sending w-full h-full">
+				<div class="absolute-center">
 					<div class="spinner-border spinner-border-sm text-primary"></div>
 				</div>
 			</div>
-			<div v-else class="position-absolute-center preview-video-play pointer-events-none">
+			<div v-else class="absolute-center preview-video-play pointer-events-none">
 				<play-icon height="20" width="20"></play-icon>
 			</div>
 			<div v-if="squareThumbnail" class="image-square rounded" :style="{ backgroundImage: 'url(' + message.preview + ')' }" @click="if (click) $parent.openFile(message);"></div>
@@ -35,12 +35,12 @@
 
 		<!-- File -->
 		<div class="mb-0" v-else-if="message.type == 'file'">
-			<img draggable="false" v-if="$root.isImage(message.metadata.extension)" class="w-100 rounded cursor-pointer" :src="message.preview" />
-			<span class=" cursor-pointer" @click="if (click) $root.downloadMedia(message);">
-				<span class="d-block text-center">
+			<img draggable="false" v-if="$root.isImage(message.metadata.extension)" class="w-full rounded-md cursor-pointer" :src="message.preview" />
+			<span class="cursor-pointer" @click="if (click) $root.downloadMedia(message);">
+				<span class="block text-center">
 					<component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)" :fill="outgoing ? 'white' : ''"></component>
 				</span>
-				<div class="d-flex align-items-center">
+				<div class="flex items-center">
 					<arrow-circle-down-icon height="15" width="15" :fill="outgoing ? 'white' : ''"></arrow-circle-down-icon>&nbsp;
 					<small class="text-ellipsis" :class="[outgoing ? 'text-white' : 'text-muted']">{{ message.metadata.filename }}</small>
 				</div>
@@ -178,8 +178,7 @@ export default {
 	background-color: rgba(255, 255, 255, 0.65);
 }
 .message-text {
-	white-space: pre-wrap;
-	word-break: break-word;
+	@apply leading-5 whitespace-pre-wrap break-words;
 }
 p {
 	line-height: 1.3;

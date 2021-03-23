@@ -3,14 +3,12 @@ import UpcomingBookings from '../../components/UpcomingBookings/UpcomingBookings
 import DayView from '../../components/DayView/DayView.vue';
 import WeekView from '../../components/WeekView/WeekView.vue';
 import Booking from '../../components/Booking/Booking.vue';
-import Vue from 'vue';
-import VCalendar from 'v-calendar';
 import ArrowLeftIcon from '../../../icons/arrow-left.vue';
 import ArrowRightIcon from '../../../icons/arrow-right.vue';
-Vue.use(VCalendar);
+import VCalendar from 'v-calendar/lib/components/calendar.umd';
 const dayjs = require('dayjs');
 export default {
-	components: { UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking },
+	components: { UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar },
 
 	data: () => ({
 		dayjs: dayjs,

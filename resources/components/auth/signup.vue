@@ -206,7 +206,7 @@ export default {
 		async goToStep(step) {
 			this.loading = true;
 			let data = this.$root.auth || this.signupForm;
-			let response = await axios.post('/auth', data, { toasted: true }).catch(e => {
+			let response = await axios.post('/auth', data, { toast: true }).catch(e => {
 				this.$parent.error = e.response.data.message;
 			});
 			if (response) {
@@ -224,7 +224,7 @@ export default {
 				if (this.contact && this.contact.email) this.signupForm.email = this.contact.email;
 				else if (this.member && this.member.email) this.signupForm.email = this.member.email;
 				window.axios
-					.post(`/signup`, this.signupForm, { toasted: true })
+					.post(`/signup`, this.signupForm, { toast: true })
 					.then(response => {
 						this.$root.auth = response.data;
 						this.$root.signupStep = 1;

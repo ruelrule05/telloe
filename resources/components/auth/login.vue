@@ -75,14 +75,10 @@ export default {
 				this.loading = true;
 				if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
 				window.axios
-					.post('/login', this.loginForm, { toasted: true })
-					.then(response => {
+					.post('/login', this.loginForm, { toast: true })
+					.then(() => {
 						setTimeout(() => {
-							if (response.data.role_id == 2) {
-								window.location.replace('/dashboard/bookings/calendar');
-							} else if (response.data.role_id == 3) {
-								window.location.replace('/dashboard/bookings');
-							}
+							window.location.replace('/dashboard/overview');
 						}, 150);
 					})
 					.catch(() => {

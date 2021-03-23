@@ -3,8 +3,6 @@ import Vue from 'vue';
 
 import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
-import VueToast from 'vue-toast-notification';
-Vue.use(VueToast, { position: 'bottom' });
 const introJS = require('intro.js');
 
 Vue.use(VueRouter);
@@ -15,6 +13,7 @@ import dayjs from 'dayjs';
 import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
 
 import BellIcon from '../icons/bell';
+import CloseIcon from '../icons/close';
 
 import DocumentIcon from '../icons/document';
 import VideoCall from './components/video-call/video-call.vue';
@@ -32,6 +31,7 @@ window.app = new Vue({
 	el: '#app',
 	components: {
 		BellIcon,
+		CloseIcon,
 
 		VideoCall,
 		ScreenRecorder,
@@ -183,20 +183,6 @@ window.app = new Vue({
 		if (this.$route.name != 'conversations') this.getConversations();
 		this.call_sound = new Audio(`/notifications/call.mp3`);
 		this.message_sound = new Audio('/notifications/new_message.mp3');
-
-		(function(d) {
-			var js,
-				id = 'facebook-jssdk',
-				ref = d.getElementsByTagName('script')[0];
-			if (d.getElementById(id)) {
-				return;
-			}
-			js = d.createElement('script');
-			js.id = id;
-			js.async = true;
-			js.src = '//connect.facebook.net/en_US/all.js';
-			ref.parentNode.insertBefore(js, ref);
-		})(document);
 
 		this.getNotifications();
 		this.getBookings();

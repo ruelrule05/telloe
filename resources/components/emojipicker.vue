@@ -1,7 +1,7 @@
 <template>
 	<div class="">
 		<emoji-picker @emoji="insert">
-			<div class="emoji-invoker text-primary" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent">
+			<div class="emoji-invoker text-primary transition-colors hover:bg-gray-200 p-2 rounded-full" ref="emoji-invoker" slot="emoji-invoker" slot-scope="{ events: { click: clickEvent } }" @click.stop="clickEvent">
 				<emoticon-icon class="fill-current"></emoticon-icon>
 			</div>
 			<div class="emoji-picker" slot="emoji-picker" slot-scope="{ emojis, insert }">

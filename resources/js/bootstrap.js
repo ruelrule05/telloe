@@ -3,6 +3,9 @@
 // } catch (e) {
 // 	console.log(e);
 // }
+import Vue from 'vue';
+import VueToast from 'vue-toast-notification';
+Vue.use(VueToast, { position: 'bottom' });
 window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.interceptors.request.use(
@@ -23,12 +26,14 @@ window.axios.interceptors.request.use(
 );
 window.axios.interceptors.response.use(
 	function(response) {
-		if (response.config.toasted && window.app) {
-			window.app.$toasted.show(response.data.message);
+		Vue.$toast.clear();
+		if (response.config.toast && response.data.message) {
+			Vue.$toast.open(response.data.message);
 		}
 		return response;
 	},
 	function(error) {
+		Vue.$toast.clear();
 		let responseStatus = error.response.status;
 		if ([401, 419].find(x => x == responseStatus)) {
 			let isHomepage = window.location.pathname == '/';
@@ -38,8 +43,9 @@ window.axios.interceptors.response.use(
 				window.location.href = '/?auth=login';
 			}
 		}
-		if (error.response.config.toasted && window.app) {
-			window.app.$toasted.error(error.response.data.message);
+		if (error.response.config.toast) {
+			console.log(Vue.$toast);
+			Vue.$toast.error(error.response.data.message);
 		}
 		/*if (error.response && error.response.status == 401) {
             window.location.href = '/login';

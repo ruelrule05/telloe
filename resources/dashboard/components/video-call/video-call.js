@@ -124,6 +124,30 @@ export default {
 			}
 		},
 		'$root.appChannel': function() {
+			this.initListeners();
+		}
+	},
+
+	created() {
+		this.notification_sound = new Audio(`/notifications/call.mp3`);
+		window.onbeforeunload = () => {
+			//e = e || window.event;
+			this.endCall(true, true, true);
+		};
+	},
+
+	mounted() {
+		if (this.$root.appChannel) {
+			this.initListeners();
+		}
+	},
+
+	methods: {
+		...mapActions({
+			storeMessage: 'messages/store'
+		}),
+
+		initListeners() {
 			this.$root.appChannel.listenForWhisper('liveCallIncoming', data => {
 				let conversation = this.$root.conversations.find(x => x.id == data.conversation_id);
 				if (conversation) {
@@ -173,23 +197,7 @@ export default {
 					});
 				}
 			});
-		}
-	},
-
-	created() {
-		this.notification_sound = new Audio(`/notifications/call.mp3`);
-		window.onbeforeunload = () => {
-			//e = e || window.event;
-			this.endCall(true, true, true);
-		};
-	},
-
-	mounted() {},
-
-	methods: {
-		...mapActions({
-			storeMessage: 'messages/store'
-		}),
+		},
 
 		startTimer() {
 			this.timer = setInterval(() => {
@@ -251,10 +259,11 @@ export default {
 		setRemoteStream(stream, uid) {
 			// check if exists
 			let videoContainer = document.createElement('div');
-			videoContainer.classList.add('flex-grow-1');
+			videoContainer.classList.add('flex-grow');
 			videoContainer.classList.add('video-container');
-			videoContainer.classList.add('position-relative');
+			videoContainer.classList.add('relative');
 			videoContainer.classList.add('remote-video');
+			videoContainer.classList.add('h-full');
 			videoContainer.id = uid;
 
 			let videoEl = document.createElement('video');
@@ -263,22 +272,23 @@ export default {
 			videoEl.autoplay = true;
 			videoEl.playsinline = true;
 			videoEl.disablePictureInPicture = true;
-			let canvas = videoCanvas(videoEl);
-			canvas.classList.add('w-100');
-			canvas.classList.add('h-auto');
-			canvas.classList.add('position-absolute-center');
+			//let canvas = videoCanvas(videoEl);
+			videoEl.classList.add('w-full');
+			videoEl.classList.add('h-full');
+			videoEl.classList.add('pointer-events-none');
+			//canvas.classList.add('absolute-center');
 
 			let wavesurferEl = document.createElement('div');
-			wavesurferEl.classList.add('position-absolute-center');
-			wavesurferEl.classList.add('w-50');
-			wavesurferEl.classList.add('d-none');
+			wavesurferEl.classList.add('absolute-center');
+			wavesurferEl.classList.add('w-1/2');
+			wavesurferEl.classList.add('hidden');
 			wavesurferEl.id = `wavesurfer-${uid}`;
 
 			let microphoneMute = this.$refs['microphoneMute'].$el.cloneNode(true);
 			microphoneMute.id = `microphone-mute-${uid}`;
 			microphoneMute.classList.add('microphone-mute');
 
-			videoContainer.appendChild(canvas);
+			videoContainer.appendChild(videoEl);
 			videoContainer.appendChild(wavesurferEl);
 			videoContainer.appendChild(microphoneMute);
 			this.$refs['remoteStreams'].appendChild(videoContainer);
@@ -362,6 +372,7 @@ export default {
 						if (fromPeer != this.username) {
 							this.notification_sound.pause();
 							if (this.status != 'ongoing') {
+								this.action = '';
 								this.status = 'ongoing';
 								this.startTimer();
 							}
@@ -461,15 +472,12 @@ export default {
 			this.open = true;
 			this.conversation = conversation;
 			this.action = 'outgoing';
-			$(this.$refs['modal'])
-				.modal({ keyboard: false, backdrop: 'static' })
-				.modal('show');
 			this.isVideoStopped = !camera;
 			this.isIncoming = false;
 			clearTimeout(this.callTimeout);
 
 			await this.initConnection();
-			if (!this.$root.muted) this.notification_sound.play();
+			//if (!this.$root.muted) this.notification_sound.play();
 			this.$root.appChannel.whisper('liveCallIncoming', {
 				conversation_id: conversation.id,
 				user_id: this.$root.auth.id,
@@ -478,7 +486,7 @@ export default {
 			this.$root.callConversation = conversation;
 			this.callTimeout = setTimeout(() => {
 				if (!this.status) {
-					this.endCall();
+					//this.endCall();
 				}
 			}, 15000);
 		},
@@ -498,21 +506,15 @@ export default {
 		incomingCall(conversation) {
 			this.conversation = conversation;
 			this.open = true;
-			if (!this.$root.muted) this.notification_sound.play();
+			//if (!this.$root.muted) this.notification_sound.play();
 			this.isIncoming = true;
-			$(this.$refs['modal'])
-				.modal({ keyboard: false, backdrop: 'static' })
-				.modal('show');
 			this.action = 'incoming';
 		},
 
 		answerCall() {
+			this.action = '';
 			this.isIncoming = false;
 			this.status = 'ongoing';
-			// this.$root.appChannel.whisper('liveCallAnswer', {
-			// 	conversation_id: this.$root.callConversation.id,
-			// 	user_id: this.$root.auth.id
-			// });
 			this.notification_sound.pause();
 			this.initConnection();
 		},
@@ -584,11 +586,10 @@ export default {
 
 			if (this.isRecording) this.recordCall();
 			else {
-				if (this.$refs['modal']) this.$refs['modal'].removeAttribute('style');
 				if (this.draggable) this.draggable.remove();
 				this.draggable = null;
 			}
-			$(this.$refs['remoteStreams']).empty();
+			//$(this.$refs['remoteStreams']).empty();
 			if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
 			this.stopLocalStream();
 		},

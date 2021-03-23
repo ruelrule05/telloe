@@ -1,216 +1,37 @@
-@import '../../../sass/variables';
 .video-call-modal-container {
-	z-index: 10000;
-	.video-call-modal {
-		.video-call {
-			height: 500px;
-		}
-		.caller {
-			z-index: 100;
-		}
-		#remote-streams-container.has-presenter {
-			#presenter-container .remote-video {
-				height: 100% !important;
-			}
-		}
-		#remote-streams {
-			&:not(.shrink-right) {
-				display: flex;
-				flex-grow: 1 !important;
-			}
-			&.shrink-right {
-				width: 250px;
-				padding: 1em;
-				.remote-video {
-					height: 130px;
-					overflow: hidden;
-				}
-				.presenter-thumbnail {
-					height: 130px;
-					.presenter-profile-image {
-						width: 60px;
-						height: 60px;
-						background-size: cover;
-						background-position: center;
-						background-repeat: no-repeat;
-					}
-				}
-			}
-		}
-
-		.user-profile-image {
-			width: 120px;
-			height: 120px;
-			border-radius: 50%;
-			background-position: center;
-			background-size: cover;
-			background-repeat: no-repeat;
-			background-color: $gray-400 !important;
-			span {
-				font-size: 42px;
-				font-weight: lighter;
-			}
-		}
-		.btn-record {
-			top: 10px;
-			left: 10px;
-			z-index: 10;
-			i {
-				width: 15px;
-				height: 15px;
-				border-radius: 50%;
-				background: red;
-				display: inline-block;
-			}
-		}
-		.preview-wrapper {
-			&.preview-thumb {
-				position: absolute;
-				bottom: 20px;
-				left: 20px;
-				width: 178px;
-				height: 100px;
-				overflow: hidden;
-				z-index: 10;
-				video {
-					height: 100%;
-					width: auto;
-					position: absolute;
-					left: 50%;
-					bottom: 0;
-					transform: translateX(-50%);
-				}
-			}
-			&.profile-image {
-				width: 100px;
-				height: 100px;
-				border-radius: 50%;
-				> span {
-					background-size: cover;
-					background-position: center;
-					background-repeat: no-repeat;
-					span {
-						font-size: 30px;
-					}
-				}
-			}
-		}
-		video,
-		canvas {
-			pointer-events: none !important;
-		}
-		.recorded {
-			.recorded-preview {
-				height: 180px;
-				background-color: #333;
-				background-size: contain;
-				background-position: center;
-				background-repeat: no-repeat;
-			}
-			.recorded-details {
-				bottom: 0;
-			}
-		}
-		.recorded-data {
-			z-index: 100;
-			top: 0;
-			left: 0;
-		}
-		.opacity-0 {
-			opacity: 0 !important;
-		}
-		.video-container {
-			&.mirror {
-				transform: rotateY(180deg);
-			}
-		}
-		.disabled-line {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			width: 1px;
-			height: 80%;
-			background: red;
-			transform: translate(-50%, -50%) rotate(45deg);
-		}
-		&.show {
-			display: block;
-		}
-
-		#recorderControls {
-			z-index: 1;
-		}
-
-		&.is-shrinked {
-			width: 250px;
-			height: 140px;
-			.modal-dialog {
-				margin: 0;
-				transform: scale(1);
-			}
-			.modal-dialog,
-			.video-call {
-				height: 100% !important;
-			}
-			.btn-expand-wrapper {
-				position: absolute;
-				z-index: 10;
-				top: 10px;
-				right: 10px;
-			}
-			#recorderControls {
-				svg {
-					width: 20px;
-					height: 20px;
-				}
-			}
-			.remote-streams {
-				border-radius: $border-radius;
-				border: solid 1px $border-color;
-			}
-		}
-		&.is-fullscreen:not(.is-shrinked) {
-			.modal-dialog {
-				height: 100vh;
-				max-height: 100vh !important;
-				width: 100vw;
-				max-width: 100vw !important;
-				margin: 0;
-			}
-			.video-call {
-				height: 100% !important;
-			}
-			.ongoing-body {
-				border-radius: 0 !important;
-			}
-		}
-		.call-topbar {
-			background-image: linear-gradient(rgba(0, 0, 0, 0.25), transparent);
-			z-index: 1;
-			top: 0;
-			left: 0;
-		}
-		.call-bottombar {
-			background-color: #232324;
-		}
-		.btn-close {
-			top: 5px;
-			right: 5px;
-		}
-		.mainControls {
-			.btn {
-				width: 40px;
-				height: 40px;
-			}
-		}
-		.call-bottombar {
-			border-bottom-left-radius: $border-radius;
-			border-bottom-right-radius: $border-radius;
-		}
-		#remote-streams {
-			background-color: #232324;
+	@apply transition-all fixed w-screen h-screen top-0 left-0 grid grid-cols-11 auto-cols-max items-center justify-center opacity-0;
+	z-index: -1;
+	> div:not(.modal-backdrop) {
+		box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);
+		@apply bg-white rounded-xl relative z-50;
+	}
+	.modal-body {
+		@apply z-50 relative scale-95 transition-all ease-in-out;
+	}
+	.modal-backdrop {
+		backdrop-filter: blur(4px);
+		@apply bg-white bg-opacity-80 fixed top-0 left-0 z-40 w-screen h-screen;
+	}
+	&.open {
+		@apply opacity-100;
+		z-index: 99999;
+		.modal-body {
+			@apply scale-100;
 		}
 	}
+}
+.preview {
+	height: 120px;
+}
+.profile-image {
+	width: 80px;
+	height: 80px;
+	span {
+		font-size: 28px;
+	}
+}
+#remote-streams-container {
+	background: #39445b;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -324,7 +145,7 @@
 			$color: #f9f9f9;
 
 			.popover-inner {
-				background: $color;
+				//background: $color;
 				color: black;
 				padding: 24px;
 				border-radius: 5px;
@@ -332,7 +153,7 @@
 			}
 
 			.popover-arrow {
-				border-color: $color;
+				//border-color: $color;
 			}
 		}
 

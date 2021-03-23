@@ -1,0 +1,18 @@
+.members-search-container {
+	height: 200px;
+}
+.new-conversation-member {
+	width: 70px;
+	height: 70px;
+	span {
+		font-size: 24px;
+	}
+}
+.contact-card {
+	&.active {
+		@apply text-primary pointer-events-none;
+	}
+	&.disabled {
+		@apply opacity-50 pointer-events-none;
+	}
+}

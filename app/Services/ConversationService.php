@@ -34,7 +34,7 @@ class ConversationService
 
     public function show($id)
     {
-        $conversation = Conversation::withTrashed()->with('contact')->where(function ($query) {
+        $conversation = Conversation::withTrashed()->with('contact', 'notes')->where(function ($query) {
             $query->has('members.user')->orHas('contact');
         })->with('user.services', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);

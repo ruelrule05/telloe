@@ -211,8 +211,8 @@
 			</div>
 
 			
-			{{-- <video-call ref="videoCall"></video-call>
-			<screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
+			<video-call ref="videoCall"></video-call>
+			{{-- <screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
 			<notification ref="notification"></notification> --}}
 			{{-- <modal ref="addAppModal">
 				<h5 class="font-heading mb-3">Add App</h5>

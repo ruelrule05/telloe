@@ -12,7 +12,7 @@ class Conversation extends BaseModel
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags'];
-    public $appends = ['member', 'last_message', 'timestamp', 'notes'];
+    public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
@@ -39,21 +39,27 @@ class Conversation extends BaseModel
         return $this->hasMany(Message::class)->orderBy('timestamp', 'DESC');
     }
 
-    public function getNotesAttribute()
+    public function notes()
     {
-        return Note::where('conversation_id', $this->attributes['id'])->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+        return $this->hasMany(Note::class)->orderBy('created_at', 'DESC');
     }
+
+    // public function getNotesAttribute()
+    // {
+    //     return Note::where('conversation_id', $this->attributes['id'])->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
+    // }
 
     public function getMemberAttribute()
     {
         $member = null;
         if ($this->members->count() == 1) {
-            $member = $this->user->load('role');
-            if (Auth::user()->id == $member->id) {
-                $member = $this->members()->first()->user->load('role')->makeVisible(['last_online_format']);
+            if (Auth::user()->id == $this->attributes['user_id']) {
+                $member = $this->members()->first()->user->makeVisible('last_online_format');
                 if (isset($this->attributes['contact_id'])) {
                     $member->contact = Contact::find($this->attributes['contact_id']);
                 }
+            } else {
+                $member = $this->user->makeVisible('last_online_format');
             }
         } else {
             $member = [
@@ -87,10 +93,10 @@ class Conversation extends BaseModel
         return $last_message ?? [
             //'timestamp' => Carbon::parse($this->attributes['created_at'])->getPreciseTimestamp(6),
             'timestamp' => 0,
-            'is_read' => 1, 
+            'is_read' => 1,
             'message' => 'No messages yet'
         ];
-    }    
+    }
 
     public function getTimestampAttribute()
     {

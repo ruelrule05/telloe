@@ -14,7 +14,7 @@ class StoreNoteRequest extends FormRequest
      */
     public function authorize()
     {
-        $conversation = Conversation::find($this->user_id);
+        $conversation = Conversation::find($this->conversation_id);
         return $this->user()->can('addNote', $conversation);
     }
 

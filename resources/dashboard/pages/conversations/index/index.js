@@ -52,7 +52,6 @@ export default {
 		newConversation: {
 			members: []
 		},
-		userSearch: '',
 		newContact: {
 			custom_fields: {},
 			blacklisted_services: []
@@ -64,9 +63,6 @@ export default {
 		...mapState({
 			conversations: state => state.conversations.index,
 			ready: state => state.conversations.ready,
-			contacts: state => state.contacts.index,
-			members: state => state.members.index,
-			contactsReady: state => state.contacts.ready,
 			services: state => state.services.index
 		}),
 
@@ -94,47 +90,8 @@ export default {
 			});
 		},
 
-		filteredUsers() {
-			let filteredUsers = [];
-			let trimmedQuery = this.userSearch.trim().toLowerCase();
-			this.users.forEach(user => {
-				if (user.user.full_name.toLowerCase().includes(trimmedQuery) || user.user.email.toLowerCase().includes(trimmedQuery)) filteredUsers.push(user);
-			});
-
-			return filteredUsers;
-		},
-
 		defaultEmailMessage() {
 			return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;
-		},
-
-		users() {
-			let users = [];
-
-			this.contacts.forEach(contact => {
-				if (!contact.is_pending) {
-					let exists = users.find(x => x.user.id == contact.contact_user_id);
-					if (!exists) {
-						users.push({
-							type: 'contact',
-							user: contact.contact_user
-						});
-					}
-				}
-			});
-			this.members.forEach(member => {
-				if (!member.is_pending) {
-					let exists = users.find(x => x.user.id == member.member_user_id);
-					if (!exists) {
-						users.push({
-							type: 'member',
-							user: member.member_user
-						});
-					}
-				}
-			});
-
-			return users;
 		}
 	},
 
@@ -147,8 +104,6 @@ export default {
 				this.setConversation(this.orderedConversations[0]);
 			}
 		});
-		this.getContacts({ nopaginate: true });
-		this.getMembers();
 		this.$root.appChannel.listenForWhisper('newConversation', data => {
 			if (data.member_ids.find(x => x == this.$root.auth.id)) {
 				let conversation = this.conversations.find(x => x.id == data.conversation_id);
@@ -162,7 +117,6 @@ export default {
 	methods: {
 		...mapActions({
 			getConversations: 'conversations/index',
-			storeConversation: 'conversations/store',
 			updateConversation: 'conversations/update',
 			showConversation: 'conversations/show',
 			getContacts: 'contacts/index',
@@ -198,25 +152,6 @@ export default {
 			await this.showConversation({ id: conversation_id });
 			let conversation = this.conversations.find(x => x.id == conversation_id);
 			if (conversation) this.setConversation(conversation);
-		},
-
-		addNewConversationMember(member) {
-			if (!member.is_pending && !this.newConversation.members.find(x => x.user.id == member.user.id)) this.newConversation.members.push(member);
-		},
-
-		createConversation() {
-			if (this.newConversation.members.length > 0) {
-				let member_ids = [];
-				this.newConversation.members.forEach(m => {
-					member_ids.push(m.user.id);
-				});
-
-				this.storeConversation({ members: member_ids }).then(conversation => {
-					if (conversation.id != this.$route.params.id) this.setConversation(conversation);
-					this.$root.appChannel.whisper('newConversation', { member_ids: member_ids, conversation_id: conversation.id });
-				});
-				this.$refs['newConversationModal'].hide();
-			}
 		},
 
 		searchMembers(e, newConversation = true) {

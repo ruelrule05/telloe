@@ -12,7 +12,7 @@ import Modal from '../../../../components/modal/modal.vue';
 import MessageType from './message-type';
 
 import CastIcon from '../../../../icons/cast';
-import InfoCircleIcon from '../../../../icons/colored-info-circle';
+import NoteIcon from '../../../../icons/note';
 import VideoCameraIcon from '../../../../icons/video-camera';
 import MicrophoneIcon from '../../../../icons/microphone';
 import AddNoteIcon from '../../../../icons/add-note';
@@ -40,20 +40,23 @@ import VueChatScroll from 'vue-chat-scroll';
 import SendIcon from '../../../../icons/send';
 import AttachmentIcon from '../../../../icons/attachment';
 Vue.use(VueChatScroll);
+//import WeekView from '../../../components/WeekView/WeekView.vue';
 
 import Tooltip from '../../../../js/directives/tooltip';
-//import toggleFullscreen from 'toggle-fullscreen';
 
 const emojiRegex = require('emoji-regex');
+
 export default {
 	components: {
+		//WeekView,
+
 		VueFormValidate,
 		Emojipicker,
 		Modal,
 		MessageType,
 
 		CastIcon,
-		InfoCircleIcon,
+		NoteIcon,
 		VideoCameraIcon,
 		MicrophoneIcon,
 		AddNoteIcon,
@@ -108,14 +111,18 @@ export default {
 		isScreenRecordDownloading: false,
 		channel: null,
 		typingUsers: {},
-		duration: 0
+		duration: 0,
+		showNotes: false,
+		dayjs: dayjs,
+		addNewNote: false,
+		newNote: ''
 	}),
 
 	watch: {
 		ready: function(value) {
 			if (value) {
 				this.$root.contentloading = false;
-				this.$root.getFiles(this.conversation);
+				//this.$root.getFiles(this.conversation);
 			}
 			setTimeout(() => {
 				this.$nextTick(() => {
@@ -140,9 +147,6 @@ export default {
 				let message = this.conversation.paginated_messages.data.find(x => x.id == value.id);
 				if (!message) {
 					this.conversation.paginated_messages.data.push(value);
-					if (!['text', 'emoji'].find(x => x == value.type)) {
-						this.conversation.files.data.unshift(value);
-					}
 				}
 			}
 		},
@@ -238,8 +242,27 @@ export default {
 			updateConversation: 'conversations/update',
 			storeMessage: 'messages/store',
 			updateMessage: 'messages/update',
-			deleteMessage: 'messages/delete'
+			deleteMessage: 'messages/delete',
+			storeNote: 'notes/store',
+			deleteNote: 'notes/delete'
 		}),
+
+		deleteNoteSubmit(note, index) {
+			this.deleteNote(note);
+			this.conversation.notes.splice(index, 1);
+		},
+
+		addNote() {
+			if (this.newNote.trim().length > 0) {
+				this.storeNote({ notes: this.newNote, conversation_id: this.conversation.id }).then(note => {
+					if (note) {
+						this.conversation.notes.unshift(note);
+					}
+				});
+				this.addNewNote = false;
+				this.newNote = '';
+			}
+		},
 
 		async getMessageByID(messageID) {
 			let message = await window.axios.get(`/messages/${messageID}`).catch(() => {});

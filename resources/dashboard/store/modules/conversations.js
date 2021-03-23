@@ -32,6 +32,7 @@ const mutations = {
 				Vue.set(conversation, 'ready', true);
 				Vue.set(conversation.last_message, 'is_read', true);
 				Vue.set(conversation, 'has_new_message', false);
+				Vue.set(conversation, 'notes', data.notes);
 			} else {
 				Vue.set(data, 'ready', true);
 				Vue.set(data.last_message, 'is_read', true);
@@ -45,6 +46,13 @@ const mutations = {
 		let conversation = state.index.find(x => x.id == data.id);
 		if (conversation) {
 			conversation.archive_users = data.archive_users;
+		}
+	},
+
+	store(state, data) {
+		let exists = state.index.find(x => x.id == data.id);
+		if (!exists) {
+			state.index.unshift(data);
 		}
 	}
 };
@@ -68,8 +76,8 @@ const actions = {
 	},
 
 	async store({ commit }, data) {
-		commit('store');
 		let response = await window.axios.post(`/${name}`, data, { toasted: true });
+		commit('store', response.data);
 		return response.data;
 	},
 

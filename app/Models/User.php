@@ -52,7 +52,7 @@ class User extends Authenticatable implements JWTSubject
         'profile_image',
         'timezone',
         'initials',
-        'full_name'
+        'full_name',
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];
