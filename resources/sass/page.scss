@@ -1,11 +1,41 @@
-h1 {
+.heading {
 	font-size: 80px;
 	line-height: 64px;
 }
 .navbar-item {
-	@apply px-3 py-2 text-xs font-normal font-serif text-muted hover:text-gray-600 transition-colors focus:outline-none;
+	@apply px-3 py-2 text-xs font-semibold font-serif text-muted hover:text-gray-600 transition-colors focus:outline-none;
 	&.active {
 		@apply font-medium text-gray-600;
+	}
+}
+.price::first-letter {
+	@apply text-6xl #{!important};
+}
+
+.faq {
+	max-height: 0;
+	overflow: hidden;
+	@apply transition-all;
+	&.show {
+		max-height: 500px;
+	}
+}
+.feature {
+	.feature-content {
+		@apply transition-all;
+		overflow: hidden;
+		max-height: 0;
+	}
+	&.show {
+		.feature-title {
+			@apply text-primary;
+		}
+		.feature-content {
+			max-height: 800px;
+		}
+		.line-1 {
+			display: none;
+		}
 	}
 }
 //@import '../sass/bootstrap';
