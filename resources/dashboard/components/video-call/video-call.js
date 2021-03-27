@@ -8,6 +8,7 @@ import toggleFullscreen, { fullscreenChange, isFullscreen } from 'toggle-fullscr
 import PlainDraggable from '../../../js/plugins/plain-draggable.min';
 
 import VideoIcon from '../../../icons/video';
+import VideoMutedIcon from '../../../icons/video-muted';
 import PhoneIcon from '../../../icons/phone';
 import CloseIcon from '../../../icons/close';
 import DuplicateAltIcon from '../../../icons/duplicate-alt';
@@ -20,10 +21,12 @@ import MicrophoneIcon from '../../../icons/microphone';
 import ArrowBottomLeftIcon from '../../../icons/arrow-bottom-left';
 import ArrowTopRightIcon from '../../../icons/arrow-top-right';
 import MicrophoneAltIcon from '../../../icons/microphone-alt';
-import MicrophoneMute from '../../../icons/microphone-mute';
+import MicrophoneMuteIcon from '../../../icons/microphone-mute';
 import VideocamIcon from '../../../icons/videocam';
 import CallMenuIcon from '../../../icons/call-menu';
 import CommentIcon from '../../../icons/comment';
+import ScreenshareIcon from '../../../icons/screenshare';
+import SendIcon from '../../../icons/send';
 
 import Tooltip from '../../../js/directives/tooltip.js';
 import { mapActions } from 'vuex';
@@ -33,6 +36,8 @@ import domtoimage from 'dom-to-image';
 
 require('../../../js/xirsys/xirsys-signal.js');
 require('../../../js/xirsys/xirsys-p2group.js');
+
+import Messages from '../../components/Messages/Messages.vue';
 
 const videoCanvas = require('video-canvas');
 
@@ -48,13 +53,17 @@ export default {
 		CollapseIcon,
 		InterviewIcon,
 		MicrophoneIcon,
+		MicrophoneMuteIcon,
 		ArrowBottomLeftIcon,
 		ArrowTopRightIcon,
 		MicrophoneAltIcon,
 		VideocamIcon,
 		CallMenuIcon,
 		CommentIcon,
-		MicrophoneMute
+		VideoMutedIcon,
+		ScreenshareIcon,
+		SendIcon,
+		Messages
 	},
 
 	directives: {
@@ -108,7 +117,8 @@ export default {
 		isLoading: false,
 		duration: 0,
 		timer: null,
-		isCalling: false
+		isCalling: false,
+		showMessages: false
 	}),
 
 	watch: {
@@ -154,6 +164,9 @@ export default {
 					this.caller = conversation.member;
 					this.$root.callConversation = conversation;
 					this.remoteCallID = data.username;
+					if (!conversation.channel) {
+						conversation.channel = this.$echo.private(`conversations.${conversation.id}`);
+					}
 					this.incomingCall(conversation);
 				}
 			});
@@ -231,7 +244,8 @@ export default {
 					if (completeCount == 3) resolve();
 				});
 				window.axios.get(`/xirsys/host?id=${this.username}`).then(response => {
-					this.host = response.data.v;
+					this.host = response.data;
+					//this.host = response.data.v;
 					completeCount++;
 					if (completeCount == 3) resolve();
 				});
@@ -259,11 +273,8 @@ export default {
 		setRemoteStream(stream, uid) {
 			// check if exists
 			let videoContainer = document.createElement('div');
-			videoContainer.classList.add('flex-grow');
 			videoContainer.classList.add('video-container');
-			videoContainer.classList.add('relative');
 			videoContainer.classList.add('remote-video');
-			videoContainer.classList.add('h-full');
 			videoContainer.id = uid;
 
 			let videoEl = document.createElement('video');
@@ -276,11 +287,14 @@ export default {
 			videoEl.classList.add('w-full');
 			videoEl.classList.add('h-full');
 			videoEl.classList.add('pointer-events-none');
+			videoEl.classList.add('relative');
+			videoEl.classList.add('z-20');
 			//canvas.classList.add('absolute-center');
 
 			let wavesurferEl = document.createElement('div');
-			wavesurferEl.classList.add('absolute-center');
+			wavesurferEl.classList.add('wavesurfer');
 			wavesurferEl.classList.add('w-1/2');
+			wavesurferEl.classList.add('z-10');
 			wavesurferEl.classList.add('hidden');
 			wavesurferEl.id = `wavesurfer-${uid}`;
 
@@ -313,6 +327,12 @@ export default {
 
 		onStartCall(evt) {
 			let remoteId = evt.data;
+			this.conversation.channel.whisper('remoteUserProfile', {
+				username: this.username,
+				profileImage: this.$root.auth.profile_image,
+				fullName: this.$root.auth.full_name,
+				initials: this.$root.auth.initials
+			});
 			this.setRemoteStream(this.peer.getLiveStream(remoteId), remoteId);
 			this.remoteCallID = remoteId;
 		},
@@ -441,15 +461,17 @@ export default {
 			}
 		},
 
-		toogleMic() {
+		toggleMic() {
 			this.isMuted = !this.isMuted;
 			if (this.localStream) {
-				this.localStream.getAudioTracks()[0].enabled = !this.isMuted;
-
-				this.conversation.channel.whisper('isMuted', {
-					username: this.username,
-					isMuted: this.isMuted
-				});
+				let audioTrack = this.localStream.getAudioTracks()[0];
+				if (audioTrack) {
+					audioTrack.enabled = !this.isMuted;
+					this.conversation.channel.whisper('isMuted', {
+						username: this.username,
+						isMuted: this.isMuted
+					});
+				}
 			}
 		},
 
@@ -477,7 +499,7 @@ export default {
 			clearTimeout(this.callTimeout);
 
 			await this.initConnection();
-			//if (!this.$root.muted) this.notification_sound.play();
+			if (!this.$root.muted) this.notification_sound.play();
 			this.$root.appChannel.whisper('liveCallIncoming', {
 				conversation_id: conversation.id,
 				user_id: this.$root.auth.id,
@@ -486,7 +508,7 @@ export default {
 			this.$root.callConversation = conversation;
 			this.callTimeout = setTimeout(() => {
 				if (!this.status) {
-					//this.endCall();
+					this.endCall();
 				}
 			}, 15000);
 		},
@@ -506,7 +528,7 @@ export default {
 		incomingCall(conversation) {
 			this.conversation = conversation;
 			this.open = true;
-			//if (!this.$root.muted) this.notification_sound.play();
+			if (!this.$root.muted) this.notification_sound.play();
 			this.isIncoming = true;
 			this.action = 'incoming';
 		},
@@ -565,6 +587,7 @@ export default {
 			this.isFullScreen = false;
 			this.isIncoming = false;
 			this.isShrinked = false;
+			this.showMessages = false;
 
 			if (emit && this.$root.appChannel) {
 				this.$root.appChannel.whisper('liveCallEnd', {
@@ -738,8 +761,10 @@ export default {
 				this.localStream.getVideoTracks().forEach(function(track) {
 					track.stop();
 				});
-				this.localStream = screenStreams;
-				let screenTrack = this.localStream.getVideoTracks()[0];
+				screenStreams.getVideoTracks().forEach(track => {
+					this.localStream.addTrack(track);
+				});
+				let screenTrack = screenStreams.getVideoTracks()[0];
 				this.peer.updateLocalStream(screenTrack);
 				this.$refs['cameraPreview'].srcObject = null;
 				this.$refs['cameraPreview'].srcObject = new MediaStream(screenStreams.getVideoTracks());

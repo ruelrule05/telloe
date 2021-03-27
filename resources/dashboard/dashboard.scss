@@ -32,6 +32,13 @@
 			@apply text-lg;
 		}
 	}
+	&.profile-image-xl {
+		width: 80px;
+		height: 80px;
+		> span {
+			@apply text-3xl;
+		}
+	}
 }
 .sidebar-menu-item {
 	@apply mt-4 cursor-pointer text-xs transition-all hover:text-primary;

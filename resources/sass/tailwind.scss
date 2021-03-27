@@ -22,6 +22,7 @@ body.modal-open {
 }
 ::-webkit-scrollbar {
 	width: 5px;
+	height: 5px;
 }
 ::-webkit-scrollbar-track {
 	background: transparent;
@@ -66,8 +67,10 @@ body.modal-open {
 		height: 32px;
 		padding: 0 24px;
 	}
-	&:disabled {
+	&:disabled,
+	&.disabled {
 		pointer-events: none;
+		opacity: 0.5 !important;
 	}
 }
 label {

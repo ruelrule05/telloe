@@ -1,9 +1,9 @@
 import VLazyImage from 'v-lazy-image';
-import Waveplayer from '../../components/waveplayer';
-import CloseIcon from '../../icons/close';
-import ChevronLeftIcon from '../../icons/chevron-left';
-import ChevronRightIcon from '../../icons/chevron-right';
-import VolumeMidIcon from '../../icons/volume-mid';
+import Waveplayer from '../../../components/waveplayer';
+import CloseIcon from '../../../icons/close';
+import ChevronLeftIcon from '../../../icons/chevron-left';
+import ChevronRightIcon from '../../../icons/chevron-right';
+import VolumeMidIcon from '../../../icons/volume-mid';
 export default {
 	components: {
 		VLazyImage,
