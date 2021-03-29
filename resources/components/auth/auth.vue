@@ -5,7 +5,7 @@
 			<div class="relative">
 				<div class="auth-card">
 					<img src="/logo.svg" class="h-5" />
-					<h4 class="text-primary font-serif auth-heading my-16 mb-8 uppercase">{{ heading }}</h4>
+					<h4 class="auth-heading">{{ heading }}</h4>
 					<login v-if="$root.action == 'login'"></login>
 					<signup v-else-if="$root.action == 'signup'"></signup>
 					<recover v-else-if="$root.action == 'recover'"></recover>

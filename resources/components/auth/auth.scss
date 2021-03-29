@@ -13,6 +13,8 @@
 	max-width: 90vw;
 }
 .auth-heading {
+	@apply text-primary font-serif  mt-20 mb-8 uppercase font-semibold;
 	font-size: 32px;
 	line-height: 32px;
+	letter-spacing: -1.75px !important;
 }

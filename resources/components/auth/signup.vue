@@ -10,7 +10,7 @@
 					</div>
 					<div class="pl-3 w-1/2">
 						<label class="text-muted">Last Name</label>
-						<input type="email" v-model="signupForm.last_name" data-required />
+						<input type="text" v-model="signupForm.last_name" data-required />
 					</div>
 				</div>
 				<div class="mb-5">
