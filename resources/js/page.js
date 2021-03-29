@@ -25,7 +25,7 @@ window.app = new Vue({
 		invite_token: null,
 		member_invite_token: null,
 		email: '',
-		signupStep: 0, //0,
+		signupStep: 0, //0
 		planFeatures: [
 			{ title: 'Booking', features: ['Unlimited Event Types', 'Scheduling Slider', 'Booking Notes', 'Recurring Bookings', 'Client self-booking', 'Book on behalf of clients', 'Unlimited Event Types', 'Schedule Multiple Bookings', 'Calendar Integrations', 'Outreach Widget', 'Booking URL'] },
 			{ title: 'Communications', features: ['Messaging System', 'Notifications', 'Zoom, Google Meet Integration', 'Telloe Video Calling'] },
@@ -81,6 +81,7 @@ window.app = new Vue({
 				.get('/auth')
 				.then(response => {
 					if (response) {
+						this.auth = response.data;
 						window.location.replace('/dashboard/overview');
 					}
 				})

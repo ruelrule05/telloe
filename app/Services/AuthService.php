@@ -90,6 +90,7 @@ class AuthService
             'google_calendar_token',
             'outlook_token',
             'xero_token',
+            'default_availability'
         ]) : false;
 
         if (! $user) {
@@ -151,6 +152,7 @@ class AuthService
             'last_name' => $request->last_name,
             'email' => $request->email,
             'last_online' => null,
+            'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
         ]);
         $user->password = bcrypt($request->password);
         $user->save();
@@ -168,11 +170,11 @@ class AuthService
         self::createDefaultField($user);
 
         $user = $user->refresh();
-        if ($user->role->role == 'client') {
-            Mail::queue(new Welcome($user));
-        }
+        Mail::queue(new Welcome($user));
 
-        return $user;
+        return $user->makeVisible([
+            'default_availability'
+        ]);
     }
 
     public static function logout()

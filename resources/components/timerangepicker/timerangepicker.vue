@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="flex">
+		<div class="flex" :class="{ 'dropdown-w-full': dropdownWFull }">
 			<div class="w-1/2 pr-2">
 				<label v-if="!noLabel">From</label>
 				<vue-timepicker ref="timeStart" format="hh:mm A" @change="emitChange" :hour-range="[startHourRange]" :minute-range="[startMinuteRange]" class="w-full" v-model="time_start" :hide-clear-button="hideClearButton" :class="{ 'has-controls': !hideClearButton }" close-on-complete auto-scroll></vue-timepicker>

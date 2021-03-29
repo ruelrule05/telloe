@@ -20,6 +20,10 @@ export default {
 		hideClearButton: {
 			type: Boolean,
 			default: false
+		},
+		dropdownWFull: {
+			type: Boolean,
+			default: false
 		}
 	},
 	components: {

@@ -70,7 +70,7 @@
 		<template v-else-if="$root.signupStep == 3">
 			<div class="mb-3 text-muted">You can change availability information later.</div>
 			<vue-form-validate @submit="goToStep(4)">
-				<timerangepicker start="06:00" end="18:00" class="mb-2"></timerangepicker>
+				<timerangepicker hide-clear-button dropdown-w-full start="06:00" end="18:00" class="mb-2"></timerangepicker>
 
 				<div v-for="(day, index) in $root.auth.default_availability" :key="day.name" class="py-3" :class="{ 'border-top': index > 0 }">
 					<VueCheckbox v-model="day.is_available" :label="day.day"></VueCheckbox>
@@ -108,41 +108,41 @@ export default {
 			invite_token: null,
 			member_invite_token: null,
 			timezone: null,
-			username: '',
-			availability: {
-				from: '08:00',
-				to: '18:00',
-				days: [
-					{
-						day: 'Monday',
-						is_available: true
-					},
-					{
-						day: 'Tuesday',
-						is_available: true
-					},
-					{
-						day: 'Wednesday',
-						is_available: true
-					},
-					{
-						day: 'Thursday',
-						is_available: true
-					},
-					{
-						day: 'Friday',
-						is_available: true
-					},
-					{
-						day: 'Saturday',
-						is_available: false
-					},
-					{
-						day: 'Sunday',
-						is_available: false
-					}
-				]
-			}
+			username: ''
+			// default_availability: {
+			// 	from: '08:00',
+			// 	to: '18:00',
+			// 	days: [
+			// 		{
+			// 			day: 'Monday',
+			// 			is_available: true
+			// 		},
+			// 		{
+			// 			day: 'Tuesday',
+			// 			is_available: true
+			// 		},
+			// 		{
+			// 			day: 'Wednesday',
+			// 			is_available: true
+			// 		},
+			// 		{
+			// 			day: 'Thursday',
+			// 			is_available: true
+			// 		},
+			// 		{
+			// 			day: 'Friday',
+			// 			is_available: true
+			// 		},
+			// 		{
+			// 			day: 'Saturday',
+			// 			is_available: false
+			// 		},
+			// 		{
+			// 			day: 'Sunday',
+			// 			is_available: false
+			// 		}
+			// 	]
+			// }
 		},
 		loading: false,
 		timezonesOptions: [],
@@ -209,11 +209,12 @@ export default {
 			let response = await axios.post('/auth', data, { toast: true }).catch(e => {
 				this.$parent.error = e.response.data.message;
 			});
-			if (response) {
+			if (response && step < 4) {
 				this.$root.signupStep = step;
 			}
 			this.loading = false;
 			if (step == 4) {
+				this.loading = true;
 				window.location.href = '/dashboard/overview';
 			}
 		},
@@ -228,6 +229,7 @@ export default {
 					.then(response => {
 						this.$root.auth = response.data;
 						this.$root.signupStep = 1;
+						this.loading = false;
 					})
 					.catch(e => {
 						this.loading = false;
