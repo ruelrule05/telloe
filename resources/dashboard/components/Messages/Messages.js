@@ -168,6 +168,7 @@ export default {
 				link.href = URL.createObjectURL(video.source);
 				link.click();
 			}
+			this.hasScreenRecording = false;
 		},
 
 		async sendScreenRecording() {
