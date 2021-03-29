@@ -1,5 +1,4 @@
-@import "../../sass/variables.scss";
-.screen-recorder{
+.screen-recorder {
 	position: fixed;
 	z-index: 102;
 	bottom: 10px;
@@ -10,17 +9,17 @@
 .recorder-content {
 	background: rgba(#333, 0.75);
 }
-.counter{
+.counter {
 	width: 50px;
 }
-.video-container{
+.video-container {
 	width: 100px;
 	height: 75px;
 }
-.video-preview{
+.video-preview {
 	z-index: 2;
 }
-.video-control{
+.video-control {
 	border: 0 !important;
 	outline: 0 !important;
 	width: 40px;
@@ -28,7 +27,7 @@
 	border-radius: 50% !important;
 	background-color: #000;
 	position: relative;
-	&.video-record:before{
+	&.video-record:before {
 		content: '';
 		position: absolute;
 		top: 50%;
@@ -39,8 +38,9 @@
 		background-color: #fff;
 		border-radius: 50%;
 	}
-	&.video-pause{
-		&:before{
+	&.video-pause {
+		@apply bg-red-600;
+		&:before {
 			content: '';
 			position: absolute;
 			top: 50%;
@@ -51,7 +51,7 @@
 			background-color: #fff;
 			border-radius: 5px;
 		}
-		&:after{
+		&:after {
 			content: '';
 			position: absolute;
 			top: 50%;

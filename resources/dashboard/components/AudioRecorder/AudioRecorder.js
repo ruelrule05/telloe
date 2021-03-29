@@ -12,6 +12,7 @@ export default {
 	components: { CloseIcon, MicrophoneIcon, PlayIcon, PauseIcon },
 
 	data: () => ({
+		ready: false,
 		audioRecorder: null,
 		streams: null,
 		blobs: [],
@@ -41,6 +42,7 @@ export default {
 			//backend: 'MediaElement',
 			height: 200,
 			barWidth: 3,
+			barMinHeight: 0.01,
 			barHeight: 1,
 			barRadius: 3,
 			interact: true,
@@ -53,6 +55,7 @@ export default {
 			this.playerStatus = 'paused';
 			this.wavesurfer.seekTo(0);
 		});
+		this.ready = true;
 		/*this.wavesurfer.on('ready', (progress) => {
 			if(this.recorderStatus == 'paused') {
 				this.wavesurfer.play();
@@ -85,7 +88,9 @@ export default {
 			this.timer = null;
 			this.wavesurfer.setCursorColor('transparent');
 			this.wavesurfer.empty();
-			this.audioRecorder.stop();
+			if (this.audioRecorder.state != 'inactive') {
+				this.audioRecorder.stop();
+			}
 		},
 
 		submit() {

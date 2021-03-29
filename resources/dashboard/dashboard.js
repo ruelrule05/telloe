@@ -10,7 +10,7 @@ Vue.use(VueRouter);
 //window.Vue.component('vue-button', require('../components/vue-button.vue').default);
 
 import dayjs from 'dayjs';
-import ScreenRecorder from '../components/screen-recorder/screen-recorder.vue';
+import ScreenRecorder from '../dashboard/components/ScreenRecorder/ScreenRecorder.vue';
 
 import BellIcon from '../icons/bell';
 import CloseIcon from '../icons/close';

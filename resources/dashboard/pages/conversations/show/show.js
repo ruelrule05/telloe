@@ -69,12 +69,9 @@ export default {
 	data: () => ({
 		ready: false,
 		moreActions: false,
-		hasScreenRecording: false,
-		pastedFile: null,
 		selectedMessage: null,
 		isTyping: false,
 		typingTimeout: null,
-		isScreenRecordDownloading: false,
 		channel: null,
 		duration: 0,
 		showNotes: false,
@@ -119,16 +116,7 @@ export default {
 				this.showConversation({ id: value }).then(() => {
 					this.initChannel();
 				});
-				this.checkScreenRecorder();
 			}
-		},
-		'$root.screenRecorder.status': function(value) {
-			if (value == 'paused') this.checkScreenRecorder();
-			else this.hasScreenRecording = false;
-		},
-		'$root.screenRecorder.conversation_id': function(value) {
-			if (value == this.conversation.id) this.checkScreenRecorder();
-			//else this.hasScreenRecording = false;
 		}
 	},
 
@@ -153,9 +141,7 @@ export default {
 		});
 	},
 
-	mounted() {
-		this.checkScreenRecorder();
-	},
+	mounted() {},
 
 	methods: {
 		...mapActions({
@@ -322,40 +308,6 @@ export default {
 			}
 		},
 
-		async downloadScreenRecording() {
-			if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isDownloaded) {
-				let video = await this.$root.$refs['screenRecorder'].submit();
-				let link = document.createElement('a');
-				link.download = video.source.name;
-				link.href = URL.createObjectURL(video.source);
-				link.click();
-			}
-		},
-
-		async sendScreenRecording() {
-			if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isSent) {
-				let video = await this.$root.$refs['screenRecorder'].submit();
-				this.hasScreenRecording = false;
-				this.sendVideo(video);
-			}
-		},
-
-		checkScreenRecorder() {
-			if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
-				this.hasScreenRecording = true;
-				this.$nextTick(() => {
-					if (this.$refs['screenRecorderData']) {
-						let blob = new Blob(this.$root.screenRecorder.data);
-						this.$refs['screenRecorderData'].src = null;
-						this.$refs['screenRecorderData'].src = URL.createObjectURL(blob);
-						this.$refs['screenRecorderData'].load();
-					}
-				});
-			} else {
-				this.hasScreenRecording = false;
-			}
-		},
-
 		markHistory(message) {
 			message.is_history = !message.is_history;
 			this.updateMessage(message);
@@ -375,22 +327,6 @@ export default {
 					this.conversation.name = newName;
 					this.updateConversation(this.conversation);
 				}
-			}
-		},
-
-		sendVideo(video) {
-			if (this.conversation) {
-				let message = {
-					user: this.$root.auth,
-					source: video.source,
-					preview: video.preview,
-					type: 'video',
-					message: 'video',
-					created_diff: 'Just now',
-					metadata: { duration: video.duration }
-				};
-				this.sendMessage(message);
-				this.recorder = '';
 			}
 		},
 

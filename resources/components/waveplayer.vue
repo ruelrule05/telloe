@@ -1,10 +1,10 @@
 <template>
-	<div class="d-flex align-items-center justify-content-between waveplayer-container">
-		<button class="audio-control shadow-sm position-relative p-0 mr-2 border btn-white" @click="togglePlayer">
-			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="#999"></play-icon>
-			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="#999"></pause-icon>
+	<div class="flex items-center justify-between waveplayer-container">
+		<button class="audio-control shadow-sm relative p-0 mr-2 border btn-white" @click="togglePlayer">
+			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="white"></play-icon>
+			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="white"></pause-icon>
 		</button>
-		<div ref="waveplayer" class="waveplayer flex-grow-1"></div>
+		<div ref="waveplayer" class="waveplayer flex-grow"></div>
 		<span class="text-nowrap pl-2">{{ duration }}</span>
 	</div>
 </template>

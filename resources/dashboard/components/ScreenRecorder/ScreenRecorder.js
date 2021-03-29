@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import PlainDraggable from '../../js/plugins/plain-draggable.min';
-import Tooltip from '../../js/directives/tooltip';
-import CameraIcon from '../../icons/camera.vue';
-import CloseIcon from '../../icons/close.vue';
-import PauseAltIcon from '../../icons/pause-alt';
-import CommentIcon from '../../icons/comment';
+import PlainDraggable from '../../../js/plugins/plain-draggable.min';
+import Tooltip from '../../../js/directives/tooltip';
+import CameraIcon from '../../../icons/camera.vue';
+import CloseIcon from '../../../icons/close.vue';
+import PauseAltIcon from '../../../icons/pause-alt';
+import CommentIcon from '../../../icons/comment';
 export default {
 	components: { CameraIcon, CloseIcon, PauseAltIcon, CommentIcon },
 
@@ -61,7 +61,7 @@ export default {
 
 	methods: {
 		goToConversation() {
-			let target = `/dashboard/bookings/services/${this.$root.screenRecorder.conversation_id}`;
+			let target = `/dashboard/conversations/${this.$root.screenRecorder.conversation_id}`;
 			if (this.$route.path != target) this.$router.push(target);
 		},
 

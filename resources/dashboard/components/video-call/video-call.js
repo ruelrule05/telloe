@@ -311,6 +311,7 @@ export default {
 				container: document.querySelector(`#wavesurfer-${uid}`),
 				height: 200,
 				barWidth: 3,
+				barMinHeight: 0.01,
 				barHeight: 1,
 				barRadius: 3,
 				interact: true,

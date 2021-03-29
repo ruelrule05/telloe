@@ -4,35 +4,29 @@
 			<span class="absolute-center text-muted text-2xl">Drop Files Here</span>
 		</div>
 		<div class="overflow-hidden flex-grow relative">
-			<!-- <div v-if="hasScreenRecording" class="position-absolute w-100 h-100 bg-white screen-recorder-data">
-							<div class="position-absolute-center w-75 text-center h-100 py-5 d-flex flex-column">
-								<h6 class="font-heading h5">Screen recording</h6>
-								<div class="flex-grow-1 position-relative bg-dark rounded overflow-hidden">
-									<video src="" class="w-100 h-100 bg-black position-absolute-center d-block outline-0" controls ref="screenRecorderData"></video>
-								</div>
-								<div class="mt-2">
-									<button type="button" class="btn btn-light border" @click="downloadScreenRecording()">Download</button>
-									<button type="button" class="btn  btn-light border" @click="sendScreenRecording">Send</button>
-								</div>
-							</div>
-							<div class="position-absolute-center w-100 h-100 bg-white" v-if="isScreenRecordDownloading">
-								<div class="position-absolute-center w-75 text-center">
-									<div class="spinner-border text-primary"></div>
-									<h5 class="font-heading mb-0 mt-3">Converting your video...</h5>
-								</div>
-							</div>
-						</div>
+			<div v-if="hasScreenRecording" class="absolute w-full h-full bg-white screen-recorder-data">
+				<div class="absolute-center w-3/4 text-center h-full py-5 flex flex-col">
+					<h6 class="text-xl mb-2">Screen recording</h6>
+					<div class="flex-grow-1 position-relative bg-dark rounded overflow-hidden">
+						<video src="" class="w-100 h-100 bg-black position-absolute-center d-block outline-0" controls ref="screenRecorderData"></video>
+					</div>
+					<div class="mt-2">
+						<button type="button" class="btn btn-sm border" @click="downloadScreenRecording()"><span>Download</span></button>
+						<button type="button" class="btn btn-sm border" @click="sendScreenRecording()"><span>Send</span></button>
+					</div>
+				</div>
+			</div>
 
-						<div v-if="pastedFile" class="position-absolute w-100 h-100 bg-white pasted-file">
-							<div class="position-absolute-center w-75 h-100 d-flex flex-column p-5">
-								<div v-if="!pastedFile.preview" class="position-relative border"></div>
-								<div v-else class="pasted-preview flex-grow-1" :style="{ 'background-image': 'url(' + pastedFile.preview + ')' }"></div>
-								<div class="text-center mt-3">
-									<button type="button" class="btn btn-light border" @click="pastedFile = null">Cancel</button>
-									<button type="button" class="btn btn-light border" @click="sendPastedFile()">Send</button>
-								</div>
-							</div>
-						</div> -->
+			<!-- <div v-if="pastedFile" class="position-absolute w-100 h-100 bg-white pasted-file">
+				<div class="position-absolute-center w-75 h-100 d-flex flex-column p-5">
+					<div v-if="!pastedFile.preview" class="position-relative border"></div>
+					<div v-else class="pasted-preview flex-grow-1" :style="{ 'background-image': 'url(' + pastedFile.preview + ')' }"></div>
+					<div class="text-center mt-3">
+						<button type="button" class="btn btn-light border" @click="pastedFile = null">Cancel</button>
+						<button type="button" class="btn btn-light border" @click="sendPastedFile()">Send</button>
+					</div>
+				</div>
+			</div> -->
 
 			<div v-if="!ready || !conversation.ready" class="bg-white messages-loader position-absolute-center w-100 h-100">
 				<div class="position-absolute-center">
@@ -208,7 +202,7 @@
 
 		<gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
 
-		<audio-recorder-modal xv-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></audio-recorder-modal>
+		<AudioRecorder v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></AudioRecorder>
 
 		<!-- <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal> -->
 	</div>
