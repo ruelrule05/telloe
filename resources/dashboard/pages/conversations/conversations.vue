@@ -5,7 +5,7 @@
 				<div class="content-header border-bottom">
 					MESSAGES
 					<div class="ml-auto">
-						<button type="button" class="btn btn-md btn-outline-primary" @click="$refs.newConversationModal.show()">
+						<button type="button" class="btn btn-md btn-primary" @click="$refs.newConversationModal.show()">
 							<span>NEW CONVERSATION</span>
 						</button>
 					</div>

@@ -35,7 +35,7 @@
 		<div class="p-2 border-top overflow-hidden">
 			<div class="overflow-auto w-full text-center">
 				<div class="inline-flex max-w-full">
-					<div v-for="(m, mediaIndex) in media" :key="mediaIndex" class="preview mx-1 cursor-pointer bg-light position-relative" :class="{ active: (file || {}).id == m.id }" :style="{ 'background-image': 'url(' + m.preview + ')' }" @click="$parent.selectedFile = m">
+					<div v-for="(m, mediaIndex) in media" :key="mediaIndex" class="preview mx-1 cursor-pointer bg-gray-100 relative" :class="{ active: (file || {}).id == m.id }" :style="{ 'background-image': 'url(' + m.preview + ')' }" @click="$parent.selectedFile = m">
 						<volume-mid-icon v-if="m.type == 'audio'" width="32" height="32" class="absolute-center"></volume-mid-icon>
 					</div>
 				</div>

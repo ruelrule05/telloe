@@ -361,6 +361,7 @@ export default {
 		async xirsys() {
 			await this.addLocalStream();
 
+			console.log(this.host);
 			this.signal = new window.$xirsys.signal(this.host + '/v2/' + this.token, this.username);
 			this.signal.on('message', msg => {
 				var pkt = JSON.parse(msg.data);
@@ -416,6 +417,7 @@ export default {
 			this.isLoading = true;
 			this.username = this.guid();
 			await this.getXirsys();
+			console.log(this.host);
 			this.isLoading = false;
 			this.xirsys();
 		},
