@@ -1,4 +1,6 @@
 const colors = require('tailwindcss/colors');
+let coolGray = colors.coolGray;
+coolGray['50'] = '#F8F8F9';
 module.exports = {
 	purge: ['./resources/**/*.blade.php', './resources/**/*.js', './resources/**/*.vue'],
 	darkMode: false, // or 'media' or 'class
@@ -30,7 +32,7 @@ module.exports = {
 			current: 'currentColor',
 			black: colors.black,
 			white: colors.white,
-			gray: colors.coolGray,
+			gray: coolGray,
 			red: colors.red,
 			yellow: colors.amber,
 			green: colors.emerald,

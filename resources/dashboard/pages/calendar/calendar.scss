@@ -70,14 +70,3 @@
 		@apply uppercase font-serif text-xs;
 	}
 }
-.button-date-nav {
-	@apply inline-flex items-center align-bottom rounded-full font-semibold border-solid border border-primary font-serif uppercase text-xs text-primary overflow-hidden;
-	> button {
-		@apply px-2 focus:outline-none transition-colors hover:bg-primary hover:text-white;
-		height: 30px;
-	}
-	span {
-		@apply px-2;
-		margin-bottom: -1px;
-	}
-}

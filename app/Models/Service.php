@@ -10,7 +10,7 @@ class Service extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment'];
 
     protected $casts = [
         'days' => 'array',
@@ -25,6 +25,7 @@ class Service extends BaseModel
         'ask_phone' => 'boolean',
         'require_phone' => 'boolean',
         'create_zoom_link' => 'boolean',
+        'require_payment' => 'boolean',
     ];
 
     protected $appends = ['coach'];

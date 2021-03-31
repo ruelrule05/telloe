@@ -43,6 +43,11 @@ export default {
 		noCaret: {
 			type: Boolean,
 			default: false
+		},
+
+		dropPosition: {
+			type: String,
+			default: 'down'
 		}
 	},
 

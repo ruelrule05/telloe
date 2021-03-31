@@ -8,8 +8,6 @@ require('../js/bootstrap');
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import 'bootstrap/js/dist/modal';
-import 'bootstrap/js/dist/dropdown';
 import VCalendar from 'v-calendar';
 import Toasted from 'vue-toasted';
 import dayjs from 'dayjs';
@@ -113,7 +111,6 @@ export default {
 		selectedService: null,
 		startDate: null,
 		selectedDate: null,
-		selectedTimeslot: null,
 		detailsConfirmed: false,
 		error: 'sds',
 		reviewForm: 'details',
@@ -156,7 +153,8 @@ export default {
 		masks: {
 			input: 'MMM D, YYYY'
 		},
-		timezonesOptions: []
+		timezonesOptions: [],
+		summary: false
 	}),
 
 	computed: {
@@ -304,7 +302,7 @@ export default {
 				this.selectedCoachId = this.profile.id;
 				this.error = null;
 				this.authError = '';
-				this.selectedTimeslot = null;
+				this.selectedTimeslots = [];
 				this.calendarView = 'month';
 				this.authAction = 'signup';
 				this.authForm = false;
@@ -404,12 +402,6 @@ export default {
 			return endTime;
 		},
 
-		summary() {
-			if (this.selectedTimeslots.length > 0) {
-				this.selectedTimeslot = true;
-			}
-		},
-
 		previousWeek() {
 			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
 			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
@@ -441,6 +433,7 @@ export default {
 				}
 			}
 		},
+
 		timezoneTooltip(timezone, timeslot) {
 			return `
 				<div class="text-left py-1 line-height-base">
@@ -489,7 +482,8 @@ export default {
 		},
 
 		goToCoachSelection() {
-			this.assignedService = this.startDate = this.selectedTimeslot = null;
+			this.assignedService = this.startDate = null;
+			this.selectedTimeslot = [];
 			this.calendarView = 'month';
 			this.authForm = false;
 			this.authError = '';
@@ -785,7 +779,7 @@ export default {
 		async getTimeslots() {
 			if (this.selectedService) {
 				this.timeslotsLoading = true;
-				this.selectedTimeslot = null;
+				this.selectedTimeslots = [];
 				let response = await window.axios.get(`/@${this.profile.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
 				this.timeslots = response.data;
 				this.timeslotsLoading = false;
@@ -798,8 +792,10 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				// this.selectedServiceForTimeline = this.services[0];
-				// this.selectedService = this.selectedServiceForTimeline;
+				this.selectedServiceForTimeline = this.services[0];
+				this.selectedService = this.selectedServiceForTimeline;
+				this.selectedTimeslots.push({ date: { name: 'Thu', dayName: 'Thursday', date: '2021-04-01T05:12:34.213Z', label: 'Apr 01', format: '2021-04-01' }, timeslot: { label: '08:00AM', time: '08:00', is_available: true }, days: [] });
+				this.summary = true;
 
 				this.ready = true;
 			});

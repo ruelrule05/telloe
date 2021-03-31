@@ -93,7 +93,10 @@
 							<div class="mb-5">
 								<vue-checkbox v-model="clonedService.in_widget" label="Available in widget"></vue-checkbox>
 							</div>
-							<vue-checkbox :disabled="!$root.auth.zoom_token" v-model="clonedService.create_zoom_link" label="Create Zoom link on booking"></vue-checkbox>
+							<div class="mb-5">
+								<vue-checkbox :disabled="!$root.auth.zoom_token" v-model="clonedService.create_zoom_link" label="Create Zoom link on booking"></vue-checkbox>
+							</div>
+							<vue-checkbox v-model="clonedService.require_payment" label="Require payment on booking"></vue-checkbox>
 						</div>
 					</div>
 
