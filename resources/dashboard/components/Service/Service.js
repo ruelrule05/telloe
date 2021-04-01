@@ -5,6 +5,9 @@ import Timerangepicker from '../../../components/timerangepicker/timerangepicker
 import convertTime from '../../../js/plugins/convert-time';
 import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
+import PlusIcon from '../../../icons/plus';
+import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
+import CloseIcon from '../../../icons/close';
 export default {
 	props: {
 		service: {
@@ -17,7 +20,7 @@ export default {
 		}
 	},
 
-	components: { VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect },
+	components: { VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect, PlusIcon, VueDropdown, CloseIcon },
 
 	data: () => ({
 		menus: ['General Settings', 'Availability', 'Payment', 'Advanced'],
@@ -58,7 +61,8 @@ export default {
 				text: 'NZD',
 				value: 'NZD'
 			}
-		]
+		],
+		types: ['Google Meet', 'Zoom', 'Face-to-face']
 	}),
 
 	watch: {
@@ -81,6 +85,18 @@ export default {
 		...mapActions({
 			updateService: 'services/update'
 		}),
+
+		selectType(type) {
+			if (!this.clonedService.types) {
+				this.$set(this.clonedService, 'types', []);
+			}
+			let exists = this.clonedService.types.find(x => x.type == type);
+			if (!exists) {
+				this.clonedService.types.push({
+					type: type
+				});
+			}
+		},
 
 		setMounted() {
 			if (this.clonedService) {

@@ -227,6 +227,26 @@
 								>
 									REMOVE BOOKING
 								</button>
+
+								<div class="mt-6">
+									<div v-for="(type, typeIndex) in selectedService.types" :key="typeIndex" class="booking-type" :class="{ selected: type.is_selected }" @click="setTypeSelected(type)">
+										<div>
+											<div class="type-checkbox"><div class="absolute-center"></div></div>
+										</div>
+										<div class="px-3 text-sm text-muted -mt-1 flex-grow">
+											<div>
+												{{ type.type }}
+											</div>
+											<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
+											<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
+										</div>
+										<div>
+											<ZoomIcon v-if="type.type == 'Zoom'" class="w-5 h-5"></ZoomIcon>
+											<GoogleMeetIcon v-else-if="type.type == 'Google Meet'" class="w-5 h-5"></GoogleMeetIcon>
+											<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="w-5 h-5 fill-current text-primary"></MapMarkerIcon>
+										</div>
+									</div>
+								</div>
 							</div>
 							<div class="flex items-center">
 								<span class="text-sm mr-3">Recurring</span>

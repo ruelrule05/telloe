@@ -2,7 +2,15 @@
 	<div class="service-card">
 		<div class="flex justify-between">
 			<div class="rounded-xl border border-gray-300 bg-secondary w-9 h-5">&nbsp;</div>
-			<div><VueDropdown :options="actions" @click="serviceAction" class="-mr-2 -mt-2"></VueDropdown></div>
+			<div>
+				<VueDropdown :options="actions" @click="serviceAction" class="-mr-2 -mt-2">
+					<template #button>
+						<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+							<CogIcon class="fill-current text-gray-400"></CogIcon>
+						</div>
+					</template>
+				</VueDropdown>
+			</div>
 		</div>
 		<h6 class="text-primary font-bold mt-6 mb-1">{{ service.name }}</h6>
 		<div class="text-sm">

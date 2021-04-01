@@ -55,6 +55,8 @@ dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';
 import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
 import VueSelect from '../components/vue-select/vue-select.vue';
+import ZoomIcon from '../icons/zoom';
+import GoogleMeetIcon from '../icons/google-meet';
 
 const ct = require('countries-and-timezones');
 
@@ -87,7 +89,9 @@ export default {
 		MoreIcon,
 		ToggleSwitch,
 		VueSelect,
-		MapMarkerIcon
+		MapMarkerIcon,
+		ZoomIcon,
+		GoogleMeetIcon
 	},
 
 	directives: { tooltip },
@@ -344,6 +348,15 @@ export default {
 	},
 
 	methods: {
+		setTypeSelected(type) {
+			this.selectedService.types.forEach(serviceType => {
+				if (serviceType.type != type.type) {
+					serviceType.is_selected = false;
+				}
+			});
+			this.$set(type, 'is_selected', true);
+		},
+
 		daysInMonth(timeslot) {
 			return [
 				{

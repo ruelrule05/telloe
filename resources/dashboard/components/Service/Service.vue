@@ -39,6 +39,34 @@
 								<input type="number" v-model="clonedService.interval" required />
 							</div>
 						</div>
+						<div class="font-serif uppercase font-semibold text-xs mt-10">MEETING TYPE</div>
+						<template v-if="clonedService.types">
+							<div v-for="(type, typeIndex) in clonedService.types" class="mt-6" :key="typeIndex">
+								<div class="text-muted text-sm mb-1">Type of meeting</div>
+								<div class="flex">
+									<div class="w-6/12 rounded-md border overflow-hidden">
+										<div class="py-2 px-4">
+											{{ type.type }}
+										</div>
+										<div v-if="type.type == 'Face-to-face'" class="p-4 bg-gray-100 border-top">
+											<div class="text-muted text-sm mb-1">Location/details</div>
+											<input type="text" v-model="type.data" placeholder="Location/details.." data-required />
+										</div>
+										<div v-else class="text-muted text-sm  px-4 pb-2">{{ type.type }} link will be created for each booking.</div>
+									</div>
+									<div class="pl-2">
+										<button class="focus:outline-none rounded-full p-2 border text-gray-400 transition-colors hover:bg-gray-400 hover:text-white" type="button" @click="clonedService.types.splice(typeIndex, 1)"><CloseIcon class="fill-current"></CloseIcon></button>
+									</div>
+								</div>
+							</div>
+						</template>
+						<div class="relative mt-6">
+							<VueDropdown :options="types" drop-position="top" @click="selectType">
+								<template #button>
+									<div class="btn cursor-pointer btn-md btn-outline-primary inline-flex items-center"><PlusIcon class="stroke-current mr-2"></PlusIcon><span>Add Type</span></div>
+								</template>
+							</VueDropdown>
+						</div>
 					</div>
 
 					<!-- Availability -->

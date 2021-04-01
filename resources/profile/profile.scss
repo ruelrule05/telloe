@@ -44,3 +44,21 @@
 		@apply bg-green-400 text-white font-semibold;
 	}
 }
+.booking-type {
+	@apply border rounded-xl p-4 flex mt-2 cursor-pointer transition-colors hover:bg-gray-100;
+	&.selected {
+		@apply border-primary;
+		.type-checkbox {
+			@apply border-primary;
+			> div {
+				@apply bg-primary;
+			}
+		}
+	}
+}
+.type-checkbox {
+	@apply border h-5 w-5 relative rounded-full;
+	> div {
+		@apply w-2 h-2 rounded-full scale-0 transition-colors;
+	}
+}

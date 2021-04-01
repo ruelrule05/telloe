@@ -5,6 +5,11 @@ export default {
 		options: {
 			type: Array,
 			required: true
+		},
+
+		dropPosition: {
+			type: String,
+			default: 'down'
 		}
 	},
 	components: { CogIcon },

@@ -2,6 +2,7 @@ import { mapActions } from 'vuex';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import copy from 'copy-text-to-clipboard';
+import CogIcon from '../../../icons/cog';
 export default {
 	props: {
 		service: {
@@ -14,7 +15,7 @@ export default {
 		actions: ['Edit', 'Duplicate', 'Delete']
 	}),
 
-	components: { ToggleSwitch, VueDropdown },
+	components: { ToggleSwitch, VueDropdown, CogIcon },
 
 	methods: {
 		...mapActions({

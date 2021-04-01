@@ -1,9 +1,9 @@
 <template>
 	<div class="dropdown" :class="{ open: open }" v-click-outside="onBlur">
-		<button type="button" class="dropdown-button" @click="open = !open">
-			<CogIcon class="fill-current text-gray-400"></CogIcon>
-		</button>
-		<div class="dropdown-menu">
+		<div @click="open = !open">
+			<slot name="button"></slot>
+		</div>
+		<div class="dropdown-menu" :class="[dropPosition]">
 			<span v-for="(option, optionIndex) in options" :key="optionIndex" class="dropdown-item" @click="emitClick(option)">{{ option }}</span>
 		</div>
 	</div>
