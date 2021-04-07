@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Requests\GuestBookRequest;
 use App\Http\Requests\UserBookRequest;
 use App\Http\Requests\UserFacebookLoginAndBook;
 use App\Http\Requests\UserGoogleLoginRequest;
@@ -283,7 +284,7 @@ class UserService
         return abort(403, $message);
     }
 
-    public static function book($username, $service_id, $request, $customer)
+    public static function book($username, $service_id, $request, $customer, $guest = false)
     {
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
@@ -297,7 +298,7 @@ class UserService
             });
         })->firstOrfail();
 
-        if ($customer->id == $user->id) {
+        if ($customer && $customer->id == $user->id) {
             return abort(403, 'You are not allowed to book using your own account.');
         }
 
@@ -449,5 +450,10 @@ class UserService
         }
 
         return self::book($username, $service_id, $request, $user, true);
+    }
+
+    public static function guestBook($username, $service_id, GuestBookRequest $request)
+    {
+        return self::book($username, $service_id, $request, NULL, true);
     }
 }

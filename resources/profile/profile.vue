@@ -68,7 +68,7 @@
 			</div>
 
 			<!-- Select coach/date/time -->
-			<div v-else-if="selectedServiceForTimeline && !summary" class="container my-12 flex justify-center" key="service">
+			<div v-else-if="selectedServiceForTimeline && !step" class="container my-12 flex justify-center" key="service">
 				<div class="bg-white rounded-2xl w-11/12">
 					<div class="flex">
 						<div class="w-5/12 p-10">
@@ -181,7 +181,7 @@
 								</table>
 
 								<div class="mt-12 flex items-center justify-between">
-									<button :disabled="selectedTimeslots.length == 0" class="btn btn-primary" type="button" @click="summary = true">
+									<button :disabled="selectedTimeslots.length == 0" class="btn btn-primary" type="button" @click="step = 'summary'">
 										<span>Continue</span>
 									</button>
 									<div class="text-muted text-sm">
@@ -199,10 +199,11 @@
 				</div>
 			</div>
 
-			<div v-else-if="summary" class="flex" key="summary">
+			<!-- Summary -->
+			<div v-else-if="step == 'summary'" class="flex" key="summary">
 				<div class="border w-4/12 p-16">
 					<h6 class="text-primary font-serif text-4xl font-semibold leading-none mb-10">SET YOUR BOOKING DETAILS</h6>
-					<button class="btn btn-outline-primary flex items-center" type="button" @click="summary = false"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
+					<button class="btn btn-outline-primary flex items-center" type="button" @click="step = false"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
 				<div class="w-8/12 min-h-screen bg-white p-16">
 					<h4 class="mb-2 font-serif font-semibold text-2xl text-primary">{{ selectedService.name }}</h4>
@@ -210,67 +211,101 @@
 						<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
 					</div>
 
-					<div v-for="(selectedTimeslot, selectedTimeslotIndex) in selectedTimeslots" :key="selectedTimeslotIndex" class="mt-8">
-						<div class="flex items-start justify-between">
-							<div>
-								<div class="font-bold">{{ dayjs(selectedTimeslot.date.format).format('MMMM D, YYYY') }} ({{ selectedTimeslot.date.dayName }})</div>
-								<div>{{ selectedTimeslot.timeslot.label }} - {{ endTime(selectedTimeslot.timeslot.time) }}</div>
-								<button
-									class="font-serif text-primary text-xxs font-semibold"
-									type="button"
-									@click="
-										selectedTimeslots.splice(selectedTimeslotIndex, 1);
-										if (selectedTimeslots.length == 0) {
-											summary = false;
-										}
-									"
-								>
-									REMOVE BOOKING
-								</button>
+					<div class="w-8/12">
+						<div v-for="(selectedTimeslot, selectedTimeslotIndex) in selectedTimeslots" :key="selectedTimeslotIndex" class="mt-8">
+							<div class="flex items-start justify-between">
+								<div>
+									<div class="font-bold">{{ dayjs(selectedTimeslot.date.format).format('MMMM D, YYYY') }} ({{ selectedTimeslot.date.dayName }})</div>
+									<div>{{ timezoneTime(selectedTimeslot.timeslot.time) }} - {{ endTime(selectedTimeslot.timeslot.time) }}</div>
+									<button
+										class="font-serif text-primary text-xxs font-semibold"
+										type="button"
+										@click="
+											selectedTimeslots.splice(selectedTimeslotIndex, 1);
+											if (selectedTimeslots.length == 0) {
+												step = false;
+											}
+										"
+									>
+										REMOVE BOOKING
+									</button>
+								</div>
 
-								<div class="mt-6">
-									<div v-for="(type, typeIndex) in selectedService.types" :key="typeIndex" class="booking-type" :class="{ selected: type.is_selected }" @click="setTypeSelected(type)">
-										<div>
-											<div class="type-checkbox"><div class="absolute-center"></div></div>
-										</div>
-										<div class="px-3 text-sm text-muted -mt-1 flex-grow">
-											<div>
-												{{ type.type }}
+								<div class="flex items-center">
+									<span class="text-xs mr-2">Recurring</span>
+									<ToggleSwitch
+										class="ml-auto"
+										@input="
+											if (selectedTimeslot.is_recurring) {
+												$set(
+													selectedTimeslot,
+													'end_date',
+													dayjs(new Date())
+														.add(1, 'week')
+														.toDate()
+												);
+												$set(selectedTimeslot, 'frequency', recurringFrequencies[0].value);
+												setTimeslotDefaultDay('week', selectedTimeslot);
+											}
+										"
+										active-class="bg-primary"
+										v-model="selectedTimeslot.is_recurring"
+									></ToggleSwitch>
+									<div v-if="selectedTimeslot.is_recurring" class="relative" v-click-outside="() => (selectedTimeslot.menu = false)">
+										<button class="ml-1 focus:outline-none rounded-full p-1 border text-gray-400 transition-colors hover:bg-gray-400 hover:text-white btn-timeslot" type="button" @click="$set(selectedTimeslot, 'menu', true)"><CogIcon class="fill-current h-4 w-4"></CogIcon></button>
+
+										<div class="timeslot-menu" :class="{ show: selectedTimeslot.menu }">
+											<div class="flex">
+												<button class="flex-grow btn btn-sm mr-1" type="button" :class="[selectedTimeslot.frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'week')"><span>Weekly</span></button>
+												<button class="flex-grow btn btn-sm ml-1" type="button" :class="[selectedTimeslot.frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'month')"><span>Monthly</span></button>
 											</div>
-											<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
-											<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
-										</div>
-										<div>
-											<ZoomIcon v-if="type.type == 'Zoom'" class="w-5 h-5"></ZoomIcon>
-											<GoogleMeetIcon v-else-if="type.type == 'Google Meet'" class="w-5 h-5"></GoogleMeetIcon>
-											<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="w-5 h-5 fill-current text-primary"></MapMarkerIcon>
+											<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
+											<div class="flex space-x-2 mt-3">
+												<div @click="timeslotToggleDay(selectedTimeslot, dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: selectedTimeslot.days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+													<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+												</div>
+											</div>
+
+											<div class="mt-4">
+												<v-date-picker :min-date="new Date()" class="input" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
+													<template v-slot="{ inputValue, inputEvents }">
+														<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
+															<span class="text-muted text-sm mr-2">Until</span>
+															{{ inputValue }}
+														</button>
+													</template>
+												</v-date-picker>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="flex items-center">
-								<span class="text-sm mr-3">Recurring</span>
-								<ToggleSwitch
-									class="ml-auto"
-									@input="
-										if (selectedTimeslot.is_recurring) {
-											$set(
-												selectedTimeslot,
-												'end_date',
-												dayjs(new Date())
-													.add(1, 'week')
-													.toDate()
-											);
-											$set(selectedTimeslot, 'frequency', recurringFrequencies[0].value);
-											setTimeslotDefaultDay('week', selectedTimeslot);
-										}
-									"
-									active-class="bg-primary"
-									v-model="selectedTimeslot.is_recurring"
-								></ToggleSwitch>
+
+							<div v-if="selectedService.types.length > 0" class="mt-6">
+								<div v-for="(type, typeIndex) in selectedService.types" :key="typeIndex" class="booking-type" :class="{ selected: selectedTimeslot.type == type }" @click="setTypeSelected(selectedTimeslot, type)">
+									<div>
+										<div class="type-checkbox"><div class="absolute-center"></div></div>
+									</div>
+									<div class="px-3 text-sm text-muted -mt-1 flex-grow">
+										<div>
+											{{ type.type }}
+										</div>
+										<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
+										<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
+									</div>
+									<div>
+										<ZoomIcon v-if="type.type == 'Zoom'" class="w-5 h-5"></ZoomIcon>
+										<GoogleMeetIcon v-else-if="type.type == 'Google Meet'" class="w-5 h-5"></GoogleMeetIcon>
+										<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="w-5 h-5 fill-current text-primary"></MapMarkerIcon>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
+
+					<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="button" @click="step = selectedService.require_payment ? 'payment' : 'authenticate'">
+						<span>Continue</span>
+					</button>
 				</div>
 
 				<vue-form-validate hidden @submit="submit" class="row justify-content-center">
@@ -438,6 +473,87 @@
 						</div>
 					</div>
 				</vue-form-validate>
+			</div>
+
+			<!-- Payment -->
+			<div v-else-if="step == 'payment'" class="container my-12 flex items-center justify-center" key="payment">
+				<div class="w-5/12 bg-white rounded-2xl p-14">
+					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">CHECKOUT</h6>
+					<div class="text-xl text-muted mb-8">Pay with card</div>
+
+					<vue-form-validate @submit="pay">
+						<div class="inpuxt p-0 shadow-none border-0 ring-0 overflow-hidden">
+							<div class="input-cc-card border-bottom border-gray-300 relative z-10">
+								<div class="cc-icon">
+									<component :is="cardBrandComponent"></component>
+								</div>
+								<input v-model="cardForm.number" type="tel" class="ring-0 ring-offset-0 rounded-b-none border-b-0" :class="{ 'is-invalid': cardForm.errors.number }" placeholder="#### #### #### ####" v-cardformat:formatCardNumber data-required />
+							</div>
+							<div class="flex relative">
+								<div class="flex-grow">
+									<input type="text" :class="{ 'is-invalid': cardForm.errors.expiration }" v-model="cardForm.expiration" class="ring-0 ring-offset-0 rounded-t-none rounded-r-none border-r-0 border-t-0" placeholder="MM/YY" v-cardformat:formatCardExpiry data-required />
+								</div>
+								<div class="flex-grow border-left">
+									<input type="text" :class="{ 'is-invalid': cardForm.errors.cvc }" v-model="cardForm.cvc" class="ring-0 ring-offset-0 rounded-t-none rounded-l-none border-l-0 border-t-0" placeholder="CVC" v-cardformat:formatCardCVC data-required />
+								</div>
+							</div>
+						</div>
+						<button>submit</button>
+					</vue-form-validate>
+				</div>
+			</div>
+
+			<!-- Authenticate -->
+			<div v-else-if="step == 'authenticate'" class="flex" key="authenticate">
+				<div class="border w-4/12 p-16">
+					<h6 class="text-primary font-serif text-4xl font-semibold leading-none mb-10">ADD YOUR CONTACT INFO</h6>
+					<button class="btn btn-outline-primary flex items-center" type="button" @click="step = 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
+				</div>
+				<div class="w-8/12 min-h-screen bg-white">
+					<div class="grid grid-cols-2 border-bottom">
+						<div class="border-right p-16">
+							<vue-form-validate @submit="bookGuest">
+								<h6 class="text-primary font-semibold font-serif text-3xl mb-8">Book as guest</h6>
+								<div class="mb-4">
+									<label class="text-muted">First Name</label>
+									<input v-model="guest.first_name" type="text" data-required />
+								</div>
+								<div class="mb-4">
+									<label class="text-muted">Last Name</label>
+									<input v-model="guest.last_name" type="text" data-required />
+								</div>
+								<div class="mb-6">
+									<label class="text-muted">E-mail address</label>
+									<input v-model="guest.email" type="email" data-required />
+								</div>
+								<button class="btn btn-primary" type="submit"><span>Book as guest</span></button>
+							</vue-form-validate>
+						</div>
+						<div class="p-16">
+							<vue-form-validate>
+								<h6 class="text-primary font-semibold font-serif text-3xl mb-4">Log In</h6>
+								<div class="text-muted mb-6">Book using an existing account</div>
+								<div class="mb-4">
+									<label class="text-muted">E-mail address</label>
+									<input type="email" v-model="user.email" data-required />
+								</div>
+								<div class="mb-6">
+									<label class="text-muted">Password</label>
+									<input type="password" v-model="user.password" data-required />
+								</div>
+								<button class="btn btn-primary" type="submit"><span>Login and book</span></button>
+
+								<div class="flex items-center my-8">
+									<span class="text-muted">Or login with:</span>
+									<div class="ml-auto flex">
+										<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="FacebookLoginAndBook" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></FacebookAltIcon></button>
+										<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100 ml-3" type="button" @click="GoogleLoginAndBook" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)" class="fill-current text-primary"></GoogleAltIcon></button>
+									</div>
+								</div>
+							</vue-form-validate>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 

@@ -4,6 +4,7 @@ coolGray['50'] = '#F8F8F9';
 module.exports = {
 	purge: ['./resources/**/*.blade.php', './resources/**/*.js', './resources/**/*.vue'],
 	darkMode: false, // or 'media' or 'class
+	important: true,
 	theme: {
 		fontFamily: {
 			sans: ['Manrope', 'sans-serif'],

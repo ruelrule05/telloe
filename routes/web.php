@@ -149,13 +149,19 @@ Route::group(
             });
 
             // Booking page
-            Route::get('@{username}', 'UserController@profile')->name('profile');
-            Route::get('@{username}/{service_id}/timeslots', 'UserController@serviceTimeslots')->name('profile.service.timeslots');
-            Route::post('@{username}/{service_id}/book', 'UserController@book')->name('profile.book');
-            Route::post('@{username}/{service_id}/login_and_book', 'UserController@loginAndBook')->name('profile.login_and_book');
-            Route::post('@{username}/{service_id}/signup_and_book', 'UserController@signupAndBook')->name('profile.signup_and_book');
-            Route::post('@{username}/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook')->name('profile.google_login_and_book');
-            Route::post('@{username}/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook')->name('profile.facebook_login_and_book');
+
+            Route::group([
+                'prefix' => '@{username}'
+            ], function () {
+                Route::get('', 'UserController@profile')->name('profile');
+                Route::get('/{service_id}/timeslots', 'UserController@serviceTimeslots')->name('profile.service.timeslots');
+                Route::post('/{service_id}/book', 'UserController@book')->name('profile.book');
+                Route::post('/{service_id}/login_and_book', 'UserController@loginAndBook')->name('profile.login_and_book');
+                Route::post('/{service_id}/signup_and_book', 'UserController@signupAndBook')->name('profile.signup_and_book');
+                Route::post('/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook')->name('profile.google_login_and_book');
+                Route::post('/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook')->name('profile.facebook_login_and_book');
+                Route::post('/{service_id}/guest_book', 'UserController@guestBook')->name('profile.guest_book');
+            });
 
             // Organization booking page
             Route::get('{organization}', 'OrganizationController@profile');

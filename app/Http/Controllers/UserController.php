@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GuestBookRequest;
 use App\Http\Requests\UserBookRequest;
 use App\Http\Requests\UserFacebookLoginAndBook;
 use App\Http\Requests\UserGoogleLoginRequest;
@@ -73,5 +74,10 @@ class UserController extends Controller
     public function loginAndBook($username, $service_id, UserBookRequest $request)
     {
         return response(UserService::loginAndBook($username, $service_id, $request));
+    }
+
+    public function guestBook($username, $service_id, GuestBookRequest $request)
+    {
+        return response(UserService::guestBook($username, $service_id, $request));
     }
 }

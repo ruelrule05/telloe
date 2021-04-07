@@ -22,6 +22,10 @@ export default {
 		open: false
 	}),
 
+	mounted() {
+		this.popupItem = this.$el;
+	},
+
 	methods: {
 		onBlur() {
 			this.open = false;

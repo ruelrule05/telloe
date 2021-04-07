@@ -57,8 +57,19 @@ import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
 import VueSelect from '../components/vue-select/vue-select.vue';
 import ZoomIcon from '../icons/zoom';
 import GoogleMeetIcon from '../icons/google-meet';
-
+import CogIcon from '../icons/cog';
+import vClickOutside from 'v-click-outside';
+import FacebookAltIcon from '../icons/facebook-alt.vue';
+import GoogleAltIcon from '../icons/google-alt.vue';
+import VueCardFormat from '../components/vue-credit-card-validation/src';
 const ct = require('countries-and-timezones');
+import VisaIcon from '../icons/cc/visa.vue';
+import MastercardIcon from '../icons/cc/mastercard.vue';
+import AmexIcon from '../icons/cc/amex.vue';
+import DiscoverIcon from '../icons/cc/discover.vue';
+import DinersclubIcon from '../icons/cc/dinersclub.vue';
+import JcbIcon from '../icons/cc/jcb.vue';
+import UnionpayIcon from '../icons/cc/unionpay.vue';
 
 export default {
 	components: {
@@ -91,10 +102,19 @@ export default {
 		VueSelect,
 		MapMarkerIcon,
 		ZoomIcon,
-		GoogleMeetIcon
+		GoogleMeetIcon,
+		CogIcon,
+		FacebookAltIcon,
+		GoogleAltIcon,
+		MastercardIcon,
+		AmexIcon,
+		DiscoverIcon,
+		DinersclubIcon,
+		JcbIcon,
+		UnionpayIcon
 	},
 
-	directives: { tooltip },
+	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
 
 	data: () => ({
 		profile: PROFILE,
@@ -110,7 +130,6 @@ export default {
 				contentClass: 'bg-primary'
 			}
 		},
-		step: 1,
 		selectedServiceForTimeline: null,
 		selectedService: null,
 		startDate: null,
@@ -158,10 +177,56 @@ export default {
 			input: 'MMM D, YYYY'
 		},
 		timezonesOptions: [],
-		summary: false
+		authenticate: false,
+		step: false, //false
+		user: {
+			email: '',
+			password: ''
+		},
+		guest: {
+			first_name: '',
+			last_name: '',
+			email: ''
+		},
+		cardForm: {
+			number: '',
+			expiration: '',
+			exp_month: '',
+			exp_year: '',
+			cvc: '',
+			name: '',
+			errors: {
+				number: false,
+				expiration: false,
+				cvc: false
+			}
+		},
+
+		cardBrand: null
 	}),
 
 	computed: {
+		cardBrandComponent() {
+			switch (this.cardBrand) {
+				case 'visa':
+					return VisaIcon;
+				case 'mastercard':
+					return MastercardIcon;
+				case 'amex':
+					return AmexIcon;
+				case 'discover':
+					return DiscoverIcon;
+				case 'dinersclub':
+					return DinersclubIcon;
+				case 'jcb':
+					return JcbIcon;
+				case 'unionpay':
+					return UnionpayIcon;
+				default:
+					return false;
+			}
+		},
+
 		formattedHolidays() {
 			let formattedHolidays = [];
 			let service = this.assignedService || this.selectedService;
@@ -341,20 +406,50 @@ export default {
 	},
 
 	mounted() {
-		/*this.$refs['bookingModal'].show();
-        setTimeout(() => {
-            this.bookingSuccess = true;
-        }, 1000);*/
+		this.popupItem = this.$el;
 	},
 
 	methods: {
-		setTypeSelected(type) {
-			this.selectedService.types.forEach(serviceType => {
-				if (serviceType.type != type.type) {
-					serviceType.is_selected = false;
+		pay() {
+			Object.keys(this.cardForm.errors).forEach(k => (this.cardForm.errors[k] = false));
+			let error = false;
+
+			// validate card number
+			if (!VueCardFormat.format().validateCardNumber(this.cardForm.number)) {
+				this.cardForm.errors.number = error = true;
+			}
+
+			// validate card expiry
+			if (!VueCardFormat.format().validateCardExpiry(this.cardForm.expiration)) {
+				this.cardForm.errors.expiration = error = true;
+			}
+
+			// validate card CVC
+			if (!VueCardFormat.format().validateCardCVC(this.cardForm.cvc)) {
+				this.cardForm.errors.cvc = error = true;
+			}
+
+			if (!error) {
+				console.log('ok');
+			}
+		},
+
+		async bookGuest() {
+			let timeslots = this.selectedTimeslots.map(timeslot => {
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
+				return timeslot;
 			});
-			this.$set(type, 'is_selected', true);
+
+			let data = JSON.parse(JSON.stringify(this.guest));
+			data.timeslots = timeslots;
+			let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/guest_book`, data, { toasted: true });
+			console.log(response.data);
+		},
+
+		setTypeSelected(timeslot, type) {
+			this.$set(timeslot, 'type', type);
 		},
 
 		daysInMonth(timeslot) {
@@ -410,9 +505,9 @@ export default {
 				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
 				endTime = dayjs(startDate)
 					.add(this.selectedService.duration, 'minute')
-					.format('hh:mmA');
+					.format('HH:mm');
 			}
-			return endTime;
+			return this.timezoneTime(endTime);
 		},
 
 		previousWeek() {
@@ -438,11 +533,15 @@ export default {
 				if (index > -1) {
 					this.selectedTimeslots.splice(index, 1);
 				} else {
-					this.selectedTimeslots.push({
+					let timeslotData = {
 						date: date,
 						timeslot: timeslot,
 						days: []
-					});
+					};
+					if (this.selectedService.types.length > 0) {
+						timeslotData.type = this.selectedService.types[0];
+					}
+					this.selectedTimeslots.push(timeslotData);
 				}
 			}
 		},
@@ -593,48 +692,10 @@ export default {
 		},
 
 		submit() {
-			// this.$refs['bookingModal'].show();
-			// this.bookingSuccess = true;
-			// return;
-
 			if (this.authAction == 'login') {
 				this.LoginAndBook();
 			} else if (this.authAction == 'signup') {
 				this.SignupAndBook();
-			}
-		},
-
-		SignupAndBook() {
-			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedTimeslots.length > 0) {
-				this.$refs['bookingModal'].show().then(() => {
-					this.loginForm.loading = true;
-					this.isBooking = true;
-					let data = {
-						first_name: this.loginForm.first_name,
-						last_name: this.loginForm.last_name,
-						email: this.loginForm.email,
-						password: this.loginForm.password,
-						timeslots: this.selectedTimeslots,
-						timezone: this.timezone
-					};
-					window.axios
-						.post(`/@${this.profile.username}/${service.id}/signup_and_book`, data, { toasted: true })
-						.then(response => {
-							this.bookingSuccess = true;
-							this.loginForm.loading = false;
-							this.selectedTimeslots = [];
-							this.bookings = response.data;
-						})
-						.catch(() => {
-							setTimeout(() => {
-								this.$refs['bookingModal'].hide().then(() => {
-									this.loginForm.loading = false;
-									this.isBooking = false;
-								});
-							}, 150);
-						});
-				});
 			}
 		},
 
@@ -805,10 +866,8 @@ export default {
 				this.packages = response.data.packages;
 
 				// testing
-				this.selectedServiceForTimeline = this.services[0];
-				this.selectedService = this.selectedServiceForTimeline;
-				this.selectedTimeslots.push({ date: { name: 'Thu', dayName: 'Thursday', date: '2021-04-01T05:12:34.213Z', label: 'Apr 01', format: '2021-04-01' }, timeslot: { label: '08:00AM', time: '08:00', is_available: true }, days: [] });
-				this.summary = true;
+				// this.selectedServiceForTimeline = this.services[0];
+				// this.selectedService = this.selectedServiceForTimeline;
 
 				this.ready = true;
 			});
