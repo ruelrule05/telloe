@@ -178,7 +178,6 @@ Route::group(
                 Route::post('widget/rule', 'WidgetController@addRule');
                 Route::delete('widget/rule/{id}', 'WidgetController@deleteRule');
                 Route::any('integration', 'WidgetController@updateIntegration');
-                Route::get('stripe_publishable_key', 'WidgetController@stripePublishableKey');
                 Route::resource('subscriptions', 'SubscriptionController', [
                     'only' => ['store', 'destroy']
                 ]);

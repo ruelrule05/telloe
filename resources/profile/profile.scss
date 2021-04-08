@@ -87,3 +87,11 @@ input.is-invalid:not(:focus) {
 		}
 	}
 }
+.feature-check {
+	width: 36px;
+	height: 36px;
+	@apply bg-green-400 rounded-full relative text-white;
+	svg {
+		@apply h-3 w-3 stroke-current;
+	}
+}

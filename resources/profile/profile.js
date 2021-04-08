@@ -9,16 +9,9 @@ require('../js/bootstrap');
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VCalendar from 'v-calendar';
-import Toasted from 'vue-toasted';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
 Vue.use(VueRouter);
-Vue.use(Toasted, {
-	position: 'bottom-center',
-	duration: 3000,
-	className: 'bg-primary rounded shadow-none'
-});
-
 import VueFormValidate from '../components/vue-form-validate';
 import VueButton from '../components/vue-button';
 import Modal from '../components/modal/modal.vue';
@@ -70,6 +63,8 @@ import DiscoverIcon from '../icons/cc/discover.vue';
 import DinersclubIcon from '../icons/cc/dinersclub.vue';
 import JcbIcon from '../icons/cc/jcb.vue';
 import UnionpayIcon from '../icons/cc/unionpay.vue';
+const format = require('format-number');
+import Stripe from 'stripe-client';
 
 export default {
 	components: {
@@ -184,25 +179,26 @@ export default {
 			password: ''
 		},
 		guest: {
-			first_name: '',
-			last_name: '',
-			email: ''
+			first_name: 'erer',
+			last_name: 'erer',
+			email: 'ere@rere.e'
 		},
 		cardForm: {
-			number: '',
-			expiration: '',
-			exp_month: '',
-			exp_year: '',
-			cvc: '',
-			name: '',
+			number: '4242424242424242',
+			exp_month: '02',
+			exp_year: '23',
+			cvc: '999',
+			name: 'Billy Joe',
+			expiration: '02/23',
 			errors: {
 				number: false,
 				expiration: false,
 				cvc: false
 			}
 		},
-
-		cardBrand: null
+		cardBrand: null,
+		format: format,
+		bookingLoading: false
 	}),
 
 	computed: {
@@ -376,6 +372,10 @@ export default {
 				this.authAction = 'signup';
 				this.authForm = false;
 			}
+		},
+
+		step: function() {
+			window.scrollTo(0, 0);
 		}
 	},
 
@@ -410,7 +410,27 @@ export default {
 	},
 
 	methods: {
-		pay() {
+		async getCardToken() {
+			const publishableKey = process.env.MIX_STRIPE_PUBLISHABLE_KEY;
+			const stripe = Stripe(publishableKey);
+			let cardData = {
+				number: this.cardForm.number,
+				exp_month: this.cardForm.exp_month,
+				exp_year: this.cardForm.exp_year,
+				cvc: this.cardForm.cvc,
+				name: this.cardForm.name
+			};
+			let cardToken = await stripe.createToken({ card: cardData });
+			const tokenData = await cardToken.json();
+			if (!tokenData.error) {
+				return tokenData.id;
+			} else {
+				this.$toast.error(tokenData.error.message);
+				return false;
+			}
+		},
+
+		async cardDetails() {
 			Object.keys(this.cardForm.errors).forEach(k => (this.cardForm.errors[k] = false));
 			let error = false;
 
@@ -429,12 +449,18 @@ export default {
 				this.cardForm.errors.cvc = error = true;
 			}
 
+			// validate card name
+			if (!this.cardForm.name.trim().length) {
+				error = true;
+			}
+
 			if (!error) {
-				console.log('ok');
+				this.step = 'authenticate';
 			}
 		},
 
 		async bookGuest() {
+			this.bookingLoading = true;
 			let timeslots = this.selectedTimeslots.map(timeslot => {
 				if (timeslot.end_date) {
 					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
@@ -444,8 +470,18 @@ export default {
 
 			let data = JSON.parse(JSON.stringify(this.guest));
 			data.timeslots = timeslots;
-			let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/guest_book`, data, { toasted: true });
-			console.log(response.data);
+			data.card_token = true;
+			if (this.selectedService.require_payment) {
+				data.card_token = await this.getCardToken();
+			}
+			if (data.card_token) {
+				let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/guest_book`, data, { toast: true }).catch(() => {
+					this.bookingLoading = false;
+				});
+				this.bookings = response.data;
+				this.step = 'booked-signup';
+			}
+			this.bookingLoading = false;
 		},
 
 		setTypeSelected(timeslot, type) {
@@ -719,7 +755,7 @@ export default {
 						timeslots: this.selectedTimeslots
 					};
 					window.axios
-						.post(`/@${this.profile.username}/${service.id}/login_and_book`, data, { toasted: true })
+						.post(`/@${this.profile.username}/${service.id}/login_and_book`, data, { toast: true })
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
@@ -753,7 +789,7 @@ export default {
 									data.timeslots = this.selectedTimeslots;
 
 									window.axios
-										.post(`/@${this.profile.username}/${service.id}/facebook_login_and_book`, data, { toasted: true })
+										.post(`/@${this.profile.username}/${service.id}/facebook_login_and_book`, data, { toast: true })
 										.then(response => {
 											this.bookingSuccess = true;
 											this.loginForm.loading = false;
@@ -806,7 +842,7 @@ export default {
 							};
 
 							window.axios
-								.post(`/@${this.profile.username}/${service.id}/google_login_and_book`, data, { toasted: true })
+								.post(`/@${this.profile.username}/${service.id}/google_login_and_book`, data, { toast: true })
 								.then(response => {
 									this.bookingSuccess = true;
 									this.loginForm.loading = false;

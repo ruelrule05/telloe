@@ -182,7 +182,7 @@ class Service extends BaseModel
             if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays)) {
                 $timeslot['is_available'] = true;
             } elseif ($bookings->count() > 0) {
-                $timeslot['bookings'] = $bookings->load('user', 'service.user');
+                $timeslot['bookings'] = $bookings->load('bookingUsers', 'service.user');
             }
             $timeslots[] = $timeslot;
             $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
@@ -209,14 +209,14 @@ class Service extends BaseModel
 
         $bookings = $this->bookings()->where(function ($query) {
             $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
-        })->get()->load(['user', 'service.user', 'service.member.memberUser'])->toArray();
+        })->get()->load(['bookingUsers', 'service.user', 'service.member.memberUser'])->toArray();
         $assignedServices = $this->assignedServices()->where('parent_service_id', '<>', $this->attributes['id'])->withTrashed()->get();
         $assignedServices->map(function ($assignedService) use (&$bookings) {
             $assignedServiceBookings = $assignedService->bookings()->where(function ($query) {
                 $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
             })->get();
             if ($assignedServiceBookings->count() > 0) {
-                $bookings = array_merge($bookings, $assignedServiceBookings->load(['user', 'service.user', 'service.member.memberUser', 'service' => function ($service) {
+                $bookings = array_merge($bookings, $assignedServiceBookings->load(['bookingUsers', 'service.user', 'service.member.memberUser', 'service' => function ($service) {
                     $service->withTrashed();
                 }])->toArray());
             }

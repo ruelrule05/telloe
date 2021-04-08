@@ -28,6 +28,7 @@
 									@click="
 										selectedServiceForTimeline = service;
 										selectedService = service;
+										step = 'booked-signup';
 									"
 								>
 									<h3 class="font-bold text-primary">{{ service.name }}</h3>
@@ -304,7 +305,7 @@
 					</div>
 
 					<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="button" @click="step = selectedService.require_payment ? 'payment' : 'authenticate'">
-						<span>Continue</span>
+						<span>Continue <span v-if="selectedService.require_payment">to payment</span></span>
 					</button>
 				</div>
 
@@ -478,27 +479,37 @@
 			<!-- Payment -->
 			<div v-else-if="step == 'payment'" class="container my-12 flex items-center justify-center" key="payment">
 				<div class="w-5/12 bg-white rounded-2xl p-14">
-					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">CHECKOUT</h6>
-					<div class="text-xl text-muted mb-8">Pay with card</div>
+					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">PAYMENT</h6>
+					<div class="text-xl text-muted mb-8">
+						Pay <strong class="text-black">{{ selectedService.currency }} {{ format({ padRight: 2 })(selectedService.default_rate * selectedTimeslots.length) }}</strong> with card
+					</div>
 
-					<vue-form-validate @submit="pay">
-						<div class="inpuxt p-0 shadow-none border-0 ring-0 overflow-hidden">
-							<div class="input-cc-card border-bottom border-gray-300 relative z-10">
-								<div class="cc-icon">
-									<component :is="cardBrandComponent"></component>
-								</div>
-								<input v-model="cardForm.number" type="tel" class="ring-0 ring-offset-0 rounded-b-none border-b-0" :class="{ 'is-invalid': cardForm.errors.number }" placeholder="#### #### #### ####" v-cardformat:formatCardNumber data-required />
+					<vue-form-validate @submit="cardDetails">
+						<label>Card information</label>
+						<div class="input-cc-card border-bottom border-gray-300 relative z-10">
+							<div class="cc-icon">
+								<component :is="cardBrandComponent"></component>
 							</div>
-							<div class="flex relative">
-								<div class="flex-grow">
-									<input type="text" :class="{ 'is-invalid': cardForm.errors.expiration }" v-model="cardForm.expiration" class="ring-0 ring-offset-0 rounded-t-none rounded-r-none border-r-0 border-t-0" placeholder="MM/YY" v-cardformat:formatCardExpiry data-required />
-								</div>
-								<div class="flex-grow border-left">
-									<input type="text" :class="{ 'is-invalid': cardForm.errors.cvc }" v-model="cardForm.cvc" class="ring-0 ring-offset-0 rounded-t-none rounded-l-none border-l-0 border-t-0" placeholder="CVC" v-cardformat:formatCardCVC data-required />
-								</div>
+							<input v-model="cardForm.number" type="tel" class="ring-0 ring-offset-0 rounded-b-none border-b-0" :class="{ 'is-invalid': cardForm.errors.number }" placeholder="#### #### #### ####" v-cardformat:formatCardNumber data-required />
+						</div>
+						<div class="flex relative">
+							<div class="flex-grow">
+								<input type="text" :class="{ 'is-invalid': cardForm.errors.expiration }" v-model="cardForm.expiration" class="ring-0 ring-offset-0 rounded-t-none rounded-r-none border-r-0 border-t-0" placeholder="MM/YY" v-cardformat:formatCardExpiry data-required />
+							</div>
+							<div class="flex-grow border-left">
+								<input type="text" :class="{ 'is-invalid': cardForm.errors.cvc }" v-model="cardForm.cvc" class="ring-0 ring-offset-0 rounded-t-none rounded-l-none border-l-0 border-t-0" placeholder="CVC" v-cardformat:formatCardCVC data-required />
 							</div>
 						</div>
-						<button>submit</button>
+
+						<div class="mt-6 mb-8">
+							<label>Name on card</label>
+							<input v-model="cardForm.name" type="text" data-required />
+						</div>
+
+						<div class="flex justify-between">
+							<button type="button" class="btn btn-lg btn-outline-primary" @click="step = 'summary'"><span>Back</span></button>
+							<button type="submit" class="btn btn-lg btn-primary"><span>Continue</span></button>
+						</div>
 					</vue-form-validate>
 				</div>
 			</div>
@@ -507,7 +518,7 @@
 			<div v-else-if="step == 'authenticate'" class="flex" key="authenticate">
 				<div class="border w-4/12 p-16">
 					<h6 class="text-primary font-serif text-4xl font-semibold leading-none mb-10">ADD YOUR CONTACT INFO</h6>
-					<button class="btn btn-outline-primary flex items-center" type="button" @click="step = 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
+					<button :disabled="bookingLoading" class="btn btn-outline-primary flex items-center" type="button" @click="step = selectedService.require_payment ? 'payment' : 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
 				<div class="w-8/12 min-h-screen bg-white">
 					<div class="grid grid-cols-2 border-bottom">
@@ -555,10 +566,67 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Booked Signup -->
+			<div v-else-if="step == 'booked-signup'" class="container my-12 flex items-center justify-center" key="payment">
+				<div class="w-5/12 bg-white rounded-2xl p-12">
+					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">EVENT BOOKED. SIGN UP FOR FREE!</h6>
+					<p class="text-muted text-xl">
+						Hey there, thank you for scheduling a meeting with Telloe as a guest. If you sign up you can start using Telloe now and enjoy:
+					</p>
+
+					<div class="flex mt-10">
+						<div>
+							<div class="feature-check"><CheckmarkIcon class="absolute-center"></CheckmarkIcon></div>
+						</div>
+						<div class="pl-6">
+							<div class="pb-6 border-bottom">
+								<h6 class="font-serif text-primary font-semibold text-sm mb-2">FEATURE TITLE ONE</h6>
+								<p class="text-muted">Feature title one description that helps the user decide to register.</p>
+							</div>
+						</div>
+					</div>
+					<div class="flex mt-6">
+						<div>
+							<div class="feature-check"><CheckmarkIcon class="absolute-center"></CheckmarkIcon></div>
+						</div>
+						<div class="pl-6">
+							<div class="pb-6 border-bottom">
+								<h6 class="font-serif text-primary font-semibold text-sm mb-2">FEATURE TITLE ONE</h6>
+								<p class="text-muted">Feature title one description that helps the user decide to register.</p>
+							</div>
+						</div>
+					</div>
+					<div class="flex mt-6 mb-10">
+						<div>
+							<div class="feature-check"><CheckmarkIcon class="absolute-center"></CheckmarkIcon></div>
+						</div>
+						<div class="pl-6">
+							<h6 class="font-serif text-primary font-semibold text-sm mb-2">FEATURE TITLE ONE</h6>
+							<p class="text-muted">Feature title one description that helps the user decide to register.</p>
+						</div>
+					</div>
+
+					<button class="w-full btn btn-primary mb-3" type="button">CREATE ACCOUNT</button>
+					<button class="w-full btn btn-outline-primary" type="button">SKIP AND VIEW BOOKING</button>
+				</div>
+			</div>
 		</div>
 
 		<div v-else class="absolute-center">
 			<div class="spinner" role="status"></div>
+		</div>
+
+		<!-- Booking loader -->
+		<div v-if="bookingLoading" class="bg-secondary fixed z-50 top-0 left-0 w-full h-full text-center">
+			<div class="container h-full flex items-center justify-center">
+				<div class="w-4/12 bg-white rounded-2xl p-14">
+					<div class="spinner" role="status"></div>
+					<div class="mt-4 text-2xl">
+						Booking...
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<modal ref="bookingModal" id="bookingModal" :close-button="bookingSuccess" @hide="reset">

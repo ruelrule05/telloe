@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddGuestFieldInBookingUsersTable extends Migration
+class UpdateUserIdFieldInBookingUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AddGuestFieldInBookingUsersTable extends Migration
     {
         Schema::table('booking_users', function (Blueprint $table) {
             //
-            $table->json('guest')->after('user_id')->nullable()->default(NULL);
+            $table->unsignedBigInteger('user_id')->nullable()->change();
         });
     }
 
@@ -28,7 +28,6 @@ class AddGuestFieldInBookingUsersTable extends Migration
     {
         Schema::table('booking_users', function (Blueprint $table) {
             //
-            $table->dropColumn('guest');
         });
     }
 }

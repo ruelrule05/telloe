@@ -14,6 +14,8 @@ use App\Http\Zoom;
 use App\Mail\NewBooking;
 use App\Mail\Welcome;
 use App\Models\Booking;
+use App\Models\BookingUser;
+use App\Models\Notification;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Widget;
@@ -21,8 +23,8 @@ use Auth;
 use Carbon\Carbon;
 use File;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\Notification;
 use Image;
+use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
 
@@ -284,7 +286,7 @@ class UserService
         return abort(403, $message);
     }
 
-    public static function book($username, $service_id, $request, $customer, $guest = false)
+    public static function book($username, $service_id, $request, $customer, $guest = NULL)
     {
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
@@ -298,7 +300,7 @@ class UserService
             });
         })->firstOrfail();
 
-        if ($customer && $customer->id == $user->id) {
+        if (! $guest && $customer->id == $user->id) {
             return abort(403, 'You are not allowed to book using your own account.');
         }
 
@@ -307,12 +309,11 @@ class UserService
             $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}");
             $end = $start->copy()->add('minute', $service->duration);
             $booking = self::createBooking($service, [
-                'user_id' => $customer->id,
                 'service_id' => $service->id,
                 'date' => $timeslot['date']['format'],
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
-            ]);
+            ], $customer, $guest);
             if ($booking) {
                 $bookings[] = $booking;
             }
@@ -353,12 +354,11 @@ class UserService
                     }
                     if ($createBooking) {
                         $booking = self::createBooking($service, [
-                            'user_id' => $customer->id,
                             'service_id' => $service->id,
                             'date' => $currentDate->clone()->format('Y-m-d'),
                             'start' => $start->format('H:i'),
                             'end' => $end->format('H:i'),
-                        ]);
+                        ], $customer, $guest);
                         if ($booking) {
                             $bookings[] = $booking;
                         }
@@ -398,7 +398,7 @@ class UserService
         return $bookings;
     }
 
-    public static function createBooking($service, $data)
+    public static function createBooking($service, $data, $customer, $guest = NULL)
     {
         $availableTimeslots = $service->timeslots($data['date']);
         $timeslotAvailable = false;
@@ -408,9 +408,9 @@ class UserService
                 break;
             }
         }
-        if (! $timeslotAvailable) {
-            return false;
-        }
+        // if (! $timeslotAvailable) {
+        //     return false;
+        // }
 
         $booking = Booking::create($data);
 
@@ -422,6 +422,11 @@ class UserService
                 ]);
             }
         }
+        BookingUser::create([
+            'booking_id' => $booking->id,
+            'user_id' => $customer->id ?? NULL,
+            'guest' => $guest
+        ]);
 
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);
@@ -454,6 +459,20 @@ class UserService
 
     public static function guestBook($username, $service_id, GuestBookRequest $request)
     {
-        return self::book($username, $service_id, $request, NULL, true);
+        $service = Service::findOrFail($service_id);
+        if ($service->require_payment) {
+            if (! $request->card_token) {
+                return abort(403, 'Please provide your credit card details.');
+            } else {
+                $stripe_api = new StripeAPI();
+                $charge = $stripe_api->charge('create', [
+                    'amount' => $service->default_rate * 100, 
+                    'currency' => strtolower($service->currency),
+                    'source' => $request->card_token
+                ]);
+            }
+        }
+
+        return self::book($username, $service_id, $request, NULL, $request->only('email', 'first_name', 'last_name'));
     }
 }

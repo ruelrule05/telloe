@@ -171,12 +171,6 @@ class WidgetService
         return $plans;
     }
 
-    public static function stripePublishableKey()
-    {
-        $stripePublishableKey = config('stripe.publishable_key');
-        return $stripePublishableKey;
-    }
-
     public static function store(Request $request)
     {
         return ;
