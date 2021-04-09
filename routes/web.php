@@ -8,6 +8,22 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 
+Route::get('/test', function () {
+    $booking = App\Models\Booking::first();
+
+    $from = Carbon\Carbon::parse("$booking->date $booking->start");
+    $to = $from->clone()->addMinute($booking->service->duration);
+    $link = Spatie\CalendarLinks\Link::create($booking->service->name, $from, $to)
+        ->description($booking->service->description);
+
+    $booking->google_link = $link->google();
+    $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+    $booking->yahoo_link = $link->yahoo();
+    $booking->ical_link = $booking->outlook_link;
+    $email = new App\Mail\NewBooking([$booking], 'serviceUser');
+    return $email;
+});
+
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
 });
@@ -43,6 +59,7 @@ Route::group(
             Route::put('auth/password', 'AuthController@updatePassword');
             Route::post('fb_notify', 'InquiryController@messengerNotify');
             Route::put('auth/update_stripe_account', 'AuthController@updateStripeAccount');
+            Route::post('auth/guest_account', 'AuthController@createGuestAccount');
 
             // Authenticated routes
             Route::group([
@@ -149,7 +166,6 @@ Route::group(
             });
 
             // Booking page
-
             Route::group([
                 'prefix' => '@{username}'
             ], function () {

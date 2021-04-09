@@ -65,6 +65,7 @@ import JcbIcon from '../icons/cc/jcb.vue';
 import UnionpayIcon from '../icons/cc/unionpay.vue';
 const format = require('format-number');
 import Stripe from 'stripe-client';
+import axios from 'axios';
 
 export default {
 	components: {
@@ -181,7 +182,7 @@ export default {
 		guest: {
 			first_name: 'erer',
 			last_name: 'erer',
-			email: 'ere@rere.e'
+			email: 'clyde@tradearcade.tvx'
 		},
 		cardForm: {
 			number: '4242424242424242',
@@ -198,7 +199,8 @@ export default {
 		},
 		cardBrand: null,
 		format: format,
-		bookingLoading: false
+		bookingLoading: false,
+		creatingAccount: false
 	}),
 
 	computed: {
@@ -410,6 +412,17 @@ export default {
 	},
 
 	methods: {
+		async createAccount() {
+			this.creatingAccount = true;
+			let response = await axios.post('/auth/guest_account', this.guest);
+			if (response.data.user) {
+				this.step = 'bookings';
+			} else {
+				this.step = 'account-created';
+			}
+			this.creatingAccount = false;
+		},
+
 		async getCardToken() {
 			const publishableKey = process.env.MIX_STRIPE_PUBLISHABLE_KEY;
 			const stripe = Stripe(publishableKey);

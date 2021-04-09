@@ -69,8 +69,7 @@ body.modal-open {
 	}
 	&:disabled,
 	&.disabled {
-		pointer-events: none;
-		opacity: 0.5 !important;
+		@apply pointer-events-none select-none opacity-50;
 	}
 }
 label {

@@ -28,7 +28,7 @@
 									@click="
 										selectedServiceForTimeline = service;
 										selectedService = service;
-										step = 'booked-signup';
+										step = 'bookings';
 									"
 								>
 									<h3 class="font-bold text-primary">{{ service.name }}</h3>
@@ -607,8 +607,35 @@
 						</div>
 					</div>
 
-					<button class="w-full btn btn-primary mb-3" type="button">CREATE ACCOUNT</button>
-					<button class="w-full btn btn-outline-primary" type="button">SKIP AND VIEW BOOKING</button>
+					<vue-button :loading="creatingAccount" class="w-full btn btn-primary mb-3" type="button" @click="createAccount">CREATE ACCOUNT</vue-button>
+					<button :disabled="creatingAccount" class="w-full btn btn-outline-primary" type="button" @click="step = 'bookings'">SKIP AND VIEW BOOKING</button>
+				</div>
+			</div>
+
+			<!-- Account Created -->
+			<div v-else-if="step == 'account-created'" class="container my-12 flex items-center justify-center" key="payment">
+				<div class="w-5/12 bg-white rounded-2xl p-12">
+					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">NICE! YOUR TELLOE ACCOUNT IS NOW CREATED.</h6>
+					<p class="text-muted mb-8">
+						Thanks for creating a Telloe account. Once you finish this booking you can login to your Telloe account. A temporary passsword is sent to your e-mail address with additional information. <br /><br />
+						Continue to your booking confirmation.
+					</p>
+
+					<button class="w-full btn btn-primary" type="button" @click="step = 'bookings'">TO BOOKING CONFIRMATION</button>
+				</div>
+			</div>
+
+			<!-- Bookings -->
+			<div v-else-if="step == 'bookings'" class="container my-12 flex items-center justify-center" key="payment">
+				<div class="w-5/12 bg-white rounded-2xl p-12">
+					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
+					<p class="text-muted mb-8">
+						A calendar invite is on it’s way to your e-mail address.
+					</p>
+					<h4 class="mb-2 font-bold text-xl">{{ selectedService.name }}</h4>
+					<div class="text-sm">
+						<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
+					</div>
 				</div>
 			</div>
 		</div>

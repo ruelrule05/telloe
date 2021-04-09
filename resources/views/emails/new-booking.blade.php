@@ -46,7 +46,7 @@
             @if($booking->zoom_link)
             <tr>
                 <td style="width: 25%; vertical-align: top">Zoom link</td>
-                <td><u><a target="_blank" style="word-break: break-all" href="{{ $booking->zoom_link['join_url'] }}">Go to Zoom meeting</a></u></td>
+                <td><u><a target="_blank" style="word-break: break-all" href="{{ $booking->zoom_link }}">Go to Zoom meeting</a></u></td>
             </tr>
             @endif
         </table>

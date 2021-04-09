@@ -78,4 +78,14 @@ class AuthController extends Controller
     {
         return response(AuthService::generateUsername($request));
     }
+
+    public function createGuestAccount(Request $request)
+    {
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email'
+        ]);
+        return AuthService::createGuestAccount($request);
+    }
 }

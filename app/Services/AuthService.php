@@ -13,6 +13,7 @@ use App\Http\Requests\PasswordResetRequest;
 use App\Http\SocialiteHelper;
 use App\Http\StripeAPI;
 use App\Jobs\CreateStripeCustomer;
+use App\Mail\GuestAccount;
 use App\Mail\Welcome;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
@@ -30,7 +31,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use Mail;
-
 class AuthService
 {
     public static function socialiteCallback($driver)
@@ -580,5 +580,28 @@ class AuthService
                 ]
             );
         }
+    }
+
+    public static function createGuestAccount(Request $request)
+    {
+        $user = User::where('email', $request->email)->exists();
+        if (! $user) {
+            $username = self::generateUsername($request);
+            $newUser = User::create([
+                'username' => $username,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'last_online' => null,
+                'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
+            ]);
+
+            $password = Str::random(6);
+            $newUser->password = bcrypt($password);
+            $newUser->save();
+            Mail::to($newUser->email)->queue(new GuestAccount($password));
+        }
+
+        return response(['user' => $user]);
     }
 }
