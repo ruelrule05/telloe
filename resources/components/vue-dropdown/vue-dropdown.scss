@@ -11,7 +11,7 @@
 		}
 	}
 	.dropdown-item {
-		@apply block cursor-pointer rounded transition-colors px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+		@apply block cursor-pointer rounded transition-colors px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900;
 		&.active {
 			@apply bg-primary text-white;
 		}

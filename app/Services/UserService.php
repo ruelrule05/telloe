@@ -27,6 +27,7 @@ use Image;
 use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
+use Hash;
 
 class UserService
 {
@@ -150,142 +151,6 @@ class UserService
         return ;
     }
 
-    public static function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)
-    {
-        $exists = User::where('email', $request->email)->first();
-        if ($exists) {
-            return abort(403, 'Email is already registered to another account.');
-        }
-
-        $authController = new AuthController();
-        $new_username = $authController->generateUsername($request);
-        $user = User::create([
-            'username' => $new_username,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'last_online' => null,
-        ]);
-        $user->password = bcrypt($request->password);
-        $user->role_id = 3;
-        $user->save();
-
-        if (isValidTimezone($request->timezone)) {
-            $user->timezone = $request->timezone;
-            $user->save();
-        }
-
-        $authController->createDefaultField($user);
-        $authController->createInitialConversations($user);
-        $authController->createPresetService($user);
-
-        $user = $user->refresh();
-        if ($user->role->role == 'client') {
-            Mail::queue(new Welcome($user));
-        }
-
-        return self::book($username, $service_id, $request, $user);
-    }
-
-    public static function googleLoginAndBook($username, $service_id, UserGoogleLoginRequest $request)
-    {
-        $user = User::where('email', $request->email)->first();
-        $authController = new AuthController();
-        if (! $user || $user->google_id == $request->id) {
-            if (! $user) {
-                $time = time();
-                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $new_username = $authController->generateUsername($request);
-                $user = User::create([
-                    'username' => $new_username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                ]);
-                $user->role_id = 3;
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->google_id = $request->id;
-                $user->save();
-                if (isValidTimezone($request->timezone)) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
-                Mail::queue(new Welcome($user));
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
-            }
-
-            $authController->createDefaultField($user);
-            $authController->createInitialConversations($user);
-            $authController->createPresetService($user);
-
-            return self::book($username, $service_id, $request, $user);
-        }
-
-        $message = "There's no user associated with this Google account.";
-        if ($user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
-    }
-
-    public static function facebookLoginAndBook($username, $service_id, UserFacebookLoginAndBook $request)
-    {
-        $user = User::where('email', $request->email)->first();
-        $authController = new AuthController();
-        if (! $user || $user->facebook_id == $request->id) {
-            if (! $user) {
-                $time = time();
-                $profile_image = 'http://graph.facebook.com/' . $request->id . '/picture?type=normal';
-                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $new_username = $authController->generateUsername($request);
-                $user = User::create([
-                    'username' => $new_username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                ]);
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->facebook_id = $request->id;
-                $user->save();
-                if (isValidTimezone($request->timezone)) {
-                    $user->timezone = $request->timezone;
-                    $user->save();
-                }
-                $widget = Widget::create([
-                    'user_id' => $user->id
-                ]);
-
-                Mail::queue(new Welcome($user));
-            } else {
-                if (! Widget::where('user_id', $user->id)->first()) {
-                    $widget = Widget::create([
-                        'user_id' => $user->id
-                    ]);
-                }
-            }
-
-            $authController->createDefaultField($user);
-            $authController->createInitialConversations($user);
-            $authController->createPresetService($user);
-
-            return self::book($username, $service_id, $request, $user);
-        }
-
-        $message = "There's no user associated with this Facebook account.";
-        if ($user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
-    }
-
     public static function book($username, $service_id, $request, $customer, $guest = NULL)
     {
         $bookings = [];
@@ -314,9 +179,6 @@ class UserService
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
             ], $customer, $guest);
-            if ($booking) {
-                $bookings[] = $booking;
-            }
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
                 $timeslotDayName = Carbon::parse($timeslot['date']['format'])->format('l');
@@ -353,18 +215,31 @@ class UserService
                         }
                     }
                     if ($createBooking) {
-                        $booking = self::createBooking($service, [
+                        $recurringBooking = self::createBooking($service, [
                             'service_id' => $service->id,
                             'date' => $currentDate->clone()->format('Y-m-d'),
                             'start' => $start->format('H:i'),
                             'end' => $end->format('H:i'),
                         ], $customer, $guest);
-                        if ($booking) {
-                            $bookings[] = $booking;
+                        if ($recurringBooking) {
+                            //$bookings[] = $recurringBooking;
+                            $booking->recurring = true;
+                            $booking->until = Carbon::parse($recurringBooking->date)->format('M d, Y');
+                            if(!$booking->recurring_days) {
+                                $booking->recurring_days = [];
+                            }
+                            $recurringDays = $booking->recurring_days;
+                            $recurringDays[] = Carbon::parse($recurringBooking->date)->format('l');
+                            $booking->recurring_days = $recurringDays;
                         }
+
                     }
                     $currentDate->addDay(1);
                 }
+            }
+
+            if ($booking) {
+                $bookings[] = $booking;
             }
         }
         if (count($bookings) > 0) {
@@ -474,5 +349,54 @@ class UserService
         }
 
         return self::book($username, $service_id, $request, NULL, $request->only('email', 'first_name', 'last_name'));
+    }
+
+    public static function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)
+    {
+        $exists = User::where('email', $request->email)->first();
+        if ($exists) {
+            return abort(403, 'Email is already registered to another account.');
+        }
+
+        $authController = new AuthController();
+        $new_username = $authController->generateUsername($request);
+        $user = User::create([
+            'username' => $new_username,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'last_online' => null,
+        ]);
+        $user->password = bcrypt($request->password);
+        $user->role_id = 3;
+        $user->save();
+
+        if (isValidTimezone($request->timezone)) {
+            $user->timezone = $request->timezone;
+            $user->save();
+        }
+
+        $authController->createDefaultField($user);
+        $authController->createInitialConversations($user);
+        $authController->createPresetService($user);
+
+        $user = $user->refresh();
+        if ($user->role->role == 'client') {
+            Mail::queue(new Welcome($user));
+        }
+
+        return self::book($username, $service_id, $request, $user);
+    }
+
+    public static function googleLoginAndBook($username, $service_id, UserGoogleLoginRequest $request)
+    {
+        $user= Auth::user();
+        return self::book($username, $service_id, $request, $user);
+    }
+
+    public static function facebookLoginAndBook($username, $service_id, UserFacebookLoginAndBook $request)
+    {
+        $user= Auth::user();
+        return self::book($username, $service_id, $request, $user);
     }
 }

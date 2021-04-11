@@ -44,7 +44,6 @@ window.axios.interceptors.response.use(
 			}
 		}
 		if (error.response.config.toast) {
-			console.log(Vue.$toast);
 			Vue.$toast.error(error.response.data.message);
 		}
 		/*if (error.response && error.response.status == 401) {

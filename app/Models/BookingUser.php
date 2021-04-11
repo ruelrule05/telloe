@@ -18,6 +18,6 @@ class BookingUser extends BaseModel
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withDefault($this->attributes['guest']);
+        return $this->belongsTo(User::class)->withDefault($this->attributes['guest'] ?? $this->guest);
     }
 }

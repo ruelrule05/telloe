@@ -8,21 +8,36 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 
-Route::get('/test', function () {
-    $booking = App\Models\Booking::first();
+// Route::get('/test', function () {
 
-    $from = Carbon\Carbon::parse("$booking->date $booking->start");
-    $to = $from->clone()->addMinute($booking->service->duration);
-    $link = Spatie\CalendarLinks\Link::create($booking->service->name, $from, $to)
-        ->description($booking->service->description);
+//     $booking1 = App\Models\Booking::first();
+//     $from = Carbon\Carbon::parse("$booking1->date $booking1->start");
+//     $to = $from->clone()->addMinute($booking1->service->duration);
+//     $link = Spatie\CalendarLinks\Link::create($booking1->service->name, $from, $to)
+//         ->description($booking1->service->description);
+//     $booking1->google_link = $link->google();
+//     $booking1->outlook_link = url('/ics?name=' . $booking1->service->name . '&data=' . $link->ics());
+//     $booking1->yahoo_link = $link->yahoo();
+//     $booking1->ical_link = $booking1->outlook_link;
+//     $booking1->recurring = true;
+//     $booking1->until = Carbon\Carbon::parse($booking1->date)->format('M d, Y');
+//     $booking1->recurring_days = ['Monday', 'Tuesday'];
 
-    $booking->google_link = $link->google();
-    $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
-    $booking->yahoo_link = $link->yahoo();
-    $booking->ical_link = $booking->outlook_link;
-    $email = new App\Mail\NewBooking([$booking], 'serviceUser');
-    return $email;
-});
+
+//     $booking2 = App\Models\Booking::latest()->first();
+//     $from = Carbon\Carbon::parse("$booking2->date $booking2->start");
+//     $to = $from->clone()->addMinute($booking2->service->duration);
+//     $link = Spatie\CalendarLinks\Link::create($booking2->service->name, $from, $to)
+//         ->description($booking2->service->description);
+//         $booking2->google_link = $link->google();
+//     $booking2->outlook_link = url('/ics?name=' . $booking2->service->name . '&data=' . $link->ics());
+//     $booking2->yahoo_link = $link->yahoo();
+//     $booking2->ical_link = $booking2->outlook_link;
+
+//     $email = new App\Mail\NewBooking([$booking1, $booking2], 'serviceUser');
+//     //Mail::to('cleidoscope@gmail.com')->send($email);
+//     return $email;
+// });
 
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
@@ -154,16 +169,12 @@ Route::group(
                 Route::post('booking-links/{id}/send_invitation', 'BookingLinkController@sendInvitation');
                 Route::apiResource('booking-links', 'BookingLinkController');
             });
-
-            Route::group([
-                'middleware' => 'guest'
-            ], function () {
-                Route::get('/auth/{driver}/redirect', [SocialiteHelper::class, 'getRedirectUrl'])->middleware('ajax');
-                Route::post('login', 'AuthController@login');
-                Route::post('signup', 'AuthController@signup');
-                Route::post('recover', 'AuthController@recover');
-                Route::post('reset', 'AuthController@reset');
-            });
+           
+            Route::get('/auth/{driver}/redirect', [SocialiteHelper::class, 'getRedirectUrl'])->middleware('ajax');
+            Route::post('login', 'AuthController@login');
+            Route::post('signup', 'AuthController@signup');
+            Route::post('recover', 'AuthController@recover');
+            Route::post('reset', 'AuthController@reset');
 
             // Booking page
             Route::group([
@@ -174,8 +185,8 @@ Route::group(
                 Route::post('/{service_id}/book', 'UserController@book')->name('profile.book');
                 Route::post('/{service_id}/login_and_book', 'UserController@loginAndBook')->name('profile.login_and_book');
                 Route::post('/{service_id}/signup_and_book', 'UserController@signupAndBook')->name('profile.signup_and_book');
-                Route::post('/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook')->name('profile.google_login_and_book');
-                Route::post('/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook')->name('profile.facebook_login_and_book');
+                Route::post('/{service_id}/google_login_and_book', 'UserController@googleLoginAndBook')->name('profile.google_login_and_book')->middleware('auth');
+                Route::post('/{service_id}/facebook_login_and_book', 'UserController@facebookLoginAndBook')->name('profile.facebook_login_and_book')->middleware('auth');
                 Route::post('/{service_id}/guest_book', 'UserController@guestBook')->name('profile.guest_book');
             });
 
@@ -205,11 +216,7 @@ Route::group(
 
         Route::post('logout', 'AuthController@logout')->middleware('auth');
         // Socialite callback
-        Route::group([
-            'middleware' => 'guest'
-        ], function () {
-            Route::get('/auth/{driver}/callback', [AuthController::class, 'socialiteCallback']);
-        });
+        Route::get('/auth/{driver}/callback', [AuthController::class, 'socialiteCallback']);
 
         // Dashboard fallback
         Route::group([

@@ -7,6 +7,7 @@ import Auth from '../components/auth/auth.vue';
 import CheckmarkIcon from '../icons/checkmark';
 import GreencheckIcon from '../icons/greencheck';
 import Vue from 'vue';
+import vClickOutside from 'v-click-outside';
 
 Vue.component('pageloader', require('../components/pageloader.vue').default);
 window.app = new Vue({
@@ -17,6 +18,8 @@ window.app = new Vue({
 		CheckmarkIcon,
 		GreencheckIcon
 	},
+
+	directives: { clickOutside: vClickOutside.directive },
 
 	data: {
 		auth: false, //false
@@ -35,7 +38,8 @@ window.app = new Vue({
 		],
 		faq: 1,
 		feature: 1,
-		showVideo: true
+		showVideo: true,
+		dropdownOpen: false
 	},
 
 	watch: {
@@ -69,7 +73,9 @@ window.app = new Vue({
 		}
 	},
 
-	mounted() {},
+	mounted() {
+		this.popupItem = this.$el;
+	},
 
 	methods: {
 		openVideoDemo() {

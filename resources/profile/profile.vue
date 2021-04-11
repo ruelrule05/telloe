@@ -2,16 +2,18 @@
 	<div>
 		<div v-if="ready">
 			<!-- Select service -->
-			<div class="container my-12 flex items-center justify-center" v-if="!selectedServiceForTimeline" key="services">
-				<div class="w-8/12 bg-white rounded-2xl p-14">
-					<div class="flex justify-between">
-						<div class="w-1/2 pr-4">
+			<div class="container lg:my-12 my-6 flex items-center justify-center" v-if="!selectedServiceForTimeline" key="services">
+				<div class="lg:w-8/12 w-11/12 bg-white rounded-2xl lg:p-14 p-8">
+					<div class="lg:flex justify-between">
+						<div class="lg:w-1/2 pr-4">
 							<h3 class="font-serif font-semibold text-3xl text-primary leading-none">BOOK AN EVENT</h3>
 						</div>
-						<div class="w-1/2">
+						<div class="lg:w-1/2 lg:mt-0 mt-4">
 							<div class="flex items-center">
-								<div class="profile-image profile-image-md mr-3" :style="{ 'background-image': `url(${profile.profile_image})` }">
-									<span v-if="!profile.profile_image">{{ profile.initials }}</span>
+								<div>
+									<div class="profile-image profile-image-md mr-3" :style="{ 'background-image': `url(${profile.profile_image})` }">
+										<span v-if="!profile.profile_image">{{ profile.initials }}</span>
+									</div>
 								</div>
 								<h1 class="font-bold">{{ profile.full_name }}</h1>
 							</div>
@@ -19,16 +21,15 @@
 					</div>
 
 					<!-- Services -->
-					<div class="mt-20">
+					<div class="mt-10 lg:mt-20">
 						<h6 v-if="services.length == 0" class="text-gray-400 text-center font-weight-light">No services available</h6>
-						<div v-else class="grid grid-cols-2 gap-10">
+						<div v-else class="grid lg:grid-cols-2 lg:gap-10 gap-6">
 							<div v-for="service in services" :key="service.id">
 								<div
 									class="bg-gray-50 rounded-2xl p-4 cursor-pointer transition-colors hover:bg-gray-100 border-2 border-primary border-opacity-0 hover:border-opacity-100"
 									@click="
 										selectedServiceForTimeline = service;
 										selectedService = service;
-										step = 'bookings';
 									"
 								>
 									<h3 class="font-bold text-primary">{{ service.name }}</h3>
@@ -69,21 +70,21 @@
 			</div>
 
 			<!-- Select coach/date/time -->
-			<div v-else-if="selectedServiceForTimeline && !step" class="container my-12 flex justify-center" key="service">
+			<div v-else-if="selectedServiceForTimeline && !step" class="container lg:my-12 my-6 flex justify-center" key="service">
 				<div class="bg-white rounded-2xl w-11/12">
-					<div class="flex">
-						<div class="w-5/12 p-10">
+					<div class="lg:flex">
+						<div class="lg:w-5/12 lg:p-10 p-8 pb-4">
 							<h4 class="mb-1 font-serif font-semibold text-2xl text-primary">{{ selectedServiceForTimeline.name }}</h4>
 							<div class="text-muted font-bold text-sm">{{ selectedServiceForTimeline.duration }} min</div>
 						</div>
-						<div class="w-7/12 p-10">
+						<div class="lg:w-7/12 lg:p-10 pt-0 p-8">
 							<p class="mb-0 service-description text-sm text-muted">{{ selectedServiceForTimeline.description }}</p>
 						</div>
 					</div>
 
-					<div class="flex border-top">
-						<div class="border-right p-12 flex flex-col w-4/12">
-							<div class="text-muted text-sm mb-8">Schedule a time with:</div>
+					<div class="lg:flex border-top">
+						<div class="border-right lg:p-12 p-8 flex flex-col lg:w-4/12">
+							<div class="text-muted text-sm lg:mb-8 mb-2">Schedule a time with:</div>
 
 							<div>
 								<!-- Main Coach -->
@@ -133,59 +134,61 @@
 								</div>
 							</div>
 
-							<div class="mt-auto">
-								<div class="text-muted text-sm mb-4">Your timezone:</div>
+							<div class="lg:mt-auto mt-4">
+								<div class="text-muted text-sm lg:mb-4 mb-2">Your timezone:</div>
 								<vue-select :options="timezonesOptions" drop-position="top" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
 							</div>
 						</div>
 
 						<!-- Date/time selection -->
-						<div class="p-12 w-8/12">
-							<div class="flex items-center justify-between">
+						<div class="lg:p-12 pt-0 p-8 lg:w-8/12">
+							<div class="lg:flex items-center justify-between">
 								<div class="text-muted text-sm">Select one or more timeslots</div>
 								<div>
-									<div class="button-date-nav">
+									<div class="button-date-nav lg:mt-0 mt-2">
 										<button type="button" @click="previousWeek()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-										<span>{{ dayjs(startDate).format('MMMM D, YYYY') }}</span>
+										<span class="flex-grow text-center">{{ dayjs(startDate).format('MMMM D, YYYY') }}</span>
 										<button type="button" @click="nextWeek()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 									</div>
 								</div>
 							</div>
 
-							<div class="mt-10 relative">
-								<table class="table-fixed w-full">
-									<thead>
-										<tr>
-											<template v-for="(tabDate, index) in tabDates">
-												<th v-if="selectedService.days[tabDate.dayName].isOpen" class="text-left text-xs font-semibold uppercase font-serif pb-2" :key="index">
-													<div class="uppercase text-gray-500 font-semibold text-xs">{{ tabDate.name }}</div>
-													<span class="text-gray-300">{{ tabDate.label }}</span>
-												</th>
-											</template>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<template v-for="(date, dateIndex) in tabDates">
-												<td :key="dateIndex" v-if="selectedService.days[date.dayName].isOpen">
-													<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
-														<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
-															<button type="button" class="timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }" @click="setSelectedDateAndTimeslot(date, timeslot)">
-																{{ timezoneTime(timeslot.time) }}
-															</button>
-														</div>
-													</template>
-												</td>
-											</template>
-										</tr>
-									</tbody>
-								</table>
+							<div class="lg:mt-10 mt-4 relative overflow-hidden">
+								<div class="min-w-full overflow-y-auto">
+									<table class="table-fixed min-w-full">
+										<thead>
+											<tr>
+												<template v-for="(tabDate, index) in tabDates">
+													<th v-if="selectedService.days[tabDate.dayName].isOpen" class="text-left text-xxs lg:text-xs font-semibold uppercase font-serif pb-2" :key="index">
+														<div class="uppercase text-gray-500 font-semibold">{{ tabDate.name }}</div>
+														<span class="text-gray-300">{{ tabDate.label }}</span>
+													</th>
+												</template>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<template v-for="(date, dateIndex) in tabDates">
+													<td :key="dateIndex" v-if="selectedService.days[date.dayName].isOpen">
+														<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
+															<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
+																<button type="button" class="timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }" @click="setSelectedDateAndTimeslot(date, timeslot)">
+																	{{ timezoneTime(timeslot.time) }}
+																</button>
+															</div>
+														</template>
+													</td>
+												</template>
+											</tr>
+										</tbody>
+									</table>
+								</div>
 
-								<div class="mt-12 flex items-center justify-between">
+								<div class="mt-12 lg:flex items-center justify-between">
 									<button :disabled="selectedTimeslots.length == 0" class="btn btn-primary" type="button" @click="step = 'summary'">
 										<span>Continue</span>
 									</button>
-									<div class="text-muted text-sm">
+									<div class="text-muted text-sm mt-4 lg:mt-0">
 										Note: You can add recurring timeslots on the next step.
 									</div>
 								</div>
@@ -201,18 +204,18 @@
 			</div>
 
 			<!-- Summary -->
-			<div v-else-if="step == 'summary'" class="flex" key="summary">
-				<div class="border w-4/12 p-16">
-					<h6 class="text-primary font-serif text-4xl font-semibold leading-none mb-10">SET YOUR BOOKING DETAILS</h6>
+			<div v-else-if="step == 'summary'" class="lg:flex" key="summary">
+				<div class="border w-4/12 lg:p-16 p-8">
+					<h6 class="text-primary font-serif text-4xl font-semibold leading-none lg:mb-10 mb-5">SET YOUR BOOKING DETAILS</h6>
 					<button class="btn btn-outline-primary flex items-center" type="button" @click="step = false"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
-				<div class="w-8/12 min-h-screen bg-white p-16">
+				<div class="lg:w-8/12 min-h-screen bg-white lg:p-16 p-8">
 					<h4 class="mb-2 font-serif font-semibold text-2xl text-primary">{{ selectedService.name }}</h4>
 					<div class="text-sm">
 						<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
 					</div>
 
-					<div class="w-8/12">
+					<div class="lg:w-8/12">
 						<div v-for="(selectedTimeslot, selectedTimeslotIndex) in selectedTimeslots" :key="selectedTimeslotIndex" class="mt-8">
 							<div class="flex items-start justify-between">
 								<div>
@@ -477,8 +480,8 @@
 			</div>
 
 			<!-- Payment -->
-			<div v-else-if="step == 'payment'" class="container my-12 flex items-center justify-center" key="payment">
-				<div class="w-5/12 bg-white rounded-2xl p-14">
+			<div v-else-if="step == 'payment'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+				<div class="lg:w-5/12 bg-white rounded-2xl lg:p-14 p-8">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">PAYMENT</h6>
 					<div class="text-xl text-muted mb-8">
 						Pay <strong class="text-black">{{ selectedService.currency }} {{ format({ padRight: 2 })(selectedService.default_rate * selectedTimeslots.length) }}</strong> with card
@@ -515,14 +518,14 @@
 			</div>
 
 			<!-- Authenticate -->
-			<div v-else-if="step == 'authenticate'" class="flex" key="authenticate">
-				<div class="border w-4/12 p-16">
-					<h6 class="text-primary font-serif text-4xl font-semibold leading-none mb-10">ADD YOUR CONTACT INFO</h6>
+			<div v-else-if="step == 'authenticate'" class="lg:flex" key="authenticate">
+				<div class="border w-4/12 lg:p-16 p-8">
+					<h6 class="text-primary font-serif text-4xl font-semibold leading-none lg:mb-10 mb-5">ADD YOUR CONTACT INFO</h6>
 					<button :disabled="bookingLoading" class="btn btn-outline-primary flex items-center" type="button" @click="step = selectedService.require_payment ? 'payment' : 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
-				<div class="w-8/12 min-h-screen bg-white">
-					<div class="grid grid-cols-2 border-bottom">
-						<div class="border-right p-16">
+				<div class="lg:w-8/12 min-h-screen bg-white">
+					<div class="grid lg:grid-cols-2 border-bottom">
+						<div class="border-right lg:p-16 p-8">
 							<vue-form-validate @submit="bookGuest">
 								<h6 class="text-primary font-semibold font-serif text-3xl mb-8">Book as guest</h6>
 								<div class="mb-4">
@@ -540,8 +543,8 @@
 								<button class="btn btn-primary" type="submit"><span>Book as guest</span></button>
 							</vue-form-validate>
 						</div>
-						<div class="p-16">
-							<vue-form-validate>
+						<div class="lg:p-16 p-8">
+							<vue-form-validate @submit="LoginAndBook">
 								<h6 class="text-primary font-semibold font-serif text-3xl mb-4">Log In</h6>
 								<div class="text-muted mb-6">Book using an existing account</div>
 								<div class="mb-4">
@@ -568,8 +571,8 @@
 			</div>
 
 			<!-- Booked Signup -->
-			<div v-else-if="step == 'booked-signup'" class="container my-12 flex items-center justify-center" key="payment">
-				<div class="w-5/12 bg-white rounded-2xl p-12">
+			<div v-else-if="step == 'booked-signup'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">EVENT BOOKED. SIGN UP FOR FREE!</h6>
 					<p class="text-muted text-xl">
 						Hey there, thank you for scheduling a meeting with Telloe as a guest. If you sign up you can start using Telloe now and enjoy:
@@ -613,8 +616,8 @@
 			</div>
 
 			<!-- Account Created -->
-			<div v-else-if="step == 'account-created'" class="container my-12 flex items-center justify-center" key="payment">
-				<div class="w-5/12 bg-white rounded-2xl p-12">
+			<div v-else-if="step == 'account-created'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">NICE! YOUR TELLOE ACCOUNT IS NOW CREATED.</h6>
 					<p class="text-muted mb-8">
 						Thanks for creating a Telloe account. Once you finish this booking you can login to your Telloe account. A temporary passsword is sent to your e-mail address with additional information. <br /><br />
@@ -626,15 +629,35 @@
 			</div>
 
 			<!-- Bookings -->
-			<div v-else-if="step == 'bookings'" class="container my-12 flex items-center justify-center" key="payment">
-				<div class="w-5/12 bg-white rounded-2xl p-12">
+			<div v-else-if="step == 'bookings'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
-					<p class="text-muted mb-8">
+					<p class="mb-8">
 						A calendar invite is on it’s way to your e-mail address.
 					</p>
 					<h4 class="mb-2 font-bold text-xl">{{ selectedService.name }}</h4>
 					<div class="text-sm">
 						<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
+					</div>
+
+					<div class="bg-gray-50 rounded-2xl p-4 mt-5" v-for="booking in bookings" :key="booking.id">
+						<h6 class="font-semibold">{{ formatDate(booking.date) }} ({{ dayjs(booking.date).format('dddd') }})</h6>
+						<div>{{ timezoneTime(booking.start) }} - {{ endTime(booking.end) }}</div>
+						<div v-if="booking.recurring" class="text-muted text-xs flex xitems-center mt-4">
+							<RefreshIcon class="fill-current mr-2 mt-1"></RefreshIcon>
+							<div>
+								Repeating booking every&nbsp;
+								<span class="font-bold">{{ booking.recurring_days.join(',') }}</span>
+								&nbsp;until&nbsp;
+								<span class="font-bold">{{ booking.until }}</span>
+							</div>
+						</div>
+
+						<VueDropdown @click="addToCalendar($event, booking)" :options="['Google Calendar', 'MS Outlook', 'Yahoo', 'iCal (.ics file download)']" class="mt-4">
+							<template #button>
+								<button class="btn btn-primary btn-sm flex items-center" type="button"><span>Add To Calendar</span><ChevronDownIcon class="fill-current"></ChevronDownIcon></button>
+							</template>
+						</VueDropdown>
 					</div>
 				</div>
 			</div>
@@ -655,38 +678,6 @@
 				</div>
 			</div>
 		</div>
-
-		<modal ref="bookingModal" id="bookingModal" :close-button="bookingSuccess" @hide="reset">
-			<div class="text-center position-relative">
-				<div :class="{ disabled: !bookingSuccess }">
-					<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
-					<h6 class="h3 font-heading">Booking placed!</h6>
-					<p class="mb-4 h6 font-weight-normal text-muted">A booking confirmation has been sent to your email</p>
-
-					<div v-for="booking in bookings" :key="booking.id" class="rounded p-3 text-left bg-light d-flex align-items-center mt-3">
-						<div>
-							<h6 class="font-heading mb-1">{{ formatDate(booking.date) }}</h6>
-							<div class="text-muted">{{ formatTime(booking.start) }} - {{ formatTime(booking.end) }}</div>
-						</div>
-						<div class="ml-auto dropdown">
-							<button class="btn btn-white shadow-none" type="button" data-toggle="dropdown">
-								Add to Calendar
-							</button>
-							<div class="dropdown-menu">
-								<a target="_blank" :href="booking.google_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Google Calendar</a>
-								<a target="_blank" :href="booking.outlook_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Outlook</a>
-								<a target="_blank" :href="booking.yahoo_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Yahoo!</a>
-								<a target="_blank" :href="booking.ical_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">iCal</a>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div v-if="!bookingSuccess" class="position-absolute-center">
-					<div class="spinner-border text-primary" role="status"></div>
-					<h6 class="h3 mt-4 mb-0 font-heading">Booking...</h6>
-				</div>
-			</div>
-		</modal>
 	</div>
 </template>
 

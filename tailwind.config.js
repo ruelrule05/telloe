@@ -4,7 +4,6 @@ coolGray['50'] = '#F8F8F9';
 module.exports = {
 	purge: ['./resources/**/*.blade.php', './resources/**/*.js', './resources/**/*.vue'],
 	darkMode: false, // or 'media' or 'class
-	important: true,
 	theme: {
 		fontFamily: {
 			sans: ['Manrope', 'sans-serif'],
@@ -59,7 +58,8 @@ module.exports = {
 			'6xl': ['3.75rem', { lineHeight: '1' }],
 			'7xl': ['4.5rem', { lineHeight: '1' }],
 			'8xl': ['6rem', { lineHeight: '1' }],
-			'9xl': ['8rem', { lineHeight: '1' }]
+			'9xl': ['8rem', { lineHeight: '1' }],
+			'home-heading': ['5rem', { lineHeight: '64px' }]
 		},
 
 		fontWeight: {

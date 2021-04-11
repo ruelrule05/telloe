@@ -144,7 +144,7 @@ class AuthService
             return abort(403, 'Email is already registered to another account.');
         }
 
-        $username = self::generateUsername($request);
+        $username = self::generateUsername($request->first_name, $request->last_name);
 
         $user = User::create([
             'username' => $username,
@@ -309,7 +309,7 @@ class AuthService
                 $time = time();
                 $profile_image = 'http://graph.facebook.com/' . $request->id . '/picture?type=normal';
                 Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $username = self::generateUsername($request);
+                $username = self::generateUsername($request->first_name, $request->last_name);
                 $user = User::create([
                     'username' => $username,
                     'first_name' => $request->first_name,
@@ -353,7 +353,7 @@ class AuthService
                 $isNew = true;
                 $time = time();
                 Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $username = self::generateUsername($request);
+                $username = self::generateUsername($request->first_name, $request->last_name);
                 $user = User::create([
                     'username' => $username,
                     'first_name' => $request->first_name,
@@ -460,10 +460,10 @@ class AuthService
         return ['message' => 'Payout details successfuly saved.', 'stripe_account' => $user->stripe_account];
     }
 
-    public static function generateUsername(Request $request)
+    public static function generateUsername($first_name, $last_name)
     {
         $i = '';
-        $username = strtolower($request->first_name) . strtolower($request->last_name);
+        $username = strtolower($first_name) . strtolower($last_name);
         while (true) {
             if (! User::where('username', $username)->first()) {
                 break;
@@ -586,7 +586,7 @@ class AuthService
     {
         $user = User::where('email', $request->email)->exists();
         if (! $user) {
-            $username = self::generateUsername($request);
+            $username = self::generateUsername($request->first_name, $request->last_name);
             $newUser = User::create([
                 'username' => $username,
                 'first_name' => $request->first_name,

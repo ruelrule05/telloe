@@ -39,9 +39,10 @@ class Mailer extends Mailable
         'text-primary' => 'color: #6e82ea;',
 
         /* Buttons ------------------------------ */
-        'button' => 'border-radius: 0.35rem; padding: 10px 24px;
+        'button' => 'border-radius: 50px; padding: 8px 36px; text-transform: uppercase;
 	    			font-weight: bold;
-	                 background-color: #6e82ea; color: #ffffff; font-size: 15px;;
+                    display: inline-block;
+	                 background-color: #3167e3; color: #ffffff; font-size: 15px;;
 	                 text-align: center; text-decoration: none; -webkit-text-size-adjust: none;max-width:100%;',
 
         'display-block' => 'display: block;',

@@ -11,7 +11,6 @@
         -webkit-font-smoothing: antialiased;
         font-smoothing: antialiased;
       }
-      .text-primary{color:#3f51b5;}
       a { text-decoration: none; outline: none; }
       @media (max-width: 649px) {
         .o_col-full { max-width: 100% !important; }
@@ -31,6 +30,8 @@
         .o_xs-pt-xs { padding-top: 8px !important; }
         .o_xs-pb-xs { padding-bottom: 8px !important; }
       }
+      .text-muted{color: #838ea6;}
+      .text-primary{color: #3167e3}
     </style>
     <!--[if mso]>
     <style>
@@ -44,19 +45,19 @@
     </xml>
     <![endif]-->
   </head>
-  <body class="o_body o_bg-white" style="width: 100%;margin: 0px;padding: 0px;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;background-color: #f5f5f5;">
+  <body class="o_body o_bg-white" style="width: 100%;margin: 0px;padding: 0px;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;background-color: #fae6e2;">
 
     
     <!-- content -->
-    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="margin-top: 10px; background-color: #f5f5f5;">
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="margin-top: 10px; background-color: #fae6e2;">
       <tbody>
         <tr>
           <td class="o_bg-white o_px-md o_py" align="center" style="padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 6px;">
             <!--[if mso]><table width="584" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td align="center"><![endif]-->
-            <div class="o_col-6s o_sans o_text o_text-secondary o_center" style="font-family: {{ $fontFamily }};margin-top: 0px;margin-bottom: 0px;font-size: 15px;line-height: 24px;max-width: 584px;">
-              <div style="background: #ffffff; padding: 25px; box-sizing: border-box;border: solid 1px #e5e5e5; box-shadow: 0 0 10px  #ddd">
-                <a class="o_text-primary" target="_blank" href="{{ config('app.url') }}" style="text-decoration: none;outline: none;color: #126de5;"><img src="{{ config('app.url') }}/logo.png" height="30"></a>
-                  <div style="margin-top: 40px">&nbsp;</div>
+            <div class="o_col-6s o_sans o_text o_text-secondary o_center" style="font-family: {{ $fontFamily }};margin-top: 0px;margin-bottom: 0px;font-size: 15px;line-height: 24px;max-width: 584px; text-align: left;">
+              <div style="background: #ffffff; padding: 60px; box-sizing: border-box;border-radius: 15px">
+                <a class="o_text-primary" target="_blank" href="{{ config('app.url') }}" style="text-decoration: none;outline: none;color: #126de5;"><img src="{{ config('app.url') }}/logo.png" height="25"></a>
+                  <div style="margin-top: 25px">&nbsp;</div>
                   @yield('content')
               </div>
 

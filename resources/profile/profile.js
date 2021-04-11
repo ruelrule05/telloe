@@ -2,7 +2,6 @@
 /* global SERVICE */
 /* global TIMEZONE */
 /* global gapi */
-/* global FB */
 
 require('../js/bootstrap');
 
@@ -25,6 +24,7 @@ import ArrowRightIcon from '../icons/arrow-right';
 import CalendarMonthIcon from '../icons/calendar-month';
 import ChevronLeftIcon from '../icons/chevron-left';
 import ChevronRightIcon from '../icons/chevron-right';
+import ChevronDownIcon from '../icons/chevron-down';
 import EarthIcon from '../icons/earth';
 import CheckmarkCircleIcon from '../icons/checkmark-circle';
 import FacebookIcon from '../icons/facebook';
@@ -66,6 +66,9 @@ import UnionpayIcon from '../icons/cc/unionpay.vue';
 const format = require('format-number');
 import Stripe from 'stripe-client';
 import axios from 'axios';
+import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
+import RefreshIcon from '../icons/refresh';
+import SocialLogin from '../js/helpers/SocialLogin';
 
 export default {
 	components: {
@@ -107,7 +110,10 @@ export default {
 		DiscoverIcon,
 		DinersclubIcon,
 		JcbIcon,
-		UnionpayIcon
+		UnionpayIcon,
+		VueDropdown,
+		ChevronDownIcon,
+		RefreshIcon
 	},
 
 	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
@@ -174,15 +180,15 @@ export default {
 		},
 		timezonesOptions: [],
 		authenticate: false,
-		step: false, //false
+		step: false,
 		user: {
 			email: '',
 			password: ''
 		},
 		guest: {
-			first_name: 'erer',
-			last_name: 'erer',
-			email: 'clyde@tradearcade.tvx'
+			first_name: '',
+			last_name: '',
+			email: ''
 		},
 		cardForm: {
 			number: '4242424242424242',
@@ -412,6 +418,23 @@ export default {
 	},
 
 	methods: {
+		addToCalendar(calendar, booking) {
+			switch (calendar) {
+				case 'Google Calendar':
+					window.open(booking.google_link, '_blank');
+					break;
+				case 'MS Outlook ':
+					window.open(booking.outlook_link, '_blank');
+					break;
+				case 'Yahoo':
+					window.open(booking.yahoo_link, '_blank');
+					break;
+				case 'iCal (.ics file download)':
+					window.open(booking.ical_link, '_blank');
+					break;
+			}
+		},
+
 		async createAccount() {
 			this.creatingAccount = true;
 			let response = await axios.post('/auth/guest_account', this.guest);
@@ -491,10 +514,99 @@ export default {
 				let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/guest_book`, data, { toast: true }).catch(() => {
 					this.bookingLoading = false;
 				});
-				this.bookings = response.data;
-				this.step = 'booked-signup';
+				if (response) {
+					this.bookings = response.data;
+					this.step = 'booked-signup';
+				}
 			}
 			this.bookingLoading = false;
+		},
+
+		async LoginAndBook() {
+			this.bookingLoading = true;
+			let timeslots = this.selectedTimeslots.map(timeslot => {
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+				}
+				return timeslot;
+			});
+
+			let data = JSON.parse(JSON.stringify(this.user));
+			data.timeslots = timeslots;
+			data.card_token = true;
+			if (this.selectedService.require_payment) {
+				data.card_token = await this.getCardToken();
+			}
+			if (data.card_token) {
+				let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/login_and_book`, data, { toast: true }).catch(() => {
+					this.bookingLoading = false;
+				});
+				if (response) {
+					this.bookings = response.data;
+					this.step = 'bookings';
+				}
+			}
+			this.bookingLoading = false;
+		},
+
+		async FacebookLoginAndBook() {
+			let response = await SocialLogin.FacebookLogin();
+			if (response) {
+				this.bookingLoading = true;
+				let timeslots = this.selectedTimeslots.map(timeslot => {
+					if (timeslot.end_date) {
+						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+					}
+					return timeslot;
+				});
+
+				let data = JSON.parse(JSON.stringify(this.user));
+				data.timeslots = timeslots;
+				data.card_token = true;
+				if (this.selectedService.require_payment) {
+					data.card_token = await this.getCardToken();
+				}
+				if (data.card_token) {
+					let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
+						this.bookingLoading = false;
+					});
+					if (response) {
+						this.bookings = response.data;
+						this.step = 'bookings';
+					}
+				}
+				this.bookingLoading = false;
+			}
+		},
+
+		async GoogleLoginAndBook() {
+			let response = await SocialLogin.GoogleSignin();
+			if (response) {
+				this.bookingLoading = true;
+				let timeslots = this.selectedTimeslots.map(timeslot => {
+					if (timeslot.end_date) {
+						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+					}
+					return timeslot;
+				});
+
+				let data = JSON.parse(JSON.stringify(this.user));
+				data.timeslots = timeslots;
+				data.card_token = true;
+				if (this.selectedService.require_payment) {
+					data.card_token = await this.getCardToken();
+				}
+				if (data.card_token) {
+					let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
+						this.bookingLoading = false;
+					});
+					if (response) {
+						this.bookings = response.data;
+						this.step = 'bookings';
+					}
+				}
+				this.bookingLoading = false;
+			}
 		},
 
 		setTypeSelected(timeslot, type) {
@@ -745,142 +857,6 @@ export default {
 				this.LoginAndBook();
 			} else if (this.authAction == 'signup') {
 				this.SignupAndBook();
-			}
-		},
-
-		LoginAndBook() {
-			/* eslint-disable */
-			let timeslots = this.selectedTimeslots.map(timeslot => {
-				if (timeslot.end_date) {
-					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
-				}
-				return timeslot;
-			});
-
-			let service = this.assignedService || this.selectedService;
-			if (service && this.selectedTimeslots.length > 0) {
-				this.$refs['bookingModal'].show().then(() => {
-					this.loginForm.loading = true;
-					this.isBooking = true;
-					let data = {
-						email: this.loginForm.email,
-						password: this.loginForm.password,
-						timeslots: this.selectedTimeslots
-					};
-					window.axios
-						.post(`/@${this.profile.username}/${service.id}/login_and_book`, data, { toast: true })
-						.then(response => {
-							this.bookingSuccess = true;
-							this.loginForm.loading = false;
-							this.authForm = false;
-							this.selectedTimeslots = [];
-							this.bookings = response.data;
-						})
-						.catch(() => {
-							setTimeout(() => {
-								this.$refs['bookingModal'].hide().then(() => {
-									this.loginForm.loading = false;
-									this.isBooking = false;
-								});
-							}, 150);
-						});
-				});
-			}
-		},
-
-		FacebookLoginAndBook() {
-			let service = this.assignedService || this.selectedService;
-			if (typeof FB != 'undefined' && service && this.selectedDate && this.selectedTimeslots.length > 0) {
-				this.$refs['bookingModal'].show().then(() => {
-					this.loginForm.loading = true;
-					this.isBooking = true;
-					FB.login(
-						() => {
-							FB.api('/me', { fields: 'first_name, last_name, email' }, data => {
-								if (data && !data.error) {
-									data.timezone = this.timezone;
-									data.timeslots = this.selectedTimeslots;
-
-									window.axios
-										.post(`/@${this.profile.username}/${service.id}/facebook_login_and_book`, data, { toast: true })
-										.then(response => {
-											this.bookingSuccess = true;
-											this.loginForm.loading = false;
-											this.authForm = false;
-											this.selectedTimeslots = [];
-											this.bookings = response.data;
-										})
-										.catch(() => {
-											setTimeout(() => {
-												this.$refs['bookingModal'].hide().then(() => {
-													this.loginForm.loading = false;
-													this.isBooking = false;
-												});
-											}, 150);
-										});
-								} else {
-									this.$refs['bookingModal'].hide();
-									setTimeout(() => {
-										this.loginForm.loading = false;
-										this.isBooking = false;
-										this.bookingSuccess = false;
-									}, 150);
-								}
-							});
-						},
-						{ scope: 'email' }
-					);
-				});
-			}
-		},
-
-		GoogleLoginAndBook() {
-			let service = this.assignedService || this.selectedService;
-			if (this.GoogleAuth && service && this.selectedTimeslots.length > 0) {
-				this.$refs['bookingModal'].show().then(() => {
-					this.loginForm.loading = true;
-					this.isBooking = true;
-					this.GoogleAuth.signIn()
-						.then(googleUser => {
-							let profile = googleUser.getBasicProfile();
-							let timezone = this.timezone;
-							let data = {
-								id: profile.getId(),
-								first_name: profile.getGivenName(),
-								last_name: profile.getFamilyName(),
-								email: profile.getEmail(),
-								image_url: profile.getImageUrl(),
-								timezone: timezone,
-								timeslots: this.selectedTimeslots
-							};
-
-							window.axios
-								.post(`/@${this.profile.username}/${service.id}/google_login_and_book`, data, { toast: true })
-								.then(response => {
-									this.bookingSuccess = true;
-									this.loginForm.loading = false;
-									this.authForm = false;
-									this.selectedTimeslots = [];
-									this.bookings = response.data;
-								})
-								.catch(() => {
-									setTimeout(() => {
-										this.$refs['bookingModal'].hide().then(() => {
-											this.loginForm.loading = false;
-											this.isBooking = false;
-										});
-									}, 150);
-								});
-						})
-						.catch(() => {
-							this.$refs['bookingModal'].hide();
-							setTimeout(() => {
-								this.loginForm.loading = false;
-								this.isBooking = false;
-								this.bookingSuccess = false;
-							}, 150);
-						});
-				});
 			}
 		},
 

@@ -3,59 +3,55 @@
 @section('content')
 
 
-<p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
-{!! $emailMessage !!}
-</p>
-<div style="text-align: xleft; margin-top: 30px; margin-bottom: 30px">
-    <h1 style="font-size: 26px; margin-bottom: 0; margin-top: 0">{{ $bookings[0]->service->name }}</h1>
-    {{ $bookings[0]->service->coach->full_name }}
+<div style="margin-bottom: 30px">
+    <h1 style="font-size: 32px; margin-bottom: 0; margin-top: 0" class="text-primary">{{ $bookings[0]->service->name }} is booked!</h1>
+   
 </div>
 
+<p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
+You successfully booked an event <strong>"{{ $bookings[0]->service->name }}"</strong> with <strong> {{ $bookings[0]->service->coach->full_name }}</strong>.
+</p>
 
 @foreach($bookings as $booking) 
-    <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 10px 1rem; text-align-last: left; margin-top: 10px">
-        <table style="width: 100%;">
-            <tr>
-                <td style="width: 25%">Date</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">From</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">To</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">Timezone</td>
-                <td><strong>{{ $booking->user->timezone ?? config('app.timezone') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">Add to</td>
-                <td>
-                    <u><a target="_blank" href="{{ $booking->google_link}}">Google Calendar</a></u>
-                    &nbsp;|&nbsp;
-                    <u><a target="_blank" href="{{ $booking->outlook_link }}">Outlook</a></u>
-                    &nbsp;|&nbsp;
-                    <u><a target="_blank" href="{{ $booking->yahoo_link }}">Yahoo!</a></u>
-                    &nbsp;|&nbsp;
-                    <u><a target="_blank" href="{{ $booking->ical_link }}">iCal</a></u>
-                </td>
-            </tr>
-            @if($booking->zoom_link)
-            <tr>
-                <td style="width: 25%; vertical-align: top">Zoom link</td>
-                <td><u><a target="_blank" style="word-break: break-all" href="{{ $booking->zoom_link }}">Go to Zoom meeting</a></u></td>
-            </tr>
-            @endif
-        </table>
+    <div style="border-radius: 15px; background-color: #F8F8F9; padding: 20px; margin-top: 20px">
+        <h3 style="margin-top: 0; margin-bottom: 0">
+            {{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }} ({{ \Carbon\Carbon::parse($booking->date)->format('l') }})
+        </h3>
+        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</div>
+
+        @if($booking->recurring)
+        <div style="margin-top: 10px; display: flex; align-items: cexnter; flex-wrap: nowrap; font-size: 14px; line-height: 18px" class="text-muted">
+            <div>
+                <img src="{{ config('app.url') }}/images/refresh.png" style="margin-top: 5px" />
+            </div>
+            <div style="margin-left: 10px;">
+                Repeating booking every <strong>{{ implode(',', $booking->recurring_days) }}</strong> until <strong>{{ $booking->until }}</strong>.
+            </div>
+        </div>
+        @endif
+        <div style="margin-top: 10px">
+            Add to:&nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->google_link}}"><strong>Google Calendar</strong></a>
+            &nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->outlook_link }}"><strong>Outlook</strong></a>
+            &nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->yahoo_link }}"><strong>Yahoo!</strong></a>
+            &nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->ical_link }}"><strong>iCal</strong></a>
+        </div>
+
+        @if($booking->zoom_link)
+        <div>
+            Zoom link:&nbsp;&nbsp;
+            <a target="_blank"  class="text-primary" style="word-break: break-all" href="{{ $booking->zoom_link }}"><strong>Go to Zoom meeting</strong></a>
+        </div>
+        @endif
     </div>
 @endforeach
 
 @if($actionUrl)
 <a href="{{ $actionUrl }}"
-    style="{{ $style['button'] }}{{ $style['display-block'] }} margin-top: 20px; margin-bottom: 5px"
+    style="{{ $style['button'] }} margin-top: 20px; margin-bottom: 5px"
     class="button"
     target="_blank">
     {{ $actionText }}

@@ -70,7 +70,7 @@
 }
 .timeslot-menu {
 	z-index: -1;
-	@apply absolute top-0 left-9 transform scale-95  origin-left rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out whitespace-nowrap p-4;
+	@apply absolute top-0 lg:left-9 lg:right-auto left-auto right-7 transform scale-95  origin-left rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out whitespace-nowrap p-4;
 	&.show {
 		@apply z-50 opacity-100 scale-100;
 	}
