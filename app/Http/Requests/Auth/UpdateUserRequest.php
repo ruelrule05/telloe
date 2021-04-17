@@ -29,7 +29,7 @@ class UpdateUserRequest extends FormRequest
             'last_name' => 'required|string|max:100',
             'email' => 'required|string|max:100|',
 
-            'phone' => 'nullable|numeric|max:30',
+            'phone' => 'nullable|numeric',
             'availability' => 'nullable|array',
             // 'role_id' => 'required|integer',
             // 'profile_image' => 'required|string|max:255',
@@ -42,9 +42,9 @@ class UpdateUserRequest extends FormRequest
             // 'google_id' => 'string|max:191',
 
             // 'timezone' => 'string|max:191',
-            // 'notify_message' => 'integer|max:1',
-            // 'notify_sms' => 'integer|max:1',
-            // 'notify_email' => 'integer|max:1',
+            'notify_message' => 'integer|max:1',
+            'notify_sms' => 'integer|max:1',
+            'notify_email' => 'integer|max:1',
         ];
     }
 }

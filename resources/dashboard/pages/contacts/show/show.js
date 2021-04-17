@@ -26,9 +26,11 @@ import PlusIcon from '../../../../icons/plus';
 import draggable from 'vuedraggable';
 import Add from '../../../../dashboard/pages/bookings/add/add.vue';
 import EditBooking from '../../bookings/edit/edit.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 
 export default {
 	components: {
+		VueDropdown,
 		VCalendar,
 		Modal,
 		CheckmarkCircleIcon,
@@ -192,6 +194,18 @@ export default {
 			deleteBooking: 'bookings/delete',
 			storeConversation: 'conversations/store'
 		}),
+
+		noteAction(action, note) {
+			switch (action) {
+				case 'Edit':
+					this.selectedNote = note;
+					this.selectedNote.new_note = note.note;
+					break;
+				case 'Delete':
+					this.deleteContactNote(note);
+					break;
+			}
+		},
 
 		async goToConversation() {
 			let conversation = await this.storeConversation({ members: [this.contact.contact_user_id] });

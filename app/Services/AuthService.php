@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use Mail;
+
 class AuthService
 {
     public static function socialiteCallback($driver)
@@ -73,7 +74,7 @@ class AuthService
 
     public static function get(Request $request, $last_online = true)
     {
-        $user = Auth::check() ? Auth::user()->load('subscription', 'role')->makeVisible([
+        $user = Auth::check() ? Auth::user()->load('subscription.plan', 'role')->makeVisible([
             'google_calendars',
             'google_calendars',
             'google_calendar_id',
@@ -90,7 +91,12 @@ class AuthService
             'google_calendar_token',
             'outlook_token',
             'xero_token',
-            'default_availability'
+            'default_availability',
+            'subscription',
+            'notify_email',
+            'notify_sms',
+            'notify_email',
+            'notify_message',
         ]) : false;
 
         if (! $user) {

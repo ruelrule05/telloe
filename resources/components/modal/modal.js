@@ -10,6 +10,10 @@ export default {
 		size: {
 			type: String,
 			default: ''
+		},
+		noBackdropHide: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -79,8 +83,8 @@ export default {
 			this.open = true;
 		},
 
-		async hide() {
-			this.open = false;
+		async hide(force = false) {
+			if (!this.noBackdropHide || force) this.open = false;
 		}
 	}
 };

@@ -3,6 +3,9 @@
 	&.show {
 		@apply border-gray-500 ring-2;
 	}
+	&:disabled {
+		@apply pointer-events-none opacity-50;
+	}
 }
 .select-menu {
 	> div {

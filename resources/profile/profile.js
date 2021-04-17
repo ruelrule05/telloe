@@ -191,12 +191,12 @@ export default {
 			email: ''
 		},
 		cardForm: {
-			number: '4242424242424242',
-			exp_month: '02',
-			exp_year: '23',
-			cvc: '999',
-			name: 'Billy Joe',
-			expiration: '02/23',
+			number: '',
+			exp_month: '',
+			exp_year: '',
+			cvc: '',
+			name: '',
+			expiration: '',
 			errors: {
 				number: false,
 				expiration: false,
@@ -449,10 +449,20 @@ export default {
 		async getCardToken() {
 			const publishableKey = process.env.MIX_STRIPE_PUBLISHABLE_KEY;
 			const stripe = Stripe(publishableKey);
+			let expParts = this.cardForm.expiration.split('/');
+			let exp_month = expParts[0].trim();
+			let exp_year = expParts[1].trim();
+			if (exp_year.length === 2) {
+				if (exp_year < 70) {
+					exp_year = `20${exp_year}`;
+				} else {
+					exp_year = `19${exp_year}`;
+				}
+			}
 			let cardData = {
 				number: this.cardForm.number,
-				exp_month: this.cardForm.exp_month,
-				exp_year: this.cardForm.exp_year,
+				exp_month: exp_month,
+				exp_year: exp_year,
 				cvc: this.cardForm.cvc,
 				name: this.cardForm.name
 			};

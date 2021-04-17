@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Contact;
+use App\Models\ContactNote;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateContactNoteRequest extends FormRequest
@@ -14,8 +14,8 @@ class UpdateContactNoteRequest extends FormRequest
      */
     public function authorize()
     {
-        $contact = Contact::find($this->user_id);
-        return $this->user()->can('update', $contact);
+        $note = ContactNote::findOrfail($this->contact_note);
+        return $this->user()->can('show', $note->contact);
     }
 
     /**

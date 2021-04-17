@@ -106,19 +106,13 @@ export default {
 	},
 
 	watch: {
-		'conversation.channel': function() {
-			this.conversation.channel.listenForWhisper('typing', e => {
-				if (this.$root.auth.id != e.userId) {
-					this.$set(this.typingUsers, e.userId, e);
-				}
-			});
-		},
-		'$route.params.id': function(value) {
+		'conversation.channel': function(value) {
 			if (value) {
-				this.showConversation({ id: value }).then(() => {
-					this.initChannel();
+				this.conversation.channel.listenForWhisper('typing', e => {
+					if (this.$root.auth.id != e.userId) {
+						this.$set(this.typingUsers, e.userId, e);
+					}
 				});
-				this.checkScreenRecorder();
 			}
 		},
 		'$root.screenRecorder.status': function(value) {

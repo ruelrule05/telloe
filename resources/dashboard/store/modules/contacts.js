@@ -94,7 +94,7 @@ const actions = {
 	},
 
 	async store({ commit }, data) {
-		let response = await window.axios.post(`/${name}`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}`, data, { toast: true });
 		commit('store', response.data);
 		return response.data;
 	},
@@ -111,7 +111,7 @@ const actions = {
 	},
 
 	async create_invoice({ commit }, data) {
-		let response = await window.axios.post(`/${name}/${data.id}/create_invoice`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}/${data.id}/create_invoice`, data, { toast: true });
 		commit('create_invoice', response.data);
 	},
 
@@ -121,12 +121,12 @@ const actions = {
 	},
 
 	async create_subscription({ commit }, data) {
-		let response = await window.axios.post(`/${name}/${data.id}/create_subscription`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}/${data.id}/create_subscription`, data, { toast: true });
 		commit('create_subscription', response.data);
 	},
 
 	async cancel_subscription({ commit }, data) {
-		let response = await window.axios.post(`/${name}/${data.contact.id}/cancel_subscription?subscription_id=${data.id}`, null, { toasted: true });
+		let response = await window.axios.post(`/${name}/${data.contact.id}/cancel_subscription?subscription_id=${data.id}`, null, { toast: true });
 		commit('cancel_subscription', response.data);
 	},
 

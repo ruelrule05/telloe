@@ -25,6 +25,7 @@ import CallMenuIcon from '../../../../icons/call-menu';
 import VideocamIcon from '../../../../icons/videocam';
 import DocumentAltIcon from '../../../../icons/document-alt';
 import DownloadIcon from '../../../../icons/download';
+import VueFormValidate from '../../../../components/vue-form-validate.vue';
 //import WeekView from '../../../components/WeekView/WeekView.vue';
 
 import Tooltip from '../../../../js/directives/tooltip';
@@ -33,7 +34,7 @@ import Messages from '../../../components/Messages/Messages.vue';
 export default {
 	components: {
 		//WeekView,
-
+		VueFormValidate,
 		Modal,
 
 		CastIcon,

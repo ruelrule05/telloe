@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Http\Requests\IndexBookingLinkRequest;
 use App\Mail\SendBookingLinkInvitation;
 use App\Models\BookingLink;
+use App\Models\BookingLinkContact;
+use App\Models\Contact;
 use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -20,9 +22,9 @@ class BookingLinkService
     {
         {
             if ($request->paginate) {
-                $bookingLinks = Auth::user()->bookingLinks()->withCount('bookingLinkContacts')->paginate(20);
+                $bookingLinks = Auth::user()->bookingLinks()->with('bookingLinkContacts.contact')->paginate(20);
             } else {
-                $bookingLinks = Auth::user()->bookingLinks()->withCount('bookingLinkContacts')->get();
+                $bookingLinks = Auth::user()->bookingLinks()->with('bookingLinkContacts.contact')->get();
             }
 
             return $bookingLinks;
@@ -40,16 +42,16 @@ class BookingLinkService
     {
         $contacts = [];
         $emails = [];
-        foreach ($request->contacts as $contact) {
-            if (! isset($contact['type']) || $contact['type'] != 'email') {
-                $contact = Contact::findOrFail($contact['id']);
+        foreach ($request->contacts as $requestContact) {
+            if (! isset($requestContact['type']) || $requestContact['type'] != 'email') {
+                $contact = Contact::findOrFail($requestContact['id']);
 
                 $contacts[] = $contact;
             } else {
-                if (isset($contact['type']) && $contact['type'] == 'email') {
+                if (isset($requestContact['type']) && $requestContact['type'] == 'email') {
                     $emails[] = [
-                        'email' => $contact['id'],
-                        'timezone' => $contact['timezone'],
+                        'email' => $requestContact['id'],
+                        'timezone' => $requestContact['timezone'],
                     ];
                 }
             }
@@ -66,7 +68,8 @@ class BookingLinkService
         foreach ($contacts as $contact) {
             BookingLinkContact::create([
                 'contact_id' => $contact->id,
-                'booking_link_id' => $bookingLink->id
+                'booking_link_id' => $bookingLink->id,
+                'color' => $requestContact['color'] ?? '#3167e3'
             ]);
         }
 

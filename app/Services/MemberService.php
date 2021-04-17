@@ -27,8 +27,8 @@ class MemberService
         $members = Member::with('memberUser', 'assignedServices')
             ->withCount('assignedServices')
             ->where('user_id', Auth::user()->id)
-            ->orderBy('created_at', 'DESC')
-            ->where('member_user_id', '!=', null);
+            ->orderBy('created_at', 'DESC');
+            //->where('member_user_id', '!=', null);
 
         if ($query) {
             $members = $members->whereHas('memberUser', function ($memberUser) use ($query) {

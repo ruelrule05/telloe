@@ -12,3 +12,291 @@
 		border-bottom-right-radius: $border-radius !important;
 	}
 }
+
+.profile-photo {
+	.image {
+		@apply p-8 rounded-full text-3xl text-primary bg-secondary-light bg-center bg-no-repeat bg-cover;
+		line-height: 0.5;
+	}
+}
+.card-plan {
+	@apply bg-gray-50 rounded-xl p-4;
+	.active-plan {
+		@apply opacity-0;
+	}
+	.plan-cancel-text {
+		@apply opacity-0 text-muted text-sm;
+	}
+	&.active {
+		@apply ring-2 ring-primary;
+		.active-plan {
+			@apply opacity-100;
+		}
+		.plan-cancel-text {
+			@apply opacity-100;
+		}
+		.btn-subscribe {
+			@apply hidden;
+		}
+		.btn-cancel {
+			@apply block;
+		}
+	}
+	&:not(.active) {
+		.btn-subscribe {
+			@apply block;
+		}
+		.btn-cancel {
+			@apply hidden;
+		}
+	}
+}
+
+.input-cc-card {
+	@apply relative;
+	.cc-icon {
+		@apply absolute right-2 transform top-1/2 -translate-y-1/2;
+		svg {
+			@apply h-8 w-8;
+		}
+	}
+}
+
+.input-cc {
+	@apply ring-0 ring-offset-0 #{!important};
+	&.is-invalid:not(:focus) {
+		@apply border-red-600 ring-red-600 text-red-600;
+	}
+}
+
+.billing-content {
+	@apply p-0;
+
+	.billing-setting {
+		width: 45%;
+
+		.billing-row {
+			&:last-of-type {
+				@apply border-none;
+			}
+
+			p {
+				@apply pb-3 pt-5 flex items-center;
+				width: 50%;
+				flex: 0 0 50%;
+
+				&.title {
+					@apply text-muted uppercase font-normal text-xs tracking-widest;
+				}
+				&.content {
+					@apply text-body font-semibold text-sm;
+				}
+			}
+		}
+
+		.visa {
+			img {
+				@apply mr-2;
+
+				height: 18px;
+				width: auto;
+			}
+
+			p {
+				@apply text-sm font-bold;
+			}
+		}
+
+		.settings {
+			a {
+				@apply rounded-full border p-1 inline-block;
+			}
+
+			img {
+				@apply h-5 w-5;
+			}
+		}
+	}
+
+	.members {
+		width: 55%;
+
+		h2 {
+			.button {
+				@apply ml-auto px-5 flex items-center border-primary text-primary border rounded-full font-serif tracking-tighter font-bold uppercase;
+
+				height: 34px;
+				padding-top: 1px;
+				font-size: 0.6rem;
+			}
+		}
+
+		.member-row {
+			@apply w-full pb-3 pt-3;
+
+			.name {
+				@apply flex items-center flex-grow;
+
+				.profile {
+					@apply bg-cover bg-center bg-no-repeat rounded-full bg-primary relative mr-3;
+					width: 24px;
+					height: 24px;
+
+					> span {
+						@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-xs font-bold text-white leading-tight;
+						padding-bottom: 0.5px;
+						padding-left: 1px;
+					}
+				}
+
+				p {
+					@apply text-body text-xs font-bold;
+				}
+			}
+
+			.status {
+				@apply mr-auto flex;
+				width: 50%;
+
+				p {
+					@apply text-muted uppercase font-normal text-xs tracking-widest text-right flex-grow  justify-end;
+				}
+			}
+
+			.remove {
+				@apply flex font-serif tracking-tighter font-bold uppercase ml-auto items-center text-muted;
+				font-size: 0.6rem;
+
+				img {
+					@apply mr-1 inline-block;
+					width: 22px;
+				}
+			}
+
+			p {
+				@apply flex items-center;
+				width: 50%;
+				flex: 0 0 50%;
+
+				&.title {
+					@apply text-muted uppercase font-normal text-xs tracking-widest;
+				}
+				&.content {
+					@apply text-body font-semibold text-sm;
+				}
+			}
+		}
+	}
+
+	.invoices {
+		@apply pt-8 pl-6 pb-0 pr-0 w-full;
+
+		.search {
+			input {
+				@apply px-3 py-2 mb-2 text-sm w-80;
+			}
+		}
+
+		.table-fixed {
+			thead {
+				tr td {
+					@apply text-muted font-normal text-xs tracking-wider pb-3;
+				}
+			}
+			tbody {
+				tr {
+					&:hover {
+						@apply bg-secondary-light;
+					}
+					td {
+						@apply text-muted font-normal text-sm pb-5 pt-6;
+
+						&.invoice {
+							@apply text-primary font-bold uppercase;
+						}
+
+						&.status {
+							p {
+								@apply inline-flex items-center bg-green-400 text-xs capitalize rounded-md px-3 py-0 text-white inline-block;
+								height: 24px;
+								font-size: 0.7rem;
+							}
+						}
+
+						&.download {
+							a {
+								@apply px-5 inline-flex items-center border-primary text-primary border rounded-full font-serif tracking-tighter font-bold uppercase;
+
+								height: 24px;
+								padding-top: 3px;
+								font-size: 0.4rem;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.payout-content {
+	@apply w-full max-w-screen-lg;
+
+	p.note {
+		@apply py-3 px-4 bg-secondary-light rounded-xl mb-8;
+	}
+
+	.payout-sidebar {
+		width: 200px;
+		flex: 0 0 200px;
+
+		h2 {
+			@apply flex justify-between font-serif uppercase tracking-tighter font-bold text-muted;
+		}
+	}
+
+	.form {
+		@apply flex-1;
+	}
+
+	.form-inline {
+		@apply pl-8 flex-wrap;
+
+		.form-field {
+			@apply mb-4;
+
+			width: 48.5%;
+
+			p.warning {
+				@apply text-red-600;
+			}
+
+			&:last-child,
+			&:nth-last-child(2) {
+				@apply mb-0;
+
+				input {
+					@apply mb-0;
+				}
+			}
+		}
+
+		&.flex-col {
+			.form-field {
+				@apply mb-4;
+
+				input {
+					@apply mb-2;
+				}
+
+				&:last-child {
+					@apply mb-0;
+
+					input {
+						@apply mb-0;
+					}
+				}
+			}
+		}
+	}
+}

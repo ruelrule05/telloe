@@ -95,3 +95,7 @@ input.is-invalid:not(:focus) {
 		@apply h-3 w-3 stroke-current;
 	}
 }
+
+.input-cc {
+	@apply ring-0 ring-offset-0 #{!important};
+}

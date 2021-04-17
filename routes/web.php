@@ -23,7 +23,6 @@ use  App\Http\SocialiteHelper;
 //     $booking1->until = Carbon\Carbon::parse($booking1->date)->format('M d, Y');
 //     $booking1->recurring_days = ['Monday', 'Tuesday'];
 
-
 //     $booking2 = App\Models\Booking::latest()->first();
 //     $from = Carbon\Carbon::parse("$booking2->date $booking2->start");
 //     $to = $from->clone()->addMinute($booking2->service->duration);
@@ -169,7 +168,7 @@ Route::group(
                 Route::post('booking-links/{id}/send_invitation', 'BookingLinkController@sendInvitation');
                 Route::apiResource('booking-links', 'BookingLinkController');
             });
-           
+
             Route::get('/auth/{driver}/redirect', [SocialiteHelper::class, 'getRedirectUrl'])->middleware('ajax');
             Route::post('login', 'AuthController@login');
             Route::post('signup', 'AuthController@signup');
@@ -211,6 +210,7 @@ Route::group(
                 Route::resource('chatbots', 'ChatbotController');
                 Route::resource('chatboxes', 'ChatboxController');
                 Route::post('upload_file', 'ChatboxController@uploadFile');
+                Route::get('stripe_invoices', 'DashboardController@stripeInvoices');
             });
         });
 

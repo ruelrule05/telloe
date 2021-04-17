@@ -15,7 +15,7 @@ class StoreContactNoteRequest extends FormRequest
      */
     public function authorize()
     {
-        $contact = Contact::find($this->user_id);
+        $contact = Contact::find($this->contact_id);
         return $this->user()->can('show', $contact);
     }
 

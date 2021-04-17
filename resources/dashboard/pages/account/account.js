@@ -2,7 +2,7 @@ import VueFormValidate from '../../../components/vue-form-validate.vue';
 import VueButton from '../../../components/vue-button.vue';
 import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
-import VCalendar from 'v-calendar';
+import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
 import ExclamationCircleIcon from '../../../icons/exclamation-circle';
 import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
@@ -12,22 +12,52 @@ const countryCodes = require('country-codes-list');
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 const ct = require('countries-and-timezones');
 import numbersOnly from 'numbers-only';
-
+import Vue from 'vue';
+import { mapState, mapActions } from 'vuex';
+import Modal from '../../../components/modal/modal.vue';
+import VueCardFormat from '../../../components/vue-credit-card-validation/src';
 const phone = require('phone');
+import VisaIcon from '../../../icons/cc/visa.vue';
+import MastercardIcon from '../../../icons/cc/mastercard.vue';
+import AmexIcon from '../../../icons/cc/amex.vue';
+import DiscoverIcon from '../../../icons/cc/discover.vue';
+import DinersclubIcon from '../../../icons/cc/dinersclub.vue';
+import JcbIcon from '../../../icons/cc/jcb.vue';
+import UnionpayIcon from '../../../icons/cc/unionpay.vue';
+import Stripe from 'stripe-client';
+import CcPreviewIcon from '../../../icons/cc/preview.vue';
+import CloseIcon from '../../../icons/close.vue';
+import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 
 export default {
 	components: {
+		ToggleSwitch,
+		CloseIcon,
+		CcPreviewIcon,
 		VueFormValidate,
 		VueButton,
 		VueCheckbox,
 		VueSelect,
-		VCalendar,
-
+		VDatePicker,
 		ExclamationCircleIcon,
-		CheckmarkCircleIcon
+		CheckmarkCircleIcon,
+		Modal,
+		MastercardIcon,
+		AmexIcon,
+		DiscoverIcon,
+		DinersclubIcon,
+		JcbIcon,
+		UnionpayIcon
 	},
 
+	directives: { cardformat: VueCardFormat },
+
 	data: () => ({
+		invoiceSearch: '',
+		selectedMember: null,
+		app_name: window.APP_NAME,
+		dayjs: dayjs,
+		cardBrand: null,
 		loading: false,
 		user: null,
 		tab: 'notifications', // profile
@@ -48,7 +78,30 @@ export default {
 			input: 'MMMM D, YYYY'
 		},
 		numbersOnly: numbersOnly,
-		phone: phone
+		phone: phone,
+		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications'],
+		activeMenu: 'Profile',
+		selectedPlan: null,
+		cardForm: {
+			number: '',
+			expiration: '',
+			exp_month: '',
+			exp_year: '',
+			cvc: '',
+			name: '',
+			errors: {
+				number: false,
+				expiration: false,
+				cvc: false
+			}
+		},
+		paymentLoading: false,
+		stripeInvoices: [],
+		newMember: {
+			custom_fields: {},
+			assigned_services: [],
+			sendToEmail: 1
+		}
 	}),
 
 	watch: {
@@ -69,6 +122,43 @@ export default {
 	},
 
 	computed: {
+		...mapState({
+			plans: state => state.plans.index,
+			members: state => state.members.index,
+			services: state => state.services.index
+		}),
+
+		filteredInvoices() {
+			return this.stripeInvoices.filter(i => {
+				return i.number.toLowerCase().includes(this.invoiceSearch.trim().toLowerCase());
+			});
+		},
+
+		defaultEmailMessage() {
+			return `${this.$root.auth.full_name} has invited you as a member in ${this.app_name}`;
+		},
+
+		cardBrandComponent() {
+			switch (this.cardBrand) {
+				case 'visa':
+					return VisaIcon;
+				case 'mastercard':
+					return MastercardIcon;
+				case 'amex':
+					return AmexIcon;
+				case 'discover':
+					return DiscoverIcon;
+				case 'dinersclub':
+					return DinersclubIcon;
+				case 'jcb':
+					return JcbIcon;
+				case 'unionpay':
+					return UnionpayIcon;
+				default:
+					return false;
+			}
+		},
+
 		timezoneAreaCode() {
 			let userTimezone = ct.getTimezone(this.user.timezone);
 			return userTimezone;
@@ -116,8 +206,9 @@ export default {
 			Object.entries(getNameList()).forEach(([name, code]) => {
 				if (this.allowed_countries.find(x => x == code)) {
 					countries.push({
-						name: name,
-						code: code
+						text: name.replace(/\b\w/g, l => l.toUpperCase()),
+						value: code,
+						name: name
 					});
 				}
 			});
@@ -178,6 +269,11 @@ export default {
 			}
 		}
 		if (this.$route.query.tab) this.tab = this.$route.query.tab;
+
+		this.getPlans();
+		this.getMembers();
+		this.getStripeInvoices();
+		this.getServices();
 	},
 
 	mounted() {
@@ -185,6 +281,124 @@ export default {
 	},
 
 	methods: {
+		...mapActions({
+			getPlans: 'plans/index',
+			getMembers: 'members/index',
+			getServices: 'services/index',
+			storeMember: 'members/store',
+			deleteMember: 'members/delete'
+		}),
+
+		toggleAssignedService(service) {
+			let index = this.newMember.assigned_services.findIndex(x => x == service.id);
+			if (index > -1) {
+				this.newMember.assigned_services.splice(index, 1);
+			} else {
+				this.newMember.assigned_services.push(service.id);
+			}
+		},
+
+		submitStoreMember() {
+			if (this.newMember.email) {
+				this.storeMember(this.newMember).then(() => {
+					this.newMember = {
+						custom_fields: {},
+						assigned_services: [],
+						sendToEmail: 1
+					};
+				});
+				this.$refs.addMember.hide();
+			}
+		},
+
+		async getStripeInvoices() {
+			let response = await window.axios.get('/dashboard/stripe_invoices');
+			if (response) {
+				this.stripeInvoices = response.data.data;
+			}
+		},
+
+		async getCardToken() {
+			const publishableKey = process.env.MIX_STRIPE_PUBLISHABLE_KEY;
+			const stripe = Stripe(publishableKey);
+			let expParts = this.cardForm.expiration.split('/');
+			let exp_month = expParts[0].trim();
+			let exp_year = expParts[1].trim();
+			if (exp_year.length === 2) {
+				if (exp_year < 70) {
+					exp_year = `20${exp_year}`;
+				} else {
+					exp_year = `19${exp_year}`;
+				}
+			}
+			let cardData = {
+				number: this.cardForm.number,
+				exp_month: exp_month,
+				exp_year: exp_year,
+				cvc: this.cardForm.cvc,
+				name: this.cardForm.name
+			};
+			let cardToken = await stripe.createToken({ card: cardData });
+			const tokenData = await cardToken.json();
+			if (!tokenData.error) {
+				return tokenData.id;
+			} else {
+				Vue.$toast.clear();
+				Vue.$toast.error(tokenData.error.message);
+				return false;
+			}
+		},
+
+		unsubscribe() {
+			this.loading = true;
+			window.axios.delete(`/dashboard/subscriptions/${this.$root.auth.id}`).then(() => {
+				this.$root.auth.subscription = null;
+				this.$refs.cancelSubscription.hide();
+				this.loading = false;
+			});
+		},
+
+		async subscribe() {
+			Object.keys(this.cardForm.errors).forEach(k => (this.cardForm.errors[k] = ''));
+			let error = false;
+
+			// validate card number
+			if (!VueCardFormat.format().validateCardNumber(this.cardForm.number)) {
+				this.cardForm.errors.number = error = true;
+			}
+
+			// validate card expiry
+			if (!VueCardFormat.format().validateCardExpiry(this.cardForm.expiration)) {
+				this.cardForm.errors.expiration = error = true;
+			}
+
+			// validate card CVC
+			if (!VueCardFormat.format().validateCardCVC(this.cardForm.cvc)) {
+				this.cardForm.errors.cvc = error = true;
+			}
+
+			this.paymentLoading = true;
+			let cardToken = await this.getCardToken();
+
+			if (!error && this.selectedPlan && cardToken) {
+				let response = await window.axios.post(`/dashboard/subscriptions`, { card_token: cardToken, plan_id: this.selectedPlan.id }).catch(() => {
+					this.paymentLoading = false;
+				});
+				if (response) {
+					this.$refs.paymentModal.hide(true);
+					this.$root.auth.subscription = response.data;
+				}
+			}
+			this.paymentLoading = false;
+		},
+
+		selectPlan(plan) {
+			if (plan.id != (this.$root.auth.subscription || {}).plan_id) {
+				this.selectedPlan = plan;
+				this.$refs['paymentModal'].show();
+			}
+		},
+
 		async save() {
 			this.loading = true;
 			let user = Object.assign({}, this.user);
@@ -195,18 +409,23 @@ export default {
 				if (validatePhone.length == 0) {
 					this.loading = false;
 					this.$refs['phone'].focus();
-					return this.$toasted.error('Phone number is invalid for the selected country.', { className: 'bg-danger rounded shadow-none' });
+					Vue.$toast.clear();
+					return Vue.$toast.error('Phone number is invalid for the selected country.');
 				}
 				user.phone = validatePhone[0].replace(user.dial_code, '');
 			}
 			if (user.profile_image_file) {
 				user.profile_image_file = await this.fileToBase64(this.user.profile_image_file);
 			}
-			let response = await window.axios.post('/auth', user, { toasted: true });
-			this.$root.auth = response.data;
-			this.user = Object.assign({}, this.$root.auth);
-			this.loading = false;
-			this.$toasted.show('Account has been updated successfully.');
+			let response = await window.axios.post('/auth', user, { toast: true }).catch(() => {
+				this.loading = false;
+			});
+			if (response) {
+				this.$root.auth = response.data;
+				this.user = Object.assign({}, this.$root.auth);
+				this.loading = false;
+				Vue.$toast.open('Account has been updated successfully.');
+			}
 		},
 
 		async fileToBase64(file) {
@@ -219,8 +438,8 @@ export default {
 		},
 
 		password() {
-			window.axios.put('/auth/password', this.securityForm, { toasted: true }).then(() => {
-				this.$toasted.show('Password has been updated successfully.');
+			window.axios.put('/auth/password', this.securityForm, { toast: true }).then(() => {
+				Vue.$toast.open('Password has been updated successfully.');
 			});
 			this.securityForm = {
 				current_password: '',
@@ -236,7 +455,7 @@ export default {
 		async updateStripeAccount() {
 			this.stripeAccountForm.loading = true;
 
-			let response = await window.axios.put('/auth/update_stripe_account', this.stripeAccountForm, { toasted: true }).catch(e => {
+			let response = await window.axios.put('/auth/update_stripe_account', this.stripeAccountForm, { toast: true }).catch(e => {
 				console.log(e.message.errors);
 			});
 			if (response) {

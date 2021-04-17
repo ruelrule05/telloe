@@ -493,14 +493,14 @@
 							<div class="cc-icon">
 								<component :is="cardBrandComponent"></component>
 							</div>
-							<input v-model="cardForm.number" type="tel" class="ring-0 ring-offset-0 rounded-b-none border-b-0" :class="{ 'is-invalid': cardForm.errors.number }" placeholder="#### #### #### ####" v-cardformat:formatCardNumber data-required />
+							<input v-model="cardForm.number" type="tel" class="input-cc rounded-b-none border-b-0" :class="{ 'is-invalid': cardForm.errors.number }" placeholder="#### #### #### ####" v-cardformat:formatCardNumber data-required />
 						</div>
 						<div class="flex relative">
 							<div class="flex-grow">
-								<input type="text" :class="{ 'is-invalid': cardForm.errors.expiration }" v-model="cardForm.expiration" class="ring-0 ring-offset-0 rounded-t-none rounded-r-none border-r-0 border-t-0" placeholder="MM/YY" v-cardformat:formatCardExpiry data-required />
+								<input type="text" :class="{ 'is-invalid': cardForm.errors.expiration }" v-model="cardForm.expiration" class="input-cc rounded-t-none rounded-r-none border-r-0 border-t-0" placeholder="MM/YY" v-cardformat:formatCardExpiry data-required />
 							</div>
 							<div class="flex-grow border-left">
-								<input type="text" :class="{ 'is-invalid': cardForm.errors.cvc }" v-model="cardForm.cvc" class="ring-0 ring-offset-0 rounded-t-none rounded-l-none border-l-0 border-t-0" placeholder="CVC" v-cardformat:formatCardCVC data-required />
+								<input type="text" :class="{ 'is-invalid': cardForm.errors.cvc }" v-model="cardForm.cvc" class="input-cc rounded-t-none rounded-l-none border-l-0 border-t-0" placeholder="CVC" v-cardformat:formatCardCVC data-required />
 							</div>
 						</div>
 

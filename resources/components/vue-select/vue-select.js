@@ -13,6 +13,11 @@ export default {
 			default: ''
 		},
 
+		label: {
+			type: String,
+			default: null
+		},
+
 		options: {
 			type: Array,
 			default: []

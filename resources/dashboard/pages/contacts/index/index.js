@@ -16,6 +16,9 @@ import CheckmarkCircleIcon from '../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../icons/close';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import Paginate from '../../../../components/paginate/paginate.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../icons/cog';
+
 export default {
 	components: {
 		Modal,
@@ -33,10 +36,13 @@ export default {
 		CheckmarkCircleIcon,
 		CloseIcon,
 		VueSelect,
-		Paginate
+		Paginate,
+		VueDropdown,
+		CogIcon
 	},
 
 	data: () => ({
+		actions: ['Edit', 'Delete'],
 		infoTab: '',
 		selectedContact: null,
 		manageContact: false,
@@ -70,7 +76,8 @@ export default {
 		contactStatus: 'all',
 		query: '',
 		originalUserCustomFields: [],
-		userCustomFields: []
+		userCustomFields: [],
+		action: null
 	}),
 
 	computed: {
@@ -168,6 +175,19 @@ export default {
 			storeConversation: 'conversations/store'
 		}),
 
+		contactAction(action, contact) {
+			this.selectedContact = contact;
+			switch (action) {
+				case 'Edit':
+					this.clonedContact = Object.assign({}, contact);
+					this.$refs.editModal.show();
+					break;
+				case 'Delete':
+					this.$refs.deleteModal.show();
+					break;
+			}
+		},
+
 		async updateUserCustomFields() {
 			if (this.newField.trim().length > 0) {
 				this.userCustomFields.push(this.newField.trim());
@@ -186,8 +206,8 @@ export default {
 			}
 		},
 
-		async getData(page = this.contact.current_page) {
-			this.getContacts({ page: page, query: this.query, status: this.contactStatus });
+		async getData() {
+			this.getContacts({ page: this.contacts.current_page, query: this.query, status: this.contactStatus });
 		},
 
 		update(contact) {
@@ -263,7 +283,7 @@ export default {
 						sendToEmail: 1
 					};
 				});
-				this.$refs['addModal'].hide();
+				this.addContact = false;
 			}
 		}
 	}

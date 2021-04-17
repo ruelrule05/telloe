@@ -1,7 +1,8 @@
 <template>
 	<div class="relative">
 		<button type="button" class="select" :id="`select-${_uid}`" :class="{ show: show }" :disabled="disabled" @click="show = !show" v-click-outside="onBlur">
-			<span class="mr-2 text-sm" :class="{ 'text-gray-400': !value }">{{ text_value }}</span>
+			<span v-if="label" class="text-sm text-muted">{{ label }}:&nbsp;</span>
+			<span class="mr-2 text-sm whitespace-nowrap truncate" :class="{ 'text-gray-400': !value }">{{ text_value }}</span>
 			<div class="ml-auto line-height-0 text-gray-400">
 				<chevron-down-icon v-if="!noCaret" class="ml-2 fill-current" width="8" height="8" transform="scale(3)"></chevron-down-icon>
 			</div>

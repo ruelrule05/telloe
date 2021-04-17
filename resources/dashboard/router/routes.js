@@ -28,22 +28,15 @@ const routes = [
 				component: () => import(/* webpackChunkName: "dashboard-services" */ '../pages/services/services.vue')
 			},
 			{
-				name: 'bookings',
-				path: 'bookings',
-				component: () => import(/* webpackChunkName: "dashboard-bookings" */ '../pages/bookings/bookings.vue'),
-				children: [
-					{
-						path: 'booking-links',
-						name: 'booking-links',
-						component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/bookings/booking-links/index/index.vue')
-					},
-					{
-						path: 'booking-links/:id',
-						name: 'booking-links_show',
-						component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/bookings/booking-links/show/show.vue')
-					}
-				]
+				path: 'booking-links',
+				name: 'Custom Links',
+				component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/index/index.vue')
 			},
+			// {
+			// 	path: 'booking-links/:id',
+			// 	name: 'booking-links_show',
+			// 	component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/show/show.vue')
+			// },
 			{
 				path: 'contacts',
 				name: 'contacts',
@@ -55,7 +48,7 @@ const routes = [
 				children: [
 					{
 						path: '/',
-						name: 'contacts_index',
+						name: 'Contacts',
 						component: () => import(/* webpackChunkName: "dashboard-contacts" */ '../pages/contacts/index/index.vue')
 					},
 					{
@@ -156,6 +149,10 @@ const routes = [
 				component: () => import(/* webpackChunkName: "dashboard-integrations" */ '../pages/integrations/integrations.vue')
 			}
 		]
+	},
+	{
+		path: '*',
+		component: () => import(/* webpackChunkName: "404" */ '../pages/404/404.vue')
 	}
 ];
 

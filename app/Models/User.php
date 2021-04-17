@@ -53,6 +53,7 @@ class User extends Authenticatable implements JWTSubject
         'timezone',
         'initials',
         'full_name',
+        'dial_code'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];

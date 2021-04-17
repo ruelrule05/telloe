@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Http\StripeAPI;
 use App\Models\Conversation;
 use Auth;
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -78,5 +80,18 @@ class DashboardService
     public static function delete($id)
     {
         return ;
+    }
+
+    public static function stripeInvoices()
+    {
+        $authUser = Auth::user();
+        if (! $authUser->stripe_customer_id) {
+            return response()->json([]);
+        }
+        $invoices = Cache::remember('invoices_' . $authUser->stripe_customer_id, 3600, function () use ($authUser) {
+            $stripe_api = new StripeAPI();
+            return $stripe_api->invoice('all', ['customer' => $authUser->stripe_customer_id]);
+        });
+        return response()->json($invoices);
     }
 }

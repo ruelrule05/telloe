@@ -11,4 +11,9 @@ class DashboardController extends Controller
     {
         return response(DashboardService::searchTags($request));
     }
+
+    public function stripeInvoices()
+    {
+        return DashboardService::stripeInvoices();
+    }
 }

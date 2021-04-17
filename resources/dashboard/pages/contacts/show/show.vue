@@ -1,5 +1,153 @@
 <template>
 	<div v-if="contact" class="w-100 h-100 overflow-hidden">
+		<div class="content-header border-bottom flex items-center justify-between">
+			<div>
+				CONTACT DETAILS
+			</div>
+			<div>
+				<button type="button" class="btn btn-md btn-primary"><span>Add Booking</span></button>
+			</div>
+		</div>
+
+		<div class="page-contacts page-profile">
+			<div class="flex h-full contact-content">
+				<div class="w-5/12 border-right">
+					<div class="pt-8 pb-8 pl-6 pr-16 contact-detail bg-secondary-light">
+						<div class="flex items-start contact-profile">
+							<div class="mr-4">
+								<div class="profile-image profile-image-xl" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
+									<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
+									<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status">&nbsp;</i>
+								</div>
+							</div>
+
+							<div class="flex-1 pt-2">
+								<h2 class="mb-1 text-xl font-bold">{{ contact.contact_user.full_name }}</h2>
+								<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
+
+								<div class="flex items-end justify-between mt-9">
+									<div>
+										<span class="px-3 py-1 mb-1 text-xs font-bold bg-gray-200 rounded-md text-muted">Accepted</span>
+										<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Status</p>
+									</div>
+									<div>
+										<span class="flex mb-1 font-bold">{{ contact.bookings.total }}</span>
+										<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Bookings</p>
+									</div>
+									<div>
+										<span class="flex mb-1">{{ formatDate(contact.created_at) }}</span>
+										<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Added</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="pt-0 pb-8 pl-6 pr-16 contact-files ">
+						<ul class="flex p-0 mb-4 tabs">
+							<li class="active"><span>Notes</span></li>
+							<li><span>Fields</span></li>
+							<!-- <li><span>Packages</span></li>
+							<li><span>Subscriptions</span></li> -->
+						</ul>
+
+						<div class="flex items-center justify-between mb-6 filters">
+							<button type="button" class="btn btn-outline-primary btn-sm" @click="addingNote = true"><span>Add new</span></button>
+							<div class="flex">
+								<vue-select v-if="(contact.contactNotes || []).length > 0" :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="notesOrder" label="Date" placeholder="Order by" @input="getContactNotes"></vue-select>
+							</div>
+						</div>
+
+						<!-- Add Note -->
+						<vue-form-validate v-if="addingNote && !selectedNote" class="mt-2 mb-3" @submit="confirmAddNote()">
+							<textarea placeholder="Write note..." v-model="newNote" data-required rows="3" class="form-control resize-none"></textarea>
+							<div class="flex justify-between mt-2">
+								<button
+									class="btn btn-sm"
+									type="button"
+									@click="
+										newNote = '';
+										addingNote = false;
+									"
+								>
+									<span>Cancel</span>
+								</button>
+								<button class="btn btn-sm btn-primary" type="submit"><span>Add</span></button>
+							</div>
+						</vue-form-validate>
+
+						<!-- Edit Note -->
+						<vue-form-validate v-else-if="selectedNote" class="mt-2 mb-3" @submit="confirmUpdateNote(selectedNote)">
+							<textarea placeholder="Write note..." v-model="selectedNote.new_note" data-required rows="3" class="form-control resize-none"></textarea>
+							<div class="flex justify-between mt-2">
+								<button class="btn btn-sm" type="button" @click="selectedNote = null"><span>Cancel</span></button>
+								<button class="btn btn-primary btn-sm" type="submit"><span>Update</span></button>
+							</div>
+						</vue-form-validate>
+
+						<div v-for="contact_note in contact.contactNotes" :key="contact_note.id" class="relative flex justify-between p-5 mb-3 rounded-lg bg-secondary-light note-row">
+							<div class="">
+								<p class="mr-4 text-sm">{{ contact_note.note }}</p>
+								<div class="flex items-center mt-2">
+									<p class="text-xxs text-muted">{{ formatDate(contact_note.created_at) }}</p>
+								</div>
+							</div>
+
+							<VueDropdown :options="['Edit', 'Delete']" @click="noteAction($event, contact_note)">
+								<template #button>
+									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 -mt-2 -mr-3">
+										<MoreIcon class="fill-current text-gray-300 h-4 w-4"></MoreIcon>
+									</div>
+								</template>
+							</VueDropdown>
+						</div>
+					</div>
+				</div>
+				<div class="w-7/12 py-8 pl-0 pr-16">
+					<div class="flex items-center justify-between pl-8 mb-6 filters bookings">
+						<h5 class="font-serif text-sm font-bold tracking-tighter uppercase">Bookings</h5>
+						<div class="flex">
+							<div class="select-wrap notes">
+								<select name="" id="">
+									<option value="">All</option>
+								</select>
+							</div>
+							<div class="select-wrap date">
+								<select name="" id="">
+									<option value="">Newest</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="flex py-4 booking-row border-bottom">
+						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
+						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
+						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
+						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
+					</div>
+					<div class="flex py-4 booking-row border-bottom">
+						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
+						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
+						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
+						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
+					</div>
+					<div class="flex py-4 booking-row border-bottom">
+						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
+						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
+						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
+						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
+					</div>
+					<div class="flex py-4 booking-row border-bottom">
+						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
+						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
+						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
+						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
+					</div>
+
+					<pagination class="pl-8"></pagination>
+				</div>
+			</div>
+		</div>
+
 		<div class="overflow-auto h-100 pb-4">
 			<div class="p-4 d-flex align-items-center">
 				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/contacts')">

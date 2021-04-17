@@ -24,8 +24,8 @@ class StripeAPI
         switch ($action) {
             case 'create' :
                 $invoiceItem = \Stripe\InvoiceItem::create($data, $stripe_account);
-        return $invoiceItem;
-        break;
+                return $invoiceItem;
+                break;
         }
     }
 
@@ -35,13 +35,18 @@ class StripeAPI
         switch ($action) {
             case 'create' :
                 $invoice = \Stripe\Invoice::create($data, $stripe_account);
-        return $invoice;
-        break;
+                return $invoice;
+                break;
 
-        case 'retrieve' :
+            case 'retrieve' :
                 $invoice = \Stripe\Invoice::retrieve($data, $stripe_account);
-        return $invoice;
-        break;
+                return $invoice;
+                break;
+
+            case 'all' :
+                $invoices = \Stripe\Invoice::all($data);
+                return $invoices;
+                break;
         }
     }
 

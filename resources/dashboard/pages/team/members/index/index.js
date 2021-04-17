@@ -14,8 +14,15 @@ import ClockIcon from '../../../../../icons/clock';
 import CheckmarkCircleIcon from '../../../../../icons/checkmark-circle';
 import CloseIcon from '../../../../../icons/close';
 import PackageIcon from '../../../../../icons/package';
+import VueDropdown from '../../../../../components/vue-dropdown/vue-dropdown.vue';
+import VueSelect from '../../../../../components/vue-select/vue-select.vue';
+import CogIcon from '../../../../../icons/cog';
+
 export default {
 	components: {
+		CogIcon,
+		VueDropdown,
+		VueSelect,
 		Modal,
 		VueFormValidate,
 		VueCheckbox,
@@ -33,6 +40,7 @@ export default {
 	},
 
 	data: () => ({
+		actions: ['Edit', 'Delete'],
 		infoTab: '',
 		selectedMember: null,
 		manageMember: false,
@@ -48,7 +56,23 @@ export default {
 		addField: false,
 		newField: '',
 		resendLoading: false,
-		clonedMember: null
+		clonedMember: null,
+		memberStatuses: [
+			{
+				text: 'All',
+				value: 'all'
+			},
+			{
+				text: 'Accepted',
+				value: 'accepted'
+			},
+			{
+				text: 'Pending',
+				value: 'pending'
+			}
+		],
+		memberStatus: 'All',
+		query: ''
 	}),
 
 	computed: {
@@ -97,6 +121,8 @@ export default {
 			deleteMember: 'members/delete',
 			getMemberFromInviteToken: 'members/get_member_from_invite_token'
 		}),
+
+		getData() {},
 
 		update() {
 			this.updateMember(this.clonedMember);

@@ -1,24 +1,26 @@
 import { mapState, mapActions } from 'vuex';
-import VueFormValidate from '../../../../../components/vue-form-validate.vue';
-import Modal from '../../../../../components/modal/modal.vue';
+import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import Modal from '../../../../components/modal/modal.vue';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
-import ChevronLeftIcon from '../../../../../icons/chevron-left';
-import ChevronRightIcon from '../../../../../icons/chevron-right';
-import VueSelect from '../../../../../components/vue-select/vue-select.vue';
-import CheckmarkIcon from '../../../../../icons/checkmark';
+import ChevronLeftIcon from '../../../../icons/chevron-left';
+import ChevronRightIcon from '../../../../icons/chevron-right';
+import VueSelect from '../../../../components/vue-select/vue-select.vue';
+import CheckmarkIcon from '../../../../icons/checkmark';
 import jstz from 'jstz';
 const timezone = jstz.determine();
-import tooltip from '../../../../../js/directives/tooltip.js';
-import Paginate from '../../../../../components/paginate/paginate.vue';
-import ShortcutIcon from '../../../../../icons/shortcut';
-import MoreIcon from '../../../../../icons/more';
-import convertTime from '../../../../../js/plugins/convert-time.js';
-import PlusIcon from '../../../../../icons/plus';
-import CloseIcon from '../../../../../icons/close';
+import tooltip from '../../../../js/directives/tooltip.js';
+import Paginate from '../../../../components/paginate/paginate.vue';
+import ShortcutIcon from '../../../../icons/shortcut';
+import MoreIcon from '../../../../icons/more';
+import convertTime from '../../../../js/plugins/convert-time.js';
+import PlusIcon from '../../../../icons/plus';
+import CloseIcon from '../../../../icons/close';
 const ct = require('countries-and-timezones');
+import InfoCircleIcon from '../../../../icons/info-circle.vue';
+import Add from '../add/add.vue';
 export default {
-	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, PlusIcon, CloseIcon },
+	components: { Add, InfoCircleIcon, VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, PlusIcon, CloseIcon },
 
 	directives: { tooltip },
 
@@ -40,14 +42,14 @@ export default {
 		addEmail: false,
 		newEmail: '',
 		newTimezone: '',
-		timezonesOptions: []
+		timezonesOptions: [],
+		addLink: false
 	}),
 
 	computed: {
 		...mapState({
 			ready: state => state.booking_links.ready,
-			booking_links: state => state.booking_links.paginated,
-			contacts: state => state.contacts.index
+			booking_links: state => state.booking_links.paginated
 		}),
 
 		tabDates() {
@@ -106,7 +108,6 @@ export default {
 		this.selectedDate = formatDate;
 		this.dates[formatDate] = { timeslots: [], selectedTimeslots: [] };
 		this.getBookingLinks({ paginate: true });
-		this.getContacts({ nopaginate: true });
 		Object.keys(ct.getAllTimezones()).forEach(timezone => {
 			this.timezonesOptions.push({
 				text: timezone,
@@ -118,8 +119,7 @@ export default {
 	methods: {
 		...mapActions({
 			getBookingLinks: 'booking_links/index',
-			storeBookingLink: 'booking_links/store',
-			getContacts: 'contacts/index'
+			storeBookingLink: 'booking_links/store'
 		}),
 		addNewEmail() {
 			if (this.newEmail && this.newTimezone) {
@@ -220,25 +220,6 @@ export default {
 					<div class="tooltip-timezone">${timezone}</div><div class="tooltip-timezonetime"><strong>${timezoneTime}</strong></div>
 				</div>
 			`;
-		},
-
-		async storeLink() {
-			this.timeslotsLoading = true;
-			let data = {
-				name: this.name,
-				contacts: this.selectedContacts.map(c => {
-					return {
-						id: c.id,
-						type: c.type,
-						timezone: c.contact_user.timezone
-					};
-				}),
-				dates: this.dates
-			};
-			await window.axios.post('/booking-links', data);
-			this.getBookingLinks({ paginate: true });
-			this.timeslotsLoading = false;
-			this.$refs['addModal'].hide();
 		},
 
 		formatDate(date) {

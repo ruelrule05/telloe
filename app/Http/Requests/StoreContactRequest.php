@@ -26,8 +26,8 @@ class StoreContactRequest extends FormRequest
         return [
             'email' => 'required|email|unique:users,email|max:191',
             'invite_message' => 'nullable|string',
-            'first_name' => 'required|max:191|string',
-            'last_name' => 'required|max:191|string',
+            'first_name' => 'nullable|max:191|string',
+            'last_name' => 'nullable|max:191|string',
         ];
     }
 }

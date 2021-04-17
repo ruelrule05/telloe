@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ContactNotePolicy
@@ -17,5 +16,10 @@ class ContactNotePolicy
     public function __construct()
     {
         //
+    }
+
+    public function store()
+    {
+        return true;
     }
 }

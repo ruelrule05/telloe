@@ -16,7 +16,7 @@
 				</div>
 
 				<div class="flex flex-col p-6">
-					<div class="cursor-pointer flex items-center justify-center">
+					<router-link to="/dashboard/account"  class="cursor-pointer flex items-center justify-center">
 						<div class="profile-image profile-image-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
 							<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
 						</div>
@@ -24,12 +24,12 @@
 							<div class="text-ellipsis font-bold">@{{ auth.full_name }}</div>
 							<div class="text-muted text-ellipsis">@{{ '@' + auth.username  }}</div>
 						</div>
-					</div>
+					</router-link >
 					
-					<form action="/logout" method="POST">
+					{{-- <form action="/logout" method="POST">
 						@csrf
 						<button type="submit" class="dropdown-item outline-0">Log Out</button>
-					</form>
+					</form> --}}
 
 					
 					<div class="dropright profile-dropdown cursor-pointer" hidden>

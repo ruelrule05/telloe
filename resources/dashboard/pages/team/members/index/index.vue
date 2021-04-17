@@ -1,5 +1,56 @@
 <template>
 	<div class="h-100" v-if="ready">
+		<div class="content-header border-bottom flex items-center justify-between">
+			<div>
+				MEMBERS
+			</div>
+			<div>
+				<button type="button" class="btn btn-md btn-primary" @click="addMember = true"><span>Add Member</span></button>
+			</div>
+		</div>
+
+		<div class="flex h-full contact-content">
+			<div class="w-2/3 pt-8 pb-8 pl-6 pr-16 border-right">
+				<div class="flex items-center justify-between mb-3 header">
+					<VueSelect :options="memberStatuses" v-model="memberStatus" @input="getData" label="Status"></VueSelect>
+
+					<form @submit.prevent="getData()">
+						<input type="text" v-model="query" placeholder="Search members..." />
+					</form>
+				</div>
+
+				<div class="flex items-start justify-between contact-row border-bottom" v-for="member in members" :key="member.id">
+					<div class="flex items-start">
+						<div class="mr-2">
+							<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + member.member_user.profile_image + ')' }">
+								<span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
+								<i v-if="$root.isOnline(member.member_user_id)" class="online-status">&nbsp;</i>
+							</div>
+						</div>
+						<div>
+							<router-link :to="`/dashboard/team/members/${member.id}`" class="font-bold text-primary">{{ member.member_user.full_name }}</router-link>
+							<p class="text-xs text-muted">{{ member.member_user.email }}</p>
+						</div>
+					</div>
+					<div class="flex items-center">
+						<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
+							<template #button>
+								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+									<CogIcon class="fill-current text-gray-400"></CogIcon>
+								</div>
+							</template>
+						</VueDropdown>
+					</div>
+				</div>
+
+				<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
+			</div>
+			<div class="w-1/3 p-6">
+				<p class="text-sm text-muted">Members information can be upgraded with custom fields. That gives you the option to have specific fields for contacts that match your needs.</p>
+				<button type="button" class="btn btn-sm btn-outline-primary mt-6"><span>Manage fields</span></button>
+			</div>
+		</div>
+
 		<div class="d-flex h-100">
 			<div class="h-100 flex-grow-1">
 				<div class="d-flex flex-column h-100">
