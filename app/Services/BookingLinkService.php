@@ -45,6 +45,7 @@ class BookingLinkService
         foreach ($request->contacts as $requestContact) {
             if (! isset($requestContact['type']) || $requestContact['type'] != 'email') {
                 $contact = Contact::findOrFail($requestContact['id']);
+                $contact->color = $requestContact['color'] ?? '#3167e3';
 
                 $contacts[] = $contact;
             } else {
@@ -69,7 +70,7 @@ class BookingLinkService
             BookingLinkContact::create([
                 'contact_id' => $contact->id,
                 'booking_link_id' => $bookingLink->id,
-                'color' => $requestContact['color'] ?? '#3167e3'
+                'color' => $contact->color
             ]);
         }
 

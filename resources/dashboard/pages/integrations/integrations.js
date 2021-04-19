@@ -27,8 +27,11 @@ export default {
 		},
 
 		async getXeroToken() {
-			await window.axios.get('/xero/token');
-			this.$root.auth.xero_token = 1;
+			let response = await window.axios.get('/xero/token');
+			if (response.data) {
+				this.$root.auth.xero_token = 1;
+				this.$router.push('/dashboard/integrations/xero');
+			}
 		},
 
 		async removeXero() {

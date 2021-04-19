@@ -94,6 +94,7 @@ export default {
 
 		confirmDeleteBooking() {
 			this.deleteBooking(this.booking.id);
+			this.$emit('delete', this.booking);
 			this.close();
 			this.$refs.deleteModal.hide();
 		},

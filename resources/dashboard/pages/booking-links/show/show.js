@@ -1,25 +1,27 @@
 import { mapActions } from 'vuex';
-import VueFormValidate from '../../../../../components/vue-form-validate.vue';
-import Modal from '../../../../../components/modal/modal.vue';
+import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import Modal from '../../../../components/modal/modal.vue';
 import VCalendar from 'v-calendar';
 import dayjs from 'dayjs';
-import ChevronLeftIcon from '../../../../../icons/chevron-left';
-import ChevronRightIcon from '../../../../../icons/chevron-right';
-import VueSelect from '../../../../../components/vue-select/vue-select.vue';
-import CheckmarkIcon from '../../../../../icons/checkmark';
+import ChevronLeftIcon from '../../../../icons/chevron-left';
+import ChevronRightIcon from '../../../../icons/chevron-right';
+import VueSelect from '../../../../components/vue-select/vue-select.vue';
+import CheckmarkIcon from '../../../../icons/checkmark';
 import jstz from 'jstz';
 const timezone = jstz.determine();
-import tooltip from '../../../../../js/directives/tooltip.js';
-import Paginate from '../../../../../components/paginate/paginate.vue';
-import ShortcutIcon from '../../../../../icons/shortcut';
-import MoreIcon from '../../../../../icons/more';
-import ArrowLeftIcon from '../../../../../icons/arrow-left';
+import tooltip from '../../../../js/directives/tooltip.js';
+import Paginate from '../../../../components/paginate/paginate.vue';
+import ShortcutIcon from '../../../../icons/shortcut';
+import MoreIcon from '../../../../icons/more';
+import ArrowLeftIcon from '../../../../icons/arrow-left';
 import { debounce } from 'throttle-debounce';
-import echo from '../../../../../js/echo.js';
+import echo from '../../../../js/echo.js';
 import Chatroom from '../chatroom/chatroom.vue';
-import VueButton from '../../../../../components/vue-button.vue';
+import VueButton from '../../../../components/vue-button.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import copy from 'copy-text-to-clipboard';
 export default {
-	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton },
+	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown },
 
 	directives: { tooltip },
 
@@ -33,7 +35,8 @@ export default {
 		selectedDate: null,
 		currentTarget: null,
 		sendingEmail: false,
-		hoveredTimeslot: null
+		hoveredTimeslot: null,
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -85,8 +88,8 @@ export default {
 			this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
 			this.channel.listenForWhisper('move', data => {
 				if (data.selectedDate == this.selectedDate) {
-					this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
-					data.user.left = `${document.querySelector('.timeslot-button[data-index="' + data.index + '"]').offsetLeft}px`;
+					this.highlighterWidth = `${document.querySelector('.timeslot').offsetWidth}px`;
+					data.user.left = `${document.querySelector('.timeslot[data-index="' + data.index + '"]').offsetLeft}px`;
 					this.$set(this.users, data.user.id, data.user);
 				} else {
 					data.user.left = '-100%';
@@ -107,7 +110,7 @@ export default {
 				});
 			});
 			this.$nextTick(() => {
-				this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
+				//this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
 			});
 		});
 	},
@@ -123,10 +126,25 @@ export default {
 			deleteBookingLink: 'booking_links/delete'
 		}),
 
+		action(action) {
+			switch (action) {
+				case 'Send email invitation':
+					this.$refs.sendModal.show();
+					break;
+
+				case 'Copy link':
+					this.copyToClipboard();
+					break;
+
+				case 'Delete':
+					this.$refs.deleteModal.show();
+					break;
+			}
+		},
+
 		async destroy() {
 			await this.deleteBookingLink(this.bookingLink);
-			this.$refs['deleteModal'].hide();
-			this.$router.push(`/dashboard/bookings/booking-links`);
+			this.$router.push(`/dashboard/booking-links`);
 		},
 
 		async toggleTimeslot() {
@@ -152,14 +170,9 @@ export default {
 		},
 
 		copyToClipboard() {
-			this.$toasted.show('Copied to clipboard');
-			let element = this.$refs['link'];
-			let $temp = $('<input>');
-			$('body').append($temp);
-			$temp.val($(element).text()).select();
-			document.execCommand('copy');
-			$temp.remove();
-			this.selectElementText(element);
+			if (copy(this.bookingLinkUrl)) {
+				this.$toast.open('Copied to clipboard');
+			}
 		},
 
 		selectElementText(el) {
@@ -184,8 +197,8 @@ export default {
 			this.sendingEmail = true;
 			let response = await window.axios.post(`/booking-links/${this.bookingLink.id}/send_invitation`);
 			if (response) {
-				this.$refs['sendModal'].hide();
-				this.$toasted.success('Invitation emails has been sent successfully.');
+				this.$refs.sendModal.hide(true);
+				this.$toast.success('Invitation emails has been sent successfully.');
 			}
 			this.sendingEmail = false;
 		},

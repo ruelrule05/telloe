@@ -32,11 +32,11 @@ const routes = [
 				name: 'Custom Links',
 				component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/index/index.vue')
 			},
-			// {
-			// 	path: 'booking-links/:id',
-			// 	name: 'booking-links_show',
-			// 	component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/show/show.vue')
-			// },
+			{
+				path: 'booking-links/:id',
+				name: 'Custom Links',
+				component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/show/show.vue')
+			},
 			{
 				path: 'contacts',
 				name: 'contacts',
@@ -147,6 +147,12 @@ const routes = [
 				path: 'integrations',
 				name: 'integrations',
 				component: () => import(/* webpackChunkName: "dashboard-integrations" */ '../pages/integrations/integrations.vue')
+			},
+
+			{
+				path: 'integrations/xero',
+				name: 'Xero Invoicing',
+				component: () => import(/* webpackChunkName: "dashboard-integrations-xero" */ '../pages/integrations/xero/xero.vue')
 			}
 		]
 	},

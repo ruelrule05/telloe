@@ -39,6 +39,9 @@
 			@apply text-3xl;
 		}
 	}
+	&.profile-image-gray {
+		@apply bg-gray-300;
+	}
 }
 .sidebar-menu-item {
 	@apply mt-4 cursor-pointer text-xs transition-all hover:text-primary;

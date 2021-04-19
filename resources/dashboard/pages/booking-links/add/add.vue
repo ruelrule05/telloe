@@ -59,7 +59,7 @@
 									</div>
 								</td>
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available }">
-									<div class="items-center column  mb-2 cursor-pointer px-1" :style="{ backgroundColor: contact.color }">
+									<div class="items-center column  mb-2 px-1" :style="{ backgroundColor: contact.color }">
 										<div class="timeslot-content" :class="{ selected: (dates[selectedDate].selectedTimeslots || []).find(x => x.time == timeslot.time) }">
 											<p class="text-sm font-bold text-center text-body">{{ timeslot['12hr'] }}</p>
 											<p class="text-sm text-center text-muted uppercase">{{ timeslot.abbreviation }}</p>

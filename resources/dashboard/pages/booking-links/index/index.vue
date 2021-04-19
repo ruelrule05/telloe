@@ -22,30 +22,30 @@
 				</div>
 			</div>
 
-			<div v-else class="grid grid-cols-12">
-				<div class="col-span-4 p-6 border-right">
+			<div v-else class="flex flex-grow">
+				<div class="w-4/12 p-6 border-right">
 					<p class="text-muted text-sm">Custom links are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
 				</div>
 
-				<div class="col-span-8 p-6">
-					<router-link tag="div" :to="`/dashboard/bookings/booking-links/${booking_link.id}`" v-for="booking_link in booking_links.data" :key="booking_link.id" class="cursor-pointer">
+				<div class="w-8/12 p-6">
+					<router-link tag="div" :to="`/dashboard/booking-links/${booking_link.id}`" v-for="booking_link in booking_links.data" :key="booking_link.id" class="cursor-pointer border-bottom pb-4 transition-colors hover:bg-gray-50">
 						<div class="text-primary font-bold">
 							{{ booking_link.name }}
 						</div>
 						<div class="text-muted text-xs">Created: {{ formatDate(booking_link.created_at) }}</div>
-						<div class="flex items-center mt-2">
+						<div class="flex items-center mt-3">
 							<div class="flex items-center">
-								<div v-for="contact in booking_link.booking_link_contacts" :key="contact.id">
-									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
+								<div v-for="contact in booking_link.booking_link_contacts" :key="contact.id" class="-mr-2">
+									<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
 										<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 									</div>
 								</div>
 							</div>
-							<span class="text-muted text-sm">Custom link dates:</span>
-							<div>
-								<div v-for="(date, dateKey) in booking_link.dates" :key="dateKey" class="text-sm">
+							<span class="text-muted text-sm ml-4">Custom link dates:</span>
+							<div class="flex items-center">
+								<div v-for="(date, dateKey, dateIndex) in booking_link.dates" :key="dateKey" class="text-sm">
+									<span v-if="dateIndex > 0" class="text-muted">|</span>
 									<span class="mx-2">{{ formatDate(dateKey) }} </span>
-									<span class="text-muted">|</span>
 								</div>
 							</div>
 						</div>

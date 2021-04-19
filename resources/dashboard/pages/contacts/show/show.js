@@ -27,9 +27,15 @@ import draggable from 'vuedraggable';
 import Add from '../../../../dashboard/pages/bookings/add/add.vue';
 import EditBooking from '../../bookings/edit/edit.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../icons/cog';
+import ChevronLeftIcon from '../../../../icons/chevron-left';
+import Booking from '../../../components/Booking/Booking.vue';
 
 export default {
 	components: {
+		Booking,
+		CogIcon,
+		ChevronLeftIcon,
 		VueDropdown,
 		VCalendar,
 		Modal,
@@ -55,6 +61,7 @@ export default {
 	},
 
 	data: () => ({
+		selectedService: null,
 		contact: null,
 		clonedContact: null,
 		filterServices: [],
@@ -109,7 +116,7 @@ export default {
 		},
 
 		servicesList() {
-			let servicesList = [];
+			let servicesList = [{ text: 'All', value: { id: 0 } }];
 			this.services.forEach(service => {
 				servicesList.push({
 					text: service.name,
@@ -190,10 +197,34 @@ export default {
 			showUserCustomFields: 'user_custom_fields/show',
 			updateContact: 'contacts/update',
 			storeBooking: 'bookings/store',
-			updateBooking: 'bookings/update',
-			deleteBooking: 'bookings/delete',
 			storeConversation: 'conversations/store'
 		}),
+
+		bookingDeleted(booking) {
+			let index = this.contact.bookings.data.findIndex(b => b.id == booking.id);
+			if (index >= -1) {
+				this.contact.bookings.data.splice(index, 1);
+			}
+		},
+
+		bookingUpdated(booking) {
+			if (booking.id == this.selectedBooking.id) {
+				this.selectedBooking.date = dayjs(booking.date).format('YYYY-MM-DD');
+				this.selectedBooking.start = booking.start;
+				this.selectedBooking.end = booking.end;
+			}
+			this.selectedBooking = null;
+		},
+
+		bookingAction(action, booking) {
+			switch (action) {
+				case 'Edit':
+					this.selectedBooking = booking;
+					break;
+				case 'Delete':
+					break;
+			}
+		},
 
 		noteAction(action, note) {
 			switch (action) {
@@ -356,7 +387,7 @@ export default {
 		},
 
 		async filterBookings() {
-			let serviceIds = this.filterServices.map(x => x.id);
+			let serviceIds = this.selectedService ? [this.selectedService.id] : [];
 			let response = await window.axios.get(`/contacts/${this.contact.id}?page=${this.contact.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
 			this.contact.bookings = response.data.bookings;
 		},
@@ -389,8 +420,8 @@ export default {
 
 		async getRecentNotes() {
 			if (this.contact) {
-				let response = await window.axios.get(`/contacts/${this.contact.id}/recent_notes`);
-				this.recentNotes = response.data;
+				// let response = await window.axios.get(`/contacts/${this.contact.id}/recent_notes`);
+				// this.recentNotes = response.data;
 			}
 		},
 

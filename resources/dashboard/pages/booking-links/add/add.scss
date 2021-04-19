@@ -367,7 +367,7 @@
 	}
 }
 .timeslot-content {
-	@apply px-1 flex flex-col justify-center h-full border border-transparent hover:border-primary transition-colors rounded-lg relative;
+	@apply px-1 flex flex-col justify-center h-full border border-transparent transition-colors rounded-lg relative;
 	&:after {
 		content: '';
 		width: 1px;

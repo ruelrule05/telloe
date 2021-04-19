@@ -1,18 +1,19 @@
 <template>
-	<div v-if="contact" class="w-100 h-100 overflow-hidden">
+	<div v-if="contact" class="min-h-screen flex flex-col overflow-hidden">
 		<div class="content-header border-bottom flex items-center justify-between">
-			<div>
+			<div class="flex items-center">
+				<router-link to="/dashboard/contacts" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 				CONTACT DETAILS
 			</div>
 			<div>
-				<button type="button" class="btn btn-md btn-primary"><span>Add Booking</span></button>
+				<button type="button" class="hidden btn btn-md btn-primary"><span>Add Booking</span></button>
 			</div>
 		</div>
 
-		<div class="page-contacts page-profile">
-			<div class="flex h-full contact-content">
-				<div class="w-5/12 border-right">
-					<div class="pt-8 pb-8 pl-6 pr-16 contact-detail bg-secondary-light">
+		<div class="page-contacts h-full page-profile">
+			<div class="flex items-stretch h-full contact-content">
+				<div class="w-5/12 min-h-full border-right">
+					<div class="p-6 contact-detail bg-secondary-light">
 						<div class="flex items-start contact-profile">
 							<div class="mr-4">
 								<div class="profile-image profile-image-xl" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
@@ -42,7 +43,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="pt-0 pb-8 pl-6 pr-16 contact-files ">
+					<div class="px-6 pb-6 contact-files ">
 						<ul class="flex p-0 mb-4 tabs">
 							<li class="active"><span>Notes</span></li>
 							<li><span>Fields</span></li>
@@ -102,53 +103,39 @@
 						</div>
 					</div>
 				</div>
-				<div class="w-7/12 py-8 pl-0 pr-16">
-					<div class="flex items-center justify-between pl-8 mb-6 filters bookings">
+				<div class="w-7/12 p-6">
+					<div class="flex items-center justify-between mb-6 filters">
 						<h5 class="font-serif text-sm font-bold tracking-tighter uppercase">Bookings</h5>
-						<div class="flex">
-							<div class="select-wrap notes">
-								<select name="" id="">
-									<option value="">All</option>
-								</select>
-							</div>
-							<div class="select-wrap date">
-								<select name="" id="">
-									<option value="">Newest</option>
-								</select>
+						<div class="flex-grow flex items-center justify-end">
+							<vue-select :options="servicesList" button_class="mr-2 border-0 bg-light shadow-none" v-model="selectedService" label="Service" placeholder="All" @input="filterBookings"></vue-select>
+							<div class="ml-2">
+								<vue-select :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="order" label="Date" @input="filterBookings"></vue-select>
 							</div>
 						</div>
 					</div>
-					<div class="flex py-4 booking-row border-bottom">
-						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
-						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
-						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
-						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
+					<div class="flex py-4 flex items-center justify-between border-bottom" v-for="booking in contact.bookings.data" :key="booking.id">
+						<div>
+							<span class="font-bold text-primary">{{ booking.service.name }}</span>
+						</div>
+						<div class="flex items-center justify-end text-sm"><ClockIcon class="fill-current text-gray-200 mr-2"></ClockIcon>{{ formatDate(booking.created_at) }}</div>
+						<div class="text-sm text-right">{{ booking.start }} &mdash; {{ booking.end }}</div>
+						<div>
+							<VueDropdown :options="['Edit']" @click="bookingAction($event, booking)" class="-mr-2 -mt-2">
+								<template #button>
+									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+										<CogIcon class="fill-current text-gray-400"></CogIcon>
+									</div>
+								</template>
+							</VueDropdown>
+						</div>
 					</div>
-					<div class="flex py-4 booking-row border-bottom">
-						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
-						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
-						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
-						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
-					</div>
-					<div class="flex py-4 booking-row border-bottom">
-						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
-						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
-						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
-						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
-					</div>
-					<div class="flex py-4 booking-row border-bottom">
-						<div class="w-2/5 pl-8"><span class="font-bold text-primary">60min Coaching Call</span></div>
-						<div class="flex items-center justify-end w-1/5 text-sm"><img src="/clock-green.svg" class="w-4 mr-2" alt="" /> 19 Mar 2021</div>
-						<div class="w-1/5 text-sm text-right">09:00 - 10:00</div>
-						<div class="w-1/5"><img src="/cog-muted.svg" class="w-5 ml-auto" alt="" /></div>
-					</div>
-
-					<pagination class="pl-8"></pagination>
 				</div>
 			</div>
 		</div>
 
-		<div class="overflow-auto h-100 pb-4">
+		<Booking :booking="selectedBooking" @update="bookingUpdated" @close="selectedBooking = null" @delete="bookingDeleted"></Booking>
+
+		<div class="hidden overflow-auto h-full pb-4">
 			<div class="p-4 d-flex align-items-center">
 				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/contacts')">
 					<arrow-left-icon width="30" height="30"></arrow-left-icon>

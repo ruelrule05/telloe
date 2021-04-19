@@ -1,8 +1,12 @@
-import CloseIcon from '../../../../../icons/close.vue';
-import MessagesIcon from '../../../../../icons/chat.vue';
-import VueFormValidate from '../../../../../components/vue-form-validate.vue';
-import Emojipicker from '../../../../../components/emojipicker';
+import CloseIcon from '../../../../icons/close.vue';
+import MessagesIcon from '../../../../icons/chat.vue';
+import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import Emojipicker from '../../../../components/emojipicker';
 import dayjs from 'dayjs';
+import Vue from 'vue';
+import SendIcon from '../../../../icons/send';
+import VueChatScroll from 'vue-chat-scroll';
+Vue.use(VueChatScroll);
 export default {
 	props: {
 		bookingLink: {
@@ -62,7 +66,8 @@ export default {
 		CloseIcon,
 		VueFormValidate,
 		Emojipicker,
-		MessagesIcon
+		MessagesIcon,
+		SendIcon
 	},
 	methods: {
 		messageTimezoneTime(message) {

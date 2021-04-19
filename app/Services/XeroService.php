@@ -21,7 +21,7 @@ class XeroService
     {
         $XeroClient = new XeroClient($request);
         session(['oauth2state' => $XeroClient->client->getState()]);
-        return $XeroClient->client;
+        return response()->json($XeroClient->client);
     }
 
     public static function callback(Request $request)
