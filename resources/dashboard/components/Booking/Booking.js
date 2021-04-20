@@ -14,6 +14,9 @@ export default {
 		newEvent: {
 			type: Boolean,
 			default: false
+		},
+		contact: {
+			type: Object
 		}
 	},
 
@@ -81,6 +84,9 @@ export default {
 			this.getServices();
 			this.getContacts({ nopaginate: true });
 		}
+		if (this.contact) {
+			this.selectedContacts.push(this.contact);
+		}
 	},
 
 	methods: {
@@ -103,13 +109,14 @@ export default {
 			this.$refs.deleteModal.show();
 		},
 
-		createBooking() {
+		async createBooking() {
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service.id;
 			data.contact_ids = this.selectedContacts.map(x => x.id);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
-			this.storeBooking(data);
 			this.close();
+			let booking = await this.storeBooking(data);
+			this.$emit('store', booking);
 		},
 
 		update() {

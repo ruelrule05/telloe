@@ -5,7 +5,7 @@
 				MEMBERS
 			</div>
 			<div>
-				<button type="button" class="btn btn-md btn-primary" @click="addMember = true"><span>Add Member</span></button>
+				<button type="button" class="btn btn-md btn-primary" @click="$refs.addModal.show()"><span>Add Member</span></button>
 			</div>
 		</div>
 
@@ -33,7 +33,7 @@
 						</div>
 					</div>
 					<div class="flex items-center">
-						<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
+						<VueDropdown :options="actions" @click="memberAction($event, member)" class="-mr-2 ml-1">
 							<template #button>
 								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
 									<CogIcon class="fill-current text-gray-400"></CogIcon>
@@ -152,102 +152,97 @@
 			</div>
 		</div>
 
-		<modal ref="editModal" :close-button="false">
-			<h5 class="font-heading mb-3">Edit Member</h5>
+		<Modal ref="editModal" size="sm">
+			<h4 class="font-serif uppercase font-semibold mb-4">EDIT MEMBER</h4>
 			<vue-form-validate v-if="clonedMember" @submit="update">
-				<div class="form-group">
+				<div class="mb-4">
 					<label class="form-label">Email</label>
 					<input :disabled="!clonedMember.is_pending" type="email" class="form-control" v-model="clonedMember.email" data-required />
 				</div>
-				<div class="form-row form-group">
-					<div class="col">
+				<div class="grid grid-cols-2 gap-x-4 mb-4">
+					<div>
 						<label class="form-label">First Name (Optional)</label>
 						<input :disabled="!clonedMember.is_pending" type="text" class="form-control" v-model="clonedMember.first_name" />
 					</div>
-					<div class="col">
+					<div>
 						<label class="form-label">Last Name (Optional)</label>
 						<input :disabled="!clonedMember.is_pending" type="text" class="form-control" v-model="clonedMember.last_name" />
 					</div>
 				</div>
-				<div class="form-group">
-					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
+				<div class="mb-4">
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Assign Services</h2>
 					<template v-for="service in services">
-						<div xv-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
-							<div>
-								<h6 class="font-heading mb-0">{{ service.name }}</h6>
-								<small class="text-gray d-block">{{ service.duration }} minutes</small>
-							</div>
-							<div class="ml-auto">
-								<toggle-switch active-class="bg-primary" :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
+						<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
+							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
+							<div class="mt-2 flex items-center">
+								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Inactive' : 'Active' }}</span>
+								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? false : true" @input="toggleMemberAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>
 				</div>
 
-				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex mt-6 justify-between">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.editModal.hide()">
+						<span>Cancel</span>
 					</button>
-					<button class="ml-auto btn btn-primary" type="submit">
-						Save
+					<button class="btn btn-md btn-primary" type="submit">
+						<span>Save</span>
 					</button>
 				</div>
 			</vue-form-validate>
-		</modal>
+		</Modal>
 
-		<modal ref="addModal" :close-button="false">
-			<h5 class="font-heading mb-3">Add Member</h5>
+		<Modal ref="addModal" size="sm">
+			<h4 class="font-serif uppercase font-semibold mb-4">ADD MEMBER</h4>
 			<vue-form-validate @submit="store">
-				<div class="form-group">
-					<label class="form-label">Email</label>
+				<div class="mb-4">
+					<label>Email</label>
 					<input type="email" class="form-control" v-model="newMember.email" data-required />
 				</div>
-				<div class="form-row form-group">
-					<div class="col">
+				<div class="grid grid-cols-2 gap-x-4 mb-4">
+					<div>
 						<label class="form-label">First Name (Optional)</label>
 						<input type="text" class="form-control" v-model="newMember.first_name" />
 					</div>
-					<div class="col">
+					<div>
 						<label class="form-label">Last Name (Optional)</label>
 						<input type="text" class="form-control" v-model="newMember.last_name" />
 					</div>
 				</div>
-				<div class="form-group">
-					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
+				<div class="mb-4">
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Assign Services</h2>
 					<template v-for="service in services">
-						<div v-if="service.is_available" :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
-							<div>
-								<h6 class="font-heading mb-0">{{ service.name }}</h6>
-								<small class="text-gray d-block">{{ service.duration }} minutes</small>
-							</div>
-							<div class="ml-auto">
-								<toggle-switch active-class="bg-primary" :value="newMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleAssignedService(service)"></toggle-switch>
+						<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
+							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
+							<div class="mt-2 flex items-center">
+								<span class="text-xs mr-2">{{ newMember.assigned_services.find(x => x == service.id) ? 'Inactive' : 'Active' }}</span>
+								<toggle-switch :value="newMember.assigned_services.find(x => x == service.id) ? false : true" @input="toggleAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>
 				</div>
 
-				<div class="form-group">
-					<strong class="d-block mb-2">Invitation Message (Optional)</strong>
-					<textarea rows="3" class="form-control resize-none" :placeholder="defaultEmailMessage" v-model="newMember.invite_message"></textarea>
-				</div>
-
-				<div class="form-group">
+				<div>
 					<vue-checkbox v-model="newMember.sendToEmail" label="Send invitation link to email"></vue-checkbox>
+					<div v-if="newMember.sendToEmail" class="mt-4">
+						<label>Invitation Message (Optional)</label>
+						<textarea rows="3" class="resize-none" :placeholder="defaultEmailMessage" v-model="newMember.invite_message"></textarea>
+					</div>
 				</div>
 
-				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex mt-6 justify-between">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.addModal.hide()">
+						<span>Cancel</span>
 					</button>
-					<button class="ml-auto btn btn-primary" type="submit">
-						Add
+					<button class="btn btn-md btn-primary" type="submit">
+						<span>Add</span>
 					</button>
 				</div>
 			</vue-form-validate>
-		</modal>
+		</Modal>
 
-		<modal ref="resendModal" :close-button="false">
+		<Modal ref="resendModal">
 			<template v-if="selectedMember">
 				<h5 class="font-heading text-center">Resend Invitation</h5>
 				<p class="text-center mt-3">
@@ -263,11 +258,11 @@
 					<vue-button button_class="btn btn-primary ml-auto" :loading="resendLoading" type="button" @click="resendEmail(selectedMember)">Resend Invitation</vue-button>
 				</div>
 			</template>
-		</modal>
+		</Modal>
 
-		<modal ref="deleteModal" :close-button="false">
+		<Modal ref="deleteModal">
 			<template v-if="selectedMember">
-				<h5 class="font-heading text-center">Delete Member</h5>
+				<h4 class="font-serif uppercase font-semibold mb-4 text-center">DELETE MEMBER</h4>
 				<p class="text-center mt-3">
 					Are you sure to delete member
 					<strong>{{ selectedMember.full_name.trim() || selectedMember.email }}</strong>
@@ -275,24 +270,24 @@
 					<br />
 					<span class="text-danger">This action cannot be undone</span>
 				</p>
-				<div class="d-flex justify-content-end">
-					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex justify-between mt-4">
+					<button class="btn btn-outline-primary btn-md" @click="$refs.deleteModal.hide()">
+						<span>Cancel</span>
 					</button>
 					<button
-						class="btn btn-danger ml-auto"
+						class="btn btn-red btn-md"
 						type="button"
 						@click="
 							deleteMember(selectedMember);
-							$refs['deleteModal'].hide();
+							$refs.deleteModal.hide();
 							selectedMember = null;
 						"
 					>
-						Delete
+						<span>Delete</span>
 					</button>
 				</div>
 			</template>
-		</modal>
+		</Modal>
 	</div>
 </template>
 

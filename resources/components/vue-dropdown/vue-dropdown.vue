@@ -4,7 +4,7 @@
 			<slot name="button"></slot>
 		</div>
 		<div class="dropdown-menu" :class="[dropPosition]">
-			<span v-for="(option, optionIndex) in options" :key="optionIndex" class="dropdown-item" @click="emitClick(option)">{{ option }}</span>
+			<span v-for="(option, optionIndex) in options" :key="optionIndex" class="dropdown-item" @click="emitClick(option)">{{ option.text || option }}</span>
 		</div>
 	</div>
 </template>

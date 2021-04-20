@@ -32,7 +32,7 @@
 						</div>
 
 						<label>Guests</label>
-						<vue-select required :options="contactsOptions" @input="contactSelected" no-set-value placeholder="Add guests"></vue-select>
+						<vue-select v-if="!contact" required :options="contactsOptions" @input="contactSelected" no-set-value placeholder="Add guests"></vue-select>
 						<div v-for="(contact, contactIndex) in selectedContacts" :key="contact.id" class="contact-item">
 							<div class="flex items-center">
 								<div>

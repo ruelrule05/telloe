@@ -82,14 +82,26 @@ export default {
 
 			if (state) {
 				this.dates[this.selectedDate].selectedTimeslots.push(timeslot);
+				timeslot.is_selected = true;
 			} else {
 				let index = this.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
 				this.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
+				timeslot.is_selected = false;
 			}
 		},
 
 		async storeLink() {
 			this.$parent.timeslotsLoading = true;
+			let dates = {};
+			Object.keys(this.dates).forEach(d => {
+				let date = JSON.parse(JSON.stringify(this.dates[d]));
+				date.timeslots.forEach(t => {
+					if (!date.selectedTimeslots.find(s => s.time == t.time)) {
+						t.is_available = false;
+					}
+				});
+				dates[d] = date;
+			});
 			let data = {
 				name: this.name,
 				contacts: this.selectedContacts.map(c => {
@@ -100,7 +112,7 @@ export default {
 						color: c.color
 					};
 				}),
-				dates: this.dates
+				dates: dates
 			};
 			await window.axios.post('/booking-links', data);
 			this.$parent.getBookingLinks({ paginate: true });
@@ -120,7 +132,12 @@ export default {
 				this.timeslotsLoading = true;
 				let response = await window.axios.get(`/booking-links/get_all_timeslots?date=${this.selectedDate}`);
 				if (response) {
-					this.dates[this.selectedDate].timeslots = response.data;
+					this.dates[this.selectedDate].timeslots = response.data.map(t => {
+						if (this.dates[this.selectedDate].selectedTimeslots.find(s => s.time == t.time)) {
+							t.is_selected = true;
+						}
+						return t;
+					});
 				}
 				this.timeslotsLoading = false;
 			}

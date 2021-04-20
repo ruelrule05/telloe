@@ -7,7 +7,6 @@
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
-
 // Route::get('/test', function () {
 
 //     $booking1 = App\Models\Booking::first();

@@ -2,8 +2,6 @@ require('../js/bootstrap');
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import 'bootstrap/js/dist/modal';
-import 'bootstrap/js/dist/dropdown';
 import VCalendar from 'v-calendar';
 import Toasted from 'vue-toasted';
 import dayjs from 'dayjs';

@@ -13,7 +13,6 @@
 	"devDependencies": {
 		"autoprefixer": "^10.2.4",
 		"axios": "^0.21",
-		"bootstrap-sass": "^3.4.1",
 		"cross-env": "^7.0.3",
 		"css-loader": "^5.0.1",
 		"eslint": "^7.17.0",
@@ -38,7 +37,6 @@
 	},
 	"dependencies": {
 		"blueimp-load-image": "^5.14.0",
-		"bootstrap": "^4.5.3",
 		"convert-time": "^0.3.0",
 		"copy-text-to-clipboard": "^3.0.1",
 		"countries-and-timezones": "^2.3.1",

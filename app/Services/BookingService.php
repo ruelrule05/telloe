@@ -74,7 +74,6 @@ class BookingService
                 BookingUser::create([
                     'booking_id' => $booking->id,
                     'user_id' => $contact->contact_user_id,
-                    'email' => $contact->contactUser->email,
                 ]);
             }
         }

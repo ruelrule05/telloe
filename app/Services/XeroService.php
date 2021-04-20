@@ -7,7 +7,9 @@ use App\Http\Requests\XeroStoreInvoiceRequest;
 use App\Http\Requests\XeroUpdateInvoiceRequest;
 use App\Http\XeroClient;
 use App\Models\Contact;
+use App\Models\Service;
 use Auth;
+use Cache;
 use Illuminate\Http\Request;
 
 class XeroService
@@ -54,9 +56,11 @@ class XeroService
 
     public static function tenants(Request $request)
     {
-        $XeroClient = new XeroClient($request);
-
-        $tenants = $XeroClient->getTenants();
+        $authUser = Auth::user();
+        $tenants = Cache::remember("{$authUser->id}_xero_tenants", 43200, function () use ($request) {
+            $XeroClient = new XeroClient($request);
+            return $XeroClient->getTenants();
+        });
 
         return $tenants;
     }
@@ -67,18 +71,21 @@ class XeroService
         $invoices = [];
 
         $tenantId = $request->tenantId ?? $authUser->xero_tenant_id;
-        if ($authUser->xero_tenant_id) {
-            $XeroClient = new XeroClient($request);
-            $xero = new \XeroPHP\Application($XeroClient->accessToken, $tenantId);
-            $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)
-                ->orderBy('Date', 'DESC')
-                ->where('Status', 'DRAFT')
-                ->orWhere('Status', 'SUBMITTED')
-                ->orWhere('Status', 'AUTHORISED')
-                ->execute();
+        if ($tenantId) {
+            $invoices = Cache::remember("{$authUser->id}_xero_invoices", 43200, function () use ($request, $tenantId) {
+                $XeroClient = new XeroClient($request);
+                $xero = new \XeroPHP\Application($XeroClient->accessToken, $tenantId);
+                $invoices = $xero->load(\XeroPHP\Models\Accounting\Invoice::class)
+                        ->orderBy('Date', 'DESC')
+                        ->where('Status', 'DRAFT')
+                        ->orWhere('Status', 'SUBMITTED')
+                        ->orWhere('Status', 'AUTHORISED')
+                        ->execute();
+                return json_encode($invoices);
+            });
         }
 
-        return json_decode(json_encode($invoices), true);
+        return json_decode($invoices, true);
     }
 
     public static function remove()
@@ -133,9 +140,15 @@ class XeroService
             $xeroCurrency->save();
         }
 
+        $lineDescription = '';
+        if ($request->service_ids) {
+            $services = Service::whereIn('id', $request->service_ids)->where('user_id', $authUser->id)->get()->pluck('name')->toArray();
+            $lineDescription = implode(', ', $services);
+        }
         $lineItem = new \XeroPHP\Models\Accounting\LineItem();
         $lineItem->setLineAmount($request->amount);
         $lineItem->setQuantity(1);
+        $lineItem->setDescription($lineDescription);
 
         $invoice = new \XeroPHP\Models\Accounting\Invoice($xero);
         $invoice->setType('ACCREC');

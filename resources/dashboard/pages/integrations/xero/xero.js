@@ -19,8 +19,16 @@ import Vue from 'vue';
 Vue.use(VuePaginate);
 const format = require('format-number');
 import getSymbolFromCurrency from 'currency-symbol-map';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../icons/cog';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+
 export default {
 	components: {
+		Multiselect,
+		VueDropdown,
+		CogIcon,
 		Modal,
 		VueFormValidate,
 		VueSelect,
@@ -174,7 +182,7 @@ export default {
 			this.services.forEach(service => {
 				if (service.is_available) {
 					services.push({
-						text: service.name,
+						name: service.name,
 						value: service.id
 					});
 				}
@@ -233,6 +241,10 @@ export default {
 			storePendingInvoice: 'pending_invoices/store',
 			deletePendingInvoice: 'pending_invoices/delete'
 		}),
+
+		invoiceAction(action, invoice) {
+			this.confirmInvoiceUpdate(invoice, action.value);
+		},
 
 		async updateInvoice(invoiceToUpdate) {
 			this.$refs['editModal'].hide();
@@ -386,26 +398,23 @@ export default {
 			this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
 
 			if (this.$root.auth.xero_token) {
-				let response = await window.axios.post('/xero/invoices', this.newInvoiceForm, { toasted: true }).catch(() => {
+				let data = JSON.parse(JSON.stringify(this.newInvoiceForm));
+				data.service_ids = data.service_ids.map(s => {
+					return s.value;
+				});
+				let response = await window.axios.post('/xero/invoices', data, { toast: true }).catch(() => {
 					this.newInvoiceForm.loading = false;
 				});
 				if (response) {
 					this.invoices.unshift(response.data);
-					this.newInvoiceForm.loading = false;
-					this.$refs['createInvoiceModal'].hide();
-				}
-			} else {
-				let pendingInvoice = await this.storePendingInvoice(this.newInvoiceForm);
-				if (pendingInvoice) {
-					this.invoices.unshift(pendingInvoice);
 				}
 				this.newInvoiceForm.loading = false;
-				this.$refs['createInvoiceModal'].hide();
+				this.$refs.createInvoiceModal.hide(true);
 			}
 		},
 
 		formatDate(date) {
-			return dayjs(date).format('MMM d, YYYY');
+			return dayjs(date).format('MMM D, YYYY');
 		}
 	}
 };

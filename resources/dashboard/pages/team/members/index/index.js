@@ -122,6 +122,19 @@ export default {
 			getMemberFromInviteToken: 'members/get_member_from_invite_token'
 		}),
 
+		memberAction(action, member) {
+			this.selectedMember = member;
+			switch (action) {
+				case 'Edit':
+					this.clonedMember = Object.assign({}, member);
+					this.$refs.editModal.show();
+					break;
+				case 'Delete':
+					this.$refs.deleteModal.show();
+					break;
+			}
+		},
+
 		getData() {},
 
 		update() {

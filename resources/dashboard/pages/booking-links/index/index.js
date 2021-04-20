@@ -95,6 +95,9 @@ export default {
 					this.$refs['newEmailInput'].focus();
 				});
 			}
+		},
+		addLink: function() {
+			this.$refs.toggleAddLinkBtn.blur();
 		}
 	},
 

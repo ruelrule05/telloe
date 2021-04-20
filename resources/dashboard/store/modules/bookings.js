@@ -25,6 +25,7 @@ const mutations = {
 
 	store(state, data) {
 		state.index.unshift(data);
+		state.paginated.data.unshift(data);
 	},
 
 	update(state, data) {

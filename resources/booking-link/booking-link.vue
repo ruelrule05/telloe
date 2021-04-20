@@ -1,72 +1,107 @@
 <template>
-	<div class="p-5 h-100">
-		<div class="overflow-hidden">
-			<h1 class="font-heading h3">{{ bookingLink.name }}</h1>
-			<vue-select :options="dateOptions" button_class="btn btn-light shadow-none" v-model="selectedDate"></vue-select>
-			<div class="d-flex h-100 my-3">
-				<div class="flex-grow-1 d-flex bg-light rounded position-relative">
-					<div ref="highlighter" class="highlighter position-absolute border border-primary h-100 rounded" :style="{ width: highlighterWidth }">
-						<div class="timeslot-action position-absolute dropdown w-100">
-							<button class="btn btn-primary btn-sm py-0 btn-block" data-toggle="dropdown"><more-icon class="fill-white"></more-icon></button>
-							<div class="dropdown-menu">
-								<span class="dropdown-item cursor-pointer" @click="toggleTimeslot"> {{ timeslotStatusText }} timeslot </span>
-							</div>
+	<div class="p-12 h-full">
+		<h1 class="font-serif uppercase font-bold text-xl">{{ bookingLink.name }}</h1>
+
+		<div v-if="bookingLink.booking_link_contacts.length > 0">
+			<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
+				<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
+			</div>
+
+			<div class="flex justify-end relative mt-4">
+				<div class="overflow-x-scroll overflow-y-visible" style="margin-left: 200px">
+					<table class="w-full timeslots-table" cellspacing="0" cellpadding="0">
+						<tr v-for="contact in bookingLink.booking_link_contacts" :key="contact.id" class="relative">
+							<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
+								<div class="flex items-center py-3 -ml-3">
+									<div>
+										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
+											<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
+										</div>
+									</div>
+									<div class="pl-2">
+										<p class="text-sm whitespace-nowrap">{{ contact.contact.full_name }}</p>
+										<p class="flex items-center tracking-wide text-xxs text-muted">{{ contact.contact.contact_user.timezone }}</p>
+									</div>
+								</div>
+							</td>
+							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
+								<div class="items-center column  mb-2 cursor-pointer px-1" :style="{ backgroundColor: contact.color }">
+									<div class="timeslot-content" :class="{ selected: (bookingLink.dates[selectedDate].selectedTimeslots || []).find(x => x.time == timeslot.time) }">
+										<p class="text-sm font-bold text-center text-body">{{ timeslot['12hr'] }}</p>
+										<p class="text-sm text-center text-muted uppercase">{{ timeslot.abbreviation }}</p>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<vue-select :options="dateOptions" button_class="btn btn-light shadow-none" v-model="selectedDate"></vue-select>
+		<div class="d-flex h-100 my-3">
+			<div class="flex-grow-1 d-flex bg-light rounded position-relative">
+				<div ref="highlighter" class="highlighter position-absolute border border-primary h-100 rounded" :style="{ width: highlighterWidth }">
+					<div class="timeslot-action position-absolute dropdown w-100">
+						<button class="btn btn-primary btn-sm py-0 btn-block" data-toggle="dropdown"><more-icon class="fill-white"></more-icon></button>
+						<div class="dropdown-menu">
+							<span class="dropdown-item cursor-pointer" @click="toggleTimeslot"> {{ timeslotStatusText }} timeslot </span>
 						</div>
 					</div>
-					<div v-for="user in users" :key="user.id" :data-id="user.id" class="highlighter position-absolute border border-orange h-100 rounded" :style="{ left: user.left, width: highlighterWidth }">
-						<div data-tooltip-wrapper style="top: -2px" class="position-relative">
-							<div class="tooltip" x-placement="top">
-								<div class="tooltip-arrow"></div>
-								<div class="tooltip-inner">{{ user.full_name }}</div>
-							</div>
+				</div>
+				<div v-for="user in users" :key="user.id" :data-id="user.id" class="highlighter position-absolute border border-orange h-100 rounded" :style="{ left: user.left, width: highlighterWidth }">
+					<div data-tooltip-wrapper style="top: -2px" class="position-relative">
+						<div class="tooltip" x-placement="top">
+							<div class="tooltip-arrow"></div>
+							<div class="tooltip-inner">{{ user.full_name }}</div>
 						</div>
 					</div>
-					<div class="flex-grow-1 timeslots-wrapper position-relative rounded">
-						<table class="table table-sm table-borderless mb-0 table-layout-fixed contacts-table">
-							<tbody class="shadow-none bg-transparent text-center">
-								<tr v-for="bookingLinkContact in bookingLink.booking_link_contacts" :key="bookingLinkContact.id" @mouseover="showHighlight">
-									<td class="contact-container">
-										<div class="d-flex align-items-center py-2 pl-2 mr-n2">
-											<div class="profile-image profile-image-sm cursor-pointer" :style="{ 'background-image': `url(${bookingLinkContact.contact.contact_user.profile_image})` }">
-												<span v-if="!bookingLinkContact.contact.contact_user.profile_image">{{ bookingLinkContact.contact.contact_user.initials }}</span>
-											</div>
-											<div class="flex-1 text-left pl-2">
-												<h6 class="font-heading text-nowrap mb-0">
-													{{ bookingLinkContact.contact.contact_user.full_name }}
-												</h6>
-												<small class="text-secondary">{{ bookingLinkContact.contact.contact_user.timezone }}</small>
-											</div>
+				</div>
+				<div class="flex-grow-1 timeslots-wrapper position-relative rounded">
+					<table class="table table-sm table-borderless mb-0 table-layout-fixed contacts-table">
+						<tbody class="shadow-none bg-transparent text-center">
+							<tr v-for="bookingLinkContact in bookingLink.booking_link_contacts" :key="bookingLinkContact.id" @mouseover="showHighlight">
+								<td class="contact-container">
+									<div class="d-flex align-items-center py-2 pl-2 mr-n2">
+										<div class="profile-image profile-image-sm cursor-pointer" :style="{ 'background-image': `url(${bookingLinkContact.contact.contact_user.profile_image})` }">
+											<span v-if="!bookingLinkContact.contact.contact_user.profile_image">{{ bookingLinkContact.contact.contact_user.initials }}</span>
 										</div>
-									</td>
-
-									<template v-if="selectedDate">
-										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time), 'bg-warning': timeslot.isSuggested }">
-											<small>{{ timezoneTime(bookingLinkContact.contact.contact_user.timezone, timeslot.time) }}</small>
-										</td>
-									</template>
-								</tr>
-								<tr v-for="email in bookingLink.emails" :key="email.email" @mouseover="showHighlight">
-									<td class="contact-container">
-										<div class="d-flex align-items-center py-2 pl-2 mr-n2">
-											<div class="profile-image profile-image-sm cursor-pointer"></div>
-											<div class="flex-1 text-left pl-2">
-												<h6 class="font-heading text-nowrap mb-0">
-													{{ email.email }}
-												</h6>
-												<small class="text-secondary">{{ email.timezone }}</small>
-											</div>
+										<div class="flex-1 text-left pl-2">
+											<h6 class="font-heading text-nowrap mb-0">
+												{{ bookingLinkContact.contact.contact_user.full_name }}
+											</h6>
+											<small class="text-secondary">{{ bookingLinkContact.contact.contact_user.timezone }}</small>
 										</div>
-									</td>
+									</div>
+								</td>
 
-									<template v-if="selectedDate">
-										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time), 'bg-warning': timeslot.isSuggested }">
-											<small>{{ timezoneTime(email.timezone, timeslot.time) }}</small>
-										</td>
-									</template>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+								<template v-if="selectedDate">
+									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" :key="timeslotIndex" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time), 'bg-warning': timeslot.isSuggested }">
+										<small>{{ timezoneTime(bookingLinkContact.contact.contact_user.timezone, timeslot.time) }}</small>
+									</td>
+								</template>
+							</tr>
+							<tr v-for="email in bookingLink.emails" :key="email.email" @mouseover="showHighlight">
+								<td class="contact-container">
+									<div class="d-flex align-items-center py-2 pl-2 mr-n2">
+										<div class="profile-image profile-image-sm cursor-pointer"></div>
+										<div class="flex-1 text-left pl-2">
+											<h6 class="font-heading text-nowrap mb-0">
+												{{ email.email }}
+											</h6>
+											<small class="text-secondary">{{ email.timezone }}</small>
+										</div>
+									</div>
+								</td>
+
+								<template v-if="selectedDate">
+									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :data-index="timeslotIndex" :key="timeslotIndex" :data-timeslot="JSON.stringify(timeslot)" class="align-middle timeslot-button position-relative overflow-hidden border border-white" :class="{ 'bg-primary text-white': bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time), 'bg-warning': timeslot.isSuggested }">
+										<small>{{ timezoneTime(email.timezone, timeslot.time) }}</small>
+									</td>
+								</template>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>

@@ -1,21 +1,4 @@
 .contact-content {
-	> * {
-		.select-wrap {
-			width: 200px;
-
-			&:before {
-				@apply text-muted text-sm items-center absolute flex;
-
-				content: 'Status:';
-				height: 38px;
-				left: 0.75rem;
-			}
-			select {
-				padding-left: 4.25rem;
-			}
-		}
-	}
-
 	.contact-row {
 		@apply py-5;
 

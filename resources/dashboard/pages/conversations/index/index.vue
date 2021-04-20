@@ -12,18 +12,20 @@
 						<div>
 							<div class="profile-image profile-image-sm relative" :class="{ 'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1 }" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 								<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
-								<div v-else-if="conversation.members.length > 1" class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
+								<span v-else-if="conversation.members.length > 1">GC</span>
+								<!-- <div class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">
+									<span>GC</span>
 									<template v-for="(member, index) in conversation.members">
-										<div class="w-50 position-relative conversation-members-container" :key="member.id" v-if="index < 4">
+										<div class="w-1/2 relative conversation-members-container" :key="member.id" v-if="index < 4">
 											<div class="line-height-0 user-profile-image user-profile-image-xs overflow-hidden" :style="{ backgroundImage: 'url(' + member.user.profile_image + ')' }">
 												<span v-if="!member.user.profile_image">{{ member.user.initials }}</span>
 												<span v-if="index == 3 && conversation.members.length > 4" class="line-height-0 conversation-members-more w-100 h-100">
-													<span class="position-absolute-center">+{{ conversation.members.length - 4 }}</span>
+													<span class="absolute-center">+{{ conversation.members.length - 4 }}</span>
 												</span>
 											</div>
 										</div>
 									</template>
-								</div>
+								</div> -->
 								<i v-if="$root.isOnline(conversation.member.id)" class="online-status">&nbsp;</i>
 							</div>
 						</div>

@@ -25,7 +25,6 @@ import MoveIcon from '../../../../icons/move';
 import PlusIcon from '../../../../icons/plus';
 import draggable from 'vuedraggable';
 import Add from '../../../../dashboard/pages/bookings/add/add.vue';
-import EditBooking from '../../bookings/edit/edit.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
 import ChevronLeftIcon from '../../../../icons/chevron-left';
@@ -56,8 +55,7 @@ export default {
 		MoveIcon,
 		PlusIcon,
 		draggable,
-		Add,
-		EditBooking
+		Add
 	},
 
 	data: () => ({
@@ -100,7 +98,10 @@ export default {
 		notesOrder: 'desc',
 		masks: {
 			input: 'MMMM D, YYYY'
-		}
+		},
+		newEvent: false,
+		activeTab: 'notes',
+		page: 1
 	}),
 
 	computed: {
@@ -179,6 +180,9 @@ export default {
 		},
 		'newBooking.date': function() {
 			this.getNewBookingServiceTimeslots();
+		},
+		page: function() {
+			this.getContact();
 		}
 	},
 
@@ -199,6 +203,15 @@ export default {
 			storeBooking: 'bookings/store',
 			storeConversation: 'conversations/store'
 		}),
+
+		newBookingStored(booking) {
+			this.contact.bookings.data.unshift(booking);
+		},
+
+		createNewEvent() {
+			this.newEvent = true;
+			this.selectedBooking = { date: dayjs().format('YYYY-MM-DD'), start: '02:00', end: '03:00' };
+		},
 
 		bookingDeleted(booking) {
 			let index = this.contact.bookings.data.findIndex(b => b.id == booking.id);
@@ -307,7 +320,7 @@ export default {
 		},
 
 		getServiceMembers(booking) {
-			if (booking) {
+			if (booking && booking.id) {
 				let serviceMembers = [];
 				if (booking.service.parent_service) {
 					serviceMembers.push({
@@ -398,7 +411,7 @@ export default {
 		},
 
 		async getContact() {
-			let response = await window.axios.get(`/contacts/${this.$route.params.id}`);
+			let response = await window.axios.get(`/contacts/${this.$route.params.id}`, { params: { page: this.page } });
 			let contact = response.data;
 			contact.upcoming_bookings.forEach(booking => {
 				booking.startDate = dayjs(`${booking.date} ${booking.start}`).toDate();

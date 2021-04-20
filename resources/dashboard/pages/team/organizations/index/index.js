@@ -3,7 +3,6 @@ import Modal from '../../../../../components/modal/modal.vue';
 import VueFormValidate from '../../../../../components/vue-form-validate.vue';
 import VueCheckbox from '../../../../../components/vue-checkbox/vue-checkbox.vue';
 import VueButton from '../../../../../components/vue-button.vue';
-import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import ToggleSwitch from '../../../../../components/toggle-switch/toggle-switch.vue';
 import MoreIcon from '../../../../../icons/more-h';
 import PlusIcon from '../../../../../icons/plus';
@@ -15,14 +14,23 @@ import CloseIcon from '../../../../../icons/close';
 import ShortcutIcon from '../../../../../icons/shortcut';
 import tooltip from '../../../../../js/directives/tooltip.js';
 const slugify = require('slugify');
+import InfoCircleIcon from '../../../../../icons/info-circle.vue';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+import VueDropdown from '../../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../../icons/cog';
+import copy from 'copy-text-to-clipboard';
 
 export default {
 	components: {
+		CogIcon,
+		VueDropdown,
+		Multiselect,
+		InfoCircleIcon,
 		Modal,
 		VueFormValidate,
 		VueCheckbox,
 		VueButton,
-		VueSelect,
 		ToggleSwitch,
 
 		MoreIcon,
@@ -63,7 +71,7 @@ export default {
 				if (!member.is_pending) {
 					let memberCopy = Object.assign({}, member);
 					members.push({
-						text: memberCopy.member_user.full_name,
+						name: memberCopy.member_user.full_name,
 						value: memberCopy
 					});
 				}
@@ -104,12 +112,43 @@ export default {
 			addOrganizationMembers: 'organizations/add_members'
 		}),
 
-		goToPage(slug) {
-			window.open(`/${slug}`);
+		copyLink(e, organization) {
+			this.$toast.clear();
+			if (copy(`${process.env.MIX_APP_URL}/${organization.slug}`)) {
+				this.$toast.open('Link copied to clipboard');
+			}
+			e.currentTarget.blur();
 		},
 
-		goToOrganization(id) {
-			this.$router.push(`/dashboard/team/organizations/${id}`);
+		orgAction(action, org) {
+			switch (action) {
+				case 'Booking Page':
+					window.open(`${process.env.MIX_APP_URL}/${org.slug}`, '_blank');
+					break;
+				case 'Edit':
+					/* eslint-disable */
+					let clonedOrganization = JSON.parse(JSON.stringify(org));
+					clonedOrganization.members.forEach(m => {
+						m.name = m.member.full_name;
+					});
+					this.clonedOrganization = clonedOrganization;
+					this.$refs.editModal.show();
+					break;
+
+				case 'Delete':
+					this.selectedOrganization = org;
+					this.$refs.deleteModal.show();
+					break;
+			}
+		},
+
+		async confirmStoreOrganization() {
+			let data = JSON.parse(JSON.stringify(this.newOrganization));
+			data.members = data.members.map(m => {
+				return { id: m.value.id };
+			});
+			await this.storeOrganization(data);
+			this.resetForm();
 		},
 
 		resetForm() {
@@ -120,9 +159,12 @@ export default {
 		},
 
 		async submitUpdate() {
-			let data = await this.updateOrganization(this.clonedOrganization);
-			this.organization = data;
-			this.$refs['editModal'].hide();
+			let data = JSON.parse(JSON.stringify(this.clonedOrganization));
+			data.members = data.members.map(m => {
+				return { id: m.value ? m.value.id : m.id };
+			});
+			this.updateOrganization(data);
+			this.$refs.editModal.hide();
 		},
 
 		addMembers() {

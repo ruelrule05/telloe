@@ -3,6 +3,7 @@
 <head>
 	<title>Booking Link | {{ config('app.name')}}</title>
 	@include('partials.meta_tags')
+	@include('partials.styles')
 	<link rel="stylesheet" href="{{ mix('css/booking-link.css') }}">
 </head>
 <body class="h-100vh w-100vw">

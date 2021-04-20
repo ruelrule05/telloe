@@ -201,3 +201,66 @@ fieldset.disabled input {
 		transform: rotate(360deg);
 	}
 }
+.paginate-links {
+	@apply flex items-center;
+	.left-arrow {
+		@apply mr-3 cursor-pointer text-primary;
+		&.disabled {
+			@apply pointer-events-none text-gray-300;
+		}
+	}
+	.right-arrow {
+		@apply ml-3 cursor-pointer text-primary;
+		&.disabled {
+			@apply pointer-events-none text-gray-300;
+		}
+	}
+	.number {
+		a {
+			width: 24px;
+			height: 25px;
+			padding-top: 4px;
+			@apply transition-colors mx-1 hover:bg-gray-200 inline-block rounded-full cursor-pointer leading-none relative text-center;
+		}
+		&.active {
+			a {
+				@apply bg-primary text-white font-semibold;
+			}
+		}
+	}
+}
+.multiselect {
+	.multiselect__select {
+		display: none !important;
+	}
+	.multiselect__tags {
+		@apply border border-gray-300 text-sm block rounded-md font-medium w-full outline-none px-3 py-2 transition-all ring-primary ring-offset-1 focus-within:border-gray-500 focus-within:ring-2 shadow-inner #{!important};
+	}
+	.multiselect__input {
+		@apply ring-0 shadow-none p-0 border-none rounded-none mb-0 #{!important};
+	}
+	.multiselect__tag {
+		@apply bg-gray-200 text-body mb-1 p-2 pr-10;
+	}
+	.multiselect__tag-icon {
+		@apply bg-gray-300 rounded-full hover:bg-red-600;
+		height: 16px;
+		width: 16px;
+		margin: 8px 15px 0 0;
+	}
+	.multiselect__option--selected.multiselect__option--highlight,
+	.multiselect__option.multiselect__option--highlight,
+	.multiselect__option.multiselect__option--highlight:after {
+		@apply bg-primary;
+	}
+	.multiselect__tag-icon:after {
+		@apply text-white flex items-center justify-center h-full;
+		font-size: 16px;
+	}
+	.multiselect__element span {
+		@apply text-sm font-normal;
+	}
+	.multiselect__placeholder {
+		@apply mb-0 pt-px;
+	}
+}

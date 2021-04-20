@@ -87,22 +87,22 @@ const routes = [
 				children: [
 					{
 						path: 'organizations',
-						name: 'organizations_index',
+						name: 'Organizations',
 						component: () => import(/* webpackChunkName: "dashboard-team-organizations" */ '../pages/team/organizations/index/index.vue')
 					},
 					{
 						path: 'organizations/:id',
-						name: 'organizations_show',
+						name: 'Organizations',
 						component: () => import(/* webpackChunkName: "dashboard-team-organizations-show" */ '../pages/team/organizations/show/show.vue')
 					},
 					{
 						path: 'members',
-						name: 'members_index',
+						name: 'Members',
 						component: () => import(/* webpackChunkName: "dashboard-team-members" */ '../pages/team/members/index/index.vue')
 					},
 					{
 						path: 'members/:id',
-						name: 'members_show',
+						name: '',
 						component: () => import(/* webpackChunkName: "dashboard-team-members-show" */ '../pages/team/members/show/show.vue')
 					}
 				]

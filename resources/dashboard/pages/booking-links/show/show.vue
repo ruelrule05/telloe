@@ -22,9 +22,17 @@
 						</VueDropdown>
 					</div>
 				</div>
-				<div class="flex justify-end relative mt-4">
+				<div class="flex justify-end relative mt-8">
 					<div class="overflow-x-scroll overflow-y-visible" style="margin-left: 200px">
 						<table class="w-full timeslots-table" cellspacing="0" cellpadding="0">
+							<tr>
+								<td></td>
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
+									<div class="text-center px-2 pb-2 bg-white">
+										<VueCheckbox v-model="timeslot.is_available"></VueCheckbox>
+									</div>
+								</td>
+							</tr>
 							<tr v-for="contact in bookingLink.booking_link_contacts" :key="contact.id" class="relative">
 								<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
@@ -41,7 +49,7 @@
 								</td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
 									<div class="items-center column  mb-2 cursor-pointer px-1" :style="{ backgroundColor: contact.color }">
-										<div class="timeslot-content" :class="{ selected: (bookingLink.dates[selectedDate].selectedTimeslots || []).find(x => x.time == timeslot.time) }">
+										<div class="timeslot-content" :class="{ selected: bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
 											<p class="text-sm font-bold text-center text-body">{{ timeslot['12hr'] }}</p>
 											<p class="text-sm text-center text-muted uppercase">{{ timeslot.abbreviation }}</p>
 										</div>
@@ -50,19 +58,6 @@
 							</tr>
 						</table>
 					</div>
-				</div>
-			</div>
-		</div>
-		<div class="hidden d-flex align-items-center">
-			<button class="btn p-1 btn-white badge-pill shadow-sm mb-3" type="button" @click="$router.go(-1)">
-				<arrow-left-icon width="30" height="30"></arrow-left-icon>
-			</button>
-			<div class="dropdown ml-auto">
-				<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-125, 5">
-					<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
-				</button>
-				<div class="dropdown-menu">
-					<span class="dropdown-item cursor-pointerr" @click="$refs['deleteModal'].show()">Delete</span>
 				</div>
 			</div>
 		</div>

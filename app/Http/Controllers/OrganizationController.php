@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Organization;
-use Illuminate\Http\Request;
 use App\Http\Requests\OrganizationAddMembersRequest;
 use App\Http\Requests\OrganizationDestroyMemberRequest;
 use App\Http\Requests\OrganizationServiceTimeslotsRequest;
 use App\Http\Requests\StoreOrganizationRequest;
 use App\Http\Requests\UpdateOrganizationRequest;
+use App\Models\Organization;
 use App\Services\OrgranizationsService;
+use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
@@ -56,6 +55,6 @@ class OrganizationController extends Controller
 
     public function destroy($id)
     {
-        return response(OrganizationService::destroy($id));
+        return response(OrgranizationsService::destroy($id));
     }
 }

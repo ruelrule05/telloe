@@ -52,7 +52,7 @@
 				</div>
 				<div class="w-1/3 p-6">
 					<p class="text-sm text-muted">Contacts information can be upgraded with custom fields. That gives you the option to have specific fields for contacts that match your needs.</p>
-					<button type="button" class="btn btn-sm btn-outline-primary mt-6"><span>Manage fields</span></button>
+					<button type="button" class="btn btn-sm btn-outline-primary mt-6" @click="$refs.fieldsModal.show()"><span>Manage fields</span></button>
 				</div>
 			</div>
 		</div>
@@ -119,6 +119,34 @@
 				</div>
 			</vue-form-validate>
 		</div>
+
+		<Modal ref="fieldsModal" size="sm">
+			<h4 class="font-serif uppercase font-semibold mb-4">MANAGE FIELDS</h4>
+			<div v-for="(custom_field, index) in userCustomFields" :key="index" class="flex items-center custom-field position-relative">
+				<div class="mb-1 flex items-center w-full">
+					<input type="text" :value="custom_field" class="flex-grow" />
+					<TrashIcon class="cursor-pointer ml-3 fill-current text-gray-300" @click.native="userCustomFields.splice(index, 1)"></TrashIcon>
+				</div>
+			</div>
+			<div class="mb-1 flex items-center w-full">
+				<input type="text" v-model="newField" class="flex-grow" placeholder="New Field" />
+				<trash-icon class="ml-3 opacity-0"></trash-icon>
+			</div>
+			<div class="flex justify-between mt-6">
+				<button
+					class="btn btn-md btn-outline-primary"
+					type="button"
+					@click="
+						newField = '';
+						$refs.fieldsModal.hide();
+						userCustomFields = JSON.parse(JSON.stringify(originalUserCustomFields));
+					"
+				>
+					<span>Cancel</span>
+				</button>
+				<button type="button" class="btn btn-md btn-primary" :disabled="addField" @click="updateUserCustomFields()"><span>Save</span></button>
+			</div>
+		</Modal>
 
 		<Modal ref="editModal" :close-button="false">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT CONTACT</h4>

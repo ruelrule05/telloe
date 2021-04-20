@@ -6,6 +6,8 @@ use App\Http\Requests\XeroSaveTenantRequest;
 use App\Http\Requests\XeroStoreInvoiceRequest;
 use App\Http\Requests\XeroUpdateInvoiceRequest;
 use App\Services\XeroService;
+use Auth;
+use Cache;
 use Illuminate\Http\Request;
 
 class XeroController extends Controller
@@ -49,11 +51,17 @@ class XeroController extends Controller
 
     public function storeInvoice(XeroStoreInvoiceRequest $request)
     {
+        $authUser = Auth::user();
+        Cache::forget("{$authUser->id}_xero_invoices");
+        $this->invoices($request);
         return response(XeroService::storeInvoice($request));
     }
 
     public function updateInvoice(XeroUpdateInvoiceRequest $request)
     {
+        $authUser = Auth::user();
+        Cache::forget("{$authUser->id}_xero_invoices");
+        $this->invoices($request);
         return response(XeroService::updateInvoice($request));
     }
 }

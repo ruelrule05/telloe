@@ -11,7 +11,7 @@
 	> div {
 		max-height: 200px;
 	}
-	@apply transform scale-95  origin-top overflow-hidden absolute right-0 top-9 w-full mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out;
+	@apply transform scale-95  origin-top overflow-hidden absolute right-0 top-9 whitespace-nowrap mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out;
 	z-index: -1;
 	&.open {
 		@apply z-50 scale-100 opacity-100;

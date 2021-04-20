@@ -14,7 +14,7 @@ import VueSelect from '../components/vue-select/vue-select.vue';
 import Modal from '../components/modal/modal.vue';
 import VueFormValidate from '../components/vue-form-validate.vue';
 import MoreIcon from '../icons/more';
-import 'bootstrap/js/dist/modal';
+
 export default {
 	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon },
 
@@ -44,7 +44,8 @@ export default {
 			password: ''
 		},
 		authAction: 'login',
-		hoveredTimeslot: null
+		hoveredTimeslot: null,
+		dayjs: dayjs
 	}),
 
 	computed: {

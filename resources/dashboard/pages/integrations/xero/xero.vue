@@ -3,7 +3,14 @@
 		<div class="content-header border-bottom flex items-center justify-between">
 			<div>XERO INVOICING</div>
 
-			<button class="btn btn-primary btn-md" type="button" @click="$refs['createInvoiceModal'].show()">
+			<button
+				class="btn btn-primary btn-md"
+				type="button"
+				@click="
+					resetInvoiceForm();
+					$refs['createInvoiceModal'].show();
+				"
+			>
 				<span>New Invoice</span>
 			</button>
 		</div>
@@ -41,10 +48,10 @@
 					</div>
 				</template>
 				<template v-else-if="$root.auth.xero_token">
-					<table class="table table-borderless mb-0" v-if="invoices.length > 0">
+					<table class="table my-6" v-if="invoices.length > 0">
 						<thead>
 							<tr>
-								<th>Invoice #</th>
+								<th>Invoice No.</th>
 								<th>To</th>
 								<th>Date</th>
 								<th>Due Date</th>
@@ -57,102 +64,83 @@
 						<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
 							<template v-for="invoice in paginated('invoices')">
 								<tr :key="invoice.InvoiceID" v-if="invoiceStatus == 'all' || invoice.Status.toLowerCase() == invoiceStatus.toLowerCase()">
-									<td class="align-middle">{{ invoice.InvoiceNumber }}</td>
-									<td class="align-middle">{{ invoice.Contact.Name }}</td>
-									<td class="align-middle">{{ invoice.Date }}</td>
-									<td class="align-middle">{{ invoice.DueDate || '-' }}</td>
+									<td class="align-middle text-primary font-bold">{{ invoice.InvoiceNumber }}</td>
+									<td class="align-middle text-gray-600">{{ invoice.Contact.Name }}</td>
+									<td class="align-middle">{{ formatDate(invoice.Date) }}</td>
+									<td class="align-middle">{{ formatDate(invoice.DueDate) }}</td>
 									<td class="align-middle">{{ getSymbolFromCurrency(invoice.CurrencyCode) }}{{ format({ padRight: 2 })(invoice.AmountPaid) }}</td>
 									<td class="align-middle">{{ getSymbolFromCurrency(invoice.CurrencyCode) }}{{ format({ padRight: 2 })(invoice.AmountDue) }}</td>
 									<td class="align-middle">
-										<div v-if="invoice.statusLoading" class="spinner-border spinner-border-sm text-primary"></div>
-										<span v-else>{{ invoice.Status }}</span>
+										<div v-if="invoice.statusLoading" class="spinner spinner-sm"></div>
+										<span v-else class="badge">{{ invoice.Status }}</span>
 									</td>
-									<td class="align-middle"><checkmark-icon v-if="invoice.SentToContact && invoice.SentToContact != 'false'" class="fill-success"></checkmark-icon></td>
+									<td class="align-middle"><CheckmarkIcon v-if="invoice.SentToContact && invoice.SentToContact != 'false'" class="stroke-current text-green-500"></CheckmarkIcon></td>
 
 									<td class="text-right align-middle">
-										<div class="dropleft">
-											<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown" :disabled="invoice.statusLoading">
-												<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-											</button>
-											<div class="dropdown-menu dropdown-menu-right">
-												<span v-for="(action, index) in xeroInvoiceStatuses[invoice.Status]" :key="index" class="dropdown-item d-flex align-items-center cursor-pointer" @click="confirmInvoiceUpdate(invoice, action.value)">
-													{{ action.text }}
-												</span>
-											</div>
-										</div>
+										<VueDropdown :options="xeroInvoiceStatuses[invoice.Status]" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
+											<template #button>
+												<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+													<CogIcon class="fill-current text-gray-400"></CogIcon>
+												</div>
+											</template>
+										</VueDropdown>
 									</td>
 								</tr>
 							</template>
 						</paginate>
 					</table>
 
-					<div v-else class="text-muted text-center position-absolute-center w-100">
-						<div class="h6 text-secondary font-weight-normal mb-0">No invoices found.</div>
-					</div>
-				</template>
-				<template v-else-if="!$root.auth.xero_token">
-					<table class="table table-borderless mb-0" v-if="pending_invoices.length > 0">
-						<thead>
-							<tr>
-								<th>Invoice #</th>
-								<th>Contact</th>
-								<th>Amount</th>
-								<th>Date</th>
-							</tr>
-						</thead>
-						<paginate tag="tbody" name="invoices" :list="pending_invoices" :per="15" ref="paginate">
-							<template v-for="invoice in paginated('invoices')">
-								<tr :key="invoice.id">
-									<td>{{ invoice.id }}</td>
-									<td>{{ invoice.contact.contact_user.full_name }}</td>
-									<td>{{ invoice.currency }} {{ format({ padRight: 2 })(invoice.amount) }}</td>
-									<td>{{ formatDate(invoice.created_at) }}</td>
-								</tr>
-							</template>
-						</paginate>
-					</table>
-
-					<div v-else class="text-muted text-center position-absolute-center w-100">
-						<div class="h6 text-secondary font-weight-normal mb-0">No invoices found.</div>
+					<div v-else class="text-center absolute-center w-full">
+						<div class="text-muted ">No invoices found.</div>
 					</div>
 				</template>
 
-				<paginate-links :key="invoices.length" :async="true" for="invoices" :show-step-links="true" :classes="{ ul: ['pagination', 'd-inline-flex', 'mb-0', 'shadow-sm'], li: ['page-item'], 'li > a': ['page-link', 'cursor-pointer', 'bg-white'] }"></paginate-links>
+				<paginate-links
+					:step-links="{
+						next: 'Next',
+						prev: 'Previous'
+					}"
+					:key="invoices.length"
+					:async="true"
+					for="invoices"
+					:show-step-links="true"
+				></paginate-links>
 			</div>
 
-			<modal :close-button="false" ref="createInvoiceModal" @hidden="resetInvoiceForm()">
-				<h4 class="font-heading mb-3">Create Invoice</h4>
-				<vue-form-validate @submit="createInvoice()" class="d-flex flex-column flex-grow-1">
-					<div class="flex-grow-1">
-						<div class="form-group">
-							<label class="form-label">Contact</label>
-							<vue-select v-model="newInvoiceForm.contact_id" button_class="form-control" :options="stripeContacts" searchable required placeholder="Find contact"></vue-select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">Amount</label>
-							<input type="number" step="0.01" class="form-control" data-required v-model="newInvoiceForm.amount" placeholder="Amount" />
-						</div>
-						<div class="form-group">
-							<label class="form-label">Currency</label>
-							<vue-select v-model="newInvoiceForm.currency" button_class="form-control" :options="currencies" searchable required placeholder="Set currency"></vue-select>
-						</div>
-						<div class="form-group">
-							<label class="form-label">Booking Types (Optional)</label>
-							<vue-select v-model="newInvoiceForm.service_ids" :options="servicesList" button_class="form-control" multiple placeholder="Select booking type"></vue-select>
-						</div>
+			<Modal ref="createInvoiceModal" size="sm" :noBackdropHide="true">
+				<h4 class="font-serif uppercase font-semibold mb-4">CREATE INVOICE</h4>
+				<vue-form-validate @submit="createInvoice()">
+					<div class="mb-4">
+						<label>Contact</label>
+						<vue-select v-model="newInvoiceForm.contact_id" button_class="form-control" :options="stripeContacts" searchable required placeholder="Find contact"></vue-select>
 					</div>
-					<div class="d-flex align-items-center mt-2">
-						<button type="button" data-dismiss="modal" class="btn btn-light shadow-none" :disabled="newInvoiceForm.loading">Cancel</button>
-						<vue-button type="submit" :loading="newInvoiceForm.loading" button_class="ml-auto btn btn-primary">Create</vue-button>
+					<div class="mb-4">
+						<label>Amount</label>
+						<input type="number" step="0.01" class="form-control" data-required v-model="newInvoiceForm.amount" placeholder="Amount" />
+					</div>
+					<div class="mb-4">
+						<label>Currency</label>
+						<vue-select v-model="newInvoiceForm.currency" button_class="form-control" :options="currencies" searchable required placeholder="Set currency"></vue-select>
+					</div>
+					<div class="mb-4">
+						<label>Booking Types (Optional)</label>
+						<multiselect v-model="newInvoiceForm.service_ids" label="name" track-by="name" :options="servicesList" :showLabels="false" placeholder="" multiple>
+							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+							<span slot="noResult" class="text-muted text-sm">No services found.</span>
+						</multiselect>
+					</div>
+					<div class="flex justify-between mt-6">
+						<button type="button" class="btn btn-md btn-outline-primary" :disabled="newInvoiceForm.loading" @click="$refs.createInvoiceModal.hide()"><span>Cancel</span></button>
+						<vue-button type="submit" :loading="newInvoiceForm.loading" class="btn btn-md btn-primary"><span>Create</span></vue-button>
 					</div>
 				</vue-form-validate>
-			</modal>
+			</Modal>
 
-			<modal ref="editModal" :close-button="false">
+			<Modal ref="editModal">
 				<vue-form-validate v-if="invoiceToEdit" @submit="updateInvoice(invoiceToEdit)">
 					<h5 class="font-heading">Edit Invoice {{ invoiceToEdit.InvoiceNumber }}</h5>
-					<div class="form-group">
-						<label class="form-label">Description</label>
+					<div class="mb-4">
+						<label>Description</label>
 						<textarea rows="3" placeholder="Line description..." class="form-control resize-none" data-required v-model="invoiceToEdit.description"></textarea>
 					</div>
 					<div class="d-flex justify-content-end">
@@ -162,55 +150,55 @@
 						</button>
 					</div>
 				</vue-form-validate>
-			</modal>
+			</Modal>
 
-			<modal ref="voidModal" :close-button="false">
+			<Modal ref="voidModal">
 				<template v-if="invoiceToVoid">
-					<h5 class="font-heading text-center">Void Invoice</h5>
+					<h4 class="font-serif uppercase font-semibold mb-4 text-center">VOID INVOICE</h4>
 					<p class="text-center mt-3">
 						Are you sure to void this invoice?
 						<br />
-						<span class="text-danger">This action cannot be undone</span>
+						<span class="text-red-600">This action cannot be undone</span>
 					</p>
-					<div class="d-flex justify-content-end">
-						<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">Cancel</button>
+					<div class="flex justify-between mt-4">
+						<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.voidModal.hide()"><span>Cancel</span></button>
 						<button
-							class="btn btn-warning ml-auto"
+							class="btn btn-primary btn-md"
 							type="button"
 							@click="
 								updateInvoice(invoiceToVoid);
-								$refs['voidModal'].hide();
+								$refs.voidModal.hide();
 							"
 						>
-							Void
+							<span>Void</span>
 						</button>
 					</div>
 				</template>
-			</modal>
+			</Modal>
 
-			<modal ref="deleteModal" :close-button="false">
+			<Modal ref="deleteModal">
 				<template v-if="invoiceToDelete">
-					<h5 class="font-heading text-center">Delete Invoice</h5>
+					<h4 class="font-serif uppercase font-semibold mb-4 text-center">DELETE INVOICE</h4>
 					<p class="text-center mt-3">
 						Are you sure to delete this invoice?
 						<br />
-						<span class="text-danger">This action cannot be undone</span>
+						<span class="text-red-600">This action cannot be undone</span>
 					</p>
-					<div class="d-flex justify-content-end">
-						<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">Cancel</button>
+					<div class="flex justify-between mt-4">
+						<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.deleteModal.hide()"><span>Cancel</span></button>
 						<button
-							class="btn btn-danger ml-auto"
+							class="btn btn-red btn-md"
 							type="button"
 							@click="
 								updateInvoice(invoiceToDelete);
-								$refs['deleteModal'].hide();
+								$refs.deleteModal.hide();
 							"
 						>
-							Delete
+							<span>Delete</span>
 						</button>
 					</div>
 				</template>
-			</modal>
+			</Modal>
 		</div>
 
 		<div v-else class="position-absolute-center text-center">
