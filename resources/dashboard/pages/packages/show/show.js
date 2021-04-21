@@ -22,9 +22,12 @@ Vue.use(VuePaginate);
 import tooltip from '../../../../js/directives/tooltip.js';
 //const convertTime = require('convert-time');
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
+import ChevronLeftIcon from '../../../../icons/chevron-left';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
-	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, DollarSignIcon, WindowPlusIcon, CalendarIcon, VueSelect },
+	components: { Modal, VueFormValidate, VueCheckbox, PencilIcon, ChevronDownIcon, PlusIcon, CogIcon, TrashIcon, ClockIcon, ToggleSwitch, Timerangepicker, ArrowLeftIcon, MoreIcon, DollarSignIcon, WindowPlusIcon, CalendarIcon, VueSelect, ChevronLeftIcon, Multiselect },
 
 	directives: { tooltip },
 
@@ -32,7 +35,10 @@ export default {
 		packageItem: null,
 		clonedPackage: null,
 		selectedService: null,
-		activeServicePosition: 0
+		activeServicePosition: 0,
+		masks: {
+			input: 'MMMM D, YYYY'
+		}
 	}),
 
 	watch: {
@@ -106,8 +112,8 @@ export default {
 
 		update() {
 			this.updatePackage(this.clonedPackage).then(packageItemData => {
-				Object.keys(packageItemData).map(key => {
-					this.packageItem[key] = packageItemData[key];
+				Object.keys(packageItemData.data).map(key => {
+					this.packageItem[key] = packageItemData.data[key];
 				});
 			});
 			this.$refs['editModal'].hide();

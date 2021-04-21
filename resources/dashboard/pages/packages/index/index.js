@@ -13,12 +13,20 @@ import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
 import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
 import dayjs from 'dayjs';
+import InfoCircleIcon from '../../../../icons/info-circle.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../icons/cog';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 export default {
-	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch, MoreIcon, VueCheckbox },
+	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch, MoreIcon, VueCheckbox, InfoCircleIcon, VueDropdown, CogIcon, Multiselect },
 	data: () => ({
 		newPackage: {},
 		clonedPackage: null,
-		selectedPackage: null
+		selectedPackage: null,
+		masks: {
+			input: 'MMMM D, YYYY'
+		}
 	}),
 
 	computed: {
@@ -35,8 +43,9 @@ export default {
 					let serviceCopy = Object.assign({}, service);
 					serviceCopy.bookings = 1;
 					services.push({
-						text: serviceCopy.name,
-						value: serviceCopy
+						name: serviceCopy.name,
+						value: serviceCopy,
+						id: serviceCopy.id
 					});
 				}
 			});
@@ -75,19 +84,22 @@ export default {
 			deletePackage: 'packages/delete'
 		}),
 
-		edit(packageItem, index) {
-			this.clonedPackage = Object.assign({}, packageItem);
-			this.clonedPackage.index = index;
-			this.$refs['editModal'].show();
+		packageAction(action, packageItem) {
+			switch (action) {
+				case 'Edit':
+					this.clonedPackage = Object.assign({}, packageItem);
+					this.$refs.editModal.show();
+					break;
+				case 'Delete':
+					this.selectedPackage = packageItem;
+					this.$refs.deleteModal.show();
+					break;
+			}
 		},
 
 		update() {
-			this.updatePackage(this.clonedPackage).then(packageItem => {
-				Object.keys(packageItem).map(key => {
-					this.packages[this.clonedPackage.index][key] = packageItem[key];
-				});
-			});
-			this.$refs['editModal'].hide();
+			this.updatePackage(this.clonedPackage);
+			this.$refs.editModal.hide();
 		},
 
 		submit() {

@@ -1,6 +1,79 @@
 <template>
-	<div class="h-100" v-if="packageItem">
-		<div class="d-flex h-100 overflow-hidden">
+	<div v-if="packageItem">
+		<div class="min-h-screen flex flex-col relative">
+			<div class="content-header border-bottom uppercase">
+				<router-link to="/dashboard/packages" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
+				PACKAGE OVERVIEW
+			</div>
+
+			<div class="border-bottom p-6 grid grid-cols-12">
+				<div class="col-span-5">
+					<h1 class="text-2xl text-primary font-bold font-serif">{{ packageItem.name }}</h1>
+					<p class="text-sm text-muted">{{ packageItem.description }}</p>
+				</div>
+				<div class="col-span-4 flex items-center justify-between text-sm px-8">
+					<div>
+						<span class="text-muted">SERVICES</span>
+						<div>{{ packageItem.services.length }}</div>
+					</div>
+					<div class="px-8">
+						<span class="text-muted">PRICE</span>
+						<div>${{ parseFloat(packageItem.price).toFixed(2) }}</div>
+					</div>
+					<div>
+						<span class="text-muted">EXPIRES</span>
+						<div>{{ formatDate(packageItem.expiration_date) }}</div>
+					</div>
+				</div>
+				<div class="col-span-3 flex items-center justify-end">
+					<button type="button" class="btn btn-sm btn-primary" @click="$refs.editModal.show()"><span>Edit</span></button>
+					<button type="button" class="btn btn-sm btn-outline-primary ml-3" @click="$refs.deleteModal.show()"><TrashIcon class="fill-current"></TrashIcon></button>
+				</div>
+			</div>
+
+			<!-- Services -->
+			<div class="px-6">
+				<div class="border-bottom py-4" :class="{ active: selectedService.id == service.id }" v-for="(service, index) in packageItem.services" :key="service.id">
+					<div class="flex items-center " :data-intro="index == 0 ? $root.intros.packages_show.steps[0] : null">
+						<div>
+							<h6 class="mb-1 font-bold">{{ service.name }}</h6>
+							<span class="text-muted">Duration: {{ service.value.duration }} min</span>
+
+							<div class="flex items-center mt-4">
+								<div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings))" :key="index">
+									<div class="bg-gray-100 rounded-xl py-2 px-3">
+										<h6 class="font-bold">{{ service.value.duration }}min</h6>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="hidden dropdown mr-1 pl-1 ml-auto service-dropdown">
+							<button class="btn btn-white line-height-0 p-1 badge-pill shadow-none" data-toggle="dropdown" data-offset="-140, 0">
+								<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
+							</button>
+							<div class="dropdown-menu">
+								<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/bookings/services/${service.id}`">
+									View Service
+								</router-link>
+								<span class="dropdown-item cursor-pointer" @click="removeAssignedService(service, index)">
+									Remove
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="p-3 flex-1 bg-white shadow-sm position-relative rounded">
+					<div class="px-1 mb-2 d-inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings))" :key="index">
+						<div class="bg-primary rounded text-white py-3 px-4 cursor-pointerx">
+							<h6 class="font-heading mb-0">{{ selectedService.duration }} min</h6>
+						</div>
+					</div>
+				</div> -->
+			</div>
+		</div>
+
+		<div class="hidden d-flex h-100 overflow-hidden">
 			<div class="p-4 flex-grow-1 overflow-auto">
 				<div class="d-flex">
 					<div>
@@ -84,189 +157,88 @@
 						</div>
 					</div>
 				</div>
-
-				<!-- <div class="mt-5">
-          <div class="row px-2">
-            <div class="col-md-4 px-2" v-for="(service, index) in packageItem.services" :key="service.id">
-              <div class="mx-1 mb-4">
-                <div class="card rounded service p-3 shadow-sm w-100 position-relative">
-                  <div class="dropdown service-more position-absolute">
-                    <button
-                      class="btn btn-white line-height-0 p-1 badge-pill shadow-none"
-                      data-toggle="dropdown"
-                      data-offset="-140, 0"
-                    >
-                      <more-icon width="25" height="25" transform="scale(0.65)" class="fill-gray"></more-icon>
-                    </button>
-                    <div class="dropdown-menu">
-                      <router-link
-                        class="dropdown-item cursor-pointer"
-                        tag="span"
-                        :to="`/dashboard/bookings/services/${service.id}`"
-                      >
-                        View Service
-                      </router-link>
-                      <span
-                        class="dropdown-item cursor-pointer"
-                        @click="packageItem.services.splice(index, 1)"
-                      >
-                        Remove
-                      </span>
-                    </div>
-                  </div>
-                  <h5 class="font-heading mb-1">{{ service.name }}</h5>
-                  <p class="multiline-ellipsis mb-0 text-muted">
-                    {{ service.description }}
-                  </p>
-
-                  <div class="d-flex align-items-center mt-3 user-profile-container">
-                    <div
-                        v-tooltip.top="'You'"
-                        class="user-profile-image user-profile-image-sm"
-                        :style="{
-                          backgroundImage:
-                            'url(' + $root.auth.profile_image + ')',
-                        }"
-                      >
-                        <span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
-                      </div>
-                      <div
-                        v-for="assignedService in service.assigned_services"
-                        :key="assignedService.id"
-                        v-tooltip.top="assignedService.member.member_user.full_name"
-                        class="user-profile-image user-profile-image-sm"
-                        :style="{
-                          backgroundImage:
-                            'url(' + assignedService.member.member_user.profile_image + ')',
-                        }"
-                      >
-                        <span v-if="!assignedService.member.member_user.profile_image">{{  assignedService.member.member_user.initials }}</span>
-                      </div>
-                  </div>
-
-                  <div class="d-flex align-items-center mt-4 line-height-1">
-                    <div class="d-flex align-items-center">
-                      <clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
-                      <small class="text-muted ml-1">{{ service.duration }} min</small>
-                    </div>
-                    <div class="d-flex align-items-center ml-3">
-                      <dollar-sign-icon width="8" height="8" transform="scale(2.4)" fill="#6c757d"></dollar-sign-icon>
-                      <small class="text-muted ml-1">{{ service.default_rate }}</small>
-                    </div>
-                    <div class="d-flex align-items-center ml-3" v-if="service.in_widget">
-                      <window-plus-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></window-plus-icon>
-                      <small class="text-muted ml-1">In widget</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4 px-2">
-              <div class="position-relative pb-4 h-100">
-                <div class="h-100 position-relative">
-                  <button
-                    :data-intro="$root.intros.add_service.intro"
-                    :data-step="$root.intros.add_service.step"
-                    class="btn btn-light btn-add btn-lg shadow-none d-flex align-items-center justify-content-center w-100 h-100 text-muted"
-                    type="button"
-                    @click="
-                      newService = {};
-                      $refs['addModal'].show();
-                    "
-                  >
-                    <plus-icon class="fill-gray"></plus-icon>
-                    Add Service
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
 			</div>
 		</div>
 
-		<modal ref="editModal" :close-button="false" size="modal-lg">
-			<h5 class="font-heading mb-3">Edit Package</h5>
+		<Modal ref="editModal">
+			<h6 class="font-serif font-semibold mb-5">EDIT PACKAGE</h6>
 			<vue-form-validate @submit="update" v-if="clonedPackage">
-				<div class="row mx-0 mb-2">
-					<div class="col-md-6 pl-0">
-						<fieldset>
-							<div class="form-group">
-								<label class="form-label">Package name</label>
-								<input type="text" class="form-control" v-model="clonedPackage.name" data-required />
-							</div>
-							<div class="form-group">
-								<label class="form-label">Description</label>
-								<textarea class="form-control resize-none" v-model="clonedPackage.description" data-required rows="3"></textarea>
-							</div>
-
-							<div class="form-group">
-								<label class="form-label">Expires on</label>
-								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date">
-									<template v-slot="{ inputValue, inputEvents }">
-										<div type="button" class="form-control" v-on="inputEvents">
-											<span v-if="inputValue">{{ formatDate(inputValue) }}</span>
-											<span v-else class="text-muted font-weight-normal">Set expiration date</span>
-										</div>
-									</template>
-								</v-date-picker>
-							</div>
-
-							<div class="form-group">
-								<label class="form-label">Package Total</label>
-								<input type="number" step="0.01" class="form-control" v-model="clonedPackage.price" placeholder="Package Price" />
-							</div>
-						</fieldset>
+				<fieldset>
+					<div class="mb-4">
+						<label>Package name</label>
+						<input type="text" v-model="clonedPackage.name" data-required />
 					</div>
-					<div class="col-md-6 border-left pr-0 border-gray-200">
-						<h6 class="font-heading">Services</h6>
-						<vue-select v-model="clonedPackage.services" :options="servicesList" multiple data-required placeholder="Select service"></vue-select>
-						<div v-for="(service, index) in clonedPackage.services" :key="service.id" class="rounded bg-light px-3 py-2 mt-2 d-flex align-items-center">
-							<h6 class="mb-1">{{ service.name }}</h6>
-							<input type="number" class="form-control w-25 ml-auto" data-required placeholder="Bookings" min="1" v-model="clonedPackage.services[index].bookings" value="1" />
+					<div class="mb-4">
+						<label>Description</label>
+						<textarea class="form-control resize-none" v-model="clonedPackage.description" data-required rows="3"></textarea>
+					</div>
+
+					<div class="mb-4">
+						<label>Expires on</label>
+						<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date" :masks="masks">
+							<template v-slot="{ inputValue, inputEvents }">
+								<input type="text" readonly v-on="inputEvents" :value="inputValue" placeholder="Set expiration date" />
+							</template>
+						</v-date-picker>
+					</div>
+
+					<div class="mb-4">
+						<label>Services</label>
+						<multiselect v-model="clonedPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple>
+							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+							<span slot="noResult" class="text-muted text-sm">No services found.</span>
+						</multiselect>
+
+						<div v-for="(service, index) in clonedPackage.services" :key="service.id" class="rounded-xl bg-gray-100 px-3 py-2 mt-2 flex items-center">
+							<h6 class="text-sm text-primary font-semibold">{{ service.name }}</h6>
+							<input type="number" class="w-1/3 ml-auto" data-required placeholder="Bookings" min="1" v-model="clonedPackage.services[index].bookings" value="1" />
 						</div>
 					</div>
-				</div>
-				<div class="form-group">
+
+					<div class="mb-4">
+						<label>Package Total</label>
+						<input type="number" step="0.01" v-model="clonedPackage.price" placeholder="Package Price" />
+					</div>
+				</fieldset>
+				<div class="mb-4">
 					<vue-checkbox v-model="clonedPackage.in_widget" label="Available in widget"></vue-checkbox>
 				</div>
-				<div class="d-flex align-items-center">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex items-center justify-between mt-6">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.editModal.hide()">
+						<span>Cancel</span>
 					</button>
-					<button class="ml-auto btn btn-primary" type="submit">Update</button>
+					<button class="btn btn-md btn-primary" type="submit"><span>Update</span></button>
 				</div>
 			</vue-form-validate>
-		</modal>
+		</Modal>
 
-		<modal ref="deleteModal" :close-button="false">
+		<Modal ref="deleteModal">
 			<template v-if="packageItem">
-				<h5 class="font-heading text-center">Delete Service</h5>
+				<h6 class="font-serif font-semibold mb-5 text-center">DELETE PACKAGE</h6>
 				<p class="text-center mt-3">
 					Are you sure to delete the package
 					<strong>{{ packageItem.name }}</strong>
 					?
 					<br />
-					<span class="text-danger">This action cannot be undone</span>
+					<span class="text-red-600">This action cannot be undone</span>
 				</p>
-				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex justify-between items-center mt-4">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.deleteModal.hide()">
+						<span>Cancel</span>
 					</button>
 					<button
-						class="btn btn-danger ml-auto"
+						class="btn btn-md btn-red"
 						type="button"
 						@click="
-							deletePackage(packageItem).then(() => $router.push('/dashboard/bookings/packages'));
-							$refs['deleteModal'].hide();
+							deletePackage(packageItem).then(() => $router.push('/dashboard/packages'));
+							$refs.deleteModal.hide();
 						"
 					>
-						Delete
+						<span>Delete</span>
 					</button>
 				</div>
 			</template>
-		</modal>
+		</Modal>
 	</div>
 </template>
 

@@ -5,20 +5,18 @@ require('../js/bootstrap');
 
 import dayjs from 'dayjs';
 import jstz from 'jstz';
-import tooltip from '../js/directives/tooltip.js';
 const timezone = jstz.determine();
 import CheckmarkIcon from '../icons/checkmark';
 import echo from '../js/echo.js';
-import { debounce } from 'throttle-debounce';
 import VueSelect from '../components/vue-select/vue-select.vue';
 import Modal from '../components/modal/modal.vue';
 import VueFormValidate from '../components/vue-form-validate.vue';
 import MoreIcon from '../icons/more';
+import VueCheckbox from '../components/vue-checkbox/vue-checkbox.vue';
+import Chatroom from '../dashboard/pages/booking-links/chatroom/chatroom.vue';
 
 export default {
-	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon },
-
-	directives: { tooltip },
+	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom },
 
 	data: () => ({
 		auth: AUTH,
@@ -85,35 +83,11 @@ export default {
 	created() {
 		this.timezone = timezone.name();
 		this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
-		this.channel.leaving(user => {
-			let highlighter = document.querySelector(`.highlighter[data-id="${user.id}"]`);
-			if (highlighter) {
-				highlighter.style.left = '-100%';
-			}
-		});
-		this.channel.listenForWhisper('move', data => {
-			if (data.selectedDate == this.selectedDate) {
-				this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
-				data.user.left = `${document.querySelector('.timeslot-button[data-index="' + data.index + '"]').offsetLeft}px`;
-				this.$set(this.users, data.user.id, data.user);
-			} else {
-				data.user.left = '-100%';
-			}
-			this.$set(this.users, data.user.id, data.user);
-		});
 
 		this.channel.listenForWhisper('selectedTimeslots', data => {
 			if (data.selectedDate == this.selectedDate) {
 				this.bookingLink.dates[data.selectedDate].selectedTimeslots = data.selectedTimeslots;
 			}
-		});
-		this.debounceFunc = debounce(350, false, e => {
-			this.currentTarget = e.target;
-			this.channel.whisper('move', {
-				user: this.auth,
-				index: e.target.dataset.index,
-				selectedDate: this.selectedDate
-			});
 		});
 
 		this.selectedDate = Object.keys(this.bookingLink.dates)[0];
@@ -125,23 +99,19 @@ export default {
 	},
 
 	mounted() {
-		this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
 		if (this.in_emails) {
 			this.$refs['loginModal'].show();
 		}
 	},
 
 	methods: {
-		async toggleTimeslot() {
-			if (this.hoveredTimeslot) {
-				let timeslot = this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == this.hoveredTimeslot.time);
-				if (timeslot) {
-					this.$set(timeslot, 'isSuggested', !timeslot.isSuggested);
-					this.channel.whisper('suggestTimeslot', {
-						timeslot: timeslot
-					});
-				}
-			}
+		async toggleTimeslot(state, timeslot) {
+			this.$set(timeslot, 'is_suggested', state);
+			this.channel.whisper('suggestTimeslot', {
+				userId: this.auth.id,
+				timeslot: timeslot,
+				is_suggested: state
+			});
 		},
 
 		login() {
@@ -150,16 +120,6 @@ export default {
 
 		register() {
 			this.$refs['loginModal'].hide();
-		},
-
-		showHighlight(e) {
-			let timeslot = e.target.dataset.timeslot;
-			if (timeslot) {
-				this.hoveredTimeslot = JSON.parse(timeslot);
-			}
-			let x = `${e.target.offsetLeft}px`;
-			this.$refs['highlighter'].style.left = x;
-			this.debounceFunc(e);
 		},
 
 		formatDate(date) {

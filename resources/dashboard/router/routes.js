@@ -65,12 +65,12 @@ const routes = [
 				children: [
 					{
 						path: '/',
-						name: 'packages_index',
+						name: 'Packages',
 						component: () => import(/* webpackChunkName: "dashboard-packages" */ '../pages/packages/index/index.vue')
 					},
 					{
 						path: ':id',
-						name: 'packages_show',
+						name: 'Packages',
 						component: () => import(/* webpackChunkName: "dashboard-bookings-packages-show" */ '../pages/packages/show/show.vue')
 					}
 				]

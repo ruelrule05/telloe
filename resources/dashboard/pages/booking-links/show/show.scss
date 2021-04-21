@@ -23,8 +23,8 @@
 	&:after {
 		content: '';
 		width: 1px;
-		height: 10px;
-		top: -10px;
+		height: 17px;
+		top: -17px;
 		z-index: -1;
 		@apply absolute bg-primary transform -translate-x-1/2 left-1/2 transition-opacity opacity-0;
 	}

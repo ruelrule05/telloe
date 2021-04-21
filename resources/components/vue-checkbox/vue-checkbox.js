@@ -11,10 +11,6 @@ export default {
 	watch: {
 		value: function(value) {
 			this.state = value ? 1 : 0;
-		},
-
-		state: function(value) {
-			this.$emit('input', value);
 		}
 	},
 
@@ -32,6 +28,12 @@ export default {
 
 		label: {
 			type: String
+		}
+	},
+
+	methods: {
+		emitInput() {
+			this.$emit('input', this.state);
 		}
 	}
 };

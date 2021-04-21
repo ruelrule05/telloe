@@ -23,7 +23,7 @@
 					</div>
 				</div>
 				<div class="flex justify-end relative mt-8">
-					<div class="overflow-x-scroll overflow-y-visible" style="margin-left: 200px">
+					<div class="overflow-x-scroll overflow-y-visible pb-4" style="margin-left: 200px">
 						<table class="w-full timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>
@@ -34,7 +34,7 @@
 								</td>
 							</tr>
 							<tr v-for="contact in bookingLink.booking_link_contacts" :key="contact.id" class="relative">
-								<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
+								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
 											<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
@@ -47,8 +47,13 @@
 										</div>
 									</div>
 								</td>
-								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
-									<div class="items-center column  mb-2 cursor-pointer px-1" :style="{ backgroundColor: contact.color }">
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
+									<span v-if="(contact.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested border-l-2 border-r-2 border-b-2 absolute bottom-3 z-50 left-0 w-full h-3 text-center" :style="{ borderColor: contact.color.replace('0.1', '1') }">
+										<div class="profile-image profile-image-xs inline-block -mt-1" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
+											<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
+										</div>
+									</span>
+									<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: contact.color }">
 										<div class="timeslot-content" :class="{ selected: bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
 											<p class="text-sm font-bold text-center text-body">{{ timeslot['12hr'] }}</p>
 											<p class="text-sm text-center text-muted uppercase">{{ timeslot.abbreviation }}</p>

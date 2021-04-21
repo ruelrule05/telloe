@@ -14,7 +14,6 @@ import Paginate from '../../../../components/paginate/paginate.vue';
 import ShortcutIcon from '../../../../icons/shortcut';
 import MoreIcon from '../../../../icons/more';
 import ArrowLeftIcon from '../../../../icons/arrow-left';
-import { debounce } from 'throttle-debounce';
 import echo from '../../../../js/echo.js';
 import Chatroom from '../chatroom/chatroom.vue';
 import VueButton from '../../../../components/vue-button.vue';
@@ -87,31 +86,24 @@ export default {
 			this.selectedDate = Object.keys(this.bookingLink.dates)[0];
 			this.$root.contentloading = false;
 			this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
-			this.channel.listenForWhisper('move', data => {
-				if (data.selectedDate == this.selectedDate) {
-					this.highlighterWidth = `${document.querySelector('.timeslot').offsetWidth}px`;
-					data.user.left = `${document.querySelector('.timeslot[data-index="' + data.index + '"]').offsetLeft}px`;
-					this.$set(this.users, data.user.id, data.user);
-				} else {
-					data.user.left = '-100%';
-				}
-				this.$set(this.users, data.user.id, data.user);
-			});
+
 			this.channel.listenForWhisper('suggestTimeslot', data => {
-				let timeslot = this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == data.timeslot.time);
-				if (timeslot) {
-					this.$set(timeslot, 'isSuggested', data.timeslot.isSuggested);
+				let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+				if (contact) {
+					if (!contact.suggestedTimeslots) {
+						this.$set(contact, 'suggestedTimeslots', []);
+					}
+					let index = contact.suggestedTimeslots.findIndex(t => t.time == data.timeslot.time);
+					if (data.is_suggested) {
+						if (index == -1) {
+							contact.suggestedTimeslots.push(data.timeslot);
+						}
+					} else {
+						if (index > -1) {
+							contact.suggestedTimeslots.splice(index, 1);
+						}
+					}
 				}
-			});
-			this.debounceFunc = debounce(350, false, e => {
-				this.channel.whisper('move', {
-					user: this.$root.auth,
-					index: e.target.dataset.index,
-					selectedDate: this.selectedDate
-				});
-			});
-			this.$nextTick(() => {
-				//this.highlighterWidth = `${document.querySelector('.timeslot-button').offsetWidth}px`;
 			});
 		});
 	},

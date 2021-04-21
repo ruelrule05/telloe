@@ -127,7 +127,7 @@
 						<div class="sidebar-heading mt-9">APPS</div>
 						<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
 						</div>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/packages">
+						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/packages">
 							Packages
 						</router-link>
 

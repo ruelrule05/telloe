@@ -19,7 +19,7 @@
 	}
 }
 .timeslot-content {
-	@apply px-1 flex flex-col justify-center h-full border border-transparent hover:border-primary transition-colors rounded-lg relative;
+	@apply px-1 flex flex-col justify-center h-full border border-gray-100 border-opacity-0 rounded-lg relative transition-colors;
 	&:after {
 		content: '';
 		width: 1px;
@@ -29,7 +29,13 @@
 		@apply absolute bg-primary transform -translate-x-1/2 left-1/2 transition-opacity opacity-0;
 	}
 	&.selected {
-		@apply border-primary;
+		@apply border-primary border-opacity-100 #{!important};
+		&:after {
+			@apply opacity-100;
+		}
+	}
+	&.suggested {
+		@apply border-opacity-100;
 		&:after {
 			@apply opacity-100;
 		}
