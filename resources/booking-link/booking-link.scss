@@ -23,8 +23,8 @@
 	&:after {
 		content: '';
 		width: 1px;
-		height: 10px;
-		top: -10px;
+		height: 17px;
+		top: -17px;
 		z-index: -1;
 		@apply absolute bg-primary transform -translate-x-1/2 left-1/2 transition-opacity opacity-0;
 	}
@@ -47,6 +47,13 @@
 	height: 36px;
 	> span {
 		@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-sm font-bold text-white leading-tight;
+	}
+	&.profile-image-xs {
+		width: 22px;
+		height: 22px;
+		> span {
+			font-size: 8px;
+		}
 	}
 	&.profile-image-sm {
 		width: 28px;
@@ -72,4 +79,7 @@
 	&.profile-image-gray {
 		@apply bg-gray-300;
 	}
+}
+.suggested {
+	@apply border-l-2 border-r-2 border-b-2 absolute bottom-3 z-50 left-0 w-full h-3 text-center;
 }

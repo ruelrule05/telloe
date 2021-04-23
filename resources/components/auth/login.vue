@@ -78,7 +78,7 @@ export default {
 					.post('/login', this.loginForm, { toast: true })
 					.then(() => {
 						setTimeout(() => {
-							window.location.replace('/dashboard/overview');
+							window.location.replace('/dashboard/calendar');
 						}, 150);
 					})
 					.catch(() => {

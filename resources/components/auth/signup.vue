@@ -215,7 +215,7 @@ export default {
 			this.loading = false;
 			if (step == 4) {
 				this.loading = true;
-				window.location.href = '/dashboard/overview';
+				window.location.href = '/dashboard/calendar';
 			}
 		},
 

@@ -91,9 +91,6 @@
 
 					<div class="mt-12">
 						<div class="sidebar-heading">BOOKINGS</div>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/overview">
-							Overview
-						</router-link>
 						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/calendar">
 							Calendar
 						</router-link>

@@ -61,7 +61,7 @@ export default {
 			this.pageloading = false;
 			if (response.data.user) {
 				if (this.$root.action == 'login') {
-					window.location.replace('/dashboard/overview');
+					window.location.replace('/dashboard/calendar');
 				} else if (this.$root.action == 'signup') {
 					this.$root.auth = response.data.user;
 					this.$root.signupStep = 1;
@@ -75,7 +75,7 @@ export default {
 			this.pageloading = false;
 			if (response.data.user) {
 				if (this.$root.action == 'login') {
-					window.location.replace('/dashboard/overview');
+					window.location.replace('/dashboard/calendar');
 				} else if (this.$root.action == 'signup') {
 					this.$root.auth = response.data.user;
 					this.$root.signupStep = 1;

@@ -20,6 +20,7 @@ import VueButton from '../../../../components/vue-button.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import copy from 'copy-text-to-clipboard';
 import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
+
 export default {
 	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox },
 

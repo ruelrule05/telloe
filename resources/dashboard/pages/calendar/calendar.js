@@ -37,7 +37,7 @@ export default {
 				});
 			});
 
-			this.$root.auth.google_calendar_events.forEach(event => {
+			(this.$root.auth.google_calendar_events || []).forEach(event => {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
@@ -48,7 +48,7 @@ export default {
 				});
 			});
 
-			this.$root.auth.outlook_calendar_events.forEach(event => {
+			(this.$root.auth.outlook_calendar_events || []).forEach(event => {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {

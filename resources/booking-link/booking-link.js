@@ -14,9 +14,12 @@ import VueFormValidate from '../components/vue-form-validate.vue';
 import MoreIcon from '../icons/more';
 import VueCheckbox from '../components/vue-checkbox/vue-checkbox.vue';
 import Chatroom from '../dashboard/pages/booking-links/chatroom/chatroom.vue';
+import ClockIcon from '../icons/clock';
+import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
+import ChevronDownIcon from '../icons/chevron-down';
 
 export default {
-	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom },
+	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom, ClockIcon, VueDropdown, ChevronDownIcon },
 
 	data: () => ({
 		auth: AUTH,
@@ -43,7 +46,11 @@ export default {
 		},
 		authAction: 'login',
 		hoveredTimeslot: null,
-		dayjs: dayjs
+		dayjs: dayjs,
+		requestData: null,
+		acceptedContacts: 0,
+		selectedTimeslot: null,
+		booking: null
 	}),
 
 	computed: {
@@ -90,6 +97,66 @@ export default {
 			}
 		});
 
+		this.channel.listenForWhisper('suggestTimeslot', data => {
+			let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+			if (contact) {
+				if (!contact.suggestedTimeslots) {
+					this.$set(contact, 'suggestedTimeslots', []);
+				}
+				let index = contact.suggestedTimeslots.findIndex(t => t.time == data.timeslot.time);
+				if (data.is_suggested) {
+					if (index == -1) {
+						contact.suggestedTimeslots.push(data.timeslot);
+					}
+				} else {
+					if (index > -1) {
+						contact.suggestedTimeslots.splice(index, 1);
+					}
+				}
+			}
+		});
+
+		this.channel.listenForWhisper('requestToBook', data => {
+			let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+			if (contact) {
+				data.contact = contact;
+				this.requestData = data;
+				this.$refs.requestingModal.show();
+			}
+		});
+
+		this.channel.listenForWhisper('declineRequest', data => {
+			this.acceptedContacts = 0;
+			this.$refs.requestModal.hide(true);
+			this.$toast.error(`${data.contact} has declined the request to book the selected timeslot.`);
+		});
+
+		this.channel.listenForWhisper('acceptRequest', data => {
+			let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+			if (contact) {
+				this.acceptedContacts++;
+				if (this.bookingLink.booking_link_contacts.length == this.acceptedContacts) {
+					this.channel.whisper('creatingBooking', {});
+					this.$refs.requestingModal.hide(true);
+					this.$refs.requestModal.hide(true);
+					this.$refs.bookingModal.show();
+					this.createBooking();
+				}
+			}
+		});
+
+		this.channel.listenForWhisper('creatingBooking', () => {
+			this.$refs.requestingModal.hide(true);
+			this.$refs.requestModal.hide(true);
+			this.$refs.bookingModal.show();
+		});
+
+		this.channel.listenForWhisper('bookingSuccess', data => {
+			this.booking = data.booking;
+			this.$refs.bookingModal.hide(true);
+			this.$refs.bookingSuccessModal.show();
+		});
+
 		this.selectedDate = Object.keys(this.bookingLink.dates)[0];
 
 		if (this.in_emails) {
@@ -100,11 +167,70 @@ export default {
 
 	mounted() {
 		if (this.in_emails) {
-			this.$refs['loginModal'].show();
+			this.$refs.loginModal.show();
 		}
 	},
 
 	methods: {
+		addToCalendar(calendar, booking) {
+			switch (calendar) {
+				case 'Google Calendar':
+					window.open(booking.google_link, '_blank');
+					break;
+				case 'MS Outlook':
+					window.open(booking.outlook_link, '_blank');
+					break;
+				case 'Yahoo':
+					window.open(booking.yahoo_link, '_blank');
+					break;
+				case 'iCal (.ics file download)':
+					window.open(booking.ical_link, '_blank');
+					break;
+			}
+		},
+
+		async createBooking() {
+			let data = {
+				date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+				start: this.selectedTimeslot.time
+			};
+			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
+			if (response.data) {
+				this.booking = response.data;
+				this.$refs.bookingModal.hide(true);
+				this.$refs.bookingSuccessModal.show();
+				this.channel.whisper('bookingSuccess', {
+					booking: this.booking
+				});
+			}
+		},
+
+		declineRequest() {
+			this.channel.whisper('declineRequest', {
+				contact: this.auth.full_name
+			});
+			this.$refs.requestingModal.hide(true);
+		},
+
+		acceptRequest() {
+			this.channel.whisper('acceptRequest', {
+				userId: this.auth.id
+			});
+			this.$refs.requestingModal.hide(true);
+			this.$refs.requestModal.show();
+		},
+
+		requestToBook(timeslot) {
+			this.selectedTimeslot = timeslot;
+			this.channel.whisper('requestToBook', {
+				userId: this.auth.id,
+				timeslot: timeslot,
+				date: this.selectedDate
+			});
+			this.acceptedContacts++;
+			this.$refs.requestModal.show();
+		},
+
 		async toggleTimeslot(state, timeslot) {
 			this.$set(timeslot, 'is_suggested', state);
 			this.channel.whisper('suggestTimeslot', {
@@ -126,17 +252,17 @@ export default {
 			return dayjs(date).format('MMMM D, YYYY');
 		},
 
-		timezoneTime(timezone, time) {
-			let timezoneTime;
-			if (timezone != this.timezone) {
-				let profileTZ = this.getTimeZoneOffset(new Date(), timezone);
-				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
-				let timeslotDate = `${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`;
-				timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
-			} else {
-				timezoneTime = dayjs(`${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`);
-			}
-			return timezoneTime.format('h:mm A');
+		timeslotTime(time, contact) {
+			let timezoneTime = this.timezoneTime(time, contact.contact.contact_user.timezone);
+			return `<span class="text-sm font-bold text-body block -mb-1">${timezoneTime.replace('AM', '').replace('PM', '')}</span><span class="text-sm text-muted uppercase">${timezoneTime.slice(-2)}</span>`;
+		},
+
+		timezoneTime(time, userTimezone) {
+			let userTZ = this.getTimeZoneOffset(new Date(), userTimezone);
+			let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
+			let timeslotDate = `${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`;
+			let timezoneTime = dayjs(timeslotDate).add(localTZ - userTZ, 'minute');
+			return timezoneTime.format('hh:mmA');
 		},
 
 		getTimeZoneOffset(date, timeZone) {

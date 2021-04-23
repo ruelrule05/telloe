@@ -36,7 +36,9 @@ use  App\Http\SocialiteHelper;
 //     //Mail::to('cleidoscope@gmail.com')->send($email);
 //     return $email;
 // });
-
+Route::get('test', function () {
+    echo 'sds';
+});
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
 });
@@ -48,7 +50,7 @@ Route::group(
     function () {
         Route::get('/', 'PageController@homepage');
 
-        Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
+        Route::get('/booking-links/{uuid}', 'BookingLinkController@public')->middleware('auth');
 
         Route::get('/ics', 'BookingController@downloadIcs');
 
@@ -165,6 +167,7 @@ Route::group(
 
                 Route::get('booking-links/get_all_timeslots', 'BookingLinkController@getAllTimeslots');
                 Route::post('booking-links/{id}/send_invitation', 'BookingLinkController@sendInvitation');
+                Route::post('booking-links/{uuid}/book', 'BookingLinkController@book');
                 Route::apiResource('booking-links', 'BookingLinkController');
             });
 

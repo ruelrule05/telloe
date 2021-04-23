@@ -8,6 +8,7 @@ import VueSelect from '../../../components/vue-select/vue-select.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Modal from '../../../components/modal/modal.vue';
 import convertTime from '../../../js/plugins/convert-time';
+import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 export default {
 	props: {
 		booking: {},
@@ -20,7 +21,7 @@ export default {
 		}
 	},
 
-	components: { CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon },
+	components: { CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker },
 
 	data: () => ({
 		clonedBooking: {},

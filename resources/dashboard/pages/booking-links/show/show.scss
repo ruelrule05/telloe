@@ -35,3 +35,6 @@
 		}
 	}
 }
+.suggested {
+	@apply border-l-2 border-r-2 border-b-2 absolute bottom-3 z-50 left-0 w-full h-3 text-center;
+}

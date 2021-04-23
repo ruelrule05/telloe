@@ -101,7 +101,8 @@ export default {
 			custom_fields: {},
 			assigned_services: [],
 			sendToEmail: 1
-		}
+		},
+		csrf_token: ''
 	}),
 
 	watch: {
@@ -278,6 +279,7 @@ export default {
 
 	mounted() {
 		this.$root.contentloading = false;
+		this.csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 	},
 
 	methods: {

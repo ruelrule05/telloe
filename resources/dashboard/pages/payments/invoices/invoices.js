@@ -19,6 +19,7 @@ import Vue from 'vue';
 Vue.use(VuePaginate);
 const format = require('format-number');
 import getSymbolFromCurrency from 'currency-symbol-map';
+import InfoCircleIcon from '../../../../icons/info-circle.vue';
 export default {
 	components: {
 		Modal,
@@ -34,7 +35,8 @@ export default {
 		TrashIcon,
 		MoreIcon,
 		XeroIcon,
-		CheckmarkIcon
+		CheckmarkIcon,
+		InfoCircleIcon
 	},
 
 	directives: { Tooltip },

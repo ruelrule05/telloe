@@ -3,17 +3,21 @@
 		<h3 class="mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a custom link</h3>
 		<vue-form-validate @submit="storeLink">
 			<div class="form">
-				<div class="grid grid-cols-2 gap-x-8 justify-between form-inline">
-					<div class="form-field">
+				<div class="grid grid-cols-12 gap-x-8 justify-between form-inline">
+					<div class="col-span-4 form-field">
 						<label>Name</label>
 						<input type="text" v-model="name" placeholder="Enter a name for your custom link" data-required />
 					</div>
-					<div class="form-field">
+					<div class="col-span-6 form-field">
 						<label>Add Contacts</label>
 						<multiselect v-model="selectedContacts" label="name" track-by="name" :options="contactsOptions" :showLabels="false" placeholder="" multiple>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
 						</multiselect>
+					</div>
+					<div class="col-span-2 form-field">
+						<label>Duration (min)</label>
+						<input type="number" min="1" v-model="duration" placeholder="Duration" data-required />
 					</div>
 				</div>
 			</div>

@@ -423,7 +423,7 @@ export default {
 				case 'Google Calendar':
 					window.open(booking.google_link, '_blank');
 					break;
-				case 'MS Outlook ':
+				case 'MS Outlook':
 					window.open(booking.outlook_link, '_blank');
 					break;
 				case 'Yahoo':

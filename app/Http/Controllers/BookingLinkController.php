@@ -52,4 +52,13 @@ class BookingLinkController extends Controller
         $bookingLinkService = new BookingLinkService();
         return $bookingLinkService->destroy($id);
     }
+
+    public function book($uuid, Request $request)
+    {
+        $this->validate($request, [
+            'date' => 'required|date',
+            'start' => 'required|date_format:H:i',
+        ]);
+        return BookingLinkService::book($uuid, $request);
+    }
 }

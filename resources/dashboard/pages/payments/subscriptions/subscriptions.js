@@ -20,6 +20,7 @@ Vue.use(VuePaginate);
 import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
 const dateFormat = require('dateformat');
+import InfoCircleIcon from '../../../../icons/info-circle.vue';
 
 export default {
 	components: {
@@ -36,7 +37,8 @@ export default {
 		BlockIcon,
 		TrashIcon,
 		MoreIcon,
-		CloseIcon
+		CloseIcon,
+		InfoCircleIcon
 	},
 
 	directives: { Tooltip },

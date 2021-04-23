@@ -7,6 +7,11 @@
 		<div class="flex flex-grow">
 			<div class="sidebar border-right px-6">
 				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+
+				<form action="/logout" method="POST">
+					<input type="hidden" name="_token" :value="csrf_token" />
+					<button class="sidebar-menu-item" type="submit">Log Out</button>
+				</form>
 			</div>
 			<div class="flex-grow">
 				<div v-if="activeMenu == 'Profile'" class="w-6/12 p-6">

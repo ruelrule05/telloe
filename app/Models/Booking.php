@@ -10,7 +10,7 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes'];
+    protected $fillable = ['service_id', 'booking_link_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes'];
     protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
@@ -26,6 +26,11 @@ class Booking extends BaseModel
     public function service()
     {
         return $this->belongsTo(Service::class)->withTrashed();
+    }
+
+    public function bookingLink()
+    {
+        return $this->belongsTo(BookingLink::class)->withTrashed();
     }
 
     public function getIsExpiredAttribute()

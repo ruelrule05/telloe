@@ -28,6 +28,7 @@ class StoreBookingLinkRequest extends FormRequest
             'name' => 'required|max:255',
             'contacts' => 'required|array',
             'dates' => 'required|array',
+            'duration' => 'required|integer',
 
             // 'user_id' => 'required|integer',
             // 'uuid' => 'required|unique',

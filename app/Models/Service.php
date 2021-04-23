@@ -119,8 +119,6 @@ class Service extends BaseModel
             $timeslot = [
                 'label' => $timeStart->format('h:iA'),
                 'time' => $timeStart->format('H:i'),
-                'abbreviation' => $timeStart->format('a'),
-                '12hr' => $timeStart->format('h:i'),
                 'is_available' => false
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');

@@ -19,7 +19,8 @@ export default {
 		timeslotsLoading: false,
 		dayjs: dayjs,
 		startDate: null,
-		name: ''
+		name: '',
+		duration: 0
 	}),
 
 	computed: {
@@ -112,7 +113,8 @@ export default {
 						color: c.color
 					};
 				}),
-				dates: dates
+				dates: dates,
+				duration: this.duration
 			};
 			await window.axios.post('/booking-links', data);
 			this.$parent.getBookingLinks({ paginate: true });

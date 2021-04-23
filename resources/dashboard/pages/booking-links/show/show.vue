@@ -2,7 +2,7 @@
 	<div class="min-h-screen" v-if="bookingLink">
 		<div class="content-header border-bottom flex items-center">
 			<router-link to="/dashboard/booking-links" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
-			{{ bookingLink.name }}
+			{{ bookingLink.name }} ({{ bookingLink.duration }} mins)
 		</div>
 		<div class="p-6">
 			<div v-if="bookingLink.booking_link_contacts.length > 0">
@@ -48,7 +48,7 @@
 									</div>
 								</td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
-									<span v-if="(contact.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested border-l-2 border-r-2 border-b-2 absolute bottom-3 z-50 left-0 w-full h-3 text-center" :style="{ borderColor: contact.color.replace('0.1', '1') }">
+									<span v-if="(contact.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: contact.color.replace('0.1', '1') }">
 										<div class="profile-image profile-image-xs inline-block -mt-1" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
 											<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 										</div>

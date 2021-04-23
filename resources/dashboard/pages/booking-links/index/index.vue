@@ -34,7 +34,9 @@
 						<div class="text-primary font-bold">
 							{{ booking_link.name }}
 						</div>
-						<div class="text-muted text-xs">Created: {{ formatDate(booking_link.created_at) }}</div>
+						<div class="text-muted text-xs">
+							Created: {{ formatDate(booking_link.created_at) }} <span class="ml-3">Duration: {{ booking_link.duration }} mins</span>
+						</div>
 						<div class="flex items-center mt-3">
 							<div class="flex items-center">
 								<div v-for="contact in booking_link.booking_link_contacts" :key="contact.id" class="-mr-2">

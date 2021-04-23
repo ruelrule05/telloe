@@ -3,15 +3,19 @@
 namespace App\Services;
 
 use App\Http\Requests\IndexBookingLinkRequest;
+use App\Mail\NewBooking;
 use App\Mail\SendBookingLinkInvitation;
+use App\Models\Booking;
 use App\Models\BookingLink;
 use App\Models\BookingLinkContact;
 use App\Models\Contact;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Mail;
+use Spatie\CalendarLinks\Link;
 use Webpatser\Uuid\Uuid;
 
 class BookingLinkService
@@ -63,7 +67,8 @@ class BookingLinkService
             'user_id' => Auth::user()->id,
             'dates' => $request->dates,
             'uuid' => Uuid::generate(),
-            'emails' => $emails
+            'emails' => $emails,
+            'duration' => $request->duration,
         ]);
 
         foreach ($contacts as $contact) {
@@ -145,5 +150,43 @@ class BookingLinkService
         $bookingLink = BookingLink::findOrFail($id);
         $this->authorize('destroy', $bookingLink);
         return $bookingLink->delete();
+    }
+
+    public static function book($uuid, Request $request)
+    {
+        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser')->firstOrFail();
+        $user = Auth::user(); 
+        $email = $user->email ?? $request->email;
+        $bookingLinkContact = false;
+        if ($user) {
+            $bookingLinkContact = $bookingLink->whereHas('bookingLinkContacts', function ($bookingLinkContact) use ($user) {
+                $bookingLinkContact->whereHas('contact', function ($contact) use ($user) {
+                    $contact->where('contact_user_id', $user->id);
+                });
+            })->exists();
+        }
+        $inEmails = in_array($email, Arr::pluck($bookingLink->emails, 'email'));
+        if ($email == $bookingLink->user->email || $inEmails || $bookingLinkContact) {
+            $start = Carbon::parse("{$request->date} {$request->start}");
+            $end = $start->copy()->add('minute', $bookingLink->duration);
+
+            $booking = Booking::create([
+                'booking_link_id' => $bookingLink->id,
+                'date' => $request->date,
+                'start' => $start->format('H:i'),
+                'end' => $end->format('H:i'),
+            ]);
+
+            $link = Link::create($bookingLink->name, $start, $end);
+            $booking->google_link = $link->google();
+            $booking->outlook_link = url('/ics?name=' . $bookingLink->name . '&data=' . $link->ics());
+            $booking->yahoo_link = $link->yahoo();
+            $booking->ical_link = $booking->outlook_link;
+
+            //Mail::queue(new NewBooking([$booking], 'customer'));
+
+            return response($booking);
+        }
+        return abort(403);
     }
 }
