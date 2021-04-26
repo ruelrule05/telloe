@@ -150,7 +150,7 @@
 			</div>
 		</Modal>
 
-		<chatroom :booking-link="bookingLink"></chatroom>
+		<chatroom v-if="channel" :booking-link="bookingLink" :channel="channel"></chatroom>
 	</div>
 </template>
 

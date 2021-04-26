@@ -1,18 +1,78 @@
 <template>
 	<div class="min-h-screen flex flex-col">
-		<div v-if="$root.auth.stripe_account" class="content-header border-bottom flex items-center justify-between">
-			<div>INVOICES</div>
+		<div v-if="$root.auth.stripe_account">
+			<div class="content-header border-bottom flex items-center justify-between">
+				<div>INVOICES</div>
 
-			<button
-				class="btn btn-primary btn-md"
-				type="button"
-				@click="
-					resetInvoiceForm();
-					$refs['createInvoiceModal'].show();
-				"
-			>
-				<span>New Invoice</span>
-			</button>
+				<button
+					class="btn btn-primary btn-md"
+					type="button"
+					@click="
+						resetInvoiceForm();
+						$refs['createInvoiceModal'].show();
+					"
+				>
+					<span>New Invoice</span>
+				</button>
+			</div>
+
+			<div v-if="invoices.length > 0" class="px-6 pb-6">
+				<table class="table my-6">
+					<thead>
+						<tr>
+							<th>Invoice No.</th>
+							<th>To</th>
+							<th>Date</th>
+							<th>Due Date</th>
+							<th>Paid</th>
+							<th>Due</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
+						<template v-for="invoice in paginated('invoices')">
+							<tr :key="invoice.InvoiceID">
+								<td class="align-middle text-primary font-bold">{{ invoice.number }}</td>
+								<td class="align-middle text-gray-600">{{ invoice.customer_name }}</td>
+								<td class="align-middle text-gray-600">{{ formatDate(invoice.created) }}</td>
+								<td class="align-middle text-gray-600">{{ formatDate(invoice.due_date) }}</td>
+								<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_paid / 100) }}</td>
+								<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_due / 100) }}</td>
+								<td class="align-middle">
+									<div v-if="invoice.statusLoading" class="spinner spinner-sm"></div>
+									<span v-else class="badge capitalize">{{ invoice.status }}</span>
+								</td>
+								<td class="text-right align-middle">
+									<div v-if="!['paid', 'void'].find(s => s == invoice.status)" class="text-left inline-block">
+										<VueDropdown :options="stripeInvoiceStatuses(invoice.status)" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
+											<template #button>
+												<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+													<CogIcon class="fill-current text-gray-400"></CogIcon>
+												</div>
+											</template>
+										</VueDropdown>
+									</div>
+								</td>
+							</tr>
+						</template>
+					</paginate>
+				</table>
+
+				<paginate-links
+					:step-links="{
+						next: 'Next',
+						prev: 'Previous'
+					}"
+					:key="invoices.length"
+					:async="true"
+					for="invoices"
+					:show-step-links="true"
+				></paginate-links>
+			</div>
+
+			<div v-else class="text-center absolute-center w-full">
+				<div class="text-muted ">No invoices found.</div>
+			</div>
 		</div>
 		<div v-else class="absolute-center p-6 bg-secondary rounded-xl flex items-start" style="width: 450px">
 			<div class="text-primary">

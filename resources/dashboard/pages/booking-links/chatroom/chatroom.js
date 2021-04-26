@@ -6,17 +6,44 @@ import dayjs from 'dayjs';
 import Vue from 'vue';
 import SendIcon from '../../../../icons/send';
 import VueChatScroll from 'vue-chat-scroll';
+import MessageType from '../../../pages/conversations/show/message-type.vue';
+import axios from 'axios';
 Vue.use(VueChatScroll);
 export default {
 	props: {
 		bookingLink: {
 			required: true
+		},
+
+		channel: {
+			required: true
 		}
 	},
+
+	components: {
+		CloseIcon,
+		VueFormValidate,
+		Emojipicker,
+		MessagesIcon,
+		SendIcon,
+		MessageType
+	},
+
 	data: () => ({
-		open: false,
-		emojipicker: false
+		open: false, // false
+		emojipicker: false,
+		messageText: '',
+		bouncing: false
 	}),
+
+	mounted() {
+		this.channel.listenForWhisper('newMessage', data => {
+			this.bookingLink.booking_link_messages.push(data.message);
+			if (!this.open) {
+				this.bouncing = true;
+			}
+		});
+	},
 
 	computed: {
 		grouped_messages() {
@@ -62,13 +89,6 @@ export default {
 			return grouped_messages;
 		}
 	},
-	components: {
-		CloseIcon,
-		VueFormValidate,
-		Emojipicker,
-		MessagesIcon,
-		SendIcon
-	},
 	methods: {
 		messageTimezoneTime(message) {
 			return dayjs(parseFloat(message.timestamp)).format('hh:mmA on ddd');
@@ -78,7 +98,24 @@ export default {
 				this.$refs['messageInput'].focus();
 			}
 		},
-		sendText() {},
+
+		async sendText() {
+			if (this.messageText.trim().length) {
+				let message = {
+					user_id: this.$root.auth.id,
+					booking_link_id: this.bookingLink.id,
+					timestamp: dayjs().valueOf(),
+					message: this.messageText.trim(),
+					type: 'text'
+				};
+				this.messageText = '';
+				let response = await axios.post(`/booking-links/${this.bookingLink.id}/message`, message);
+				this.bookingLink.booking_link_messages.push(response.data);
+				this.channel.whisper('newMessage', {
+					message: response.data
+				});
+			}
+		},
 		selectEmoji(emoji) {
 			this.$refs['messageInput'].innerHTML += emoji + ' ';
 			this.placeCaretAtEnd(this.$refs['messageInput']);

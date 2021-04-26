@@ -9,7 +9,10 @@ use App\Http\Requests\ContactFinalizeInvoiceRequest;
 use App\Http\Requests\ContactGetFromInviteTokenRequest;
 use App\Http\Requests\StoreContactRequest;
 use App\Models\Contact;
+use App\Models\ContactPackage;
+use App\Models\Package;
 use App\Services\ContactService;
+use Auth;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -83,5 +86,34 @@ class ContactController extends Controller
     {
         $contactService = new ContactService();
         return response($contactService->contactNotes($id, $request));
+    }
+
+    public function package($id, Request $request)
+    {
+        $this->validate($request, [
+            'package_id' => 'required|exists:packages,id',
+            'service' => 'required'
+        ]);
+        $authUser = Auth::user();
+        $contact = Contact::where('id', $id)->where('user_id', $authUser->id)->firstOrfail();
+        $package = Package::where('user_id', $authUser->id)->where('id', $request->package_id)->firstOrFail();
+        $contactPackage = ContactPackage::create([
+            'package_id' => $package->id,
+            'contact_id' => $contact->id,
+            'service' => $request->service
+        ]);
+
+        return response()->json($contactPackage);
+    }
+
+    public function deletePackage($id, Request $request)
+    {
+        $this->validate($request, [
+            'package_id' => 'required|exists:contact_packages,id'
+        ]);
+        $authUser = Auth::user();
+        $contact = Contact::where('id', $id)->where('user_id', $authUser->id)->firstOrfail();
+        $contactPackage = ContactPackage::where('id', $request->package_id)->where('contact_id', $contact->id)->firstOrFail();
+        return response()->json($contactPackage->delete());
     }
 }

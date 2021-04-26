@@ -46,6 +46,7 @@
 					<ul class="flex p-0 mb-4 tabs">
 						<li :class="{ active: activeTab == 'notes' }"><span class="cursor-pointer" @click="activeTab = 'notes'">Notes</span></li>
 						<li :class="{ active: activeTab == 'fields' }"><span class="cursor-pointer" @click="activeTab = 'fields'">Fields</span></li>
+						<li :class="{ active: activeTab == 'packages' }"><span class="cursor-pointer" @click="activeTab = 'packages'">Packages</span></li>
 					</ul>
 
 					<template v-if="activeTab == 'notes'">
@@ -151,6 +152,45 @@
 							<button class="btn btn-sm btn-outline-primary mt-3" type="button" @click="editFields = true">
 								<span>Edit Fields</span>
 							</button>
+						</div>
+					</template>
+
+					<template v-if="activeTab == 'packages'">
+						<button v-if="!addingPackage" type="button" class="btn btn-outline-primary btn-sm" @click="addingPackage = true"><span>Add Package</span></button>
+						<vue-form-validate @submit="addPackageService" v-else class="mb-6">
+							<div class="grid grid-cols-2 gap-x-4">
+								<div>
+									<VueSelect :options="packagesOptions" v-model="selectedPackage" placeholder="Select Package" required></VueSelect>
+								</div>
+								<div>
+									<VueSelect :disabled="!selectedPackage" :options="selectedPackageOptions" required v-model="selectedPackageService" placeholder="Select Service"></VueSelect>
+								</div>
+							</div>
+							<div class="flex items-center justify-between">
+								<button
+									type="button"
+									class="btn btn-outline-primary btn-sm mt-2"
+									@click="
+										addingPackage = false;
+										selectedPackage = null;
+										selectedPackageService = null;
+									"
+								>
+									<span>Cancel</span>
+								</button>
+								<button type="submit" class="btn btn-primary btn-sm mt-2"><span>Add</span></button>
+							</div>
+						</vue-form-validate>
+
+						<div>
+							<div class="rounded-xl p-3 flex items-center justify-between bg-gray-50 my-2" v-for="(contactPackage, contactPackageIndex) in contact.contact_packages" :key="contactPackage.id">
+								<span class="font-semibold">
+									{{ contactPackage.service.name }}
+								</span>
+								<div>
+									<trash-icon width="15" height="15" class="cursor-pointer ml-1 fill-current text-gray-400" @click.native="deleteContactPackage(contactPackage, contactPackageIndex)"></trash-icon>
+								</div>
+							</div>
 						</div>
 					</template>
 				</div>

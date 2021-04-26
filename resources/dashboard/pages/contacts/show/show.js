@@ -29,6 +29,7 @@ import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
 import ChevronLeftIcon from '../../../../icons/chevron-left';
 import Booking from '../../../components/Booking/Booking.vue';
+import axios from 'axios';
 
 export default {
 	components: {
@@ -59,6 +60,9 @@ export default {
 	},
 
 	data: () => ({
+		addingPackage: false,
+		selectedPackage: null,
+		selectedPackageService: null,
 		selectedService: null,
 		contact: null,
 		clonedContact: null,
@@ -107,8 +111,33 @@ export default {
 	computed: {
 		...mapState({
 			services: state => state.services.index,
-			user_custom_fields: state => state.user_custom_fields.fields
+			user_custom_fields: state => state.user_custom_fields.fields,
+			packages: state => state.packages.index
 		}),
+
+		selectedPackageOptions() {
+			let selectedPackageOptions = [];
+			if (this.selectedPackage) {
+				this.selectedPackage.services.forEach(service => {
+					selectedPackageOptions.push({
+						text: service.name,
+						value: service
+					});
+				});
+			}
+			return selectedPackageOptions;
+		},
+
+		packagesOptions() {
+			let packagesOptions = [];
+			this.packages.forEach(packageItem => {
+				packagesOptions.push({
+					text: packageItem.name,
+					value: packageItem
+				});
+			});
+			return packagesOptions;
+		},
 
 		availableServices() {
 			return this.services.filter(service => {
@@ -190,6 +219,7 @@ export default {
 		this.getContact();
 		this.getServices();
 		this.showUserCustomFields();
+		this.getPackages();
 	},
 
 	mounted() {},
@@ -201,8 +231,22 @@ export default {
 			showUserCustomFields: 'user_custom_fields/show',
 			updateContact: 'contacts/update',
 			storeBooking: 'bookings/store',
-			storeConversation: 'conversations/store'
+			storeConversation: 'conversations/store',
+			getPackages: 'packages/index'
 		}),
+
+		deleteContactPackage(contactPackage, index) {
+			this.contact.contact_packages.splice(index, 1);
+			axios.delete(`/contacts/${this.contact.id}/package`, { params: { package_id: contactPackage.id } });
+		},
+
+		async addPackageService() {
+			this.addingPackage = false;
+			let response = await axios.post(`/contacts/${this.contact.id}/package`, { package_id: this.selectedPackage.id, service: this.selectedPackageService });
+			this.contact.contact_packages.unshift(response.data);
+			this.selectedPackage = null;
+			this.selectedPackageService = null;
+		},
 
 		newBookingStored(booking) {
 			this.contact.bookings.data.unshift(booking);

@@ -29,7 +29,7 @@
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 									<div class="text-center px-2 pb-2 bg-white">
-										<VueCheckbox v-model="timeslot.is_available"></VueCheckbox>
+										<VueCheckbox v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
 									</div>
 								</td>
 							</tr>
@@ -97,7 +97,7 @@
 			</div>
 		</Modal>
 
-		<chatroom :booking-link="bookingLink"></chatroom>
+		<chatroom v-if="channel" :booking-link="bookingLink" :channel="channel"></chatroom>
 	</div>
 </template>
 

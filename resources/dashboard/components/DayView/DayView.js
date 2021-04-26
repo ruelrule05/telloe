@@ -43,7 +43,7 @@ export default {
 				}
 				return {
 					booking: booking,
-					name: booking.service.name,
+					name: (booking.service || booking.booking_link).name,
 					start: `${booking.date} ${booking.start}`,
 					end: `${booking.date} ${booking.end}`,
 					category: 'bookings',

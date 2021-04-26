@@ -14,7 +14,7 @@
 							<div class="font-normal text-muted" v-if="booking.zoom_link">Zoom Meeting</div>
 						</div>
 						<div class="text-right w-4/12">
-							<div class="badge">{{ booking.service.name }}</div>
+							<div class="badge">{{ (booking.service || booking.booking_link).name }}</div>
 						</div>
 					</div>
 				</div>

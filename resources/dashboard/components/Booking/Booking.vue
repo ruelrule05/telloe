@@ -59,7 +59,7 @@
 			<!-- Manage booking -->
 			<template v-else>
 				<div class="flex-grow">
-					<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.service.name }}</h5>
+					<h5 class="font-semibold text-xl mb-4">{{ (clonedBooking.service || clonedBooking.booking_link).name }}</h5>
 
 					<div class="mb-4">
 						<label>Guests</label>

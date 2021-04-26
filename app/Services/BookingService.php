@@ -36,10 +36,12 @@ class BookingService
     {
         $bookings = [];
 
-        $bookings = Booking::with(['service', 'bookingUsers.user'])->whereHas('service', function ($service) {
+        $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])->whereHas('service', function ($service) {
             $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
                 $parentService->where('user_id', Auth::user()->id);
             });
+        })->orWhereHas('bookingLink', function ($bookingLink) {
+            $bookingLink->where('user_id', Auth::user()->id);
         });
 
         if ($request->date) {
@@ -506,7 +508,7 @@ class BookingService
     {
         $tomorrow = Carbon::now()->addDay(1);
         $daysAgo = Carbon::now()->subDays(5);
-        return Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->get()->toArray();
+        return Booking::with('bookingUsers.user', 'service', 'bookingLink')->whereBetween('date', [$daysAgo, $tomorrow])->get()->toArray();
         return response(Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->get());
     }
 }

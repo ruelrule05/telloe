@@ -28,7 +28,7 @@ class BookingLinkController extends Controller
 
     public function update($id, UpdateBookingLinkRequest $request)
     {
-        return BookingLinkService::store($id, $request);
+        return BookingLinkService::update($id, $request);
     }
 
     public function public($uuid, Request $request)
@@ -60,5 +60,14 @@ class BookingLinkController extends Controller
             'start' => 'required|date_format:H:i',
         ]);
         return BookingLinkService::book($uuid, $request);
+    }
+
+    public function message($id, Request $request)
+    {
+        $this->validate($request, [
+            'message' => 'required|string',
+            'timestamp' => 'required|numeric',
+        ]);
+        return BookingLinkService::message($id, $request);
     }
 }

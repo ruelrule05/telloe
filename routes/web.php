@@ -36,9 +36,7 @@ use  App\Http\SocialiteHelper;
 //     //Mail::to('cleidoscope@gmail.com')->send($email);
 //     return $email;
 // });
-Route::get('test', function () {
-    echo 'sds';
-});
+
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
 });
@@ -95,6 +93,8 @@ Route::group(
                 Route::get('contacts/{id}/recent_notes', 'ContactController@recentNotes');
                 Route::get('contacts/{id}/contact_notes', 'ContactController@contactNotes');
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
+                Route::post('contacts/{id}/package', 'ContactController@package');
+                Route::delete('contacts/{id}/package', 'ContactController@deletePackage');
                 Route::apiResource('members', 'MemberController');
                 Route::post('members/{id}/resend', 'MemberController@resend');
                 Route::post('members/{id}/assign_service', 'MemberController@assignService');
@@ -168,7 +168,13 @@ Route::group(
                 Route::get('booking-links/get_all_timeslots', 'BookingLinkController@getAllTimeslots');
                 Route::post('booking-links/{id}/send_invitation', 'BookingLinkController@sendInvitation');
                 Route::post('booking-links/{uuid}/book', 'BookingLinkController@book');
+                Route::post('booking-links/{id}/message', 'BookingLinkController@message');
                 Route::apiResource('booking-links', 'BookingLinkController');
+
+                Route::prefix('stripe')->group(function () {
+                    Route::get('invoices', 'StripeController@invoices');
+                    Route::put('invoices/{id}', 'StripeController@update');
+                });
             });
 
             Route::get('/auth/{driver}/redirect', [SocialiteHelper::class, 'getRedirectUrl'])->middleware('ajax');

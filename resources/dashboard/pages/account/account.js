@@ -462,6 +462,7 @@ export default {
 			});
 			if (response) {
 				this.$root.auth.stripe_account = response.data.stripe_account;
+				this.stripeAccountForm.countryDisabled = true;
 			}
 			this.stripeAccountForm.loading = false;
 		},

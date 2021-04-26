@@ -44,8 +44,13 @@ class StripeAPI
                 break;
 
             case 'all' :
-                $invoices = \Stripe\Invoice::all($data);
+                $invoices = \Stripe\Invoice::all($data, $stripe_account);
                 return $invoices;
+                break;
+
+            case 'update' :
+                $invoice = \Stripe\Invoice::update($data, null, $stripe_account);
+                return $invoice;
                 break;
         }
     }

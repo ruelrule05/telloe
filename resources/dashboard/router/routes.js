@@ -118,12 +118,12 @@ const routes = [
 				children: [
 					{
 						path: 'subscriptions',
-						name: 'subscriptions_index',
+						name: 'subscriptions',
 						component: () => import(/* webpackChunkName: "dashboard-payments-subscriptions" */ '../pages/payments/subscriptions/subscriptions.vue')
 					},
 					{
-						path: 'Invoices',
-						name: 'invoices_index',
+						path: 'invoices',
+						name: 'invoices',
 						component: () => import(/* webpackChunkName: "dashboard-payments-invoices" */ '../pages/payments/invoices/invoices.vue')
 					}
 				]

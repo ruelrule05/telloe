@@ -20,13 +20,16 @@ Vue.use(VuePaginate);
 const format = require('format-number');
 import getSymbolFromCurrency from 'currency-symbol-map';
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
+import axios from 'axios';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../icons/cog';
 export default {
 	components: {
+		CogIcon,
 		Modal,
 		VueFormValidate,
 		VueSelect,
 		VueButton,
-
 		MoreHIcon,
 		PlusIcon,
 		ShortcutIcon,
@@ -36,7 +39,8 @@ export default {
 		MoreIcon,
 		XeroIcon,
 		CheckmarkIcon,
-		InfoCircleIcon
+		InfoCircleIcon,
+		VueDropdown
 	},
 
 	directives: { Tooltip },
@@ -110,42 +114,6 @@ export default {
 		],
 		format: format,
 		getSymbolFromCurrency: getSymbolFromCurrency,
-		xeroInvoiceStatuses: {
-			DRAFT: [
-				// {
-				// 	text: 'Submit',
-				// 	value: 'SUBMITTED'
-				// },
-				// {
-				// 	text: 'Authorise',
-				// 	value: 'AUTHORISED'
-				// },
-				{
-					text: 'Delete',
-					value: 'DELETED'
-				}
-			],
-			SUBMITTED: [
-				// {
-				// 	text: 'Authorise',
-				// 	value: 'AUTHORISED'
-				// },
-				{
-					text: 'Draft',
-					value: 'DRAFT'
-				},
-				{
-					text: 'Delete',
-					value: 'DELETED'
-				}
-			],
-			AUTHORISED: [
-				{
-					text: 'Void',
-					value: 'VOIDED'
-				}
-			]
-		},
 		invoiceToDelete: null,
 		invoiceToVoid: null,
 		invoiceToEdit: null
@@ -199,21 +167,7 @@ export default {
 		//this.$root.contentloading = !this.ready;
 		this.getUserContacts({ nopaginate: true });
 		this.getServices();
-		if (this.$root.auth.xero_token) {
-			this.getTenants();
-			this.getXeroInvoices();
-			this.invoiceStatuses.push({
-				text: 'Authorised',
-				value: 'authorised'
-			});
-			this.invoiceStatuses.push({
-				text: 'Paid',
-				value: 'paid'
-			});
-		} else {
-			//this.getPendingInvoices().then(() => {});
-			this.$root.contentloading = false;
-		}
+		this.getStripeInvoices();
 	},
 
 	mounted() {
@@ -236,6 +190,39 @@ export default {
 			storePendingInvoice: 'pending_invoices/store',
 			deletePendingInvoice: 'pending_invoices/delete'
 		}),
+
+		async invoiceAction(action, invoice) {
+			let response = await axios.put(`/stripe/invoices/${invoice.id}`, { action: action.value }, { toast: true }).catch(() => {});
+			if (response) {
+				invoice.status = response.data.status;
+			}
+		},
+
+		stripeInvoiceStatuses(status) {
+			switch (status) {
+				case 'uncollectible':
+					return [
+						{ text: 'Void', value: 'void' },
+						{ text: 'Pay', value: 'pay' }
+					];
+				case 'open':
+					return [
+						{ text: 'Send', value: 'send' },
+						{ text: 'Void', value: 'void' },
+						{ text: 'Mark Uncollectible', value: 'uncollectible' },
+						{ text: 'Pay', value: 'pay' }
+					];
+			}
+
+			return [];
+		},
+
+		async getStripeInvoices() {
+			let response = await axios.get('/stripe/invoices');
+			if (response) {
+				this.invoices = response.data.data;
+			}
+		},
 
 		async updateInvoice(invoiceToUpdate) {
 			this.$refs['editModal'].hide();
@@ -408,7 +395,7 @@ export default {
 		},
 
 		formatDate(date) {
-			return dayjs(date).format('MMM d, YYYY');
+			return dayjs.unix(date).format('MMM D, YYYY');
 		}
 	}
 };

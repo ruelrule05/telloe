@@ -21,8 +21,8 @@ class Package extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    public function orders()
+    public function contactPackages()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(ContactPackage::class);
     }
 }

@@ -29,9 +29,6 @@ export default {
 			this.bookings.forEach(booking => {
 				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
 				attributes.push({
-					dot: {
-						color: 'red'
-					},
 					customData: 'booking',
 					dates: bookingDate
 				});

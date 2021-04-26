@@ -92,9 +92,8 @@ export default {
 		this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
 
 		this.channel.listenForWhisper('selectedTimeslots', data => {
-			if (data.selectedDate == this.selectedDate) {
-				this.bookingLink.dates[data.selectedDate].selectedTimeslots = data.selectedTimeslots;
-			}
+			this.bookingLink.dates[data.selectedDate].selectedTimeslots = data.selectedTimeslots;
+			this.bookingLink.dates[data.selectedDate].timeslots = data.timeslots;
 		});
 
 		this.channel.listenForWhisper('suggestTimeslot', data => {

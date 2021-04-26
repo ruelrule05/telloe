@@ -99,7 +99,7 @@ class ContactService
         $upcoming_bookings = clone $bookings;
         $contact->upcoming_bookings = $upcoming_bookings->whereDate('date', '>=', $now)->orderBy('date', 'DESC')->limit(5)->get();
         $contact->bookings = $bookings->orderBy('date', $order)->paginate(10);
-        return response($contact->load('contactUser'));
+        return response($contact->load('contactUser', 'contactPackages'));
     }
 
     public static function store(StoreContactRequest $request)

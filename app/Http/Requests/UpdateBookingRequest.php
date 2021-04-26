@@ -29,7 +29,6 @@ class UpdateBookingRequest extends FormRequest
             // 'user_id' => 'required|integer',
             // 'contact_id' => 'required|integer',
 
-            'service_id' => 'required|integer|exists:services,id',
             'date' => 'required|date',
             'start' => 'required|date_format:H:i',
             'end' => 'required|date_format:H:i',

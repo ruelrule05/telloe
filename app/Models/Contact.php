@@ -79,4 +79,9 @@ class Contact extends BaseModel
     {
         return $this->contactUser ? $this->contactUser->profile_image : null;
     }
+
+    public function contactPackages()
+    {
+        return $this->hasMany(ContactPackage::class)->orderBy('created_at', 'DESC');
+    }
 }

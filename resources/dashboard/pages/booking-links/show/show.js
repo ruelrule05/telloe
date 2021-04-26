@@ -141,26 +141,21 @@ export default {
 			this.$router.push(`/dashboard/booking-links`);
 		},
 
-		async toggleTimeslot() {
-			if (this.hoveredTimeslot) {
-				let timeslot = this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == this.hoveredTimeslot.time);
-				if (timeslot) {
-					let index = this.bookingLink.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
-					if (index == -1) {
-						this.bookingLink.dates[this.selectedDate].selectedTimeslots.push(timeslot);
-					} else {
-						this.bookingLink.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
-					}
-
-					// update bookingLink
-					await this.updateBookingLink(this.bookingLink);
-
-					this.channel.whisper('selectedTimeslots', {
-						selectedDate: this.selectedDate,
-						selectedTimeslots: this.bookingLink.dates[this.selectedDate].selectedTimeslots
-					});
-				}
+		async toggleTimeslot(state, timeslot) {
+			let index = this.bookingLink.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
+			if (index == -1) {
+				this.bookingLink.dates[this.selectedDate].selectedTimeslots.push(timeslot);
+			} else {
+				this.bookingLink.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
 			}
+			// update bookingLink
+			await this.updateBookingLink(this.bookingLink);
+
+			this.channel.whisper('selectedTimeslots', {
+				selectedDate: this.selectedDate,
+				selectedTimeslots: this.bookingLink.dates[this.selectedDate].selectedTimeslots,
+				timeslots: this.bookingLink.dates[this.selectedDate].timeslots
+			});
 		},
 
 		copyToClipboard() {

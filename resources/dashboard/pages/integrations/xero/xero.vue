@@ -77,13 +77,15 @@
 									<td class="align-middle"><CheckmarkIcon v-if="invoice.SentToContact && invoice.SentToContact != 'false'" class="stroke-current text-green-500"></CheckmarkIcon></td>
 
 									<td class="text-right align-middle">
-										<VueDropdown :options="xeroInvoiceStatuses[invoice.Status]" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
-											<template #button>
-												<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-													<CogIcon class="fill-current text-gray-400"></CogIcon>
-												</div>
-											</template>
-										</VueDropdown>
+										<div class="text-left inline-block">
+											<VueDropdown :options="xeroInvoiceStatuses[invoice.Status]" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
+												<template #button>
+													<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+														<CogIcon class="fill-current text-gray-400"></CogIcon>
+													</div>
+												</template>
+											</VueDropdown>
+										</div>
 									</td>
 								</tr>
 							</template>

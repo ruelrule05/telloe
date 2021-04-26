@@ -21,7 +21,7 @@ class PackageService
         if ($package->user_id != Auth::user()->id) {
             return abort(403);
         }
-        return $package->load('orders.user');
+        return $package->load('contactPackages.contact');
     }
 
     public static function store(StorePackageRequest $request)

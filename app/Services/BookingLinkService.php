@@ -8,6 +8,7 @@ use App\Mail\SendBookingLinkInvitation;
 use App\Models\Booking;
 use App\Models\BookingLink;
 use App\Models\BookingLinkContact;
+use App\Models\BookingLinkMessage;
 use App\Models\Contact;
 use Auth;
 use Carbon\Carbon;
@@ -39,7 +40,7 @@ class BookingLinkService
     {
         $bookingLink = BookingLink::findOrFail($id);
         $this->authorize('show', $bookingLink);
-        return response($bookingLink->load('bookingLinkContacts.contact.contactUser'));
+        return response($bookingLink->load('bookingLinkContacts.contact.contactUser', 'bookingLinkMessages.user'));
     }
 
     public static function store(Request $request)
@@ -115,7 +116,7 @@ class BookingLinkService
 
     public static function public($uuid, Request $request)
     {
-        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser')->firstOrFail();
+        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser', 'bookingLinkMessages.user')->firstOrFail();
         $user = Auth::user();
         $email = $user->email ?? $request->email;
         $bookingLinkContact = false;
@@ -188,5 +189,26 @@ class BookingLinkService
             return response($booking);
         }
         return abort(403);
+    }
+
+    public static function message($id, Request $request)
+    {
+        $bookingLink = BookingLink::where('id', $id)->firstOrFail();
+        $user = Auth::user(); 
+        $bookingLinkContact = $bookingLink->whereHas('bookingLinkContacts', function ($bookingLinkContact) use ($user) {
+            $bookingLinkContact->whereHas('contact', function ($contact) use ($user) {
+                $contact->where('contact_user_id', $user->id);
+            });
+        })->exists();
+        if ($bookingLink->user_id == $user->id || $bookingLinkContact) {
+            $bookingLinkMessage = BookingLinkMessage::create([
+                'message' => $request->message,
+                'timestamp' => $request->timestamp,
+                'booking_link_id' => $bookingLink->id,
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json($bookingLinkMessage->load('user'));
+        }
     }
 }

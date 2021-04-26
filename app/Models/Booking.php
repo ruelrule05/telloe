@@ -25,12 +25,12 @@ class Booking extends BaseModel
 
     public function service()
     {
-        return $this->belongsTo(Service::class)->withTrashed();
+        return $this->belongsTo(Service::class);
     }
 
     public function bookingLink()
     {
-        return $this->belongsTo(BookingLink::class)->withTrashed();
+        return $this->belongsTo(BookingLink::class);
     }
 
     public function getIsExpiredAttribute()
