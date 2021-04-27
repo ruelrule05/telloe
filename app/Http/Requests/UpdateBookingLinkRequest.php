@@ -14,7 +14,7 @@ class UpdateBookingLinkRequest extends FormRequest
      */
     public function authorize()
     {
-        $bookingLink = BookingLink::find($this->user_id);
+        $bookingLink = BookingLink::find($this->route('booking_link'));
         return $this->user()->can('update', $bookingLink);
     }
 

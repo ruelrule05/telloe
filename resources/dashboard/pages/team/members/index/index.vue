@@ -1,5 +1,5 @@
 <template>
-	<div class="h-100" v-if="ready">
+	<div class="min-h-screen" v-if="ready">
 		<div class="content-header border-bottom flex items-center justify-between">
 			<div>
 				MEMBERS
@@ -9,8 +9,8 @@
 			</div>
 		</div>
 
-		<div class="flex h-full contact-content">
-			<div class="w-2/3 pt-8 pb-8 pl-6 pr-16 border-right">
+		<div class="h-full contact-content p-6">
+			<div>
 				<div class="flex items-center justify-between mb-3 header">
 					<VueSelect :options="memberStatuses" v-model="memberStatus" @input="getData" label="Status"></VueSelect>
 
@@ -45,13 +45,13 @@
 
 				<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
 			</div>
-			<div class="w-1/3 p-6">
+			<div class="hidden w-1/3 p-6">
 				<p class="text-sm text-muted">Members information can be upgraded with custom fields. That gives you the option to have specific fields for contacts that match your needs.</p>
 				<button type="button" class="btn btn-sm btn-outline-primary mt-6"><span>Manage fields</span></button>
 			</div>
 		</div>
 
-		<div class="d-flex h-100">
+		<!-- <div class="d-flex h-100">
 			<div class="h-100 flex-grow-1">
 				<div class="d-flex flex-column h-100">
 					<div class="border-bottom bg-white px-3 py-4">
@@ -150,7 +150,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 
 		<Modal ref="editModal" size="sm">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT MEMBER</h4>

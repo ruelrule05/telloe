@@ -23,6 +23,6 @@ class Package extends BaseModel
 
     public function contactPackages()
     {
-        return $this->hasMany(ContactPackage::class);
+        return $this->hasMany(ContactPackage::class)->has('contact');
     }
 }

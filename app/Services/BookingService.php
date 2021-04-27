@@ -42,7 +42,7 @@ class BookingService
             });
         })->orWhereHas('bookingLink', function ($bookingLink) {
             $bookingLink->where('user_id', Auth::user()->id);
-        });
+        })->has('service')->orHas('bookingLink');
 
         if ($request->date) {
             $bookings = $bookings->where('date', $request->date);
@@ -508,7 +508,7 @@ class BookingService
     {
         $tomorrow = Carbon::now()->addDay(1);
         $daysAgo = Carbon::now()->subDays(5);
-        return Booking::with('bookingUsers.user', 'service', 'bookingLink')->whereBetween('date', [$daysAgo, $tomorrow])->get()->toArray();
-        return response(Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->get());
+        return Booking::with('bookingUsers.user', 'service', 'bookingLink')->whereBetween('date', [$daysAgo, $tomorrow])->has('service')->orHas('bookingLink')->get()->toArray();
+        return response(Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->has('service')->orHas('bookingLink')->get());
     }
 }

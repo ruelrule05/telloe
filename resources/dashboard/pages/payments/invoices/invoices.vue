@@ -1,5 +1,5 @@
 <template>
-	<div class="min-h-screen flex flex-col">
+	<div class="min-h-screen flex flex-col relative">
 		<div v-if="$root.auth.stripe_account">
 			<div class="content-header border-bottom flex items-center justify-between">
 				<div>INVOICES</div>
