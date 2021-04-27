@@ -147,20 +147,25 @@ class StripeAPI
         switch ($action) {
             case 'create' :
                 $subscription = \Stripe\Subscription::create($data, $stripe_account);
-        return $subscription;
-        break;
+                return $subscription;
+                break;
 
-        case 'cancel' :
+            case 'all' :
+                $subscriptions = \Stripe\Subscription::all($data, $stripe_account);
+                return $subscriptions;
+                break;
+
+            case 'cancel' :
                 $subscription = \Stripe\Subscription::retrieve($data, $stripe_account);
-        $subscription->cancel();
-        return $subscription;
-        break;
+                $subscription->cancel();
+                return $subscription;
+                break;
 
-        case 'apply_referral_coupon' :
+            case 'apply_referral_coupon' :
                 $subscription = \Stripe\Subscription::retrieve($data);
-        $subscription->coupon = $this->referral_coupon;
-        $subscription->save();
-        break;
+                $subscription->coupon = $this->referral_coupon;
+                $subscription->save();
+                break;
         }
     }
 

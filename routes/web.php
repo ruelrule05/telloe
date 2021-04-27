@@ -173,7 +173,10 @@ Route::group(
 
                 Route::prefix('stripe')->group(function () {
                     Route::get('invoices', 'StripeController@invoices');
-                    Route::put('invoices/{id}', 'StripeController@update');
+                    Route::post('invoices', 'StripeController@storeInvoice');
+                    Route::put('invoices/{id}', 'StripeController@updateInvoice');
+                    Route::get('subscriptions', 'StripeController@subscriptions');
+                    Route::post('subscriptions', 'StripeController@storeSubscription');
                 });
             });
 

@@ -21,9 +21,13 @@ import VCalendar from 'v-calendar';
 Vue.use(VCalendar);
 const dateFormat = require('dateformat');
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
+import axios from 'axios';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
 	components: {
+		Multiselect,
 		Modal,
 		VueFormValidate,
 		VueSelect,
@@ -89,7 +93,9 @@ export default {
 		],
 		subscriptionStatus: 'all',
 		hasSubscriptions: false,
-		invoiceLoading: false
+		invoiceLoading: false,
+		loading: true,
+		subscriptions: []
 	}),
 
 	computed: {
@@ -106,6 +112,19 @@ export default {
 				total += service.rate * service.frequency;
 			});
 			return total.toFixed(2);
+		},
+
+		stripeContacts() {
+			let contacts = [];
+			this.contacts.forEach(contact => {
+				if (!contact.is_pending) {
+					contacts.push({
+						text: contact.contact_user.full_name,
+						value: contact.id
+					});
+				}
+			});
+			return contacts;
 		},
 
 		stripeCustomers() {
@@ -125,42 +144,13 @@ export default {
 			let services = [];
 			this.services.forEach(service => {
 				if (service.is_available) {
-					let serviceCopy = Object.assign({}, service);
-					serviceCopy.frequency = 1;
-					serviceCopy.frequency_interval = 'day';
-					serviceCopy.rate = service.default_rate;
 					services.push({
-						text: serviceCopy.name,
-						value: serviceCopy
+						name: service.name,
+						value: service.id
 					});
 				}
 			});
 			return services;
-		},
-
-		subscriptions() {
-			let subscriptions = [];
-			this.contacts.forEach(contact => {
-				contact.subscriptions.forEach(subscription => {
-					subscription.contact = contact;
-					this.$set(subscription, 'statusLoading', false);
-					if (this.subscriptionStatus == 'all' || this.subscriptionStatus == subscription.status) {
-						if (subscription.status == 'trialing') subscription.status = 'pending';
-						subscriptions.push(subscription);
-					}
-				});
-			});
-			subscriptions = subscriptions.concat(this.pending_subscriptions);
-			subscriptions.sort((a, b) => {
-				return a.created > b.created ? -1 : 1;
-			});
-			if (subscriptions.length > 0) {
-				this.hasSubscriptions = true;
-			} else {
-				subscriptions.push({ placeholder: true });
-				this.hasSubscriptions = false;
-			}
-			return subscriptions;
 		}
 	},
 
@@ -178,7 +168,7 @@ export default {
 		this.$root.contentloading = !this.ready;
 		this.getContacts({ nopaginate: true });
 		this.getServices();
-		this.getPendingSubscriptions();
+		this.getSubscriptions();
 	},
 
 	mounted() {
@@ -201,6 +191,24 @@ export default {
 			storePendingSubscription: 'pending_subscriptions/store',
 			deletePendingSubscription: 'pending_subscriptions/delete'
 		}),
+
+		async getSubscriptions() {
+			this.loading = true;
+			let response = await axios.get('/stripe/subscriptions');
+			if (response) {
+				this.subscriptions = response.data.data;
+			}
+			this.loading = false;
+		},
+
+		resetInvoiceForm() {
+			this.newSubscriptionForm = {
+				contact_id: '',
+				loading: false,
+				service_ids: []
+			};
+			this.openInfo = false;
+		},
 
 		getInvoice(invoice_id) {
 			this.invoiceLoading = true;
@@ -273,27 +281,22 @@ export default {
 			this.openInfo = false;
 		},
 
-		createSubscription() {
+		async createSubscription() {
 			this.newSubscriptionForm.loading = true;
 			this.newSubscriptionForm.id = this.newSubscriptionForm.contact_id;
 
-			if (this.$root.payoutComplete) {
-				this.createContactSubscription(this.newSubscriptionForm)
-					.then(() => {
-						this.$refs['addModal'].hide();
-					})
-					.catch(() => {
-						this.newSubscriptionForm.loading = false;
-					});
-			} else {
-				this.newSubscriptionForm.date = dayjs(this.newSubscriptionForm.date).format('YYYY-MM-DD');
-				this.storePendingSubscription(this.newSubscriptionForm)
-					.then(() => {
-						this.$refs['addModal'].hide();
-					})
-					.catch(() => {
-						this.newSubscriptionForm.loading = false;
-					});
+			let data = JSON.parse(JSON.stringify(this.newSubscriptionForm));
+			data.service_ids = data.service_ids.map(s => {
+				return s.value;
+			});
+
+			let response = await window.axios.post('/stripe/subscriptions', data, { toasted: true }).catch(() => {
+				this.newSubscriptionForm.loading = false;
+			});
+			if (response) {
+				this.subscriptions.unshift(response.data);
+				this.newSubscriptionForm.loading = false;
+				this.$refs.createInvoiceModal.hide(true);
 			}
 		},
 

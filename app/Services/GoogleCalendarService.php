@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\GoogleCalendarClient;
+use Auth;
 use Illuminate\Http\Request;
 
 class GoogleCalendarService

@@ -55,8 +55,7 @@
 									</span>
 									<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: contact.color }">
 										<div class="timeslot-content" :class="{ selected: bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
-											<p class="text-sm font-bold text-center text-body">{{ timeslot['12hr'] }}</p>
-											<p class="text-sm text-center text-muted uppercase">{{ timeslot.abbreviation }}</p>
+											<p class="text-center" v-html="timeslotTime(timeslot.time, contact)"></p>
 										</div>
 									</div>
 								</td>

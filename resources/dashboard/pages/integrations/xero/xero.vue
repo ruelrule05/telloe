@@ -132,7 +132,7 @@
 						</multiselect>
 					</div>
 					<div class="flex justify-between mt-6">
-						<button type="button" class="btn btn-md btn-outline-primary" :disabled="newInvoiceForm.loading" @click="$refs.createInvoiceModal.hide()"><span>Cancel</span></button>
+						<button type="button" class="btn btn-md btn-outline-primary" :disabled="newInvoiceForm.loading" @click="$refs.createInvoiceModal.hide(true)"><span>Cancel</span></button>
 						<vue-button type="submit" :loading="newInvoiceForm.loading" class="btn btn-md btn-primary"><span>Create</span></vue-button>
 					</div>
 				</vue-form-validate>

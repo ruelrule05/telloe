@@ -120,6 +120,11 @@ export default {
 			deleteBookingLink: 'booking_links/delete'
 		}),
 
+		timeslotTime(time, contact) {
+			let timezoneTime = this.timezoneTime(time, contact.contact.contact_user.timezone);
+			return `<span class="text-sm font-bold text-body block -mb-1">${timezoneTime.replace('AM', '').replace('PM', '')}</span><span class="text-sm text-muted uppercase">${timezoneTime.slice(-2)}</span>`;
+		},
+
 		action(action) {
 			switch (action) {
 				case 'Send email invitation':
@@ -205,17 +210,12 @@ export default {
 			this.debounceFunc(e);
 		},
 
-		timezoneTime(timezone, time) {
-			let timezoneTime;
-			if (timezone != this.timezone) {
-				let profileTZ = this.getTimeZoneOffset(new Date(), timezone);
-				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
-				let timeslotDate = `${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`;
-				timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
-			} else {
-				timezoneTime = dayjs(`${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`);
-			}
-			return timezoneTime.format('h:mm A');
+		timezoneTime(time, userTimezone) {
+			let userTZ = this.getTimeZoneOffset(new Date(), userTimezone);
+			let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
+			let timeslotDate = `${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`;
+			let timezoneTime = dayjs(timeslotDate).add(localTZ - userTZ, 'minute');
+			return timezoneTime.format('hh:mmA');
 		},
 
 		getTimeZoneOffset(date, timeZone) {

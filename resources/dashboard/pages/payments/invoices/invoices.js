@@ -23,8 +23,11 @@ import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import axios from 'axios';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 export default {
 	components: {
+		Multiselect,
 		CogIcon,
 		Modal,
 		VueFormValidate,
@@ -116,7 +119,8 @@ export default {
 		getSymbolFromCurrency: getSymbolFromCurrency,
 		invoiceToDelete: null,
 		invoiceToVoid: null,
-		invoiceToEdit: null
+		invoiceToEdit: null,
+		loading: true
 	}),
 
 	computed: {
@@ -145,7 +149,7 @@ export default {
 			this.services.forEach(service => {
 				if (service.is_available) {
 					services.push({
-						text: service.name,
+						name: service.name,
 						value: service.id
 					});
 				}
@@ -194,12 +198,24 @@ export default {
 		async invoiceAction(action, invoice) {
 			let response = await axios.put(`/stripe/invoices/${invoice.id}`, { action: action.value }, { toast: true }).catch(() => {});
 			if (response) {
-				invoice.status = response.data.status;
+				if (action.value == 'delete') {
+					this.invoices.splice(
+						this.invoices.findIndex(i => i.id == invoice.id),
+						1
+					);
+				} else {
+					Object.assign(invoice, response.data);
+				}
 			}
 		},
 
 		stripeInvoiceStatuses(status) {
 			switch (status) {
+				case 'draft':
+					return [
+						{ text: 'Finalize', value: 'finalize' },
+						{ text: 'Delete', value: 'delete' }
+					];
 				case 'uncollectible':
 					return [
 						{ text: 'Void', value: 'void' },
@@ -218,10 +234,12 @@ export default {
 		},
 
 		async getStripeInvoices() {
+			this.loading = true;
 			let response = await axios.get('/stripe/invoices');
 			if (response) {
 				this.invoices = response.data.data;
 			}
+			this.loading = false;
 		},
 
 		async updateInvoice(invoiceToUpdate) {
@@ -375,22 +393,18 @@ export default {
 			this.newInvoiceForm.loading = true;
 			this.newInvoiceForm.id = this.newInvoiceForm.contact_id;
 
-			if (this.$root.auth.xero_token) {
-				let response = await window.axios.post('/xero/invoices', this.newInvoiceForm, { toasted: true }).catch(() => {
-					this.newInvoiceForm.loading = false;
-				});
-				if (response) {
-					this.invoices.unshift(response.data);
-					this.newInvoiceForm.loading = false;
-					this.$refs['createInvoiceModal'].hide();
-				}
-			} else {
-				let pendingInvoice = await this.storePendingInvoice(this.newInvoiceForm);
-				if (pendingInvoice) {
-					this.invoices.unshift(pendingInvoice);
-				}
+			let data = JSON.parse(JSON.stringify(this.newInvoiceForm));
+			data.service_ids = data.service_ids.map(s => {
+				return s.value;
+			});
+
+			let response = await window.axios.post('/stripe/invoices', data, { toasted: true }).catch(() => {
 				this.newInvoiceForm.loading = false;
-				this.$refs['createInvoiceModal'].hide();
+			});
+			if (response) {
+				this.invoices.unshift(response.data);
+				this.newInvoiceForm.loading = false;
+				this.$refs.createInvoiceModal.hide(true);
 			}
 		},
 

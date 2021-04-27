@@ -53,7 +53,6 @@ class XeroController extends Controller
     {
         $authUser = Auth::user();
         Cache::forget("{$authUser->id}_xero_invoices");
-        $this->invoices($request);
         return response(XeroService::storeInvoice($request));
     }
 
@@ -61,7 +60,6 @@ class XeroController extends Controller
     {
         $authUser = Auth::user();
         Cache::forget("{$authUser->id}_xero_invoices");
-        $this->invoices($request);
         return response(XeroService::updateInvoice($request));
     }
 }
