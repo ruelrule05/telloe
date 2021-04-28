@@ -10,7 +10,7 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'booking_link_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes'];
+    protected $fillable = ['service_id', 'booking_link_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes', 'contact_package_id'];
     protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
@@ -43,5 +43,10 @@ class Booking extends BaseModel
         return $this->hasOne(BookingNote::class)->withDefault([
             'note' => '',
         ]);
+    }
+
+    public function contactPackage()
+    {
+        return $this->belongsTo(ContactPackage::class);
     }
 }

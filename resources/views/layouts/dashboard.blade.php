@@ -115,9 +115,9 @@
 						<router-link tag="div" exact class="sidebar-menu-item" to="/dashboard/integrations">
 							Add an Integration
 						</router-link>
-						<router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
+						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
 							Xero Invoicing
-						</router-link>
+						</router-link> --}}
 
 
 

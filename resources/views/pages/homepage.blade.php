@@ -10,7 +10,7 @@
 			<div class="lg:col-span-8 col-span-12 lg:pr-24 order-2 lg:order-1">
 				<h1 class="font-serif text-primary font-semibold sm:text-home-heading text-4xl">MONDAY&mdash;FRIDAY SIMPLIFIED.</h1>
 				<p class="text-xl lg:my-16 mt-4 mb-8 text-muted lg:pr-36">Organize meetings with people on different video calling platforms across multiple time zones; without needless back and forth.</p>
-				<button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base"><span  class="relative -bottom-px">START FREE TRIAL</span></button>
+				<button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'"><span  class="relative -bottom-px">START FREE TRIAL</span></button>
 				<button type="button" class="w-full lg:w-auto px-9 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary lg:ml-4 text-base" @click="openVideoDemo()"><span class="relative -bottom-px">WATCH VIDEO</span></button>
 			</div>
 			<div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6">
@@ -21,7 +21,7 @@
 </div>
 
  
-<div class="container lg:py-24 py-8">
+<div class="container lg:py-24 py-8" id="features">
 	<div class="grid lg:grid-cols-2 items-center">
 		<div class="lg:pr-24">
 			<span class="font-serif text-xs font-semibold">SAVE TIME, FEWER MISTAKES, LESS FRUSTRATION!</span>
@@ -181,7 +181,7 @@
 </div>
 
 
-<div class="bg-gray-100 lg:py-24 py-8">
+<div class="bg-gray-100 lg:py-24 py-8" id="about">
 	<div class="container">
 		<div class="grid lg:grid-cols-12 items-center">
 			<div class="col-span-6 lg:pr-10 order-2 lg:order-1">
@@ -269,7 +269,7 @@
 </div>
 
 
-<div class="container lg:py-24 py-8">
+<div class="container lg:py-24 py-8" id="pricing">
 	<h2 class="text-primary lg:text-5xl text-2xl font-bold lg:mt-5 lg:mb-14">Simple plans, no surprises</h2>
 	<h6 class="font-bold lg:text-2xl">Every plan includes 14 Day Trial and:</h6>
 
@@ -292,7 +292,7 @@
 				<div>
 					<div class="font-bold lg:text-2xl mb-1">{{ $plan->name }}</div>
 					<div class="text-muted mb-4 text-sm">{{ $plan->subheading }}</div>
-					<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"><span class="relative -bottom-px">START FREE TRIAL</span></button>
+					<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'"><span class="relative -bottom-px">START FREE TRIAL</span></button>
 				</div>
 				<div class="text-center lg:text-right lg:mt-0 mt-4">
 					<div class="text-xl font-bold"><span class="lg:text-6xl text-3xl">$</span><p class="price inline-block">{{ $plan->price }}</p>/month</div>
@@ -392,7 +392,7 @@
 					<br />
 					Ready to switch to one of the most powerful and efficient client communication platforms available?
 				</p>
-				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"><span class="relative -bottom-px">START FREE TRIAL</span></button>
+				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'"><span class="relative -bottom-px">START FREE TRIAL</span></button>
 			</div>
 		</div>
 	</div>
@@ -406,7 +406,7 @@
 				<h3 class="font-serif text-white font-semibold heading lg:mb-10 mb-5">MONDAY&mdash;FRIDAY SIMPLIFIED.</h3>
 				<h4 class="text-white lg:text-3xl text-2xl font-semibold mb-4">Telloe, making your Monday to Friday simple again! </h4>
 				<p class="text-white lg:text-xl mb-10">Sign up  now and start using Telloe instantly with a free 14 Day Trial. You don't have to install anything to gain access to this simple, easy to use, game changing tool.</p>
-				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs"><span class="relative -bottom-px">START FREE TRIAL</span></button>
+				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs" @click="auth = true; action = 'signup'"><span class="relative -bottom-px">START FREE TRIAL</span></button>
 			</div>
 		</div>
 	</div>

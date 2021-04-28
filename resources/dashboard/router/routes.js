@@ -53,7 +53,7 @@ const routes = [
 					},
 					{
 						path: ':id',
-						name: 'contacts_show',
+						name: 'Contacts',
 						component: () => import(/* webpackChunkName: "dashboard-contacts" */ '../pages/contacts/show/show.vue')
 					}
 				]

@@ -44,7 +44,7 @@
 						</div>
 					</div>
 
-					<div class="flex w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
+					<!-- <div class="flex w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
 						<div class="w-16 image">
 							<img src="/logos/xero.png" alt="Zoom" height="80" />
 						</div>
@@ -54,7 +54,7 @@
 							<button v-if="$root.auth.xero_token" :disabled="xeroLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeXero"><span>Remove integration</span></button>
 							<button v-else :disabled="xeroLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateXero"><span>Add integration</span></button>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>

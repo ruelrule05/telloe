@@ -18,11 +18,12 @@
 		@yield('content')
 		
 		<auth v-if="auth" ref="authForm"></auth>
+		
+		@if ($footer ?? true)
+			@include('partials.footer')
+		@endif
 	</div>
 
-	@if ($footer ?? true)
-		@include('partials.footer')
-	@endif
 
 	<script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>
 	<div class="wistia_embed wistia_async_sbp1xbl4gp popover=true"></div>

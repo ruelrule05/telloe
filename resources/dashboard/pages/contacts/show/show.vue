@@ -183,12 +183,29 @@
 						</vue-form-validate>
 
 						<div>
-							<div class="rounded-xl p-3 flex items-center justify-between bg-gray-50 my-2" v-for="(contactPackage, contactPackageIndex) in contact.contact_packages" :key="contactPackage.id">
-								<span class="font-semibold">
-									{{ contactPackage.service.name }}
-								</span>
-								<div>
-									<trash-icon width="15" height="15" class="cursor-pointer ml-1 fill-current text-gray-400" @click.native="deleteContactPackage(contactPackage, contactPackageIndex)"></trash-icon>
+							<div class="rounded-xl p-3  bg-gray-50 my-2" v-for="(contactPackage, contactPackageIndex) in contact.contact_packages" :key="contactPackage.id">
+								<div class="flex justify-between">
+									<div>
+										<div class="text-xs text-muted">{{ contactPackage.package.name }}</div>
+										<div class="font-semibold text-sm">{{ contactPackage.service.name }}</div>
+									</div>
+									<div>
+										<trash-icon width="15" height="15" class="cursor-pointer ml-1 fill-current text-gray-400" @click.native="deleteContactPackage(contactPackage, contactPackageIndex)"></trash-icon>
+									</div>
+								</div>
+
+								<div class="border-bottom py-2 flex justify-between items-center" v-for="contactPackageBooking in contactPackage.bookings" :key="contactPackageBooking.id">
+									<div class="text-sm">{{ contactPackage.service.value.duration }}min</div>
+									<div>
+										<button type="button" class="btn btn-sm btn-primary disabled"><span>Booked</span></button>
+									</div>
+								</div>
+
+								<div class="border-bottom py-2 flex justify-between items-center" v-for="(block, index) in new Array(parseInt(contactPackage.service.bookings - contactPackage.bookings.length))" :key="index">
+									<div class="text-sm">{{ contactPackage.service.value.duration }}min</div>
+									<div>
+										<button type="button" class="btn btn-sm btn-outline-primary" @click="bookPackage(contactPackage, contactPackageIndex)"><span>Book</span></button>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -227,7 +244,7 @@
 			</div>
 		</div>
 
-		<Booking :contact="contact" @store="newBookingStored" :newEvent="newEvent" :booking="selectedBooking" @update="bookingUpdated" @close="selectedBooking = null" @delete="bookingDeleted"></Booking>
+		<Booking :contact="contact" :service="packageService" @store="newBookingStored" :newEvent="newEvent" :booking="selectedBooking" @update="bookingUpdated" @close="selectedBooking = null" @delete="bookingDeleted"></Booking>
 
 		<modal ref="editModal" :close-button="false">
 			<h5 class="font-heading mb-3">Edit Contact</h5>

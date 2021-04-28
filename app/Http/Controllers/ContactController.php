@@ -103,7 +103,7 @@ class ContactController extends Controller
             'service' => $request->service
         ]);
 
-        return response()->json($contactPackage);
+        return response()->json($contactPackage->load('package'));
     }
 
     public function deletePackage($id, Request $request)

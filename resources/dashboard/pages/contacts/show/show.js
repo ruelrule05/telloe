@@ -105,7 +105,9 @@ export default {
 		},
 		newEvent: false,
 		activeTab: 'notes',
-		page: 1
+		page: 1,
+		packageService: null,
+		contactPackageIndex: 0
 	}),
 
 	computed: {
@@ -249,12 +251,22 @@ export default {
 		},
 
 		newBookingStored(booking) {
+			if (this.packageService) {
+				this.contact.contact_packages[this.contactPackageIndex].bookings.push(booking);
+			}
 			this.contact.bookings.data.unshift(booking);
 		},
 
 		createNewEvent() {
 			this.newEvent = true;
 			this.selectedBooking = { date: dayjs().format('YYYY-MM-DD'), start: '02:00', end: '03:00' };
+		},
+
+		bookPackage(contactPackage, contactPackageIndex) {
+			this.newEvent = true;
+			this.packageService = contactPackage.service.value;
+			this.contactPackageIndex = contactPackageIndex;
+			this.selectedBooking = { date: dayjs().format('YYYY-MM-DD'), start: '02:00', end: '03:00', contact_package_id: contactPackage.id };
 		},
 
 		bookingDeleted(booking) {

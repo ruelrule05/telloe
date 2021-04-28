@@ -40,12 +40,14 @@
 							<span class="text-muted">Duration: {{ service.value.duration }} min</span>
 
 							<div class="flex items-center mt-4">
-								<div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings - packageItem.contact_packages.filter(p => p.service.id == service.id).length))" :key="index">
+								<!-- <div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings - packageItem.contact_packages.filter(p => p.service.id == service.id).length))" :key="index"> -->
+
+								<div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(service.bookings))" :key="index">
 									<div class="bg-gray-100 rounded-xl py-2 px-3">
 										<h6 class="font-bold">{{ service.value.duration }}min</h6>
 									</div>
 								</div>
-								<template v-for="contactPackage in packageItem.contact_packages">
+								<!-- <template v-for="contactPackage in packageItem.contact_packages">
 									<div class="mr-2 mb-2 inline-block" v-if="contactPackage.service.id == service.id" :key="contactPackage.id">
 										<div class="bg-gray-100 rounded-xl py-2 px-3 flex items-center">
 											<div class="profile-image profile-image-xs mr-2" :style="{ backgroundImage: 'url(' + contactPackage.contact.profile_image + ')' }">
@@ -55,7 +57,7 @@
 											<h6 class="font-bold">{{ service.value.duration }}min</h6>
 										</div>
 									</div>
-								</template>
+								</template> -->
 							</div>
 						</div>
 

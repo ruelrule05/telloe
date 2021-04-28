@@ -7,7 +7,7 @@
 					<div class="flex-grow">
 						<h5 class="font-semibold font-serif text-md mb-4">New Booking</h5>
 						<label>Event Type</label>
-						<vue-select required :options="servicesOptions" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service"></vue-select>
+						<VueSelect :disabled="disableServiceSelect" required :options="servicesOptions" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service"></VueSelect>
 						<v-date-picker
 							is-required
 							v-model="clonedBooking.date"
@@ -27,8 +27,29 @@
 								</div>
 							</template>
 						</v-date-picker>
+
 						<div class="my-4">
-							<timerangepicker @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
+							<div class="flex justify-between">
+								<label>Time</label>
+								<VueCheckbox v-if="clonedBooking.service" v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
+							</div>
+							<div v-if="!clonedBooking.service" class="text-center text-muted py-4 bg-gray-100 rounded-lg text-sm">Please choose an event type.</div>
+							<template v-else>
+								<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-visible border bg-gray-50 rounded-lg">
+									<table class="w-full" cellspacing="0" cellpadding="0">
+										<tr class="relative">
+											<td v-for="(timeslot, timeslotIndex) in timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslot.time == timeslot.time }" @click="selectTimeslot(timeslot)">
+												<div class="items-center column px-1 bg-primary-400">
+													<div class="timeslot-content">
+														<p class="text-center" v-html="timeslotTime(timeslot)"></p>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+								<timerangepicker v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
+							</template>
 						</div>
 
 						<label>Guests</label>
@@ -87,7 +108,24 @@
 						</template>
 					</v-date-picker>
 					<div class="my-4">
-						<timerangepicker :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2" @change="updateTime"></timerangepicker>
+						<div class="flex justify-between">
+							<label>Time</label>
+							<VueCheckbox v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
+						</div>
+						<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-visible border bg-gray-50 rounded-lg">
+							<table class="w-full" cellspacing="0" cellpadding="0">
+								<tr class="relative">
+									<td v-for="(timeslot, timeslotIndex) in timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslot.time == timeslot.time }" @click="selectTimeslot(timeslot)">
+										<div class="items-center column px-1 bg-primary-400">
+											<div class="timeslot-content">
+												<p class="text-center" v-html="timeslotTime(timeslot)"></p>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<timerangepicker v-else @change="updateTime" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
 					</div>
 
 					<div>
