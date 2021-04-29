@@ -75,6 +75,12 @@ export default {
 
 	created() {
 		this.clonedService = JSON.parse(JSON.stringify(this.service));
+		if (!this.$root.auth.zoom_token) {
+			this.types.splice(this.types.indexOf('Zoom'), 1);
+		}
+		if (!this.$root.auth.google_calendar_token) {
+			this.types.splice(this.types.indexOf('Google Meet'), 1);
+		}
 	},
 
 	mounted() {

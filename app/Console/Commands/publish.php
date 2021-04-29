@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use File;
+use Illuminate\Console\Command;
 
 class publish extends Command
 {
@@ -46,9 +46,12 @@ class publish extends Command
             'storage/app/public/sample-images',
             'storage/app/public/message-media',
             'storage/app/public/chatbox-media',
+            'storage/app/private/var/tmp',
         ];
-        foreach($publicFolders as $folder) :
-            if (!File::exists($folder)) File::makeDirectory($folder);
-        endforeach;
+        foreach ($publicFolders as $folder) {
+            if (! File::exists($folder)) {
+                File::makeDirectory($folder);
+            }
+        }
     }
 }
