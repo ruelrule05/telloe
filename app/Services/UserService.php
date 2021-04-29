@@ -70,7 +70,7 @@ class UserService
         return $timeslots;
     }
 
-    public static function profile($username, Request $request)
+    public static function profile($username, $service_id, Request $request)
     {
         $profile = User::where('username', $username)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
 
@@ -86,8 +86,8 @@ class UserService
         }
 
         $service = null;
-        if ($request->service_id) {
-            $service = Service::with('user', 'assignedServices.member.memberUser')->where('is_available', true)->where('id', $request->service_id)->where('user_id', $profile->id)->firstOrFail();
+        if ($service_id) {
+            $service = Service::with('user', 'assignedServices.member.memberUser')->where('is_available', true)->where('id', $service_id)->where('user_id', $profile->id)->firstOrFail();
         }
 
         $timezone = null;

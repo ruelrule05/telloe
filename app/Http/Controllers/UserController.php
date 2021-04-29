@@ -21,9 +21,9 @@ class UserController extends Controller
         return response(UserService::index($request));
     }
 
-    public function profile($username, Request $request)
+    public function profile($username, $service_id = null, Request $request)
     {
-        return UserService::profile($username, $request);
+        return UserService::profile($username, $service_id, $request);
     }
 
     public function showService($username, $service_id)
