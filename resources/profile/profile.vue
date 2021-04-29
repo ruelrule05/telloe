@@ -210,106 +210,122 @@
 					<button class="btn btn-outline-primary flex items-center" type="button" @click="step = false"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
 				<div class="lg:w-8/12 min-h-screen bg-white lg:p-16 p-8">
-					<h4 class="mb-2 font-serif font-semibold text-2xl text-primary">{{ selectedService.name }}</h4>
-					<div class="text-sm">
-						<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
-					</div>
+					<vue-form-validate
+						@submit="
+							() => {
+								step = selectedService.require_payment ? 'payment' : 'authenticate';
+							}
+						"
+					>
+						<h4 class="mb-2 font-serif font-semibold text-2xl text-primary">{{ selectedService.name }}</h4>
+						<div class="text-sm">
+							<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
+						</div>
 
-					<div class="lg:w-8/12">
-						<div v-for="(selectedTimeslot, selectedTimeslotIndex) in selectedTimeslots" :key="selectedTimeslotIndex" class="mt-8">
-							<div class="flex items-start justify-between">
-								<div>
-									<div class="font-bold">{{ dayjs(selectedTimeslot.date.format).format('MMMM D, YYYY') }} ({{ selectedTimeslot.date.dayName }})</div>
-									<div>{{ timezoneTime(selectedTimeslot.timeslot.time) }} - {{ endTime(selectedTimeslot.timeslot.time) }}</div>
-									<button
-										class="font-serif text-primary text-xxs font-semibold"
-										type="button"
-										@click="
-											selectedTimeslots.splice(selectedTimeslotIndex, 1);
-											if (selectedTimeslots.length == 0) {
-												step = false;
-											}
-										"
-									>
-										REMOVE BOOKING
-									</button>
-								</div>
+						<div class="lg:w-8/12">
+							<div v-for="(selectedTimeslot, selectedTimeslotIndex) in selectedTimeslots" :key="selectedTimeslotIndex" class="mt-8">
+								<div class="flex items-start justify-between">
+									<div>
+										<div class="font-bold">{{ dayjs(selectedTimeslot.date.format).format('MMMM D, YYYY') }} ({{ selectedTimeslot.date.dayName }})</div>
+										<div>{{ timezoneTime(selectedTimeslot.timeslot.time) }} - {{ endTime(selectedTimeslot.timeslot.time) }}</div>
+										<button
+											class="font-serif text-primary text-xxs font-semibold"
+											type="button"
+											@click="
+												selectedTimeslots.splice(selectedTimeslotIndex, 1);
+												if (selectedTimeslots.length == 0) {
+													step = false;
+												}
+											"
+										>
+											REMOVE BOOKING
+										</button>
+									</div>
 
-								<div class="flex items-center">
-									<span class="text-xs mr-2">Recurring</span>
-									<ToggleSwitch
-										class="ml-auto"
-										@input="
-											if (selectedTimeslot.is_recurring) {
-												$set(
-													selectedTimeslot,
-													'end_date',
-													dayjs(new Date())
-														.add(1, 'week')
-														.toDate()
-												);
-												$set(selectedTimeslot, 'frequency', recurringFrequencies[0].value);
-												setTimeslotDefaultDay('week', selectedTimeslot);
-											}
-										"
-										active-class="bg-primary"
-										v-model="selectedTimeslot.is_recurring"
-									></ToggleSwitch>
-									<div v-if="selectedTimeslot.is_recurring" class="relative" v-click-outside="() => (selectedTimeslot.menu = false)">
-										<button class="ml-1 focus:outline-none rounded-full p-1 border text-gray-400 transition-colors hover:bg-gray-400 hover:text-white btn-timeslot" type="button" @click="$set(selectedTimeslot, 'menu', true)"><CogIcon class="fill-current h-4 w-4"></CogIcon></button>
+									<div class="flex items-center">
+										<span class="text-xs mr-2">Recurring</span>
+										<ToggleSwitch
+											class="ml-auto"
+											@input="
+												if (selectedTimeslot.is_recurring) {
+													$set(
+														selectedTimeslot,
+														'end_date',
+														dayjs(new Date())
+															.add(1, 'week')
+															.toDate()
+													);
+													$set(selectedTimeslot, 'frequency', recurringFrequencies[0].value);
+													setTimeslotDefaultDay('week', selectedTimeslot);
+												}
+											"
+											active-class="bg-primary"
+											v-model="selectedTimeslot.is_recurring"
+										></ToggleSwitch>
+										<div v-if="selectedTimeslot.is_recurring" class="relative" v-click-outside="() => (selectedTimeslot.menu = false)">
+											<button class="ml-1 focus:outline-none rounded-full p-1 border text-gray-400 transition-colors hover:bg-gray-400 hover:text-white btn-timeslot" type="button" @click="$set(selectedTimeslot, 'menu', true)"><CogIcon class="fill-current h-4 w-4"></CogIcon></button>
 
-										<div class="timeslot-menu" :class="{ show: selectedTimeslot.menu }">
-											<div class="flex">
-												<button class="flex-grow btn btn-sm mr-1" type="button" :class="[selectedTimeslot.frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'week')"><span>Weekly</span></button>
-												<button class="flex-grow btn btn-sm ml-1" type="button" :class="[selectedTimeslot.frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'month')"><span>Monthly</span></button>
-											</div>
-											<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
-											<div class="flex space-x-2 mt-3">
-												<div @click="timeslotToggleDay(selectedTimeslot, dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: selectedTimeslot.days.indexOf(dayIndex) > -1 }" :key="dayIndex">
-													<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+											<div class="timeslot-menu" :class="{ show: selectedTimeslot.menu }">
+												<div class="flex">
+													<button class="flex-grow btn btn-sm mr-1" type="button" :class="[selectedTimeslot.frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'week')"><span>Weekly</span></button>
+													<button class="flex-grow btn btn-sm ml-1" type="button" :class="[selectedTimeslot.frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'month')"><span>Monthly</span></button>
+												</div>
+												<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
+												<div class="flex space-x-2 mt-3">
+													<div @click="timeslotToggleDay(selectedTimeslot, dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: selectedTimeslot.days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+														<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+													</div>
+												</div>
+
+												<div class="mt-4">
+													<v-date-picker :min-date="new Date()" class="input" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
+														<template v-slot="{ inputValue, inputEvents }">
+															<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
+																<span class="text-muted text-sm mr-2">Until</span>
+																{{ inputValue }}
+															</button>
+														</template>
+													</v-date-picker>
 												</div>
 											</div>
-
-											<div class="mt-4">
-												<v-date-picker :min-date="new Date()" class="input" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
-													<template v-slot="{ inputValue, inputEvents }">
-														<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
-															<span class="text-muted text-sm mr-2">Until</span>
-															{{ inputValue }}
-														</button>
-													</template>
-												</v-date-picker>
-											</div>
 										</div>
 									</div>
 								</div>
-							</div>
 
-							<div v-if="selectedService.types.length > 0" class="mt-6">
-								<div v-for="(type, typeIndex) in selectedService.types" :key="typeIndex" class="booking-type" :class="{ selected: selectedTimeslot.type == type }" @click="setTypeSelected(selectedTimeslot, type)">
-									<div>
-										<div class="type-checkbox"><div class="absolute-center"></div></div>
-									</div>
-									<div class="px-3 text-sm text-muted -mt-1 flex-grow">
+								<div v-if="selectedService.types.length > 0" class="mt-6">
+									<div v-for="(type, typeIndex) in selectedService.types" :key="typeIndex" class="booking-type" :class="{ selected: selectedTimeslot.type == type }" @click="setTypeSelected(selectedTimeslot, type)">
 										<div>
-											{{ type.type }}
+											<div class="type-checkbox"><div class="absolute-center"></div></div>
 										</div>
-										<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
-										<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
-									</div>
-									<div>
-										<ZoomIcon v-if="type.type == 'Zoom'" class="w-5 h-5"></ZoomIcon>
-										<GoogleMeetIcon v-else-if="type.type == 'Google Meet'" class="w-5 h-5"></GoogleMeetIcon>
-										<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="w-5 h-5 fill-current text-primary"></MapMarkerIcon>
+										<div class="px-3 text-sm text-muted -mt-1 flex-grow">
+											<div>
+												{{ type.type }}
+											</div>
+											<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
+											<div class="mt-1" v-else-if="type.type == 'Phone'">
+												<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="phone" />
+											</div>
+											<div class="mt-1" v-else-if="type.type == 'Skype'">
+												<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="skype" placeholder="Add your Skype ID" />
+											</div>
+											<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
+										</div>
+										<div>
+											<ZoomIcon v-if="type.type == 'Zoom'" class="w-5 h-5"></ZoomIcon>
+											<GoogleMeetIcon v-else-if="type.type == 'Google Meet'" class="w-5 h-5"></GoogleMeetIcon>
+											<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="w-5 h-5 fill-current text-primary"></MapMarkerIcon>
+											<PhoneIcon v-else-if="type.type == 'Phone'" class="w-5 h-5 fill-current text-primary"></PhoneIcon>
+											<SkypeIcon v-else-if="type.type == 'Skype'" class="w-5 h-5 fill-current text-primary"></SkypeIcon>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
 
-					<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="button" @click="step = selectedService.require_payment ? 'payment' : 'authenticate'">
-						<span>Continue <span v-if="selectedService.require_payment">to payment</span></span>
-					</button>
+						<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="submit">
+							<span>Continue <span v-if="selectedService.require_payment">to payment</span></span>
+						</button>
+					</vue-form-validate>
 				</div>
 
 				<vue-form-validate hidden @submit="submit" class="row justify-content-center">

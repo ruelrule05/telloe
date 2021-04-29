@@ -36,10 +36,8 @@ window.axios.interceptors.response.use(
 		Vue.$toast.clear();
 		let responseStatus = error.response.status;
 		if ([401, 419].find(x => x == responseStatus)) {
-			let isHomepage = window.location.pathname == '/';
-			if (!isHomepage) {
-				window.location.href = '/';
-			} else if (responseStatus == 419 && window.location.search == '') {
+			let isPage = ['/', 'privacy-policy', 'terms-of-service'].find(x => x == window.location.pathname);
+			if (!isPage && responseStatus == 419 && window.location.search == '') {
 				window.location.href = '/?auth=login';
 			}
 		}

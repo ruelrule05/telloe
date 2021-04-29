@@ -62,7 +62,7 @@ export default {
 				value: 'NZD'
 			}
 		],
-		types: ['Google Meet', 'Zoom', 'Face-to-face']
+		types: ['Google Meet', 'Zoom', 'Face-to-face', 'Phone', 'Skype']
 	}),
 
 	watch: {

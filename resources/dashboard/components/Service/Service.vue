@@ -52,6 +52,8 @@
 											<div class="text-muted text-sm mb-1">Location/details</div>
 											<input type="text" v-model="type.data" placeholder="Location/details.." data-required />
 										</div>
+
+										<div v-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm  px-4 pb-2">{{ type.type }} will be required before placing a booking.</div>
 										<div v-else class="text-muted text-sm  px-4 pb-2">{{ type.type }} link will be created for each booking.</div>
 									</div>
 									<div class="pl-2">
@@ -104,7 +106,7 @@
 					<div v-show="activeMenu == 'Advanced'">
 						<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>
 						<div class="w-9/12">
-							<div class="mb-5 flex items-center">
+							<!-- <div class="mb-5 flex items-center">
 								<vue-checkbox v-model="clonedService.ask_skype" label="Ask for Skype ID in booking"></vue-checkbox>
 								<div class="ml-auto flex items-center">
 									<span v-if="clonedService.ask_skype" class="text-xs mr-2">Required</span>
@@ -117,7 +119,7 @@
 									<span v-if="clonedService.require_phone" class="text-xs mr-2">Required</span>
 									<toggle-switch :disabled="!clonedService.ask_phone" v-model="clonedService.require_phone"></toggle-switch>
 								</div>
-							</div>
+							</div> -->
 							<div class="mb-5">
 								<vue-checkbox v-model="clonedService.in_widget" label="Available in widget"></vue-checkbox>
 							</div>

@@ -79,7 +79,9 @@ export default {
 		}),
 
 		addTimeslot(state, timeslot) {
-			if (!timeslot.is_available) return false;
+			if (!timeslot.is_available && timeslot.is_booked) return false;
+
+			timeslot.is_available = true;
 
 			if (state) {
 				this.dates[this.selectedDate].selectedTimeslots.push(timeslot);

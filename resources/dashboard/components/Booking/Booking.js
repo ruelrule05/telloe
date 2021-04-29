@@ -12,6 +12,8 @@ import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
 import jstz from 'jstz';
 const timezone = jstz.determine();
+import SkypeIcon from '../../../icons/skype.vue';
+import CallMenuIcon from '../../../icons/call-menu.vue';
 export default {
 	props: {
 		booking: {},
@@ -28,7 +30,7 @@ export default {
 		}
 	},
 
-	components: { VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker },
+	components: { CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker },
 
 	data: () => ({
 		clonedBooking: {},

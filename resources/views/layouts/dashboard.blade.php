@@ -203,8 +203,8 @@
 							<button class="ml-6 font-bold" type="button">Get Support</button>
 						</div>
 						<div>
-							<button type="button">Privacy Policy</button>
-							<button class="ml-6" type="button">Terms of Service</button>
+							<a class="ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>
+							<a class="ml-6" target="_blank" href="/terms-of-service">Terms of Service</a>
 						</div>
 					</div>
 				</div>

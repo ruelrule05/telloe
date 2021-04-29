@@ -110,7 +110,8 @@ class BookingLinkService
         foreach ($allTimeslots as $key => $timeslot) {
             $timeslots[] = $timeslot;
         }
-
+        $time = array_column($timeslots, 'time');
+        array_multisort($time, SORT_ASC, $timeslots);
         return $timeslots;
     }
 

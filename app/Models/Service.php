@@ -119,7 +119,8 @@ class Service extends BaseModel
             $timeslot = [
                 'label' => $timeStart->format('h:iA'),
                 'time' => $timeStart->format('H:i'),
-                'is_available' => false
+                'is_available' => false,
+                'is_booked' => false,
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = Booking::with('bookingNote')
@@ -183,6 +184,7 @@ class Service extends BaseModel
                 $timeslot['is_available'] = true;
             } elseif ($bookings->count() > 0) {
                 $timeslot['bookings'] = $bookings->load('bookingUsers', 'service.user');
+                $timeslot['is_booked'] = true;
             }
             $timeslots[] = $timeslot;
             $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');

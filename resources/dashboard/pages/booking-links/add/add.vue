@@ -44,7 +44,8 @@
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 									<div class="text-center px-2 pb-2 bg-white">
-										<VueCheckbox v-if="timeslot.is_available" v-model="timeslot.is_selected" @input="addTimeslot($event, timeslot)"></VueCheckbox>
+										<VueCheckbox v-if="timeslot.is_available || !timeslot.is_booked" v-model="timeslot.is_selected" @input="addTimeslot($event, timeslot)"></VueCheckbox>
+										<span v-if="timeslot.is_booked" class="text-xxs text-muted">Booked</span>
 									</div>
 								</td>
 							</tr>
@@ -62,7 +63,7 @@
 										</div>
 									</div>
 								</td>
-								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available }">
+								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
 									<div class="items-center column  mb-2 px-1" :style="{ backgroundColor: contact.color }">
 										<div class="timeslot-content" :class="{ selected: dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, contact)"></p>

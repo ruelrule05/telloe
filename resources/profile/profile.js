@@ -69,9 +69,13 @@ import axios from 'axios';
 import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
 import RefreshIcon from '../icons/refresh';
 import SocialLogin from '../js/helpers/SocialLogin';
+import PhoneIcon from '../icons/call-menu.vue';
+import SkypeIcon from '../icons/skype.vue';
 
 export default {
 	components: {
+		SkypeIcon,
+		PhoneIcon,
 		VueFormValidate,
 		Modal,
 		ClockIcon,
@@ -206,7 +210,9 @@ export default {
 		cardBrand: null,
 		format: format,
 		bookingLoading: false,
-		creatingAccount: false
+		creatingAccount: false,
+		phone: '',
+		skype: ''
 	}),
 
 	computed: {
@@ -395,9 +401,9 @@ export default {
 		} else {
 			this.getData();
 		}
-		if (!this.timezone) {
-			this.timezone = timezone.name();
-		}
+		//if (!this.timezone) {
+		this.timezone = timezone.name();
+		//}
 		this.startDate = dayjs().toDate();
 
 		if (typeof gapi != 'undefined') {
@@ -517,6 +523,8 @@ export default {
 			let data = JSON.parse(JSON.stringify(this.guest));
 			data.timeslots = timeslots;
 			data.card_token = true;
+			data.phone = this.phone;
+			data.skype = this.skype;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -544,6 +552,8 @@ export default {
 			let data = JSON.parse(JSON.stringify(this.user));
 			data.timeslots = timeslots;
 			data.card_token = true;
+			data.phone = this.phone;
+			data.skype = this.skype;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -573,6 +583,8 @@ export default {
 				let data = JSON.parse(JSON.stringify(this.user));
 				data.timeslots = timeslots;
 				data.card_token = true;
+				data.phone = this.phone;
+				data.skype = this.skype;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
@@ -603,6 +615,8 @@ export default {
 				let data = JSON.parse(JSON.stringify(this.user));
 				data.timeslots = timeslots;
 				data.card_token = true;
+				data.phone = this.phone;
+				data.skype = this.skype;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}

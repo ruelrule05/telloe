@@ -552,72 +552,74 @@ export default {
 		},
 
 		endCall(emit = true, message = false, broadcast = false) {
-			if (message && this.isCalling) {
-				if (this.status == 'ongoing') {
-					clearInterval(this.timer);
-					this.sendMessage({
-						message: `Call ${this.secondsToHms(this.duration)}`,
-						type: 'call_ended',
-						conversation_id: this.conversation.id
-					});
-				} else if (!this.status) {
-					this.sendMessage(
-						{
-							message: 'Call failed',
-							type: 'call_failed',
+			if (this.conversation) {
+				if (message && this.isCalling) {
+					if (this.status == 'ongoing') {
+						clearInterval(this.timer);
+						this.sendMessage({
+							message: `Call ${this.secondsToHms(this.duration)}`,
+							type: 'call_ended',
 							conversation_id: this.conversation.id
-						},
-						broadcast
-					);
+						});
+					} else if (!this.status) {
+						this.sendMessage(
+							{
+								message: 'Call failed',
+								type: 'call_failed',
+								conversation_id: this.conversation.id
+							},
+							broadcast
+						);
+					}
 				}
-			}
-			this.isCalling = false;
-			this.duration = 0;
-			this.caller = null;
-			this.timer = null;
-			this.localCameraReady = false;
-			this.remoteCameraReady = false;
-			this.isAnswered = false;
-			this.videoAnswer = null;
-			this.callRecorder = null;
-			this.status = '';
-			this.action = '';
-			this.open = false;
-			this.notification_sound.pause();
-			this.isMuted = false;
-			this.isVideoStopped = false;
-			this.isScreenSharing = false;
-			this.isFullScreen = false;
-			this.isIncoming = false;
-			this.isShrinked = false;
-			this.showMessages = false;
+				this.isCalling = false;
+				this.duration = 0;
+				this.caller = null;
+				this.timer = null;
+				this.localCameraReady = false;
+				this.remoteCameraReady = false;
+				this.isAnswered = false;
+				this.videoAnswer = null;
+				this.callRecorder = null;
+				this.status = '';
+				this.action = '';
+				this.open = false;
+				this.notification_sound.pause();
+				this.isMuted = false;
+				this.isVideoStopped = false;
+				this.isScreenSharing = false;
+				this.isFullScreen = false;
+				this.isIncoming = false;
+				this.isShrinked = false;
+				this.showMessages = false;
 
-			if (emit && this.$root.appChannel) {
-				this.$root.appChannel.whisper('liveCallEnd', {
-					conversation_id: this.conversation.id,
-					uid: this.username
-				});
-			}
+				if (emit && this.$root.appChannel) {
+					this.$root.appChannel.whisper('liveCallEnd', {
+						conversation_id: this.conversation.id,
+						uid: this.username
+					});
+				}
 
-			if (this.peer) {
-				this.peer.close();
-			}
-			if (this.signal) {
-				this.signal.close();
-			}
+				if (this.peer) {
+					this.peer.close();
+				}
+				if (this.signal) {
+					this.signal.close();
+				}
 
-			this.notification_sound.pause();
-			this.notification_sound.currentTime = 0;
-			this.$root.callConversation = null;
+				this.notification_sound.pause();
+				this.notification_sound.currentTime = 0;
+				this.$root.callConversation = null;
 
-			if (this.isRecording) this.recordCall();
-			else {
-				if (this.draggable) this.draggable.remove();
-				this.draggable = null;
+				if (this.isRecording) this.recordCall();
+				else {
+					if (this.draggable) this.draggable.remove();
+					this.draggable = null;
+				}
+				//$(this.$refs['remoteStreams']).empty();
+				if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
+				this.stopLocalStream();
 			}
-			//$(this.$refs['remoteStreams']).empty();
-			if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
-			this.stopLocalStream();
 		},
 
 		fullScreen(state) {

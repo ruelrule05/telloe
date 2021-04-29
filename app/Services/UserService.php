@@ -22,12 +22,11 @@ use App\Models\Widget;
 use Auth;
 use Carbon\Carbon;
 use File;
+use Hash;
 use Illuminate\Http\Request;
-use Image;
 use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
-use Hash;
 
 class UserService
 {
@@ -178,6 +177,7 @@ class UserService
                 'date' => $timeslot['date']['format'],
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
+                'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
             ], $customer, $guest);
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
@@ -220,19 +220,19 @@ class UserService
                             'date' => $currentDate->clone()->format('Y-m-d'),
                             'start' => $start->format('H:i'),
                             'end' => $end->format('H:i'),
+                            'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
                         ], $customer, $guest);
                         if ($recurringBooking) {
                             //$bookings[] = $recurringBooking;
                             $booking->recurring = true;
                             $booking->until = Carbon::parse($recurringBooking->date)->format('M d, Y');
-                            if(!$booking->recurring_days) {
+                            if (! $booking->recurring_days) {
                                 $booking->recurring_days = [];
                             }
                             $recurringDays = $booking->recurring_days;
                             $recurringDays[] = Carbon::parse($recurringBooking->date)->format('l');
                             $booking->recurring_days = $recurringDays;
                         }
-
                     }
                     $currentDate->addDay(1);
                 }
@@ -390,13 +390,13 @@ class UserService
 
     public static function googleLoginAndBook($username, $service_id, UserGoogleLoginRequest $request)
     {
-        $user= Auth::user();
+        $user = Auth::user();
         return self::book($username, $service_id, $request, $user);
     }
 
     public static function facebookLoginAndBook($username, $service_id, UserFacebookLoginAndBook $request)
     {
-        $user= Auth::user();
+        $user = Auth::user();
         return self::book($username, $service_id, $request, $user);
     }
 }
