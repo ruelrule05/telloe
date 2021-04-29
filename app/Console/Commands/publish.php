@@ -50,7 +50,7 @@ class publish extends Command
         ];
         foreach ($publicFolders as $folder) {
             if (! File::exists($folder)) {
-                File::makeDirectory($folder);
+                File::makeDirectory($folder, 0755, true);
             }
         }
     }
