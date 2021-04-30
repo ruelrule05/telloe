@@ -264,6 +264,7 @@ function compressVideo($source, $ouput)
     $command .= ' 2>&1';
     //exec($command);
     exec($command, $commandOutput);
+    Log::debug('compressVideo command: [' . $command . ']');
     Log::debug('compressVideo: ' . json_encode($commandOutput));
     // print_r($output);
 }
