@@ -55,18 +55,18 @@
 
 						<label>Guests</label>
 						<vue-select v-if="!contact" required :options="contactsOptions" @input="contactSelected" no-set-value placeholder="Add guests"></vue-select>
-						<div v-for="(contact, contactIndex) in selectedContacts" :key="contact.id" class="contact-item">
+						<div v-for="(selectedContact, contactIndex) in selectedContacts" :key="selectedContact.id" class="contact-item">
 							<div class="flex items-center">
 								<div>
-									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
-										<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
+									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + selectedContact.contact_user.profile_image + ')' }">
+										<span v-if="!selectedContact.contact_user.profile_image">{{ selectedContact.contact_user.initials }}</span>
 									</div>
 								</div>
 								<div class="pl-1 text-sm font-semibold leading-tight">
-									{{ contact.contact_user.full_name }}
+									{{ selectedContact.contact_user.full_name }}
 								</div>
 							</div>
-							<div>
+							<div v-if="!contact">
 								<div class="contact-remove" @click="selectedContacts.splice(contactIndex, 1)"><CloseIcon class="fill-current"></CloseIcon></div>
 							</div>
 						</div>

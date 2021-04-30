@@ -2,6 +2,8 @@ import { mapState, mapActions } from 'vuex';
 import { VCalendar } from 'vuetify/lib';
 import vuetify from '../../../js/plugins/vuetify';
 import dayjs from 'dayjs';
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+dayjs.extend(IsSameOrAfter);
 export default {
 	vuetify,
 	props: {
@@ -34,6 +36,10 @@ export default {
 		...mapState({
 			bookings: state => state.bookings.index
 		}),
+
+		isPrevious() {
+			return dayjs().isSameOrAfter(dayjs(this.date));
+		},
 
 		parsedBookings() {
 			return this.bookings.map(booking => {

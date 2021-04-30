@@ -7,7 +7,7 @@
 
 		<VCalendar ref="calendar" :value="date" color="primary" type="day" hide-header :interval-format="intervalFormat" :categories="['bookings']" category-show-all :events="parsedBookings" @click:event="eventClick">
 			<template #interval="interval">
-				<div class="day-interval" @click="setNewEvent(interval)"></div>
+				<div class="day-interval" :class="{ disabled: isPrevious }" @click="setNewEvent(interval)"></div>
 			</template>
 			<template #event="{ event }">
 				<div>{{ event.name }}</div>

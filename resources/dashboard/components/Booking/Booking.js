@@ -41,7 +41,7 @@ export default {
 		selectedContacts: [],
 		timeslots: [],
 		selectedTimeslot: {},
-		selectFromTimeslots: false,
+		selectFromTimeslots: true, // false
 		disableServiceSelect: false
 	}),
 
