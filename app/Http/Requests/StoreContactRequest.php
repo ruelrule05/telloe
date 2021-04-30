@@ -24,7 +24,7 @@ class StoreContactRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:users,email|max:191',
+            'email' => 'required|email|max:191',
             'invite_message' => 'nullable|string',
             'first_name' => 'nullable|max:191|string',
             'last_name' => 'nullable|max:191|string',
