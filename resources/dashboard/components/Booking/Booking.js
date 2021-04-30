@@ -141,8 +141,9 @@ export default {
 			this.selectedTimeslot = timeslot;
 			this.clonedBooking.start = timeslot.time;
 			let startDate = dayjs(dayjs(this.clonedBooking.date).format('YYYY-MM-DD') + ' ' + timeslot.time);
+			let serviceOption = this.services.find(x => x.id == this.clonedBooking.service);
 			let endTime = dayjs(startDate)
-				.add(this.clonedBooking.service.duration, 'minute')
+				.add(serviceOption.duration, 'minute')
 				.format('HH:mm');
 			this.clonedBooking.end = endTime;
 		},

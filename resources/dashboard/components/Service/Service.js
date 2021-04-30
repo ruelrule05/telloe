@@ -8,6 +8,8 @@ import VueSelect from '../../../components/vue-select/vue-select.vue';
 import PlusIcon from '../../../icons/plus';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import CloseIcon from '../../../icons/close';
+import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
+import dayjs from 'dayjs';
 export default {
 	props: {
 		service: {
@@ -20,9 +22,12 @@ export default {
 		}
 	},
 
-	components: { VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect, PlusIcon, VueDropdown, CloseIcon },
+	components: { VDatePicker, VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect, PlusIcon, VueDropdown, CloseIcon },
 
 	data: () => ({
+		masks: {
+			input: 'MMMM D, YYYY'
+		},
 		menus: ['General Settings', 'Availability', 'Payment', 'Advanced'],
 		activeMenu: 'General Settings',
 		clonedService: null,
@@ -67,7 +72,16 @@ export default {
 
 	watch: {
 		service: function() {
-			this.clonedService = JSON.parse(JSON.stringify(this.service));
+			let clonedService = JSON.parse(JSON.stringify(this.service));
+			if (clonedService) {
+				if (clonedService.starts_at) {
+					clonedService.starts_at = dayjs(clonedService.starts_at).toDate();
+				}
+				if (clonedService.ends_at) {
+					clonedService.ends_at = dayjs(clonedService.ends_at).toDate();
+				}
+			}
+			this.clonedService = clonedService;
 			this.activeMenu = 'General Settings';
 			this.setMounted();
 		}
@@ -115,7 +129,14 @@ export default {
 		},
 
 		update() {
-			this.updateService(this.clonedService);
+			let data = JSON.parse(JSON.stringify(this.clonedService));
+			if (data.starts_at) {
+				data.starts_at = dayjs(data.starts_at).format('YYYY-MM-DD');
+			}
+			if (data.ends_at) {
+				data.ends_at = dayjs(data.ends_at).format('YYYY-MM-DD');
+			}
+			this.updateService(data);
 			this.$emit('close');
 		},
 

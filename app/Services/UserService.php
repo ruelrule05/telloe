@@ -73,14 +73,21 @@ class UserService
     public static function profile($username, $service_id, Request $request)
     {
         $profile = User::where('username', $username)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
+        $now = Carbon::now();
 
         if ($request->ajax() || $request->wantsJson()) {
-            $services = $profile->load(['services' => function ($service) {
-                $service->where('is_available', true);
+            $services = $profile->load(['services' => function ($service) use ($now) {
+                $service->where('is_available', true)->where(function ($query) use ($now) {
+                    $query->where(function ($startsAt) use ($now) {
+                        $startsAt->whereNull('starts_at')->orWhereDate('starts_at', '<=', $now);
+                    })->where(function ($endsAt) use ($now) {
+                        $endsAt->whereNull('ends_at')->orWhereDate('ends_at', '>', $now);
+                    });
+                });
             }])->services->load('user', 'assignedServices.member.memberUser');
 
             $data = [];
-            $data['services'] = $profile->services()->where('is_available', true)->get()->load('user', 'assignedServices.member.memberUser');
+            $data['services'] = $services;
 
             return response()->json($data);
         }

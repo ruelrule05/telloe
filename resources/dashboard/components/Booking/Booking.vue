@@ -34,6 +34,7 @@
 								<VueCheckbox v-if="clonedBooking.service" v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
 							</div>
 							<div v-if="!clonedBooking.service" class="text-center text-muted py-4 bg-gray-100 rounded-lg text-sm">Please choose an event type.</div>
+
 							<template v-else>
 								<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-visible border bg-gray-50 rounded-lg">
 									<table class="w-full" cellspacing="0" cellpadding="0">

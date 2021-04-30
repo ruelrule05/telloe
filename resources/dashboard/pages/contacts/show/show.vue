@@ -227,7 +227,7 @@
 					<div class="w-4/12">
 						<span class="font-bold text-primary">{{ booking.service.name }}</span>
 					</div>
-					<div class="w-3/12 flex items-center justify-end text-sm"><ClockIcon class="fill-current text-gray-200 mr-2"></ClockIcon>{{ formatDate(booking.created_at) }}</div>
+					<div class="w-3/12 flex items-center justify-end text-sm"><ClockIcon class="fill-current text-gray-200 mr-2"></ClockIcon>{{ formatDate(booking.date) }}</div>
 					<div class="w-3/12 text-sm text-right">{{ booking.start }} &mdash; {{ booking.end }}</div>
 					<div class="w-2/12 text-right">
 						<VueDropdown :options="['Edit']" @click="bookingAction($event, booking)" class="-mb-2">
