@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Mail\Mailer;
 use App\Models\Contact;
 
 class SendInvitation extends Mailer
@@ -28,7 +27,7 @@ class SendInvitation extends Mailer
     public function build()
     {
         return $this->from(config('app.noreply_email'), config('app.name'))
-            ->subject('Customer Invitation')
+            ->subject('Contact Invitation')
             ->view('emails.send-invitation');
     }
 }
