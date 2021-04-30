@@ -7,9 +7,9 @@
 				<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 			</div>
 
-			<div class="flex justify-end relative mt-10">
+			<div class="relative mt-10">
 				<div class="overflow-x-scroll overflow-y-visible  pb-4" style="margin-left: 200px">
-					<table class="w-full timeslots-table" cellspacing="0" cellpadding="0">
+					<table class="timeslots-table" cellspacing="0" cellpadding="0">
 						<tr v-if="bookingLink.user_id != auth.id">
 							<td></td>
 							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">

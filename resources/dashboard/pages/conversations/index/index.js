@@ -21,6 +21,7 @@ import VolumeMaxIcon from '../../../../icons/volume-max';
 import VolumeMinIcon from '../../../../icons/volume-min';
 import BellSlashIcon from '../../../../icons/bell-slash';
 import EditSquareIcon from '../../../../icons/edit-square';
+import dayjs from 'dayjs';
 
 export default {
 	components: {
@@ -70,8 +71,8 @@ export default {
 			let conversations = Object.assign([], this.conversations);
 			conversations.sort((a, b) => {
 				//console.log(a.last_message.timestamp);
-				const a_timestamp = a.last_message.timestamp || 0;
-				const b_timestamp = b.last_message.timestamp || 0;
+				const a_timestamp = a.last_message.timestamp || dayjs(a.created_at).valueOf();
+				const b_timestamp = b.last_message.timestamp || dayjs(b.created_at).valueOf();
 				return a_timestamp > b_timestamp ? -1 : 1;
 			});
 

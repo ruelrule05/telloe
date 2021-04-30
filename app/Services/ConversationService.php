@@ -25,18 +25,13 @@ class ConversationService
                         $members->where('user_id', Auth::user()->id);
                     });
             })
-            ->where(function ($query) {
-                $query->has('members.user')->orHas('contact');
-            })
             ->get();
         return $conversations;
     }
 
     public function show($id)
     {
-        $conversation = Conversation::withTrashed()->with('contact', 'notes')->where(function ($query) {
-            $query->has('members.user')->orHas('contact');
-        })->with('user.services', 'members.user')->findOrfail($id);
+        $conversation = Conversation::withTrashed()->with('contact', 'notes')->with('user.services', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 
         //if ($request->is_read) :
@@ -58,7 +53,7 @@ class ConversationService
     public static function store(StoreConversationRequest $request)
     {
         $authUser = Auth::user();
-        if (count($request->members) == 1) {
+        if (count($request->members ?? []) == 1) {
             $user = User::findOrFail($request->members[0]);
             $contact = Contact::where('user_id', $authUser->id)->where('contact_user_id', $user->id)->where('is_pending', false)->first();
             $member = Member::where('user_id', $authUser->id)->where('member_user_id', $user->id)->where('is_pending', false)->first();
@@ -78,7 +73,7 @@ class ConversationService
 
         $error = false;
         $members = [];
-        foreach ($request->members as $user_id) {
+        foreach ($request->members ?? [] as $user_id) {
             $user = User::findOrFail($user_id);
             $contact = Contact::where('user_id', $authUser->id)->where('contact_user_id', $user->id)->first();
             $member = Member::where('user_id', $authUser->id)->where('member_user_id', $user->id)->where('is_pending', false)->first();
@@ -104,6 +99,21 @@ class ConversationService
                     'conversation_id' => $conversation->id,
                     'user_id' => $user_id
                 ]);
+            }
+        } else {
+            if ($request->email) {
+                $userExists = User::where('email', $request->email)->first();
+                $conversation = Conversation::create([
+                    'user_id' => Auth::user()->id,
+                ]);
+                ConversationMember::create([
+                    'conversation_id' => $conversation->id,
+                    'email' => $request->email,
+                    'user_id' => $userExists->id ?? NULL
+                ]);
+
+                // if userExists, send an email about the new message
+                // else, send an email with signup link
             }
         }
 

@@ -22,9 +22,9 @@
 						</VueDropdown>
 					</div>
 				</div>
-				<div class="flex justify-end relative mt-8">
+				<div class="relative mt-8">
 					<div class="overflow-x-scroll overflow-y-visible pb-4" style="margin-left: 200px">
-						<table class="w-full timeslots-table" cellspacing="0" cellpadding="0">
+						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">

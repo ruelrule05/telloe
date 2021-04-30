@@ -54,7 +54,16 @@ class Conversation extends BaseModel
         $member = null;
         if ($this->members->count() == 1) {
             if (Auth::user()->id == $this->attributes['user_id']) {
-                $member = $this->members()->first()->user->makeVisible('last_online_format');
+                $member = $this->members()->first();
+                if ($member->user) {
+                    $member = $member->user->makeVisible('last_online_format');
+                } elseif ($member->email) {
+                    $member = [
+                        'initials' => strtoupper($member->email[0]),
+                        'full_name' => $member->email,
+                        'email' => $member->email,
+                    ];
+                }
                 if (isset($this->attributes['contact_id'])) {
                     $member->contact = Contact::find($this->attributes['contact_id']);
                 }

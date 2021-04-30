@@ -37,9 +37,9 @@
 			</div>
 
 			<div v-if="selectedContacts.length > 0">
-				<div class="flex justify-end relative mt-4">
+				<div class="relative mt-4">
 					<div class="overflow-x-scroll overflow-y-visible" style="margin-left: 200px">
-						<table class="w-full timeslots-table" cellspacing="0" cellpadding="0">
+						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">

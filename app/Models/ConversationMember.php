@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class ConversationMember extends BaseModel
 {
     //
-    protected $fillable = ['conversation_id', 'user_id'];
+    protected $fillable = ['conversation_id', 'user_id', 'email'];
 
     use AuthorizesRequests;
 

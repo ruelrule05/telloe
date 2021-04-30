@@ -3,6 +3,7 @@ import Index from './index/index.vue';
 import Show from './show/show.vue';
 import Modal from '../../../components/modal/modal.vue';
 import CloseIcon from '../../../icons/close';
+const isEmail = require('isemail');
 export default {
 	components: { Index, Show, Modal, CloseIcon },
 	created() {
@@ -16,7 +17,8 @@ export default {
 		newConversation: {
 			members: []
 		},
-		userSearch: ''
+		userSearch: '',
+		isEmail: isEmail
 	}),
 
 	computed: {
@@ -84,8 +86,10 @@ export default {
 					if (conversation.id != this.$route.params.id) this.$refs.conversationIndex.setConversation(conversation);
 					this.$root.appChannel.whisper('newConversation', { member_ids: member_ids, conversation_id: conversation.id });
 				});
-				this.$refs.newConversationModal.hide();
+			} else if (this.isEmail.validate(this.userSearch)) {
+				this.storeConversation({ email: this.userSearch });
 			}
+			this.$refs.newConversationModal.hide();
 		},
 
 		addNewConversationMember(member) {

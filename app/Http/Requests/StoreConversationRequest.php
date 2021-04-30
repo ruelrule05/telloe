@@ -24,7 +24,8 @@ class StoreConversationRequest extends FormRequest
     public function rules()
     {
         return [
-            'members' => 'required|array',
+            'members' => 'nullable|array',
+            'email' => 'nullable|email'
         ];
     }
 }

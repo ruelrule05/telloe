@@ -15,9 +15,9 @@
 						<div class="flex items-center" v-else-if="conversation.member.id && conversation.member.last_online_format">
 							<small class="text-muted">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
 						</div>
+						<small v-else-if="conversation.members.length > 1" class="block text-muted"> {{ conversation.members.length }} members </small>
 						<small v-else class="block text-muted">
-							<template v-if="(conversation.member.role || {}).role != 'support'">{{ conversation.members.length }} members</template>
-							<template v-else>{{ conversation.member.email }}</template>
+							<template>{{ conversation.member.email }}</template>
 						</small>
 					</div>
 				</div>

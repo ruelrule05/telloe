@@ -58,6 +58,8 @@ class AuthService
                 $data[$driver_id] = $socialiteUser->user['id'];
                 $data['profile_image'] = "/$profile_image";
                 $user = User::create($data);
+
+                // update all ConversationMember with user_id
                 self::createInitialConversations($user);
                 Mail::queue(new Welcome($user));
             }
@@ -162,6 +164,7 @@ class AuthService
         ]);
         $user->password = bcrypt($request->password);
         $user->save();
+        // update all ConversationMember with user_id
 
         Auth::login($user);
 
@@ -325,6 +328,7 @@ class AuthService
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
                 $user->save();
+                // update all ConversationMember with user_id
 
                 Mail::queue(new Welcome($user));
                 self::createDefaultField($user);
@@ -369,6 +373,7 @@ class AuthService
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
                 $user->save();
+                // update all ConversationMember with user_id
 
                 Mail::queue(new Welcome($user));
                 self::createDefaultField($user);
@@ -601,6 +606,7 @@ class AuthService
                 'last_online' => null,
                 'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
             ]);
+            // update all ConversationMember with user_id
 
             $password = Str::random(6);
             $newUser->password = bcrypt($password);
