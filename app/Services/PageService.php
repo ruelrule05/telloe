@@ -15,7 +15,7 @@ class PageService
     {
         checkRequestInviteToken($request);
         if (Auth::check()) {
-            return redirect('/dashboard/overview');
+            return redirect('/dashboard/calendar');
         }
 
         if ($request->auth == 'reset' && $request->token) {
