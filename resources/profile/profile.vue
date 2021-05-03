@@ -112,7 +112,7 @@
 								<!-- Assigned Coaches -->
 								<div
 									v-for="assignedService in selectedServiceForTimeline.assigned_services"
-									class="coach-card"
+									class="coach-card mt-4"
 									:class="{ active: selectedCoachId == assignedService.coach.id }"
 									:key="assignedService.id"
 									@click="

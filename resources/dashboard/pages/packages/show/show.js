@@ -81,8 +81,9 @@ export default {
 					let serviceCopy = Object.assign({}, service);
 					serviceCopy.bookings = 1;
 					services.push({
-						text: serviceCopy.name,
-						value: serviceCopy
+						name: serviceCopy.name,
+						value: serviceCopy,
+						id: serviceCopy.id
 					});
 				}
 			});

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\StoreConversationRequest;
+use App\Mail\NewConversation;
 use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Mail;
 
 class ConversationService
 {
@@ -111,9 +113,15 @@ class ConversationService
                     'email' => $request->email,
                     'user_id' => $userExists->id ?? NULL
                 ]);
-
-                // if userExists, send an email about the new message
-                // else, send an email with signup link
+                $emailToSend = NULL;
+                if ($userExists && $userExists->email && $userExists->notify_message) {
+                    $emailToSend = $userExists->email;
+                } elseif (! $userExists) {
+                    $emailToSend = $request->email;
+                }
+                if ($emailToSend) {
+                    Mail::to($userExists->email)->queue(new NewConversation($conversation, $userExists ? false : true));
+                }
             }
         }
 

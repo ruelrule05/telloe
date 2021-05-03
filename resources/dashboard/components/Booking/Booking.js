@@ -14,6 +14,9 @@ import jstz from 'jstz';
 const timezone = jstz.determine();
 import SkypeIcon from '../../../icons/skype.vue';
 import CallMenuIcon from '../../../icons/call-menu.vue';
+import Multiselect from 'vue-multiselect';
+const isEmail = require('isemail');
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 export default {
 	props: {
 		booking: {},
@@ -30,7 +33,7 @@ export default {
 		}
 	},
 
-	components: { CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker },
+	components: { Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker },
 
 	data: () => ({
 		clonedBooking: {},
@@ -42,7 +45,9 @@ export default {
 		timeslots: [],
 		selectedTimeslot: {},
 		selectFromTimeslots: true, // false
-		disableServiceSelect: false
+		disableServiceSelect: false,
+		isEmail: isEmail,
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -58,13 +63,9 @@ export default {
 		},
 
 		contactsOptions() {
-			return this.contacts
-				.filter(contact => {
-					return !this.selectedContacts.find(x => x.id == contact.id);
-				})
-				.map(contact => {
-					return { text: contact.contact_user.full_name, value: contact };
-				});
+			return this.contacts.map(contact => {
+				return { name: contact.contact_user.full_name, value: contact.id, id: contact.id, contact_user: contact.contact_user };
+			});
 		}
 	},
 
@@ -113,11 +114,13 @@ export default {
 	created() {
 		this.timezone = timezone.name();
 		this.clonedBooking = JSON.parse(JSON.stringify(this.booking));
+		this.getServices();
 		if (this.newEvent) {
-			this.getServices();
 			this.getContacts({ nopaginate: true });
 		}
 		if (this.contact) {
+			this.contact.value = this.contact.id;
+			this.contact.name = this.contact.contact_user.full_name;
 			this.selectedContacts.push(this.contact);
 		}
 		if (this.service) {
@@ -136,6 +139,23 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index'
 		}),
+
+		addEmail(email) {
+			let exists = this.selectedContacts.find(x => x.email == email);
+			if (!exists) {
+				this.selectedContacts.push({
+					id: email,
+					name: email,
+					contact_user: {
+						initials: email[0].toUpperCase(),
+						full_name: email,
+						timezone: this.$root.auth.timezone
+					},
+					type: 'email'
+				});
+			}
+			this.$refs.selectedContacts.deactivate();
+		},
 
 		selectTimeslot(timeslot) {
 			this.selectedTimeslot = timeslot;
@@ -203,7 +223,8 @@ export default {
 			}
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service;
-			data.contact_ids = this.selectedContacts.map(x => x.id);
+			data.contact_ids = this.selectedContacts.filter(x => x.type != 'email').map(x => x.id);
+			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.name);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			this.close();
 			let booking = await this.storeBooking(data);

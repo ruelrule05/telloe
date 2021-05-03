@@ -37,14 +37,14 @@
 					<div class="flex items-center " :data-intro="index == 0 ? $root.intros.packages_show.steps[0] : null">
 						<div>
 							<h6 class="mb-1 font-bold">{{ service.name }}</h6>
-							<span class="text-muted">Duration: {{ service.value.duration }} min</span>
+							<span class="text-muted">Duration: {{ service.duration }} min</span>
 
 							<div class="flex items-center mt-4">
 								<!-- <div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings - packageItem.contact_packages.filter(p => p.service.id == service.id).length))" :key="index"> -->
 
 								<div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(service.bookings))" :key="index">
 									<div class="bg-gray-100 rounded-xl py-2 px-3">
-										<h6 class="font-bold">{{ service.value.duration }}min</h6>
+										<h6 class="font-bold">{{ service.duration }}min</h6>
 									</div>
 								</div>
 								<!-- <template v-for="contactPackage in packageItem.contact_packages">
@@ -54,7 +54,7 @@
 												<span v-if="!contactPackage.contact.profile_image">{{ contactPackage.contact.initials }}</span>
 												<i v-if="$root.isOnline(contactPackage.contact.contact_user_id)" class="online-status">&nbsp;</i>
 											</div>
-											<h6 class="font-bold">{{ service.value.duration }}min</h6>
+											<h6 class="font-bold">{{ service.duration }}min</h6>
 										</div>
 									</div>
 								</template> -->
@@ -83,93 +83,6 @@
 						</div>
 					</div>
 				</div> -->
-			</div>
-		</div>
-
-		<div class="hidden d-flex h-100 overflow-hidden">
-			<div class="p-4 flex-grow-1 overflow-auto">
-				<div class="d-flex">
-					<div>
-						<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/packages')">
-							<arrow-left-icon width="30" height="30"></arrow-left-icon>
-						</button>
-					</div>
-					<div class="dropdown ml-auto">
-						<button class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10" :data-intro="$root.intros.packages_show.steps[2]" data-step="3">
-							<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
-						</button>
-						<div class="dropdown-menu">
-							<span
-								class="dropdown-item cursor-pointer"
-								@click="
-									clonedPackage = Object.assign({}, packageItem);
-									$refs['editModal'].show();
-								"
-							>
-								Edit
-							</span>
-							<span class="dropdown-item cursor-pointer" @click="$refs['deleteModal'].show()">
-								Delete
-							</span>
-						</div>
-					</div>
-				</div>
-
-				<div class="mt-4">
-					<h1 class="font-heading h3">{{ packageItem.name }}</h1>
-					<p class="service-description mb-3">{{ packageItem.description }}</p>
-					<div class="d-flex align-items-center">
-						<div class="d-flex align-items-center ">
-							<dollar-sign-icon width="8" height="8" transform="scale(2.4)"></dollar-sign-icon>
-							<span class="ml-1">{{ parseFloat(packageItem.price).toFixed(2) }}</span>
-						</div>
-						<div class="d-flex align-items-center ml-4">
-							<calendar-icon width="8" height="8" transform="scale(2)"></calendar-icon>
-							<span class="ml-2">{{ formatDate(packageItem.expiration_date) }}</span>
-						</div>
-					</div>
-				</div>
-
-				<!-- Services -->
-				<div class="mt-4 d-flex">
-					<div class="position-relative">
-						<div class="position-relative services-container">
-							<div class="pl-2 py-2 cursor-pointer position-relative service-container" :class="{ active: selectedService.id == service.id }" v-for="(service, index) in packageItem.services" :key="service.id" @click="selectedService = service">
-								<div class="d-flex align-items-center py-1 pl-1" :data-intro="index == 0 ? $root.intros.packages_show.steps[0] : null" :data-step="index == 0 ? 1 : null">
-									<div>
-										<h6 class="mb-1">{{ service.name }}</h6>
-										<div class="d-flex align-items-center">
-											<clock-icon width="11" height="11" transform="scale(1.5)" fill="#6c757d"></clock-icon>
-											<small class="text-muted ml-1">{{ service.duration }} min</small>
-										</div>
-									</div>
-
-									<div class="dropdown mr-1 pl-1 ml-auto service-dropdown">
-										<button class="btn btn-white line-height-0 p-1 badge-pill shadow-none" data-toggle="dropdown" data-offset="-140, 0">
-											<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
-										</button>
-										<div class="dropdown-menu">
-											<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/bookings/services/${service.id}`">
-												View Service
-											</router-link>
-											<span class="dropdown-item cursor-pointer" @click="removeAssignedService(service, index)">
-												Remove
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="active-package position-absolute w-100" :style="{ top: `${activeServicePosition}px` }"></div>
-					</div>
-					<div class="p-3 flex-1 bg-white shadow-sm position-relative rounded">
-						<div class="px-1 mb-2 d-inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings))" :key="index">
-							<div class="bg-primary rounded text-white py-3 px-4 cursor-pointerx">
-								<h6 class="font-heading mb-0">{{ selectedService.duration }} min</h6>
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 

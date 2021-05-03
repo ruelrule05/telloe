@@ -20,13 +20,14 @@ use App\Models\Contact;
 use App\Models\Notification;
 use App\Models\Service;
 use Auth;
+use Cache;
 use Carbon\Carbon;
 use File;
 use Google_Service_Calendar;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use  Spatie\CalendarLinks\Link;
+use  Illuminate\Support\Facades\Mail;
+use Spatie\CalendarLinks\Link;
 
 class BookingService
 {
@@ -80,6 +81,17 @@ class BookingService
             }
         }
 
+        $emails = array_unique($data['emails']);
+        foreach ($emails as $email) {
+            BookingUser::create([
+                'booking_id' => $booking->id,
+                'user_id' => NULL,
+                'guest' => [
+                    'email' => $email
+                ]
+            ]);
+        }
+
         if ($service->create_zoom_link && $service->user->zoom_token) {
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
@@ -99,30 +111,19 @@ class BookingService
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
 
-        Mail::queue(new NewBooking([$booking], 'client'));
-        Mail::queue(new NewBooking([$booking], 'contact'));
+        Mail::queue(new NewBooking([$booking], 'serviceUser'));
+        Mail::queue(new NewBooking([$booking], 'customer'));
 
-        $user_id = null;
-        $description = '';
-        $link = '';
-        if ($booking->user) {
-            if (Auth::user()->id == $booking->user_id) { // if contact - notify client
-                $user_id = $booking->service->user->id;
-                $description = "<strong>{$booking->user->full_name}</strong> has placed a booking.";
-                $contact = $booking->contact ?? Contact::where('user_id', $booking->service->user_id)->where('contact_user_id', $booking->user_id)->first() ?? null;
-                if ($contact) {
-                    $link = "/dashboard/contacts/$contact->id";
-                }
-            } elseif (Auth::user()->id == $booking->service->user_id) { // if client - notify contact
-                $user_id = $booking->user->id;
+        foreach ($booking->bookingUsers as $bookingUser) {
+            if ($bookingUser->user_id) {
+                $user_id = $bookingUser->user_id;
                 $description = 'A booking has been placed for your account.';
+                Notification::create([
+                    'user_id' => $user_id,
+                    'description' => $description,
+                    'link' => ''
+                ]);
             }
-
-            Notification::create([
-                'user_id' => $user_id,
-                'description' => $description,
-                'link' => $link
-            ]);
         }
 
         return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user'));
@@ -258,30 +259,32 @@ class BookingService
     {
         $events = [];
         $calendarId = Auth::user()->google_calendar_id;
-        if ($calendarId) {
-            $GoogleCalendarClient = new GoogleCalendarClient();
-            $client = $GoogleCalendarClient->client;
-            $service = new Google_Service_Calendar($client);
-            $eventsList = $service->events->listEvents($calendarId);
-            while (true) {
-                foreach ($eventsList->getItems() as $event) {
-                    if (! isset($event->getExtendedProperties()->private['booking'])) {
-                        $events[] = $event;
-                    }
-                }
-                $pageToken = $eventsList->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $eventsList = $service->events->listEvents($calendarId, $optParams);
-                } else {
-                    break;
-                }
-            }
-        }
-
         $user = Auth::user();
-        $user->google_calendar_events = $events;
-        $user->save();
+        if ($calendarId) {
+            $events = Cache::remember("{$user->id}_google_calendar_events", 43200, function () use ($calendarId) {
+                $events = [];
+                $GoogleCalendarClient = new GoogleCalendarClient();
+                $client = $GoogleCalendarClient->client;
+                $service = new Google_Service_Calendar($client);
+                $eventsList = $service->events->listEvents($calendarId);
+                while (true) {
+                    foreach ($eventsList->getItems() as $event) {
+                        if (! isset($event->getExtendedProperties()->private['booking'])) {
+                            $events[] = $event;
+                        }
+                    }
+                    $pageToken = $eventsList->getNextPageToken();
+                    if ($pageToken) {
+                        $optParams = ['pageToken' => $pageToken];
+                        $eventsList = $service->events->listEvents($calendarId, $optParams);
+                    } else {
+                        break;
+                    }
+                };
+
+                return $events;
+            });
+        }
 
         return $events;
     }
@@ -289,35 +292,34 @@ class BookingService
     public static function googleCalendarList(Request $request)
     {
         $GoogleCalendarClient = new GoogleCalendarClient();
+        $user = Auth::user();
         $calendars = [];
         if (! isset($GoogleCalendarClient->client->authUrl)) {
-            $client = $GoogleCalendarClient->client;
-            $service = new Google_Service_Calendar($client);
+            $calendars = Cache::remember("{$user->id}_google_calendars", 43200, function () use ($GoogleCalendarClient) {
+                $calendars = [];
+                $client = $GoogleCalendarClient->client;
+                $service = new Google_Service_Calendar($client);
 
-            $calendarList = $service->calendarList->listCalendarList([
-                'showHidden' => true,
-                'showDeleted' => true,
-            ]);
-            while (true) {
-                foreach ($calendarList->getItems() as $calendarListEntry) {
-                    $calendars[] = $calendarListEntry;
+                $calendarList = $service->calendarList->listCalendarList();
+                while (true) {
+                    foreach ($calendarList->getItems() as $calendarListEntry) {
+                        $calendars[] = $calendarListEntry;
+                    }
+                    $pageToken = $calendarList->getNextPageToken();
+                    if ($pageToken) {
+                        $optParams = ['pageToken' => $pageToken];
+                        $calendarList = $service->calendarList->listCalendarList($optParams);
+                    } else {
+                        break;
+                    }
                 }
-                $pageToken = $calendarList->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $calendarList = $service->calendarList->listCalendarList($optParams);
-                } else {
-                    break;
-                }
-            }
 
-            usort($calendars, function ($a, $b) {
-                return strcmp($a->summary, $b->summary);
+                usort($calendars, function ($a, $b) {
+                    return strcmp($a->summary, $b->summary);
+                });
+                return $calendars;
             });
         }
-        $user = Auth::user();
-        $user->google_calendars = $calendars;
-        $user->save();
 
         return $calendars;
     }

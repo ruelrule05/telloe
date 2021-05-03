@@ -46,11 +46,6 @@ const mutations = {
 		);
 	},
 
-	googleCalendars(state, data) {
-		state.googleCalendarsReady = true;
-		window.app.auth.google_calendars = data;
-	},
-
 	outlookCalendars(state, data) {
 		state.outlookCalendarsReady = true;
 		window.app.auth.outlook_calendars = data;
@@ -89,10 +84,8 @@ const actions = {
 		commit('delete', id);
 	},
 
-	googleCalendars({ commit }) {
-		window.axios.get(`/google_calendar_list`).then(response => {
-			commit('googleCalendars', response.data);
-		});
+	async getGoogleCalendars() {
+		return await window.axios.get(`/google_calendar_list`);
 	},
 
 	outlookCalendars({ commit }) {

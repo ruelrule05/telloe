@@ -38,6 +38,7 @@ class StoreBookingRequest extends FormRequest
         return [
             'service_id' => 'required|exists:services,id',
             'contact_ids' => 'required|array',
+            'emails' => 'nullable|array',
             'date' => 'required|date',
             'start' => 'required|date_format:H:i',
             'end' => 'required|date_format:H:i',

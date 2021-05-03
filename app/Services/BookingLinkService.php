@@ -58,6 +58,7 @@ class BookingLinkService
                     $emails[] = [
                         'email' => $requestContact['id'],
                         'timezone' => $requestContact['timezone'],
+                        'color' => $requestContact['color'],
                     ];
                 }
             }

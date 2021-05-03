@@ -6,16 +6,20 @@ import Booking from '../../components/Booking/Booking.vue';
 import ArrowLeftIcon from '../../../icons/arrow-left.vue';
 import ArrowRightIcon from '../../../icons/arrow-right.vue';
 import VCalendar from 'v-calendar/lib/components/calendar.umd';
+import VueSelect from '../../../components/vue-select/vue-select.vue';
+import axios from 'axios';
 const dayjs = require('dayjs');
 export default {
-	components: { UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar },
+	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar },
 
 	data: () => ({
 		dayjs: dayjs,
 		selectedDate: null,
 		view: 'day',
 		selectedBooking: null,
-		newEvent: false
+		newEvent: false,
+		googleCalendars: [],
+		googleCalendarEvents: []
 	}),
 
 	computed: {
@@ -34,7 +38,7 @@ export default {
 				});
 			});
 
-			(this.$root.auth.google_calendar_events || []).forEach(event => {
+			this.googleCalendarEvents.forEach(event => {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
@@ -73,19 +77,28 @@ export default {
 	created() {
 		//this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookings();
+		this.getGoogleCalendars().then(response => {
+			this.googleCalendars = response.data.map(calendar => {
+				return {
+					text: calendar.summary,
+					value: calendar.id
+				};
+			});
+		});
+	},
+
+	mounted() {
+		this.getGoogleCalendarEvents();
 	},
 
 	methods: {
 		...mapActions({
-			getUpcomingBookings: 'bookings/getUpcomingBookings'
+			getUpcomingBookings: 'bookings/getUpcomingBookings',
+			getGoogleCalendars: 'bookings/getGoogleCalendars'
 		}),
 
-		toggleView() {
-			this.view = this.view == 'week' ? 'day' : 'week';
-		},
-
-		countBookings(attributes) {
-			let count;
+		hasBooking(attributes) {
+			let count = 0;
 			attributes.forEach(attr => {
 				if (attr.customData == 'booking') {
 					if (!count) count = 0;
@@ -93,6 +106,32 @@ export default {
 				}
 			});
 			return count;
+		},
+
+		hasGoogleEvent(attributes) {
+			let count = 0;
+			attributes.forEach(attr => {
+				if (attr.customData == 'google-event') {
+					if (!count) count = 0;
+					count++;
+				}
+			});
+			return count;
+		},
+
+		async getGoogleCalendarEvents() {
+			if (this.$root.auth.google_calendar_id) {
+				let response = await axios.get('/google_calendar_events');
+				this.googleCalendarEvents = response.data;
+			}
+		},
+
+		updateGoogleCalendar(calendarId) {
+			console.log(calendarId);
+		},
+
+		toggleView() {
+			this.view = this.view == 'week' ? 'day' : 'week';
 		},
 
 		dayClick(date) {

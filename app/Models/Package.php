@@ -25,4 +25,16 @@ class Package extends BaseModel
     {
         return $this->hasMany(ContactPackage::class)->has('contact');
     }
+
+    public function getServicesAttribute($value)
+    {
+        $value = json_decode($value, true);
+        $serviceIds = collect($value)->map(function ($service) {
+            return $service['id'];
+        });
+        return Service::whereIn('id', $serviceIds)->get()->map(function ($service, $index) use ($value) {
+            $service->bookings = $value[$index]['bookings'];
+            return $service;
+        });
+    }
 }

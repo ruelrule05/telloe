@@ -10,6 +10,8 @@ import CloseIcon from '../../../../icons/close';
 import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
 const color = require('randomcolor');
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
+const isEmail = require('isemail');
+
 export default {
 	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate },
 	data: () => ({
@@ -20,7 +22,8 @@ export default {
 		dayjs: dayjs,
 		startDate: null,
 		name: '',
-		duration: 0
+		duration: 0,
+		isEmail: isEmail
 	}),
 
 	computed: {
@@ -77,6 +80,29 @@ export default {
 			getContacts: 'contacts/index',
 			storeBookingLink: 'booking_links/store'
 		}),
+
+		addEmail(email) {
+			let exists = this.selectedContacts.find(x => x.email == email);
+			if (!exists) {
+				let colorOptions = { luminosity: 'bright', format: 'rgba', alpha: 0.1 };
+				let contactColor = color(colorOptions);
+				while (this.selectedContacts.find(c => c.color == contactColor)) {
+					contactColor = color(colorOptions);
+				}
+				this.selectedContacts.push({
+					id: email,
+					name: email,
+					contact_user: {
+						initials: email[0].toUpperCase(),
+						full_name: email,
+						timezone: this.$root.auth.timezone
+					},
+					type: 'email',
+					color: contactColor
+				});
+			}
+			this.$refs.selectedContacts.deactivate();
+		},
 
 		addTimeslot(state, timeslot) {
 			if (!timeslot.is_available && timeslot.is_booked) return false;

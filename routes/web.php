@@ -7,33 +7,8 @@
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
-// Route::get('/test', function () {
-
-//     $booking1 = App\Models\Booking::first();
-//     $from = Carbon\Carbon::parse("$booking1->date $booking1->start");
-//     $to = $from->clone()->addMinute($booking1->service->duration);
-//     $link = Spatie\CalendarLinks\Link::create($booking1->service->name, $from, $to)
-//         ->description($booking1->service->description);
-//     $booking1->google_link = $link->google();
-//     $booking1->outlook_link = url('/ics?name=' . $booking1->service->name . '&data=' . $link->ics());
-//     $booking1->yahoo_link = $link->yahoo();
-//     $booking1->ical_link = $booking1->outlook_link;
-//     $booking1->recurring = true;
-//     $booking1->until = Carbon\Carbon::parse($booking1->date)->format('M d, Y');
-//     $booking1->recurring_days = ['Monday', 'Tuesday'];
-
-//     $booking2 = App\Models\Booking::latest()->first();
-//     $from = Carbon\Carbon::parse("$booking2->date $booking2->start");
-//     $to = $from->clone()->addMinute($booking2->service->duration);
-//     $link = Spatie\CalendarLinks\Link::create($booking2->service->name, $from, $to)
-//         ->description($booking2->service->description);
-//         $booking2->google_link = $link->google();
-//     $booking2->outlook_link = url('/ics?name=' . $booking2->service->name . '&data=' . $link->ics());
-//     $booking2->yahoo_link = $link->yahoo();
-//     $booking2->ical_link = $booking2->outlook_link;
-
-//     $email = new App\Mail\NewBooking([$booking1, $booking2], 'serviceUser');
-//     //Mail::to('cleidoscope@gmail.com')->send($email);
+// Route::get('/email', function () {
+//     $email = new App\Mail\NewConversation(App\Models\Conversation::first(), true);
 //     return $email;
 // });
 
@@ -48,7 +23,7 @@ Route::group(
     function () {
         Route::get('/', 'PageController@homepage');
 
-        Route::get('/booking-links/{uuid}', 'BookingLinkController@public')->middleware('auth');
+        Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
 
         Route::get('/ics', 'BookingController@downloadIcs');
 

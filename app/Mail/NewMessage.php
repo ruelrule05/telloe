@@ -2,9 +2,7 @@
 
 namespace App\Mail;
 
-use App\Mail\Mailer;
 use App\Models\Message;
-use Auth;
 
 class NewMessage extends Mailer
 {

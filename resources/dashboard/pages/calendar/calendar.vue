@@ -1,15 +1,20 @@
 <template>
 	<div class="min-h-full">
-		<div class="content-header border-bottom">
-			CALENDAR
-			<div v-if="selectedDate" class="ml-auto">
-				<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
-					<span>{{ weekToggleText }}</span>
-				</button>
-				<div class="button-date-nav">
-					<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-					<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
-					<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
+		<div class="flex items-center border-bottom">
+			<div class="content-header">CALENDAR</div>
+			<div class="ml-auto pr-6 flex items-center">
+				<div v-if="selectedDate">
+					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
+						<span>{{ weekToggleText }}</span>
+					</button>
+					<div class="button-date-nav">
+						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
+						<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
+						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
+					</div>
+				</div>
+				<div v-else>
+					<VueSelect v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
 				</div>
 			</div>
 		</div>
@@ -23,8 +28,9 @@
 						<div class="day-content text-center">
 							<div class="day-label" :class="{ active: selectedDate && selectedDate.toString() == data.day.date.toString(), 'is-today': data.day.isToday }" @click="dayClick(data.day.date)">
 								<span>{{ data.day.label }}</span>
-								<div v-if="data.attributes" class="d-flex align-items-center vc-badge-container">
-									<div v-if="data.attributes.length > 0" class="vc-badge"></div>
+								<div v-if="data.attributes" class="flex items-center vc-badge-container">
+									<div class="vc-badge bg-primary" v-if="hasBooking(data.attributes)"></div>
+									<div class="vc-badge bg-red-500" v-if="hasGoogleEvent(data.attributes)"></div>
 								</div>
 							</div>
 						</div>
@@ -34,7 +40,7 @@
 		</div>
 
 		<div v-else>
-			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick"></DayView>
+			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents"></DayView>
 			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick"></WeekView>
 		</div>
 

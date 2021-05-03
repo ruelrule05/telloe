@@ -111,6 +111,9 @@ class Service extends BaseModel
 
         $ignoredCalendarEvents = $user->ignored_calendar_events ?? [];
         $googleEventsList = $user->google_calendar_events ?? [];
+
+        //$googleEventsList = Cache::get("{$user->id}_google_calendar_events");
+
         $outlookEventsList = $user->outlook_calendar_events ?? [];
         $assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
 

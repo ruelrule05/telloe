@@ -245,7 +245,7 @@ export default {
 		async addPackageService() {
 			this.addingPackage = false;
 			let response = await axios.post(`/contacts/${this.contact.id}/package`, { package_id: this.selectedPackage.id, service: this.selectedPackageService });
-			this.contact.contact_packages.unshift(response.data);
+			this.contact.contact_packages = this.contact.contact_packages.concat(response.data);
 			this.selectedPackage = null;
 			this.selectedPackageService = null;
 		},
@@ -264,7 +264,7 @@ export default {
 
 		bookPackage(contactPackage, contactPackageIndex) {
 			this.newEvent = true;
-			this.packageService = contactPackage.service.value;
+			this.packageService = contactPackage.service;
 			this.contactPackageIndex = contactPackageIndex;
 			this.selectedBooking = { date: dayjs().format('YYYY-MM-DD'), start: '02:00', end: '03:00', contact_package_id: contactPackage.id };
 		},

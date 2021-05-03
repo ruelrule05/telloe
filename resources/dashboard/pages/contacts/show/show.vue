@@ -158,14 +158,10 @@
 					<template v-if="activeTab == 'packages'">
 						<button v-if="!addingPackage" type="button" class="btn btn-outline-primary btn-sm" @click="addingPackage = true"><span>Add Package</span></button>
 						<vue-form-validate @submit="addPackageService" v-else class="mb-6">
-							<div class="grid grid-cols-2 gap-x-4">
-								<div>
-									<VueSelect :options="packagesOptions" v-model="selectedPackage" placeholder="Select Package" required></VueSelect>
-								</div>
-								<div>
-									<VueSelect :disabled="!selectedPackage" :options="selectedPackageOptions" required v-model="selectedPackageService" placeholder="Select Service"></VueSelect>
-								</div>
+							<div class="w-1/2">
+								<VueSelect :options="packagesOptions" dropPosition="w-full" v-model="selectedPackage" placeholder="Select Package" required></VueSelect>
 							</div>
+
 							<div class="flex items-center justify-between">
 								<button
 									type="button"
@@ -195,14 +191,14 @@
 								</div>
 
 								<div class="border-bottom py-2 flex justify-between items-center" v-for="contactPackageBooking in contactPackage.bookings" :key="contactPackageBooking.id">
-									<div class="text-sm">{{ contactPackage.service.value.duration }}min</div>
+									<div class="text-sm">{{ contactPackage.service.duration }}min</div>
 									<div>
 										<button type="button" class="btn btn-sm btn-primary disabled"><span>Booked</span></button>
 									</div>
 								</div>
 
 								<div class="border-bottom py-2 flex justify-between items-center" v-for="(block, index) in new Array(parseInt(contactPackage.service.bookings - contactPackage.bookings.length))" :key="index">
-									<div class="text-sm">{{ contactPackage.service.value.duration }}min</div>
+									<div class="text-sm">{{ contactPackage.service.duration }}min</div>
 									<div>
 										<button type="button" class="btn btn-sm btn-outline-primary" @click="bookPackage(contactPackage, contactPackageIndex)"><span>Book</span></button>
 									</div>

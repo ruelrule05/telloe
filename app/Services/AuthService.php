@@ -60,6 +60,9 @@ class AuthService
                 $user = User::create($data);
 
                 // update all ConversationMember with user_id
+                ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
+                    'user_id' => $user->id
+                ]);
                 self::createInitialConversations($user);
                 Mail::queue(new Welcome($user));
             }
@@ -166,6 +169,9 @@ class AuthService
         $user->save();
         // update all ConversationMember with user_id
 
+        ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
+            'user_id' => $user->id
+        ]);
         Auth::login($user);
 
         if ($request->invite_token) {
@@ -329,6 +335,9 @@ class AuthService
                 $user->facebook_id = $request->id;
                 $user->save();
                 // update all ConversationMember with user_id
+                ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
+                    'user_id' => $user->id
+                ]);
 
                 Mail::queue(new Welcome($user));
                 self::createDefaultField($user);
@@ -374,6 +383,9 @@ class AuthService
                 $user->google_id = $request->id;
                 $user->save();
                 // update all ConversationMember with user_id
+                ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
+                    'user_id' => $user->id
+                ]);
 
                 Mail::queue(new Welcome($user));
                 self::createDefaultField($user);
@@ -607,6 +619,9 @@ class AuthService
                 'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
             ]);
             // update all ConversationMember with user_id
+            ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
+                'user_id' => $newUser->id
+            ]);
 
             $password = Str::random(6);
             $newUser->password = bcrypt($password);

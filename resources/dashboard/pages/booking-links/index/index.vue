@@ -44,6 +44,11 @@
 										<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 									</div>
 								</div>
+								<div v-for="email in booking_link.emails" :key="email.email" class="-mr-2">
+									<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white">
+										<span class="uppercase">{{ email.email[0] }}</span>
+									</div>
+								</div>
 							</div>
 							<span class="text-muted text-sm ml-4">Custom link dates:</span>
 							<div class="flex items-center">

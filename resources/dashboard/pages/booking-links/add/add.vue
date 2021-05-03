@@ -9,10 +9,13 @@
 						<input type="text" v-model="name" placeholder="Enter a name for your custom link" data-required />
 					</div>
 					<div class="col-span-6 form-field">
-						<label>Add Contacts</label>
-						<multiselect v-model="selectedContacts" label="name" track-by="name" :options="contactsOptions" :showLabels="false" placeholder="" multiple>
+						<label>Add Contacts or email</label>
+						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="" multiple clearOnSelect>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-							<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
+							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
+								<button v-if="isEmail.validate(data.search)" type="button" @click="addEmail(data.search)" class="btn btn-sm btn-outline-primary"><span>Add this email</span></button>
+								<span v-else>No contacts found.</span>
+							</div>
 						</multiselect>
 					</div>
 					<div class="col-span-2 form-field">

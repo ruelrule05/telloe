@@ -92,18 +92,20 @@ class ContactController extends Controller
     {
         $this->validate($request, [
             'package_id' => 'required|exists:packages,id',
-            'service' => 'required'
         ]);
         $authUser = Auth::user();
         $contact = Contact::where('id', $id)->where('user_id', $authUser->id)->firstOrfail();
         $package = Package::where('user_id', $authUser->id)->where('id', $request->package_id)->firstOrFail();
-        $contactPackage = ContactPackage::create([
-            'package_id' => $package->id,
-            'contact_id' => $contact->id,
-            'service' => $request->service
-        ]);
+        $contactPackages = [];
+        foreach ($package->services as $service) {
+            $contactPackages[] = ContactPackage::create([
+                'package_id' => $package->id,
+                'contact_id' => $contact->id,
+                'service' => $service
+            ])->load('package', 'bookings');
+        }
 
-        return response()->json($contactPackage->load('package'));
+        return response()->json($contactPackages);
     }
 
     public function deletePackage($id, Request $request)

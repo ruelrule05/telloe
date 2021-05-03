@@ -6,7 +6,16 @@
 					PACKAGES
 				</div>
 				<div>
-					<button type="button" class="btn btn-md btn-primary" @click="$refs.addModal.show()"><span>Add Package</span></button>
+					<button
+						type="button"
+						class="btn btn-md btn-primary"
+						@click="
+							newPackage = {};
+							$refs.addModal.show();
+						"
+					>
+						<span>Add Package</span>
+					</button>
 				</div>
 			</div>
 
@@ -23,7 +32,7 @@
 			</div>
 
 			<div v-else class="flex-grow">
-				<div class="grid grid-cols-3 gap-6 p-6">
+				<div class="grid grid-cols-4 gap-6 p-6">
 					<div v-for="packageItem in packages" class="rounded-2xl bg-secondary-light p-4 w-full" :key="packageItem.id">
 						<div class="flex justify-between">
 							<div class="overflow-hidden">
@@ -50,10 +59,6 @@
 								<span class="text-muted">PRICE</span>
 								<div>${{ parseFloat(packageItem.price).toFixed(2) }}</div>
 							</div>
-							<div>
-								<span class="text-muted">EXPIRES</span>
-								<div>{{ formatDate(packageItem.expiration_date) }}</div>
-							</div>
 						</div>
 
 						<div class="flex items-center">
@@ -79,15 +84,6 @@
 					</div>
 
 					<div class="mb-4">
-						<label>Expires on</label>
-						<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date" :masks="masks">
-							<template v-slot="{ inputValue, inputEvents }">
-								<input type="text" readonly v-on="inputEvents" :value="inputValue" placeholder="Set expiration date" />
-							</template>
-						</v-date-picker>
-					</div>
-
-					<div class="mb-4">
 						<label>Services</label>
 						<multiselect v-model="clonedPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
@@ -105,9 +101,6 @@
 						<input type="number" step="0.01" v-model="clonedPackage.price" placeholder="Package Price" />
 					</div>
 				</fieldset>
-				<div class="mb-4">
-					<vue-checkbox v-model="clonedPackage.in_widget" label="Available in widget"></vue-checkbox>
-				</div>
 				<div class="flex items-center justify-between mt-6">
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.editModal.hide()">
 						<span>Cancel</span>
@@ -160,15 +153,6 @@
 					</div>
 
 					<div class="mb-4">
-						<label>Expires on</label>
-						<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="newPackage.expiration_date" :masks="masks">
-							<template v-slot="{ inputValue, inputEvents }">
-								<input type="text" readonly v-on="inputEvents" :value="inputValue" placeholder="Set expiration date" />
-							</template>
-						</v-date-picker>
-					</div>
-
-					<div class="mb-4">
 						<label>Services</label>
 						<multiselect v-model="newPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
@@ -186,9 +170,6 @@
 						<input type="number" step="0.01" v-model="newPackage.price" placeholder="Package Price" />
 					</div>
 				</fieldset>
-				<div class="mb-4">
-					<vue-checkbox v-model="newPackage.in_widget" label="Available in widget"></vue-checkbox>
-				</div>
 				<div class="flex items-center justify-between mt-6">
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.addModal.hide()">
 						<span>Cancel</span>

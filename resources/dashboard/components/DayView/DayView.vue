@@ -10,8 +10,13 @@
 				<div class="day-interval" :class="{ disabled: isPrevious }" @click="setNewEvent(interval)"></div>
 			</template>
 			<template #event="{ event }">
-				<div>{{ event.name }}</div>
-				<div>{{ dayjs(event.start).format('H:mm') }}&mdash;{{ dayjs(event.end).format('H:mm') }}</div>
+				<div class="flex justify-between">
+					<div>
+						<div>{{ event.name }}</div>
+						<div>{{ dayjs(event.start).format('H:mm') }}&mdash;{{ dayjs(event.end).format('H:mm') }}</div>
+					</div>
+					<GoogleIcon class="h-4 w-4" v-if="event.type == 'google-event'"></GoogleIcon>
+				</div>
 			</template>
 		</VCalendar>
 	</div>

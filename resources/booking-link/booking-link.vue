@@ -10,7 +10,7 @@
 			<div class="relative mt-10">
 				<div class="overflow-x-scroll overflow-y-visible  pb-4" style="margin-left: 200px">
 					<table class="timeslots-table" cellspacing="0" cellpadding="0">
-						<tr v-if="bookingLink.user_id != auth.id">
+						<tr v-if="auth && bookingLink.user_id != auth.id">
 							<td></td>
 							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 								<div class="text-center px-2 pb-2 bg-white">
@@ -52,14 +52,14 @@
 			</div>
 		</div>
 
-		<Modal ref="requestModal" :noBackdropHide="true" size="sm">
+		<Modal ref="requestModal" noBackdropHide size="sm">
 			<div class="text-center py-5">
 				<div class="spinner"></div>
 				<div class="text0sm text-muted mt-4">Waiting for the other guests..</div>
 			</div>
 		</Modal>
 
-		<Modal ref="requestingModal" :noBackdropHide="true" size="sm">
+		<Modal ref="requestingModal" noBackdropHide size="sm">
 			<div v-if="requestData" class="text-sm">
 				<h6 class="font-serif font-semibold mb-5 uppercase text-center">Booking Request</h6>
 				<strong>{{ requestData.contact.contact.full_name }}</strong> is requesting to book a timeslot with the following details:
@@ -82,51 +82,49 @@
 			</div>
 		</Modal>
 
-		<Modal ref="loginModal" size="modal-sm" :close-button="false">
-			<h4 class="font-heading mb-3">
-				<span class="text-capitalize">{{ authAction }}</span> to continue
-			</h4>
+		<Modal ref="loginModal" size="sm" noBackdropHide>
+			<h4 class="font-serif font-semibold uppercase mb-3">{{ authAction }} to continue</h4>
 			<vue-form-validate @submit="login" v-if="authAction == 'login'">
-				<div class="form-group mb-2">
-					<input type="email" disabled readonly class="form-control" :value="email" data-required />
+				<div class="mb-4">
+					<input type="email" disabled readonly :value="email" data-required />
 				</div>
-				<div class="form-group">
-					<input type="password" class="form-control" v-model="loginForm.password" placeholder="Password" data-required />
+				<div class="mb-4">
+					<input type="password" v-model="loginForm.password" placeholder="Password" data-required />
 				</div>
-				<button class="btn-block btn btn-primary" type="submit">Log In</button>
-				<div class="text-center">
-					<button class="btn" type="button" @click="authAction = 'register'">Sign Up</button>
+				<button class="btn btn-primary w-full" type="submit"><span>Log In</span></button>
+				<div class="text-center mt-2">
+					<button class="btn w-full btn-outline-primary" type="button" @click="authAction = 'register'"><span>Sign Up</span></button>
 				</div>
 			</vue-form-validate>
 
 			<vue-form-validate @submit="register" v-else-if="authAction == 'register'">
-				<div class="form-group mb-2">
-					<input type="email" disabled readonly class="form-control" :value="email" data-required />
+				<div class="mb-4">
+					<input type="email" disabled readonly :value="email" data-required />
 				</div>
-				<div class="form-group">
-					<input type="text" class="form-control" v-model="signupForm.firstName" placeholder="First Name" data-required />
+				<div class="mb-4">
+					<input type="text" v-model="signupForm.firstName" placeholder="First Name" data-required />
 				</div>
-				<div class="form-group">
-					<input type="text" class="form-control" v-model="signupForm.lastName" placeholder="Last Name" data-required />
+				<div class="mb-4">
+					<input type="text" v-model="signupForm.lastName" placeholder="Last Name" data-required />
 				</div>
-				<div class="form-group">
-					<input type="password" class="form-control" v-model="signupForm.password" placeholder="Password" data-required />
+				<div class="mb-4">
+					<input type="password" v-model="signupForm.password" placeholder="Password" data-required />
 				</div>
-				<button class="btn-block btn btn-primary" type="submit">Sign Up</button>
-				<div class="text-center">
-					<button class="btn" type="button" @click="authAction = 'login'">Log In</button>
+				<button class="w-full btn btn-primary" type="submit"><span>Sign Up</span></button>
+				<div class="text-center mt-2">
+					<button class="btn w-full btn-outline-primary" type="button" @click="authAction = 'login'"><span>Log In</span></button>
 				</div>
 			</vue-form-validate>
 		</Modal>
 
-		<Modal ref="bookingModal" :noBackdropHide="true" size="sm">
+		<Modal ref="bookingModal" noBackdropHide size="sm">
 			<div class="text-center py-5">
 				<div class="spinner"></div>
 				<div class="text0sm text-muted mt-4">Creating your booking..</div>
 			</div>
 		</Modal>
 
-		<Modal ref="bookingSuccessModal" :noBackdropHide="true" size="sm">
+		<Modal ref="bookingSuccessModal" noBackdropHide size="sm">
 			<div v-if="booking">
 				<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
 				<p class="mb-8">

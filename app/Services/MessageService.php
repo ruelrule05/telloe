@@ -105,9 +105,9 @@ class MessageService
             // } elseif ($targetUser && $targetUser->email && $targetUser->notify_message) {
             //     Mail::to($targetUser->email)->queue(new NewMessage($message));
             // }
-            if ($targetUser && $targetUser->email && $targetUser->notify_message) {
-                Mail::to($targetUser->email)->queue(new NewMessage($message));
-            }
+            // if ($targetUser && $targetUser->email && $targetUser->notify_message) {
+            //     Mail::to($targetUser->email)->queue(new NewMessage($message));
+            // }
         }
 
         return $message;
