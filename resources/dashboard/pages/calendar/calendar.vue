@@ -1,7 +1,12 @@
 <template>
 	<div class="min-h-full">
 		<div class="flex items-center border-bottom">
-			<div class="content-header">CALENDAR</div>
+			<div class="content-header">
+				<div v-if="!selectedDate" class="content-header">CALENDAR</div>
+				<button v-else type="button" class="btn btn-md btn-outline-primary" @click="selectedDate = null">
+					<span>OVERVIEW</span>
+				</button>
+			</div>
 			<div class="ml-auto pr-6 flex items-center">
 				<div v-if="selectedDate">
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">

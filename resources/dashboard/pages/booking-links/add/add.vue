@@ -52,7 +52,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr v-for="contact in selectedContacts" :key="contact.id" class="relative">
+							<tr v-for="contact in selectedContacts" :key="contact.id">
 								<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>

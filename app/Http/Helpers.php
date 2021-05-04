@@ -278,6 +278,8 @@ function checkInviteToken(App\Models\User $user, $invite_token)
             'is_pending' => false
         ]);
 
+        broadcast(new App\Events\ContactAcceptedEvent($contact))->toOthers();
+
         // Create contact of the other person if not existing
         if (! App\Models\Contact::where('user_id', $user->id)->where('contact_user_id', $contact->user_id)->exists()) {
             App\Models\Contact::create([

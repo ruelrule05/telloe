@@ -1,6 +1,4 @@
-/* global WebKitCSSMatrix */
 /* global TelloeAxios */
-/* global FB */
 import dayjs from 'dayjs';
 import VueFormValidate from '../../components/vue-form-validate';
 import VueButton from '../../components/vue-button';
@@ -21,15 +19,39 @@ import GoogleIcon from '../../icons/google';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import jstz from 'jstz';
 const timezone = jstz.determine();
+import ArrowRightIcon from '../../icons/arrow-right';
+const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+dayjs.extend(IsSameOrBefore);
+dayjs.extend(IsSameOrAfter);
+import VueCardFormat from '../../components/vue-credit-card-validation/src';
+import Stripe from 'stripe-client';
+import SocialLogin from '../../js/helpers/SocialLogin';
+import RefreshIcon from '../../icons/refresh';
+import PhoneIcon from '../../icons/call-menu.vue';
+import SkypeIcon from '../../icons/skype.vue';
+import ZoomIcon from '../../icons/zoom';
+import GoogleMeetIcon from '../../icons/google-meet';
+import CogIcon from '../../icons/cog';
+import MapMarkerIcon from '../../icons/map-marker';
+
 export default {
 	components: {
+		MapMarkerIcon,
+		ZoomIcon,
+		GoogleMeetIcon,
+		CogIcon,
+		RefreshIcon,
+		PhoneIcon,
+		SkypeIcon,
+		ArrowLeftIcon,
 		VueFormValidate,
 		ClockIcon,
 		CalendarDayIcon,
 		InfoCircleIcon,
 		CheckmarkIcon,
 		VueButton,
-		ArrowLeftIcon,
+		ArrowRightIcon,
 		CalendarMonthIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -44,7 +66,7 @@ export default {
 	data: () => ({
 		ready: false,
 		services: [],
-		selectedService: null,
+		service: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		selectAttribute: {
 			highlight: {
@@ -52,7 +74,7 @@ export default {
 				contentClass: 'bg-primary'
 			}
 		},
-		step: 1,
+		step: null,
 		selectedDate: null,
 		selectedTimeslot: null,
 		detailsConfirmed: false,
@@ -77,14 +99,17 @@ export default {
 		bookingSuccess: false,
 		open: true, // false
 		authAction: 'signup', // login
-		timezone: ''
+		timezone: '',
+		dayjs: dayjs,
+		selectedTimeslots: [],
+		startDate: null
 	}),
 
 	computed: {
 		formattedHolidays() {
 			let formattedHolidays = [];
-			if (this.selectedService) {
-				this.selectedService.holidays.forEach(holiday => {
+			if (this.service) {
+				this.service.holidays.forEach(holiday => {
 					let parts = holiday.split('-');
 					const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
 					formattedHolidays.push(holidayDate);
@@ -94,7 +119,7 @@ export default {
 				this.days.forEach((day, index) => {
 					index = index + 2;
 					if (index >= 8) index = 1;
-					if (!this.selectedService.days[day].isOpen) disabledDays.push(index);
+					if (!this.service.days[day].isOpen) disabledDays.push(index);
 				});
 				if (disabledDays.length > 0) {
 					formattedHolidays.push({
@@ -187,62 +212,410 @@ export default {
 			return options;
 		},
 
-		endTime() {
-			let endTime = '';
-			if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
-				let selectedDate = dayjs(dayjs(this.selectedDate).format('YYYY-MM-DD') + ' ' + this.selectedTimeslot.time);
-				endTime = dayjs(selectedDate)
-					.add(this.selectedService.duration, 'minute')
-					.format('hh:mmA');
+		tabDates() {
+			let tabDates = [];
+			let i = 7;
+			let startDate = dayjs(this.startDate);
+			while (i > 0) {
+				tabDates.push({
+					name: startDate.format('ddd'),
+					dayName: startDate.format('dddd'),
+					date: startDate.toDate(),
+					label: startDate.format('MMM DD'),
+					format: startDate.format('YYYY-MM-DD')
+				});
+				startDate = startDate.add(1, 'day');
+				i--;
 			}
-			return endTime;
+
+			return tabDates;
 		}
 	},
 
 	watch: {
-		selectedDate: function(value) {
+		startDate: function(value) {
 			if (value) this.error = null;
-			this.getTimeslots();
-			this.timeslotsLoading = true;
 			this.authError = '';
+			this.getTimeslots();
 		},
-		step: function(value) {
-			if (value == 4) {
-				this.submit();
-			}
+		step: function() {
+			window.scrollTo(0, 0);
 		}
-		/*selectedService: function(value) {
-	            this.error = null;
-	            this.authError = ''; 
-	            if(!value) {
-	                this.timeslots = [];
-	                this.selectedTimeslot = null;
-	                this.selectedDate = null;
-	                this.calendarView = 'month';
-	            }
-	        }*/
 	},
 
 	created() {
 		this.getData();
 		this.timezone = timezone.name();
+		this.startDate = dayjs().toDate();
 	},
 
 	mounted() {},
 
 	methods: {
+		addToCalendar(calendar, booking) {
+			switch (calendar) {
+				case 'Google Calendar':
+					window.open(booking.google_link, '_blank');
+					break;
+				case 'MS Outlook':
+					window.open(booking.outlook_link, '_blank');
+					break;
+				case 'Yahoo':
+					window.open(booking.yahoo_link, '_blank');
+					break;
+				case 'iCal (.ics file download)':
+					window.open(booking.ical_link, '_blank');
+					break;
+			}
+		},
+
+		async createAccount() {
+			this.creatingAccount = true;
+			let response = await TelloeAxios.post('/auth/guest_account', this.guest);
+			if (response.data.user) {
+				this.step = 'bookings';
+			} else {
+				this.step = 'account-created';
+			}
+			this.creatingAccount = false;
+		},
+
+		async getCardToken() {
+			const publishableKey = process.env.MIX_STRIPE_PUBLISHABLE_KEY;
+			const stripe = Stripe(publishableKey);
+			let expParts = this.cardForm.expiration.split('/');
+			let exp_month = expParts[0].trim();
+			let exp_year = expParts[1].trim();
+			if (exp_year.length === 2) {
+				if (exp_year < 70) {
+					exp_year = `20${exp_year}`;
+				} else {
+					exp_year = `19${exp_year}`;
+				}
+			}
+			let cardData = {
+				number: this.cardForm.number,
+				exp_month: exp_month,
+				exp_year: exp_year,
+				cvc: this.cardForm.cvc,
+				name: this.cardForm.name
+			};
+			let cardToken = await stripe.createToken({ card: cardData });
+			const tokenData = await cardToken.json();
+			if (!tokenData.error) {
+				return tokenData.id;
+			} else {
+				this.$toast.error(tokenData.error.message);
+				return false;
+			}
+		},
+
+		async cardDetails() {
+			Object.keys(this.cardForm.errors).forEach(k => (this.cardForm.errors[k] = false));
+			let error = false;
+
+			// validate card number
+			if (!VueCardFormat.format().validateCardNumber(this.cardForm.number)) {
+				this.cardForm.errors.number = error = true;
+			}
+
+			// validate card expiry
+			if (!VueCardFormat.format().validateCardExpiry(this.cardForm.expiration)) {
+				this.cardForm.errors.expiration = error = true;
+			}
+
+			// validate card CVC
+			if (!VueCardFormat.format().validateCardCVC(this.cardForm.cvc)) {
+				this.cardForm.errors.cvc = error = true;
+			}
+
+			// validate card name
+			if (!this.cardForm.name.trim().length) {
+				error = true;
+			}
+
+			if (!error) {
+				this.step = 'authenticate';
+			}
+		},
+
+		async bookGuest() {
+			this.bookingLoading = true;
+			let timeslots = this.selectedTimeslots.map(timeslot => {
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+				}
+				timeslot.type = timeslot.type.type;
+				return timeslot;
+			});
+
+			let data = JSON.parse(JSON.stringify(this.guest));
+			data.timeslots = timeslots;
+			data.card_token = true;
+			data.phone = this.phone;
+			data.skype = this.skype;
+			if (this.service.require_payment) {
+				data.card_token = await this.getCardToken();
+			}
+			if (data.card_token) {
+				let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/guest_book`, data, { toast: true }).catch(() => {
+					this.bookingLoading = false;
+				});
+				if (response) {
+					this.bookings = response.data;
+					this.step = 'booked-signup';
+				}
+			}
+			this.bookingLoading = false;
+		},
+
+		async LoginAndBook() {
+			this.bookingLoading = true;
+			let timeslots = this.selectedTimeslots.map(timeslot => {
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+				}
+				timeslot.type = timeslot.type.type;
+				return timeslot;
+			});
+
+			let data = JSON.parse(JSON.stringify(this.user));
+			data.timeslots = timeslots;
+			data.card_token = true;
+			data.phone = this.phone;
+			data.skype = this.skype;
+			if (this.service.require_payment) {
+				data.card_token = await this.getCardToken();
+			}
+			if (data.card_token) {
+				let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/login_and_book`, data, { toast: true }).catch(() => {
+					this.bookingLoading = false;
+				});
+				if (response) {
+					this.bookings = response.data;
+					this.step = 'bookings';
+				}
+			}
+			this.bookingLoading = false;
+		},
+
+		async FacebookLoginAndBook() {
+			let response = await SocialLogin.FacebookLogin();
+			if (response) {
+				this.bookingLoading = true;
+				let timeslots = this.selectedTimeslots.map(timeslot => {
+					if (timeslot.end_date) {
+						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+					}
+					timeslot.type = timeslot.type.type;
+					return timeslot;
+				});
+
+				let data = JSON.parse(JSON.stringify(this.user));
+				data.timeslots = timeslots;
+				data.card_token = true;
+				data.phone = this.phone;
+				data.skype = this.skype;
+				if (this.service.require_payment) {
+					data.card_token = await this.getCardToken();
+				}
+				if (data.card_token) {
+					let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
+						this.bookingLoading = false;
+					});
+					if (response) {
+						this.bookings = response.data;
+						this.step = 'bookings';
+					}
+				}
+				this.bookingLoading = false;
+			}
+		},
+
+		async GoogleLoginAndBook() {
+			let response = await SocialLogin.GoogleSignin();
+			if (response) {
+				this.bookingLoading = true;
+				let timeslots = this.selectedTimeslots.map(timeslot => {
+					if (timeslot.end_date) {
+						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+					}
+					timeslot.type = timeslot.type.type;
+					return timeslot;
+				});
+
+				let data = JSON.parse(JSON.stringify(this.user));
+				data.timeslots = timeslots;
+				data.card_token = true;
+				data.phone = this.phone;
+				data.skype = this.skype;
+				if (this.service.require_payment) {
+					data.card_token = await this.getCardToken();
+				}
+				if (data.card_token) {
+					let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
+						this.bookingLoading = false;
+					});
+					if (response) {
+						this.bookings = response.data;
+						this.step = 'bookings';
+					}
+				}
+				this.bookingLoading = false;
+			}
+		},
+
+		setTypeSelected(timeslot, type) {
+			this.$set(timeslot, 'type', type);
+		},
+
+		daysInMonth(timeslot) {
+			return [
+				{
+					text: `First ${timeslot.date.dayName} of the month`,
+					value: 'first_week'
+				},
+				{
+					text: `Second ${timeslot.date.dayName} of the month`,
+					value: 'second_week'
+				},
+				{
+					text: `Third ${timeslot.date.dayName} of the month`,
+					value: 'third_week'
+				},
+				{
+					text: `Last ${timeslot.date.dayName} of the month`,
+					value: 'last_week'
+				}
+			];
+		},
+
+		setTimeslotDefaultDay(frequency, timeslot) {
+			if (frequency == 'week') {
+				let dayIndex = this.days.indexOf(timeslot.date.dayName);
+				let index = timeslot.days.indexOf(dayIndex);
+				if (index == -1 || timeslot.days.length == 1) {
+					timeslot.days.push(dayIndex);
+				}
+			} else if (frequency == 'month') {
+				timeslot.day_in_month = 'first_week';
+			}
+		},
+
+		timeslotToggleDay(timeslot, dayIndex) {
+			let index = timeslot.days.indexOf(dayIndex);
+			if (index == -1) {
+				timeslot.days.push(dayIndex);
+			} else {
+				timeslot.days.splice(index, 1);
+			}
+
+			if (timeslot.days.length == 0) {
+				let dayIndex = this.days.indexOf(timeslot.date.dayName);
+				timeslot.days.push(dayIndex);
+			}
+		},
+
+		endTime(time) {
+			let endTime = '';
+			if (this.service && this.startDate) {
+				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
+				endTime = dayjs(startDate)
+					.add(this.service.duration, 'minute')
+					.format('HH:mm');
+			}
+			return this.timezoneTime(endTime);
+		},
+
+		previousWeek() {
+			let previousWeek = dayjs(this.startDate).subtract(7, 'day');
+			if (dayjs(previousWeek.format('YYYY-MM-DD')).isSameOrAfter(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = previousWeek.toDate();
+			} else if (!dayjs(dayjs(this.startDate).format('YYYY-MM-DD')).isSame(dayjs(dayjs().format('YYYY-MM-DD')))) {
+				this.startDate = dayjs().toDate();
+			}
+		},
+
+		nextWeek() {
+			this.startDate = dayjs(this.startDate)
+				.add(7, 'day')
+				.toDate();
+		},
+
+		setSelectedDateAndTimeslot(date, timeslot) {
+			if (timeslot.is_available) {
+				// this.selectedDate = date.date;
+				// this.selectedTimeslot = timeslot;
+				let index = this.selectedTimeslots.findIndex(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time);
+				if (index > -1) {
+					this.selectedTimeslots.splice(index, 1);
+				} else {
+					let timeslotData = {
+						date: date,
+						timeslot: timeslot,
+						days: []
+					};
+					if (this.service.types.length > 0) {
+						timeslotData.type = this.service.types[0];
+					}
+					this.selectedTimeslots.push(timeslotData);
+				}
+			}
+		},
+
+		timezoneTooltip(timezone, timeslot) {
+			return `
+				<div class="text-left py-1 line-height-base">
+					<div class="mb-2"><div>${timezone}</div><div><strong>${timeslot.label}</strong></div></div>
+					<div>${this.timezone}</div><div><strong>${this.timezoneTime(timeslot.time)}</strong></div>
+				</div>
+			`;
+		},
+
+		selectTimeslot(e) {
+			console.log(e.target);
+		},
+
+		availableTimeslots(service, timeslot) {
+			let startParts = timeslot.split(':');
+			let availableTimeslots = (service.timeslots || []).filter(x => {
+				let serviceStartParts = x.time.split(':');
+				return startParts[0] == serviceStartParts[0];
+			});
+
+			return availableTimeslots;
+		},
+
+		moveSelector(e) {
+			let selector = this.$refs['selector'];
+			let rect = e.target.getBoundingClientRect();
+			let x = e.clientX - rect.left;
+			console.log(x);
+			if (x >= 0 && x <= e.srcElement.offsetWidth - selector.offsetWidth) {
+				selector.style.left = `${x}px`;
+			}
+		},
+
 		timezoneTime(time) {
 			let profileTimezone = this.$root.profile.timezone;
 			let timezoneTime;
 			if (profileTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
 				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
-				let timeslotDate = `${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`;
+				let timeslotDate = `${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`;
 				timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
 			} else {
-				timezoneTime = dayjs(`${dayjs(this.selectedDate).format('YYYY-MM-DD')} ${time}`);
+				timezoneTime = dayjs(`${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`);
 			}
 			return timezoneTime.format('hh:mmA');
+		},
+
+		goToCoachSelection() {
+			this.assignedService = this.startDate = null;
+			this.selectedTimeslot = [];
+			this.calendarView = 'month';
+			this.authForm = false;
+			this.authError = '';
 		},
 
 		getTimeZoneOffset(date, timeZone) {
@@ -273,38 +646,33 @@ export default {
 			return -(lie - date) / 60 / 1000;
 		},
 
-		stebBack() {
-			if (this.authForm) {
-				this.authForm = false;
-			} else if (this.selectedService) {
-				this.reset();
-			}
-		},
-
 		reset() {
-			this.selectedService = null;
-			this.selectedDate = null;
-			this.selectedTimeslot = null;
-			this.isBooking = false;
-			this.bookingSuccess = false;
-			this.authForm = false;
-			this.authAction = 'signup';
-			this.error = '';
-			this.calendarView = 'month';
+			setTimeout(() => {
+				this.bookings = [];
+				this.isBooking = false;
+				this.bookingSuccess = false;
+				this.authForm = false;
+				this.authAction = 'signup';
+				this.authForm = false;
+				this.startDate = dayjs().toDate();
+				this.serviceForTimeline = this.service = this.selectedTimeslot = null;
+			}, 150);
 		},
 
 		disabledDate(date) {
+			let service = this.assignedService || this.service;
 			let dayName = dayjs(date.date).format('dddd');
-			return !this.selectedService.days[dayName].isOpen || this.selectedService.holidays.find(x => x == date.label);
+			return !service.days[dayName].isOpen || service.holidays.find(x => x == date.label);
 		},
 
 		sliderActiveDate(date) {
-			return (this.selectedDate ? dayjs(this.selectedDate).format('MMMDYYYY') : '') === dayjs(date.date).format('MMMDYYYY');
+			return (this.startDate ? dayjs(this.startDate).format('MMMDYYYY') : '') === dayjs(date.date).format('MMMDYYYY');
 		},
 
 		dateSelected(date) {
 			if (date && this.calendarView == 'month') {
-				this.selectedDate = date;
+				this.startDate = date;
+				//this.dateForWeekView = date;
 				this.calendarView = 'week';
 				this.sliderNavIndex = 0;
 				this.selectedTimeslot = null;
@@ -317,7 +685,8 @@ export default {
 		adjustSlider(step) {
 			let weekdaySlider = this.$refs['weekday-slider'];
 
-			let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - this.sliderItemSize;
+			//let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - this.sliderItemSize;
+			let translateX = weekdaySlider.style.width;
 			if ((step == -1 && translateX < this.sliderItemSize * -1) || step == 1) {
 				this.sliderNavIndex += step;
 			}
@@ -325,7 +694,7 @@ export default {
 
 		calcSliderTranslate() {
 			if (this.$refs['weekday-slider'] && this.calendarView == 'week') {
-				let date = this.selectedDate || new Date();
+				let date = this.startDate || new Date();
 				let dateID = dayjs(date).format('MMMDYYYY');
 				let sliderItem = this.$refs['weekday-slider'].querySelector(`#${dateID}`);
 				let sliderSize = this.sliderItemSize;
@@ -347,196 +716,37 @@ export default {
 			}
 		},
 
-		SignupAndBook() {
-			if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
-				this.loginForm.loading = true;
-				this.isBooking = true;
-				let data = {
-					first_name: this.loginForm.first_name,
-					last_name: this.loginForm.last_name,
-					email: this.loginForm.email,
-					password: this.loginForm.password,
-					timeslots: [
-						{
-							date: { format: dayjs(this.selectedDate).format('YYYY-MM-DD') }
-						}
-					],
-					timezone: this.timezone
-				};
-				TelloeAxios.post(`/@${this.$root.profile.username}/${this.selectedService.id}/signup_and_book`, data)
-					.then(() => {
-						this.bookingSuccess = true;
-						this.loginForm.loading = false;
-						this.authForm = false;
-						this.selectedService = this.selectedDate = this.selectedTimeslot = null;
-					})
-					.catch(e => {
-						this.loginForm.loading = false;
-						this.authError = e.response.data.message;
-						this.isBooking = false;
-					});
-			}
-		},
-
-		LoginAndBook() {
-			if (this.selectedService && this.selectedDate && this.selectedTimeslot) {
-				this.loginForm.loading = true;
-				this.isBooking = true;
-				let data = {
-					email: this.loginForm.email,
-					password: this.loginForm.password,
-					timeslots: [
-						{
-							timeslot: this.selectedTimeslot,
-							date: { format: dayjs(this.selectedDate).format('YYYY-MM-DD') }
-						}
-					]
-				};
-				TelloeAxios.post(`/@${this.$root.profile.username}/${this.selectedService.id}/login_and_book`, data)
-					.then(() => {
-						this.bookingSuccess = true;
-						this.loginForm.loading = false;
-						this.authForm = false;
-						this.selectedService = this.selectedDate = this.selectedTimeslot = null;
-					})
-					.catch(e => {
-						this.loginForm.loading = false;
-						this.authError = e.response.data.message;
-						this.isBooking = false;
-					});
-			}
-		},
-
-		FacebookLoginAndBook() {
-			if (typeof FB != 'undefined' && this.selectedService && this.selectedDate && this.selectedTimeslot) {
-				this.loginForm.loading = true;
-				this.isBooking = true;
-				FB.login(
-					() => {
-						FB.api('/me', { fields: 'first_name, last_name, email' }, data => {
-							if (data && !data.error) {
-								data.timezone = this.timezone;
-								data.date = { format: dayjs(this.selectedDate).format('YYYY-MM-DD') };
-								data.timeslots = this.selectedTimeslot.time;
-
-								TelloeAxios.post(`/@${this.$root.profile.username}/${this.selectedService.id}/facebook_login_and_book`, data)
-									.then(() => {
-										this.bookingSuccess = true;
-										this.loginForm.loading = false;
-										this.authForm = false;
-										this.selectedService = this.selectedDate = this.selectedTimeslot = null;
-									})
-									.catch(e => {
-										this.loginForm.loading = false;
-										this.authError = e.response.data.message;
-										this.isBooking = false;
-									});
-							} else {
-								this.loginForm.loading = false;
-								this.isBooking = false;
-								this.bookingSuccess = false;
-							}
-						});
-					},
-					{ scope: 'email' }
-				);
-			}
-		},
-
-		GoogleLoginAndBook() {
-			if (this.$root.GoogleAuth && this.selectedService && this.selectedDate && this.selectedTimeslot) {
-				this.loginForm.loading = true;
-				this.isBooking = true;
-				this.$root.GoogleAuth.signIn()
-					.then(googleUser => {
-						let profile = googleUser.getBasicProfile();
-						let data = {
-							id: profile.getId(),
-							first_name: profile.getGivenName(),
-							last_name: profile.getFamilyName(),
-							email: profile.getEmail(),
-							image_url: profile.getImageUrl(),
-							timezone: this.timezone,
-							date: { format: dayjs(this.selectedDate).format('YYYY-MM-DD') },
-							timeslots: [this.selectedTimeslot.time]
-						};
-
-						TelloeAxios.post(`/@${this.$root.profile.username}/${this.selectedService.id}/google_login_and_book`, data)
-							.then(() => {
-								this.bookingSuccess = true;
-								this.loginForm.loading = false;
-								this.authForm = false;
-								this.selectedService = this.selectedDate = this.selectedTimeslot = null;
-							})
-							.catch(e => {
-								this.loginForm.loading = false;
-								this.authError = e.response.data.message;
-								this.isBooking = false;
-							});
-					})
-					.catch(() => {
-						this.loginForm.loading = false;
-						this.isBooking = false;
-						this.bookingSuccess = false;
-					});
-			}
-		},
-
 		formatDate(date) {
 			let formatDate = '';
 			if (date) formatDate = dayjs(date).format('MMMM DD, YYYY');
 			return formatDate;
 		},
 
-		resetStep() {
-			this.step = 1;
-			this.selectedTimeslot = this.selectedDate = null;
+		formatTime(time) {
+			let parts = time.split(':');
+			let formatTime = dayjs()
+				.hour(parts[0])
+				.minute(parts[1])
+				.format('hh:mmA');
+			return formatTime;
 		},
 
-		getTimeslots() {
-			if (this.selectedService && this.selectedDate) {
-				this.selectedTimeslot = null;
-				TelloeAxios.get(`/@${this.$root.profile.username}/${this.selectedService.id}/timeslots?single=true&date=${dayjs(this.selectedDate).format('YYYY-MM-DD')}`).then(response => {
-					this.timeslots = response.data;
-					this.timeslotsLoading = false;
-				});
+		async getTimeslots() {
+			if (this.service) {
+				this.timeslotsLoading = true;
+				this.selectedTimeslots = [];
+				let response = await TelloeAxios.get(`/@${this.$root.profile.username}/${this.service.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
+				this.timeslots = response.data;
+				this.timeslotsLoading = false;
 			}
-		},
-
-		setService(service) {
-			this.selectedService = service;
 		},
 
 		getData() {
-			TelloeAxios.get(`/@${this.$root.profile.username}`).then(response => {
-				this.services = response.data.services;
-				//this.selectedService = this.services[0]; // testing
+			TelloeAxios.get(`/@${this.$root.profile.username}?widget=true`).then(response => {
+				this.service = response.data;
 				this.ready = true;
+				this.getTimeslots();
 			});
-		},
-
-		nextStep() {
-			if (!this.nextDisabled) this.step++;
-			if (this.step == 4) this.detailsConfirmed = true;
-		},
-
-		stepClass(step) {
-			let stepClass = [];
-			if (this.step == step) stepClass.push('step-current');
-			switch (step) {
-				case 1:
-					if (this.selectedDate) stepClass.push('step-complete');
-					break;
-
-				case 2:
-					if (this.selectedTimeslot) stepClass.push('step-complete');
-					break;
-
-				case 3:
-					if (this.detailsConfirmed) stepClass.push('step-complete');
-					break;
-			}
-			return stepClass.join(' ');
 		}
 	}
 };

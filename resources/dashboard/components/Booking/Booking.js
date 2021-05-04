@@ -17,6 +17,7 @@ import CallMenuIcon from '../../../icons/call-menu.vue';
 import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import GoogleMeetIcon from '../../../icons/google-meet.vue';
 export default {
 	props: {
 		booking: {},
@@ -33,7 +34,7 @@ export default {
 		}
 	},
 
-	components: { Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker },
+	components: { Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon },
 
 	data: () => ({
 		clonedBooking: {},

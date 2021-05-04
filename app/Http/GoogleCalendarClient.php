@@ -2,18 +2,20 @@
 
 namespace App\Http;
 
-use Auth;
 use Google_Client;
 use Google_Service_Calendar;
+use App\Models\User;
 
 class GoogleCalendarClient
 {
     public $client;
+    protected $user;
 
-    public function __construct()
+    public function __construct(User $user)
     {
+        $this->user = $user;
         $client = new Google_Client();
-        $client->setApplicationName('Google Calendar API PHP Quickstart');
+        $client->setApplicationName(config('app.name'));
         $client->setScopes([Google_Service_Calendar::CALENDAR_READONLY, Google_Service_Calendar::CALENDAR_EVENTS]);
         $client->setAuthConfig(config_path('credentials.json'));
         $client->setAccessType('offline');
@@ -21,7 +23,7 @@ class GoogleCalendarClient
         $client->setRedirectUri(route('googlecalendarcallback'));
 
         // get user token
-        $authToken = Auth::user()->google_calendar_token;
+        $authToken = $this->user->google_calendar_token;
         if ($authToken) {
             $client->setAccessToken($authToken);
         }
@@ -47,8 +49,7 @@ class GoogleCalendarClient
             throw new Exception(join(', ', $accessToken));
         }
 
-        $user = Auth::user();
-        $user->google_calendar_token = $this->client->getAccessToken();
-        $user->save();
+        $this->user->google_calendar_token = $this->client->getAccessToken();
+        $this->user->save();
     }
 }

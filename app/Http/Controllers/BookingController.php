@@ -33,16 +33,6 @@ class BookingController extends Controller
         return BookingService::destroy($id);
     }
 
-    public function googleCalendarEvents()
-    {
-        return BookingService::googleCalendarEvents();
-    }
-
-    public function googleCalendarList(Request $request)
-    {
-        return response(BookingService::googleCalendarList($request));
-    }
-
     public function updateOutlookCalendarEvents(UpdateOutlookCalendarEventsRequest $request)
     {
         return response(BookingService::updateOutlookCalendarEvents($request));

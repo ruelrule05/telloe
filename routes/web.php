@@ -12,6 +12,7 @@ use  App\Http\SocialiteHelper;
 //     return $email;
 // });
 
+
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
 });
@@ -100,11 +101,12 @@ Route::group(
 
                 // Google calendar
                 Route::get('google_calendar/client', 'GoogleCalendarController@getClient');
-                Route::get('google_calendar_list', 'BookingController@googleCalendarList');
-                Route::get('google_calendar_events', 'BookingController@googleCalendarEvents');
+                Route::get('google_calendar_list', 'GoogleCalendarController@googleCalendarList');
+                Route::get('google_calendar_events', 'GoogleCalendarController@googleCalendarEvents');
                 Route::post('update_google_calendar_events', 'BookingController@updateGoogleCalendarEvents');
                 Route::get('google_calendar/token', 'GoogleCalendarController@getToken');
                 Route::get('google_calendar/remove', 'GoogleCalendarController@remove');
+                Route::put('google_calendar', 'GoogleCalendarController@update');
 
                 // Outlook calendar
                 Route::get('outlook/client', 'OutlookController@getClient');

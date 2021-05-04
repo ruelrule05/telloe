@@ -33,7 +33,7 @@
 									</div>
 								</td>
 							</tr>
-							<tr v-for="contact in bookingLink.booking_link_contacts" :key="contact.id" class="relative">
+							<tr v-for="contact in bookingLink.booking_link_contacts" :key="contact.id">
 								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
@@ -61,7 +61,7 @@
 								</td>
 							</tr>
 
-							<tr v-for="email in bookingLink.emails" :key="email.email" class="relative">
+							<tr v-for="email in bookingLink.emails" :key="email.email">
 								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>

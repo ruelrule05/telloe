@@ -15,7 +15,7 @@ export default {
 	data: () => ({
 		dayjs: dayjs,
 		selectedDate: null,
-		view: 'day',
+		view: 'week',
 		selectedBooking: null,
 		newEvent: false,
 		googleCalendars: [],
@@ -78,12 +78,16 @@ export default {
 		//this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookings();
 		this.getGoogleCalendars().then(response => {
-			this.googleCalendars = response.data.map(calendar => {
-				return {
-					text: calendar.summary,
-					value: calendar.id
-				};
-			});
+			this.googleCalendars = response.data
+				.filter(calendar => {
+					return calendar.accessRole == 'owner';
+				})
+				.map(calendar => {
+					return {
+						text: calendar.summary,
+						value: calendar.id
+					};
+				});
 		});
 	},
 
@@ -126,8 +130,9 @@ export default {
 			}
 		},
 
-		updateGoogleCalendar(calendarId) {
-			console.log(calendarId);
+		async updateGoogleCalendar(calendarId) {
+			let response = await axios.put('/google_calendar', { google_calendar_id: calendarId });
+			this.googleCalendarEvents = response.data;
 		},
 
 		toggleView() {

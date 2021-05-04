@@ -308,6 +308,10 @@
 											<div class="mt-1" v-else-if="type.type == 'Skype'">
 												<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="skype" placeholder="Add your Skype ID" />
 											</div>
+
+											<span v-else-if="type.type == 'Telloe Video Call'">
+												A conversation will be created for the video call.
+											</span>
 											<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
 										</div>
 										<div>
@@ -327,172 +331,6 @@
 						</button>
 					</vue-form-validate>
 				</div>
-
-				<vue-form-validate hidden @submit="submit" class="row justify-content-center">
-					<div class="col-md-9">
-						<div class="d-flex align-items-center mb-3">
-							<button class="btn line-height-0 p-0 close" type="button" @click="selectedTimeslot = false"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
-							<h4 class="mb-0 font-heading ml-3">Confirm and Book</h4>
-						</div>
-						<div class="bg-white shadow-sm rounded selected-service text-left d-flex">
-							<div class="p-4 border-right flex-1">
-								<h3 class="h3 mb-3 font-heading">{{ selectedService.name }}</h3>
-								<div class="mb-3">
-									<div class="font-weight-normal text-secondary">Coach</div>
-									<div class="h6 font-heading">{{ selectedService.coach.full_name }}</div>
-								</div>
-								<div class="mb-3">
-									<div class="font-weight-normal text-secondary">Duration</div>
-									<div class="h6 font-heading">{{ selectedService.duration }} minutes</div>
-								</div>
-
-								<div class="mb-3">
-									<div class="font-weight-normal text-secondary">Timeslots</div>
-									<div v-for="(timeslot, timeslotIndex) in selectedTimeslots" :key="timeslotIndex" class="bg-light rounded p-3 mt-2">
-										<div class="d-flex">
-											<div>
-												<h6 class="font-heading mb-1">{{ formatDate(timeslot.date.date) }} ({{ dayjs(timeslot.date.date).format('dddd') }})</h6>
-												<div class="text-muted">{{ timeslot.timeslot.label }} - {{ endTime(timeslot.timeslot.time) }}</div>
-											</div>
-											<div class="dropleft ml-auto mr-n2 mt-n2">
-												<button class="btn btn-sm btn-light p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown">
-													<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
-												</button>
-
-												<div class="dropdown-menu">
-													<div class="d-flex align-items-center px-2 py-1">
-														<span>Recurring</span>
-														<toggle-switch
-															class="ml-auto"
-															@input="
-																if (timeslot.is_recurring) {
-																	$set(
-																		timeslot,
-																		'end_date',
-																		dayjs(new Date())
-																			.add(1, 'week')
-																			.toDate()
-																	);
-																	$set(timeslot, 'frequency', recurringFrequencies[0].value);
-																	setTimeslotDefaultDay('week', timeslot);
-																}
-															"
-															active-class="bg-primary"
-															v-model="timeslot.is_recurring"
-														></toggle-switch>
-													</div>
-
-													<span
-														class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
-														@click="
-															selectedTimeslots.splice(timeslotIndex, 1);
-															if (selectedTimeslots.length == 0) {
-																selectedTimeslot = false;
-															}
-														"
-													>
-														Remove
-													</span>
-												</div>
-											</div>
-										</div>
-										<div v-if="timeslot.is_recurring">
-											<div class="mb-2">
-												<vue-select dropdown_class="w-100" button_class="form-control mt-2" :options="recurringFrequencies" v-model="timeslot.frequency" label="Repeat every" @input="setTimeslotDefaultDay($event, timeslot)"></vue-select>
-											</div>
-											<div v-if="timeslot.frequency == 'week'" class="mb-2">
-												<div v-tooltip.top="day" @click="timeslotToggleDay(timeslot, dayIndex)" v-for="(day, dayIndex) in days" class="badge badge-pill badge-day ml-1 cursor-pointer position-relative shadow-sm p-3" :class="[timeslot.days.indexOf(dayIndex) == -1 ? 'badge-white' : 'badge-primary']" :key="dayIndex">
-													<span>{{ day.substring(0, 1) }}</span>
-												</div>
-											</div>
-											<div v-else-if="timeslot.frequency == 'month'" class="form-group mb-2">
-												<vue-select dropdown_class="w-100" button_class="form-control" :options="daysInMonth(timeslot)" v-model="timeslot.day_in_month" label="On"></vue-select>
-											</div>
-											<div class="form-group mb-0">
-												<v-date-picker :min-date="new Date()" class="flex-grow-1" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.end_date" :masks="masks">
-													<template v-slot="{ inputValue, inputEvents }">
-														<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
-															<span class="text-secondary mr-2">Until</span>
-															{{ inputValue }}
-														</button>
-													</template>
-												</v-date-picker>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="p-4 flex-1">
-								<div class="d-flex flex-column h-100">
-									<div class="flex-grow-1 h-100 position-relative">
-										<template v-if="authAction == 'login'">
-											<h5 class="h4 font-heading mb-4">Log In</h5>
-											<div class="form-group mb-2">
-												<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
-											</div>
-											<div class="form-group mb-2">
-												<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
-											</div>
-
-											<div v-if="selectedService.ask_skype" class="form-group mb-2">
-												<input type="text" class="form-control" placeholder="Skype ID" :data-required="selectedService.require_skype" />
-											</div>
-
-											<div v-if="selectedService.ask_phone" class="form-group">
-												<input type="text" class="form-control" placeholder="Phone" :data-required="selectedService.require_phone" />
-											</div>
-
-											<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
-											<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'signup'">Sign Up</button>
-										</template>
-										<template v-else-if="authAction == 'signup'">
-											<h5 class="h4 font-heading mb-3">Create your account</h5>
-											<div class="d-flex align-items-center mb-2">
-												<div class="form-group mb-0 pr-1">
-													<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required />
-												</div>
-												<div class="form-group mb-0 pl-1">
-													<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required />
-												</div>
-											</div>
-											<div class="form-group mb-2">
-												<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
-											</div>
-											<div class="form-group mb-2">
-												<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
-											</div>
-
-											<div v-if="selectedService.ask_skype" class="form-group mb-2">
-												<input type="text" class="form-control" placeholder="Skype ID" :data-required="selectedService.require_skype" />
-											</div>
-
-											<div v-if="selectedService.ask_phone" class="form-group">
-												<input type="text" class="form-control" placeholder="Phone" :data-required="selectedService.require_phone" />
-											</div>
-
-											<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
-											<button type="button" class="btn btn-block btn-white shadow-sm border" @click="authAction = 'login'">Login</button>
-										</template>
-
-										<div class="d-flex mx-n1 mt-3">
-											<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook">
-												<facebook-icon height="20" width="20" class="mr-2"></facebook-icon>
-												Facebook
-											</button>
-											<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook">
-												<google-icon height="16" width="16" class="mr-2"></google-icon>
-												Google
-											</button>
-										</div>
-
-										<div class="text-center text-danger position-absolute w-100">&nbsp;{{ authError }}&nbsp;</div>
-									</div>
-									<div></div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</vue-form-validate>
 			</div>
 
 			<!-- Payment -->
@@ -589,8 +427,8 @@
 			<!-- Booked Signup -->
 			<div v-else-if="step == 'booked-signup'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
 				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
-					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">EVENT BOOKED. SIGN UP FOR FREE!</h6>
-					<p class="text-muted text-xl">
+					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-4">EVENT BOOKED. SIGN UP FOR FREE!</h6>
+					<p class="text-muted">
 						Hey there, thank you for scheduling a meeting with Telloe as a guest. If you sign up you can start using Telloe now and enjoy:
 					</p>
 
@@ -600,8 +438,8 @@
 						</div>
 						<div class="pl-6">
 							<div class="pb-6 border-bottom">
-								<h6 class="font-serif text-primary font-semibold text-sm mb-2">FEATURE TITLE ONE</h6>
-								<p class="text-muted">Feature title one description that helps the user decide to register.</p>
+								<h6 class="font-serif text-primary font-semibold text-sm mb-2 uppercase">Collaborate, Organize, Week Sorted</h6>
+								<p class="text-muted text-sm">Simplified online scheduling that takes the hassle out of bookings.</p>
 							</div>
 						</div>
 					</div>
@@ -611,8 +449,8 @@
 						</div>
 						<div class="pl-6">
 							<div class="pb-6 border-bottom">
-								<h6 class="font-serif text-primary font-semibold text-sm mb-2">FEATURE TITLE ONE</h6>
-								<p class="text-muted">Feature title one description that helps the user decide to register.</p>
+								<h6 class="font-serif text-primary font-semibold text-sm mb-2 uppercase">Create Team Booking Groups</h6>
+								<p class="text-muted text-sm">Share your teams calendar allowing people to book with the person that’s available at the time that best works for them</p>
 							</div>
 						</div>
 					</div>
@@ -621,8 +459,8 @@
 							<div class="feature-check"><CheckmarkIcon class="absolute-center"></CheckmarkIcon></div>
 						</div>
 						<div class="pl-6">
-							<h6 class="font-serif text-primary font-semibold text-sm mb-2">FEATURE TITLE ONE</h6>
-							<p class="text-muted">Feature title one description that helps the user decide to register.</p>
+							<h6 class="font-serif text-primary font-semibold text-sm mb-2 uppercase">Getting paid in a way that works for you.</h6>
+							<p class="text-muted text-sm">Take credit or debit card payments ahead of appointments using stripe integration.</p>
 						</div>
 					</div>
 

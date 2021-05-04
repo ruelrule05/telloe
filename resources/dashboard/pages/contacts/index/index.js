@@ -77,7 +77,8 @@ export default {
 		query: '',
 		originalUserCustomFields: [],
 		userCustomFields: [],
-		action: null
+		action: null,
+		channel: null
 	}),
 
 	computed: {
@@ -147,6 +148,13 @@ export default {
 		});
 		this.getServices();
 		this.getContacts();
+		this.channel = this.$echo.private(`contacts.${this.$root.auth.id}`);
+		this.channel.listen('ContactAcceptedEvent', e => {
+			let contact = this.contacts.data.find(c => c.id == e.contact_id);
+			if (contact) {
+				contact.is_pending = false;
+			}
+		});
 		// this.$root.socket.on('invite_token', invite_token => {
 		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
 		// });

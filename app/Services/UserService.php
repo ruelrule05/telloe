@@ -27,6 +27,9 @@ use Illuminate\Http\Request;
 use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
+use App\Http\GoogleCalendarClient;
+use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
 
 class UserService
 {
@@ -76,6 +79,11 @@ class UserService
         $now = Carbon::now();
 
         if ($request->ajax() || $request->wantsJson()) {
+            if($request->widget) {
+                $service = $profile->services()->where('in_widget', true)->first();
+                return response()->json($service);
+            }
+
             $services = $profile->load(['services' => function ($service) use ($now) {
                 $service->where('is_available', true)->where(function ($query) use ($now) {
                     $query->where(function ($startsAt) use ($now) {
@@ -114,7 +122,7 @@ class UserService
 
     public static function widget(Request $request)
     {
-        $profile = User::with('widget')->where('username', $request->p)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
+        $profile = User::where('username', $request->p)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
         $profile->profile_image = config('app.url') . $profile->profile_image;
         echo 'const PROFILE = ' . json_encode($profile) . ";\n\n";
         echo "const ENDPOINT = '" . config('app.url') . "';\n\n";
@@ -184,6 +192,7 @@ class UserService
                 'date' => $timeslot['date']['format'],
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
+                'meeting_type' => $timeslot['type'],
                 'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
             ], $customer, $guest);
 
@@ -227,6 +236,7 @@ class UserService
                             'date' => $currentDate->clone()->format('Y-m-d'),
                             'start' => $start->format('H:i'),
                             'end' => $end->format('H:i'),
+                            'meeting_type' => $timeslot['type'],
                             'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
                         ], $customer, $guest);
                         if ($recurringBooking) {
@@ -304,11 +314,44 @@ class UserService
                 ]);
             }
         }
-        BookingUser::create([
+
+        $bookingUser = BookingUser::create([
             'booking_id' => $booking->id,
             'user_id' => $customer->id ?? NULL,
             'guest' => $guest
         ]);
+
+        if($service->user->google_calendar_token && $service->user->google_calendar_id) {
+            $GoogleCalendarClient = new GoogleCalendarClient($service->user);
+            $client = $GoogleCalendarClient->client;
+            $googleService = new Google_Service_Calendar($client);
+            $event = new Google_Service_Calendar_Event(array(
+                'summary' => $booking->service->name,
+                'description' => $booking->service->description,
+                'start' => [
+                    'dateTime' => Carbon::parse("$booking->date $booking->start")->toIso8601String(),
+                    'timeZone' => $booking->service->timezone,
+                ],
+                'end' => [
+                    'dateTime' => Carbon::parse("$booking->date $booking->end")->toIso8601String(),
+                    'timeZone' => $booking->service->timezone,
+                ],
+                'attendees' => [
+                    ['email' => $bookingUser->user->email ?? $bookingUser->guest->email],
+                ],
+                'conferenceData' => [
+                    'createRequest' => [
+                        'requestId' => time()
+                    ]
+                ]
+            ));
+
+            $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+            $booking->update([
+                'meet_link' => $event->hangoutLink
+            ]);
+
+        }
 
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);

@@ -30,3 +30,6 @@ Broadcast::channel('onlineUsers', function () {
 Broadcast::channel('bookingLinks.{bookingLink}', function ($user, BookingLink $bookingLink) {
     return $user->can('show', $bookingLink) ? ['id' => $user->id, 'name' => $user->full_name] : false;
 });
+Broadcast::channel('contacts.{user}', function ($user, $userId) {
+    return $user->id == $userId;
+});

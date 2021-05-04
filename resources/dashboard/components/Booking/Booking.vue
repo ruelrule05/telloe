@@ -141,13 +141,19 @@
 							<timerangepicker v-else @change="updateTime" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
 						</div>
 
-						<div>
+						<div class="my-4">
 							<label>Notes</label>
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 
+						<div>
+							<label>Type</label>
+							<div>{{ clonedBooking.meeting_type }}</div>
+						</div>
+
 						<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
 						<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
+						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
 					</div>
 
 					<div class="flex justify-between">
@@ -161,8 +167,8 @@
 						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.summary }}</h5>
 
 						<label class="-mb-1">Date</label>
-						<div>{{ dayjs(clonedBooking.start.date || clonedBooking.start.dateTime).format('MMMM DD, YYYY') }}</div>
-						<div>{{ dayjs(clonedBooking.start.date || clonedBooking.start.dateTime).format('hh:mmA') }} - {{ dayjs(clonedBooking.end.date || clonedBooking.end.dateTime).format('hh:mmA') }}</div>
+						<div>{{ dayjs(clonedBooking.startDate).format('MMMM DD, YYYY') }}</div>
+						<div>{{ dayjs(clonedBooking.startDate).format('hh:mmA') }} - {{ dayjs(clonedBooking.endDate).format('hh:mmA') }}</div>
 					</div>
 					<div class="flex justify-between">
 						<button type="button" class="btn" @click="close">Close</button>

@@ -1,12 +1,12 @@
 <template>
 	<div v-if="ready" id="widget" v-cloak>
-		<button id="button" class="position-fixed btn btn-primary align-items-center" :class="[open ? 'd-none' : 'd-flex']" type="button" @click="open = !open"><calendar-icon class="mr-1" fill="white" width="18" height="18"></calendar-icon> {{ $root.profile.widget.button_text }}</button>
+		<button id="button" class="fixed bottom-1 right-1 btn btn-primary items-center" :class="[open ? 'hidden' : 'flex']" type="button" @click="open = !open"><calendar-icon class="mr-1" fill="white" width="18" height="18"></calendar-icon><span class="text-white">Book</span></button>
 
 		<transition name="fade">
-			<div v-if="open" class="widget position-fixed">
-				<div class="widget-body bg-white rounded d-flex flex-column overflow-hidden w-100 h-100 position-relative">
+			<div v-if="open">
+				<div class="widget-body">
 					<!-- Loading -->
-					<div class="text-center position-absolute-center w-100 h-100 loader bg-white" v-if="isBooking">
+					<div class="text-center absolute-center w-full h-full loader bg-white" v-if="isBooking">
 						<div class="position-absolute-center w-100">
 							<template v-if="bookingSuccess">
 								<checkmark-circle-icon width="60" height="60" class="fill-success"></checkmark-circle-icon>
@@ -20,199 +20,191 @@
 						</div>
 					</div>
 
-					<div v-if="!isBooking" class="top-buttons d-flex align-items-center py-2 pl-3 pr-2 bg-transparent">
-						<button :disabled="!selectedService" class="btn btn-white badge-pill p-0 shadow-none" :class="{ 'opacity-0': !selectedService }" type="button" @click="stebBack()"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
-						<button
-							class="btn btn-white badge-pill p-0 shadow-none ml-auto"
-							type="button"
-							@click="
-								reset();
-								open = false;
-							"
-						>
-							<close-icon transform="scale(1.3)"></close-icon>
-						</button>
-					</div>
-
-					<div class="flex-grow-1 overflow-auto" :class="{ 'mt-n4': !selectedService }">
-						<template v-if="!authForm">
-							<div v-if="!selectedService" key="services">
-								<div class="text-center">
-									<div class="profile-image d-inline-block bg-light mb-1" :style="{ 'background-image': 'url(' + $root.profile.profile_image + ')' }">
-										<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
-									</div>
-									<h1 class="font-heading h5 mb-0 mt-0">{{ $root.profile.full_name }}</h1>
-									<span class="text-secondary">@{{ $root.profile.username }}</span>
-
-									<template v-cloak>
-										<h6 v-if="services.length == 0" class="text-gray font-weight-light">No services available</h6>
-										<div v-else class="text-left mt-4">
-											<div v-for="service in services" :key="service.id" class="service cursor-pointer px-4 pt-4" @click="selectedService = service">
-												<div class="pb-4">
-													<h3 class="font-heading h6 mb-1 mt-0">{{ service.name }} ({{ service.duration }} minutes)</h3>
-													<p class="mt-0 mb-0">{{ service.description }}</p>
-
-													<div class="d-flex mt-2">
-														<div v-for="day in days" :key="day" class="badge-day mr-1 rounded-circle position-relative overflow-hidden" :class="[service.days[day].isOpen ? 'bg-primary text-white' : 'text-gray-400 bg-gray-200']">
-															<span class="position-absolute-center font-weight-light line-height-1">{{ day.charAt(0) }}</span>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</template>
+					<template v-if="service">
+						<!-- Select date/timeslot -->
+						<div v-if="!step" class="timeslot-selector">
+							<div>
+								<div class="button-date-nav">
+									<button type="button" @click="previousWeek()"><ArrowLeftIcon></ArrowLeftIcon></button>
+									<span>{{ dayjs(startDate).format('MMMM D, YYYY') }}</span>
+									<button type="button" @click="nextWeek()"><ArrowRightIcon></ArrowRightIcon></button>
 								</div>
 							</div>
 
-							<div v-else key="service" class="px-4 pb-4">
-								<div class="selected-service h-1004">
-									<div class="position-relative text-left">
-										<div class="text-left">
-											<h3 class="font-heading h5 mb-1 mt-0">{{ selectedService.name }}</h3>
-										</div>
-										<div class="d-flex align-items-center small">
-											<div class="d-flex align-items-center mr-2">
-												<clock-icon width="17" height="17" class="fill-secondary"></clock-icon>
-												<small class="text-secondary">{{ selectedService.duration }} minutes</small>
-											</div>
-											<div class="d-flex align-items-center">
-												<earth-icon height="17" width="17" class="fill-secondary"></earth-icon>
-												<small class="text-secondary">
-													{{ $root.profile.timezone }}
-												</small>
-											</div>
-										</div>
-									</div>
-
-									<div class="h-100 text-left d-flex flex-column overflow-hidden position-relative mt-3">
-										<div class="d-flex align-items-center">
-											<span class="text-secondary">Select a date & time</span>
-											<button
-												v-if="selectedDate"
-												class="ml-auto btn d-flex align-items-center pr-0 pt-0"
-												type="button"
-												@click="
-													calendarView = calendarView == 'month' ? 'week' : 'month';
-													calcSliderTranslate();
-												"
-											>
-												<calendar-month-icon width="18" height="18" class="mr-1"></calendar-month-icon>
-												<small class="text-capitalize">{{ calendarView }} view</small>
-											</button>
-										</div>
-										<div class="flex-grow-1 d-flex flex-column mt-2">
-											<div>
-												<div class="align-items-center" :class="[calendarView == 'month' ? 'd-none' : 'd-flex']">
-													<button class="btn p-0 ml-n2" type="button" @click="adjustSlider(-1)"><chevron-left-icon transform="scale(1.6)"></chevron-left-icon></button>
-													<div class="flex-grow-1 overflow-hidden">
-														<div class="weekday-slider d-flex align-items-center position-relative" :style="{ transform: `translate(${sliderTranslate - sliderNavIndex * sliderItemSize}px, 0px)` }" ref="weekday-slider">
-															<div v-for="(date, index) in weekDayOptions" :key="index" class="px-1 weekday-day" :class="{ disabled: disabledDate(date) }" :id="date.id">
-																<div class="py-1 px-2 rounded weekday-container cursor-pointer" :class="{ 'bg-primary text-white': sliderActiveDate(date) }" @click="selectedDate = date.date">
-																	{{ date.title }}
-																	<strong class="text-uppercase d-block">{{ date.description }}</strong>
-																</div>
+							<div class="timeslots-container">
+								<div>
+									<table>
+										<thead>
+											<tr>
+												<template v-for="(tabDate, index) in tabDates">
+													<th v-if="service.days[tabDate.dayName].isOpen" :key="index">
+														<div>{{ tabDate.name }}</div>
+														<span>{{ tabDate.label }}</span>
+													</th>
+												</template>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<template v-for="(date, dateIndex) in tabDates">
+													<td :key="dateIndex" v-if="service.days[date.dayName].isOpen">
+														<template v-if="(timeslots[date.dayName] || []).length > 0">
+															<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex" class="timeslot-container">
+																<button type="button" class="timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }" @click="setSelectedDateAndTimeslot(date, timeslot)">
+																	{{ timezoneTime(timeslot.time) }}
+																</button>
 															</div>
-														</div>
-													</div>
-													<button class="btn p-0 mr-n2" type="button" @click="adjustSlider(1)"><chevron-right-icon transform="scale(1.6)"></chevron-right-icon></button>
-												</div>
-
-												<div :class="{ 'd-none': calendarView == 'week' }">
-													<v-date-picker :first-day-of-week="2" :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required class="v-calendar h-100 border-0 bg-light" v-model="selectedDate" @input="dateSelected" is-expanded is-inline :min-date="new Date()" title-position="left"> </v-date-picker>
-												</div>
-											</div>
-
-											<div class="flex-grow-1 overflow-hidden h-100 mt-3 d-flex flex-column" v-if="selectedDate && calendarView == 'week'">
-												<div class="flex-grow-1 position-relative overflow-auto timeslots-container" :class="{ 'py-4': timeslotsLoading }">
-													<div v-if="timeslotsLoading" class="position-absolute-center">
-														<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-													</div>
-													<div :class="{ 'd-none': timeslotsLoading }">
-														<div v-if="timeslots.length == 0" class="text-gray text-center w-100 position-absolute-center">
-															<span>There are no timeslots available for the selected date.</span>
-														</div>
-														<div v-else>
-															<div class="d-flex flex-wrap">
-																<div v-for="timeslot in timeslots" :key="timeslot.value" class="mt-2 w-100">
-																	<div class="rounded cursor-pointer py-3 px-3" :class="[timeslot == selectedTimeslot ? 'bg-blue text-white' : 'bg-light']" @click="selectedTimeslot = timeslot">
-																		<small class="d-block">{{ timezone }}</small>
-																		{{ timezoneTime(timeslot.time) }}
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
+														</template>
+													</td>
+												</template>
+											</tr>
+										</tbody>
+									</table>
 								</div>
-							</div>
-						</template>
-
-						<!-- Auth form -->
-						<div v-else class="px-4 h-100">
-							<div class="d-flex flex-column h-100">
-								<div class="flex-grow-1 position-relative">
+								<div v-if="timeslotsLoading" class="timeslot-loader">
 									<div>
-										<vue-form-validate @submit="submit()" class="w-100">
-											<!-- Login -->
-											<template v-if="authAction == 'login'">
-												<h5 class="h4 font-heading mb-3">Log In</h5>
-												<div class="form-group mb-2">
-													<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control shadow-none border" data-required />
-												</div>
-												<div class="form-group">
-													<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control shadow-none border" data-required />
-												</div>
-												<div class="mt-4">
-													<vue-button type="submit" :loading="loginForm.loading" button_class="btn btn-block btn-primary">Log In & Book</vue-button>
-												</div>
-											</template>
-
-											<!-- Signup -->
-											<template v-else-if="authAction == 'signup'">
-												<h5 class="h4 font-heading mb-3">Create your account</h5>
-												<div class="form-group mb-2">
-													<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control shadow-none border" data-required />
-												</div>
-												<div class="form-group mb-2">
-													<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control shadow-none border" data-required />
-												</div>
-												<div class="form-group mb-2">
-													<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control shadow-none border" data-required />
-												</div>
-												<div class="form-group">
-													<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control shadow-none border" data-required />
-												</div>
-												<div class="mt-4">
-													<vue-button type="submit" :loading="loginForm.loading" button_class="btn btn-block btn-primary">Sign Up & Book</vue-button>
-												</div>
-											</template>
-
-											<div class="d-flex mx-n1 mt-3">
-												<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="FacebookLoginAndBook"><facebook-icon height="20" width="20" class="mr-2"></facebook-icon>Facebook</button>
-												<button type="button" class="btn btn-light shadow-none flex-grow-1 mx-1 d-flex align-items-center justify-content-center line-height-1" @click="GoogleLoginAndBook"><google-icon height="16" width="16" class="mr-2"></google-icon>Google</button>
-											</div>
-											<div class="mt-4">
-												<button type="button" v-if="authAction == 'login'" class="btn btn-link btn-sm text-body p-0" @click="authAction = 'signup'">Don't have an account?</button>
-												<button type="button" v-else class="btn btn-link btn-sm text-body p-0 d-flex align-items-center" @click="authAction = 'login'"><arrow-left-icon></arrow-left-icon>Login</button>
-											</div>
-										</vue-form-validate>
+										<div class="widget-spinner" role="status"></div>
 									</div>
 								</div>
-								<div class="mt-auto pb-3">
-									<div class="text-center text-danger">&nbsp;{{ authError }}&nbsp;</div>
-								</div>
+							</div>
+
+							<button :disabled="selectedTimeslots.length == 0" class="widget-btn" type="button" @click="step = 'summary'">
+								<span>Continue</span>
+							</button>
+						</div>
+
+						<!-- Summary -->
+						<div v-else-if="step == 'summary'" class="widget-summary">
+							<div class="summary-heading">
+								<h2>SET YOUR BOOKING DETAILS</h2>
+								<button type="button" class="widget-btn-outline" @click="step = null"><ChevronLeftIcon></ChevronLeftIcon><span>Back</span></button>
+							</div>
+							<div class="summary-content">
+								<vue-form-validate
+									@submit="
+										() => {
+											step = service.require_payment ? 'payment' : 'authenticate';
+										}
+									"
+								>
+									<h3>{{ service.name }}</h3>
+									<div class="summary-meta">
+										<ClockIcon class="fill-current mr-2"></ClockIcon>
+										{{ service.duration }} min &nbsp;&nbsp;&nbsp; Booking with {{ service.coach.full_name }}
+									</div>
+
+									<div v-for="(selectedTimeslot, selectedTimeslotIndex) in selectedTimeslots" :key="selectedTimeslotIndex" class="selected-time">
+										<div class="selectime-time-details">
+											<div>
+												<h4>{{ dayjs(selectedTimeslot.date.format).format('MMMM D, YYYY') }} ({{ selectedTimeslot.date.dayName }})</h4>
+												<div>{{ timezoneTime(selectedTimeslot.timeslot.time) }} - {{ endTime(selectedTimeslot.timeslot.time) }}</div>
+												<button
+													class="remove-timeslot"
+													type="button"
+													@click="
+														selectedTimeslots.splice(selectedTimeslotIndex, 1);
+														if (selectedTimeslots.length == 0) {
+															step = false;
+														}
+													"
+												>
+													REMOVE BOOKING
+												</button>
+											</div>
+
+											<!-- <div class="flex items-center">
+												<span class="text-xs mr-2">Recurring</span>
+												<ToggleSwitch
+														class="ml-auto"
+														@input="
+															if (selectedTimeslot.is_recurring) {
+																$set(
+																	selectedTimeslot,
+																	'end_date',
+																	dayjs(new Date())
+																		.add(1, 'week')
+																		.toDate()
+																);
+																$set(selectedTimeslot, 'frequency', recurringFrequencies[0].value);
+																setTimeslotDefaultDay('week', selectedTimeslot);
+															}
+														"
+														active-class="bg-primary"
+														v-model="selectedTimeslot.is_recurring"
+													></ToggleSwitch>
+												<div v-if="selectedTimeslot.is_recurring" class="relative" v-click-outside="() => (selectedTimeslot.menu = false)">
+													<button class="ml-1 focus:outline-none rounded-full p-1 border text-gray-400 transition-colors hover:bg-gray-400 hover:text-white btn-timeslot" type="button" @click="$set(selectedTimeslot, 'menu', true)"><CogIcon class="fill-current h-4 w-4"></CogIcon></button>
+
+													<div class="timeslot-menu" :class="{ show: selectedTimeslot.menu }">
+														<div class="flex">
+															<button class="flex-grow btn btn-sm mr-1" type="button" :class="[selectedTimeslot.frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'week')"><span>Weekly</span></button>
+															<button class="flex-grow btn btn-sm ml-1" type="button" :class="[selectedTimeslot.frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(selectedTimeslot, 'frequency', 'month')"><span>Monthly</span></button>
+														</div>
+														<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
+														<div class="flex space-x-2 mt-3">
+															<div @click="timeslotToggleDay(selectedTimeslot, dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: selectedTimeslot.days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+																<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+															</div>
+														</div>
+
+														<div class="mt-4">
+															<v-date-picker :min-date="new Date()" class="input" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
+																<template v-slot="{ inputValue, inputEvents }">
+																	<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
+																		<span class="text-muted text-sm mr-2">Until</span>
+																		{{ inputValue }}
+																	</button>
+																</template>
+															</v-date-picker>
+														</div>
+													</div>
+												</div>
+											</div> -->
+										</div>
+
+										<div v-if="service.types.length > 0">
+											<div v-for="(type, typeIndex) in service.types" :key="typeIndex" class="meeting-type" :class="{ selected: selectedTimeslot.type == type }" @click="setTypeSelected(selectedTimeslot, type)">
+												<div>
+													<div class="type-checkbox"><div class="absolute-center"></div></div>
+												</div>
+												<div class="px-3 text-sm text-muted -mt-1 flex-grow">
+													<div>
+														{{ type.type }}
+													</div>
+													<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
+													<div class="mt-1" v-else-if="type.type == 'Phone'">
+														<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="phone" />
+													</div>
+													<div class="mt-1" v-else-if="type.type == 'Skype'">
+														<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="skype" placeholder="Add your Skype ID" />
+													</div>
+
+													<span v-else-if="type.type == 'Telloe Video Call'">
+														A conversation will be created for the video call.
+													</span>
+													<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
+												</div>
+												<div class="meeting-type-icon">
+													<ZoomIcon v-if="type.type == 'Zoom'"></ZoomIcon>
+													<GoogleMeetIcon v-else-if="type.type == 'Google Meet'"></GoogleMeetIcon>
+													<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="fill-current text-primary"></MapMarkerIcon>
+													<PhoneIcon v-else-if="type.type == 'Phone'" class="fill-primary"></PhoneIcon>
+													<SkypeIcon v-else-if="type.type == 'Skype'" class="fill-primary"></SkypeIcon>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="submit">
+										<span>Continue <span v-if="service.require_payment">to payment</span></span>
+									</button>
+								</vue-form-validate>
 							</div>
 						</div>
-					</div>
-					<div v-if="selectedDate && !authForm" class="d-flex align-items-center p-2 border-top">
-						<button :disabled="!selectedTimeslot" class="ml-auto btn btn-primary" type="button" @click="authForm = true">Next</button>
-					</div>
+					</template>
 				</div>
 				<div class="text-center widget-footer d-flex align-items-center justify-content-center">
-					<span class="text-gray-500">Powered by</span>&nbsp;<a href="https://telloe.com" target="_blank" class="font-weight-bold d-inline-flex align-items-center"><img src="https://telloe.com/logo.svg" height="13"/></a>
+					<span class="text-gray-500">Powered by</span>&nbsp;<a :href="$root.endpoint" target="_blank" class="font-weight-bold d-inline-flex align-items-center"><img :src="`${$root.endpoint}/logo.svg`" height="13"/></a>
 				</div>
 			</div>
 		</transition>

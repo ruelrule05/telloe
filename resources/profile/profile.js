@@ -517,6 +517,7 @@ export default {
 				if (timeslot.end_date) {
 					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
+				timeslot.type = timeslot.type.type;
 				return timeslot;
 			});
 
@@ -546,6 +547,7 @@ export default {
 				if (timeslot.end_date) {
 					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
+				timeslot.type = timeslot.type.type;
 				return timeslot;
 			});
 
@@ -577,6 +579,7 @@ export default {
 					if (timeslot.end_date) {
 						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 					}
+					timeslot.type = timeslot.type.type;
 					return timeslot;
 				});
 
@@ -609,6 +612,7 @@ export default {
 					if (timeslot.end_date) {
 						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 					}
+					timeslot.type = timeslot.type.type;
 					return timeslot;
 				});
 

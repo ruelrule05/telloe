@@ -38,7 +38,7 @@ class UserController extends Controller
 
     public function widget(Request $request)
     {
-        return response(UserService::widget($request));
+        return UserService::widget($request);
     }
 
     public function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)

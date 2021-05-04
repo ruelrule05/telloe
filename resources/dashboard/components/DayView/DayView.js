@@ -69,15 +69,26 @@ export default {
 					color = 'bg-red-600 text-white';
 				}
 				event.type = 'google-event';
-				parsedBooking.push({
+				let start = this.dayjs(event.start.date || event.start.dateTime);
+				let end = this.dayjs(event.end.date || event.end.dateTime);
+				let diffInHours = end.diff(start, 'hour');
+				if (diffInHours == 24) {
+					end = end.add(12, 'hour');
+				}
+				start = start.format('YYYY-MM-DD HH:mm');
+				end = end.format('YYYY-MM-DD HH:mm');
+				event.startDate = start;
+				event.endDate = end;
+				let dayEvent = {
 					booking: event,
 					name: event.summary,
 					type: 'google-event',
-					start: this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD HH:mm'),
-					end: this.dayjs(event.end.date || event.end.dateTime).format('YYYY-MM-DD HH:mm'),
+					start: start,
+					end: end,
 					category: 'bookings',
 					color: color
-				});
+				};
+				parsedBooking.push(dayEvent);
 			});
 
 			return parsedBooking;

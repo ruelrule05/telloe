@@ -42,7 +42,7 @@ mix.sass('resources/sass/tailwind.scss', 'css/vendor.css')
 mix.js('resources/js/page.js', 'js')
 	.js('resources/dashboard/dashboard.js', 'js')
 	.js('resources/js/profile.js', 'js')
-	//.js('resources/widget/index.js', 'js/widget/widget.js')
+	.js('resources/widget/index.js', 'js/widget/widget.js')
 	//.js('resources/js/organization.js', 'js')
 	.js('resources/js/booking-link.js', 'js');
 

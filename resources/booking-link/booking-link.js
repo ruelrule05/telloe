@@ -251,8 +251,8 @@ export default {
 			return dayjs(date).format('MMMM D, YYYY');
 		},
 
-		timeslotTime(time, contact) {
-			let timezoneTime = this.timezoneTime(time, contact.contact.contact_user.timezone);
+		timeslotTime(time, timezone) {
+			let timezoneTime = this.timezoneTime(time, timezone);
 			return `<span class="text-sm font-bold text-body block -mb-1">${timezoneTime.replace('AM', '').replace('PM', '')}</span><span class="text-sm text-muted uppercase">${timezoneTime.slice(-2)}</span>`;
 		},
 

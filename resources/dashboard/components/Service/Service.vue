@@ -54,6 +54,9 @@
 										</div>
 
 										<div v-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm  px-4 pb-2">{{ type.type }} will be required before placing a booking.</div>
+
+										<div v-else-if="type.type == 'Telloe Video Call'" class="text-muted text-sm  px-4 pb-2">A conversation will be created for the video call.</div>
+
 										<div v-else class="text-muted text-sm  px-4 pb-2">{{ type.type }} link will be created for each booking.</div>
 									</div>
 									<div class="pl-2">
