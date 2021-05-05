@@ -1,5 +1,8 @@
 #telloe-widget {
 	$primary: #3167e3;
+	button {
+		cursor: pointer !important;
+	}
 
 	#widget {
 		position: fixed;
@@ -67,6 +70,7 @@
 		color: black;
 		display: inline-flex;
 		align-items: center;
+		font-size: 15px;
 		img {
 			margin-right: 5px;
 		}
