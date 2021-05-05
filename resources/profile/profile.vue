@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div :class="{ 'is-widget': $root.widget }">
 		<div v-if="ready">
 			<!-- Select service -->
 			<div class="container lg:my-12 my-6 flex items-center justify-center" v-if="!selectedServiceForTimeline" key="services">
@@ -70,7 +70,7 @@
 			</div>
 
 			<!-- Select coach/date/time -->
-			<div v-else-if="selectedServiceForTimeline && !step" class="container lg:my-12 my-6 flex justify-center" key="service">
+			<div v-else-if="selectedServiceForTimeline && !step" class="container lg:my-12 my-6 flex justify-center time-selector" key="service">
 				<div class="bg-white rounded-2xl w-11/12">
 					<div class="lg:flex">
 						<div class="lg:w-5/12 lg:p-10 p-8 pb-4">
@@ -84,9 +84,9 @@
 
 					<div class="lg:flex border-top">
 						<div class="border-right lg:p-12 p-8 flex flex-col lg:w-4/12">
-							<div class="text-muted text-sm lg:mb-8 mb-2">Schedule a time with:</div>
+							<div class="text-muted text-sm lg:mb-8 mb-2 widget-hide">Schedule a time with:</div>
 
-							<div>
+							<div class="widget-hide mb-4">
 								<!-- Main Coach -->
 								<div
 									class="coach-card"
@@ -134,14 +134,14 @@
 								</div>
 							</div>
 
-							<div class="lg:mt-auto mt-4">
+							<div class="lg:mt-auto">
 								<div class="text-muted text-sm lg:mb-4 mb-2">Your timezone:</div>
 								<vue-select :options="timezonesOptions" drop-position="top" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
 							</div>
 						</div>
 
 						<!-- Date/time selection -->
-						<div class="lg:p-12 pt-0 p-8 lg:w-8/12">
+						<div class="lg:p-12 pt-0 p-8 lg:w-8/12 date-time-selector">
 							<div class="lg:flex items-center justify-between">
 								<div class="text-muted text-sm">Select one or more timeslots</div>
 								<div>
@@ -204,8 +204,8 @@
 			</div>
 
 			<!-- Summary -->
-			<div v-else-if="step == 'summary'" class="lg:flex" key="summary">
-				<div class="border w-4/12 lg:p-16 p-8">
+			<div v-else-if="step == 'summary'" class="lg:flex summary" key="summary">
+				<div class="border w-4/12 lg:p-16 p-8 bg-secondary">
 					<h6 class="text-primary font-serif text-4xl font-semibold leading-none lg:mb-10 mb-5">SET YOUR BOOKING DETAILS</h6>
 					<button class="btn btn-outline-primary flex items-center" type="button" @click="step = false"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
@@ -334,7 +334,7 @@
 			</div>
 
 			<!-- Payment -->
-			<div v-else-if="step == 'payment'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+			<div v-else-if="step == 'payment'" class="container lg:my-12 my-6 flex items-center justify-center payment" key="payment">
 				<div class="lg:w-5/12 bg-white rounded-2xl lg:p-14 p-8">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">PAYMENT</h6>
 					<div class="text-xl text-muted mb-8">
@@ -372,8 +372,8 @@
 			</div>
 
 			<!-- Authenticate -->
-			<div v-else-if="step == 'authenticate'" class="lg:flex" key="authenticate">
-				<div class="border w-4/12 lg:p-16 p-8">
+			<div v-else-if="step == 'authenticate'" class="lg:flex authenticate" key="authenticate">
+				<div class="border w-4/12 lg:p-16 p-8 bg-secondary">
 					<h6 class="text-primary font-serif text-4xl font-semibold leading-none lg:mb-10 mb-5">ADD YOUR CONTACT INFO</h6>
 					<button :disabled="bookingLoading" class="btn btn-outline-primary flex items-center" type="button" @click="step = selectedService.require_payment ? 'payment' : 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 				</div>
@@ -425,7 +425,7 @@
 			</div>
 
 			<!-- Booked Signup -->
-			<div v-else-if="step == 'booked-signup'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+			<div v-else-if="step == 'booked-signup'" class="container lg:my-12 my-6 flex items-center justify-center booked-signup" key="booked-signup">
 				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-4">EVENT BOOKED. SIGN UP FOR FREE!</h6>
 					<p class="text-muted">
@@ -483,7 +483,7 @@
 			</div>
 
 			<!-- Bookings -->
-			<div v-else-if="step == 'bookings'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
+			<div v-else-if="step == 'bookings'" class="container lg:my-12 my-6 flex items-center justify-center bookings" key="bookings">
 				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
 					<p class="mb-8">
@@ -517,12 +517,14 @@
 			</div>
 		</div>
 
-		<div v-else class="absolute-center">
-			<div class="spinner" role="status"></div>
+		<div v-else class="absolute-center h-full w-full">
+			<div class="absolute-center">
+				<div class="spinner" role="status"></div>
+			</div>
 		</div>
 
 		<!-- Booking loader -->
-		<div v-if="bookingLoading" class="bg-secondary fixed z-50 top-0 left-0 w-full h-full text-center">
+		<div v-if="bookingLoading" class="bg-secondary fixed z-50 top-0 left-0 w-full h-full text-center booking-loader">
 			<div class="container h-full flex items-center justify-center">
 				<div class="w-4/12 bg-white rounded-2xl p-14">
 					<div class="spinner" role="status"></div>

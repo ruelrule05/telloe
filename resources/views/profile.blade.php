@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="{{ mix('css/profile.css') }}">
 </head>
 <body class="w-screen min-h-screen h-screen overflow-x-hidden">
-	<div id="app" class="bg-secondary min-h-full overflow-auto" v-cloak>
+	<div id="app" class="min-h-full h-full overflow-auto" :class="{'bg-secondary': !widget}" v-cloak>
 		<profile></profile>
 	</div>
 	@include('partials.social_scripts')

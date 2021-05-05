@@ -12,7 +12,6 @@ use  App\Http\SocialiteHelper;
 //     return $email;
 // });
 
-
 Route::get('widget', function () {
     return view('widget', ['profile' => App\Models\User::find(3)]);
 });

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Controllers\AuthController;
+use App\Http\GoogleCalendarClient;
 use App\Http\Requests\GuestBookRequest;
 use App\Http\Requests\UserBookRequest;
 use App\Http\Requests\UserFacebookLoginAndBook;
@@ -22,14 +23,13 @@ use App\Models\Widget;
 use Auth;
 use Carbon\Carbon;
 use File;
+use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
 use Hash;
 use Illuminate\Http\Request;
 use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
-use App\Http\GoogleCalendarClient;
-use Google_Service_Calendar;
-use Google_Service_Calendar_Event;
 
 class UserService
 {
@@ -79,7 +79,7 @@ class UserService
         $now = Carbon::now();
 
         if ($request->ajax() || $request->wantsJson()) {
-            if($request->widget) {
+            if ($request->widget) {
                 $service = $profile->services()->where('in_widget', true)->first();
                 return response()->json($service);
             }
@@ -124,8 +124,8 @@ class UserService
     {
         $profile = User::where('username', $request->p)->firstOrfail()->makeHidden(['google_calendar_token', 'outlook_token', 'last_online_format', 'role_id', 'email', 'last_online', 'stripe_customer_id', 'psid']);
         $profile->profile_image = config('app.url') . $profile->profile_image;
-        echo 'const PROFILE = ' . json_encode($profile) . ";\n\n";
-        echo "const ENDPOINT = '" . config('app.url') . "';\n\n";
+        echo 'const PROFILE = ' . json_encode($profile) . ';';
+        echo "const ENDPOINT = '" . config('app.url') . "';";
 
         $script = File::get(public_path() . '/js/widget/widget.js');
         $response = Response::make($script);
@@ -321,11 +321,11 @@ class UserService
             'guest' => $guest
         ]);
 
-        if($service->user->google_calendar_token && $service->user->google_calendar_id) {
+        if ($service->user->google_calendar_token && $service->user->google_calendar_id) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->user);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
-            $event = new Google_Service_Calendar_Event(array(
+            $event = new Google_Service_Calendar_Event([
                 'summary' => $booking->service->name,
                 'description' => $booking->service->description,
                 'start' => [
@@ -344,13 +344,12 @@ class UserService
                         'requestId' => time()
                     ]
                 ]
-            ));
+            ]);
 
             $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
             $booking->update([
                 'meet_link' => $event->hangoutLink
             ]);
-
         }
 
         $from = Carbon::parse("$booking->date $booking->start");

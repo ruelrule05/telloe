@@ -1,134 +1,72 @@
-/* global PROFILE */
-/* global SERVICE */
-/* global TIMEZONE */
-/* global gapi */
-
-require('../js/bootstrap');
-
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import VCalendar from 'v-calendar';
+/* global TelloeAxios */
 import dayjs from 'dayjs';
-Vue.use(VCalendar);
-Vue.use(VueRouter);
-import VueFormValidate from '../components/vue-form-validate';
-import VueButton from '../components/vue-button';
-import Modal from '../components/modal/modal.vue';
-import ClockIcon from '../icons/clock';
-import CalendarDayIcon from '../icons/calendar-day';
-import CalendarDayAltIcon from '../icons/calendar-day-alt';
-import InfoCircleIcon from '../icons/info-circle';
-import CheckmarkIcon from '../icons/checkmark';
-import ArrowLeftIcon from '../icons/arrow-left';
-import ArrowRightIcon from '../icons/arrow-right';
-import CalendarMonthIcon from '../icons/calendar-month';
-import ChevronLeftIcon from '../icons/chevron-left';
-import ChevronRightIcon from '../icons/chevron-right';
-import ChevronDownIcon from '../icons/chevron-down';
-import EarthIcon from '../icons/earth';
-import CheckmarkCircleIcon from '../icons/checkmark-circle';
-import FacebookIcon from '../icons/facebook';
-import GoogleIcon from '../icons/google';
-import UsersIcon from '../icons/users';
-import CalendarIcon from '../icons/calendar';
-import CoinIcon from '../icons/coin';
-import PackageIcon from '../icons/package';
-import DollarSignIcon from '../icons/dollar-sign';
-import WindowPlusIcon from '../icons/window-plus';
-import CloseIcon from '../icons/close';
-import MoreIcon from '../icons/more-h';
-import MapMarkerIcon from '../icons/map-marker';
+import VueFormValidate from '../../components/vue-form-validate';
+import VueButton from '../../components/vue-button';
+import ClockIcon from '../../icons/clock';
+import CalendarDayIcon from '../../icons/calendar-day';
+import InfoCircleIcon from '../../icons/info-circle';
+import CheckmarkIcon from '../../icons/checkmark';
+import ArrowLeftIcon from '../../icons/arrow-left';
+import CalendarMonthIcon from '../../icons/calendar-month';
+import ChevronLeftIcon from '../../icons/chevron-left';
+import ChevronRightIcon from '../../icons/chevron-right';
+import EarthIcon from '../../icons/earth';
+import CheckmarkCircleIcon from '../../icons/checkmark-circle';
+import CloseIcon from '../../icons/close';
+import CalendarIcon from '../../icons/calendar';
+import FacebookIcon from '../../icons/facebook';
+import GoogleIcon from '../../icons/google';
+import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import jstz from 'jstz';
 const timezone = jstz.determine();
-import convertTime from '../js/plugins/convert-time.js';
+import ArrowRightIcon from '../../icons/arrow-right';
 const IsSameOrBefore = require('dayjs/plugin/isSameOrBefore');
 const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
-import tooltip from '../js/directives/tooltip.js';
-import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
-import VueSelect from '../components/vue-select/vue-select.vue';
-import ZoomIcon from '../icons/zoom';
-import GoogleMeetIcon from '../icons/google-meet';
-import CogIcon from '../icons/cog';
-import vClickOutside from 'v-click-outside';
-import FacebookAltIcon from '../icons/facebook-alt.vue';
-import GoogleAltIcon from '../icons/google-alt.vue';
-import VueCardFormat from '../components/vue-credit-card-validation/src';
-const ct = require('countries-and-timezones');
-import VisaIcon from '../icons/cc/visa.vue';
-import MastercardIcon from '../icons/cc/mastercard.vue';
-import AmexIcon from '../icons/cc/amex.vue';
-import DiscoverIcon from '../icons/cc/discover.vue';
-import DinersclubIcon from '../icons/cc/dinersclub.vue';
-import JcbIcon from '../icons/cc/jcb.vue';
-import UnionpayIcon from '../icons/cc/unionpay.vue';
-const format = require('format-number');
+import VueCardFormat from '../../components/vue-credit-card-validation/src';
 import Stripe from 'stripe-client';
-import axios from 'axios';
-import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
-import RefreshIcon from '../icons/refresh';
-import SocialLogin from '../js/helpers/SocialLogin';
-import PhoneIcon from '../icons/call-menu.vue';
-import SkypeIcon from '../icons/skype.vue';
+import SocialLogin from '../../js/helpers/SocialLogin';
+import RefreshIcon from '../../icons/refresh';
+import PhoneIcon from '../../icons/call-menu.vue';
+import SkypeIcon from '../../icons/skype.vue';
+import ZoomIcon from '../../icons/zoom';
+import GoogleMeetIcon from '../../icons/google-meet';
+import CogIcon from '../../icons/cog';
+import MapMarkerIcon from '../../icons/map-marker';
 
 export default {
 	components: {
-		SkypeIcon,
+		MapMarkerIcon,
+		ZoomIcon,
+		GoogleMeetIcon,
+		CogIcon,
+		RefreshIcon,
 		PhoneIcon,
+		SkypeIcon,
+		ArrowLeftIcon,
 		VueFormValidate,
-		Modal,
 		ClockIcon,
 		CalendarDayIcon,
-		CalendarDayAltIcon,
 		InfoCircleIcon,
 		CheckmarkIcon,
 		VueButton,
-		ArrowLeftIcon,
 		ArrowRightIcon,
 		CalendarMonthIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
 		EarthIcon,
 		CheckmarkCircleIcon,
+		CloseIcon,
+		CalendarIcon,
 		FacebookIcon,
 		GoogleIcon,
-		UsersIcon,
-		CalendarIcon,
-		CoinIcon,
-		PackageIcon,
-		DollarSignIcon,
-		WindowPlusIcon,
-		CloseIcon,
-		MoreIcon,
-		ToggleSwitch,
-		VueSelect,
-		MapMarkerIcon,
-		ZoomIcon,
-		GoogleMeetIcon,
-		CogIcon,
-		FacebookAltIcon,
-		GoogleAltIcon,
-		MastercardIcon,
-		AmexIcon,
-		DiscoverIcon,
-		DinersclubIcon,
-		JcbIcon,
-		UnionpayIcon,
-		VueDropdown,
-		ChevronDownIcon,
-		RefreshIcon
+		VDatePicker
 	},
-
-	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
-
 	data: () => ({
-		profile: PROFILE,
-		service: SERVICE,
-		timezone: TIMEZONE,
 		ready: false,
 		services: [],
-		packages: [],
+		service: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		selectAttribute: {
 			highlight: {
@@ -136,12 +74,11 @@ export default {
 				contentClass: 'bg-primary'
 			}
 		},
-		selectedServiceForTimeline: null,
-		selectedService: null,
-		startDate: null,
+		step: null,
 		selectedDate: null,
+		selectedTimeslot: null,
 		detailsConfirmed: false,
-		error: 'sds',
+		error: '',
 		reviewForm: 'details',
 
 		authError: '',
@@ -156,92 +93,23 @@ export default {
 		calendarView: 'month',
 		sliderNavIndex: 0,
 		sliderTranslate: 0,
-		sliderItemSize: 86,
+		sliderItemSize: 90,
 		authForm: false, // false
+		isBooking: false,
 		bookingSuccess: false,
-		authAction: 'signup',
-		GoogleAuth: null,
-		assignedService: null,
-		tab: 'services',
-		convertTime: convertTime,
+		open: true, // false
+		authAction: 'signup', // login
+		timezone: '',
 		dayjs: dayjs,
-		selectedCoachId: null,
-		activeUserBgPosition: 0,
 		selectedTimeslots: [],
-		recurringFrequencies: [
-			{
-				text: 'Week',
-				value: 'week'
-			},
-			{
-				text: 'Month',
-				value: 'month'
-			}
-		],
-		bookings: [],
-		masks: {
-			input: 'MMM D, YYYY'
-		},
-		timezonesOptions: [],
-		authenticate: false,
-		step: false,
-		user: {
-			email: '',
-			password: ''
-		},
-		guest: {
-			first_name: '',
-			last_name: '',
-			email: ''
-		},
-		cardForm: {
-			number: '',
-			exp_month: '',
-			exp_year: '',
-			cvc: '',
-			name: '',
-			expiration: '',
-			errors: {
-				number: false,
-				expiration: false,
-				cvc: false
-			}
-		},
-		cardBrand: null,
-		format: format,
-		bookingLoading: false,
-		creatingAccount: false,
-		phone: '',
-		skype: ''
+		startDate: null
 	}),
 
 	computed: {
-		cardBrandComponent() {
-			switch (this.cardBrand) {
-				case 'visa':
-					return VisaIcon;
-				case 'mastercard':
-					return MastercardIcon;
-				case 'amex':
-					return AmexIcon;
-				case 'discover':
-					return DiscoverIcon;
-				case 'dinersclub':
-					return DinersclubIcon;
-				case 'jcb':
-					return JcbIcon;
-				case 'unionpay':
-					return UnionpayIcon;
-				default:
-					return false;
-			}
-		},
-
 		formattedHolidays() {
 			let formattedHolidays = [];
-			let service = this.assignedService || this.selectedService;
-			if (service) {
-				service.holidays.forEach(holiday => {
+			if (this.service) {
+				this.service.holidays.forEach(holiday => {
 					let parts = holiday.split('-');
 					const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
 					formattedHolidays.push(holidayDate);
@@ -251,7 +119,7 @@ export default {
 				this.days.forEach((day, index) => {
 					index = index + 2;
 					if (index >= 8) index = 1;
-					if (!service.days[day].isOpen) disabledDays.push(index);
+					if (!this.service.days[day].isOpen) disabledDays.push(index);
 				});
 				if (disabledDays.length > 0) {
 					formattedHolidays.push({
@@ -266,7 +134,7 @@ export default {
 			let disabled = true;
 			switch (this.step) {
 				case 1:
-					if (this.startDate) disabled = false;
+					if (this.selectedDate) disabled = false;
 					break;
 
 				case 2:
@@ -308,9 +176,17 @@ export default {
 			let options = [];
 
 			let dateForWeekView = dayjs();
+			//if(this.dateForWeekView) dateForWeekView = dayjs(this.dateForWeekView);
 			let daysAfter = [];
 			for (var i = 1; i <= 90; i++) {
 				let after = dateForWeekView.add(i, 'day');
+				/* daysBefore.unshift({
+	                    date: before.toDate(),
+	                    title: before.format('ddd'),
+	                    description: before.format('D MMM'),
+	                    label: before.format('YYYY-MM-DD'),
+	                    id: before.format('MMMDYYYY'),
+	                });*/
 				daysAfter.push({
 					date: after.toDate(),
 					title: after.format('ddd'),
@@ -330,6 +206,7 @@ export default {
 				label: dateForWeekView.format('YYYY-MM-DD'),
 				id: dateForWeekView.format('MMMDYYYY')
 			};
+			//options = [...daysBefore, ...[dateForWeekView], ...daysAfter];
 			options = [...[dateForWeekView], ...daysAfter];
 
 			return options;
@@ -356,72 +233,23 @@ export default {
 	},
 
 	watch: {
-		selectedCoachId: function() {
-			this.selectedTimeslots = [];
-			this.$nextTick(() => {
-				let activeUser = document.querySelector('.user-container.active');
-				if (activeUser) {
-					this.activeUserBgPosition = activeUser.offsetTop;
-				}
-			});
-		},
-
-		'selectedService.id': function() {
-			this.getTimeslots();
-		},
-
 		startDate: function(value) {
 			if (value) this.error = null;
 			this.authError = '';
 			this.getTimeslots();
 		},
-
-		'selectedServiceForTimeline.id': function(value) {
-			if (value) {
-				this.selectedCoachId = this.profile.id;
-				this.error = null;
-				this.authError = '';
-				this.selectedTimeslots = [];
-				this.calendarView = 'month';
-				this.authAction = 'signup';
-				this.authForm = false;
-			}
-		},
-
 		step: function() {
 			window.scrollTo(0, 0);
 		}
 	},
 
 	created() {
-		if (this.service) {
-			this.selectedServiceForTimeline = this.service;
-			this.selectedService = this.selectedServiceForTimeline;
-			this.ready = true;
-		} else {
-			this.getData();
-		}
-		//if (!this.timezone) {
+		this.getData();
 		this.timezone = timezone.name();
-		//}
 		this.startDate = dayjs().toDate();
-
-		if (typeof gapi != 'undefined') {
-			gapi.load('auth2', () => {
-				this.GoogleAuth = gapi.auth2.init({ client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com' });
-			});
-		}
-		Object.keys(ct.getAllTimezones()).forEach(timezone => {
-			this.timezonesOptions.push({
-				text: timezone,
-				value: timezone
-			});
-		});
 	},
 
-	mounted() {
-		this.popupItem = this.$el;
-	},
+	mounted() {},
 
 	methods: {
 		addToCalendar(calendar, booking) {
@@ -443,7 +271,7 @@ export default {
 
 		async createAccount() {
 			this.creatingAccount = true;
-			let response = await axios.post('/auth/guest_account', this.guest);
+			let response = await TelloeAxios.post('/auth/guest_account', this.guest);
 			if (response.data.user) {
 				this.step = 'bookings';
 			} else {
@@ -526,11 +354,11 @@ export default {
 			data.card_token = true;
 			data.phone = this.phone;
 			data.skype = this.skype;
-			if (this.selectedService.require_payment) {
+			if (this.service.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
 			if (data.card_token) {
-				let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/guest_book`, data, { toast: true }).catch(() => {
+				let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/guest_book`, data, { toast: true }).catch(() => {
 					this.bookingLoading = false;
 				});
 				if (response) {
@@ -544,12 +372,11 @@ export default {
 		async LoginAndBook() {
 			this.bookingLoading = true;
 			let timeslots = this.selectedTimeslots.map(timeslot => {
-				let clonedTimeslot = JSON.parse(JSON.stringify(timeslot));
-				if (clonedTimeslot.end_date) {
-					clonedTimeslot.end_date = dayjs(clonedTimeslot.end_date).format('YYYY-MM-DD');
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
-				clonedTimeslot.type = clonedTimeslot.type.type;
-				return clonedTimeslot;
+				timeslot.type = timeslot.type.type;
+				return timeslot;
 			});
 
 			let data = JSON.parse(JSON.stringify(this.user));
@@ -557,11 +384,11 @@ export default {
 			data.card_token = true;
 			data.phone = this.phone;
 			data.skype = this.skype;
-			if (this.selectedService.require_payment) {
+			if (this.service.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
 			if (data.card_token) {
-				let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/login_and_book`, data, { toast: true }).catch(() => {
+				let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/login_and_book`, data, { toast: true }).catch(() => {
 					this.bookingLoading = false;
 				});
 				if (response) {
@@ -589,11 +416,11 @@ export default {
 				data.card_token = true;
 				data.phone = this.phone;
 				data.skype = this.skype;
-				if (this.selectedService.require_payment) {
+				if (this.service.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
 				if (data.card_token) {
-					let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
+					let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
 						this.bookingLoading = false;
 					});
 					if (response) {
@@ -622,11 +449,11 @@ export default {
 				data.card_token = true;
 				data.phone = this.phone;
 				data.skype = this.skype;
-				if (this.selectedService.require_payment) {
+				if (this.service.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
 				if (data.card_token) {
-					let response = await window.axios.post(`/@${this.profile.username}/${this.selectedService.id}/google_login_and_book`, data, { toast: true }).catch(() => {
+					let response = await TelloeAxios.post(`/@${this.$root.profile.username}/${this.service.id}/facebook_login_and_book`, data, { toast: true }).catch(() => {
 						this.bookingLoading = false;
 					});
 					if (response) {
@@ -691,10 +518,10 @@ export default {
 
 		endTime(time) {
 			let endTime = '';
-			if (this.selectedService && this.startDate) {
+			if (this.service && this.startDate) {
 				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
 				endTime = dayjs(startDate)
-					.add(this.selectedService.duration, 'minute')
+					.add(this.service.duration, 'minute')
 					.format('HH:mm');
 			}
 			return this.timezoneTime(endTime);
@@ -728,8 +555,8 @@ export default {
 						timeslot: timeslot,
 						days: []
 					};
-					if (this.selectedService.types.length > 0) {
-						timeslotData.type = this.selectedService.types[0];
+					if (this.service.types.length > 0) {
+						timeslotData.type = this.service.types[0];
 					}
 					this.selectedTimeslots.push(timeslotData);
 				}
@@ -770,7 +597,7 @@ export default {
 		},
 
 		timezoneTime(time) {
-			let profileTimezone = this.profile.timezone;
+			let profileTimezone = this.$root.profile.timezone;
 			let timezoneTime;
 			if (profileTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
@@ -828,12 +655,12 @@ export default {
 				this.authAction = 'signup';
 				this.authForm = false;
 				this.startDate = dayjs().toDate();
-				this.selectedServiceForTimeline = this.selectedService = this.selectedTimeslot = null;
+				this.serviceForTimeline = this.service = this.selectedTimeslot = null;
 			}, 150);
 		},
 
 		disabledDate(date) {
-			let service = this.assignedService || this.selectedService;
+			let service = this.assignedService || this.service;
 			let dayName = dayjs(date.date).format('dddd');
 			return !service.days[dayName].isOpen || service.holidays.find(x => x == date.label);
 		},
@@ -905,30 +732,20 @@ export default {
 		},
 
 		async getTimeslots() {
-			if (this.selectedService) {
+			if (this.service) {
 				this.timeslotsLoading = true;
 				this.selectedTimeslots = [];
-				let response = await window.axios.get(`/@${this.profile.username}/${this.selectedService.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
+				let response = await TelloeAxios.get(`/@${this.$root.profile.username}/${this.service.id}/timeslots?date=${dayjs(this.startDate).format('YYYY-MM-DD')}`);
 				this.timeslots = response.data;
 				this.timeslotsLoading = false;
 			}
 		},
 
 		getData() {
-			window.axios.get(window.location.pathname + window.location.search).then(response => {
-				if (this.$root.widget) {
-					this.selectedService = response.data;
-					this.selectedServiceForTimeline = this.selectedService;
-				} else {
-					this.services = response.data.services;
-				}
-				//this.packages = response.data.packages;
-
-				// testing
-				// this.selectedServiceForTimeline = this.services[0];
-				// this.selectedService = this.selectedServiceForTimeline;
-
+			TelloeAxios.get(`/@${this.$root.profile.username}?widget=true`).then(response => {
+				this.service = response.data;
 				this.ready = true;
+				this.getTimeslots();
 			});
 		}
 	}

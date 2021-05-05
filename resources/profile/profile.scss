@@ -2,6 +2,77 @@
 	opacity: 0;
 }
 
+.is-widget {
+	@apply h-full;
+	> div {
+		@apply h-full;
+	}
+	.widget-hide {
+		@apply hidden #{!important};
+	}
+	.container {
+		@apply px-0 #{!important};
+	}
+	.time-selector {
+		@apply my-0 #{!important};
+		> div {
+			@apply rounded-none w-full #{!important};
+		}
+	}
+	.p-8 {
+		@apply p-5 #{!important};
+	}
+	.text-2xl,
+	.text-3xl,
+	.text-4xl {
+		@apply text-xl #{!important};
+	}
+	.service-description {
+		@apply -mt-8;
+	}
+	.date-time-selector {
+		@apply -mt-4;
+	}
+	.summary {
+		> div {
+			@apply w-full #{!important};
+		}
+	}
+	::v-deep {
+		#app {
+			@apply bg-white;
+		}
+	}
+	.rounded-2xl {
+		@apply rounded-none;
+	}
+	.authenticate {
+		> div {
+			@apply w-full #{!important};
+		}
+	}
+	.booking-loader {
+		@apply bg-white #{!important};
+		> div > div {
+			@apply w-full #{!important};
+		}
+	}
+	.p-6 {
+		@apply p-5 #{!important};
+	}
+	.booked-signup {
+		@apply my-0 w-full #{!important};
+	}
+	.payment {
+		@apply my-0 #{!important};
+	}
+	.bookings {
+		@apply my-0 #{!important};
+		> div {
+			@apply p-5 w-full #{!important};
+		}
+	}
+}
 .profile-image {
 	@apply bg-cover bg-center bg-no-repeat rounded-full bg-primary relative;
 	width: 36px;
