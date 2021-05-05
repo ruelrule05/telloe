@@ -6,7 +6,7 @@
             </div>
             <div class="ml-auto flex">
                 <div class="flex align-middle items-center space-x-3">
-                    <a href="/" class="navbar-item">FEATURES</a>
+                    <a href="/" class="navbar-item">HOME</a>
                     <a href="#features" class="navbar-item">FEATURES</a>
                     <a href="#about" type="button" class="navbar-item"><span>ABOUT</span></a>
                     <a href="#pricing" type="button" class="navbar-item"><span>PRICING</span></a>
