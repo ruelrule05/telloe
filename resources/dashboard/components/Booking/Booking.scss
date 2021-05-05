@@ -49,3 +49,10 @@
 .contact-td > div {
 	height: 64px !important;
 }
+
+.badge-day {
+	@apply cursor-pointer rounded-full bg-white w-7 h-7 relative border p-2 font-serif text-muted text-xs font-semibold transition-colors hover:bg-gray-200;
+	&.active {
+		@apply bg-primary text-white border-primary;
+	}
+}

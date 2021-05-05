@@ -1,5 +1,5 @@
 <template>
-	<div class="dropdown" :class="{ open: open }" v-click-outside="onBlur">
+	<div class="dropdown" :class="{ open: open, disabled: disabled }" v-click-outside="onBlur">
 		<div @click="open = !open">
 			<slot name="button"></slot>
 		</div>

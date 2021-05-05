@@ -48,13 +48,13 @@ export default {
 		},
 
 		parsedBookings() {
-			let parsedBooking = [];
+			let parsedBookings = [];
 			this.bookings.forEach(booking => {
 				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
 				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
 					color = 'bg-primary text-white';
 				}
-				parsedBooking.push({
+				parsedBookings.push({
 					booking: booking,
 					name: (booking.service || booking.booking_link).name,
 					start: `${booking.date} ${booking.start}`,
@@ -88,10 +88,10 @@ export default {
 					category: 'bookings',
 					color: color
 				};
-				parsedBooking.push(dayEvent);
+				parsedBookings.push(dayEvent);
 			});
 
-			return parsedBooking;
+			return parsedBookings;
 		}
 	},
 

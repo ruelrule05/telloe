@@ -65,6 +65,37 @@
 							</div>
 						</multiselect>
 
+						<label class="mt-4">Meeting Type</label>
+						<VueSelect :disabled="!clonedBooking.service" required :options="meetingTypes" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
+
+						<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
+
+						<div v-if="clonedBooking.is_recurring" class="relative mt-2 mb-4" v-click-outside="() => (recurringMenu = false)">
+							<div class="bg-gray-50 rounded-xl p-3" :class="{ show: recurringMenu }">
+								<div class="flex">
+									<button class="flex-grow btn btn-sm mr-1" type="button" :class="[clonedBooking.frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'frequency', 'week')"><span>Weekly</span></button>
+									<button class="flex-grow btn btn-sm ml-1" type="button" :class="[clonedBooking.frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'frequency', 'month')"><span>Monthly</span></button>
+								</div>
+								<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
+								<div class="flex space-x-2 mt-3">
+									<div @click="timeslotToggleDay(dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: clonedBooking.days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+										<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+									</div>
+								</div>
+
+								<div class="mt-4">
+									<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.end_date" :masks="masks">
+										<template v-slot="{ inputValue, inputEvents }">
+											<button type="button" class="input bg-white text-left" v-on="inputEvents">
+												<span class="text-muted text-sm mr-2">Until</span>
+												{{ inputValue }}
+											</button>
+										</template>
+									</v-date-picker>
+								</div>
+							</div>
+						</div>
+
 						<!-- <vue-select v-if="!contact" dropPosition="w-full" required :options="contactsOptions" @input="contactSelected" no-set-value placeholder="Add guests"></vue-select> -->
 						<!-- <div v-for="(selectedContact, contactIndex) in selectedContacts" :key="selectedContact.id" class="contact-item">
 							<div class="flex items-center">

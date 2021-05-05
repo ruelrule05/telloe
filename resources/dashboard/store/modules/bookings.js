@@ -24,8 +24,10 @@ const mutations = {
 	},
 
 	store(state, data) {
-		state.index.unshift(data);
-		state.paginated.data.unshift(data);
+		data.forEach(booking => {
+			state.index.unshift(booking);
+			state.paginated.data.unshift(booking);
+		});
 	},
 
 	update(state, data) {

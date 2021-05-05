@@ -18,6 +18,9 @@ import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import GoogleMeetIcon from '../../../icons/google-meet.vue';
+import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
+import PlusIcon from '../../../icons/plus';
+import vClickOutside from 'v-click-outside';
 export default {
 	props: {
 		booking: {},
@@ -34,7 +37,9 @@ export default {
 		}
 	},
 
-	components: { Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon },
+	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon },
+
+	directives: { clickOutside: vClickOutside.directive },
 
 	data: () => ({
 		clonedBooking: {},
@@ -48,7 +53,28 @@ export default {
 		selectFromTimeslots: true, // false
 		disableServiceSelect: false,
 		isEmail: isEmail,
-		dayjs: dayjs
+		dayjs: dayjs,
+		meetingTypes: [
+			{ text: 'Google Meet', value: 'Google Meet' },
+			{ text: 'Zoom', value: 'Zoom' },
+			{ text: 'Face-to-face', value: 'Face-to-face' },
+			{ text: 'Phone', value: 'Phone' },
+			{ text: 'Skype', value: 'Skype' },
+			{ text: 'Telloe Video Call', value: 'Telloe Video Call' }
+		],
+		recurringMenu: false,
+
+		recurringFrequencies: [
+			{
+				text: 'Week',
+				value: 'week'
+			},
+			{
+				text: 'Month',
+				value: 'month'
+			}
+		],
+		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 	}),
 
 	computed: {
@@ -71,6 +97,19 @@ export default {
 	},
 
 	watch: {
+		'clonedBooking.is_recurring': function(value) {
+			if (value) {
+				this.$set(
+					this.clonedBooking,
+					'end_date',
+					dayjs(new Date())
+						.add(1, 'week')
+						.toDate()
+				);
+				this.$set(this.clonedBooking, 'frequency', this.recurringFrequencies[0].value);
+				this.setTimeslotDefaultDay('week');
+			}
+		},
 		booking: function(booking) {
 			if (booking) {
 				this.open = true;
@@ -97,6 +136,20 @@ export default {
 				let serviceOption = this.services.find(x => x.id == service);
 				let start = dayjs(`${this.clonedBooking.date} ${this.clonedBooking.start}`);
 				this.clonedBooking.end = start.add(serviceOption.duration, 'minute').format('HH:mm');
+			}
+			if (service) {
+				if (!this.$root.auth.zoom_token) {
+					this.meetingTypes.splice(
+						this.meetingTypes.findIndex(x => x.text == 'Zoom'),
+						1
+					);
+				}
+				if (!this.$root.auth.google_calendar_token) {
+					this.meetingTypes.splice(
+						this.meetingTypes.findIndex(x => x.text == 'Google Meet'),
+						1
+					);
+				}
 			}
 		},
 		'clonedBooking.date': function() {
@@ -140,6 +193,44 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index'
 		}),
+
+		timeslotToggleDay(dayIndex) {
+			let index = this.clonedBooking.days.indexOf(dayIndex);
+			if (index == -1) {
+				this.clonedBooking.days.push(dayIndex);
+			} else {
+				this.clonedBooking.days.splice(index, 1);
+			}
+
+			if (this.clonedBooking.days.length == 0) {
+				let dayName = dayjs(this.clonedBooking.date).format('dddd');
+				let dayIndex = this.days.indexOf(dayName);
+				this.clonedBooking.days.push(dayIndex);
+			}
+		},
+
+		setTimeslotDefaultDay(frequency) {
+			this.$set(this.clonedBooking, 'days', []);
+			if (frequency == 'week') {
+				let dayName = dayjs(this.clonedBooking.date).format('dddd');
+				let dayIndex = this.days.indexOf(dayName);
+				let index = this.clonedBooking.days.indexOf(dayIndex);
+				if (index == -1 || this.clonedBooking.days.length == 1) {
+					this.clonedBooking.days.push(dayIndex);
+				}
+			} else if (frequency == 'month') {
+				this.clonedBooking.day_in_month = 'first_week';
+			}
+		},
+
+		selectType(type) {
+			let exists = this.selectedTypes.find(x => x.type == type);
+			if (!exists) {
+				this.selectedTypes.push({
+					type: type
+				});
+			}
+		},
 
 		addEmail(email) {
 			let exists = this.selectedContacts.find(x => x.email == email);
@@ -221,6 +312,10 @@ export default {
 		async createBooking() {
 			if (!this.clonedBooking.start || !this.clonedBooking.end) {
 				return this.$toast.error('Please select a timeslot');
+			}
+			if (this.selectedContacts.length == 0) {
+				this.$refs.selectedContacts.$el.querySelector('.multiselect__input').focus();
+				return;
 			}
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service;

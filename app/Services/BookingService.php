@@ -20,7 +20,6 @@ use App\Models\Contact;
 use App\Models\Notification;
 use App\Models\Service;
 use Auth;
-use Cache;
 use Carbon\Carbon;
 use File;
 use Google_Service_Calendar;
@@ -69,7 +68,9 @@ class BookingService
     {
         $service = Service::findOrfail($request->service_id);
         $data = $request->validated();
+        $bookings = [];
         $booking = Booking::create($data);
+        $bookings[] = $booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user');
 
         foreach ($data['contact_ids'] as $contactID) {
             $contact = Contact::findOrFail($contactID);
@@ -111,9 +112,6 @@ class BookingService
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
 
-        Mail::queue(new NewBooking([$booking], 'serviceUser'));
-        Mail::queue(new NewBooking([$booking], 'customer'));
-
         foreach ($booking->bookingUsers as $bookingUser) {
             if ($bookingUser->user_id) {
                 $user_id = $bookingUser->user_id;
@@ -125,8 +123,61 @@ class BookingService
                 ]);
             }
         }
+        if (isset($request->is_recurring) && isset($request->frequency) && isset($request->end_date) && isset($request->days)) {
+            $start = Carbon::parse("{$request->date} {$request->start}");
+            $end = $start->copy()->add('minute', $service->duration);
+            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            $timeslotDayName = Carbon::parse($request->date)->format('l');
+            $currentDate = Carbon::now()->addDay(1);
+            $endDate = Carbon::parse($request->end_date);
+            $weekOfMonth = 0;
+            if (isset($request->day_in_month)) {
+                switch ($request->day_in_month) {
+                    case 'first_week':
+                        $weekOfMonth = 1;
+                        break;
+                    case 'second_week':
+                        $weekOfMonth = 2;
+                        break;
+                    case 'third_week':
+                        $weekOfMonth = 3;
+                        break;
+                    case 'las_week':
+                        $weekOfMonth = 4;
+                        break;
+                }
+            }
+            while ($currentDate->lessThan($endDate)) {
+                $createBooking = false;
+                if ($request->frequency == 'week') {
+                    $dayIndex = array_search($currentDate->clone()->format('l'), $days);
+                    if (in_array($dayIndex, $request->days)) {
+                        $createBooking = true;
+                    }
+                } elseif ($request->frequency == 'month' && isset($request->frequencyday_in_month)) {
+                    $dayName = $currentDate->clone()->format('l');
+                    if ($dayName == $timeslotDayName && $weekOfMonth == $currentDate->clone()->weekOfMonth) {
+                        $createBooking = true;
+                    }
+                }
+                if ($createBooking) {
+                    $booking = Booking::create([
+                        'service_id' => $service->id,
+                        'date' => $currentDate->clone()->format('Y-m-d'),
+                        'start' => $start->format('H:i'),
+                        'end' => $end->format('H:i'),
+                        'meeting_type' => $request->meeting_type,
+                        'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
+                    ]);
+                    $bookings[] = $booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user');
+                }
+                $currentDate->addDay(1);
+            }
+        }
+        Mail::queue(new NewBooking($bookings, 'serviceUser'));
+        Mail::queue(new NewBooking($bookings, 'customer'));
 
-        return response()->json($booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user'));
+        return response()->json($bookings);
     }
 
     public static function update($id, UpdateBookingRequest $request)

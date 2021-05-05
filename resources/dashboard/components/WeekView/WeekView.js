@@ -2,6 +2,7 @@ import { mapState, mapActions } from 'vuex';
 import { VCalendar } from 'vuetify/lib';
 import vuetify from '../../../js/plugins/vuetify';
 import dayjs from 'dayjs';
+import GoogleIcon from '../../../icons/google.vue';
 export default {
 	vuetify,
 	props: {
@@ -12,11 +13,15 @@ export default {
 
 		selectedBooking: {
 			type: Object
+		},
+		googleCalendarEvents: {
+			type: Array
 		}
 	},
 
 	components: {
-		VCalendar
+		VCalendar,
+		GoogleIcon
 	},
 
 	data: () => ({
@@ -38,20 +43,50 @@ export default {
 		}),
 
 		parsedBookings() {
-			let parsedBookings = this.bookings.map(booking => {
+			let parsedBookings = [];
+			this.bookings.forEach(booking => {
 				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
 				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
 					color = 'bg-primary text-white';
 				}
-				return {
+				parsedBookings.push({
 					booking: booking,
 					name: (booking.service || booking.booking_link).name,
 					start: `${booking.date} ${booking.start}`,
 					end: `${booking.date} ${booking.end}`,
 					category: 'bookings',
 					color: color
-				};
+				});
 			});
+
+			this.googleCalendarEvents.forEach(event => {
+				let color = 'bg-red-200 hover:bg-red-400 hover:text-white';
+				if (this.selectedBooking && this.selectedBooking.id == event.id) {
+					color = 'bg-red-600 text-white';
+				}
+				event.type = 'google-event';
+				let start = this.dayjs(event.start.date || event.start.dateTime);
+				let end = this.dayjs(event.end.date || event.end.dateTime);
+				let diffInHours = end.diff(start, 'hour');
+				if (diffInHours == 24) {
+					end = end.add(12, 'hour');
+				}
+				start = start.format('YYYY-MM-DD HH:mm');
+				end = end.format('YYYY-MM-DD HH:mm');
+				event.startDate = start;
+				event.endDate = end;
+				let dayEvent = {
+					booking: event,
+					name: event.summary,
+					type: 'google-event',
+					start: start,
+					end: end,
+					category: 'bookings',
+					color: color
+				};
+				parsedBookings.push(dayEvent);
+			});
+
 			if (this.newEvent) {
 				parsedBookings.push({
 					newEvent: true,

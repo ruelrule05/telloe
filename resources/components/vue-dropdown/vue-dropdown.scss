@@ -21,4 +21,7 @@
 			@apply z-50 scale-100 opacity-100;
 		}
 	}
+	&.disabled {
+		@apply pointer-events-none opacity-50;
+	}
 }

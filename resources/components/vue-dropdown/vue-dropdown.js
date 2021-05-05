@@ -10,6 +10,11 @@ export default {
 		dropPosition: {
 			type: String,
 			default: 'down'
+		},
+
+		disabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	components: { CogIcon },

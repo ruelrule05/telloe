@@ -3,7 +3,15 @@
 		<div class="flex items-center border-bottom">
 			<div class="content-header">
 				<div v-if="!selectedDate" class="content-header">CALENDAR</div>
-				<button v-else type="button" class="btn btn-md btn-outline-primary" @click="selectedDate = null">
+				<button
+					v-else
+					type="button"
+					class="btn btn-md btn-outline-primary"
+					@click="
+						selectedDate = null;
+						$refs.bookingComponent.close();
+					"
+				>
 					<span>OVERVIEW</span>
 				</button>
 			</div>
@@ -46,10 +54,10 @@
 
 		<div v-else>
 			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents"></DayView>
-			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick"></WeekView>
+			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents"></WeekView>
 		</div>
 
-		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange"></Booking>
+		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent"></Booking>
 	</div>
 </template>
 
