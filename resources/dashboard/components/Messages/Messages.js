@@ -362,8 +362,10 @@ export default {
 		},
 
 		async sendText() {
+			this.textMessage = this.$refs['messageInput'].innerText;
 			this.$refs['messageInput'].innerHTML = '';
 			let textMessage = this.textMessage.trim() || '';
+
 			this.textMessage = '';
 			if (textMessage.length > 0) {
 				let message = {
@@ -451,7 +453,6 @@ export default {
 
 		messageInput(e) {
 			let isEnter = false;
-			this.textMessage = e.target.innerText;
 			if ((e.keyCode ? e.keyCode : e.which) == 13) {
 				e.preventDefault();
 				isEnter = true;
