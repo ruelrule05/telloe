@@ -166,12 +166,11 @@ class StripeController extends Controller
         ]];
 
         $now = Carbon::now();
-        $startDateTimestamp = Carbon::parse($request->date)->timestamp;
-
+        $startDateTimestamp = Carbon::now()->add(5, 'days')->timestamp;
         $data = [
             'customer' => $contact->stripe_customer_id,
             'items' => $subscriptionItem,
-            //'trial_end' => $startDateTimestamp,
+            'trial_end' => $startDateTimestamp,
         ];
         $subscription = $stripe_api->subscription('create', $data, ['stripe_account' => Auth::user()->stripe_account['id']]);
         // $subscription->date = $request->date;
@@ -184,6 +183,7 @@ class StripeController extends Controller
         // $contact->update([
         //     'subscriptions' => $subscriptions
         // ]);
+        Cache::forget("{$authUser->id}_stripe_subscriptions");
         return response()->json($subscription);
     }
 }

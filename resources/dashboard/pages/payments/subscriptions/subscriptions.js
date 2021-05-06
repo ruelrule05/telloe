@@ -290,14 +290,14 @@ export default {
 				return s.value;
 			});
 
-			let response = await window.axios.post('/stripe/subscriptions', data, { toasted: true }).catch(() => {
+			let response = await window.axios.post('/stripe/subscriptions', data, { toast: true }).catch(() => {
 				this.newSubscriptionForm.loading = false;
 			});
 			if (response) {
 				this.subscriptions.unshift(response.data);
 				this.newSubscriptionForm.loading = false;
-				this.$refs.createInvoiceModal.hide(true);
 			}
+			this.$refs.createSubscriptionModal.hide(true);
 		},
 
 		timestampToDate(timestamp, time = true) {

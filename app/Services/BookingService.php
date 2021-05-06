@@ -72,27 +72,6 @@ class BookingService
         $booking = Booking::create($data);
         $bookings[] = $booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user');
 
-        foreach ($data['contact_ids'] as $contactID) {
-            $contact = Contact::findOrFail($contactID);
-            if (Auth::user()->can('show', $contact) && ! $contact->is_pending && $contact->contact_user_id) {
-                BookingUser::create([
-                    'booking_id' => $booking->id,
-                    'user_id' => $contact->contact_user_id,
-                ]);
-            }
-        }
-
-        $emails = array_unique($data['emails']);
-        foreach ($emails as $email) {
-            BookingUser::create([
-                'booking_id' => $booking->id,
-                'user_id' => NULL,
-                'guest' => [
-                    'email' => $email
-                ]
-            ]);
-        }
-
         if ($service->create_zoom_link && $service->user->zoom_token) {
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
@@ -177,6 +156,29 @@ class BookingService
         Mail::queue(new NewBooking($bookings, 'serviceUser'));
         Mail::queue(new NewBooking($bookings, 'customer'));
 
+        foreach ($bookings as $booking) {
+            foreach ($data['contact_ids'] as $contactID) {
+                $contact = Contact::findOrFail($contactID);
+                if (Auth::user()->can('show', $contact) && ! $contact->is_pending && $contact->contact_user_id) {
+                    BookingUser::create([
+                        'booking_id' => $booking->id,
+                        'user_id' => $contact->contact_user_id,
+                    ]);
+                }
+            }
+
+            $emails = array_unique($data['emails']);
+            foreach ($emails as $email) {
+                BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => null,
+                    'guest' => [
+                        'email' => $email
+                    ]
+                ]);
+            }
+        }
+
         return response()->json($bookings);
     }
 
@@ -245,7 +247,7 @@ class BookingService
     {
         $user = Auth::user();
 
-        switch ($request->calendar) :
+        switch ($request->calendar) {
             case 'google':
                 $GoogleCalendarClient = new GoogleCalendarClient($user);
         $client = $GoogleCalendarClient->client;
@@ -301,7 +303,7 @@ class BookingService
         $user->outlook_calendar_events = null;
         $user->save();
         break;
-        endswitch;
+        }
 
         return ['success' => true];
     }
