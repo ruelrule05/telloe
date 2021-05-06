@@ -1,5 +1,6 @@
 <template>
 	<div class="booking" :class="{ open: open }">
+		<button type="button" @click="close" class="absolute top-3 right-3 rounded-full p-2 border text-gray-600 ml-1 transition-colors hover:bg-gray-200 focus:outline-none"><CloseIcon class="fill-current"></CloseIcon></button>
 		<template v-if="booking">
 			<!-- New booking -->
 			<template v-if="newEvent">
@@ -197,12 +198,18 @@
 						<div class="text-sm text-muted">Google Event</div>
 						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.summary }}</h5>
 
-						<label class="-mb-1">Date</label>
+						<label class="-mb-px">Guests</label>
+						<div v-for="attendee in clonedBooking.attendees" :key="attendee.email">{{ attendee.email }}</div>
+
+						<label class="-mb-px mt-4">Date/time</label>
 						<div>{{ dayjs(clonedBooking.startDate).format('MMMM DD, YYYY') }}</div>
 						<div>{{ dayjs(clonedBooking.startDate).format('hh:mmA') }} - {{ dayjs(clonedBooking.endDate).format('hh:mmA') }}</div>
-					</div>
-					<div class="flex justify-between">
-						<button type="button" class="btn" @click="close">Close</button>
+
+						<label class="-mb-px mt-4">Description</label>
+						<div>{{ clonedBooking.description || 'No description' }}</div>
+
+						<label class="-mb-px mt-4">Location</label>
+						<div>{{ clonedBooking.location || 'No location' }}</div>
 					</div>
 				</template>
 			</template>

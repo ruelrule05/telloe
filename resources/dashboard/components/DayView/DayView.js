@@ -72,8 +72,8 @@ export default {
 				let start = this.dayjs(event.start.date || event.start.dateTime);
 				let end = this.dayjs(event.end.date || event.end.dateTime);
 				let diffInHours = end.diff(start, 'hour');
-				if (diffInHours == 24) {
-					end = end.add(12, 'hour');
+				if (diffInHours >= 24) {
+					end = start.add(24, 'hour').subtract(1, 'second');
 				}
 				start = start.format('YYYY-MM-DD HH:mm');
 				end = end.format('YYYY-MM-DD HH:mm');

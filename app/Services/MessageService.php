@@ -70,8 +70,8 @@ class MessageService
                     File::put($previewDestination, $preview);
                 } else {
                     $img = Image::make($request->file('source'));
-                    if ($img->width() > 200) {
-                        $img->resize(200, null, function ($constraint) {
+                    if ($img->width() > 350) {
+                        $img->resize(350, null, function ($constraint) {
                             $constraint->aspectRatio();
                             $constraint->upsize();
                         });

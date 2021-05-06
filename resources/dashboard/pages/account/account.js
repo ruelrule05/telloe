@@ -456,13 +456,18 @@ export default {
 
 		async updateStripeAccount() {
 			this.stripeAccountForm.loading = true;
+			let data = JSON.parse(JSON.stringify(this.stripeAccountForm));
+			if (!data.website.includes('http')) {
+				data.website = `https://${data.website}`;
+			}
 
-			let response = await window.axios.put('/auth/update_stripe_account', this.stripeAccountForm, { toast: true }).catch(e => {
+			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true }).catch(e => {
 				console.log(e.message.errors);
 			});
 			if (response) {
 				this.$root.auth.stripe_account = response.data.stripe_account;
 				this.stripeAccountForm.countryDisabled = true;
+				this.stripeAccountForm.website = response.data.stripe_account.business_profile.url;
 			}
 			this.stripeAccountForm.loading = false;
 		},

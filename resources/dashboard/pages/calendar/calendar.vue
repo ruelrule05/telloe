@@ -27,7 +27,7 @@
 					</div>
 				</div>
 				<div v-else>
-					<VueSelect v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
+					<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
 				</div>
 			</div>
 		</div>

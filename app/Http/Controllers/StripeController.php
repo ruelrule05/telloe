@@ -144,7 +144,7 @@ class StripeController extends Controller
         $amount = $request->amount * 100;
 
         // Create product
-        $servicesNames = implode(', ', $servicesNames);
+        $servicesNames = count($servicesNames) > 0 ? implode(', ', $servicesNames) : "Subscription for {$contact->contactUser->full_name}";
         $data = [
             'name' => $servicesNames,
             'description' => "Subscription for {$contact->contactUser->full_name}",
