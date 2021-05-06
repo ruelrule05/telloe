@@ -1,0 +1,14 @@
+.table {
+	@apply text-left table-fixed w-full text-sm text-muted;
+	th {
+		@apply text-muted font-normal uppercase text-xs pb-4;
+	}
+	tbody tr {
+		@apply transition-colors hover:bg-gray-100;
+		td {
+			border-bottom: solid 1px;
+			border-color: theme('colors.gray.200');
+			@apply py-3;
+		}
+	}
+}

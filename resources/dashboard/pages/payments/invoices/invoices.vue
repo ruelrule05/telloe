@@ -118,4 +118,4 @@
 </template>
 
 <script src="./invoices.js"></script>
-<style lang="scss" src="./invoices.scss"></style>
+<style lang="scss" src="./invoices.scss" scoped></style>

@@ -195,4 +195,9 @@ class User extends Authenticatable implements JWTSubject
             // $model->save();
         });
     }
+
+    public function stripeSubscriptions()
+    {
+        return $this->hasMany(StripeSubscription::class)->latest();
+    }
 }

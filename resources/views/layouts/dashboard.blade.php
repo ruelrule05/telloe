@@ -140,7 +140,7 @@
 
 
 
-						<div class="text-xs opacity-40 font-serif mt-9">PAYMENTS</div>
+						<div class="sidebar-heading mt-9">PAYMENTS</div>
 						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/payments/invoices">
 							Invoices
 						</router-link>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\StripeAPI;
 use App\Models\Contact;
 use App\Models\Service;
+use App\Models\StripeSubscription;
 use Auth;
 use Cache;
 use Carbon\Carbon;
@@ -102,15 +103,17 @@ class StripeController extends Controller
     public function subscriptions()
     {
         $authUser = Auth::user();
-        if (! $authUser->stripe_account) {
-            return abort(403, 'Payout account not complete');
-        }
+        return response()->json(Auth::user()->stripeSubscriptions->load('contact'));
+        // if (! $authUser->stripe_account) {
+        //     return abort(403, 'Payout account not complete');
+        // }
 
-        $subscriptions = Cache::remember("{$authUser->id}_stripe_subscriptions", 43200, function () use ($authUser) {
-            $stripe = new StripeAPI();
-            return $stripe->subscription('all', null, ['stripe_account' => Auth::user()->stripe_account['id']]);
-        });
-        return response()->json($subscriptions);
+        // $subscriptions = Cache::remember("{$authUser->id}_stripe_subscriptions", 43200, function () use ($authUser) {
+        //     $stripe = new StripeAPI();
+        //     return $stripe->subscription('all', null, ['stripe_account' => Auth::user()->stripe_account['id']]);
+        // });
+
+        // return response()->json($subscriptions);
     }
 
     public function storeSubscription(Request $request)
@@ -130,9 +133,11 @@ class StripeController extends Controller
         $contact = Contact::where('id', $request->contact_id)->where('user_id', $authUser->id)->whereNotNull('stripe_customer_id')->firstOrFail();
 
         $servicesNames = [];
+        $services = [];
         foreach ($request->service_ids as $s) {
             $service = Service::where('id', $s)->where('user_id', $authUser->id)->firstOrFail();
             $servicesNames[] = $service->name;
+            $services[] = $service;
         }
 
         $stripe_api = new StripeAPI();
@@ -166,7 +171,7 @@ class StripeController extends Controller
         ]];
 
         $now = Carbon::now();
-        $startDateTimestamp = Carbon::now()->add(5, 'days')->timestamp;
+        $startDateTimestamp = Carbon::now()->add(15, 'minutes')->timestamp;
         $data = [
             'customer' => $contact->stripe_customer_id,
             'items' => $subscriptionItem,
@@ -183,7 +188,33 @@ class StripeController extends Controller
         // $contact->update([
         //     'subscriptions' => $subscriptions
         // ]);
-        Cache::forget("{$authUser->id}_stripe_subscriptions");
-        return response()->json($subscription);
+        $subscription = StripeSubscription::create([
+            'user_id' => $authUser->id,
+            'contact_id' => $contact->id,
+            'subscription_id' => $subscription->id,
+            'status' => $subscription->status,
+            'amount' => $request->amount,
+            'currency' => $currency,
+            'interval' => $request->recurring,
+            'services' => collect($services)->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name
+                ];
+            })
+        ]);
+        return response()->json($subscription->load('contact'));
+    }
+
+    public function cancelSubscription($id)
+    {
+        $stripeSubscription = StripeSubscription::where('id', $id)->where('user_id', Auth::user()->id)->firstOrfail();
+
+        $stripe_api = new StripeAPI();
+        $stripe_subscription = $stripe_api->subscription('cancel', $stripeSubscription->subscription_id, ['stripe_account' => Auth::user()->stripe_account['id']]);
+
+        $stripeSubscription->delete();
+
+        return response()->json($stripe_subscription);
     }
 }

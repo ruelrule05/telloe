@@ -24,9 +24,15 @@ import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import axios from 'axios';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import getSymbolFromCurrency from 'currency-symbol-map';
+const format = require('format-number');
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../icons/cog';
 
 export default {
 	components: {
+		CogIcon,
+		VueDropdown,
 		Multiselect,
 		Modal,
 		VueFormValidate,
@@ -48,6 +54,8 @@ export default {
 	directives: { Tooltip },
 
 	data: () => ({
+		format: format,
+		getSymbolFromCurrency: getSymbolFromCurrency,
 		newSubscriptionForm: {
 			loading: false,
 			services: [],
@@ -75,20 +83,8 @@ export default {
 		paginate: ['subscriptions'],
 		subscriptionStatuses: [
 			{
-				text: 'All',
-				value: 'all'
-			},
-			{
-				text: 'Trialing',
-				value: 'trialing'
-			},
-			{
-				text: 'Canceled',
-				value: 'canceled'
-			},
-			{
-				text: 'Draft',
-				value: 'draft'
+				text: 'Cancel',
+				value: 'cancel'
 			}
 		],
 		subscriptionStatus: 'all',
@@ -186,17 +182,20 @@ export default {
 			getContacts: 'contacts/index',
 			createContactSubscription: 'contacts/create_subscription',
 			cancelContactSubscription: 'contacts/cancel_subscription',
-			getServices: 'services/index',
-			getPendingSubscriptions: 'pending_subscriptions/index',
-			storePendingSubscription: 'pending_subscriptions/store',
-			deletePendingSubscription: 'pending_subscriptions/delete'
+			getServices: 'services/index'
 		}),
+
+		subscriptionAction(action, subscription) {
+			let index = this.subscriptions.findIndex(x => x.id == subscription.id);
+			this.subscriptions.splice(index, 1);
+			axios.delete(`/stripe/subscriptions/${subscription.id}`);
+		},
 
 		async getSubscriptions() {
 			this.loading = true;
 			let response = await axios.get('/stripe/subscriptions');
 			if (response) {
-				this.subscriptions = response.data.data;
+				this.subscriptions = response.data;
 			}
 			this.loading = false;
 		},

@@ -18,34 +18,31 @@
 
 			<div v-show="!loading">
 				<div v-if="subscriptions.length > 0" class="px-6 pb-6">
-					<table class="table my-6">
+					<table class="table table-fixed my-6 text-sm text-left">
 						<thead>
 							<tr>
-								<th>Invoice No.</th>
-								<th>To</th>
-								<th>Date</th>
-								<th>Due Date</th>
-								<th>Paid</th>
-								<th>Due</th>
+								<th>Subscription ID</th>
+								<th>Contact</th>
 								<th>Status</th>
+								<th>Amount</th>
+								<th>Interval</th>
+								<th>Services</th>
 							</tr>
 						</thead>
 						<paginate tag="tbody" name="subscriptions" :list="subscriptions" :per="15" ref="paginate">
-							<template v-for="invoice in paginated('subscriptions')">
-								<tr :key="invoice.InvoiceID">
-									<td class="align-middle text-primary font-bold">{{ invoice.number }}</td>
-									<td class="align-middle text-gray-600">{{ invoice.customer_name }}</td>
-									<td class="align-middle text-gray-600">{{ formatDate(invoice.created) }}</td>
-									<td class="align-middle text-gray-600">{{ formatDate(invoice.due_date) }}</td>
-									<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_paid / 100) }}</td>
-									<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_due / 100) }}</td>
-									<td class="align-middle">
-										<div v-if="invoice.statusLoading" class="spinner spinner-sm"></div>
-										<span v-else class="badge capitalize">{{ invoice.status }}</span>
+							<template v-for="subscription in paginated('subscriptions')">
+								<tr :key="subscription.id">
+									<td class="align-middle text-primary font-bold uppercase ">{{ subscription.subscription_id }}</td>
+									<td>{{ subscription.contact.full_name }}</td>
+									<td class="capitalize">{{ subscription.status }}</td>
+									<td class="uppercase">{{ subscription.currency }} {{ parseFloat(subscription.amount).toFixed(2) }}</td>
+									<td class="capitalize">{{ subscription.interval }}</td>
+									<td class="capitalize">
+										{{ subscription.services.map(s => s.name).join(', ') }}
 									</td>
 									<td class="text-right align-middle">
-										<div v-if="!['paid', 'void'].find(s => s == invoice.status)" class="text-left inline-block">
-											<VueDropdown :options="stripesubscriptionstatuses(invoice.status)" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
+										<div class="text-left inline-block">
+											<VueDropdown :options="subscriptionStatuses" @click="subscriptionAction($event, subscription)" class="ml-1">
 												<template #button>
 													<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
 														<CogIcon class="fill-current text-gray-400"></CogIcon>
@@ -118,4 +115,4 @@
 </template>
 
 <script src="./subscriptions.js"></script>
-<style lang="scss" src="./subscriptions.scss"></style>
+<style lang="scss" src="./subscriptions.scss" scoped></style>

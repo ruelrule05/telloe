@@ -153,6 +153,7 @@ Route::group(
                     Route::put('invoices/{id}', 'StripeController@updateInvoice');
                     Route::get('subscriptions', 'StripeController@subscriptions');
                     Route::post('subscriptions', 'StripeController@storeSubscription');
+                    Route::delete('subscriptions/{id}', 'StripeController@cancelSubscription');
                 });
             });
 
