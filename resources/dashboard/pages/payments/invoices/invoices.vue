@@ -44,8 +44,8 @@
 										<span v-else class="badge capitalize">{{ invoice.status }}</span>
 									</td>
 									<td class="text-right align-middle">
-										<div v-if="!['paid', 'void'].find(s => s == invoice.status)" class="text-left inline-block">
-											<VueDropdown :options="stripeInvoiceStatuses(invoice.status)" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
+										<div v-if="stripeInvoiceStatuses(invoice).length > 0" class="text-left inline-block">
+											<VueDropdown :options="stripeInvoiceStatuses(invoice)" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
 												<template #button>
 													<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
 														<CogIcon class="fill-current text-gray-400"></CogIcon>

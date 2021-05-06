@@ -196,41 +196,51 @@ export default {
 		}),
 
 		async invoiceAction(action, invoice) {
-			let response = await axios.put(`/stripe/invoices/${invoice.id}`, { action: action.value }, { toast: true }).catch(() => {});
-			if (response) {
-				if (action.value == 'delete') {
-					this.invoices.splice(
-						this.invoices.findIndex(i => i.id == invoice.id),
-						1
-					);
-				} else {
-					Object.assign(invoice, response.data);
+			if (action.value == 'download') {
+				window.open(invoice.invoice_pdf, '_blank');
+			} else {
+				let response = await axios.put(`/stripe/invoices/${invoice.id}`, { action: action.value }, { toast: true }).catch(() => {});
+				if (response) {
+					if (action.value == 'delete') {
+						this.invoices.splice(
+							this.invoices.findIndex(i => i.id == invoice.id),
+							1
+						);
+					} else {
+						Object.assign(invoice, response.data);
+					}
 				}
 			}
 		},
 
-		stripeInvoiceStatuses(status) {
-			switch (status) {
+		stripeInvoiceStatuses(invoice) {
+			let stripeInvoiceStatuses = [];
+			switch (invoice.status) {
 				case 'draft':
-					return [
+					stripeInvoiceStatuses = [
 						{ text: 'Finalize', value: 'finalize' },
 						{ text: 'Delete', value: 'delete' }
 					];
+					break;
 				case 'uncollectible':
-					return [
+					stripeInvoiceStatuses = [
 						{ text: 'Void', value: 'void' },
 						{ text: 'Pay', value: 'pay' }
 					];
+					break;
 				case 'open':
-					return [
+					stripeInvoiceStatuses = [
 						{ text: 'Send', value: 'send' },
 						{ text: 'Void', value: 'void' },
 						{ text: 'Mark Uncollectible', value: 'uncollectible' },
 						{ text: 'Pay', value: 'pay' }
 					];
+					break;
 			}
-
-			return [];
+			if (invoice.invoice_pdf) {
+				stripeInvoiceStatuses.push({ text: 'Download', value: 'download' });
+			}
+			return stripeInvoiceStatuses;
 		},
 
 		async getStripeInvoices() {
