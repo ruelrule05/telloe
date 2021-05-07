@@ -16,7 +16,8 @@
 				</button>
 			</div>
 			<div class="ml-auto pr-6 flex items-center">
-				<div v-if="selectedDate">
+				<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
+				<div class="ml-2" v-if="selectedDate">
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
 					</button>
@@ -25,9 +26,6 @@
 						<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
 						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 					</div>
-				</div>
-				<div v-else>
-					<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
 				</div>
 			</div>
 		</div>
