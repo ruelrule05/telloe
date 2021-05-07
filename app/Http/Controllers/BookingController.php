@@ -67,4 +67,9 @@ class BookingController extends Controller
     {
         return BookingService::upcoming();
     }
+
+    public function contactBookings()
+    {
+        return BookingService::contactBookings();
+    }
 }

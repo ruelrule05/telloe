@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -109,10 +110,8 @@ class Service extends BaseModel
         $timeEnd->hour = $partsEnd[0];
         $timeEnd->minute = $partsEnd[1];
 
-        $ignoredCalendarEvents = $user->ignored_calendar_events ?? [];
-        $googleEventsList = $user->google_calendar_events ?? [];
-
-        //$googleEventsList = Cache::get("{$user->id}_google_calendar_events");
+        $googleCalendarEvents = $user->google_calendar_events ?? [];
+        $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
 
         $outlookEventsList = $user->outlook_calendar_events ?? [];
         $assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
@@ -141,11 +140,9 @@ class Service extends BaseModel
             foreach ($googleEventsList as $event) {
                 $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
                 if ($eventDate == $dateString) {
-                    if (! $event['start']['dateTime'] && ! $event['end']['dateTime'] && ! in_array('google-event-' . $event['id'], $ignoredCalendarEvents)) {
-                        $googleEvents[] = $event;
-                    } elseif ($event['start']['dateTime'] && $event['end']['dateTime']) {
-                        $start = Carbon::parse($event['start']['dateTime'])->format('H:i');
-                        $end = Carbon::parse($event['end']['dateTime'])->format('H:i');
+                    if (in_array($event['id'], $googleCalendarEvents)) {
+                        $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('H:i');
+                        $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'])->format('H:i');
                         if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
                             $googleEvents[] = $event;
                         }
@@ -155,24 +152,24 @@ class Service extends BaseModel
 
             // outlook calendar events
             $outlookEvents = [];
-            foreach ($outlookEventsList as $event) {
-                $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
-                if ($eventDate == $dateString) {
-                    if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
-                        $outlookEvents[] = $event;
-                    } elseif (! $event['isAllDay']) {
-                        $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-                        $start->tz = new \DateTimeZone($user->timezone);
-                        $start = $start->format('H:i');
-                        $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-                        $end->tz = new \DateTimeZone($user->timezone);
-                        $end = $end->format('H:i');
-                        if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
-                            $outlookEvents[] = $event;
-                        }
-                    }
-                }
-            }
+            // foreach ($outlookEventsList as $event) {
+            //     $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
+            //     if ($eventDate == $dateString) {
+            //         if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
+            //             $outlookEvents[] = $event;
+            //         } elseif (! $event['isAllDay']) {
+            //             $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
+            //             $start->tz = new \DateTimeZone($user->timezone);
+            //             $start = $start->format('H:i');
+            //             $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
+            //             $end->tz = new \DateTimeZone($user->timezone);
+            //             $end = $end->format('H:i');
+            //             if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
+            //                 $outlookEvents[] = $event;
+            //             }
+            //         }
+            //     }
+            // }
 
             $isBreaktime = false;
             foreach ($this->days[$dayName]['breaktimes'] ?? [] as $breaktime) {

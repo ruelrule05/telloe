@@ -169,7 +169,7 @@
 										<tbody>
 											<tr>
 												<template v-for="(date, dateIndex) in tabDates">
-													<td :key="dateIndex" v-if="selectedService.days[date.dayName].isOpen">
+													<td class="align-top" :key="dateIndex" v-if="selectedService.days[date.dayName].isOpen">
 														<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
 															<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
 																<button type="button" class="timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }" @click="setSelectedDateAndTimeslot(date, timeslot)">

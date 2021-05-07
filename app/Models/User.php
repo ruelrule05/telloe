@@ -35,7 +35,8 @@ class User extends Authenticatable implements JWTSubject
         'profile_image',
         'facebook_id',
         'google_id',
-        'default_availability'
+        'default_availability',
+        'google_calendar_events'
     ];
 
     /**
@@ -71,7 +72,7 @@ class User extends Authenticatable implements JWTSubject
         'xero_token' => 'array',
         'zoom_token' => 'array',
         'phone' => 'nullable|int',
-        'default_availability' => 'array'
+        'default_availability' => 'array',
     ];
 
     public function subscription()

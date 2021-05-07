@@ -492,9 +492,40 @@ class BookingService
 
     public static function upcoming()
     {
+        $authUser = Auth::user();
         $tomorrow = Carbon::now()->addDay(1);
         $daysAgo = Carbon::now()->subDays(5);
-        return Booking::with('bookingUsers.user', 'service', 'bookingLink')->whereBetween('date', [$daysAgo, $tomorrow])->has('service')->orHas('bookingLink')->get()->toArray();
-        return response(Booking::with('bookingUsers.user', 'service')->whereBetween('date', [$daysAgo, $tomorrow])->has('service')->orHas('bookingLink')->get());
+        $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
+        ->whereHas('service', function ($service) {
+            $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
+                $parentService->where('user_id', Auth::user()->id);
+            });
+        })
+        ->orWhereHas('bookingLink', function ($bookingLink) {
+            $bookingLink->where('user_id', Auth::user()->id);
+        })
+        ->orWhereHas('bookingUsers.user', function ($user) use ($authUser) {
+            $user->where('id', $authUser->id);
+        })
+        ->has('service')
+        ->orHas('bookingLink')
+        ->whereBetween('date', [$daysAgo, $tomorrow])
+        ->get();
+
+        return $bookings;
+    }
+
+    public static function contactBookings()
+    {
+        $authUser = Auth::user();
+        $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
+        ->whereHas('bookingUsers.user', function ($user) use ($authUser) {
+            $user->where('id', $authUser->id);
+        })
+        ->has('service')
+        ->orHas('bookingLink')
+        ->get();
+
+        return $bookings;
     }
 }

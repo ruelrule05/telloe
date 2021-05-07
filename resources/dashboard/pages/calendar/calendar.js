@@ -19,7 +19,8 @@ export default {
 		selectedBooking: null,
 		newEvent: false,
 		googleCalendars: [],
-		googleCalendarEvents: []
+		googleCalendarEvents: [],
+		contactBookings: []
 	}),
 
 	computed: {
@@ -31,6 +32,13 @@ export default {
 		calendarAttributes() {
 			let attributes = [];
 			this.bookings.forEach(booking => {
+				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
+				attributes.push({
+					customData: 'booking',
+					dates: bookingDate
+				});
+			});
+			this.contactBookings.forEach(booking => {
 				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
 				attributes.push({
 					customData: 'booking',
@@ -77,6 +85,7 @@ export default {
 	created() {
 		//this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookings();
+		this.getContactBookings();
 		this.getGoogleCalendars().then(response => {
 			this.googleCalendars = response.data
 				.filter(calendar => {
@@ -100,6 +109,11 @@ export default {
 			getUpcomingBookings: 'bookings/getUpcomingBookings',
 			getGoogleCalendars: 'bookings/getGoogleCalendars'
 		}),
+
+		async getContactBookings() {
+			let response = await axios.get('/bookings/contact');
+			this.contactBookings = response.data;
+		},
 
 		hasBooking(attributes) {
 			let count = 0;

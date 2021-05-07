@@ -74,7 +74,8 @@ export default {
 				value: 'month'
 			}
 		],
-		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+		includeGoogleCalendar: false
 	}),
 
 	computed: {
@@ -120,6 +121,10 @@ export default {
 				} else {
 					this.disableServiceSelect = false;
 				}
+				if (this.clonedBooking.type == 'google-event') {
+					let included = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
+					this.includeGoogleCalendar = included ? true : false;
+				}
 			}
 		},
 		newEvent: function(value) {
@@ -162,6 +167,10 @@ export default {
 			} else {
 				this.disableServiceSelect = false;
 			}
+			if (this.clonedBooking && this.clonedBooking.type == 'google-event') {
+				let included = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
+				this.includeGoogleCalendar = included ? true : false;
+			}
 		}
 	},
 
@@ -193,6 +202,21 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index'
 		}),
+
+		toggleIncludeGoogleCalendar(state) {
+			if (this.clonedBooking && this.clonedBooking.type == 'google-event') {
+				if (!this.$root.auth.google_calendar_events) {
+					this.$root.auth.google_calendar_events = [];
+				}
+				let index = (this.$root.auth.google_calendar_events || []).findIndex(x => x == this.clonedBooking.id);
+				if (state && index < 0) {
+					this.$root.auth.google_calendar_events.push(this.clonedBooking.id);
+				} else if (!state && index >= 0) {
+					this.$root.auth.google_calendar_events.splice(index, 1);
+				}
+				window.axios.post('/auth', this.$root.auth, { toast: true });
+			}
+		},
 
 		timeslotToggleDay(dayIndex) {
 			let index = this.clonedBooking.days.indexOf(dayIndex);
@@ -323,8 +347,8 @@ export default {
 			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.name);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			this.close();
-			let booking = await this.storeBooking(data);
-			this.$emit('store', booking);
+			let bookings = await this.storeBooking(data);
+			this.$emit('store', bookings);
 		},
 
 		update() {

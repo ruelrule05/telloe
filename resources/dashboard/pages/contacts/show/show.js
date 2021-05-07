@@ -250,11 +250,15 @@ export default {
 			this.selectedPackageService = null;
 		},
 
-		newBookingStored(booking) {
+		newBookingStored(bookings) {
 			if (this.packageService) {
-				this.contact.contact_packages[this.contactPackageIndex].bookings.push(booking);
+				bookings.forEach(booking => {
+					this.contact.contact_packages[this.contactPackageIndex].bookings.unshift(booking);
+				});
 			}
-			this.contact.bookings.data.unshift(booking);
+			bookings.forEach(booking => {
+				this.contact.bookings.data.unshift(booking);
+			});
 		},
 
 		createNewEvent() {

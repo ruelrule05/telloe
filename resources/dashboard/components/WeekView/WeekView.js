@@ -16,6 +16,9 @@ export default {
 		},
 		googleCalendarEvents: {
 			type: Array
+		},
+		contactBookings: {
+			type: Array
 		}
 	},
 
@@ -49,6 +52,22 @@ export default {
 				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
 					color = 'bg-primary text-white';
 				}
+				parsedBookings.push({
+					booking: booking,
+					name: (booking.service || booking.booking_link).name,
+					start: `${booking.date} ${booking.start}`,
+					end: `${booking.date} ${booking.end}`,
+					category: 'bookings',
+					color: color
+				});
+			});
+
+			this.contactBookings.forEach(booking => {
+				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
+				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
+					color = 'bg-primary text-white';
+				}
+				booking.type = 'contact-booking';
 				parsedBookings.push({
 					booking: booking,
 					name: (booking.service || booking.booking_link).name,

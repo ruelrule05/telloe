@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use App\Http\GoogleCalendarClient;
+use App\Jobs\GoogleCalendarEvents;
 use Auth;
-use Illuminate\Http\Request;
 use Cache;
 use Google_Service_Calendar;
+use Illuminate\Http\Request;
 
 class GoogleCalendarService
 {
@@ -44,13 +45,12 @@ class GoogleCalendarService
         return ['removed' => true];
     }
 
-    
     public static function googleCalendarEvents()
     {
         $events = [];
         $user = Auth::user();
         if ($user->google_calendar_id && $user->google_calendar_token) {
-            $events = Cache::remember("{$user->id}_google_calendar_events", 43200, function () use ($user) {
+            $events = Cache::rememberForever("{$user->id}_google_calendar_events", function () use ($user) {
                 $events = [];
                 $GoogleCalendarClient = new GoogleCalendarClient($user);
                 $client = $GoogleCalendarClient->client;
@@ -74,6 +74,8 @@ class GoogleCalendarService
                 return $events;
             });
         }
+
+        GoogleCalendarEvents::dispatch($user);
 
         return $events;
     }
@@ -113,12 +115,12 @@ class GoogleCalendarService
         return $calendars;
     }
 
-    public static function update(Request $request) {
+    public static function update(Request $request)
+    {
         $authUser = Auth::user();
         $authUser->google_calendar_id = $request->google_calendar_id;
         Cache::forget("{$authUser->id}_google_calendar_events");
         $authUser->save();
         return self::googleCalendarEvents();
     }
-
 }

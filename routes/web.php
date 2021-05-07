@@ -61,6 +61,7 @@ Route::group(
                 Route::apiResource('services', 'ServiceController');
                 Route::apiResource('notes', 'NoteController');
                 Route::get('bookings/upcoming', [BookingController::class, 'upcoming']);
+                Route::get('bookings/contact', [BookingController::class, 'contactBookings']);
                 Route::apiResource('bookings', 'BookingController');
                 Route::post('bookings/{id}/assign_to_member', 'BookingController@assignToMember');
                 Route::apiResource('user_blacklisted_services', 'UserBlacklistedServicesController');

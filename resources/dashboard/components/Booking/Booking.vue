@@ -123,6 +123,7 @@
 
 			<!-- Manage booking -->
 			<template v-else>
+				<!-- Booking -->
 				<template v-if="!clonedBooking.type">
 					<div class="flex-grow">
 						<h5 class="font-semibold text-xl mb-4">{{ (clonedBooking.service || clonedBooking.booking_link).name }}</h5>
@@ -193,8 +194,10 @@
 						<button type="button" class="btn" @click="confirmDelete">DELETE</button>
 					</div>
 				</template>
+
+				<!-- Google Event -->
 				<template v-else-if="clonedBooking.type == 'google-event'">
-					<div class="flex-grow">
+					<div class="flex-grow text-sm">
 						<div class="text-sm text-muted">Google Event</div>
 						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.summary }}</h5>
 
@@ -210,6 +213,46 @@
 
 						<label class="-mb-px mt-4">Location</label>
 						<div>{{ clonedBooking.location || 'No location' }}</div>
+
+						<label class="mt-4">Block timeslot</label>
+						<VueCheckbox @input="toggleIncludeGoogleCalendar" :value="includeGoogleCalendar" label="Block this event's time in service timeslots."></VueCheckbox>
+					</div>
+				</template>
+
+				<!-- Contact Booking -->
+				<template v-else-if="clonedBooking.type == 'contact-booking'">
+					<div class="flex-grow">
+						<h5 class="font-semibold text-xl mb-4">{{ (clonedBooking.service || clonedBooking.booking_link).name }}</h5>
+
+						<div class="mb-4">
+							<label class="-mb-px">Coach</label>
+							<span class="font-semibold">{{ clonedBooking.service.coach.full_name }}</span>
+						</div>
+
+						<div class="mb-4">
+							<label>Guests</label>
+							<div v-for="bookingUser in clonedBooking.booking_users" :key="bookingUser.id" class="flex items-center mb-3">
+								<div>
+									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + bookingUser.user.profile_image + ')' }">
+										<span v-if="!bookingUser.user.profile_image" class="uppercase">{{ bookingUser.user.initials || bookingUser.guest.email[0] }}</span>
+									</div>
+								</div>
+								<div class="pl-1 text-sm font-semibold leading-tight">
+									{{ bookingUser.user.full_name || bookingUser.guest.email }}
+								</div>
+							</div>
+						</div>
+
+						<label class="-mb-px">Date</label>
+						<div class="mb-4">{{ dayjs(clonedBooking.date).format('MMMM DD, YYYY') }}</div>
+
+						<label class="-mb-px">Time</label>
+						<div class="mb-4">{{ timezoneTime(clonedBooking.start, $root.auth.timezone) }} - {{ timezoneTime(clonedBooking.end, $root.auth.timezone) }}</div>
+
+						<div>
+							<label>Type</label>
+							<div>{{ clonedBooking.meeting_type }}</div>
+						</div>
 					</div>
 				</template>
 			</template>
