@@ -14,7 +14,7 @@
 			<div class="flex h-full contact-content">
 				<div class="w-2/3 pt-8 pb-8 pl-6 pr-16 border-right">
 					<div class="flex items-center justify-between mb-3 header">
-						<VueSelect :options="contactStatuses" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
+						<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
 
 						<form @submit.prevent="getData()">
 							<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none w-80" placeholder="Search by name, surname or e-mail" />

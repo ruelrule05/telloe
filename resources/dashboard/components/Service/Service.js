@@ -10,6 +10,7 @@ import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import CloseIcon from '../../../icons/close';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
+const ct = require('countries-and-timezones');
 export default {
 	props: {
 		service: {
@@ -25,6 +26,8 @@ export default {
 	components: { VDatePicker, VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect, PlusIcon, VueDropdown, CloseIcon },
 
 	data: () => ({
+		dayjs: dayjs,
+		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US'],
 		masks: {
 			input: 'MMMM D, YYYY'
 		},
@@ -69,6 +72,26 @@ export default {
 		],
 		types: ['Google Meet', 'Zoom', 'Face-to-face', 'Phone', 'Skype', 'Telloe Video Call']
 	}),
+
+	computed: {
+		availableTimezones() {
+			let timezones = [];
+			this.allowed_countries.forEach(code => {
+				let countryTimezones = ct.getTimezonesForCountry(code);
+				if (countryTimezones) {
+					countryTimezones.forEach(timezone => {
+						timezones.push({
+							text: timezone.name,
+							value: timezone.name
+						});
+					});
+				}
+			});
+			return timezones.sort((a, b) => {
+				return a.text > b.text ? 1 : -1;
+			});
+		}
+	},
 
 	watch: {
 		service: function() {

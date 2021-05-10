@@ -184,7 +184,7 @@ export default {
 		},
 		timezonesOptions: [],
 		authenticate: false,
-		step: false,
+		step: false, // false
 		user: {
 			email: '',
 			password: ''
@@ -770,7 +770,7 @@ export default {
 		},
 
 		timezoneTime(time) {
-			let profileTimezone = this.profile.timezone;
+			let profileTimezone = this.selectedService.timezone;
 			let timezoneTime;
 			if (profileTimezone != this.timezone) {
 				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
@@ -820,16 +820,14 @@ export default {
 		},
 
 		reset() {
-			setTimeout(() => {
-				this.bookings = [];
-				this.isBooking = false;
-				this.bookingSuccess = false;
-				this.authForm = false;
-				this.authAction = 'signup';
-				this.authForm = false;
-				this.startDate = dayjs().toDate();
-				this.selectedServiceForTimeline = this.selectedService = this.selectedTimeslot = null;
-			}, 150);
+			this.bookings = [];
+			this.isBooking = false;
+			this.bookingSuccess = false;
+			this.authForm = false;
+			this.authAction = 'signup';
+			this.authForm = false;
+			this.startDate = dayjs().toDate();
+			this.selectedServiceForTimeline = this.selectedService = this.selectedTimeslot = null;
 		},
 
 		disabledDate(date) {

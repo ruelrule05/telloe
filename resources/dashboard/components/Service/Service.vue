@@ -121,17 +121,21 @@
 								<label>Starts At</label>
 								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.starts_at" :masks="masks">
 									<template v-slot="{ inputValue, inputEvents }">
-										<input type="text" class="w-1/3" readonly v-on="inputEvents" :value="inputValue" />
+										<input type="text" class="w-1/3" readonly v-on="inputEvents" :placeholder="clonedService.starts_at ? dayjs(clonedService.starts_at).format('MMMM D, YYYY') : ''" :value="inputValue" />
+									</template>
+								</v-date-picker>
+							</div>
+							<div class="mb-4">
+								<label>Ends At</label>
+								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.ends_at" :masks="masks">
+									<template v-slot="{ inputValue, inputEvents }">
+										<input type="text" class="w-1/3" readonly v-on="inputEvents" :placeholder="clonedService.ends_at ? dayjs(clonedService.ends_at).format('MMMM D, YYYY') : ''" :value="inputValue" />
 									</template>
 								</v-date-picker>
 							</div>
 							<div>
-								<label>Ends At</label>
-								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.ends_at" :masks="masks">
-									<template v-slot="{ inputValue, inputEvents }">
-										<input type="text" class="w-1/3" readonly v-on="inputEvents" :value="inputValue" />
-									</template>
-								</v-date-picker>
+								<label>Timezone</label>
+								<VueSelect class="w-1/3" :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedService.timezone" placeholder="Select timezone"></VueSelect>
 							</div>
 						</div>
 					</div>

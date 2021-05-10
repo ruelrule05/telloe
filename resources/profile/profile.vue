@@ -46,7 +46,7 @@
 										<div
 											v-for="assignedService in service.assigned_services"
 											:key="assignedService.id"
-											class="profile-image profile-image-xxs"
+											class="profile-image profile-image-sm -ml-2"
 											:style="{
 												backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
 											}"
@@ -104,7 +104,7 @@
 											<h6 class="text-primary font-bold">
 												{{ profile.full_name }}
 											</h6>
-											<div class="text-muted text-sm">{{ profile.timezone }}</div>
+											<div class="text-muted text-sm">{{ selectedService.timezone }}</div>
 										</div>
 									</div>
 								</div>
@@ -484,35 +484,38 @@
 
 			<!-- Bookings -->
 			<div v-else-if="step == 'bookings'" class="container lg:my-12 my-6 flex items-center justify-center bookings" key="bookings">
-				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
-					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
-					<p class="mb-8">
-						A calendar invite is on it’s way to your e-mail address.
-					</p>
-					<h4 class="mb-2 font-bold text-xl">{{ selectedService.name }}</h4>
-					<div class="text-sm">
-						<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
-					</div>
-
-					<div class="bg-gray-50 rounded-2xl p-4 mt-5" v-for="booking in bookings" :key="booking.id">
-						<h6 class="font-semibold">{{ formatDate(booking.date) }} ({{ dayjs(booking.date).format('dddd') }})</h6>
-						<div>{{ timezoneTime(booking.start) }} - {{ endTime(booking.end) }}</div>
-						<div v-if="booking.recurring" class="text-muted text-xs flex xitems-center mt-4">
-							<RefreshIcon class="fill-current mr-2 mt-1"></RefreshIcon>
-							<div>
-								Repeating booking every&nbsp;
-								<span class="font-bold">{{ booking.recurring_days.join(',') }}</span>
-								&nbsp;until&nbsp;
-								<span class="font-bold">{{ booking.until }}</span>
-							</div>
+				<div class="lg:w-5/12 w-11/12">
+					<div class="bg-white rounded-2xl p-6">
+						<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
+						<p class="mb-8">
+							A calendar invite is on it’s way to your e-mail address.
+						</p>
+						<h4 class="mb-2 font-bold text-xl">{{ selectedService.name }}</h4>
+						<div class="text-sm">
+							<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
 						</div>
 
-						<VueDropdown @click="addToCalendar($event, booking)" :options="['Google Calendar', 'MS Outlook', 'Yahoo', 'iCal (.ics file download)']" class="mt-4">
-							<template #button>
-								<button class="btn btn-primary btn-sm flex items-center" type="button"><span>Add To Calendar</span><ChevronDownIcon class="fill-current"></ChevronDownIcon></button>
-							</template>
-						</VueDropdown>
+						<div class="bg-gray-50 rounded-2xl p-4 mt-5" v-for="booking in bookings" :key="booking.id">
+							<h6 class="font-semibold">{{ formatDate(booking.date) }} ({{ dayjs(booking.date).format('dddd') }})</h6>
+							<div>{{ timezoneTime(booking.start) }} - {{ endTime(booking.end) }}</div>
+							<div v-if="booking.recurring" class="text-muted text-xs flex xitems-center mt-4">
+								<RefreshIcon class="fill-current mr-2 mt-1"></RefreshIcon>
+								<div>
+									Repeating booking every&nbsp;
+									<span class="font-bold">{{ booking.recurring_days.join(',') }}</span>
+									&nbsp;until&nbsp;
+									<span class="font-bold">{{ booking.until }}</span>
+								</div>
+							</div>
+
+							<VueDropdown @click="addToCalendar($event, booking)" :options="['Google Calendar', 'MS Outlook', 'Yahoo', 'iCal (.ics file download)']" class="mt-4">
+								<template #button>
+									<button class="btn btn-primary btn-sm flex items-center" type="button"><span>Add To Calendar</span><ChevronDownIcon class="fill-current"></ChevronDownIcon></button>
+								</template>
+							</VueDropdown>
+						</div>
 					</div>
+					<button type="button" class="btn btn-outline-primary w-full mt-4" @click="reset"><span>CREATE ANOTHER BOOKING</span></button>
 				</div>
 			</div>
 		</div>

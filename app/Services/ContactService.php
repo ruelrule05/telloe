@@ -199,7 +199,7 @@ class ContactService
     public function update(Request $request, Contact $contact)
     {
         $this->authorize('update', $contact);
-        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields'));
+        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields', 'tags'));
         return response($contact->load('contactUser'));
     }
 

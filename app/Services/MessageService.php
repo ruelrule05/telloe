@@ -70,8 +70,8 @@ class MessageService
                     File::put($previewDestination, $preview);
                 } else {
                     $img = Image::make($request->file('source'));
-                    if ($img->width() > 350) {
-                        $img->resize(350, null, function ($constraint) {
+                    if ($img->width() > 450) {
+                        $img->resize(450, null, function ($constraint) {
                             $constraint->aspectRatio();
                             $constraint->upsize();
                         });
@@ -123,9 +123,11 @@ class MessageService
         return $message;
     }
 
-    public static function delete($id)
+    public static function destroy($id)
     {
-        return ;
+        $message = Message::findOrFail($id);
+        (new self)->authorize('delete', $message);
+        return $message->delete();
     }
 
     public function generateLinkPreview($id, Request $request)

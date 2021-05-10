@@ -118,4 +118,19 @@ class ContactController extends Controller
         $contactPackage = ContactPackage::where('id', $request->package_id)->where('contact_id', $contact->id)->firstOrFail();
         return response()->json($contactPackage->delete());
     }
+
+    public function updatePackage($id, Request $request)
+    {
+        $this->validate($request, [
+            'contact_package_id' => 'required|exists:contact_packages,id',
+        ]);
+        $authUser = Auth::user();
+        $contact = Contact::where('id', $id)->where('user_id', $authUser->id)->firstOrfail();
+        $contactPackage = ContactPackage::where('id', $request->contact_package_id)->where('contact_id', $contact->id)->firstOrFail();
+        $service = $contactPackage->service;
+        $service['completed'] = $request->completed;
+        return response()->json($contactPackage->update([
+            'service' => $service
+        ]));
+    }
 }

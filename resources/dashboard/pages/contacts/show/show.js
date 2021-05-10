@@ -30,9 +30,14 @@ import CogIcon from '../../../../icons/cog';
 import ChevronLeftIcon from '../../../../icons/chevron-left';
 import Booking from '../../../components/Booking/Booking.vue';
 import axios from 'axios';
+import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
 	components: {
+		Multiselect,
+		VueCheckbox,
 		Booking,
 		CogIcon,
 		ChevronLeftIcon,
@@ -107,7 +112,8 @@ export default {
 		activeTab: 'notes',
 		page: 1,
 		packageService: null,
-		contactPackageIndex: 0
+		contactPackageIndex: 0,
+		tagOptions: []
 	}),
 
 	computed: {
@@ -236,6 +242,34 @@ export default {
 			storeConversation: 'conversations/store',
 			getPackages: 'packages/index'
 		}),
+
+		removeTag() {
+			this.$nextTick(() => {
+				this.updateContact(this.contact);
+			});
+		},
+
+		addTag(newTag) {
+			let exists = this.contact.tags.find(x => x == newTag);
+			if (!exists) {
+				this.tagOptions.push(newTag);
+				this.contact.tags.push(newTag);
+				this.updateContact(this.contact);
+			}
+		},
+
+		toggleBlockStatus(state, block, contactPackage) {
+			if (!contactPackage.service.completed) {
+				this.$set(contactPackage.service, 'completed', []);
+			}
+			let index = contactPackage.service.completed.findIndex(x => x == block);
+			if (state && index < 0) {
+				contactPackage.service.completed.push(block);
+			} else if (!state && index >= 0) {
+				contactPackage.service.completed.splice(index, 1);
+			}
+			axios.put(`/contacts/${this.contact.id}/package`, { completed: contactPackage.service.completed, contact_package_id: contactPackage.id });
+		},
 
 		deleteContactPackage(contactPackage, index) {
 			this.contact.contact_packages.splice(index, 1);

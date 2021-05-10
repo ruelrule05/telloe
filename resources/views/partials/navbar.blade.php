@@ -8,8 +8,8 @@
                 <div class="flex align-middle items-center space-x-3">
                     <a href="/" class="navbar-item">HOME</a>
                     <a href="#features" class="navbar-item">FEATURES</a>
-                    <a href="#about" type="button" class="navbar-item"><span>ABOUT</span></a>
-                    <a href="#pricing" type="button" class="navbar-item"><span>PRICING</span></a>
+                    <a href="#about" class="navbar-item"><span>ABOUT</span></a>
+                    <a href="#pricing" class="navbar-item"><span>PRICING</span></a>
                     <button type="button" class="navbar-item" @click="auth = true; action = 'login'"><span>LOGIN</span></button>
                     <button type="button" class="btn btn-primary btn-md" @click="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
                 </div>

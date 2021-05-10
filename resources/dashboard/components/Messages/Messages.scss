@@ -21,11 +21,12 @@
 		}
 	}
 	.message-item {
+		.action-button {
+			@apply absolute top-0 -left-9 bg-gray-50 transition-all hover:bg-gray-100 rounded-full opacity-0 text-gray-500 cursor-pointer p-2;
+		}
 		&:hover {
-			.message-actions {
-				.action-button {
-					opacity: 1;
-				}
+			.action-button {
+				opacity: 1;
 			}
 			.message-metalabel {
 				opacity: 0;

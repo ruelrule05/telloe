@@ -26,9 +26,9 @@ class MessageController extends Controller
         return response(MessageService::update($id, $request));
     }
 
-    public function destroy($id, Request $request)
+    public function destroy($id)
     {
-        return response(MessageService::update($id, $request));
+        return response(MessageService::destroy($id));
     }
 
     public function generateLinkPreview($id, Request $request)

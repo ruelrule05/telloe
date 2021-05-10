@@ -102,28 +102,6 @@
 				</div>
 			</div>
 		</div>
-
-		<modal ref="deleteMessageModal" @hidden="selectedMessage = null">
-			<template v-if="selectedMessage">
-				<h5 class="font-heading text-center">Delete Message</h5>
-				<p class="text-center mt-3">
-					Are you sure to delete this message?
-				</p>
-				<div class="d-flex justify-content-end">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">Cancel</button>
-					<button
-						class="btn btn-danger ml-auto"
-						type="button"
-						@click="
-							deleteMessage(selectedMessage);
-							$refs['deleteMessageModal'].hide();
-						"
-					>
-						Delete
-					</button>
-				</div>
-			</template>
-		</modal>
 	</div>
 </template>
 

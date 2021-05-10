@@ -64,6 +64,16 @@
 							<div class="px-1 flex-1 -mb-1">
 								<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item">
 									<div class="relative message-content" :class="{ 'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type) }">
+										<div
+											v-if="grouped_message.outgoing"
+											class="action-button"
+											@click="
+												selectedMessage = message;
+												$refs.deleteMessageModal.show();
+											"
+										>
+											<TrashIcon class="fill-current" height="15" width="15"></TrashIcon>
+										</div>
 										<!-- <div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
 														<div class="action-content position-relative line-height-1">
 															<div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
@@ -203,6 +213,28 @@
 		<gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
 
 		<AudioRecorder v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></AudioRecorder>
+
+		<Modal ref="deleteMessageModal" size="sm">
+			<template v-if="selectedMessage">
+				<h5 class="font-serif font-semibold mb-5 uppercase text-center">Delete Message</h5>
+				<p class="text-center mt-3">
+					Are you sure to delete this message?
+				</p>
+				<div class="flex justify-between mt-8">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.deleteMessageModal.hide()"><span>Cancel</span></button>
+					<button
+						class="btn btn-md btn-red"
+						type="button"
+						@click="
+							deleteMessage(selectedMessage);
+							$refs.deleteMessageModal.hide();
+						"
+					>
+						<span>Delete</span>
+					</button>
+				</div>
+			</template>
+		</Modal>
 
 		<!-- <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal> -->
 	</div>

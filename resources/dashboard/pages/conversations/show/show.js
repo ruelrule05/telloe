@@ -150,7 +150,6 @@ export default {
 			updateConversation: 'conversations/update',
 			storeMessage: 'messages/store',
 			updateMessage: 'messages/update',
-			deleteMessage: 'messages/delete',
 			storeNote: 'notes/store',
 			deleteNote: 'notes/delete'
 		}),

@@ -15,6 +15,8 @@ import EyeIcon from '../../../icons/eye';
 import CloseIcon from '../../../icons/close';
 import DocumentIcon from '../../../icons/document';
 import PlayIcon from '../../../icons/play';
+import TrashIcon from '../../../icons/trash';
+import Modal from '../../../components/modal/modal.vue';
 
 const loadImage = require('blueimp-load-image');
 const emojiRegex = require('emoji-regex');
@@ -30,6 +32,8 @@ export default {
 	},
 
 	components: {
+		Modal,
+		TrashIcon,
 		VueFormValidate,
 		Emojipicker,
 		SendIcon,
@@ -58,7 +62,8 @@ export default {
 		recorder: '',
 		hasScreenRecording: false,
 		pastedFile: null,
-		isScreenRecordDownloading: false
+		isScreenRecordDownloading: false,
+		selectedMessage: null
 	}),
 
 	computed: {
@@ -135,6 +140,7 @@ export default {
 
 	methods: {
 		...mapActions({
+			deleteMessage: 'messages/delete',
 			storeMessage: 'messages/store'
 		}),
 
@@ -346,7 +352,7 @@ export default {
 							message.preview = dataurl;
 							this.sendMessage(message);
 						},
-						{ maxWidth: 200, canvas: true }
+						{ maxWidth: 450, canvas: true }
 					);
 				} else {
 					await this.fileToBase64(fileInput.files[0]);

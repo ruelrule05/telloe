@@ -47,8 +47,10 @@
 						<li :class="{ active: activeTab == 'notes' }"><span class="cursor-pointer" @click="activeTab = 'notes'">Notes</span></li>
 						<li :class="{ active: activeTab == 'fields' }"><span class="cursor-pointer" @click="activeTab = 'fields'">Fields</span></li>
 						<li :class="{ active: activeTab == 'packages' }"><span class="cursor-pointer" @click="activeTab = 'packages'">Packages</span></li>
+						<li :class="{ active: activeTab == 'tags' }"><span class="cursor-pointer" @click="activeTab = 'tags'">Tags</span></li>
 					</ul>
 
+					<!-- Notes -->
 					<template v-if="activeTab == 'notes'">
 						<div class="flex items-center justify-between mb-6 filters">
 							<button type="button" class="btn btn-outline-primary btn-sm" @click="addingNote = true"><span>Add new</span></button>
@@ -102,6 +104,7 @@
 						</div>
 					</template>
 
+					<!-- Fields -->
 					<template v-else-if="activeTab == 'fields'">
 						<!-- Edit Fields -->
 						<template v-if="editFields">
@@ -155,6 +158,7 @@
 						</div>
 					</template>
 
+					<!-- Packages -->
 					<template v-if="activeTab == 'packages'">
 						<button v-if="!addingPackage" type="button" class="btn btn-outline-primary btn-sm" @click="addingPackage = true"><span>Add Package</span></button>
 						<vue-form-validate @submit="addPackageService" v-else class="mb-6">
@@ -190,22 +194,31 @@
 									</div>
 								</div>
 
-								<div class="border-bottom py-2 flex justify-between items-center" v-for="contactPackageBooking in contactPackage.bookings" :key="contactPackageBooking.id">
+								<div class="py-2 flex justify-between items-center" :class="{ 'border-top': contactPackageBookingIndex > 0 }" v-for="(contactPackageBooking, contactPackageBookingIndex) in contactPackage.bookings" :key="contactPackageBooking.id">
 									<div class="text-sm">{{ contactPackage.service.duration }}min</div>
 									<div>
 										<button type="button" class="btn btn-sm btn-primary disabled"><span>Booked</span></button>
 									</div>
 								</div>
 
-								<div class="border-bottom py-2 flex justify-between items-center" v-for="(block, index) in new Array(parseInt(contactPackage.service.bookings - contactPackage.bookings.length))" :key="index">
-									<div class="text-sm">{{ contactPackage.service.duration }}min</div>
-									<div>
-										<button type="button" class="btn btn-sm btn-outline-primary" @click="bookPackage(contactPackage, contactPackageIndex)"><span>Book</span></button>
-									</div>
-								</div>
+								<template v-for="(block, index) in new Array(parseInt(contactPackage.service.bookings))">
+									<div v-if="index >= contactPackage.bookings.length" class="block-container py-2 flex justify-between items-center" :class="{ 'border-top': index > 0, completed: (contactPackage.service.completed || []).find(x => x == index) >= -1 }" :key="index">
+										<div class="text-sm">{{ contactPackage.service.duration }}min</div>
+										<div class="flex items-center">
+											<button type="button" class="btn btn-sm btn-outline-primary mr-2" @click="bookPackage(contactPackage, contactPackageIndex)">
+												<span>{{ (contactPackage.service.completed || []).find(x => x == index) >= -1 ? 'Completed' : 'Book' }}</span>
+											</button>
+											<VueCheckbox @input="toggleBlockStatus($event, index, contactPackage)" :value="(contactPackage.service.completed || []).find(x => x == index) >= -1 ? true : false"></VueCheckbox>
+										</div></div
+								></template>
 							</div>
 						</div>
 					</template>
+
+					<div v-if="activeTab == 'tags'">
+						<label>Tags</label>
+						<multiselect v-model="contact.tags" :options="tagOptions" :showLabels="false" :taggable="true" placeholder="" multiple @tag="addTag" @remove="removeTag"></multiselect>
+					</div>
 				</div>
 			</div>
 			<div class="w-7/12 p-6">

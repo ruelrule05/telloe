@@ -7,13 +7,14 @@ use Carbon\Carbon;
 class Contact extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields', 'tags'];
     protected $appends = ['full_name', 'initials', 'created_at_format', 'profile_image'];
     protected $casts = [
         'blacklisted_services' => 'array',
         'invoices' => 'array',
         'subscriptions' => 'array',
-        'custom_fields' => 'array'
+        'custom_fields' => 'array',
+        'tags' => 'array'
     ];
 
     public function user()

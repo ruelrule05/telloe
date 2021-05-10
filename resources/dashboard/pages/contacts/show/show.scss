@@ -136,3 +136,13 @@
 		}
 	}
 }
+.block-container {
+	&.completed {
+		button {
+			@apply pointer-events-none opacity-20;
+		}
+		.text-sm {
+			@apply text-gray-300;
+		}
+	}
+}

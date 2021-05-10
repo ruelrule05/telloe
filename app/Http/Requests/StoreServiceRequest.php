@@ -29,6 +29,7 @@ class StoreServiceRequest extends FormRequest
             'duration' => 'required|integer',
             'days' => 'required',
             'default_rate' => 'numeric|numeric',
+            'timezone' => 'required|string',
         ];
     }
 }

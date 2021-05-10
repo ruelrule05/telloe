@@ -71,6 +71,7 @@ Route::group(
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
                 Route::post('contacts/{id}/package', 'ContactController@package');
                 Route::delete('contacts/{id}/package', 'ContactController@deletePackage');
+                Route::put('contacts/{id}/package', 'ContactController@updatePackage');
                 Route::apiResource('members', 'MemberController');
                 Route::post('members/{id}/resend', 'MemberController@resend');
                 Route::post('members/{id}/assign_service', 'MemberController@assignService');
