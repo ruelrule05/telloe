@@ -20,6 +20,8 @@ import VueButton from '../../../../components/vue-button.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import copy from 'copy-text-to-clipboard';
 import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+dayjs.extend(IsSameOrAfter);
 
 export default {
 	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox },
@@ -41,6 +43,11 @@ export default {
 	}),
 
 	computed: {
+		editable() {
+			if (!this.selectedDate) return false;
+			return dayjs(this.selectedDate).isSameOrAfter(dayjs());
+		},
+
 		dateOptions() {
 			let dateOptions = [];
 			if (this.bookingLink) {
@@ -106,6 +113,10 @@ export default {
 					}
 				}
 			});
+
+			this.channel.listenForWhisper('selectTimeslot', data => {
+				this.$set(this.bookingLink.selected_timeslots, data.key, data.value);
+			});
 		});
 	},
 
@@ -119,6 +130,20 @@ export default {
 			updateBookingLink: 'booking_links/update',
 			deleteBookingLink: 'booking_links/delete'
 		}),
+
+		toggleSelectTimeslot(timeslot) {
+			let propName = `${this.$root.auth.id}-${this.selectedDate}`;
+			this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			this.updateBookingLink(this.bookingLink);
+			this.channel.whisper('selectTimeslot', {
+				key: propName,
+				value: timeslot.time
+			});
+		},
+
+		hasSelected(userID, timeslot) {
+			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
+		},
 
 		timeslotTime(time, timezone) {
 			let timezoneTime = this.timezoneTime(time, timezone);
@@ -148,10 +173,17 @@ export default {
 
 		async toggleTimeslot(state, timeslot) {
 			let index = this.bookingLink.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
-			if (index == -1) {
-				this.bookingLink.dates[this.selectedDate].selectedTimeslots.push(timeslot);
+			if (state) {
+				if (index == -1) {
+					this.bookingLink.dates[this.selectedDate].selectedTimeslots.push(timeslot);
+				}
 			} else {
-				this.bookingLink.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
+				if (index >= 0) {
+					this.bookingLink.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
+				}
+			}
+			if (this.bookingLink.selected_timeslots.length == 0) {
+				this.bookingLink.selected_timeslots = {};
 			}
 			// update bookingLink
 			await this.updateBookingLink(this.bookingLink);

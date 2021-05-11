@@ -18,9 +18,12 @@ import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import Paginate from '../../../../components/paginate/paginate.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
 	components: {
+		Multiselect,
 		Modal,
 		VueFormValidate,
 		VueCheckbox,
@@ -42,6 +45,7 @@ export default {
 	},
 
 	data: () => ({
+		filterTags: [],
 		actions: ['Edit', 'Delete'],
 		infoTab: '',
 		selectedContact: null,
@@ -90,6 +94,25 @@ export default {
 			services: state => state.services.index,
 			user_blacklisted_services: state => state.user_blacklisted_services.index
 		}),
+
+		filteredContacts() {
+			return this.contacts.data.filter(contact => {
+				return this.filterTags.length == 0 || this.filterTags.some(arr => contact.tags.includes(arr));
+			});
+		},
+
+		contactTags() {
+			let contactTags = [];
+			this.contacts.data.forEach(contact => {
+				contact.tags.forEach(tag => {
+					let exists = contactTags.find(x => x == tag);
+					if (!exists) {
+						contactTags.push(tag);
+					}
+				});
+			});
+			return contactTags;
+		},
 
 		defaultEmailMessage() {
 			return `${this.$root.auth.full_name} has invited you in ${APP_NAME}`;

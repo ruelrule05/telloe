@@ -5,8 +5,9 @@
 			{{ bookingLink.name }} ({{ bookingLink.duration }} mins)
 		</div>
 		<div class="p-6">
+			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
 			<div v-if="bookingLink.booking_link_contacts.length > 0">
-				<div class="flex justify-between">
+				<div class="flex justify-between items-center">
 					<div>
 						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
@@ -28,11 +29,38 @@
 							<tr>
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
-									<div class="text-center px-2 pb-2 bg-white">
-										<VueCheckbox v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
+									<div class="text-center px-2 pb-2 bg-white relative z-10">
+										<VueCheckbox v-if="!bookingLink.is_booked && editable" v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
 									</div>
 								</td>
 							</tr>
+
+							<!-- You -->
+							<tr>
+								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
+									<div class="flex items-center py-3 -ml-3">
+										<div>
+											<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
+												<span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
+											</div>
+										</div>
+										<div class="pl-2">
+											<p class="text-sm whitespace-nowrap">You</p>
+											<p class="flex items-center tracking-wide text-xxs text-muted">{{ $root.auth.timezone }}</p>
+										</div>
+									</div>
+								</td>
+
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
+									<div class="items-center column  mb-4 px-1 bg-primary-ultralight">
+										<div class="timeslot-content selectable" :class="{ selected: hasSelected($root.auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
+											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- Contacts -->
 							<tr v-for="contact in bookingLink.booking_link_contacts" :key="contact.id">
 								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
@@ -47,20 +75,21 @@
 										</div>
 									</div>
 								</td>
-								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
 									<span v-if="(contact.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: contact.color.replace('0.1', '1') }">
 										<div class="profile-image profile-image-xs inline-block -mt-1" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
 											<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 										</div>
 									</span>
 									<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: contact.color }">
-										<div class="timeslot-content" :class="{ selected: bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+										<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user_id, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
 										</div>
 									</div>
 								</td>
 							</tr>
 
+							<!-- Emails -->
 							<tr v-for="email in bookingLink.emails" :key="email.email">
 								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
 									<div class="flex items-center py-3 -ml-3">
@@ -75,14 +104,14 @@
 										</div>
 									</div>
 								</td>
-								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available }">
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || editable }">
 									<span v-if="(email.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: email.color.replace('0.1', '1') }">
 										<div class="profile-image profile-image-xs inline-block -mt-1">
 											<span>{{ email.email[0] }}</span>
 										</div>
 									</span>
 									<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: email.color }">
-										<div class="timeslot-content" :class="{ selected: bookingLink.dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+										<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
 										</div>
 									</div>

@@ -19,7 +19,10 @@
 	}
 }
 .timeslot-content {
-	@apply px-1 flex flex-col justify-center h-full border border-gray-100 border-opacity-0 rounded-lg relative transition-colors;
+	@apply px-1 flex flex-col justify-center h-full border border-transparent  rounded-lg relative;
+	&.selectable {
+		@apply cursor-pointer hover:border-primary-light transition-colors;
+	}
 	&:after {
 		content: '';
 		width: 1px;

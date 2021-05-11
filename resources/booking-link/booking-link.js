@@ -2,7 +2,6 @@
 /* global BOOKING_LINK */
 /* global IN_EMAILS */
 require('../js/bootstrap');
-
 import dayjs from 'dayjs';
 import jstz from 'jstz';
 const timezone = jstz.determine();
@@ -17,6 +16,8 @@ import Chatroom from '../dashboard/pages/booking-links/chatroom/chatroom.vue';
 import ClockIcon from '../icons/clock';
 import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
 import ChevronDownIcon from '../icons/chevron-down';
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+dayjs.extend(IsSameOrAfter);
 
 export default {
 	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom, ClockIcon, VueDropdown, ChevronDownIcon },
@@ -54,6 +55,11 @@ export default {
 	}),
 
 	computed: {
+		editable() {
+			if (!this.selectedDate) return false;
+			return dayjs(this.selectedDate).isSameOrAfter(dayjs());
+		},
+
 		timeslotStatusText() {
 			let status = 'Suggest';
 			if (this.hoveredTimeslot && this.bookingLink.dates[this.selectedDate].timeslots.find(x => x.time == this.hoveredTimeslot.time && x.isSuggested)) {
@@ -89,72 +95,78 @@ export default {
 
 	created() {
 		this.timezone = timezone.name();
-		this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
+		if (!this.bookingLink.is_booked) {
+			this.channel = this.echo.join(`bookingLinks.${this.bookingLink.id}`);
 
-		this.channel.listenForWhisper('selectedTimeslots', data => {
-			this.bookingLink.dates[data.selectedDate].selectedTimeslots = data.selectedTimeslots;
-			this.bookingLink.dates[data.selectedDate].timeslots = data.timeslots;
-		});
+			this.channel.listenForWhisper('selectedTimeslots', data => {
+				this.bookingLink.dates[data.selectedDate].selectedTimeslots = data.selectedTimeslots;
+				this.bookingLink.dates[data.selectedDate].timeslots = data.timeslots;
+			});
 
-		this.channel.listenForWhisper('suggestTimeslot', data => {
-			let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
-			if (contact) {
-				if (!contact.suggestedTimeslots) {
-					this.$set(contact, 'suggestedTimeslots', []);
-				}
-				let index = contact.suggestedTimeslots.findIndex(t => t.time == data.timeslot.time);
-				if (data.is_suggested) {
-					if (index == -1) {
-						contact.suggestedTimeslots.push(data.timeslot);
+			this.channel.listenForWhisper('suggestTimeslot', data => {
+				let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+				if (contact) {
+					if (!contact.suggestedTimeslots) {
+						this.$set(contact, 'suggestedTimeslots', []);
 					}
-				} else {
-					if (index > -1) {
-						contact.suggestedTimeslots.splice(index, 1);
+					let index = contact.suggestedTimeslots.findIndex(t => t.time == data.timeslot.time);
+					if (data.is_suggested) {
+						if (index == -1) {
+							contact.suggestedTimeslots.push(data.timeslot);
+						}
+					} else {
+						if (index > -1) {
+							contact.suggestedTimeslots.splice(index, 1);
+						}
 					}
 				}
-			}
-		});
+			});
 
-		this.channel.listenForWhisper('requestToBook', data => {
-			let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
-			if (contact) {
-				data.contact = contact;
-				this.requestData = data;
-				this.$refs.requestingModal.show();
-			}
-		});
-
-		this.channel.listenForWhisper('declineRequest', data => {
-			this.acceptedContacts = 0;
-			this.$refs.requestModal.hide(true);
-			this.$toast.error(`${data.contact} has declined the request to book the selected timeslot.`);
-		});
-
-		this.channel.listenForWhisper('acceptRequest', data => {
-			let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
-			if (contact) {
-				this.acceptedContacts++;
-				if (this.bookingLink.booking_link_contacts.length == this.acceptedContacts) {
-					this.channel.whisper('creatingBooking', {});
-					this.$refs.requestingModal.hide(true);
-					this.$refs.requestModal.hide(true);
-					this.$refs.bookingModal.show();
-					this.createBooking();
+			this.channel.listenForWhisper('requestToBook', data => {
+				let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+				if (contact) {
+					data.contact = contact;
+					this.requestData = data;
+					this.$refs.requestingModal.show();
 				}
-			}
-		});
+			});
 
-		this.channel.listenForWhisper('creatingBooking', () => {
-			this.$refs.requestingModal.hide(true);
-			this.$refs.requestModal.hide(true);
-			this.$refs.bookingModal.show();
-		});
+			this.channel.listenForWhisper('declineRequest', data => {
+				this.acceptedContacts = 0;
+				this.$refs.requestModal.hide(true);
+				this.$toast.error(`${data.contact} has declined the request to book the selected timeslot.`);
+			});
 
-		this.channel.listenForWhisper('bookingSuccess', data => {
-			this.booking = data.booking;
-			this.$refs.bookingModal.hide(true);
-			this.$refs.bookingSuccessModal.show();
-		});
+			this.channel.listenForWhisper('acceptRequest', data => {
+				let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
+				if (contact) {
+					this.acceptedContacts++;
+					if (this.bookingLink.booking_link_contacts.length == this.acceptedContacts) {
+						this.channel.whisper('creatingBooking', {});
+						this.$refs.requestingModal.hide(true);
+						this.$refs.requestModal.hide(true);
+						this.$refs.bookingModal.show();
+						this.createBooking();
+					}
+				}
+			});
+
+			this.channel.listenForWhisper('creatingBooking', () => {
+				this.$refs.requestingModal.hide(true);
+				this.$refs.requestModal.hide(true);
+				this.$refs.bookingModal.show();
+			});
+
+			this.channel.listenForWhisper('bookingSuccess', data => {
+				this.booking = data.booking;
+				this.$refs.bookingModal.hide(true);
+				this.$refs.bookingSuccessModal.show();
+			});
+
+			this.channel.listenForWhisper('selectTimeslot', data => {
+				this.$set(this.bookingLink.selected_timeslots, data.key, data.value);
+			});
+		}
 
 		this.selectedDate = Object.keys(this.bookingLink.dates)[0];
 
@@ -171,6 +183,20 @@ export default {
 	},
 
 	methods: {
+		hasSelected(userID, timeslot) {
+			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
+		},
+
+		toggleSelectTimeslot(timeslot) {
+			let propName = `${this.auth.id}-${this.selectedDate}`;
+			this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink, { toasted: true });
+			this.channel.whisper('selectTimeslot', {
+				key: propName,
+				value: timeslot.time
+			});
+		},
+
 		addToCalendar(calendar, booking) {
 			switch (calendar) {
 				case 'Google Calendar':

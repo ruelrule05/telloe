@@ -32,7 +32,11 @@ class BookingLinkPolicy
 
     public function update(User $user, BookingLink $bookingLink)
     {
-        return $user->id == $bookingLink->user_id;
+        $contactUserIds = [];
+        $bookingLink->bookingLinkContacts->each(function ($bookingLinkContact) use (&$contactUserIds) {
+            $contactUserIds[] = $bookingLinkContact->contact->contact_user_id;
+        });
+        return $user->id == $bookingLink->user_id || in_array($user->id, $contactUserIds);
     }
 
     public function destroy(User $user, BookingLink $bookingLink)

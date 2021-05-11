@@ -87,9 +87,13 @@ class BookingLinkService
     public static function update($id, Request $request)
     {
         $bookingLink = BookingLink::findOrFail($id);
+        if ($bookingLink->is_booked) {
+            return abort(403, 'Booking link is already booked.');
+        }
 
         $bookingLink->update([
-            'dates' => $request->dates
+            'dates' => $request->dates,
+            'selected_timeslots' => count($request->selected_timeslots) > 0 ? $request->selected_timeslots : NULL,
         ]);
         return response($bookingLink->fresh()->load('bookingLinkContacts.contact.contactUser'));
     }
@@ -118,7 +122,7 @@ class BookingLinkService
 
     public static function public($uuid, Request $request)
     {
-        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser', 'bookingLinkMessages.user')->firstOrFail();
+        $bookingLink = BookingLink::with('user')->where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser', 'bookingLinkMessages.user')->firstOrFail();
         $user = Auth::user();
         $email = $user->email ?? $request->email;
         $bookingLinkContact = false;

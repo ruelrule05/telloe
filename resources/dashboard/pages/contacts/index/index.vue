@@ -12,16 +12,19 @@
 			</div>
 
 			<div class="flex h-full contact-content">
-				<div class="w-2/3 pt-8 pb-8 pl-6 pr-16 border-right">
+				<div class="w-2/3 p-8 border-right">
 					<div class="flex items-center justify-between mb-3 header">
-						<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
+						<div class="flex items-center">
+							<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
+							<multiselect v-model="filterTags" class="ml-2" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
+						</div>
 
 						<form @submit.prevent="getData()">
-							<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none w-80" placeholder="Search by name, surname or e-mail" />
+							<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name, surname or e-mail" />
 						</form>
 					</div>
 
-					<div class="flex items-start justify-between contact-row border-bottom" v-for="contact in contacts.data" :key="contact.id">
+					<div class="flex items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
 						<div class="flex items-start">
 							<div class="mr-2">
 								<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
