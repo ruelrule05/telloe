@@ -137,7 +137,8 @@ class ContactService
             'last_name' => $request->last_name,
             'is_pending' => true,
             'invite_token' => $invite_token,
-            'blacklisted_services' => $request->blacklisted_services
+            'blacklisted_services' => $request->blacklisted_services,
+            'tags' => NULL
         ]);
         $contact->load('contactUser');
 
@@ -187,7 +188,7 @@ class ContactService
         }
 
         if ($request->sendToEmail) {
-            Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab, $request->invite_message));
+            Mail::to($contact->email)->queue(new SendInvitation($invite_token, $authTab, $request->invite_message));
         }
         $contact->conversation = $conversation;
         if ($createMessage) {
@@ -407,7 +408,7 @@ class ContactService
             $authTab = 'signup';
         }
 
-        Mail::to($contact->email)->queue(new SendInvitation($contact, $authTab));
+        Mail::to($contact->email)->queue(new SendInvitation($contact->invite_token, $authTab));
         return ['success' => true];
     }
 

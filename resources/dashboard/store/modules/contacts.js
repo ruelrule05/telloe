@@ -82,7 +82,9 @@ const mutations = {
 		if (contact) {
 			contact.is_pending = data.is_pending;
 		}
-	}
+	},
+
+	bulkStore() {}
 };
 
 const actions = {
@@ -96,6 +98,12 @@ const actions = {
 	async store({ commit }, data) {
 		let response = await window.axios.post(`/${name}`, data, { toast: true });
 		commit('store', response.data);
+		return response.data;
+	},
+
+	async bulkStore({ commit }, data) {
+		let response = await window.axios.post(`/${name}/bulk`, data, { toast: true });
+		commit('bulkStore', response.data);
 		return response.data;
 	},
 

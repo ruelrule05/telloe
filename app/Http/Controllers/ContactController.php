@@ -8,12 +8,16 @@ use App\Http\Requests\ContactCreateSubscriptionRequest;
 use App\Http\Requests\ContactFinalizeInvoiceRequest;
 use App\Http\Requests\ContactGetFromInviteTokenRequest;
 use App\Http\Requests\StoreContactRequest;
+use App\Mail\SendInvitation;
 use App\Models\Contact;
 use App\Models\ContactPackage;
 use App\Models\Package;
+use App\Models\User;
 use App\Services\ContactService;
 use Auth;
 use Illuminate\Http\Request;
+use Mail;
+use Str;
 
 class ContactController extends Controller
 {
@@ -132,5 +136,84 @@ class ContactController extends Controller
         return response()->json($contactPackage->update([
             'service' => $service
         ]));
+    }
+
+    public function bulkStore(Request $request)
+    {
+        $this->validate($request, [
+            'contacts' => 'required|array',
+        ]);
+        $authUser = Auth::user();
+        $contacts = [];
+        foreach ($request->contacts as $contact) {
+            if ($contact['email']) {
+                $contacts[] = [
+                    'email' => $contact['email'],
+                    'first_name' => $contact['first_name'] ?? null,
+                    'last_name' => $contact['last_name'] ?? null,
+                ];
+            }
+        }
+
+        $contactsToAdd = [];
+        $contacts = collect($contacts);
+
+        // Remove existing contacts
+        $existingContacts = Contact::where('user_id', $authUser->id)->whereIn('email', $contacts->pluck('email')->toArray())->get();
+        $contacts = $contacts->filter(function ($contact) use ($existingContacts) {
+            return $existingContacts->where('email', $contact['email'])->first() ? false : true;
+        });
+
+        // Existing users
+        $existingUsers = User::whereIn('email', $contacts->pluck('email'))->get();
+        foreach ($existingUsers as $existingUser) {
+            $invite_token = Str::random(30);
+            while (Contact::where('invite_token', $invite_token)->exists()) {
+                $invite_token = Str::random(30);
+            }
+            $contactsToAdd[] = [
+                'user_id' => $authUser->id,
+                'contact_user_id' => $existingUser->id,
+                'email' => $existingUser->email,
+                'first_name' => $existingUser->first_name,
+                'last_name' => $existingUser->last_name,
+                'is_pending' => true,
+                'invite_token' => $invite_token,
+            ];
+        }
+        // Add existing Users
+        Contact::insert($contactsToAdd);
+        foreach ($contactsToAdd as $contactsToAddEmail) {
+            Mail::to($contactsToAddEmail['email'])->queue(new SendInvitation($contactsToAddEmail['invite_token'], 'login'));
+        }
+
+        // Remove existing users
+        $contactsToAdd = [];
+        $contacts = $contacts->filter(function ($contact) use ($existingUsers) {
+            return $existingUsers->where('email', $contact['email'])->first() ? false : true;
+        });
+
+        foreach ($contacts as $contact) {
+            $invite_token = Str::random(30);
+            while (Contact::where('invite_token', $invite_token)->exists()) {
+                $invite_token = Str::random(30);
+            }
+            $contactsToAdd[] = [
+                'user_id' => $authUser->id,
+                'contact_user_id' => null,
+                'email' => $contact['email'] ?? null,
+                'first_name' => $contact['first_name'] ?? null,
+                'last_name' => $contact['last_name'] ?? null,
+                'is_pending' => true,
+                'invite_token' => $invite_token,
+            ];
+        }
+        // Add non existing users
+        Contact::insert($contactsToAdd);
+        foreach ($contactsToAdd as $contactsToAddEmail) {
+            Mail::to($contactsToAddEmail['email'])->queue(new SendInvitation($contactsToAddEmail['invite_token'], 'signup'));
+        }
+
+        return response(true);
     }
 }

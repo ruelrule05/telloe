@@ -58,7 +58,7 @@
 						<div v-if="contact">
 							{{ contact.contact_user.full_name }}
 						</div>
-						<multiselect v-else v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="" multiple clearOnSelect>
+						<multiselect v-else v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
 								<button v-if="isEmail.validate(data.search)" type="button" @click="addEmail(data.search)" class="btn btn-sm btn-outline-primary"><span>Add this email</span></button>

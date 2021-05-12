@@ -25,8 +25,8 @@ class Contact extends BaseModel
     public function contactUser()
     {
         return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function ($contactUser, $contact) {
-            $contactUser->first_name = $contact->attributes['first_name'];
-            $contactUser->last_name = $contact->attributes['last_name'];
+            $contactUser->first_name = $contact->attributes['first_name'] ?? '';
+            $contactUser->last_name = $contact->attributes['last_name'] ?? '';
             $contactUser->email = $contact->attributes['email'];
             $contactUser->last_online = null;
         });

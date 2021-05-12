@@ -6,7 +6,17 @@
 					CONTACTS
 				</div>
 				<div>
-					<button type="button" class="mr-2 btn btn-md btn-outline-primary" @click="$refs.importCsv.show()"><span>Import</span></button>
+					<button
+						type="button"
+						class="mr-2 btn btn-md btn-outline-primary"
+						@click="
+							csvFile = null;
+							csvPreview = false;
+							$refs.importCsv.show();
+						"
+					>
+						<span>Import</span>
+					</button>
 					<button type="button" class="btn btn-md btn-primary" @click="addContact = true"><span>Add contact</span></button>
 				</div>
 			</div>
@@ -50,6 +60,8 @@
 							</VueDropdown>
 						</div>
 					</div>
+
+					<Paginate v-if="contacts.data.length > 0" :data="contacts" @change="p => (page = p)" class="mt-6"></Paginate>
 
 					<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
 				</div>
@@ -123,8 +135,54 @@
 			</vue-form-validate>
 		</div>
 
-		<Modal ref="importCsv" size="sm">
-			<h4 class="font-serif uppercase font-semibold mb-4">IMPORT FROM CSV</h4>
+		<Modal ref="importCsv">
+			<div v-if="!csvFile">
+				<h4 class="font-serif uppercase font-semibold mb-4">IMPORT FROM CSV</h4>
+				<div class="py-6 text-sm text-muted text-center border border-gray-300 border-dashed rounded-xl bg-gray-50 cursor-pointer transition-colors hover:bg-gray-100" @click="$refs.csvFile.click()">
+					Click here to import CSV file
+				</div>
+				<input type="file" class="hidden" accept=".csv" ref="csvFile" @change="readCsv" />
+			</div>
+			<vue-form-validate @submit="csvPreview = true" v-else-if="!csvPreview">
+				<h4 class="font-serif uppercase font-semibold mb-4">MAP HEADINGS</h4>
+				<div v-for="mapping in csvMappings" :key="mapping.field" class="mt-2 relative flex items-center justify-between text-sm bg-gray-50 rounded-md py-2">
+					<div class="bg-gray-50 px-2 relative z-10">{{ mapping.label }} <span v-if="mapping.required">(Required)</span></div>
+					<div class="absolute-center w-full h-px bg-gray-300 z-0"></div>
+					<div class="bg-gray-50 px-2 relative z-10">
+						<select v-model="mapping.heading" :data-required="mapping.required" class="input cursor-pointer" :class="{ 'text-muted': !mapping.heading.toString().trim().length }">
+							<option value="" disabled>- Select heading -</option>
+							<option v-for="(heading, headingIndex) in csvHeadings" :key="heading" :value="headingIndex">{{ heading }}</option>
+						</select>
+					</div>
+				</div>
+				<div class="flex justify-between mt-4">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.importCsv.hide()"><span>Cancel</span></button>
+					<button :disabled="!csvFile" class="btn btn-primary btn-md" type="submit"><span>Next</span></button>
+				</div>
+			</vue-form-validate>
+
+			<div v-else-if="csvPreview">
+				<h4 class="font-serif uppercase font-semibold mb-4">PREVIEW</h4>
+
+				<div class="flex text-sm text-muted mb-2">
+					<div class="w-1/3">Email</div>
+					<div class="w-1/3 px-3">First Name</div>
+					<div class="w-1/3">Last Name</div>
+				</div>
+				<div class="overflow-y-auto overflow-x-hidden h-72">
+					<template v-for="(csvContact, csvContactIndex) in csvContacts">
+						<div v-if="csvContact[csvMappings[0].heading]" :key="csvContactIndex" class="flex text-sm border-bottom py-1">
+							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[0].heading] }}</div>
+							<div class="w-1/3 truncate overflow-hidden px-3">{{ csvContact[csvMappings[1].heading] }}</div>
+							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[2].heading] }}</div>
+						</div>
+					</template>
+				</div>
+				<div class="flex justify-between mt-4">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="csvPreview = false"><span>Back</span></button>
+					<button :disabled="!csvFile" class="btn btn-primary btn-md" type="button" @click="submitImportCsv"><span>Import</span></button>
+				</div>
+			</div>
 		</Modal>
 
 		<Modal ref="fieldsModal" size="sm">

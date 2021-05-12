@@ -82,7 +82,30 @@ export default {
 		originalUserCustomFields: [],
 		userCustomFields: [],
 		action: null,
-		channel: null
+		channel: null,
+		csvFile: null,
+		csvHeadings: [],
+		csvMappings: [
+			{
+				label: 'Email',
+				field: 'email',
+				heading: '',
+				required: true
+			},
+			{
+				label: 'First Name',
+				field: 'first_name',
+				heading: ''
+			},
+			{
+				label: 'Last Name',
+				field: 'last_name',
+				heading: ''
+			}
+		],
+		csvContacts: [],
+		csvPreview: false,
+		page: 1
 	}),
 
 	computed: {
@@ -160,6 +183,10 @@ export default {
 			if (!value) {
 				this.getContacts();
 			}
+		},
+
+		page: function() {
+			this.getData();
 		}
 	},
 
@@ -198,6 +225,7 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index',
 			storeContact: 'contacts/store',
+			bulkStoreContact: 'contacts/bulkStore',
 			updateContact: 'contacts/update',
 			deleteContact: 'contacts/delete',
 			getContactFromInviteToken: 'contacts/get_contact_from_invite_token',
@@ -205,6 +233,45 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			storeConversation: 'conversations/store'
 		}),
+
+		async submitImportCsv() {
+			if (this.csvFile && this.csvContacts.length > 0) {
+				let contacts = [];
+				this.csvContacts.forEach(contact => {
+					if (contact[this.csvMappings[0].heading]) {
+						contacts.push({
+							email: contact[this.csvMappings[0].heading],
+							first_name: contact[this.csvMappings[1].heading],
+							last_name: contact[this.csvMappings[2].heading]
+						});
+					}
+				});
+				this.$refs.importCsv.hide();
+				await this.bulkStoreContact({ contacts: contacts });
+				this.getContacts();
+			}
+		},
+
+		readCsv(e) {
+			this.csvFile = e.srcElement.files[0];
+			if (this.csvFile) {
+				var reader = new FileReader();
+				reader.onload = () => {
+					let lines = reader.result.split('\n');
+					this.csvHeadings = lines[0]
+						.replaceAll('"', '')
+						.split(',')
+						.filter(x => x.trim().length > 0);
+					delete lines[0];
+					let csvContacts = [];
+					lines.forEach(line => {
+						csvContacts.push(line.replaceAll('"', '').split(','));
+					});
+					this.csvContacts = csvContacts;
+				};
+				reader.readAsBinaryString(this.csvFile);
+			}
+		},
 
 		contactAction(action, contact) {
 			this.selectedContact = contact;
@@ -238,7 +305,7 @@ export default {
 		},
 
 		async getData() {
-			this.getContacts({ page: this.contacts.current_page, query: this.query, status: this.contactStatus });
+			this.getContacts({ page: this.page, query: this.query, status: this.contactStatus });
 		},
 
 		update(contact) {

@@ -111,7 +111,7 @@ export default {
 				parsedBookings.push(dayEvent);
 			});
 
-			return parsedBookings.filter((v, i, a) => a.findIndex(t => t.booking.id === v.booking.id) === i);
+			return parsedBookings.filter((v, i, a) => a.findIndex(t => (t.booking || {}).id === (v.booking || {}).id) === i);
 		}
 	},
 

@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Contact;
+use Auth;
 
 class SendInvitation extends Mailer
 {
@@ -11,12 +11,12 @@ class SendInvitation extends Mailer
     public $actionUrl;
     public $emailMessage;
 
-    public function __construct(Contact $contact, $authTab, $message = null)
+    public function __construct($inviteToken, $authTab, $message = null)
     {
+        $authUser = Auth::user();
         $appName = config('app.name');
-        $this->contact = $contact;
-        $this->actionUrl = url("/?invite_token=$contact->invite_token&auth=$authTab");
-        $this->emailMessage = strlen($message) > 0 ? $message : "<strong>{$contact->user->full_name}</strong> has invited you in {$appName}.";
+        $this->actionUrl = url("/?invite_token=$inviteToken&auth=$authTab");
+        $this->emailMessage = strlen($message) > 0 ? $message : "<strong>{$authUser->full_name}</strong> has invited you in {$appName}.";
     }
 
     /**
