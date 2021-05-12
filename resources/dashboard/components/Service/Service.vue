@@ -2,13 +2,14 @@
 	<div>
 		<vue-form-validate class="flex min-h-screen flex-col" v-if="clonedService" @submit="update">
 			<div class="content-header border-bottom">
-				EDITING: {{ service.name }}
+				<span v-if="createService">CREATE EVENT TYPE</span>
+				<span v-else> EDITING: {{ service.name }}</span>
 				<div class="ml-auto">
 					<button type="button" class="btn btn-md btn-outline-primary" @click="$emit('close')">
 						<span>Cancel</span>
 					</button>
 					<button type="submit" class="btn btn-md btn-primary">
-						<span>Save</span>
+						<span>{{ createService ? 'Create' : 'Save' }}</span>
 					</button>
 				</div>
 			</div>
@@ -66,7 +67,7 @@
 							</div>
 						</template>
 						<div class="relative mt-6">
-							<VueDropdown :options="types" drop-position="top" @click="selectType">
+							<VueDropdown :options="types" drop-position="top" @click="selectType" ref="meetingTypes">
 								<template #button>
 									<div class="btn cursor-pointer btn-md btn-outline-primary inline-flex items-center"><PlusIcon class="stroke-current mr-2"></PlusIcon><span>Add Type</span></div>
 								</template>
@@ -135,7 +136,7 @@
 							</div>
 							<div>
 								<label>Timezone</label>
-								<VueSelect class="w-1/3" :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedService.timezone" placeholder="Select timezone"></VueSelect>
+								<VueSelect class="w-1/3" :required="activeMenu == 'Advanced'" :options="availableTimezones" drop-position="top" searchable v-model="clonedService.timezone" placeholder="Select timezone"></VueSelect>
 							</div>
 						</div>
 					</div>

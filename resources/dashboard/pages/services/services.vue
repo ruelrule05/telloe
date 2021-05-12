@@ -9,7 +9,8 @@
 						class="btn btn-md btn-outline-primary"
 						@click="
 							resetNewService();
-							$refs.addServiceModal.show();
+							createService = true;
+							serviceToEdit = newService;
 						"
 					>
 						<span>Add Event type</span>
@@ -64,7 +65,16 @@
 		</div>
 
 		<!-- Edit service -->
-		<Service v-show="serviceToEdit" :service="serviceToEdit" @close="serviceToEdit = null"></Service>
+		<Service
+			v-show="serviceToEdit"
+			:createService="createService"
+			:service="serviceToEdit"
+			@close="
+				serviceToEdit = null;
+				resetNewService();
+				createService = false;
+			"
+		></Service>
 
 		<Modal ref="addServiceModal">
 			<h6 class="font-serif font-semibold mb-5">ADD EVENT TYPE</h6>

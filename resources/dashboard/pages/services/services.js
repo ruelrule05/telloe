@@ -19,7 +19,8 @@ export default {
 	data: () => ({
 		serviceToEdit: null,
 		serviceToDelete: null,
-		newService: {}
+		newService: {},
+		createService: false
 	}),
 
 	computed: {

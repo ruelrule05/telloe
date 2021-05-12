@@ -17,7 +17,7 @@ export default {
 			required: true
 		},
 
-		newService: {
+		createService: {
 			type: Boolean,
 			default: false
 		}
@@ -126,7 +126,8 @@ export default {
 
 	methods: {
 		...mapActions({
-			updateService: 'services/update'
+			updateService: 'services/update',
+			storeService: 'services/store'
 		}),
 
 		selectType(type) {
@@ -159,7 +160,21 @@ export default {
 			if (data.ends_at) {
 				data.ends_at = dayjs(data.ends_at).format('YYYY-MM-DD');
 			}
-			this.updateService(data);
+			if (!data.types || !data.types.length) {
+				this.$refs.meetingTypes.$el.querySelector('.btn-dropdown').click();
+				document.querySelector('.dashboard-content').scrollTo(0, document.querySelector('.dashboard-content').scrollHeight);
+				return;
+			}
+			if (!data.timezone) {
+				this.activeMenu = 'Advanced';
+				return;
+			}
+
+			if (this.createService) {
+				this.storeService(data);
+			} else {
+				this.updateService(data);
+			}
 			this.$emit('close');
 		},
 
