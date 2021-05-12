@@ -93,7 +93,7 @@ class ContactService
             }
         }
         $now = Carbon::now()->format('Y-m-d H:i');
-        $bookings = Booking::with('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices')->whereHas('bookingUsers', function ($bookingUsers) use ($contact) {
+        $bookings = Booking::with('service.user', 'service.parentService.assignedServices', 'service.assignedServices')->whereHas('bookingUsers', function ($bookingUsers) use ($contact) {
             $bookingUsers->where('user_id', $contact->contact_user_id);
         })->whereIn('service_id', $serviceIds);
         $upcoming_bookings = clone $bookings;

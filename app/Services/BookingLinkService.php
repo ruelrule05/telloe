@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\BookingLink;
 use App\Models\BookingLinkContact;
 use App\Models\BookingLinkMessage;
+use App\Models\BookingUser;
 use App\Models\Contact;
 use Auth;
 use Carbon\Carbon;
@@ -161,7 +162,7 @@ class BookingLinkService
 
     public static function book($uuid, Request $request)
     {
-        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser')->firstOrFail();
+        $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser')->where('is_booked', false)->firstOrFail();
         $user = Auth::user(); 
         $email = $user->email ?? $request->email;
         $bookingLinkContact = false;
@@ -182,13 +183,29 @@ class BookingLinkService
                 'date' => $request->date,
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
+                'meeting_type' => 'Custom Link'
             ]);
+            $bookingLink->bookingLinkContacts->each(function ($bookingLinkContact) use ($booking) {
+                BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => $bookingLinkContact->contact->contact_user_id
+                ]);
+            });
+            collect($bookingLink->emails)->each(function ($email) use ($booking) {
+                BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'guest' => ['email' => $email]
+                ]);
+            });
 
             $link = Link::create($bookingLink->name, $start, $end);
             $booking->google_link = $link->google();
             $booking->outlook_link = url('/ics?name=' . $bookingLink->name . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
             $booking->ical_link = $booking->outlook_link;
+            $bookingLink->update([
+                'is_booked' => true
+            ]);
 
             //Mail::queue(new NewBooking([$booking], 'customer'));
 

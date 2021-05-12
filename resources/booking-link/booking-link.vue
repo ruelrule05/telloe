@@ -15,8 +15,9 @@
 							<td></td>
 							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 								<div v-if="!bookingLink.is_booked && editable" class="text-center px-2 pb-2 bg-white relative z-10">
-									<VueCheckbox v-model="timeslot.is_suggested" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
+									<VueCheckbox v-if="!timeslot.is_available" v-model="timeslot.is_suggested" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
 									<!-- <button v-else class="text-xs bg-primary rounded-xl text-white w-full py-0.5" type="button" @click="requestToBook(timeslot)"><span>Book</span></button> -->
+									<span v-else>&nbsp;</span>
 								</div>
 							</td>
 						</tr>

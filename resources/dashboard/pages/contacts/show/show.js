@@ -123,6 +123,35 @@ export default {
 			packages: state => state.packages.index
 		}),
 
+		notes() {
+			let notes = this.contact.contactNotes || [];
+			this.contact.bookings.data.forEach(booking => {
+				let index = notes.findIndex(x => x.type == 'booking-note' && x.booking && x.booking.id == booking.id);
+				if (index == -1) {
+					if (booking.notes && booking.notes.trim().length > 0) {
+						notes.push({
+							type: 'booking-note',
+							note: booking.notes,
+							booking: booking,
+							created_at: booking.updated_at
+						});
+					}
+				} else {
+					notes[index].note = booking.notes;
+				}
+			});
+			if (this.notesOrder == 'desc') {
+				return notes.sort((a, b) => {
+					return a.created_at > b.created_at ? -1 : 1;
+				});
+			} else if (this.notesOrder == 'asc') {
+				return notes.sort((a, b) => {
+					return b.created_at > a.created_at ? -1 : 1;
+				});
+			}
+			return notes;
+		},
+
 		selectedPackageOptions() {
 			let selectedPackageOptions = [];
 			if (this.selectedPackage) {
@@ -319,6 +348,7 @@ export default {
 				this.selectedBooking.date = dayjs(booking.date).format('YYYY-MM-DD');
 				this.selectedBooking.start = booking.start;
 				this.selectedBooking.end = booking.end;
+				this.selectedBooking.notes = booking.notes;
 			}
 			this.selectedBooking = null;
 		},
@@ -341,6 +371,10 @@ export default {
 					break;
 				case 'Delete':
 					this.deleteContactNote(note);
+					break;
+
+				case 'View Booking':
+					this.selectedBooking = note.booking;
 					break;
 			}
 		},

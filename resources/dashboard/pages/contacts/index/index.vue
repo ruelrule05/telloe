@@ -6,7 +6,7 @@
 					CONTACTS
 				</div>
 				<div>
-					<button type="button" class="hidden mr-3 btn btn-md btn-outline-primary"><span>Import</span></button>
+					<button type="button" class="mr-2 btn btn-md btn-outline-primary" @click="$refs.importCsv.show()"><span>Import</span></button>
 					<button type="button" class="btn btn-md btn-primary" @click="addContact = true"><span>Add contact</span></button>
 				</div>
 			</div>
@@ -123,6 +123,10 @@
 			</vue-form-validate>
 		</div>
 
+		<Modal ref="importCsv" size="sm">
+			<h4 class="font-serif uppercase font-semibold mb-4">IMPORT FROM CSV</h4>
+		</Modal>
+
 		<Modal ref="fieldsModal" size="sm">
 			<h4 class="font-serif uppercase font-semibold mb-4">MANAGE FIELDS</h4>
 			<div v-for="(custom_field, index) in userCustomFields" :key="index" class="flex items-center custom-field position-relative">
@@ -151,7 +155,7 @@
 			</div>
 		</Modal>
 
-		<Modal ref="editModal" :close-button="false">
+		<Modal ref="editModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT CONTACT</h4>
 			<vue-form-validate v-if="clonedContact" @submit="update(clonedContact)">
 				<fieldset :disabled="!clonedContact.is_pending">

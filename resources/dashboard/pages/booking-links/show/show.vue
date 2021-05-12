@@ -117,6 +117,13 @@
 									</div>
 								</td>
 							</tr>
+
+							<tr>
+								<td></td>
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex">
+									<button v-if="isBookable(timeslot)" class="text-xs bg-primary rounded-xl text-white w-full py-0.5" type="button" @click="book(timeslot)"><span>Book</span></button>
+								</td>
+							</tr>
 						</table>
 					</div>
 				</div>
@@ -150,6 +157,22 @@
 			<div class="flex items-center mt-6 justify-between">
 				<button :disabled="sendingEmail" class="btn btn-outline-primary btn-md" type="button" @click="$refs.sendModal.hide(true)"><span>Cancel</span></button>
 				<vue-button :loading="sendingEmail" button_class="btn btn-primary btn-md" type="button" @click="sendEmail"><span>Send</span></vue-button>
+			</div>
+		</Modal>
+
+		<Modal ref="bookingSuccessModal" noBackdropHide size="sm">
+			<div v-if="booking">
+				<button type="button" @click="$refs.bookingSuccessModal.hide(true)" class="absolute top-3 right-3 rounded-full p-2 border text-gray-600 ml-1 transition-colors hover:bg-gray-200 focus:outline-none"><CloseIcon class="fill-current"></CloseIcon></button>
+
+				<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
+				<div class="text-sm">
+					<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ bookingLink.duration }} min</span>
+				</div>
+
+				<div class="bg-gray-50 rounded-2xl p-4 mt-5">
+					<h6 class="font-semibold">{{ formatDate(booking.date) }} ({{ dayjs(booking.date).format('dddd') }})</h6>
+					<div>{{ timezoneTime(booking.start, $root.auth.timezone) }} - {{ timezoneTime(booking.end, $root.auth.timezone) }}</div>
+				</div>
 			</div>
 		</Modal>
 

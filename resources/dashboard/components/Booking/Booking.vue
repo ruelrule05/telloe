@@ -155,7 +155,10 @@
 						</v-date-picker>
 						<div class="my-4">
 							<div class="flex justify-between">
-								<label>Time</label>
+								<div>
+									<label>Time</label>
+									{{ clonedBooking.start }} - {{ clonedBooking.end }}
+								</div>
 								<VueCheckbox v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
 							</div>
 							<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-visible border bg-gray-50 rounded-lg">

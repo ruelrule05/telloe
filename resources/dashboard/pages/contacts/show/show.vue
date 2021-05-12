@@ -55,7 +55,7 @@
 						<div class="flex items-center justify-between mb-6 filters">
 							<button type="button" class="btn btn-outline-primary btn-sm" @click="addingNote = true"><span>Add new</span></button>
 							<div class="flex">
-								<vue-select v-if="(contact.contactNotes || []).length > 0" :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="notesOrder" label="Date" placeholder="Order by" @input="getContactNotes"></vue-select>
+								<vue-select v-if="notes.length > 0" :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="notesOrder" label="Date" placeholder="Order by" @input="getContactNotes"></vue-select>
 							</div>
 						</div>
 
@@ -86,15 +86,18 @@
 							</div>
 						</vue-form-validate>
 
-						<div v-for="contact_note in contact.contactNotes" :key="contact_note.id" class="relative flex justify-between p-5 mb-3 rounded-lg bg-secondary-light note-row">
+						<div v-for="contact_note in notes" :key="contact_note.id" class="relative flex justify-between p-5 mb-3 rounded-lg bg-secondary-light note-row">
 							<div class="">
 								<p class="mr-4 text-sm">{{ contact_note.note }}</p>
 								<div class="flex items-center mt-2">
-									<p class="text-xxs text-muted">{{ formatDate(contact_note.created_at) }}</p>
+									<p class="text-xxs text-muted">
+										{{ formatDate(contact_note.created_at) }}
+										<span v-if="contact_note.type == 'booking-note'"> - Booking note</span>
+									</p>
 								</div>
 							</div>
 
-							<VueDropdown :options="['Edit', 'Delete']" @click="noteAction($event, contact_note)">
+							<VueDropdown :options="contact_note.type == 'booking-note' ? ['View Booking'] : ['Edit', 'Delete']" @click="noteAction($event, contact_note)">
 								<template #button>
 									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 -mt-2 -mr-3">
 										<MoreIcon class="fill-current text-gray-300 h-4 w-4"></MoreIcon>

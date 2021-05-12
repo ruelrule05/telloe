@@ -56,7 +56,7 @@ export default {
 
 	computed: {
 		editable() {
-			if (!this.selectedDate) return false;
+			if (!this.selectedDate || this.bookingLink.is_booked) return false;
 			return dayjs(this.selectedDate).isSameOrAfter(dayjs());
 		},
 
@@ -137,20 +137,6 @@ export default {
 				this.$toast.error(`${data.contact} has declined the request to book the selected timeslot.`);
 			});
 
-			this.channel.listenForWhisper('acceptRequest', data => {
-				let contact = this.bookingLink.booking_link_contacts.find(c => c.contact.contact_user_id == data.userId);
-				if (contact) {
-					this.acceptedContacts++;
-					if (this.bookingLink.booking_link_contacts.length == this.acceptedContacts) {
-						this.channel.whisper('creatingBooking', {});
-						this.$refs.requestingModal.hide(true);
-						this.$refs.requestModal.hide(true);
-						this.$refs.bookingModal.show();
-						this.createBooking();
-					}
-				}
-			});
-
 			this.channel.listenForWhisper('creatingBooking', () => {
 				this.$refs.requestingModal.hide(true);
 				this.$refs.requestModal.hide(true);
@@ -161,6 +147,7 @@ export default {
 				this.booking = data.booking;
 				this.$refs.bookingModal.hide(true);
 				this.$refs.bookingSuccessModal.show();
+				this.bookingLink.is_booked = true;
 			});
 
 			this.channel.listenForWhisper('selectTimeslot', data => {
@@ -211,22 +198,6 @@ export default {
 				case 'iCal (.ics file download)':
 					window.open(booking.ical_link, '_blank');
 					break;
-			}
-		},
-
-		async createBooking() {
-			let data = {
-				date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-				start: this.selectedTimeslot.time
-			};
-			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
-			if (response.data) {
-				this.booking = response.data;
-				this.$refs.bookingModal.hide(true);
-				this.$refs.bookingSuccessModal.show();
-				this.channel.whisper('bookingSuccess', {
-					booking: this.booking
-				});
 			}
 		},
 

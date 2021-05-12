@@ -116,7 +116,7 @@ export default {
 				});
 			}
 
-			return parsedBookings;
+			return parsedBookings.filter((v, i, a) => a.findIndex(t => t.booking.id === v.booking.id) === i);
 		}
 	},
 

@@ -22,9 +22,11 @@ import copy from 'copy-text-to-clipboard';
 import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
 const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrAfter);
+import ClockIcon from '../../../../icons/clock';
+import CloseIcon from '../../../../icons/close';
 
 export default {
-	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox },
+	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox, ClockIcon, CloseIcon },
 
 	directives: { tooltip },
 
@@ -39,12 +41,13 @@ export default {
 		currentTarget: null,
 		sendingEmail: false,
 		hoveredTimeslot: null,
-		dayjs: dayjs
+		dayjs: dayjs,
+		booking: null
 	}),
 
 	computed: {
 		editable() {
-			if (!this.selectedDate) return false;
+			if (!this.selectedDate || this.bookingLink.is_booked) return false;
 			return dayjs(this.selectedDate).isSameOrAfter(dayjs());
 		},
 
@@ -130,6 +133,54 @@ export default {
 			updateBookingLink: 'booking_links/update',
 			deleteBookingLink: 'booking_links/delete'
 		}),
+
+		async book(timeslot) {
+			this.channel.whisper('creatingBooking', {});
+
+			let data = {
+				date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+				start: timeslot.time
+			};
+			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
+			if (response.data) {
+				this.booking = response.data;
+				this.$refs.bookingSuccessModal.show();
+				this.bookingLink.is_booked = true;
+				this.channel.whisper('bookingSuccess', {
+					booking: this.booking
+				});
+			}
+		},
+
+		isBookable(timeslot) {
+			let isBookable = true;
+			if (!this.editable) {
+				isBookable = false;
+			} else {
+				// You
+				let propName = `${this.$root.auth.id}-${this.selectedDate}`;
+				if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
+					isBookable = false;
+				}
+
+				// Contacts
+				this.bookingLink.booking_link_contacts.forEach(bookingLinkContact => {
+					let propName = `${bookingLinkContact.contact.contact_user_id}-${this.selectedDate}`;
+					if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
+						isBookable = false;
+					}
+				});
+				this.bookingLink.emails.forEach(email => {
+					let propName = `${email}-${this.selectedDate}`;
+					if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
+						isBookable = false;
+					}
+				});
+
+				// Emails
+			}
+			return isBookable;
+		},
 
 		toggleSelectTimeslot(timeslot) {
 			let propName = `${this.$root.auth.id}-${this.selectedDate}`;
