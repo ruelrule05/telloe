@@ -1,0 +1,244 @@
+.navbar-item {
+	@apply px-3 py-2 text-xs font-semibold font-serif text-muted hover:text-gray-600 transition-colors focus:outline-none;
+	&.active {
+		@apply font-medium text-gray-600;
+	}
+}
+.price::first-letter {
+	@apply text-6xl #{!important};
+}
+@media (max-width: 1024px) {
+	.price::first-letter {
+		@apply text-3xl #{!important};
+	}
+}
+
+.faq {
+	max-height: 0;
+	overflow: hidden;
+	@apply transition-all;
+	&.show {
+		max-height: 500px;
+	}
+}
+.feature {
+	.feature-content {
+		@apply transition-all;
+		overflow: hidden;
+		max-height: 0;
+	}
+	&.show {
+		.feature-title {
+			@apply text-primary;
+		}
+		.feature-content {
+			max-height: 800px;
+		}
+		.line-1 {
+			display: none;
+		}
+	}
+}
+.navbar-mobile-menu {
+	z-index: -1;
+	@apply absolute top-12 left-0 scale-95 transform w-screen origin-top transition-all opacity-0 ease-in-out whitespace-nowrap text-muted font-semibold font-serif text-sm p-2;
+	&.open {
+		@apply z-50 opacity-100 scale-100;
+	}
+	a,
+	.a {
+		@apply hover:bg-gray-100 p-3 rounded-xl block font-semibold;
+	}
+}
+.navbar-mobile-btn {
+	@apply rounded p-1;
+	&.active {
+		@apply bg-white;
+	}
+}
+//@import '../sass/bootstrap';
+// @each $breakpoint, $value in $grid-breakpoints {
+// 	@media screen and (max-width: #{$value}) {
+// 		.btn-#{$breakpoint}-block {
+// 			display: block;
+// 			width: 100%;
+// 		}
+// 	}
+// }
+// [v-cloak] {
+// 	opacity: 0;
+// }
+// .navbar-collapse {
+// 	&.show,
+// 	&.collapsing {
+// 		margin-top: 20px;
+// 		background-color: $gray-200;
+// 	}
+// }
+// .home-content {
+// 	padding: 15vh 0;
+// 	overflow: hidden;
+// 	@media (max-width: map-get($grid-breakpoints, 'md')) {
+// 		padding: $grid-gutter-width 0;
+// 		overflow: visible;
+// 	}
+
+// 	&.home-content-2 {
+// 		img {
+// 			position: absolute;
+// 			top: 50%;
+// 			transform: translateY(-50%);
+// 			right: -100px;
+// 			width: 150%;
+// 		}
+// 		@media (max-width: map-get($grid-breakpoints, 'md')) {
+// 			img {
+// 				width: 80%;
+// 				position: static;
+// 				right: auto;
+// 				margin-top: -80px;
+// 				margin-bottom: 10px;
+// 				transform: none;
+// 				top: auto;
+// 			}
+// 			.col-md-4 {
+// 				text-align: center;
+// 			}
+// 		}
+// 	}
+// 	&.home-content-5 {
+// 		img {
+// 			position: absolute;
+// 			top: 50%;
+// 			transform: translateY(-50%);
+// 			right: -150px;
+// 			width: 100%;
+// 		}
+// 		@media (max-width: map-get($grid-breakpoints, 'md')) {
+// 			img {
+// 				top: -70px;
+// 				right: -120px;
+// 				transform: none;
+// 				width: 95%;
+// 			}
+// 		}
+// 	}
+// 	&.home-content-3 {
+// 		img {
+// 			position: absolute;
+// 			top: 50%;
+// 			transform: translateY(-50%);
+// 			right: -70px;
+// 			width: 130%;
+// 		}
+// 		@media (max-width: map-get($grid-breakpoints, 'md')) {
+// 			.col-md-5 {
+// 				text-align: center;
+// 			}
+// 			img {
+// 				width: 90%;
+// 				position: static;
+// 				transform: none;
+// 				margin-bottom: 20px;
+// 				margin-top: -50px;
+// 			}
+// 		}
+// 	}
+// 	&.home-content-6 {
+// 		img {
+// 			position: absolute;
+// 			top: 50%;
+// 			transform: translateY(-50%);
+// 			right: -150px;
+// 		}
+// 		@media (max-width: map-get($grid-breakpoints, 'md')) {
+// 			.col-md-4 {
+// 				text-align: center;
+// 			}
+// 			img {
+// 				width: 100%;
+// 				margin-top: -100px;
+// 				margin-right: -140px;
+// 				margin-bottom: -40px;
+// 				position: static;
+// 				transform: none;
+// 			}
+// 		}
+// 	}
+// }
+
+// .hero {
+// 	@media (max-width: map-get($grid-breakpoints, 'md')) {
+// 		padding: 10vh 0 !important;
+// 	}
+// 	h2 {
+// 		line-height: 1.5;
+// 	}
+// 	p {
+// 		line-height: 1.4;
+// 	}
+// }
+// .range-slider {
+// 	.range-slider-rail,
+// 	.range-slider-fill {
+// 		height: 10px !important;
+// 		border-radius: 15px !important;
+// 	}
+// 	.range-slider-fill {
+// 		background-color: #8e98b3 !important;
+// 	}
+// 	.range-slider-knob {
+// 		background-color: #2d2c68 !important;
+// 		border: solid 2px white;
+// 	}
+// }
+// .cursor-pointer {
+// 	cursor: pointer !important;
+// }
+// .opacity-0 {
+// 	opacity: 0 !important;
+// }
+// .flex-1 {
+// 	flex: 1 !important;
+// }
+// .h-100vh {
+// 	height: 100vh;
+// }
+// .line-height-sm {
+// 	line-height: $line-height-sm !important;
+// }
+// .line-height-1 {
+// 	line-height: 1 !important;
+// }
+// .line-height-0 {
+// 	line-height: 0 !important;
+// }
+// .line-height-base {
+// 	line-height: $line-height-base !important;
+// }
+// .seats-50 {
+// 	margin-right: 62px;
+// }
+// .booking-plus {
+// 	&[data-plan='standard'],
+// 	&[data-plan='pro'] {
+// 		svg {
+// 			opacity: 0;
+// 		}
+// 	}
+// }
+// .payments {
+// 	&[data-plan='standard'] {
+// 		svg {
+// 			opacity: 0;
+// 		}
+// 	}
+// }
+// .integrations {
+// 	&[data-plan='standard'] {
+// 		> div:nth-child(5) svg,
+// 		> div:nth-child(6) svg {
+// 			opacity: 0;
+// 		}
+// 	}
+// }

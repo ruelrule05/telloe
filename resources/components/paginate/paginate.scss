@@ -1,0 +1,19 @@
+.pagination {
+	@apply inline-flex;
+}
+
+.page-number {
+	width: 24px;
+	height: 25px;
+	padding-top: 4px;
+	@apply transition-colors mx-1 hover:bg-gray-200 inline-block rounded-full cursor-pointer leading-none relative text-center;
+	&.active {
+		@apply bg-primary text-white font-semibold;
+	}
+}
+.page-item {
+	@apply text-primary;
+	&.disabled {
+		@apply pointer-events-none text-gray-400;
+	}
+}

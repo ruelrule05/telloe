@@ -1,0 +1,30 @@
+::v-deep {
+	.v-calendar-events .v-event-timed {
+		@apply border-none p-2 transition-colors shadow-inner #{!important};
+	}
+	.v-calendar-daily__interval-text {
+		@apply text-xs text-muted #{!important};
+	}
+	.v-ripple__container {
+		@apply hidden #{!important};
+	}
+	.v-calendar-daily_head-weekday,
+	.v-calendar-daily_head-day-label {
+		@apply hidden;
+	}
+	.theme--light.v-calendar-daily {
+		border-top: none !important;
+	}
+}
+.week-header {
+	@apply p-4 pointer-events-none;
+	&.active {
+		@apply bg-primary;
+		> div {
+			@apply text-white #{!important};
+		}
+	}
+}
+.day-interval {
+	@apply w-full h-full transition-colors hover:bg-gray-100;
+}

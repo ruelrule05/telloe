@@ -7,13 +7,14 @@ use Carbon\Carbon;
 class Contact extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields'];
-    protected $appends = ['full_name', 'initials', 'created_at_format'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields', 'tags'];
+    protected $appends = ['full_name', 'initials', 'created_at_format', 'profile_image'];
     protected $casts = [
         'blacklisted_services' => 'array',
         'invoices' => 'array',
         'subscriptions' => 'array',
-        'custom_fields' => 'array'
+        'custom_fields' => 'array',
+        'tags' => 'array'
     ];
 
     public function user()
@@ -24,8 +25,8 @@ class Contact extends BaseModel
     public function contactUser()
     {
         return $this->belongsTo(User::class, 'contact_user_id')->withDefault(function ($contactUser, $contact) {
-            $contactUser->first_name = $contact->attributes['first_name'];
-            $contactUser->last_name = $contact->attributes['last_name'];
+            $contactUser->first_name = $contact->attributes['first_name'] ?? '';
+            $contactUser->last_name = $contact->attributes['last_name'] ?? '';
             $contactUser->email = $contact->attributes['email'];
             $contactUser->last_online = null;
         });
@@ -73,5 +74,15 @@ class Contact extends BaseModel
     public function contactNotes()
     {
         return $this->hasMany(ContactNote::class)->orderBy('created_at', 'DESC');
+    }
+
+    public function getProfileImageAttribute()
+    {
+        return $this->contactUser ? $this->contactUser->profile_image : null;
+    }
+
+    public function contactPackages()
+    {
+        return $this->hasMany(ContactPackage::class)->orderBy('created_at', 'DESC');
     }
 }

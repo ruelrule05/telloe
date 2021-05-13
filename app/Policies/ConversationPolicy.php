@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Conversation;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ConversationPolicy
@@ -24,7 +24,6 @@ class ConversationPolicy
     {
         return $user->id == $conversation->user_id || $user->id == $conversation->user_id || $conversation->members()->where('user_id', $user->id)->first();
     }
-
 
     public function update(User $user, Conversation $conversation)
     {
@@ -50,7 +49,6 @@ class ConversationPolicy
     {
         return $user->id == $conversation->user_id || $user->id == $conversation->user_id;
     }
-
 
     public function call(User $user, Conversation $conversation)
     {

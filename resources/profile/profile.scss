@@ -1,0 +1,175 @@
+[v-cloak] {
+	opacity: 0;
+}
+
+.is-widget {
+	@apply h-full;
+	> div {
+		@apply h-full;
+	}
+	.widget-hide {
+		@apply hidden #{!important};
+	}
+	.container {
+		@apply px-0 #{!important};
+	}
+	.time-selector {
+		@apply my-0 #{!important};
+		> div {
+			@apply rounded-none w-full #{!important};
+		}
+	}
+	.p-8 {
+		@apply p-5 #{!important};
+	}
+	.text-2xl,
+	.text-3xl,
+	.text-4xl {
+		@apply text-xl #{!important};
+	}
+	.service-description {
+		@apply -mt-8;
+	}
+	.date-time-selector {
+		@apply -mt-4;
+	}
+	.summary {
+		> div {
+			@apply w-full #{!important};
+		}
+	}
+	::v-deep {
+		#app {
+			@apply bg-white;
+		}
+	}
+	.rounded-2xl {
+		@apply rounded-none;
+	}
+	.authenticate {
+		> div {
+			@apply w-full #{!important};
+		}
+	}
+	.booking-loader {
+		@apply bg-white #{!important};
+		> div > div {
+			@apply w-full #{!important};
+		}
+	}
+	.p-6 {
+		@apply p-5 #{!important};
+	}
+	.booked-signup {
+		@apply my-0 w-full #{!important};
+	}
+	.payment {
+		@apply my-0 #{!important};
+	}
+	.bookings {
+		@apply my-0 #{!important};
+		> div {
+			@apply p-5 w-full #{!important};
+		}
+	}
+}
+.profile-image {
+	@apply bg-cover bg-center bg-no-repeat rounded-full bg-primary relative;
+	width: 36px;
+	height: 36px;
+	> span {
+		@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-sm font-bold text-white leading-tight;
+	}
+	&.profile-image-sm {
+		width: 28px;
+		height: 28px;
+		> span {
+			@apply text-xs;
+		}
+	}
+	&.profile-image-md {
+		width: 40px;
+		height: 40px;
+		> span {
+			@apply text-lg;
+		}
+	}
+	&.profile-image-xl {
+		width: 80px;
+		height: 80px;
+		> span {
+			@apply text-3xl;
+		}
+	}
+}
+.coach-card {
+	@apply bg-gray-50 rounded-2xl p-3 cursor-pointer transition-colors hover:bg-gray-100 border-2 border-primary border-opacity-0 hover:border-opacity-100;
+	&.active {
+		@apply border-opacity-100;
+	}
+}
+.timeslot {
+	width: 112px;
+	@apply rounded-full border border-transparent text-center py-1.5 text-sm mt-3 bg-gray-50 transition-colors hover:bg-gray-200;
+	&.disabled {
+		@apply pointer-events-none border-gray-200 text-gray-300 bg-white;
+	}
+	&.selected {
+		@apply bg-green-400 text-white font-semibold;
+	}
+}
+.booking-type {
+	@apply border rounded-xl p-4 flex mt-2 cursor-pointer transition-colors hover:bg-gray-100;
+	&.selected {
+		@apply border-primary;
+		.type-checkbox {
+			@apply border-primary;
+			> div {
+				@apply bg-primary;
+			}
+		}
+	}
+}
+.type-checkbox {
+	@apply border h-5 w-5 relative rounded-full;
+	> div {
+		@apply w-2 h-2 rounded-full scale-0 transition-colors;
+	}
+}
+.badge-day {
+	@apply cursor-pointer rounded-full w-7 h-7 relative border p-2 font-serif text-muted text-xs font-semibold transition-colors hover:bg-gray-200;
+	&.active {
+		@apply bg-primary text-white border-primary;
+	}
+}
+.timeslot-menu {
+	z-index: -1;
+	@apply absolute top-0 lg:left-9 lg:right-auto left-auto right-7 transform scale-95  origin-left rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out whitespace-nowrap p-4;
+	&.show {
+		@apply z-50 opacity-100 scale-100;
+	}
+}
+input.is-invalid:not(:focus) {
+	@apply border-red-600 ring-red-600 text-red-600;
+}
+.input-cc-card {
+	@apply relative;
+	.cc-icon {
+		@apply absolute right-2 transform top-1/2 -translate-y-1/2;
+		svg {
+			@apply h-8 w-8;
+		}
+	}
+}
+.feature-check {
+	width: 36px;
+	height: 36px;
+	@apply bg-green-400 rounded-full relative text-white;
+	svg {
+		@apply h-3 w-3 stroke-current;
+	}
+}
+
+.input-cc {
+	@apply ring-0 ring-offset-0 #{!important};
+}

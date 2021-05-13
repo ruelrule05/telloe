@@ -1,0 +1,102 @@
+<template>
+	<div>
+		<div class="video-call-modal-container" :class="{ open: open }">
+			<microphone-mute-icon class="hidden fill-current text-red-600" ref="microphoneMute"></microphone-mute-icon>
+			<!-- Outgoing -->
+			<div class="modal-body col-start-5 col-span-3 text-center" v-if="action == 'outgoing'">
+				<div class="p-6">
+					<h6 class="text-primary font-serif font-semibold mb-10">CALLING...</h6>
+					<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + $root.callConversation.member.profile_image + ')' }">
+						<span v-if="!$root.callConversation.member.profile_image">{{ $root.callConversation.member.initials }}</span>
+					</div>
+					<h3 class="mb-8">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h3>
+				</div>
+				<div class="bg-secondary-light p-6 flex items-center justify-center">
+					<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleVideo">
+						<video-muted-icon v-if="isVideoStopped" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></video-muted-icon>
+						<videocam-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></videocam-icon>
+					</button>
+					<button class="mx-2 bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="endCall(true, true)"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
+					<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleMic">
+						<microphone-mute-icon v-if="isMuted" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-mute-icon>
+						<microphone-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-icon>
+					</button>
+				</div>
+			</div>
+
+			<!-- Incoming -->
+			<div class="modal-body col-start-5 col-span-3 text-center" v-else-if="action == 'incoming'">
+				<div class="p-6">
+					<h6 class="text-primary font-serif font-semibold mb-10 uppercase">{{ caller.first_name }} IS CALLING...</h6>
+					<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + caller.profile_image + ')' }">
+						<span v-if="!caller.profile_image">{{ caller.initials }}</span>
+					</div>
+					<h3 class="mb-8">{{ caller.full_name || caller.name }}</h3>
+				</div>
+				<div class="bg-secondary-light p-6 flex items-center justify-center">
+					<button class="bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="rejectCall()"><close-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></close-icon></button>
+					<button class="ml-2 bg-green-600 border border-green-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="answerCall()"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
+				</div>
+			</div>
+
+			<!-- Ongoing -->
+			<div v-show="status == 'ongoing'" class="modal-ongoing h-screen w-screen flex flex-col overflow-hidden">
+				<div class="cameras-container" :class="{ 'has-presenter': presenter && presenter != $root.auth.id }">
+					<!-- Local camera -->
+					<div class="p-3 camera-thumbnails">
+						<div class="preview" :class="{ hidden: isShrinked || status != 'ongoing', mirror: isScreenSharing }">
+							<div v-if="isVideoStopped" class="profile-image profile-image-preview" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
+								<span v-if="isVideoStopped && !$root.auth.profile_image" class="text-secondary position-absolute-center">{{ $root.auth.initials }}</span>
+							</div>
+							<video ref="cameraPreview" @onplaying="localCameraReady = true" class="w-auto h-full rounded-xl pointer-events-none" autoplay playsinline muted :class="{ hidden: isVideoStopped }"></video>
+						</div>
+					</div>
+
+					<!-- Remote cameras -->
+					<div class="flex flex-grow overflow-hidden w-full relative" id="remote-streams-container">
+						<div v-show="presenter && presenter != $root.auth.id" id="presenter-container" class="flex-grow"></div>
+						<div ref="remoteStreams" id="remote-streams" class="overflow-hidden flex-grow flex justify-center" :class="{ 'opacity-0': !status, 'shrink-right': presenter && presenter != $root.auth.id }">
+							<div v-if="presenter && presenter != $root.auth.id && presenterUser" class="presenter-label">{{ presenterUser.full_name }} Presenting</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Buttons -->
+				<div class="flex items-center justify-between p-4">
+					<div class="w-3/12"></div>
+					<div class="w-6/12 text-center">
+						<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleVideo">
+							<video-muted-icon v-if="isVideoStopped" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></video-muted-icon>
+							<videocam-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></videocam-icon>
+						</button>
+						<button class="mx-2 bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="endCall(true, true)"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
+						<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleMic">
+							<microphone-mute-icon v-if="isMuted" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-mute-icon>
+							<microphone-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-icon>
+						</button>
+					</div>
+					<div class="w-3/12 text-right flex items-center justify-end">
+						<button v-if="presenter && presenter == $root.auth.id" type="button" class="btn btn-sm btn-outline-red inline-flex items-center mr-2" @click="stopShareScreen" :class="{ disabled: presenter && presenter != $root.auth.id }"><screenshare-icon class="fill-current mr-2"></screenshare-icon><span>Stop Presenting</span></button>
+						<button v-else type="button" class="btn btn-sm btn-outline-primary inline-flex items-center mr-2" @click="shareScreen" :class="{ disabled: presenter && presenter != $root.auth.id }"><screenshare-icon class="fill-current mr-2"></screenshare-icon><span>Present</span></button>
+						<button type="button" class="btn btn-sm btn-outline-primary inline-flex items-center" @click="showMessages = true"><send-icon class="fill-current mr-2"></send-icon><span>Message</span></button>
+					</div>
+				</div>
+			</div>
+
+			<div v-if="conversation" class="messages-container" :class="{ open: showMessages }">
+				<div class="border-bottom flex items-center justify-between p-6">
+					<div class="font-serif text-muted font-semibold">MESSAGES</div>
+					<button type="button" @click="showMessages = false" class="rounded-full p-2 border text-gray-600 ml-1 transition-colors hover:bg-gray-200 focus:outline-none"><CloseIcon class="fill-current"></CloseIcon></button>
+				</div>
+				<div class="flex-grow overflow-hidden h-full">
+					<Messages ready :conversation="conversation"></Messages>
+				</div>
+			</div>
+
+			<div class="modal-backdrop"></div>
+		</div>
+	</div>
+</template>
+
+<script src="./video-call.js"></script>
+<style lang="scss" src="./video-call.scss"></style>

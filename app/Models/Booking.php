@@ -10,32 +10,27 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'user_id', 'contact_id', 'date', 'start', 'end', 'metadata', 'zoom_link'];
-    protected $appends = ['is_expired', 'customer'];
+    protected $fillable = ['service_id', 'booking_link_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes', 'contact_package_id', 'meeting_type', 'meet_link'];
+    protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
         'notified_2' => 'boolean',
         'notified_24' => 'boolean',
     ];
 
-    public function getCustomerAttribute()
+    public function bookingUsers()
     {
-        return $this->user ?? $this->contact->contactUser ?? null;
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function contact()
-    {
-        return $this->belongsTo(Contact::class);
+        return $this->hasMany(BookingUser::class);
     }
 
     public function service()
     {
-        return $this->belongsTo(Service::class)->withTrashed();
+        return $this->belongsTo(Service::class);
+    }
+
+    public function bookingLink()
+    {
+        return $this->belongsTo(BookingLink::class);
     }
 
     public function getIsExpiredAttribute()
@@ -48,5 +43,10 @@ class Booking extends BaseModel
         return $this->hasOne(BookingNote::class)->withDefault([
             'note' => '',
         ]);
+    }
+
+    public function contactPackage()
+    {
+        return $this->belongsTo(ContactPackage::class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -10,7 +11,7 @@ class Service extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment', 'types', 'starts_at', 'ends_at', 'timezone'];
 
     protected $casts = [
         'days' => 'array',
@@ -25,6 +26,8 @@ class Service extends BaseModel
         'ask_phone' => 'boolean',
         'require_phone' => 'boolean',
         'create_zoom_link' => 'boolean',
+        'require_payment' => 'boolean',
+        'types' => 'array',
     ];
 
     protected $appends = ['coach'];
@@ -107,8 +110,9 @@ class Service extends BaseModel
         $timeEnd->hour = $partsEnd[0];
         $timeEnd->minute = $partsEnd[1];
 
-        $ignoredCalendarEvents = $user->ignored_calendar_events ?? [];
-        $googleEventsList = $user->google_calendar_events ?? [];
+        $googleCalendarEvents = $user->google_calendar_events ?? [];
+        $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
+
         $outlookEventsList = $user->outlook_calendar_events ?? [];
         $assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
 
@@ -117,7 +121,8 @@ class Service extends BaseModel
             $timeslot = [
                 'label' => $timeStart->format('h:iA'),
                 'time' => $timeStart->format('H:i'),
-                'is_available' => false
+                'is_available' => false,
+                'is_booked' => false,
             ];
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = Booking::with('bookingNote')
@@ -135,11 +140,9 @@ class Service extends BaseModel
             foreach ($googleEventsList as $event) {
                 $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
                 if ($eventDate == $dateString) {
-                    if (! $event['start']['dateTime'] && ! $event['end']['dateTime'] && ! in_array('google-event-' . $event['id'], $ignoredCalendarEvents)) {
-                        $googleEvents[] = $event;
-                    } elseif ($event['start']['dateTime'] && $event['end']['dateTime']) {
-                        $start = Carbon::parse($event['start']['dateTime'])->format('H:i');
-                        $end = Carbon::parse($event['end']['dateTime'])->format('H:i');
+                    if (in_array($event['id'], $googleCalendarEvents)) {
+                        $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('H:i');
+                        $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'])->format('H:i');
                         if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
                             $googleEvents[] = $event;
                         }
@@ -149,24 +152,24 @@ class Service extends BaseModel
 
             // outlook calendar events
             $outlookEvents = [];
-            foreach ($outlookEventsList as $event) {
-                $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
-                if ($eventDate == $dateString) {
-                    if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
-                        $outlookEvents[] = $event;
-                    } elseif (! $event['isAllDay']) {
-                        $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-                        $start->tz = new \DateTimeZone($user->timezone);
-                        $start = $start->format('H:i');
-                        $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-                        $end->tz = new \DateTimeZone($user->timezone);
-                        $end = $end->format('H:i');
-                        if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
-                            $outlookEvents[] = $event;
-                        }
-                    }
-                }
-            }
+            // foreach ($outlookEventsList as $event) {
+            //     $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
+            //     if ($eventDate == $dateString) {
+            //         if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
+            //             $outlookEvents[] = $event;
+            //         } elseif (! $event['isAllDay']) {
+            //             $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
+            //             $start->tz = new \DateTimeZone($user->timezone);
+            //             $start = $start->format('H:i');
+            //             $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
+            //             $end->tz = new \DateTimeZone($user->timezone);
+            //             $end = $end->format('H:i');
+            //             if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
+            //                 $outlookEvents[] = $event;
+            //             }
+            //         }
+            //     }
+            // }
 
             $isBreaktime = false;
             foreach ($this->days[$dayName]['breaktimes'] ?? [] as $breaktime) {
@@ -180,7 +183,8 @@ class Service extends BaseModel
             if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays)) {
                 $timeslot['is_available'] = true;
             } elseif ($bookings->count() > 0) {
-                $timeslot['bookings'] = $bookings->load('user', 'contact.contactUser', 'service.user');
+                $timeslot['bookings'] = $bookings->load('bookingUsers', 'service.user');
+                $timeslot['is_booked'] = true;
             }
             $timeslots[] = $timeslot;
             $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
@@ -201,20 +205,20 @@ class Service extends BaseModel
             ->where(function ($query) {
                 $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
             })
-            ->with('user', 'service.user', 'contact.contactUser', 'service.member.memberUser')
+            ->with('user', 'service.user', 'service.member.memberUser')
             ->paginate(15, ['*'], 'page', $page);
         return $bookings;
 
         $bookings = $this->bookings()->where(function ($query) {
             $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
-        })->get()->load(['user', 'contact.contactUser', 'service.user', 'service.member.memberUser'])->toArray();
+        })->get()->load(['bookingUsers', 'service.user', 'service.member.memberUser'])->toArray();
         $assignedServices = $this->assignedServices()->where('parent_service_id', '<>', $this->attributes['id'])->withTrashed()->get();
         $assignedServices->map(function ($assignedService) use (&$bookings) {
             $assignedServiceBookings = $assignedService->bookings()->where(function ($query) {
                 $query->whereNotNull('user_id')->orWhereNotNull('contact_id');
             })->get();
             if ($assignedServiceBookings->count() > 0) {
-                $bookings = array_merge($bookings, $assignedServiceBookings->load(['user', 'contact.contactUser', 'service.user', 'service.member.memberUser', 'service' => function ($service) {
+                $bookings = array_merge($bookings, $assignedServiceBookings->load(['bookingUsers', 'service.user', 'service.member.memberUser', 'service' => function ($service) {
                     $service->withTrashed();
                 }])->toArray());
             }
@@ -230,5 +234,10 @@ class Service extends BaseModel
             return $booking;
         });
         return $bookings->paginate(5)->values()->all();
+    }
+
+    public function getTimezoneAttribute($value)
+    {
+        return $value ?? $this->coach->timezone;
     }
 }

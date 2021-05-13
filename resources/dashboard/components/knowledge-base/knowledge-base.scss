@@ -1,0 +1,33 @@
+#knowledgebase {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	z-index: 10;
+	> div {
+	}
+}
+.knowledgebase-body {
+	width: 350px;
+	height: 360px;
+}
+.btn-close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+.topic {
+	text-decoration: none !important;
+	h6 {
+	}
+	svg {
+		opacity: 0;
+	}
+	&:hover {
+		h6 {
+			text-decoration: underline;
+		}
+		svg {
+			opacity: 1;
+		}
+	}
+}

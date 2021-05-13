@@ -1,52 +1,52 @@
 <template>
-    <button :type="type" class="btn position-relative" :class="button_class" :disabled="loading || disabled">
-        <span v-if="loading" class="spinner position-absolute-center">
-            <span class="spinner-border spinner-border-sm align-middle" role="status" aria-hidden="true"></span>
-        </span>
-        <span :class="{'opacity-0': loading}">
-            <template v-if="icon"><i :class="icon"></i>&nbsp;&nbsp;</template><slot></slot>
-        </span>
-    </button>
+	<button :type="type" class="btn relative" :class="button_class" :disabled="loading || disabled" @click="$emit('click')">
+		<div v-if="loading" class="absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 leading-none">
+			<div class="spinner spinner-sm spinner-light"></div>
+		</div>
+		<div :class="{ 'opacity-0': loading }">
+			<template v-if="icon"><i :class="icon"></i>&nbsp;&nbsp;</template><slot></slot>
+		</div>
+	</button>
 </template>
 
 <script>
 export default {
-    props: {
-        label: {
-            type: String,
-            default: '',
-        },
+	props: {
+		label: {
+			type: String,
+			default: ''
+		},
 
-        type: {
-            type: String,
-            default: 'button',
-        },
+		type: {
+			type: String,
+			default: 'button'
+		},
 
-        icon: {
-            type: String,
-            default: '',
-        },
+		icon: {
+			type: String,
+			default: ''
+		},
 
-        button_class: {
-            type: String,
-            default: 'btn-block btn-primary',
-        },
+		button_class: {
+			type: String,
+			default: 'btn-block btn-primary'
+		},
 
-        loading: {
-            type: Boolean,
-            default: false,
-        },
+		loading: {
+			type: Boolean,
+			default: false
+		},
 
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
-    },
+		disabled: {
+			type: Boolean,
+			default: false
+		}
+	},
 
-    data: () => ({}),
+	data: () => ({}),
 
-    mounted() {},
+	mounted() {},
 
-    methods: {},
+	methods: {}
 };
 </script>

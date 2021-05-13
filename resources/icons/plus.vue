@@ -1,11 +1,12 @@
 <template>
-	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-		<path d="M13,12 L18.5,12 C18.7761424,12 19,12.2238576 19,12.5 C19,12.7761424 18.7761424,13 18.5,13 L13,13 L13,18.5 C13,18.7761424 12.7761424,19 12.5,19 C12.2238576,19 12,18.7761424 12,18.5 L12,13 L6.5,13 C6.22385763,13 6,12.7761424 6,12.5 C6,12.2238576 6.22385763,12 6.5,12 L12,12 L12,6.5 C12,6.22385763 12.2238576,6 12.5,6 C12.7761424,6 13,6.22385763 13,6.5 L13,12 Z" />
+	<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path d="M8 1V15" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+		<path d="M1 8H15" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
 	</svg>
 </template>
 
 <script>
 export default {
-	name: 'plus',
+	name: 'plus'
 };
 </script>

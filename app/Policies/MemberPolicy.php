@@ -37,6 +37,7 @@ class MemberPolicy
 
     public function assignService(User $user, Member $member)
     {
+        // return true;
         return $user->id == $member->user_id;
     }
 }

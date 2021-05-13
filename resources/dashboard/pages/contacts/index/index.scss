@@ -1,0 +1,151 @@
+.contact-content {
+	> * {
+		@apply h-full;
+
+		min-height: calc(100vh - 138px);
+
+		.select-wrap {
+			width: 200px;
+			select {
+				padding-left: 4.25rem;
+			}
+		}
+	}
+
+	.contact-row {
+		@apply py-5;
+
+		.profile {
+			@apply bg-cover bg-center bg-no-repeat rounded-full bg-primary relative mr-3;
+			width: 28px;
+			height: 28px;
+
+			> span {
+				@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-xs font-bold text-white leading-tight;
+				padding-bottom: 0.5px;
+				padding-left: 1px;
+			}
+		}
+
+		.action-popup {
+			top: 25px;
+			right: 0;
+		}
+	}
+
+	.contact-profile {
+		.profile {
+			@apply bg-cover bg-center bg-no-repeat rounded-full bg-primary relative mr-7;
+			width: 65px;
+			height: 65px;
+
+			> span {
+				@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-lg font-light text-secondary leading-tight;
+				padding-bottom: 0.5px;
+				padding-left: 1px;
+			}
+		}
+	}
+
+	.tabs {
+		margin-top: -1px;
+
+		li {
+			@apply pr-4;
+
+			a {
+				@apply flex text-gray-300 font-serif uppercase tracking-tighter font-bold py-5 border-t-2 border-transparent;
+
+				font-size: 0.7rem;
+			}
+
+			&.active {
+				a {
+					@apply text-primary border-primary border-t-2;
+				}
+			}
+		}
+	}
+
+	.filters {
+		.button {
+			@apply inline-flex rounded-full border-primary border relative text-primary font-serif uppercase tracking-tighter font-bold h-7 flex items-center justify-center px-3;
+
+			font-size: 0.6rem;
+			padding-top: 1px;
+		}
+
+		.select-wrap.notes {
+			@apply h-7 mr-2;
+			width: 90px;
+
+			&:before {
+				@apply text-muted  text-xs items-center flex absolute flex h-7;
+
+				content: 'Notes:';
+				left: 0.5rem;
+			}
+			&:after {
+				@apply h-7 pr-1.5 w-4;
+				padding-bottom: 3px;
+			}
+			select {
+				@apply shadow-none border-none flex items-center bg-gray-100 text-xs h-7 py-0 font-bold;
+				padding-left: 3.25rem;
+			}
+		}
+
+		&.bookings {
+			.select-wrap.notes {
+				width: 105px;
+
+				&:before {
+					content: 'Services:';
+				}
+				select {
+					padding-left: 4.15rem;
+				}
+			}
+		}
+
+		.select-wrap.date {
+			@apply h-7;
+			width: 110px;
+
+			&:before {
+				@apply text-muted text-xs items-center flex absolute flex h-7;
+
+				content: 'Date:';
+				left: 0.5rem;
+			}
+			&:after {
+				@apply h-7 pr-1.5 w-4;
+				padding-bottom: 3px;
+			}
+			select {
+				@apply shadow-none border-none flex items-center bg-gray-100 text-xs h-7 py-0 font-bold;
+				padding-left: 2.75rem;
+			}
+		}
+	}
+
+	.note-row {
+		.action-popup {
+			top: 50px;
+			right: -100px;
+		}
+	}
+
+	.action-popup {
+		@apply shadow-lg p-3 bg-white w-36;
+		z-index: 9;
+
+		a {
+			@apply flex text-sm py-1 px-2 w-full;
+
+			&:hover {
+				@apply bg-secondary-light rounded-md;
+			}
+		}
+	}
+}

@@ -1,0 +1,19 @@
+::v-deep .v-calendar-events .v-event-timed {
+	@apply border-none p-2  transition-colors shadow-inner #{!important};
+	width: 250px !important;
+}
+::v-deep {
+	.v-calendar-daily__interval-text {
+		@apply text-xs text-muted #{!important};
+	}
+	.v-ripple__container {
+		@apply hidden #{!important};
+	}
+}
+
+.day-interval {
+	@apply w-full h-full transition-colors hover:bg-gray-100;
+	&.disabled {
+		@apply pointer-events-none bg-gray-100;
+	}
+}

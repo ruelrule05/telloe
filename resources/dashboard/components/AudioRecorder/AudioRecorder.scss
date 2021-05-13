@@ -1,0 +1,56 @@
+.wavesurfer-container {
+	@apply px-24;
+	.btn {
+		opacity: 0;
+	}
+	&:hover {
+		.btn {
+			opacity: 1;
+		}
+	}
+}
+.audio-recorder {
+	height: 500px;
+}
+.player-control {
+	z-index: 10;
+	button {
+		line-height: 1 !important;
+		padding: 15px !important;
+		position: relative;
+	}
+}
+.audio-control {
+	border: 0 !important;
+	outline: 0 !important;
+	width: 50px;
+	height: 50px;
+	border-radius: 50% !important;
+	position: relative;
+	vertical-align: top;
+	&.audio-pause {
+		@apply bg-red-600;
+		&:before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 19px;
+			transform: translateY(-50%);
+			width: 2px;
+			height: 35%;
+			background-color: #fff;
+			border-radius: 5px;
+		}
+		&:after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 27px;
+			transform: translateY(-50%);
+			width: 2px;
+			height: 35%;
+			background-color: #fff;
+			border-radius: 5px;
+		}
+	}
+}

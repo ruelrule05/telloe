@@ -1,0 +1,278 @@
+@import '../../public/fonts/monument-extended';
+@import '../../public/fonts/manrope';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'vue-toast-notification/dist/theme-sugar.css';
+
+html,
+body {
+	color: theme('colors.body');
+}
+body.modal-open {
+	padding-right: 5px;
+}
+[v-cloak] {
+	@apply opacity-0;
+}
+* {
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 15px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.font-serif {
+	letter-spacing: 0.75px;
+}
+
+.btn {
+	span {
+		position: relative;
+		bottom: -1px;
+	}
+	@apply px-8 py-3 rounded-full transition-colors font-semibold focus:outline-none font-serif uppercase text-xs;
+	&.btn-primary {
+		@apply bg-primary hover:bg-primary-light focus:bg-primary-dark focus:text-muted text-white;
+	}
+	&.btn-outline-primary {
+		@apply bg-transparent hover:bg-primary hover:text-white focus:bg-primary-dark focus:text-muted text-primary border-solid border border-primary;
+	}
+	&.btn-red {
+		@apply bg-red-600 hover:bg-red-400 focus:bg-red-800 focus:text-muted text-white;
+	}
+	&.btn-outline-red {
+		@apply bg-transparent hover:bg-red-600 hover:text-white focus:bg-red-800 focus:text-muted text-red-600 border-solid border border-red-600;
+	}
+	&.btn-sm {
+		height: 28px;
+		padding: 0 18px;
+		font-size: 9px;
+		letter-spacing: 0.35px;
+	}
+	&.btn-md {
+		height: 32px;
+		padding: 0 24px;
+	}
+	&:disabled,
+	&.disabled {
+		@apply pointer-events-none select-none opacity-50;
+	}
+}
+.input {
+	@apply border border-gray-300 text-sm block rounded-md font-medium w-full outline-none px-3 py-2 transition-all ring-primary ring-offset-1 focus:border-gray-500 focus:ring-2 shadow-inner;
+}
+.spinner {
+	@apply inline-block ease-linear rounded-full border-2 border-t-2 border-gray-200;
+	width: 40px;
+	height: 40px;
+	border-top-color: theme('colors.primary.DEFAULT');
+	-webkit-animation: spinner 1.5s linear infinite;
+	animation: spinner 0.85s linear infinite;
+	&.spinner-sm {
+		@apply border;
+		width: 20px;
+		height: 20px;
+	}
+	&.spinner-light {
+		@apply border-transparent;
+		border-top-color: white;
+	}
+}
+.button-date-nav {
+	@apply lg:inline-flex flex items-center align-bottom rounded-full font-semibold border-solid border border-primary font-serif uppercase text-xs text-primary overflow-hidden;
+	> button {
+		@apply px-2 focus:outline-none transition-colors hover:bg-primary hover:text-white;
+		height: 30px;
+	}
+	span {
+		@apply px-2;
+		margin-bottom: -1px;
+	}
+}
+.text-xxs {
+	font-size: 9px;
+}
+
+.border-top {
+	border-top: solid 1px;
+	border-color: theme('colors.gray.200');
+}
+.border-bottom {
+	border-bottom: solid 1px;
+	border-color: theme('colors.gray.200');
+}
+.border-right {
+	border-right: solid 1px;
+	border-color: theme('colors.gray.200');
+}
+.border-left {
+	border-left: solid 1px;
+	border-color: theme('colors.gray.200');
+}
+.toasted-container {
+	&.bottom-center {
+		bottom: 2% !important;
+	}
+	.toasted {
+		&.error {
+			@apply rounded text-sm #{!important};
+		}
+	}
+}
+.badge {
+	@apply rounded-full px-4 py-1 bg-primary-ultralight font-normal text-xs inline-block;
+}
+.absolute-center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+.card {
+	width: 19rem;
+	@apply rounded-2xl p-4 bg-gray-50 inline-block;
+	&.card-secondary {
+		@apply bg-secondary;
+	}
+}
+
+input,
+textarea {
+	@apply input;
+}
+label {
+	@apply text-sm mb-1 block text-muted;
+}
+.v-toast {
+	z-index: 200000;
+}
+.v-toast__item {
+	min-height: auto !important;
+	@apply px-4 py-3 m-0 text-sm;
+	.v-toast__icon {
+		width: 20px;
+		height: 20px;
+		min-width: 20px;
+		@apply p-0 mr-3 ml-0;
+	}
+	.v-toast__text {
+		@apply p-0;
+	}
+}
+button {
+	@apply focus:outline-none;
+}
+
+input:disabled,
+input.disabled,
+fieldset:disabled input,
+fieldset.disabled input {
+	@apply pointer-events-none opacity-50;
+}
+
+@-webkit-keyframes spinner {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spinner {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+.paginate-links {
+	@apply flex items-center;
+	.left-arrow {
+		@apply mr-3 cursor-pointer text-primary;
+		&.disabled {
+			@apply pointer-events-none text-gray-300;
+		}
+	}
+	.right-arrow {
+		@apply ml-3 cursor-pointer text-primary;
+		&.disabled {
+			@apply pointer-events-none text-gray-300;
+		}
+	}
+	.number {
+		a {
+			width: 24px;
+			height: 25px;
+			padding-top: 4px;
+			@apply transition-colors mx-1 hover:bg-gray-200 inline-block rounded-full cursor-pointer leading-none relative text-center;
+		}
+		&.active {
+			a {
+				@apply bg-primary text-white font-semibold;
+			}
+		}
+	}
+}
+.multiselect {
+	.multiselect__tags-wrap {
+		@apply flex items-center;
+	}
+	.multiselect__select {
+		display: none !important;
+	}
+	.multiselect__tags {
+		@apply border border-gray-300 text-sm flex items-center rounded-md font-medium w-full outline-none p-0 transition-all ring-primary ring-offset-1 focus-within:border-gray-500 focus-within:ring-2 shadow-inner overflow-hidden #{!important};
+		.multiselect__tag:not(:nth-child(1)) {
+			@apply ml-0 #{!important};
+		}
+		&:focus-within {
+			.multiselect__input {
+				@apply opacity-100 pointer-events-auto #{!important};
+			}
+		}
+	}
+	.multiselect__input {
+		@apply ring-0 shadow-none border-none rounded-none mb-0 opacity-0 p-2 text-sm pointer-events-none;
+		@apply w-28 #{!important};
+	}
+	.multiselect__tag {
+		@apply bg-gray-200 text-body mb-1 p-2 pr-7 m-1 cursor-pointer #{!important};
+	}
+	.multiselect__tag-icon {
+		@apply bg-gray-300 rounded-full hover:bg-red-600;
+		height: 16px;
+		width: 16px;
+		margin: 8px 5px 0 0;
+	}
+	.multiselect__option--selected.multiselect__option--highlight,
+	.multiselect__option.multiselect__option--highlight,
+	.multiselect__option.multiselect__option--highlight:after {
+		@apply bg-primary;
+	}
+	.multiselect__tag-icon:after {
+		@apply text-white flex items-center justify-center h-full;
+		font-size: 16px;
+	}
+	.multiselect__element span {
+		@apply text-sm font-normal;
+	}
+	.multiselect__placeholder {
+		@apply mb-0 px-3;
+	}
+}

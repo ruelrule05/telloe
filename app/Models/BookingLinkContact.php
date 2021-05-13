@@ -6,7 +6,7 @@ class BookingLinkContact extends BaseModel
 {
     //
 
-    protected $fillable = ['contact_id', 'booking_link_id'];
+    protected $fillable = ['contact_id', 'booking_link_id', 'color'];
 
     public function contact()
     {

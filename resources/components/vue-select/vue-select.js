@@ -1,162 +1,139 @@
 import ChevronDownIcon from '../../icons/chevron-down';
+import ClickOutside from 'vue-click-outside';
 export default {
-    components: {ChevronDownIcon},
-    props: {
-        drop: {
-            type: String,
-            default: 'dropdown'
-        },
+	components: {
+		ChevronDownIcon
+	},
+	directives: {
+		ClickOutside
+	},
+	props: {
+		placeholder: {
+			type: String,
+			default: ''
+		},
 
-        display: {
-            type: String,
-            default: 'static'
-        },
+		label: {
+			type: String,
+			default: null
+		},
 
-        placeholder: {
-            type: String,
-            default: '',
-        },
+		options: {
+			type: Array,
+			default: []
+		},
 
-        options: {
-            type: Array,
-            default: [],
-        },
+		value: {},
 
-        value: {
-            type: [Number, String, Array, Object],
-            default: () => [],
-        },
+		searchable: {
+			type: Boolean,
+			default: false
+		},
 
-        multiple: {
-            type: Boolean,
-            default: false,
-        },
+		required: {
+			type: Boolean,
+			default: false
+		},
 
-        searchable: {
-            type: Boolean,
-            default: false,
-        },
+		disabled: {
+			type: Boolean,
+			default: false
+		},
 
-        required: {
-            type: Boolean,
-            default: false,
-        },
+		noSetValue: {
+			type: Boolean,
+			default: false
+		},
 
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
+		noCaret: {
+			type: Boolean,
+			default: false
+		},
 
-        button_class: {
-            type: String,
-            default: '',
-        },
+		dropPosition: {
+			type: String,
+			default: 'down'
+		}
+	},
 
-        dropdown_class: {
-            type: String,
-            default: '',
-        },
-    },
+	data: () => ({
+		selected_value: null,
+		search: '',
+		show: false,
+		open: false,
+		menuOpen: false,
+		hiddenValue: ''
+	}),
 
-    data: () => ({
-        selected_value: {},
-        search: '',
-        show_no_results: true,
-        show: false
-    }),
+	computed: {
+		text_value() {
+			let value = this.options.find(x => x.value == this.selected_value);
+			return (value || {}).text || this.value || this.placeholder;
+		},
 
-    watch: {
-        value: function(value) {
-            this.selected_value = value;
-            this.search = this.selected_value.text;
-        },
-    },
+		filtered_options() {
+			return this.options.filter(option => {
+				let show = true;
 
-    created() {
-        this.selected_value = this.value;
-    },
+				if (!this.multiple && this.searchable && typeof this.search != 'undefined' && this.search.trim().length > 0) {
+					const pos = option.text.toLowerCase().indexOf(this.search.trim().toLowerCase());
+					if (pos < 0) show = false;
+				}
 
-    mounted() {
-        $(this.$refs['dropdown']).on('show.bs.dropdown', () => {
-            this.show_no_results = true;
-            this.search = '';
+				return show;
+			});
+		},
 
-            if (this.searchable) {
-                setTimeout(() => {
-                    this.$refs['input-searchable'].focus();
-                });
-            }
+		toggle_button_class() {
+			let classes = this.searchable ? 'cursor-text ' : 'cursor-pointer ';
+			classes += this.button_class;
+			return classes;
+		}
+	},
 
-            if (!this.multiple && this.selected_value.value) {
-                setTimeout(() => {
-                    const pos = document.getElementById('item-' + this.selected_value.value).offsetTop;
-                    this.$refs['scrollable-menu'].scrollTop = pos - 36;
-                });
-            } else if (this.multiple) {
-                this.$refs['scrollable-menu'].scrollTop = 0;
-            }
-        });
+	watch: {
+		value: function(value) {
+			this.selected_value = value;
+			if (!value) this.search = '';
+		},
 
-        $(this.$refs['dropdown']).on('hidden.bs.dropdown', () => {
-            this.show_no_results = false;
-            if (this.searchable && this.selected_value.text) {
-                this.search = this.selected_value.text || this.placeholder;
-            }
-        });
-    },
+		show: function(value) {
+			setTimeout(() => {
+				this.open = value;
+			});
+			if (value) {
+				this.search = '';
+				this.menuOpen = value;
+			} else {
+				setTimeout(() => {
+					this.menuOpen = value;
+				}, 150);
+			}
+		}
+	},
 
-    computed: {
-        select_placeholder() {
-            let placeholder = this.placeholder;
-            if (!this.multiple || this.selected_value) {
-                placeholder = this.selected_value.text || this.placeholder;
-            }
+	created() {
+		this.selected_value = this.value;
+		this.hiddenValue = this.value;
+		//this.search = this.select_placeholder;
+	},
 
-            return placeholder;
-        },
+	mounted() {
+		this.popupItem = this.$el;
+	},
 
-        filtered_options() {
-            return this.options.filter((option) => {
-                let show = true;
+	methods: {
+		onBlur() {
+			this.show = false;
+		},
 
-                if (this.searchable && typeof this.search != 'undefined' && this.search.trim().length > 0) {
-                    const pos = option.text.toLowerCase().indexOf(this.search.trim().toLowerCase());
-                    if (pos != 0) {
-                        show = false;
-                    }
-                }
-                if (this.multiple && this.selected_value.findIndex((x) => x.value == option.value) > -1) {
-                    show = false;
-                }
-
-                return show;
-            });
-        },
-
-        toggle_button_class() {
-            let classes = this.searchable ? 'cursor-text ' : 'cursor-pointer ';
-            classes += this.button_class;
-            return classes;
-        },
-    },
-
-    methods: {
-        inputFocused(e) {
-            if (!$(this.$refs['dropdown-menu']).hasClass('show') && e.relatedTarget && e.relatedTarget.type == 'submit') {
-                $(this.$refs['dropdown-toggle']).dropdown('show');
-            }
-        },
-
-        updateValue(option) {
-            if (this.multiple) {
-                this.selected_value.push(option);
-                this.search = this.placeholder;
-            } else {
-                this.selected_value = option;
-                this.search = option.text;
-            }
-            this.$emit('change', this.selected_value);
-            this.$emit('input', this.selected_value);
-        },
-    },
+		updateValue(option) {
+			this.show = false;
+			if (!this.noSetValue) {
+				this.selected_value = option.value;
+			}
+			this.hiddenValue = option.value;
+			this.$emit('input', option.value);
+		}
+	}
 };

@@ -1,0 +1,66 @@
+.screen-recorder {
+	position: fixed;
+	z-index: 102;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: move;
+}
+.recorder-content {
+	background: rgba(#333, 0.75);
+}
+.counter {
+	width: 50px;
+}
+.video-container {
+	width: 100px;
+	height: 75px;
+}
+.video-preview {
+	z-index: 2;
+}
+.video-control {
+	border: 0 !important;
+	outline: 0 !important;
+	width: 40px;
+	height: 40px;
+	border-radius: 50% !important;
+	background-color: #000;
+	position: relative;
+	&.video-record:before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 40%;
+		height: 40%;
+		background-color: #fff;
+		border-radius: 50%;
+	}
+	&.video-pause {
+		@apply bg-red-600;
+		&:before {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			width: 2px;
+			height: 35%;
+			background-color: #fff;
+			border-radius: 5px;
+		}
+		&:after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 23px;
+			transform: translateY(-50%);
+			width: 2px;
+			height: 35%;
+			background-color: #fff;
+			border-radius: 5px;
+		}
+	}
+}

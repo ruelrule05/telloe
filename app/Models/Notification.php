@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use Carbon\Carbon;
-use Modules\Frontend\Events\NewNotificationEvent;
+use App\Events\NewNotificationEvent;
 
 class Notification extends BaseModel
 {

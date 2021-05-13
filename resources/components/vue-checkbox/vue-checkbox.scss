@@ -1,0 +1,54 @@
+.checkbox {
+	@apply inline-block align-bottom;
+}
+.checkbox label {
+	cursor: pointer;
+	line-height: 20px;
+	span {
+		@apply transition-all;
+	}
+}
+.checkbox label:after {
+	content: '';
+	display: table;
+	clear: both;
+}
+.checkbox .cr {
+	@apply transition-all;
+	position: relative;
+	border: 1px solid #ddd;
+	border-radius: 0.43em;
+	width: 1.6em;
+	height: 1.6em;
+	float: left;
+}
+.checkbox .cr svg {
+	@apply transition-all;
+	position: absolute;
+	line-height: 0;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+.checkbox label input[type='checkbox'] {
+	display: none;
+}
+.checkbox label input[type='checkbox'] + .cr > svg {
+	opacity: 0;
+}
+.checkbox label input[type='checkbox']:checked + .cr > svg {
+	opacity: 1;
+}
+.checkbox label input[type='checkbox']:checked + .cr {
+	border-color: theme('colors.primary.DEFAULT');
+	background-color: theme('colors.primary.DEFAULT');
+}
+.checkbox label input[type='checkbox']:disabled + .cr {
+	opacity: 0.5;
+}
+.checkbox.disabled {
+	pointer-events: none !important;
+	span {
+		opacity: 0.3;
+	}
+}

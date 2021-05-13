@@ -13,38 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group([
-		'domain' => config('app.api_url'),
-		'namespace' => 'API' 
-], function(){
-	Route::get('js/widget.js', 'WidgetController@script');
-	Route::get('media/{media}', 'WidgetController@getMedia')->where('media', '(.*)');
-	Route::group([
-		'middleware' => ['api', 'ajax', 'widget'],
- 		'prefix' => 'ajax',
-	], function(){
-
-		Route::get('show', 'WidgetController@show');
-		Route::get('inquiry_types', 'WidgetController@inquiryTypes');
-		Route::resource('inquiries', 'InquiryController')->middleware('auth:api');
-		Route::resource('bookings', 'BookingController')->middleware('auth:api');
-		Route::resource('messages', 'MessageController');
-		Route::get('get_ig_images', 'WidgetController@getIGImages');
-		Route::get('get_page_preview', 'MessageController@getPagePreview');
-		Route::match(['GET', 'POST'],'botman', 'MessageController@botman');
-		
-
-		// Authentication
-		Route::group(['prefix' => 'auth'], function() {
-			Route::post('login', 'AuthController@login');
-			Route::post('login/facebook', 'AuthController@loginFacebook');
-			Route::post('login/google', 'AuthController@loginGoogle');
-			Route::post('signup', 'AuthController@signup');
-			Route::post('refresh', 'AuthController@refresh');
-			Route::get('me', 'AuthController@me')->middleware('auth:api');
-			Route::post('logout', 'AuthController@logout')->middleware('auth:api');
-		});
-
-	});
+Route::middleware('auth:api')->get('/frontend', function (Request $request) {
+    return $request->user();
 });
-

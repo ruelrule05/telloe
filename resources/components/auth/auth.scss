@@ -1,0 +1,20 @@
+.auth-container {
+	@apply transition-all opacity-0 top-0 left-0 bg-secondary fixed w-screen h-screen overflow-hidden;
+	z-index: 9000;
+	padding-right: 5px;
+	&.open {
+		@apply opacity-100 overflow-auto;
+		padding-right: 0;
+	}
+}
+.auth-card {
+	@apply bg-white rounded-sm lg:p-12 p-6 rounded-xl;
+	width: 536px;
+	max-width: 90vw;
+}
+.auth-heading {
+	@apply text-primary font-serif  mt-20 mb-8 uppercase font-semibold;
+	font-size: 32px;
+	line-height: 32px;
+	letter-spacing: -1.75px !important;
+}
