@@ -167,21 +167,24 @@ export default {
 
 		emitChange() {
 			let time_start = this.time_start;
-			if (time_start && typeof time_start == 'object') {
-				if (time_start.A && time_start.hh && time_start.mm) {
-					time_start = `${time_start.hh}:${time_start.mm} ${time_start.A}`;
-					this.time_start = time_start;
-				}
-			}
 			let time_end = this.time_end;
-			if (time_end && typeof time_end == 'object') {
-				if (time_end.A && time_end.hh && time_end.mm) {
-					time_end = `${time_end.hh}:${time_end.mm} ${time_end.A}`;
-					this.time_end = time_end;
+
+			if (time_start && time_end && time_start.A && time_start.hh && time_start.mm && time_end.A && time_end.hh && time_end.mm) {
+				if (time_start && typeof time_start == 'object') {
+					if (time_start.A && time_start.hh && time_start.mm) {
+						time_start = `${time_start.hh}:${time_start.mm} ${time_start.A}`;
+						this.time_start = time_start;
+					}
 				}
+				if (time_end && typeof time_end == 'object') {
+					if (time_end.A && time_end.hh && time_end.mm) {
+						time_end = `${time_end.hh}:${time_end.mm} ${time_end.A}`;
+						this.time_end = time_end;
+					}
+				}
+				let data = { start: time_start, end: time_end };
+				this.$emit('change', data);
 			}
-			let data = { start: time_start, end: time_end };
-			this.$emit('change', data);
 		}
 	}
 };

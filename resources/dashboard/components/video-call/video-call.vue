@@ -25,7 +25,7 @@
 			</div>
 
 			<!-- Incoming -->
-			<div class="modal-body col-start-5 col-span-3 text-center" v-else-if="action == 'incoming'">
+			<div class="modal-body col-start-5 col-span-3 text-center bg-white" v-else-if="action == 'incoming'">
 				<div class="p-6">
 					<h6 class="text-primary font-serif font-semibold mb-10 uppercase">{{ caller.first_name }} IS CALLING...</h6>
 					<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + caller.profile_image + ')' }">

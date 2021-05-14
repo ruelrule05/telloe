@@ -56,7 +56,7 @@ export default {
 
 		resetNewService() {
 			this.newService = {};
-			this.newService.days = { Friday: { end: '17:00', start: '08:00', isOpen: true }, Monday: { end: '17:00', start: '08:00', isOpen: true }, Sunday: { end: '17:00', start: '08:00', isOpen: false }, Tuesday: { end: '17:00', start: '08:00', isOpen: true }, Saturday: { end: '17:00', start: '08:00', isOpen: false }, Thursday: { end: '17:00', start: '08:00', isOpen: true }, Wednesday: { end: '17:00', start: '08:00', isOpen: true } };
+			this.newService.days = { Friday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Monday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Sunday: { end: '17:00', start: '08:00', isOpen: false, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Tuesday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Saturday: { end: '17:00', start: '08:00', isOpen: false, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Thursday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Wednesday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' } };
 		},
 
 		embedModal() {
