@@ -18,11 +18,13 @@ import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import Paginate from '../../../../components/paginate/paginate.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
+import CheckmarkIcon from '../../../../icons/checkmark-circle';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
 	components: {
+		CheckmarkIcon,
 		Multiselect,
 		Modal,
 		VueFormValidate,
@@ -294,7 +296,7 @@ export default {
 			let response = await this.storeUserCustomFields(this.userCustomFields);
 			this.userCustomFields = response.data.fields;
 			this.originalUserCustomFields = JSON.parse(JSON.stringify(response.data.fields));
-			this.$refs['fieldsModal'].hide();
+			//this.$refs['fieldsModal'].hide();
 		},
 
 		async goToConversation(contact) {
