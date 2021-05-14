@@ -15,6 +15,10 @@
 	.theme--light.v-calendar-daily {
 		border-top: none !important;
 	}
+	.v-calendar-daily__intervals-head,
+	.v-calendar-daily__intervals-body {
+		width: 70px !important;
+	}
 }
 .week-header {
 	@apply p-4 pointer-events-none;

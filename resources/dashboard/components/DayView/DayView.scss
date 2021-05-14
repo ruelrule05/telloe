@@ -9,6 +9,9 @@
 	.v-ripple__container {
 		@apply hidden #{!important};
 	}
+	.v-calendar-daily__intervals-body {
+		width: 70px !important;
+	}
 }
 
 .day-interval {

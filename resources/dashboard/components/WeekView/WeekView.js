@@ -140,7 +140,7 @@ export default {
 		},
 
 		intervalFormat(interval) {
-			return interval.time;
+			return dayjs(`${interval.date} ${interval.time}`).format('hh:mmA');
 		},
 
 		eventClick(event) {
