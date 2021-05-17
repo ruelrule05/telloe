@@ -8,7 +8,7 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 // Route::get('/email', function () {
-//     $email = new App\Mail\NewConversation(App\Models\Conversation::first(), true);
+//     $email = new App\Mail\NewBooking([App\Models\Booking::find(248)], 'serviceUser');
 //     return $email;
 // });
 

@@ -265,7 +265,7 @@ class AuthService
             return abort(403, 'Username is already taken.');
         }
 
-        $data = $request->all();
+        $data = $request->except('profile_image');
         $data['username'] = str_replace(' ', '', $request->username);
         $user = Auth::user();
 
@@ -289,8 +289,7 @@ class AuthService
                 });
             }
             $img->save($destinationPath . $fileName);
-            $user->profile_image = '/' . $destinationPath . $fileName;
-            $user->save();
+            $data['profile_image'] = '/storage/profile-images/' . $fileName;
         }
 
         $user->update($data);

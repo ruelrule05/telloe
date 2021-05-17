@@ -20,7 +20,7 @@ class XirsysController extends Controller
 
     public function getHost(Request $request)
     {
-        return response('wss://ss-api2.xirsys.com:443/ws');
+        //return response('wss://ss-api2.xirsys.com:443/ws');
         return response(XirsysService::getHost($request));
     }
 }

@@ -18,8 +18,9 @@
 					<h2 class="font-serif uppercase font-semibold mb-8">Profile Settings</h2>
 					<vue-form-validate @submit="save">
 						<div class="flex items-center mb-8 profile-photo">
-							<button class="mr-6 image" type="button" :style="{ backgroundImage: 'url(' + user.profile_image + ')' }" @click="$refs['profileImageInput'].click()">
-								<span v-if="!user.profile_image">+</span>
+							<button class="mr-6 image relative overflow-hidden" type="button" :style="{ backgroundImage: 'url(' + user.profile_image + ')' }" @click="$refs['profileImageInput'].click()">
+								<span class="absolute left-0 w-full h-1/2 opacity-80 bottom-0 bg-gradient-to-t from-black"></span>
+								<span class="absolute bottom-2 left-0 text-center w-full text-white text-xs">Edit</span>
 							</button>
 							<input ref="profileImageInput" type="file" accept="image/x-png,image/jpeg" @change="updateImage" class="hidden" />
 

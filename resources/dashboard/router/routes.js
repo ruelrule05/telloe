@@ -34,12 +34,10 @@ const routes = [
 			},
 			{
 				path: 'booking-links/:id',
-				name: 'Custom Links',
 				component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/show/show.vue')
 			},
 			{
 				path: 'contacts',
-				name: 'contacts',
 				component: {
 					render(c) {
 						return c('router-view');
@@ -48,24 +46,20 @@ const routes = [
 				children: [
 					{
 						path: '/',
-						name: 'Contacts',
 						component: () => import(/* webpackChunkName: "dashboard-contacts" */ '../pages/contacts/index/index.vue')
 					},
 					{
 						path: ':id',
-						name: 'Contacts',
 						component: () => import(/* webpackChunkName: "dashboard-contacts" */ '../pages/contacts/show/show.vue')
 					}
 				]
 			},
 			{
-				name: 'packages',
 				path: 'packages',
 				component: () => import(/* webpackChunkName: "dashboard-bookings" */ '../pages/bookings/bookings.vue'),
 				children: [
 					{
 						path: '/',
-						name: 'Packages',
 						component: () => import(/* webpackChunkName: "dashboard-packages" */ '../pages/packages/index/index.vue')
 					},
 					{
@@ -87,12 +81,10 @@ const routes = [
 				children: [
 					{
 						path: 'organizations',
-						name: 'Organizations',
 						component: () => import(/* webpackChunkName: "dashboard-team-organizations" */ '../pages/team/organizations/index/index.vue')
 					},
 					{
 						path: 'organizations/:id',
-						name: 'Organizations',
 						component: () => import(/* webpackChunkName: "dashboard-team-organizations-show" */ '../pages/team/organizations/show/show.vue')
 					},
 					{

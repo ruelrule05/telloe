@@ -3,7 +3,7 @@
 		<div class="video-call-modal-container" :class="{ open: open }">
 			<microphone-mute-icon class="hidden fill-current text-red-600" ref="microphoneMute"></microphone-mute-icon>
 			<!-- Outgoing -->
-			<div class="modal-body col-start-5 col-span-3 text-center" v-if="action == 'outgoing'">
+			<div class="modal-body col-start-5 col-span-3 text-center bg-white" v-if="action == 'outgoing'">
 				<div class="p-6">
 					<h6 class="text-primary font-serif font-semibold mb-10">CALLING...</h6>
 					<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + $root.callConversation.member.profile_image + ')' }">

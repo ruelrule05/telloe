@@ -3,6 +3,10 @@ import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import copy from 'copy-text-to-clipboard';
 import CogIcon from '../../../icons/cog';
+import PhoneIcon from '../../../icons/call-menu.vue';
+import SkypeIcon from '../../../icons/skype.vue';
+import MapMarkerIcon from '../../../icons/map-marker';
+import GoogleMeetIcon from '../../../icons/google-meet';
 export default {
 	props: {
 		service: {
@@ -15,7 +19,7 @@ export default {
 		actions: ['Edit', 'Duplicate', 'Delete']
 	}),
 
-	components: { ToggleSwitch, VueDropdown, CogIcon },
+	components: { ToggleSwitch, VueDropdown, CogIcon, PhoneIcon, SkypeIcon, MapMarkerIcon, GoogleMeetIcon },
 
 	methods: {
 		...mapActions({

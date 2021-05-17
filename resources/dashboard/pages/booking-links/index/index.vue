@@ -30,31 +30,33 @@
 				</div>
 
 				<div class="w-8/12 p-6">
-					<router-link tag="div" :to="`/dashboard/booking-links/${booking_link.id}`" v-for="booking_link in booking_links.data" :key="booking_link.id" class="cursor-pointer border-bottom pb-4 transition-colors hover:bg-gray-50">
-						<div class="text-primary font-bold">
-							{{ booking_link.name }}
-						</div>
-						<div class="text-muted text-xs">
-							Created: {{ formatDate(booking_link.created_at) }} <span class="ml-3">Duration: {{ booking_link.duration }} mins</span>
-						</div>
-						<div class="flex items-center mt-3">
-							<div class="flex items-center">
-								<div v-for="contact in booking_link.booking_link_contacts" :key="contact.id" class="-mr-2">
-									<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
-										<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
-									</div>
-								</div>
-								<div v-for="email in booking_link.emails" :key="email.email" class="-mr-2">
-									<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white">
-										<span class="uppercase">{{ email.email[0] }}</span>
-									</div>
-								</div>
+					<router-link :to="`/dashboard/booking-links/${booking_link.id}`" v-for="booking_link in booking_links.data" :key="booking_link.id" custom v-slot="{ navigate }">
+						<div @click="navigate" class="cursor-pointer border-bottom pb-4 transition-colors hover:bg-gray-50">
+							<div class="text-primary font-bold">
+								{{ booking_link.name }}
 							</div>
-							<span class="text-muted text-sm ml-4">Custom link dates:</span>
-							<div class="flex items-center">
-								<div v-for="(date, dateKey, dateIndex) in booking_link.dates" :key="dateKey" class="text-sm">
-									<span v-if="dateIndex > 0" class="text-muted">|</span>
-									<span class="mx-2">{{ formatDate(dateKey) }} </span>
+							<div class="text-muted text-xs">
+								Created: {{ formatDate(booking_link.created_at) }} <span class="ml-3">Duration: {{ booking_link.duration }} mins</span>
+							</div>
+							<div class="flex items-center mt-3">
+								<div class="flex items-center">
+									<div v-for="contact in booking_link.booking_link_contacts" :key="contact.id" class="-mr-2">
+										<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
+											<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
+										</div>
+									</div>
+									<div v-for="email in booking_link.emails" :key="email.email" class="-mr-2">
+										<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white">
+											<span class="uppercase">{{ email.email[0] }}</span>
+										</div>
+									</div>
+								</div>
+								<span class="text-muted text-sm ml-4">Custom link dates:</span>
+								<div class="flex items-center">
+									<div v-for="(date, dateKey, dateIndex) in booking_link.dates" :key="dateKey" class="text-sm">
+										<span v-if="dateIndex > 0" class="text-muted">|</span>
+										<span class="mx-2">{{ formatDate(dateKey) }} </span>
+									</div>
 								</div>
 							</div>
 						</div>

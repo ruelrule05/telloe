@@ -478,8 +478,8 @@ export default {
 		},
 
 		updateImage(e) {
-			let input = $(e.currentTarget);
-			let file = input[0].files[0];
+			let input = e.currentTarget;
+			let file = input.files[0];
 			if (file) {
 				if (file.type.match('image/jpeg') || file.type.match('image/png')) {
 					let photosize = file.size / 1000;

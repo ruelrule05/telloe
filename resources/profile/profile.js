@@ -827,6 +827,7 @@ export default {
 			this.authAction = 'signup';
 			this.authForm = false;
 			this.startDate = dayjs().toDate();
+			this.step = null;
 			this.selectedServiceForTimeline = this.selectedService = this.selectedTimeslot = null;
 		},
 

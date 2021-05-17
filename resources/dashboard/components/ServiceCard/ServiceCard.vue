@@ -1,7 +1,15 @@
 <template>
 	<div class="service-card">
 		<div class="flex justify-between">
-			<div class="rounded-xl border border-gray-300 bg-secondary w-9 h-5">&nbsp;</div>
+			<div>
+				<div v-if="service.types.length > 0" class="flex bg-secondary rounded-xl items-center px-1 py-2">
+					<MapMarkerIcon v-if="service.types.find(x => x.type == 'Face-to-face')" class="w-4 h-4 fill-current text-primary mx-1"></MapMarkerIcon>
+					<PhoneIcon v-if="service.types.find(x => x.type == 'Phone')" class="w-4 h-4 fill-current text-primary mx-1"></PhoneIcon>
+					<GoogleMeetIcon v-if="service.types.find(x => x.type == 'Google Meet')" class="w-4 h-4 fill-current text-primary mx-1"></GoogleMeetIcon>
+					<SkypeIcon v-if="service.types.find(x => x.type == 'Skype')" class="w-4 h-4 fill-current text-primary mx-1"></SkypeIcon>
+					<img src="/logo.svg" v-if="service.types.find(x => x.type == 'Telloe Video Call')" class="w-4 h-4 mx-1" />
+				</div>
+			</div>
 			<div>
 				<VueDropdown :options="actions" @click="serviceAction" class="-mr-2 -mt-2">
 					<template #button>
