@@ -91,29 +91,29 @@
 
 					<div class="mt-12">
 						<div class="sidebar-heading">BOOKINGS</div>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/calendar">
-							Calendar
+						<router-link custom v-slot="{ navigate, isActive }" to="/dashboard/calendar">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Calendar</div>
 						</router-link>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/services">
-							Event Types
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/services">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Event Types</div>
 						</router-link>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/booking-links">
-							Custom Links
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/booking-links">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Custom Links</div>
 						</router-link>
 
 
 						<div class="sidebar-heading mt-9">COMMUNICATION</div>
-						<router-link tag="div" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
-							Messages
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
 						</router-link>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/contacts">
-							Contacts
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
 						</router-link>
 						
 						
 						<div class="sidebar-heading mt-9">INTEGRATIONS</div>
-						<router-link tag="div" exact class="sidebar-menu-item" to="/dashboard/integrations">
-							Add an Integration
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/integrations">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Add an Integration</div>
 						</router-link>
 						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
 							Xero Invoicing
@@ -124,8 +124,8 @@
 						<div class="sidebar-heading mt-9">APPS</div>
 						<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
 						</div>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/packages">
-							Packages
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/packages">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Packages</div>
 						</router-link>
 
 
@@ -141,11 +141,11 @@
 
 
 						<div class="sidebar-heading mt-9">PAYMENTS</div>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/payments/invoices">
-							Invoices
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/payments/invoices">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Invoices</div>
 						</router-link>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/payments/subscriptions">
-							Subscriptions
+						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/payments/subscriptions">
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Subscriptions</div>
 						</router-link>
 					</div>
 

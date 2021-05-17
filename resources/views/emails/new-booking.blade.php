@@ -9,7 +9,7 @@
 </div>
 
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
-You successfully booked an event <strong>"{{ $bookings[0]->service->name }}"</strong> with <strong> {{ $bookings[0]->service->coach->full_name }}</strong>.
+{!! $emailMessage !!}
 </p>
 
 @foreach($bookings as $booking) 
@@ -18,6 +18,11 @@ You successfully booked an event <strong>"{{ $bookings[0]->service->name }}"</st
             {{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }} ({{ \Carbon\Carbon::parse($booking->date)->format('l') }})
         </h3>
         <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</div>
+
+        <div style="margin-top: 10px; color: #777">Guests</div>
+        @foreach($names as $name)
+            <div>{{ $name }}</div>
+        @endforeach
 
         @if($booking->recurring)
         <div style="margin-top: 10px; display: flex; align-items: cexnter; flex-wrap: nowrap; font-size: 14px; line-height: 18px" class="text-muted">

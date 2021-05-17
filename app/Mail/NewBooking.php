@@ -13,18 +13,22 @@ class NewBooking extends Mailer
     public $actionUrl;
     public $email;
     public $emailMessage;
+    public $names;
 
     public function __construct(array $bookings, $target)
     {
         $this->bookings = $bookings;
         $booking = $this->bookings[0];
         $authUser = $authUser ?? Auth::user();
+        $this->names = $booking->bookingUsers->map(function ($bookingUser) {
+            return $bookingUser->user ? $bookingUser->user->full_name : $bookingUser->guest['email'];
+        })->toArray();
         if ($target == 'serviceUser') {
             $this->email = $booking->service->coach->email;
             $this->emailMessage = 'A booking has been made with the following details:';
         } elseif ($target == 'customer') {
             $this->email = $booking->bookingUsers[0]->user->email ?? $booking['email'];
-            $this->emailMessage = "<strong>{$booking->service->coach->full_name}</strong> made a booking for you.";
+            $this->emailMessage = "You successfully booked an event <strong>\"{$booking->service->name}\"</strong> with <strong>{$booking->service->coach->full_name}</strong>.";
             if (! $booking->user && $booking->contact && $booking->contact->is_pending) {
                 $this->emailMessage = 'A booking has been made for your email with the following details:';
                 $this->actionUrl = url("/?invite_token={$booking->contact->invite_token}&auth=signup");

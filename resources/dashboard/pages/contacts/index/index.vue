@@ -206,7 +206,7 @@
 			</div>
 			<div class="mb-1 flex items-center w-full">
 				<input type="text" v-model="newField" class="flex-grow" placeholder="New Field" />
-				<CheckmarkIcon @click.native="updateUserCustomFields()" class="fill-current text-gray-300 w-7 h-7 -mr-1 ml-1 transition-colors hover:text-gray-400 cursor-pointer"></CheckmarkIcon>
+				<button class="btn btn-sm btn-outline-primary ml-2" type="button" @click="updateUserCustomFields()"><span>Add</span></button>
 			</div>
 			<div class="flex justify-end mt-6">
 				<button

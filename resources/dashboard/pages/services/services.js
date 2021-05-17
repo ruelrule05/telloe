@@ -56,6 +56,7 @@ export default {
 
 		resetNewService() {
 			this.newService = {};
+			this.newService.timezone = this.$root.auth.timezone;
 			this.newService.days = { Friday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Monday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Sunday: { end: '17:00', start: '08:00', isOpen: false, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Tuesday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Saturday: { end: '17:00', start: '08:00', isOpen: false, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Thursday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Wednesday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' } };
 		},
 

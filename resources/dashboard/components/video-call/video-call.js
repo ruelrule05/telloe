@@ -244,8 +244,8 @@ export default {
 					if (completeCount == 3) resolve();
 				});
 				window.axios.get(`/xirsys/host?id=${this.username}`).then(response => {
-					this.host = response.data;
-					//this.host = response.data.v;
+					//this.host = response.data;
+					this.host = response.data.v;
 					completeCount++;
 					if (completeCount == 3) resolve();
 				});
