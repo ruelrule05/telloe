@@ -14,6 +14,7 @@ const isEmail = require('isemail');
 import Modal from '../../../../components/modal/modal.vue';
 const ct = require('countries-and-timezones');
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
+const { getNameList } = require('country-list');
 
 export default {
 	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect },
@@ -43,7 +44,9 @@ export default {
 
 		availableTimezones() {
 			let timezones = [];
-			this.allowed_countries.forEach(code => {
+
+			/* eslint-disable */
+			Object.entries(getNameList()).forEach(([name, code]) => {
 				let countryTimezones = ct.getTimezonesForCountry(code);
 				if (countryTimezones) {
 					countryTimezones.forEach(timezone => {
