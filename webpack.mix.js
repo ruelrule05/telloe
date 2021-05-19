@@ -80,18 +80,18 @@ if (mix.inProduction()) {
 			}
 		});
 	}
-
-	mix.webpackConfig({
-		plugins: [new ESLintPlugin(), new IgnoreVuetifyStylesPlugin()],
-		module: {
-			rules: [
-				{
-					enforce: 'pre',
-					exclude: /node_modules/,
-					loader: 'eslint-loader',
-					test: /\.(js|vue)?$/
-				}
-			]
-		}
-	});
 }
+
+mix.webpackConfig({
+	plugins: [new ESLintPlugin(), new IgnoreVuetifyStylesPlugin()],
+	module: {
+		rules: [
+			{
+				enforce: 'pre',
+				exclude: /node_modules/,
+				loader: 'eslint-loader',
+				test: /\.(js|vue)?$/
+			}
+		]
+	}
+});
