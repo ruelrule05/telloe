@@ -33,7 +33,7 @@
 			<div class="w-1/2">
 				<UpcomingBookings :bookings="upcomingBookings"></UpcomingBookings>
 			</div>
-			<div class="w-1/2 py-6 px-3 border-left">
+			<div class="w-1/2 py-6 px-3 border-left calendar-container">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 					<div slot="day-content" slot-scope="data">
 						<div class="day-content text-center">

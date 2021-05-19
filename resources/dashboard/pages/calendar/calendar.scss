@@ -1,71 +1,73 @@
-.v-calendar {
-	@apply h-full border-0;
-	.vc-header,
-	.vc-arrows-container {
-		@apply hidden;
-	}
-	.vc-title {
-		font-family: 'Avenir Next';
-		font-size: 24px;
-	}
-	.day-content {
-		position: relative;
-		.day-label {
-			@apply border font-sans border-gray-200 font-bold rounded-full text-sm my-4 text-muted transition-colors hover:text-white hover:bg-primary;
-			position: relative;
-			display: inline-block;
-			vertical-align: middle;
-			cursor: pointer;
-			position: relative;
-			width: 40px;
-			height: 40px;
-			border-radius: 50%;
-
-			&.is-today {
-				@apply text-white bg-primary ring-4 ring-gray-200;
-			}
-			span {
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				z-index: 1;
-			}
+.calendar-container {
+	.v-calendar {
+		@apply h-full border-0;
+		.vc-header,
+		.vc-arrows-container {
+			@apply hidden;
 		}
-
-		.vc-badge-container {
-			position: absolute;
-			left: 50%;
-			bottom: -14px;
-			transform: translateX(-50%);
-			z-index: 1;
-			.vc-badge {
-				width: 6px;
-				height: 6px;
-				color: white;
-				font-size: 10px;
+		.vc-title {
+			font-family: 'Avenir Next';
+			font-size: 24px;
+		}
+		.day-content {
+			position: relative;
+			.day-label {
+				@apply border font-sans border-gray-200 font-bold rounded-full text-sm my-4 text-muted transition-colors hover:text-white hover:bg-primary;
+				position: relative;
+				display: inline-block;
+				vertical-align: middle;
+				cursor: pointer;
+				position: relative;
+				width: 40px;
+				height: 40px;
 				border-radius: 50%;
-				font-weight: 400;
-				pointer-events: none;
-				line-height: 1;
-				text-align: center;
-				margin: 0 1px;
+
+				&.is-today {
+					@apply text-white bg-primary ring-4 ring-gray-200;
+				}
+				span {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					z-index: 1;
+				}
+			}
+
+			.vc-badge-container {
+				position: absolute;
+				left: 50%;
+				bottom: -14px;
+				transform: translateX(-50%);
+				z-index: 1;
+				.vc-badge {
+					width: 6px;
+					height: 6px;
+					color: white;
+					font-size: 10px;
+					border-radius: 50%;
+					font-weight: 400;
+					pointer-events: none;
+					line-height: 1;
+					text-align: center;
+					margin: 0 1px;
+				}
 			}
 		}
-	}
-	.vc-pane-container,
-	.vc-grid-container.grid,
-	.vc-w-full.vc-relative,
-	.vc-pane {
-		height: 100%;
-	}
-	.vc-dots {
-		display: none;
-	}
-	.vc-weeks {
-		@apply p-0;
-	}
-	.vc-weekday {
-		@apply uppercase font-serif text-xs;
+		.vc-pane-container,
+		.vc-grid-container.grid,
+		.vc-w-full.vc-relative,
+		.vc-pane {
+			height: 100%;
+		}
+		.vc-weeks {
+			@apply p-0;
+		}
+		.vc-weekday {
+			@apply uppercase font-serif text-xs;
+		}
+		.vc-dots {
+			@apply hidden;
+		}
 	}
 }

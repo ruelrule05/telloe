@@ -13,7 +13,18 @@
 						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="" multiple clearOnSelect>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
-								<button v-if="isEmail.validate(data.search)" type="button" @click="addEmail(data.search)" class="btn btn-sm btn-outline-primary"><span>Add this email</span></button>
+								<button
+									v-if="isEmail.validate(data.search)"
+									type="button"
+									@click="
+										emailToAdd.email = data.search;
+										emailToAdd.timezone = $root.auth.timezone;
+										$refs.addEmailModal.show();
+									"
+									class="btn btn-sm btn-outline-primary"
+								>
+									<span>Add this email</span>
+								</button>
 								<span v-else>No contacts found.</span>
 							</div>
 						</multiselect>
@@ -80,6 +91,26 @@
 				<button type="submit" class="btn btn-md btn-primary mt-8"><span>Save</span></button>
 			</div>
 		</vue-form-validate>
+
+		<Modal ref="addEmailModal" size="sm">
+			<h6 class="font-serif font-semibold mb-5 uppercase">Add Email</h6>
+			<vue-form-validate @submit="addEmail">
+				<label>Email</label>
+				<input type="text" v-model="emailToAdd.email" data-required />
+
+				<label class="mt-4">Timezone</label>
+				<VueSelect drop-position="w-full" required :options="availableTimezones" searchable v-model="emailToAdd.timezone" placeholder="Select timezone"></VueSelect>
+
+				<div class="mt-8 flex justify-between">
+					<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.addEmailModal.hide()">
+						<span>Cancel</span>
+					</button>
+					<button class="btn btn-primary btn-md" type="submit">
+						<span>Add</span>
+					</button>
+				</div>
+			</vue-form-validate>
+		</Modal>
 	</div>
 </template>
 

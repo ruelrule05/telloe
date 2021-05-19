@@ -57,7 +57,17 @@
 						</div>
 						<div class="pl-4 -mt-1">
 							<p>You haven't created any event types yet. Create your first event type by clicking the button below.</p>
-							<button type="button" class="btn btn-outline-primary btn-md mt-4"><span>Add New</span></button>
+							<button
+								type="button"
+								class="btn btn-outline-primary btn-md mt-4"
+								@click="
+									resetNewService();
+									createService = true;
+									serviceToEdit = newService;
+								"
+							>
+								<span>Add New</span>
+							</button>
 						</div>
 					</div>
 				</template>
