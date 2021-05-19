@@ -70,7 +70,7 @@ class BookingService
         $data = $request->validated();
         $bookings = [];
         $booking = Booking::create($data);
-        $bookings[] = $booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user');
+        $bookings[] = $booking;
 
         if ($service->create_zoom_link && $service->user->zoom_token) {
             $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
@@ -148,13 +148,11 @@ class BookingService
                         'meeting_type' => $request->meeting_type,
                         'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
                     ]);
-                    $bookings[] = $booking->fresh()->load('service.assignedServices', 'bookingNote', 'bookingUsers.user');
+                    $bookings[] = $booking;
                 }
                 $currentDate->addDay(1);
             }
         }
-        Mail::queue(new NewBooking($bookings, 'serviceUser'));
-        Mail::queue(new NewBooking($bookings, 'customer'));
 
         foreach ($bookings as $booking) {
             foreach ($data['contact_ids'] as $contactID) {
@@ -176,6 +174,14 @@ class BookingService
                         'email' => $email
                     ]
                 ]);
+            }
+        }
+
+        Mail::queue(new NewBooking($bookings, 'serviceUser'));
+        foreach ($bookings as &$booking) {
+            $booking = $booking->refresh()->load('bookingUsers.user');
+            foreach ($booking->bookingUsers as $bookingUser) {
+                Mail::queue(new NewBooking($bookings, 'customer', $bookingUser->user->email));
             }
         }
 

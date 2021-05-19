@@ -3,50 +3,39 @@
 namespace App\Mail;
 
 use Auth;
-use Carbon\Carbon;
-use Spatie\CalendarLinks\Link;
 
 class NewBooking extends Mailer
 {
-    public $bookings;
     public $actionText = 'Manage Booking';
     public $actionUrl;
     public $email;
     public $emailMessage;
     public $names;
+    public $bookings;
 
-    public function __construct(array $bookings, $target)
+    public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
-        $this->bookings = $bookings;
-        $booking = $this->bookings[0];
         $authUser = $authUser ?? Auth::user();
-        $this->names = $booking->bookingUsers->map(function ($bookingUser) {
+        $this->bookings = $bookings;
+        $this->names = $bookings[0]->bookingUsers->map(function ($bookingUser) {
             return $bookingUser->user ? $bookingUser->user->full_name : $bookingUser->guest['email'];
         })->toArray();
+        $this->actionText = 'Manage Bookings';
+        $this->actionUrl = config('app.url') . '?auth=login';
+
         if ($target == 'serviceUser') {
-            $this->email = $booking->service->coach->email;
+            $this->email = $bookings[0]->service->coach->email;
             $this->emailMessage = 'A booking has been made with the following details:';
         } elseif ($target == 'customer') {
-            $this->email = $booking->bookingUsers[0]->user->email ?? $booking['email'];
-            $this->emailMessage = "You successfully booked an event <strong>\"{$booking->service->name}\"</strong> with <strong>{$booking->service->coach->full_name}</strong>.";
-            if (! $booking->user && $booking->contact && $booking->contact->is_pending) {
+            $this->email = $bookingUserEmail;
+            if ($userTriggered) {
+                $this->emailMessage = "You successfully booked an event <strong>\"{$bookings[0]->service->name}\"</strong> with <strong>{$bookings[0]->service->coach->full_name}</strong>.";
+            } else {
                 $this->emailMessage = 'A booking has been made for your email with the following details:';
-                $this->actionUrl = url("/?invite_token={$booking->contact->invite_token}&auth=signup");
-                $this->actionText = 'Create an account';
+                // $this->actionUrl = url("/?invite_token={$bookings[0]->contact->invite_token}&auth=signup");
+                // $this->actionText = 'Create an account';
             }
         }
-
-        $this->actionUrl = config('app.url') . '?auth=login';
-        if (count($bookings) > 1) {
-            $this->actionText = 'Manage Bookings';
-        }
-
-        // $from = Carbon::parse("$booking->date $booking->start");
-        // $to = $from->clone()->addMinute($booking->service->duration);
-
-        // $this->link = Link::create($booking->service->name, $from, $to)
-        //     ->description($booking->service->description);
-        // ->address('Kruikstraat 22, 2018 Antwerpen');
     }
 
     /**

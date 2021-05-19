@@ -8,7 +8,8 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 // Route::get('/email', function () {
-//     $email = new App\Mail\NewBooking([App\Models\Booking::find(248)], 'serviceUser');
+//     $email = new App\Mail\NewBooking([App\Models\Booking::find(248)], 'customer', 'clydewinux@gmail.com');
+//     Mail::queue($email);
 //     return $email;
 // });
 

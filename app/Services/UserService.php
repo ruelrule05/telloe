@@ -261,7 +261,12 @@ class UserService
         }
         if (count($bookings) > 0) {
             Mail::queue(new NewBooking($bookings, 'serviceUser'));
-            Mail::queue(new NewBooking($bookings, 'customer'));
+            foreach ($bookings as &$booking) {
+                $booking = $booking->refresh()->load('bookingUsers.user');
+                foreach ($booking->bookingUsers as $bookingUser) {
+                    Mail::queue(new NewBooking($bookings, 'customer', $bookingUser->user->email));
+                }
+            }
 
             $user_id = $bookings[0]->service->user->id ?? null;
             if ($user_id) {
