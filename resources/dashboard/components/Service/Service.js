@@ -11,6 +11,7 @@ import CloseIcon from '../../../icons/close';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
 const ct = require('countries-and-timezones');
+const { getNameList } = require('country-list');
 export default {
 	props: {
 		service: {
@@ -76,7 +77,9 @@ export default {
 	computed: {
 		availableTimezones() {
 			let timezones = [];
-			this.allowed_countries.forEach(code => {
+
+			/* eslint-disable */
+			Object.entries(getNameList()).forEach(([name, code]) => {
 				let countryTimezones = ct.getTimezonesForCountry(code);
 				if (countryTimezones) {
 					countryTimezones.forEach(timezone => {
@@ -87,6 +90,18 @@ export default {
 					});
 				}
 			});
+
+			// this.allowed_countries.forEach(code => {
+			// 	let countryTimezones = ct.getTimezonesForCountry(code);
+			// 	if (countryTimezones) {
+			// 		countryTimezones.forEach(timezone => {
+			// 			timezones.push({
+			// 				text: timezone.name,
+			// 				value: timezone.name
+			// 			});
+			// 		});
+			// 	}
+			// });
 			return timezones.sort((a, b) => {
 				return a.text > b.text ? 1 : -1;
 			});

@@ -205,13 +205,11 @@ export default {
 		countries() {
 			let countries = [];
 			Object.entries(getNameList()).forEach(([name, code]) => {
-				if (this.allowed_countries.find(x => x == code)) {
-					countries.push({
-						text: name.replace(/\b\w/g, l => l.toUpperCase()),
-						value: code,
-						name: name
-					});
-				}
+				countries.push({
+					text: name.replace(/\b\w/g, l => l.toUpperCase()),
+					value: code,
+					name: name
+				});
 			});
 			countries = countries.sort((a, b) => {
 				return a.name.localeCompare(b.name);
