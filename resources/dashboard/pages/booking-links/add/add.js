@@ -11,9 +11,12 @@ import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
 const color = require('randomcolor');
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 const isEmail = require('isemail');
+import Modal from '../../../../components/modal/modal.vue';
+const ct = require('countries-and-timezones');
+import VueSelect from '../../../../components/vue-select/vue-select.vue';
 
 export default {
-	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate },
+	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect },
 	data: () => ({
 		selectedContacts: [],
 		dates: {},
@@ -23,7 +26,12 @@ export default {
 		startDate: null,
 		name: '',
 		duration: 0,
-		isEmail: isEmail
+		isEmail: isEmail,
+		emailToAdd: {
+			email: '',
+			timezone: ''
+		},
+		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US']
 	}),
 
 	computed: {
@@ -32,6 +40,24 @@ export default {
 			booking_links: state => state.booking_links.paginated,
 			contacts: state => state.contacts.index
 		}),
+
+		availableTimezones() {
+			let timezones = [];
+			this.allowed_countries.forEach(code => {
+				let countryTimezones = ct.getTimezonesForCountry(code);
+				if (countryTimezones) {
+					countryTimezones.forEach(timezone => {
+						timezones.push({
+							text: timezone.name,
+							value: timezone.name
+						});
+					});
+				}
+			});
+			return timezones.sort((a, b) => {
+				return a.text > b.text ? 1 : -1;
+			});
+		},
 
 		contactsOptions() {
 			let colors = [];
@@ -81,8 +107,8 @@ export default {
 			storeBookingLink: 'booking_links/store'
 		}),
 
-		addEmail(email) {
-			let exists = this.selectedContacts.find(x => x.email == email);
+		addEmail() {
+			let exists = this.selectedContacts.find(x => x.email == this.emailToAdd.email);
 			if (!exists) {
 				let colorOptions = { luminosity: 'bright', format: 'rgba', alpha: 0.1 };
 				let contactColor = color(colorOptions);
@@ -90,18 +116,19 @@ export default {
 					contactColor = color(colorOptions);
 				}
 				this.selectedContacts.push({
-					id: email,
-					name: email,
+					id: this.emailToAdd.email,
+					name: this.emailToAdd.email,
 					contact_user: {
-						initials: email[0].toUpperCase(),
-						full_name: email,
-						timezone: this.$root.auth.timezone
+						initials: this.emailToAdd.email[0].toUpperCase(),
+						full_name: this.emailToAdd.email,
+						timezone: this.emailToAdd.timezone
 					},
 					type: 'email',
 					color: contactColor
 				});
 			}
 			this.$refs.selectedContacts.deactivate();
+			this.$refs.addEmailModal.hide();
 		},
 
 		addTimeslot(state, timeslot) {

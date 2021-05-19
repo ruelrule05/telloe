@@ -6,7 +6,7 @@
 		</div>
 		<div class="p-6">
 			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
-			<div v-if="bookingLink.booking_link_contacts.length > 0">
+			<div>
 				<div class="flex justify-between items-center">
 					<div>
 						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
@@ -104,7 +104,7 @@
 										</div>
 									</div>
 								</td>
-								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || editable }">
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
 									<span v-if="(email.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: email.color.replace('0.1', '1') }">
 										<div class="profile-image profile-image-xs inline-block -mt-1">
 											<span>{{ email.email[0] }}</span>
