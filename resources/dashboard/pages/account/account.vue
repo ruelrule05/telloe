@@ -93,6 +93,7 @@
 								<div class="text-muted font-serif uppercase font-semibold text-xs">{{ plan.name }}</div>
 								<div class="active-plan text-xs font-serif uppercase font-semibold text-primary">active</div>
 							</div>
+
 							<div class="mt-16 mb-24">
 								<h3 class="mb-6">
 									<strong class="text-6xl">${{ parseInt(plan.price) }}</strong
@@ -103,6 +104,7 @@
 									<span class="relative -bottom-px">&nbsp;{{ plan.price_meta }}&nbsp;</span>
 								</div>
 							</div>
+							<div v-if="$root.auth.subscription && $root.auth.subscription.trial_expires_at" class="bg-secondary p-3 mb-2 rounded-xl text-center text-sm free-trial">Free Trial expires at {{ dayjs($root.auth.subscription.trial_expires_at).format('MMMM d, YYYY') }}</div>
 							<div class="plan-cancel-text mb-4">
 								<p>If you cancel a subscription you can continue using the features until 22 March 2021.</p>
 							</div>

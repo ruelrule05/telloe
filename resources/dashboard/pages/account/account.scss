@@ -17,12 +17,18 @@
 	.active-plan {
 		@apply opacity-0;
 	}
+	.free-trial {
+		@apply opacity-0;
+	}
 	.plan-cancel-text {
 		@apply opacity-0 text-muted text-sm;
 	}
 	&.active {
 		@apply ring-2 ring-primary;
 		.active-plan {
+			@apply opacity-100;
+		}
+		.free-trial {
 			@apply opacity-100;
 		}
 		.plan-cancel-text {
