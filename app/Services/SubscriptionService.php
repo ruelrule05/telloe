@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Http\StripeAPI;
+use App\Mail\Subscribed;
 use App\Models\Plan;
 use App\Models\Subscription;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Mail;
 
 class SubscriptionService
 {
@@ -48,14 +51,26 @@ class SubscriptionService
                 'customer' => $user->stripe_customer_id,
                 'plan' => $plan->stripe_plan_id,
             ];
+            $trialExpiresAt = null;
+            if ($user->has_subscribed) {
+                $data['trial_end'] = 'now';
+            } else {
+                $trialExpiresAt = Carbon::now()->add(14, 'day');
+                $data['trial_period_days'] = 14;
+            }
             $stripe_subscription = $stripe_api->subscription('create', $data);
             $subscription = Subscription::create([
                 'user_id' => $user->id,
                 'stripe_subscription_id' => $stripe_subscription->id,
                 'plan_id' => $plan->id,
-                'status' => 'active'
+                'status' => 'active',
+                'trial_expires_at' => $trialExpiresAt
             ]);
 
+            $user->has_subscribed = true;
+            $user->save();
+
+            Mail::to($user->email)->queue(new Subscribed($plan));
             return $subscription;
         }
 
