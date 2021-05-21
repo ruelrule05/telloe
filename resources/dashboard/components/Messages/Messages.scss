@@ -16,9 +16,13 @@
 		text-align: left;
 		border-radius: 2px;
 		max-width: 80%;
-		::v-deep a:not(.message-preview) {
-			text-decoration: underline;
-		}
+	}
+
+	::v-deep .message-text a {
+		@apply underline break-all;
+	}
+	.message-text a {
+		@apply underline;
 	}
 	.message-item {
 		.action-button {
@@ -36,6 +40,10 @@
 			.action-button.show {
 				opacity: 1;
 			}
+		}
+		&.has-link {
+			@apply inline-block;
+			width: 500px;
 		}
 	}
 
@@ -403,4 +411,21 @@
 }
 .filedrop {
 	@apply absolute h-full w-full bg-white bg-opacity-90 border-2 border-dashed border-primary;
+}
+::v-deep .message-preview-container {
+	@apply text-left;
+	.preview-image {
+		@apply my-2 bg-cover bg-center -mx-3;
+		height: 200px;
+	}
+	.preview-title {
+		@apply line-clamp-1 font-bold;
+	}
+	.preview-description {
+		@apply text-sm line-clamp-1 no-underline;
+	}
+	.preview-host {
+		@apply opacity-40 block line-clamp-1;
+		font-size: 13px;
+	}
 }

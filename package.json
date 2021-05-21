@@ -36,6 +36,7 @@
 		"vuex": "^3.6.0"
 	},
 	"dependencies": {
+		"@tailwindcss/line-clamp": "^0.2.0",
 		"blueimp-load-image": "^5.14.0",
 		"convert-time": "^0.3.0",
 		"copy-text-to-clipboard": "^3.0.1",
