@@ -6,6 +6,7 @@ import 'vue-range-slider/dist/vue-range-slider.css';
 import Auth from '../components/auth/auth.vue';
 import CheckmarkIcon from '../icons/checkmark';
 import GreencheckIcon from '../icons/greencheck';
+import MessengerIcon from '../icons/messenger';
 import Vue from 'vue';
 import vClickOutside from 'v-click-outside';
 
@@ -16,7 +17,8 @@ window.app = new Vue({
 		RangeSlider,
 		Auth,
 		CheckmarkIcon,
-		GreencheckIcon
+		GreencheckIcon,
+		MessengerIcon
 	},
 
 	directives: { clickOutside: vClickOutside.directive },
@@ -49,7 +51,7 @@ window.app = new Vue({
 	},
 
 	created() {
-		this.checkAuth();
+		//this.checkAuth();
 		const queryString = window.location.search;
 		if (queryString) {
 			const urlParams = new URLSearchParams(queryString);

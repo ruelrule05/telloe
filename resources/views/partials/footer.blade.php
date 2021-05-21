@@ -1,4 +1,4 @@
-<footer class="lg:py-16 py-8">
+<footer class="lg:py-16 py-8 border-top">
 	<div class="container">
 		<div class="lg:grid grid-cols-12">
 			<div class="col-span-4">
@@ -14,6 +14,7 @@
 
 			<div class="col-span-2 mt-md-0 lg:mt-4 mt-8">
 				<h5 class="font-serif text-muted uppercase text-xs font-semibold lg:mb-4 mb-2">Company</h5>
+				<a href="/contact" class="block text-sm">Contact Us</a>
 				<a href="" class="block text-sm">Become an affiliate</a>
 			</div>
 
