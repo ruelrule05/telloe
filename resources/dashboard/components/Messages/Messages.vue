@@ -62,7 +62,7 @@
 								</div>
 							</div>
 							<div class="px-1 flex-1 -mb-1">
-								<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item">
+								<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item" :class="{ 'has-link': message.link_preview }">
 									<div class="relative message-content" :class="{ 'p-0 bg-transparent': ['emoji', 'image', 'video'].find(x => x == message.type) }">
 										<div
 											v-if="grouped_message.outgoing"

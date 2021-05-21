@@ -15,7 +15,7 @@
 				<div class="border-right overflow-hidden h-full">
 					<index ref="conversationIndex"></index>
 				</div>
-				<div class="flex-grow overflow-hidden h-full">
+				<div class="flex-1 overflow-hidden h-full">
 					<show @ready="showReady()"></show>
 				</div>
 			</div>

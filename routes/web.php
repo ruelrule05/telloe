@@ -36,6 +36,7 @@ Route::group(
     ],
     function () {
         Route::get('/', 'PageController@homepage');
+        Route::get('/contact', 'PageController@contact');
 
         Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
 

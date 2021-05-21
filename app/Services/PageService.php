@@ -64,9 +64,9 @@ class PageService
         return $member;
     }
 
-    public static function index()
+    public static function contact()
     {
-        return ;
+        return view('pages.contact');
     }
 
     public static function show($id)

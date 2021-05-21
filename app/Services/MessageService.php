@@ -142,15 +142,13 @@ class MessageService
             $preview = $preview->json();
             $host = parse_url($preview['url'])['host'];
             if (! isset($preview['error'])) {
-                $linkPreview = '<a class="message-preview d-block rounded mt-2 mb-1 overflow-hidden text-left" target="_blank" href="' . $preview['url'] . '">';
+                $linkPreview = '<a target="_blank" href="' . $preview['url'] . '">';
                 if ($preview['image']) {
                     $linkPreview .= '<div class="preview-image" style="background-image: url(\'' . $preview['image'] . '\')"></div>';
                 }
-                $linkPreview .= '<div class="p-2">';
-                $linkPreview .= '<h6 class="text-body mb-1 font-weight-bolder">' . htmlspecialchars($preview['title']) . '</h6>';
-                $linkPreview .= '<p class="text-body mb-1 p">' . htmlspecialchars($preview['description']) . '</p>';
-                $linkPreview .= '<span class="text-gray">' . $host . '</span>';
-                $linkPreview .= '</div>';
+                $linkPreview .= '<h6 class="preview-title">' . htmlspecialchars($preview['title']) . '</h6>';
+                $linkPreview .= '<p class="preview-description">' . htmlspecialchars($preview['description']) . '</p>';
+                $linkPreview .= '<span class="preview-host">' . $host . '</span>';
                 $linkPreview .= '</a>';
 
                 $message->update([
@@ -159,6 +157,6 @@ class MessageService
             }
         }
 
-        return response($linkPreview);
+        return $linkPreview;
     }
 }

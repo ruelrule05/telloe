@@ -10,8 +10,14 @@
                     <a href="#features" class="navbar-item">FEATURES</a>
                     <a href="#about" class="navbar-item"><span>ABOUT</span></a>
                     <a href="#pricing" class="navbar-item"><span>PRICING</span></a>
+                    <a href="/contact" class="navbar-item"><span>CONTACT US</span></a>
+                    @auth
+                    <a href="/dashboard/calendar" class="navbar-item"><span>DASHBOARD</span></a>
+                    @endauth
+                    @guest
                     <button type="button" class="navbar-item" @click="auth = true; action = 'login'"><span>LOGIN</span></button>
                     <button type="button" class="btn btn-primary btn-md" @click="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
+                    @endguest
                 </div>
             </div>
         </div>
@@ -34,12 +40,18 @@
                 <a href="#features">FEATURES</a>
                 <a href="#about">ABOUT</a>
                 <a href="#pricing">PRICING</a>
+                <a href="/contact">CONTACT US</a>
+                @auth
+                <a href="/dashboard/calendar">DASHBOARD</a>
+                @endauth
+                @guest
                 <div class="px-2 mt-4">
                     <button type="button" class="btn btn-outline-primary btn-md mb-2 w-full" @click="auth = true; action = 'login'"><span>LOGIN</span></button>
                 </div>
                 <div class="px-2 pb-2">
                     <button type="button" class="btn btn-primary btn-md w-full" @click="auth = true; action = 'signup'"><span>SIGN UP</span></button>
                 </div>
+                @endguest
              </div>
           </div>
         </div>

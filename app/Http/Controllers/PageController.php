@@ -22,4 +22,9 @@ class PageController extends Controller
     {
         return response(PageService::termsOfService($request));
     }
+
+    public function contact()
+    {
+        return response(PageService::contact());
+    }
 }
