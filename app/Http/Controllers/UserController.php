@@ -49,12 +49,7 @@ class UserController extends Controller
     public static function book($username, $service_id, UserBookRequest $request, $customer)
     {
         return response(UserService::signupAndBook($username, $service_id, $request, $customer));
-    }
-
-    public static function createBooking($service, $data)
-    {
-        return response(UserService::createBooking($service, $data));
-    }
+    }    
 
     public function googleLoginAndBook($username, $service_id, UserGoogleLoginRequest $request)
     {

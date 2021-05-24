@@ -441,7 +441,7 @@ class AuthService
                 ],
             ],
             'business_profile' => [
-                'mcc' => env('STRIPE_DEFAULT_MCC'),
+                'mcc' => config('app.stripe_default_mcc'),
                 'url' => $request->website,
             ],
             'tos_acceptance' => [

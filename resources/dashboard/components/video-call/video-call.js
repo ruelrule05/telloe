@@ -98,7 +98,7 @@ export default {
 		remoteStreamsMixer: null,
 		isMuted: false,
 		isVideoStopped: false,
-		isShrinked: false,
+		isShrinked: false, // false
 		draggable: null,
 		rejectsCount: 0,
 		callTimeout: null,
@@ -122,17 +122,6 @@ export default {
 	}),
 
 	watch: {
-		isShrinked: function(value) {
-			if (value) {
-				document.querySelector('.modal-backdrop').style.display = 'none';
-			} else {
-				document.querySelector('.modal-backdrop').style.display = 'block';
-				this.$refs['modal'].removeAttribute('style');
-				this.$refs['modal'].style.display = 'block';
-				this.$refs['modal'].style.opacity = 1;
-				this.$refs['modal'].style.visibility = 'visible';
-			}
-		},
 		'$root.appChannel': function() {
 			this.initListeners();
 		}
@@ -360,8 +349,6 @@ export default {
 
 		async xirsys() {
 			await this.addLocalStream();
-
-			console.log(this.host);
 			this.signal = new window.$xirsys.signal(this.host + '/v2/' + this.token, this.username);
 			this.signal.on('message', msg => {
 				var pkt = JSON.parse(msg.data);
@@ -448,9 +435,8 @@ export default {
 		toggleDraggable() {
 			if (this.isShrinked) {
 				if (this.draggable) this.draggable.remove();
-				this.$refs['modal'].style.visibility = 'hidden';
 				setTimeout(() => {
-					this.draggable = new PlainDraggable(this.$refs['modal'], {
+					this.draggable = new PlainDraggable(this.$refs.videoCallModal, {
 						containment: document.querySelector('#app'),
 						left: 20,
 						top: document.querySelector('#app').offsetHeight - 160
@@ -458,9 +444,9 @@ export default {
 					this.draggable.onDragStart = () => {
 						return this.isShrinked;
 					};
-					this.$refs['modal'].style.visibility = 'visible';
-					this.$refs['modal'].style.opacity = 1;
 				}, 150);
+			} else {
+				this.$refs.videoCallModal.style.transform = null;
 			}
 		},
 
@@ -513,7 +499,7 @@ export default {
 				if (!this.status) {
 					this.endCall();
 				}
-			}, 15000);
+			}, 30000);
 		},
 
 		async sendMessage(message, broadcast = false) {

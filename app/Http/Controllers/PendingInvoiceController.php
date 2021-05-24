@@ -21,6 +21,6 @@ class PendingInvoiceController extends Controller
     public function destroy(PendingInvoice $pendingInvoice)
     {
         $pendingInvoiceService = new NotificationService();
-        return response($pendingInvoiceService->deestroy($pendingInvoice));
+        return response($pendingInvoiceService->destroy($pendingInvoice));
     }
 }

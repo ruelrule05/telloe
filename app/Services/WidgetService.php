@@ -75,6 +75,7 @@ class WidgetService
         $method = $request->method();
         $fb_app_id = config('app.fb_app_id');
         $fb_app_secret = config('app.fb_app_secret');
+        $response = null;
 
         $fb = new Facebook([
             'app_id' => $fb_app_id,

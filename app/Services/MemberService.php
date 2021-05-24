@@ -28,7 +28,7 @@ class MemberService
             ->withCount('assignedServices')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC');
-            //->where('member_user_id', '!=', null);
+        //->where('member_user_id', '!=', null);
 
         if ($query) {
             $members = $members->whereHas('memberUser', function ($memberUser) use ($query) {
@@ -154,7 +154,11 @@ class MemberService
                 }
             }
         }
-        $member->update($request->all());
+        $member->update([
+            'email' => $request->email,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+        ]);
 
         return response()->json($member->load('memberUser', 'assignedServices.bookings.user'));
     }

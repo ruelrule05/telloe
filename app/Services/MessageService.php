@@ -7,13 +7,13 @@ use App\Models\Conversation;
 use App\Models\Message;
 use Auth;
 use Carbon\Carbon;
-use File;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Image;
 use Mail;
+use Storage;
 
 class MessageService
 {
@@ -42,32 +42,34 @@ class MessageService
         $time = Str::random(15) . '-' . time();
         $sourceFile = null;
         $previewFile = null;
+        $sourceS3Path = '';
+        $previewS3Path = '';
         if ($request->hasFile('source')) {
-            $filename = $time . '-source';
-
-            $srcDestination = 'storage/message-media/' . $filename;
-            $sourceFile = '/' . $srcDestination;
+            $extension = $request->source->getClientOriginalExtension();
+            $folderName = $time . '-source';
+            $sourceFile = $request->file('source');
+            $originalName = $request->source->getClientOriginalName();
 
             if ($request->type == 'video') {
-                $sourceFile .= '.mp4';
-
+                $sourceFile = public_path() . "/storage/message-media/$folderName.mp4";
                 $tmpPath = sys_get_temp_dir() . '/' . $request->source->getFilename();
-                compressVideo($tmpPath, public_path() . "/storage/message-media/$filename.mp4");
-            } else {
-                $request->file('source')->storeAs('public/message-media/', $filename);
+                compressVideo($tmpPath, $sourceFile);
             }
+            $targetPath = "message-media/$folderName/$originalName";
+            Storage::disk('s3')->put($targetPath, file_get_contents($sourceFile), 'public');
+            $sourceS3Path = Storage::disk('s3')->url($targetPath);
 
-            $originalName = $request->source->getClientOriginalName();
             $metadata['filename'] = $originalName;
             $metadata['size'] = formatBytes($request->source->getSize(), 0);
 
             if ($request->type == 'image' || $request->type == 'video') {
-                $filename = $time . '-preview';
-                $previewDestination = storage_path('app/public/message-media/' . $filename);
+                $folderName = $time . '-preview';
+                $targetPath = "message-media/$folderName/$originalName";
                 if ($request->preview) {
                     $source = $request->preview;
-                    $preview = base64_decode(substr($source, strpos($source, ',') + 1));
-                    File::put($previewDestination, $preview);
+                    $previewFile = base64_decode(substr($source, strpos($source, ',') + 1));
+                    Storage::disk('s3')->put($targetPath, $previewFile, 'public');
+                    $previewS3Path = Storage::disk('s3')->url($targetPath);
                 } else {
                     $img = Image::make($request->file('source'));
                     if ($img->width() > 450) {
@@ -76,10 +78,7 @@ class MessageService
                             $constraint->upsize();
                         });
                     }
-                    $img->save($previewDestination);
                 }
-                $filename = $time . '-preview';
-                $previewFile = '/storage/message-media/' . $filename;
             }
         }
 
@@ -88,8 +87,8 @@ class MessageService
             'user_id' => Auth::user()->id,
             'type' => $request->type,
             'message' => htmlspecialchars($request->message),
-            'source' => $sourceFile,
-            'preview' => $previewFile,
+            'source' => $sourceS3Path,
+            'preview' => $previewS3Path,
             'metadata' => $metadata,
             'timestamp' => $timestamp
         ]);
