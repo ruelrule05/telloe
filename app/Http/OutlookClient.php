@@ -15,13 +15,13 @@ class OutlookClient
     public function __construct()
     {
         $this->client = new \League\OAuth2\Client\Provider\GenericProvider([
-            'clientId' => env('OAUTH_APP_ID'),
-            'clientSecret' => env('OAUTH_APP_PASSWORD'),
-            'redirectUri' => env('OAUTH_REDIRECT_URI'),
-            'urlAuthorize' => env('OAUTH_AUTHORITY') . env('OAUTH_AUTHORIZE_ENDPOINT'),
-            'urlAccessToken' => env('OAUTH_AUTHORITY') . env('OAUTH_TOKEN_ENDPOINT'),
+            'clientId' => config('oauth.app_id'),
+            'clientSecret' => config('oauth.app_password'),
+            'redirectUri' => config('oauth.redirect_uri'),
+            'urlAuthorize' => config('oauth.authority') . config('oauth.authorize_endpoint'),
+            'urlAccessToken' => config('oauth.authority') . config('oauth.token_endpoint'),
             'urlResourceOwnerDetails' => '',
-            'scopes' => env('OAUTH_SCOPES')
+            'scopes' => config('oauth.scopes')
         ]);
 
         $this->accessToken = $this->getAccessToken();

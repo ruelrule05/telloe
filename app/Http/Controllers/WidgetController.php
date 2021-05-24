@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\WidgetAddRuleRequest;
 use App\Http\Requests\WidgetUpdateIntegrationRequest;
 use App\Services\WidgetService;
+use Illuminate\Http\Request;
 
 class WidgetController extends Controller
 {
@@ -49,11 +48,6 @@ class WidgetController extends Controller
     public function plans()
     {
         return response(WidgetService::plans());
-    }
-
-    public function stripePublishableKey()
-    {
-        return response(WidgetService::stripePublishableKey());
     }
 
     public function update(Request $request)

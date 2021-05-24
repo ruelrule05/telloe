@@ -260,7 +260,7 @@ function countryDialCode($country)
 
 function compressVideo($source, $ouput)
 {
-    $command = env('FFMPEG') . ' -y -i ' . $source . ' -crf 23 -preset medium -movflags +faststart -b:a 128k -threads 12 -vcodec libx264 -acodec libmp3lame -b:v 1000k -refs 6 -coder 1 -sc_threshold 40 -flags +loop -me_range 16 -subq 7 -i_qfactor 0.71 -qcomp 0.6 -qdiff 4 -trellis 1 -b:a 128k -vf [in]scale=-2:720,format=yuv420p[out] -pass 1 -strict -2 -passlogfile /tmp/passlogfile ' . $ouput;
+    $command = config('app.ffmpeg') . ' -y -i ' . $source . ' -crf 23 -preset medium -movflags +faststart -b:a 128k -threads 12 -vcodec libx264 -acodec libmp3lame -b:v 1000k -refs 6 -coder 1 -sc_threshold 40 -flags +loop -me_range 16 -subq 7 -i_qfactor 0.71 -qcomp 0.6 -qdiff 4 -trellis 1 -b:a 128k -vf [in]scale=-2:720,format=yuv420p[out] -pass 1 -strict -2 -passlogfile /tmp/passlogfile ' . $ouput;
     $command .= ' 2>&1';
     //exec($command);
     exec($command, $commandOutput);
@@ -582,53 +582,3 @@ function isValidTimezone($tzid)
     return true;
 }
 
-function timeslots($service, $dateString)
-{
-    $timeslots = [];
-
-    $holidays = json_decode($service->holidays, true);
-
-    if (! array_search($dateString, $holidays)) {
-        $date = Carbon::parse($dateString);
-        $days = json_decode($service->days, true);
-
-        $day = $days[$date->format('l')];
-        if ($day['isOpen']) {
-            $timeStart = $date->copy();
-            $timeEnd = $date->copy();
-
-            $partsStart = explode(':', $day['start']);
-            $timeStart->hour = $partsStart[0];
-            $timeStart->minute = $partsStart[1];
-
-            $partsEnd = explode(':', $day['end']);
-            $timeEnd->hour = $partsEnd[0];
-            $timeEnd->minute = $partsEnd[1];
-
-            while ($timeStart->lessThan($timeEnd)) {
-                $timeslot = [
-                    'label' => $timeStart->format('h:iA'),
-                    'time' => $timeStart->format('H:i'),
-                ];
-                $endTime = $timeStart->copy()->add(30, 'minute')->format('H:i');
-                $bookings = Booking::whereHas('service', function ($service) {
-                    $service->whereHas('user', function ($user) {
-                        $user->where('id', Auth::user()->id);
-                    });
-                })
-                    ->where('date', $dateString)
-                    ->where('start', '<=', $timeslot['time'])
-                    ->where('end', '>=', $timeslot['time'])
-                    ->get();
-
-                if ($bookings->count() == 0) {
-                    $timeslots[] = $timeslot;
-                }
-
-                $timeStart->add($this->attributes['duration'] + 30, 'minute');
-            }
-        }
-    }
-
-    return $timeslots;
-}

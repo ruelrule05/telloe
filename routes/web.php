@@ -213,9 +213,9 @@ Route::group(
                 Route::resource('subscriptions', 'SubscriptionController', [
                     'only' => ['store', 'destroy']
                 ]);
-                Route::resource('chatbots', 'ChatbotController');
-                Route::resource('chatboxes', 'ChatboxController');
-                Route::post('upload_file', 'ChatboxController@uploadFile');
+                // Route::resource('chatbots', 'ChatbotController');
+                // Route::resource('chatboxes', 'ChatboxController');
+                // Route::post('upload_file', 'ChatboxController@uploadFile');
                 Route::get('stripe_invoices', 'DashboardController@stripeInvoices');
             });
         });

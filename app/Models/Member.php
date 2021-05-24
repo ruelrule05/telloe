@@ -44,20 +44,20 @@ class Member extends BaseModel
 
     public function getFullNameAttribute()
     {
-        $first_name = $this->attributes['first_name'];
-        $last_name = $this->attributes['last_name'];
-        return $first_name || $last_name ? "$first_name $last_name" : $this->attributes['email'];
+        $first_name = $this->attributes['first_name'] ?? $this->first_name;
+        $last_name = $this->attributes['last_name'] ?? $this->last_name;
+        return $first_name || $last_name ? "$first_name $last_name" : $this->attributes['email'] ?? $this->email;
     }
 
     public function getInitialsAttribute()
     {
-        $first_name = $this->attributes['first_name'];
-        $last_name = $this->attributes['last_name'];
-        return $first_name || $last_name ? strtoupper(substr($this->attributes['first_name'], 0, 1) . substr($this->attributes['last_name'], 0, 1)) : strtoupper(substr($this->attributes['email'], 0, 1));
+        $first_name = $this->attributes['first_name'] ?? $this->first_name;
+        $last_name = $this->attributes['last_name'] ?? $this->last_name;
+        return $first_name || $last_name ? strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) : strtoupper(substr($this->attributes['email'] ?? $this->email, 0, 1));
     }
 
     public function getCreatedAtFormatAttribute()
     {
-        return Carbon::parse($this->attributes['created_at'])->format('M d, Y');
+        return Carbon::parse($this->attributes['created_at'] ?? $this->created_at)->format('M d, Y');
     }
 }

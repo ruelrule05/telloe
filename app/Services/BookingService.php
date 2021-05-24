@@ -286,7 +286,7 @@ class BookingService
         break;
 
         case 'outlook':
-                $extensionName = env('GRAPH_EXTENSION_NAME');
+                $extensionName = config('oauth.graph_extension_name');
         $OutlookClient = new \App\Http\OutlookClient();
         $graph = new \Microsoft\Graph\Graph();
         $graph->setAccessToken($OutlookClient->accessToken);
@@ -317,7 +317,7 @@ class BookingService
     public static function outlookCalendarEvents(Request $request)
     {
         $events = [];
-        $extensionName = env('GRAPH_EXTENSION_NAME');
+        $extensionName = config('oauth.graph_extension_name');
         $calendarId = Auth::user()->outlook_calendar_id;
         if ($calendarId) {
             $OutlookClient = new \App\Http\OutlookClient();
@@ -387,7 +387,7 @@ class BookingService
 
     public static function updateOutlookCalendarEvents(UpdateOutlookCalendarEventsRequest $request)
     {
-        $extensionName = env('GRAPH_EXTENSION_NAME');
+        $extensionName = config('oauth.graph_extension_name');
 
         $OutlookClient = new \App\Http\OutlookClient();
         $graph = new \Microsoft\Graph\Graph();

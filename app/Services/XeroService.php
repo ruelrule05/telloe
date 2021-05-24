@@ -142,7 +142,7 @@ class XeroService
 
         $lineDescription = '';
         if ($request->service_ids) {
-            $services = Service::whereIn('id', $request->service_ids)->where('user_id', $authUser->id)->get()->pluck('name')->toArray();
+            $services = Service::select('name')->whereIn('id', $request->service_ids)->where('user_id', $authUser->id)->get()->toArray();
             $lineDescription = implode(', ', $services);
         }
         $lineItem = new \XeroPHP\Models\Accounting\LineItem();

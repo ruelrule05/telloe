@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginFacebookRequest;
-use App\Http\Requests\Auth\LoginGoogleRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
+use App\Http\Requests\Auth\UpdateStripeAccountRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Requests\PasswordResetRequest;
-use App\Http\Requests\Auth\UpdateStripeAccountRequest;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 
@@ -65,19 +64,9 @@ class AuthController extends Controller
         return response(AuthService::loginFacebook($request));
     }
 
-    public function loginGoogle(LoginGoogleRequest $request)
-    {
-        return response(AuthService::updatePassword($request));
-    }
-
     public function updateStripeAccount(UpdateStripeAccountRequest $request)
     {
         return response(AuthService::updateStripeAccount($request));
-    }
-
-    public function generateUsername(Request $request)
-    {
-        return response(AuthService::generateUsername($request));
     }
 
     public function createGuestAccount(Request $request)

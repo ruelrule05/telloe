@@ -19,7 +19,7 @@ class ServiceService
     public static function index(Request $request)
     {
         $auth_user = Auth::user();
-        $member_ids = Member::where('member_user_id', $auth_user->id)->get()->pluck('id')->toArray();
+        $member_ids = Member::select('id')->where('member_user_id', $auth_user->id)->get()->toArray();
         $services = Service::with('user', 'assignedServices.member.memberUser')->where(function ($query) use ($auth_user, $member_ids) {
             $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
         })->orderBy('created_at', 'DESC');
