@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends BaseModel
 {
     //
     use SoftDeletes;
-    
+
     protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'link_preview', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
     protected $appends = ['created_diff'];
-   
+
     protected $casts = [
         'metadata' => 'array',
         'is_read' => 'boolean',
@@ -22,14 +22,13 @@ class Message extends BaseModel
 
     public function conversation()
     {
-    	return $this->belongsTo(Conversation::class);
+        return $this->belongsTo(Conversation::class);
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
 
     /*public function user()
     {
@@ -38,7 +37,7 @@ class Message extends BaseModel
 
     public function getCreatedAtFormatAttribute()
     {
-    	return Carbon::parse($this->attributes['created_at'])->format('h:iA \\o\\n D');
+        return Carbon::parse($this->attributes['created_at'])->format('h:iA \\o\\n D');
     }
 
     public function getCreatedDiffAttribute()
@@ -50,17 +49,7 @@ class Message extends BaseModel
     public function getTimestampAttribute($value)
     {
         return strlen($value) > 0 ? $value : Carbon::parse($this->attributes['created_at'])->getPreciseTimestamp(3);
-    }
-
-    public function getSourceAttribute($value)
-    {
-        return $value ? config('app.url') . $value : false;
-    }
-
-    public function getPreviewAttribute($value)
-    {
-        return $value ? config('app.url') . $value : false;
-    }
+    } 
 
     /*public function getUserAttribute()
     {
