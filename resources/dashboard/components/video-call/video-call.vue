@@ -1,6 +1,9 @@
 <template>
 	<div>
-		<div class="video-call-modal-container" :class="{ open: open }">
+		<div class="video-call-modal-container" ref="videoCallModal" :class="{ open: open, shrinked: isShrinked}">
+			<button v-if="isShrinked" class="btn-call-expand top-3 right-3 border border-white rounded-full p-2 focus:outline-none text-white" type="button" @click="isShrinked = false; toggleDraggable()">
+				<ExpandIcon height="10" width="10" transform="scale(1.6)" class="fill-current"></ExpandIcon>
+			</button>
 			<microphone-mute-icon class="hidden fill-current text-red-600" ref="microphoneMute"></microphone-mute-icon>
 			<!-- Outgoing -->
 			<div class="modal-body col-start-5 col-span-3 text-center bg-white" v-if="action == 'outgoing'">
@@ -40,7 +43,7 @@
 			</div>
 
 			<!-- Ongoing -->
-			<div v-show="status == 'ongoing'" class="modal-ongoing h-screen w-screen flex flex-col overflow-hidden">
+			<div v-show="status == 'ongoing'" ref="ongoingModal" class="modal-ongoing h-screen w-screen flex flex-col overflow-hidden" :class="{shrinked: isShrinked }">
 				<div class="cameras-container" :class="{ 'has-presenter': presenter && presenter != $root.auth.id }">
 					<!-- Local camera -->
 					<div class="p-3 camera-thumbnails">
@@ -62,8 +65,12 @@
 				</div>
 
 				<!-- Buttons -->
-				<div class="flex items-center justify-between p-4">
-					<div class="w-3/12"></div>
+				<div class="flex items-center justify-between p-4 call-buttons">
+					<div class="w-3/12">
+						<button class="mx-2 border border-primary rounded-full p-4 focus:outline-none text-primary" type="button" @click="isShrinked = true; toggleDraggable()">
+							<CollapseIcon height="10" width="10" transform="scale(2.5)" class="fill-current"></CollapseIcon>
+						</button>
+					</div>
 					<div class="w-6/12 text-center">
 						<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleVideo">
 							<video-muted-icon v-if="isVideoStopped" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></video-muted-icon>
@@ -75,7 +82,7 @@
 							<microphone-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-icon>
 						</button>
 					</div>
-					<div class="w-3/12 text-right flex items-center justify-end">
+					<div class="w-3/12 flex items-center justify-end">
 						<button v-if="presenter && presenter == $root.auth.id" type="button" class="btn btn-sm btn-outline-red inline-flex items-center mr-2" @click="stopShareScreen" :class="{ disabled: presenter && presenter != $root.auth.id }"><screenshare-icon class="fill-current mr-2"></screenshare-icon><span>Stop Presenting</span></button>
 						<button v-else type="button" class="btn btn-sm btn-outline-primary inline-flex items-center mr-2" @click="shareScreen" :class="{ disabled: presenter && presenter != $root.auth.id }"><screenshare-icon class="fill-current mr-2"></screenshare-icon><span>Present</span></button>
 						<button type="button" class="btn btn-sm btn-outline-primary inline-flex items-center" @click="showMessages = true"><send-icon class="fill-current mr-2"></send-icon><span>Message</span></button>
