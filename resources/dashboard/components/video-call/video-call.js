@@ -513,7 +513,7 @@ export default {
 				if (!this.status) {
 					this.endCall();
 				}
-			}, 15000);
+			}, 30000);
 		},
 
 		async sendMessage(message, broadcast = false) {
