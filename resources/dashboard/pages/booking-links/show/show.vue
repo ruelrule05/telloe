@@ -30,7 +30,7 @@
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 									<div class="text-center px-2 pb-2 bg-white relative z-10">
-										<VueCheckbox v-if="!bookingLink.is_booked && editable" v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
+										<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-if="!bookingLink.is_booked && editable" v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
 									</div>
 								</td>
 							</tr>
@@ -52,7 +52,7 @@
 								</td>
 
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-									<div class="items-center column  mb-4 px-1 bg-primary-ultralight">
+									<div class="items-center column mb-4 px-1 bg-primary-ultralight" v-tooltip.bottom="'Select this timeslot'">
 										<div class="timeslot-content selectable" :class="{ selected: hasSelected($root.auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
 										</div>

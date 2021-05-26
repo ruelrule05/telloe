@@ -1,4 +1,3 @@
-/* global Wistia */
 require('./bootstrap');
 
 import RangeSlider from 'vue-range-slider';
@@ -41,7 +40,9 @@ window.app = new Vue({
 		faq: 1,
 		feature: 1,
 		showVideo: true,
-		dropdownOpen: false
+		dropdownOpen: false,
+		videoOpen: false,
+		WistiaPlayer: null
 	},
 
 	watch: {
@@ -58,6 +59,7 @@ window.app = new Vue({
 			const invite_token = urlParams.get('invite_token');
 			const member_invite_token = urlParams.get('member_invite_token');
 			const authTab = urlParams.get('auth');
+			const videoOpen = urlParams.get('video');
 			if (authTab) {
 				this.action = authTab;
 				this.auth = true;
@@ -69,6 +71,7 @@ window.app = new Vue({
 				this.member_invite_token = member_invite_token;
 				this.auth = true;
 			}
+			this.videoOpen = videoOpen == 'true';
 
 			const email = urlParams.get('email');
 			if (email) this.email = email;
@@ -77,11 +80,24 @@ window.app = new Vue({
 
 	mounted() {
 		this.popupItem = this.$el;
+
+		setTimeout(() => {
+			let wq = window._wq || [];
+			wq.push({
+				id: 'sbp1xbl4gp',
+				onReady: video => {
+					this.WistiaPlayer = video;
+					if (this.videoOpen) {
+						this.openVideoDemo();
+					}
+				}
+			});
+		}, 500);
 	},
 
 	methods: {
 		openVideoDemo() {
-			Wistia.api('sbp1xbl4gp').popover.showAndPlay();
+			this.WistiaPlayer.popover.showAndPlay();
 		},
 
 		checkAuth() {

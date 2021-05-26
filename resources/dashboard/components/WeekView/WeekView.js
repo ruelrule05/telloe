@@ -3,6 +3,9 @@ import { VCalendar } from 'vuetify/lib';
 import vuetify from '../../../js/plugins/vuetify';
 import dayjs from 'dayjs';
 import GoogleIcon from '../../../icons/google.vue';
+import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
+const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+dayjs.extend(IsSameOrAfter);
 export default {
 	vuetify,
 	props: {
@@ -24,7 +27,8 @@ export default {
 
 	components: {
 		VCalendar,
-		GoogleIcon
+		GoogleIcon,
+		VueDropdown
 	},
 
 	data: () => ({
@@ -130,6 +134,52 @@ export default {
 		...mapActions({
 			getBookings: 'bookings/index'
 		}),
+
+		isPrevious(interval) {
+			return dayjs().isSameOrAfter(dayjs(interval.date));
+		},
+
+		isBlocked(interval) {
+			return (this.$root.auth.blocked_timeslots || []).find(x => x.date == interval.date && x.start == interval.time) ? true : false;
+		},
+
+		timeslotOptions(interval) {
+			if (this.isBlocked(interval)) {
+				return ['Unblock timeslot'];
+			}
+			return ['Create booking', 'Block timeslot'];
+		},
+
+		newEventAction(action, interval) {
+			let dateTimeslot = dayjs(`${interval.date} ${interval.time}`);
+			let start = dateTimeslot.format('HH:mm');
+			let end = dateTimeslot.add(1, 'hour').format('HH:mm');
+			/* eslint-disable */
+			switch (action) {
+				case 'Create booking':
+					this.setNewEvent(interval);
+					break;
+
+				case 'Block timeslot':
+					if (!this.$root.auth.blocked_timeslots) {
+						this.$set(this.$root.auth, 'blocked_timeslots', []);
+					}
+					let exists = this.$root.auth.blocked_timeslots.find(x => x.date == interval.date && x.start == interval.time);
+					if (!exists) {
+						this.$root.auth.blocked_timeslots.push({ date: interval.date, start: start, end: end });
+					}
+					this.$toast.open('Timeslot blocked.');
+					window.axios.post('/auth', this.$root.auth, { toast: true });
+					break;
+
+				case 'Unblock timeslot':
+					let index = this.$root.auth.blocked_timeslots.findIndex(x => x.date == interval.date && x.start == interval.time);
+					this.$root.auth.blocked_timeslots.splice(index, 1);
+					this.$toast.open('Timeslot unblocked.');
+					window.axios.post('/auth', this.$root.auth, { toast: true });
+					break;
+			}
+		},
 
 		getWeekBookings() {
 			this.getBookings({

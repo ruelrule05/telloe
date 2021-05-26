@@ -8,7 +8,16 @@
 				</div>
 			</template>
 			<template #interval="interval">
-				<div class="day-interval" @click="setNewEvent(interval)"></div>
+				<div v-if="isPrevious(interval)" class="day-interval disabled"></div>
+				<VueDropdown v-else :interval="interval" :options="timeslotOptions(interval)" @click="newEventAction($event, interval)" class="w-full h-full" dropPosition="top-5">
+					<template #button>
+						<div class="day-interval">
+							<div v-if="isBlocked(interval)" class="text-sm text-muted w-full h-full  bg-gray-50 pointer-events-none">
+								<span class="absolute-center">Blocked</span>
+							</div>
+						</div>
+					</template>
+				</VueDropdown>
 			</template>
 
 			<template #event="{ event }">

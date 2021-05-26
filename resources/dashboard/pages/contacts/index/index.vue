@@ -50,6 +50,9 @@
 						<div class="flex items-center">
 							<p class="mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
 							<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
+							<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
+								<MessageIcon class="fill-current text-gray-400"></MessageIcon>
+							</button>
 
 							<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
 								<template #button>

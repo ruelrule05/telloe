@@ -118,12 +118,19 @@ class Service extends BaseModel
 
         $now = Carbon::now();
         while ($timeStart->lessThan($timeEnd)) {
+            $timeslotBlocked = false;
             $timeslot = [
                 'label' => $timeStart->format('h:iA'),
                 'time' => $timeStart->format('H:i'),
                 'is_available' => false,
                 'is_booked' => false,
             ];
+            foreach ($user->blocked_timeslots as $blockedTimeslot) {
+                if ($blockedTimeslot['date'] == $dateString && $blockedTimeslot['start'] <= $timeslot['time'] && $blockedTimeslot['end'] >= $timeslot['time']) {
+                    $timeslotBlocked = true;
+                    break;
+                }
+            }
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = Booking::with('bookingNote')
                 ->where(function ($query) use ($assignedServiceIds) {
@@ -180,11 +187,13 @@ class Service extends BaseModel
                     $isBreaktime = true;
                 }
             }
-            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays)) {
+            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays) && ! $timeslotBlocked) {
                 $timeslot['is_available'] = true;
             } elseif ($bookings->count() > 0) {
                 $timeslot['bookings'] = $bookings->load('bookingUsers', 'service.user');
                 $timeslot['is_booked'] = true;
+            } elseif ($timeslotBlocked) {
+                $timeslot['is_blocked'] = true;
             }
             $timeslots[] = $timeslot;
             $timeStart->add($this->attributes['duration'] + $this->attributes['interval'], 'minute');
