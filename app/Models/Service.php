@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Cache;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Log;
 
 class Service extends BaseModel
 {
@@ -88,6 +90,7 @@ class Service extends BaseModel
 
     public function timeslots($dateString)
     {
+        DB::enableQueryLog();
         $timeslots = [];
         $holidays = $this->holidays;
         $user = $this->user ?? $this->member->memberUser;
@@ -125,7 +128,7 @@ class Service extends BaseModel
                 'is_available' => false,
                 'is_booked' => false,
             ];
-            foreach ($user->blocked_timeslots as $blockedTimeslot) {
+            foreach ($user->blocked_timeslots ?? [] as $blockedTimeslot) {
                 if ($blockedTimeslot['date'] == $dateString && $blockedTimeslot['start'] <= $timeslot['time'] && $blockedTimeslot['end'] >= $timeslot['time']) {
                     $timeslotBlocked = true;
                     break;
@@ -200,6 +203,8 @@ class Service extends BaseModel
         }
         //}
         //}
+
+        Log::debug(DB::getQueryLog());
 
         return $timeslots;
     }
