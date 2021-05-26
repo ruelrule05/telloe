@@ -120,7 +120,7 @@ class ConversationService
                     $emailToSend = $request->email;
                 }
                 if ($emailToSend) {
-                    Mail::to($userExists->email)->queue(new NewConversation($conversation, $userExists ? false : true));
+                    Mail::to($emailToSend)->queue(new NewConversation($conversation, $userExists ? false : true));
                 }
             }
         }
