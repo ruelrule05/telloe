@@ -163,6 +163,7 @@ class AuthService
             'last_name' => $request->last_name,
             'email' => $request->email,
             'last_online' => null,
+            'blocked_timeslots' => [],
             'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
         ]);
         $user->password = bcrypt($request->password);
