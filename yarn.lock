@@ -4002,6 +4002,11 @@
     "snapdragon" "^0.8.1"
     "to-regex" "^3.0.1"
 
+"extract-urls@^1.3.2":
+  "integrity" "sha512-IqL5aDUYd3n4E0Y9sZewG3YVjyQ7LvH60YJHF8pFhzK4TSJGGdP342BhR+Gal0GeXR4NZc6H46bKTrBB73kwPA=="
+  "resolved" "https://registry.npmjs.org/extract-urls/-/extract-urls-1.3.2.tgz"
+  "version" "1.3.2"
+
 "extsprintf@^1.2.0", "extsprintf@1.3.0":
   "integrity" "sha1-lpGEQOMEGnpBT4xS48V06zw+HgU="
   "resolved" "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
@@ -6853,10 +6858,10 @@
   "resolved" "https://registry.npmjs.org/normalize-url/-/normalize-url-3.3.0.tgz"
   "version" "3.3.0"
 
-"normalize-url@^4.5.0":
-  "integrity" "sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ=="
-  "resolved" "https://registry.npmjs.org/normalize-url/-/normalize-url-4.5.0.tgz"
-  "version" "4.5.0"
+"normalize-url@^4.5.1":
+  "integrity" "sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA=="
+  "resolved" "https://registry.npmjs.org/normalize-url/-/normalize-url-4.5.1.tgz"
+  "version" "4.5.1"
 
 "normalize-url@^5.1.0":
   "integrity" "sha512-9/nOVLYYe/dO/eJeQUNaGUF4m4Z5E7cb9oNTKabH+bNf19mqj60txTcveQxL0GlcWLXCxkOu2/LwL8oW0idIDA=="

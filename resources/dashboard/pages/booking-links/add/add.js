@@ -15,6 +15,7 @@ import Modal from '../../../../components/modal/modal.vue';
 const ct = require('countries-and-timezones');
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const { getNameList } = require('country-list');
+import tooltip from '../../../../js/directives/tooltip.js';
 
 export default {
 	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect },
@@ -35,6 +36,7 @@ export default {
 		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US']
 	}),
 
+	directives: { tooltip },
 	computed: {
 		...mapState({
 			ready: state => state.booking_links.ready,

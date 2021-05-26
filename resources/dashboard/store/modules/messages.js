@@ -1,6 +1,6 @@
 import Vue from 'vue';
 const name = 'messages';
-const getUrls = require('get-urls');
+const extractUrls = require('extract-urls');
 
 const state = () => ({});
 
@@ -38,7 +38,7 @@ const actions = {
 			Vue.set(newMessage, 'created_at_format', response.data.created_at_format);
 			Vue.set(newMessage, 'sending', false);
 
-			let links = [...getUrls(response.data.message)];
+			let links = extractUrls(response.data.message);
 			if (links.length > 0) {
 				window.axios.get(`/messages/${response.data.id}/generate_link_preview`).then(response => {
 					Vue.set(newMessage, 'link_preview', response.data);

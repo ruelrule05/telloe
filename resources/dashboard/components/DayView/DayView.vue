@@ -7,7 +7,16 @@
 
 		<VCalendar ref="calendar" :value="date" color="primary" type="day" hide-header :interval-format="intervalFormat" :categories="['bookings']" category-show-all :events="parsedBookings" @click:event="eventClick">
 			<template #interval="interval">
-				<div class="day-interval" :class="{ disabled: isPrevious }" @click="setNewEvent(interval)"></div>
+				<div v-if="isPrevious" class="day-interval disabled"></div>
+				<VueDropdown v-else :interval="interval" :options="timeslotOptions(interval)" @click="newEventAction($event, interval)" class="w-full h-full" dropPosition="top-5">
+					<template #button>
+						<div class="day-interval">
+							<div v-if="isBlocked(interval)" class="text-sm text-muted w-full h-full  bg-gray-50 pointer-events-none">
+								<span class="absolute-center">Blocked</span>
+							</div>
+						</div>
+					</template>
+				</VueDropdown>
 			</template>
 			<template #event="{ event }">
 				<div class="flex justify-between">

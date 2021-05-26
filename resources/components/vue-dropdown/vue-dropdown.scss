@@ -1,5 +1,6 @@
 .dropdown {
 	@apply relative inline-block;
+
 	.dropdown-menu {
 		> div {
 			max-height: 200px;

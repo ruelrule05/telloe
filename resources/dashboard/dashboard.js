@@ -70,7 +70,8 @@ window.app = new Vue({
 		userChannel: null,
 		showHelpWidget: true,
 
-		toggleKnowBase: false
+		toggleKnowBase: false,
+		promptCookie: false
 	},
 
 	computed: {
@@ -199,6 +200,9 @@ window.app = new Vue({
 				intro.enabled = false;
 			});
 		}
+		if (!window.localStorage.getItem('telloe_cookie_accepted')) {
+			this.promptCookie = true;
+		}
 	},
 
 	methods: {
@@ -209,6 +213,11 @@ window.app = new Vue({
 			clearNotifications: 'notifications/clear',
 			getBookings: 'bookings/index'
 		}),
+
+		clickPrompt() {
+			this.promptCookie = false;
+			window.localStorage.setItem('telloe_cookie_accepted', true);
+		},
 
 		newMessage(message) {
 			let conversation = window.app.conversations.find(x => x.id == message.conversation_id);

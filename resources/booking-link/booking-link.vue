@@ -39,7 +39,7 @@
 							</td>
 
 							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-								<div class="items-center column  mb-4 px-1 bg-primary-ultralight">
+								<div class="items-center column  mb-4 px-1 bg-primary-ultralight" v-tooltip.bottom="'Select this timeslot'">
 									<div class="timeslot-content selectable" :class="{ selected: hasSelected(auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
 										<p class="text-center" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
 									</div>

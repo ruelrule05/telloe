@@ -18,9 +18,12 @@ import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
 import ChevronDownIcon from '../icons/chevron-down';
 const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrAfter);
+import tooltip from '../js/directives/tooltip.js';
 
 export default {
 	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom, ClockIcon, VueDropdown, ChevronDownIcon },
+
+	directives: { tooltip },
 
 	data: () => ({
 		auth: AUTH,

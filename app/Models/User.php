@@ -36,7 +36,8 @@ class User extends Authenticatable implements JWTSubject
         'facebook_id',
         'google_id',
         'default_availability',
-        'google_calendar_events'
+        'google_calendar_events',
+        'blocked_timeslots'
     ];
 
     /**
@@ -54,7 +55,8 @@ class User extends Authenticatable implements JWTSubject
         'timezone',
         'initials',
         'full_name',
-        'dial_code'
+        'dial_code',
+        'blocked_timeslots'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];
@@ -73,6 +75,7 @@ class User extends Authenticatable implements JWTSubject
         'zoom_token' => 'array',
         'phone' => 'nullable|int',
         'default_availability' => 'array',
+        'blocked_timeslots' => 'array'
     ];
 
     public function subscription()

@@ -21,9 +21,11 @@ import CogIcon from '../../../../icons/cog';
 import CheckmarkIcon from '../../../../icons/checkmark-circle';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import MessageIcon from '../../../../icons/comment';
 
 export default {
 	components: {
+		MessageIcon,
 		CheckmarkIcon,
 		Multiselect,
 		Modal,

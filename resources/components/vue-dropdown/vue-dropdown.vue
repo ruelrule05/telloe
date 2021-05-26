@@ -1,6 +1,6 @@
 <template>
 	<div class="dropdown" :class="{ open: open, disabled: disabled }" v-click-outside="onBlur">
-		<div class="btn-dropdown" @click="open = !open">
+		<div class="btn-dropdown h-full" @click="open = !open">
 			<slot name="button"></slot>
 		</div>
 		<div class="dropdown-menu" :class="[dropPosition]">
