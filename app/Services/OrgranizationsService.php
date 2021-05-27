@@ -170,7 +170,7 @@ class OrgranizationsService
     public static function serviceTimeslots($organization, $service_id, OrganizationServiceTimeslotsRequest $request)
     {
         $organization = Organization::where('slug', $organization)->firstOrfail();
-        $service = Service::where('id', $service_id)->where(function ($query) use ($organization) {
+        $service = Service::with('user')->where('id', $service_id)->where(function ($query) use ($organization) {
             $query->where('user_id', $organization->user_id)->orWhereHas('parentService', function ($query) use ($organization) {
                 $query->where('user_id', $organization->user_id);
             });

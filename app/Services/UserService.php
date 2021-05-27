@@ -49,7 +49,7 @@ class UserService
     public static function serviceTimeslots($username, $service_id, UserServiceTimeslotsRequest $request)
     {
         $user = User::where('username', $username)->firstOrfail();
-        $service = Service::where('id', $service_id)->where(function ($query) use ($user) {
+        $service = Service::with('user')->where('id', $service_id)->where(function ($query) use ($user) {
             $query->where('user_id', $user->id)->orWhereHas('parentService', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
@@ -297,6 +297,7 @@ class UserService
 
     public static function createBooking($service, $data, $customer, $guest = NULL)
     {
+        $service->load('user');
         $availableTimeslots = $service->timeslots($data['date']);
         $timeslotAvailable = false;
         foreach ($availableTimeslots as $availableTimeslot) {
@@ -419,6 +420,7 @@ class UserService
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
+            'blocked_timeslots' => [],
             'last_online' => null,
         ]);
         $user->password = bcrypt($request->password);

@@ -93,7 +93,12 @@ class Service extends BaseModel
         DB::enableQueryLog();
         $timeslots = [];
         $holidays = $this->holidays;
-        $user = $this->user ?? $this->member->memberUser;
+        $user = $this->user;
+
+        //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
+        $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
+        ->where('service_id', $this->attributes['id'])
+        ->where('date', $dateString)->get());
 
         //if (! array_search($dateString, $holidays) && $user) {
         $date = Carbon::parse($dateString);
@@ -117,7 +122,6 @@ class Service extends BaseModel
         $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
 
         $outlookEventsList = $user->outlook_calendar_events ?? [];
-        $assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
 
         $now = Carbon::now();
         while ($timeStart->lessThan($timeEnd)) {
@@ -135,15 +139,10 @@ class Service extends BaseModel
                 }
             }
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
-            $bookings = Booking::with('bookingNote')
-                ->where(function ($query) use ($assignedServiceIds) {
-                    $query->where('service_id', $this->attributes['id']);
-                    //->orWhereIn('service_id', $assignedServiceIds)
-                })
-                ->where('date', $dateString)
-                ->where('start', '<=', $timeslot['time'])
-                ->where('end', '>=', $timeslot['time'])
-                ->get();
+            $bookings = $serviceBookings
+            ->where('start', '<=', $timeslot['time'])
+            ->where('end', '>=', $timeslot['time'])
+            ->all();
 
             // google calendar events
             $googleEvents = [];
@@ -190,10 +189,10 @@ class Service extends BaseModel
                     $isBreaktime = true;
                 }
             }
-            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && $bookings->count() == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays) && ! $timeslotBlocked) {
+            if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && count($bookings) == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays) && ! $timeslotBlocked) {
                 $timeslot['is_available'] = true;
-            } elseif ($bookings->count() > 0) {
-                $timeslot['bookings'] = $bookings->load('bookingUsers', 'service.user');
+            } elseif (count($bookings) > 0) {
+                $timeslot['bookings'] = $bookings;
                 $timeslot['is_booked'] = true;
             } elseif ($timeslotBlocked) {
                 $timeslot['is_blocked'] = true;

@@ -42,6 +42,7 @@ class AuthService
             $data = Arr::except($socialiteUser->user, ['id']);
             $data['first_name'] = $data['first_name'] ?? $data['given_name'];
             $data['last_name'] = $data['last_name'] ?? $data['family_name'];
+            $data['blocked_timeslots'] = [];
             $user = User::where('email', $data['email'])->first();
             $driver_id = "{$driver}_id";
             if ($user) {
@@ -330,6 +331,7 @@ class AuthService
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
+                    'blocked_timeslots' => []
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
@@ -378,6 +380,7 @@ class AuthService
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
+                    'blocked_timeslots' => []
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
@@ -616,6 +619,7 @@ class AuthService
                 'last_name' => $request->last_name,
                 'email' => $request->email,
                 'last_online' => null,
+                'blocked_timeslots' => [],
                 'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
             ]);
             // update all ConversationMember with user_id
