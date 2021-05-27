@@ -156,6 +156,10 @@ textarea {
 }
 label {
 	@apply text-sm mb-1 block text-muted;
+	&[required]:after {
+		content: ' *';
+		@apply text-red-600;
+	}
 }
 .v-toast {
 	z-index: 200000;

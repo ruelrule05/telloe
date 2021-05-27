@@ -167,7 +167,7 @@ export default {
 			}
 		},
 
-		update() {
+		async update() {
 			let data = JSON.parse(JSON.stringify(this.clonedService));
 			if (data.starts_at) {
 				data.starts_at = dayjs(data.starts_at).format('YYYY-MM-DD');
@@ -185,12 +185,15 @@ export default {
 				return;
 			}
 
+			let response;
 			if (this.createService) {
-				this.storeService(data);
+				response = await this.storeService(data).catch();
 			} else {
-				this.updateService(data);
+				response = await this.updateService(data).catch();
 			}
-			this.$emit('close');
+			if (response) {
+				this.$emit('close');
+			}
 		},
 
 		availableTimeChange(time, day) {

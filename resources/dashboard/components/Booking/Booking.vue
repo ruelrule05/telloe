@@ -7,7 +7,7 @@
 				<vue-form-validate @submit="createBooking" class="flex flex-col h-full">
 					<div class="flex-grow">
 						<h5 class="font-semibold font-serif text-md mb-4">New Booking</h5>
-						<label>Event Type</label>
+						<label required>Event Type</label>
 						<VueSelect :disabled="disableServiceSelect" required :options="servicesOptions" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service"></VueSelect>
 						<v-date-picker
 							is-required
@@ -19,7 +19,7 @@
 							"
 						>
 							<template v-slot="{ inputValue, inputEvents }">
-								<label>Date</label>
+								<label required>Date</label>
 								<div class="input-prefix">
 									<div class="input-icon">
 										<CalendarIcon></CalendarIcon>
@@ -31,7 +31,7 @@
 
 						<div class="my-4">
 							<div class="flex justify-between">
-								<label>Time</label>
+								<label required>Time</label>
 								<VueCheckbox v-if="clonedBooking.service" v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
 							</div>
 							<div v-if="!clonedBooking.service" class="text-center text-muted py-4 bg-gray-100 rounded-lg text-sm">Please choose an event type.</div>
@@ -54,7 +54,7 @@
 							</template>
 						</div>
 
-						<label>Guests</label>
+						<label required>Guests</label>
 						<div v-if="contact">
 							{{ contact.contact_user.full_name }}
 						</div>
@@ -66,7 +66,7 @@
 							</div>
 						</multiselect>
 
-						<label class="mt-4">Meeting Type</label>
+						<label class="mt-4" required>Meeting Type</label>
 						<VueSelect :disabled="!clonedBooking.service" required :options="meetingTypes" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
 
 						<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>

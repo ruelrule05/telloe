@@ -8,6 +8,7 @@
 					<GoogleMeetIcon v-if="service.types.find(x => x.type == 'Google Meet')" class="w-4 h-4 fill-current text-primary mx-1"></GoogleMeetIcon>
 					<SkypeIcon v-if="service.types.find(x => x.type == 'Skype')" class="w-4 h-4 fill-current text-primary mx-1"></SkypeIcon>
 					<img src="/logo.svg" v-if="service.types.find(x => x.type == 'Telloe Video Call')" class="w-4 h-4 mx-1" />
+					<ZoomIcon v-if="service.types.find(x => x.type == 'Zoom')" class="w-4 h-4 fill-current text-primary mx-1"></ZoomIcon>
 				</div>
 			</div>
 			<div>

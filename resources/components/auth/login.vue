@@ -2,13 +2,13 @@
 	<div>
 		<vue-form-validate @submit="login">
 			<div class="mb-5">
-				<label class="text-muted">Enter Your Email Address</label>
+				<label class="text-muted" required>Enter Your Email Address</label>
 				<input type="email" v-model="loginForm.email" :disabled="(contact && contact.email) || (member && member.email)" data-required />
 			</div>
 			<div class="mb-7">
 				<div class="flex align-center">
-					<label class="text-muted">Enter Your Password</label>
-					<label class="small text-primary ml-auto cursor-pointer hover:underline">Forgot password?</label>
+					<label class="text-muted" required>Enter Your Password</label>
+					<label class="small text-primary ml-auto cursor-pointer hover:underline" @click="$root.action = 'recover'">Forgot password?</label>
 				</div>
 				<input type="password" v-model="loginForm.password" data-required />
 			</div>
