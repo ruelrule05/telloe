@@ -101,8 +101,9 @@ class BookingLinkService
 
     public static function getAllTimeslots(IndexBookingLinkRequest $request)
     {
+        $authUser = Auth::user();
         $allTimeslots = [];
-        $services = Auth::user()->services()->where('is_available', true)->get();
+        $services = $authUser->services()->with('user')->where('is_available', true)->get();
         foreach ($services as $service) {
             $serviceTimeslots = $service->timeslots($request->date);
             foreach ($serviceTimeslots as $serviceTimeslot) {
