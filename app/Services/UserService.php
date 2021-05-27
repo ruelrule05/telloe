@@ -420,6 +420,7 @@ class UserService
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
+            'blocked_timeslots' => [],
             'last_online' => null,
         ]);
         $user->password = bcrypt($request->password);

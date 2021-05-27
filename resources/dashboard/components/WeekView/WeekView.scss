@@ -1,6 +1,7 @@
 ::v-deep {
 	.v-calendar-events .v-event-timed {
 		@apply border-none p-2 transition-colors shadow-inner #{!important};
+		height: 48px !important;
 	}
 	.v-calendar-daily__interval-text {
 		@apply text-xs text-muted #{!important};
