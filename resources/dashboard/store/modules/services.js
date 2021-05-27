@@ -54,10 +54,10 @@ const actions = {
 		commit('index', response.data);
 	},
 
-	store({ commit }, data) {
-		window.axios.post(`/${name}`, data).then(response => {
-			commit('store', response.data);
-		});
+	async store({ commit }, data) {
+		let response = await window.axios.post(`/${name}`, data, { toast: true });
+		commit('store', response.data);
+		return response.data;
 	},
 
 	async show({ commit }, { service_id, params }) {
@@ -68,7 +68,7 @@ const actions = {
 	},
 
 	async update({ commit }, data) {
-		let response = await window.axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data, { toast: true });
 		commit('update', response.data);
 		return response.data;
 	},

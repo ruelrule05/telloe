@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PasswordResetRequest extends FormRequest
+class AuthPasswordResetRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -24,7 +24,7 @@ class PasswordResetRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => 'required|string|max:255',
+            'password' => 'required|string|confirmed|max:255',
         ];
     }
 }

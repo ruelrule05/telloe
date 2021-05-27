@@ -8,7 +8,6 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Requests\Auth\UpdateStripeAccountRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
-use App\Http\Requests\PasswordResetRequest;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 
@@ -44,8 +43,11 @@ class AuthController extends Controller
         return response(AuthService::recover($request));
     }
 
-    public function reset(PasswordResetRequest $request)
+    public function reset(Request $request)
     {
+        $this->validate($request, [
+            'password' => 'required|string|confirmed|max:255',
+        ]);
         return response(AuthService::reset($request));
     }
 

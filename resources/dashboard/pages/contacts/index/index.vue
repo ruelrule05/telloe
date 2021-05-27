@@ -90,7 +90,7 @@
 						<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Contact Details</h2>
 						<div class="pr-3">
 							<div class="mb-4">
-								<label>Email</label>
+								<label required>Email</label>
 								<input type="email" v-model="newContact.email" data-required />
 							</div>
 

@@ -6,6 +6,9 @@
 import Vue from 'vue';
 import VueToast from 'vue-toast-notification';
 Vue.use(VueToast, { position: 'bottom' });
+if (process.env.MIX_APP_ENV == 'production') {
+	Vue.config.productionTip = false;
+}
 window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.interceptors.request.use(
@@ -42,7 +45,15 @@ window.axios.interceptors.response.use(
 			}
 		}
 		if (error.response.config.toast) {
-			Vue.$toast.error(error.response.data.message);
+			let errorMessage = error.response.data.message;
+			if (error.response.data.errors && Object.keys(error.response.data.errors).length > 0) {
+				errorMessage = Object.keys(error.response.data.errors)
+					.map(key => {
+						return error.response.data.errors[key];
+					})
+					.join('. ');
+			}
+			Vue.$toast.error(errorMessage);
 		}
 		/*if (error.response && error.response.status == 401) {
             window.location.href = '/login';

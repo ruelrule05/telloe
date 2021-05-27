@@ -5,20 +5,20 @@
 			<vue-form-validate @submit="signup">
 				<div class="flex  mb-5">
 					<div class="pr-3 w-1/2">
-						<label class="text-muted">First Name</label>
+						<label class="text-muted" required>First Name</label>
 						<input type="text" v-model="signupForm.first_name" data-required />
 					</div>
 					<div class="pl-3 w-1/2">
-						<label class="text-muted">Last Name</label>
+						<label class="text-muted" required>Last Name</label>
 						<input type="text" v-model="signupForm.last_name" data-required />
 					</div>
 				</div>
 				<div class="mb-5">
-					<label class="text-muted">Enter Your Email Address</label>
+					<label class="text-muted" required>Enter Your Email Address</label>
 					<input type="email" v-model="signupForm.email" :disabled="(contact && contact.email) || (member && member.email)" data-required />
 				</div>
 				<div class="mb-7">
-					<label class="text-muted">Set a Password</label>
+					<label class="text-muted" required>Set a Password</label>
 					<div class="relative">
 						<input :type="showPassword ? 'text' : 'password'" v-model="signupForm.password" data-required />
 						<button type="button" class="p-1 absolute transform -translate-y-1/2 top-1/2 right-2 rounded-full transition-colors hover:bg-gray-200 focus:outline-none" @click="showPassword = !showPassword"><component :is="passwordEye" height="15" width="15"></component></button>
@@ -175,6 +175,12 @@ export default {
 
 		passwordEye() {
 			return this.showPassword ? 'EyeSlashIcon' : 'EyeIcon';
+		}
+	},
+
+	watch: {
+		heading: function(value) {
+			this.$parent.heading = value;
 		}
 	},
 

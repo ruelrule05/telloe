@@ -9,7 +9,6 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Requests\Auth\UpdateStripeAccountRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
-use App\Http\Requests\PasswordResetRequest;
 use App\Http\SocialiteHelper;
 use App\Http\StripeAPI;
 use App\Jobs\CreateStripeCustomer;
@@ -226,7 +225,7 @@ class AuthService
         }
     }
 
-    public static function reset(PasswordResetRequest $request)
+    public static function reset(Request $request)
     {
         $token = $request->token;
         $passwordReset = PasswordReset::where('token', $token)->firstOrfail();

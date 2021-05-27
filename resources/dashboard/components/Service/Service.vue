@@ -24,20 +24,20 @@
 						<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>
 						<div class="w-6/12">
 							<div class="mb-5">
-								<label>Name</label>
-								<input type="text" v-model="clonedService.name" required />
+								<label required>Name</label>
+								<input type="text" v-model="clonedService.name" data-required />
 							</div>
 							<div class="mb-5">
-								<label>Description</label>
-								<textarea rows="6" v-model="clonedService.description" required class="resize-none"></textarea>
+								<label required>Description</label>
+								<textarea rows="6" v-model="clonedService.description" data-required class="resize-none"></textarea>
 							</div>
 							<div class="mb-5">
-								<label>Duration</label>
-								<input type="number" v-model="clonedService.duration" required />
+								<label required>Duration (in minutes)</label>
+								<input type="number" min="5" v-model="clonedService.duration" data-required />
 							</div>
 							<div>
-								<label>Interval</label>
-								<input type="number" v-model="clonedService.interval" required />
+								<label required>Timeslot Interval (in minutes)</label>
+								<input type="number" min="5" v-model="clonedService.interval" data-required />
 							</div>
 						</div>
 						<div class="font-serif uppercase font-semibold text-xs mt-10">MEETING TYPE</div>
@@ -50,11 +50,11 @@
 											{{ type.type }}
 										</div>
 										<div v-if="type.type == 'Face-to-face'" class="p-4 bg-gray-100 border-top">
-											<div class="text-muted text-sm mb-1">Location/details</div>
+											<label required class="text-muted text-sm mb-1">Location/details</label>
 											<input type="text" v-model="type.data" placeholder="Location/details.." data-required />
 										</div>
 
-										<div v-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm  px-4 pb-2">{{ type.type }} will be required before placing a booking.</div>
+										<div v-else-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm  px-4 pb-2">{{ type.type }} will be data-required before placing a booking.</div>
 
 										<div v-else-if="type.type == 'Telloe Video Call'" class="text-muted text-sm  px-4 pb-2">A conversation will be created for the video call.</div>
 
@@ -120,7 +120,7 @@
 
 							<div class="my-4">
 								<label>Starts At</label>
-								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.starts_at" :masks="masks">
+								<v-date-picker :min-date="new Date()" :max-date="clonedService.ends_at || null" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.starts_at" :masks="masks">
 									<template v-slot="{ inputValue, inputEvents }">
 										<input type="text" class="w-1/3" readonly v-on="inputEvents" :placeholder="clonedService.starts_at ? dayjs(clonedService.starts_at).format('MMMM D, YYYY') : ''" :value="inputValue" />
 									</template>
@@ -128,7 +128,7 @@
 							</div>
 							<div class="mb-4">
 								<label>Ends At</label>
-								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.ends_at" :masks="masks">
+								<v-date-picker :min-date="clonedService.starts_at || new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.ends_at" :masks="masks">
 									<template v-slot="{ inputValue, inputEvents }">
 										<input type="text" class="w-1/3" readonly v-on="inputEvents" :placeholder="clonedService.ends_at ? dayjs(clonedService.ends_at).format('MMMM D, YYYY') : ''" :value="inputValue" />
 									</template>
@@ -151,7 +151,7 @@
 									<input type="number" step="0.01" min="0.00" class="form-control" v-model="clonedService.default_rate" placeholder="$0.00" />
 								</div>
 								<div class="flex-grow-1 pl-2 w-1/2">
-									<label class="form-label">Currency</label>
+									<label class="form-label" data-required>Currency</label>
 									<vue-select v-model="clonedService.currency" button_class="form-control" :options="currencies" data-required placeholder="Select currency"></vue-select>
 								</div>
 							</div>

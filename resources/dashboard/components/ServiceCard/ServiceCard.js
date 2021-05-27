@@ -7,6 +7,7 @@ import PhoneIcon from '../../../icons/call-menu.vue';
 import SkypeIcon from '../../../icons/skype.vue';
 import MapMarkerIcon from '../../../icons/map-marker';
 import GoogleMeetIcon from '../../../icons/google-meet';
+import ZoomIcon from '../../../icons/zoom';
 export default {
 	props: {
 		service: {
@@ -19,7 +20,7 @@ export default {
 		actions: ['Edit', 'Duplicate', 'Delete']
 	}),
 
-	components: { ToggleSwitch, VueDropdown, CogIcon, PhoneIcon, SkypeIcon, MapMarkerIcon, GoogleMeetIcon },
+	components: { ZoomIcon, ToggleSwitch, VueDropdown, CogIcon, PhoneIcon, SkypeIcon, MapMarkerIcon, GoogleMeetIcon },
 
 	methods: {
 		...mapActions({
