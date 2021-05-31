@@ -37,12 +37,15 @@ function toTwentyFourHourTime(time, format) {
 			.replace('mm', minute)
 			.replace('MM', maybePrependZero(minute));
 	} else {
-		return format
+		let newFormat = format
 			.replace('hh', hour)
 			.replace('HH', maybePrependZero(hour))
 			.replace('mm', minute)
-			.replace('MM', maybePrependZero(minute))
-			.replace('12:', '00:');
+			.replace('MM', maybePrependZero(minute));
+		if (hour === '12' && period == 'am') {
+			newFormat = newFormat.replace('12:', '00:');
+		}
+		return newFormat;
 	}
 }
 
