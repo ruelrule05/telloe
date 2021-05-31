@@ -136,7 +136,9 @@ export default {
 		}),
 
 		isPrevious(interval) {
-			return dayjs().isSameOrAfter(dayjs(interval.date));
+			let nowMs = dayjs().unix();
+			let invervalMs = dayjs(`${interval.date} ${interval.time}`).unix();
+			return nowMs >= invervalMs;
 		},
 
 		isBlocked(interval) {
