@@ -13,7 +13,9 @@
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 						</div>
 					</div>
-					<div>
+					<div class="flex items-center">
+						<button type="button" class="btn btn-sm btn-outline-primary" @click="$refs.sendModal.show()"><span>Send email invitation</span></button>
+						<button type="button" class="btn btn-sm btn-outline-primary mx-2" @click="copyToClipboard()"><span>Copy link</span></button>
 						<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action">
 							<template #button>
 								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
