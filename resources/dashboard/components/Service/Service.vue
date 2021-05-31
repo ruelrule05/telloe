@@ -54,6 +54,11 @@
 											<input type="text" v-model="type.data" placeholder="Location/details.." data-required />
 										</div>
 
+										<div v-else-if="type.type == 'Zoom'" class="p-4 bg-gray-100 border-top">
+											<label required class="text-muted text-sm mb-1">Zoom meeting link</label>
+											<input type="text" v-model="type.data" placeholder="Zoom meeting link.." data-required />
+										</div>
+
 										<div v-else-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm  px-4 pb-2">{{ type.type }} will be data-required before placing a booking.</div>
 
 										<div v-else-if="type.type == 'Telloe Video Call'" class="text-muted text-sm  px-4 pb-2">A conversation will be created for the video call.</div>

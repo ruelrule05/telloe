@@ -2,9 +2,9 @@
 
 namespace App\Http;
 
+use App\Models\User;
 use Google_Client;
 use Google_Service_Calendar;
-use App\Models\User;
 
 class GoogleCalendarClient
 {
