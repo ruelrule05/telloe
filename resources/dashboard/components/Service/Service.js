@@ -127,9 +127,9 @@ export default {
 
 	created() {
 		this.clonedService = JSON.parse(JSON.stringify(this.service));
-		if (!this.$root.auth.zoom_token) {
-			this.types.splice(this.types.indexOf('Zoom'), 1);
-		}
+		// if (!this.$root.auth.zoom_token) {
+		// 	this.types.splice(this.types.indexOf('Zoom'), 1);
+		// }
 		if (!this.$root.auth.google_calendar_token) {
 			this.types.splice(this.types.indexOf('Google Meet'), 1);
 		}
@@ -197,15 +197,15 @@ export default {
 		},
 
 		availableTimeChange(time, day) {
-			let start = convertTime(time.start, 'hh:mm');
-			let end = convertTime(time.end, 'hh:mm');
+			let start = time.start ? convertTime(time.start, 'hh:mm') : time.start;
+			let end = time.end ? convertTime(time.end, 'hh:mm') : time.end;
 			this.clonedService.days[day].start = start;
 			this.clonedService.days[day].end = end;
 		},
 
 		breaktimeChange(time, day) {
-			let start = convertTime(time.start, 'hh:mm');
-			let end = convertTime(time.end, 'hh:mm');
+			let start = time.start ? convertTime(time.start, 'hh:mm') : time.start;
+			let end = time.end ? convertTime(time.end, 'hh:mm') : time.end;
 			this.clonedService.days[day].breaktimeStart = start;
 			this.clonedService.days[day].breaktimeEnd = end;
 		}
