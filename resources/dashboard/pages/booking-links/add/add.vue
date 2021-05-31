@@ -1,6 +1,6 @@
 <template>
 	<div class="p-6">
-		<h3 class="mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a custom link</h3>
+		<h3 class="mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke link</h3>
 		<vue-form-validate @submit="storeLink">
 			<div class="form">
 				<div class="grid grid-cols-12 gap-x-8 justify-between form-inline">

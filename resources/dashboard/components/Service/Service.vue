@@ -32,11 +32,11 @@
 								<textarea rows="6" v-model="clonedService.description" data-required class="resize-none"></textarea>
 							</div>
 							<div class="mb-5">
-								<label required>Duration (in minutes)</label>
+								<label required>Meeting length (in minutes)</label>
 								<input type="number" min="5" v-model="clonedService.duration" data-required />
 							</div>
 							<div>
-								<label required>Timeslot Interval (in minutes)</label>
+								<label required>Time gap between meetings (in minutes)</label>
 								<input type="number" min="5" v-model="clonedService.interval" data-required />
 							</div>
 						</div>

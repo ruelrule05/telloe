@@ -98,7 +98,7 @@
 							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Event Types</div>
 						</router-link>
 						<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/booking-links">
-							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Custom Links</div>
+							<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Bespoke</div>
 						</router-link>
 
 

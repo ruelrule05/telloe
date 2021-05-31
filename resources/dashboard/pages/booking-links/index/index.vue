@@ -2,7 +2,7 @@
 	<div class="min-h-screen flex flex-col relative" v-if="$root.auth && ready">
 		<div class="content-header border-bottom flex items-center justify-between">
 			<div>
-				CUSTOM LINKS
+				BESPOKE LINKS
 			</div>
 			<div>
 				<button type="button" ref="toggleAddLinkBtn" class="btn btn-md" :class="[addLink ? 'btn-outline-primary' : 'btn-primary']" @click="addLink = !addLink">
@@ -19,14 +19,14 @@
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 				</div>
 				<div class="pl-4 -mt-1">
-					<p class="font-bold text-sm">You haven't created any custom links yet. Use the custom links creation form to set up a new custom link.</p>
+					<p class="font-bold text-sm">You haven't created any bespoke links yet. Use the custom links creation form to set up a new custom link.</p>
 					<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="addLink = true"><span>Add New</span></button>
 				</div>
 			</div>
 
 			<div v-else class="flex flex-grow">
 				<div class="w-4/12 p-6 border-right">
-					<p class="text-muted text-sm">Custom links are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
+					<p class="text-muted text-sm">Bespoke links are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
 				</div>
 
 				<div class="w-8/12 p-6">
@@ -51,7 +51,7 @@
 										</div>
 									</div>
 								</div>
-								<span class="text-muted text-sm ml-4">Custom link dates:</span>
+								<span class="text-muted text-sm ml-4">Dates:</span>
 								<div class="flex items-center">
 									<div v-for="(date, dateKey, dateIndex) in booking_link.dates" :key="dateKey" class="text-sm">
 										<span v-if="dateIndex > 0" class="text-muted">|</span>
