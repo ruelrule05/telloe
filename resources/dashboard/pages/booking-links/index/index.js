@@ -43,7 +43,8 @@ export default {
 		newEmail: '',
 		newTimezone: '',
 		timezonesOptions: [],
-		addLink: false
+		addLink: false,
+		banner: true
 	}),
 
 	computed: {

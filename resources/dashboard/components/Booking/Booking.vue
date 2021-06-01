@@ -8,7 +8,7 @@
 					<div class="flex-grow">
 						<h5 class="font-semibold font-serif text-md mb-4">New Booking</h5>
 						<label required>Event Type</label>
-						<VueSelect :disabled="disableServiceSelect" required :options="servicesOptions" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service"></VueSelect>
+						<VueSelect :disabled="disableServiceSelect" required :options="servicesOptions" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service" dropPosition="w-full"></VueSelect>
 						<v-date-picker
 							is-required
 							v-model="clonedBooking.date"

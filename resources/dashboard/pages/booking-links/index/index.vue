@@ -14,6 +14,23 @@
 		<Add v-if="addLink"></Add>
 
 		<template v-else>
+			<div v-if="banner" class="p-6 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+					<div class="font-serif w-1/4 font-semibold uppercase">
+						Collaborate and agree on a time.
+					</div>
+					<div class="w-7/12">
+						<p class="text-muxted mb-4">
+							Create a Bespoke suggested meeting time selector link that shows your available times, enables invited guests to select a time that works for them or suggest an alternative.
+						</p>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="addLink = true"><span>CREATE A BESPOKE MEETING LINK</span></button>
+					</div>
+					<div class="font-serif">
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					</div>
+				</div>
+			</div>
+
 			<div v-if="booking_links.data.length == 0" class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-4/12">
 				<div class="text-primary">
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>

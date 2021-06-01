@@ -94,6 +94,7 @@ export default {
 	watch: {
 		value: function(value) {
 			this.selected_value = value;
+			this.hiddenValue = this.value;
 			if (!value) this.search = '';
 		},
 
