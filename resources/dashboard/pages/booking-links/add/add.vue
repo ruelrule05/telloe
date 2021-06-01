@@ -1,6 +1,6 @@
 <template>
 	<div class="p-6">
-		<h3 class="mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke link</h3>
+		<h3 class="mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke meeting link</h3>
 		<vue-form-validate @submit="storeLink">
 			<div class="form">
 				<div class="grid grid-cols-12 gap-x-8 justify-between form-inline">
@@ -95,10 +95,10 @@
 		<Modal ref="addEmailModal" size="sm">
 			<h6 class="font-serif font-semibold mb-5 uppercase">Add Email</h6>
 			<vue-form-validate @submit="addEmail">
-				<label>Email</label>
+				<label required>Email</label>
 				<input type="text" v-model="emailToAdd.email" data-required />
 
-				<label class="mt-4">Timezone</label>
+				<label class="mt-4" required>Timezone</label>
 				<VueSelect drop-position="w-full" required :options="availableTimezones" searchable v-model="emailToAdd.timezone" placeholder="Select timezone"></VueSelect>
 
 				<div class="mt-8 flex justify-between">

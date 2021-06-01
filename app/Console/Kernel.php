@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
                             Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $full_name));
                         }
                         if ($bookingUser->user && $bookingUser->user->notify_email) {
-                            Mail::to($bookingUser->email)->queue(new UpcomingBooking($booking, $booking->service->coach->full_name));
+                            Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $booking->service->coach->full_name));
                         }
 
                         // SendSMS
