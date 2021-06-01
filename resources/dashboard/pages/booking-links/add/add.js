@@ -26,8 +26,8 @@ export default {
 		timeslotsLoading: false,
 		dayjs: dayjs,
 		startDate: null,
-		name: '',
-		duration: 0,
+		name: 'My new bespoke link',
+		duration: 30,
 		isEmail: isEmail,
 		emailToAdd: {
 			email: '',
@@ -89,8 +89,23 @@ export default {
 				this.selectedDate = dateFormat;
 			}
 		},
-		selectedDate: function() {
-			this.getAllTimeslots();
+		selectedDate: async function() {
+			await this.getAllTimeslots();
+			let availableTimeslots = this.dates[this.selectedDate].timeslots.filter(x => x.is_available && !x.is_booked);
+			if (availableTimeslots.length > 0) {
+				this.addTimeslot(true, availableTimeslots[0]);
+			}
+			if (availableTimeslots.length > 1) {
+				this.addTimeslot(true, availableTimeslots[1]);
+			}
+		},
+		contacts: function() {
+			if (this.contactsOptions.length > 0) {
+				this.selectedContacts.push(this.contactsOptions[0]);
+			}
+			if (this.contactsOptions.length > 1) {
+				this.selectedContacts.push(this.contactsOptions[1]);
+			}
 		}
 	},
 
