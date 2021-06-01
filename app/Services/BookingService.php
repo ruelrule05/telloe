@@ -181,7 +181,7 @@ class BookingService
         foreach ($bookings as &$booking) {
             $booking = $booking->refresh()->load('bookingUsers.user');
             foreach ($booking->bookingUsers as $bookingUser) {
-                Mail::queue(new NewBooking($bookings, 'customer', $bookingUser->user->email ?? $bookingUser->guest['email']));
+                Mail::queue(new NewBooking($bookings, 'customer', $bookingUser->user->email ?? $bookingUser->guest->email));
             }
         }
 

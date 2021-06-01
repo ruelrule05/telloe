@@ -39,8 +39,8 @@ class Kernel extends ConsoleKernel
                 ->get();
             foreach ($bookings as $booking) {
                 foreach ($booking->bookingUsers as $bookingUser) {
-                    $full_name = $bookingUser ? $bookingUser->user->full_name : $bookingUser->guest['email'];
-                    $bookingStart = Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->coach->timezone ?? null)->timezone($bookingUser->user->timezone ?? $bookingUser->guest['timezone'] ?? null);
+                    $full_name = $bookingUser ? $bookingUser->user->full_name : $bookingUser->guest->email;
+                    $bookingStart = Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->coach->timezone ?? null)->timezone($bookingUser->user->timezone ?? $bookingUser->guest->timezone ?? null);
                     $diffInMinutes = $now->diffInMinutes($bookingStart, false);
                     $actionUrl = config('app.url') . '/dashboard/bookings/calendar?date=' . $booking->date;
                     if ($diffInMinutes <= 120 && ! $booking->notified_2) { // 2 hours notif
