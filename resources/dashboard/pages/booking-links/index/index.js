@@ -19,8 +19,12 @@ import CloseIcon from '../../../../icons/close';
 const ct = require('countries-and-timezones');
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import Add from '../add/add.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import copy from 'copy-text-to-clipboard';
+import VueButton from '../../../../components/vue-button.vue';
+
 export default {
-	components: { Add, InfoCircleIcon, VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, PlusIcon, CloseIcon },
+	components: { Add, InfoCircleIcon, VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, VueSelect, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, PlusIcon, CloseIcon, VueDropdown, VueButton },
 
 	directives: { tooltip },
 
@@ -44,7 +48,9 @@ export default {
 		newTimezone: '',
 		timezonesOptions: [],
 		addLink: false,
-		banner: true
+		banner: true,
+		selectedLink: null,
+		sendingEmail: false
 	}),
 
 	computed: {
@@ -70,6 +76,10 @@ export default {
 			}
 
 			return tabDates;
+		},
+
+		bookingLinkUrl() {
+			return window.location.origin + '/booking-links/' + this.selectedLink.uuid;
 		}
 	},
 
@@ -123,8 +133,48 @@ export default {
 	methods: {
 		...mapActions({
 			getBookingLinks: 'booking_links/index',
-			storeBookingLink: 'booking_links/store'
+			storeBookingLink: 'booking_links/store',
+			deleteBookingLink: 'booking_links/delete'
 		}),
+
+		copyToClipboard() {
+			if (copy(this.bookingLinkUrl)) {
+				this.$toast.open('Copied to clipboard');
+			}
+		},
+
+		async sendEmail() {
+			this.sendingEmail = true;
+			let response = await window.axios.post(`/booking-links/${this.selectedLink.id}/send_invitation`);
+			if (response) {
+				this.$refs.sendModal.hide(true);
+				this.$toast.success('Invitation emails has been sent successfully.');
+			}
+			this.sendingEmail = false;
+		},
+
+		async destroy() {
+			await this.deleteBookingLink(this.selectedLink);
+			this.$refs.deleteModal.hide(true);
+		},
+
+		action(action, bookingLink) {
+			this.selectedLink = bookingLink;
+			switch (action) {
+				case 'Send email invitation':
+					this.$refs.sendModal.show();
+					break;
+
+				case 'Copy link':
+					this.copyToClipboard();
+					break;
+
+				case 'Delete':
+					this.$refs.deleteModal.show();
+					break;
+			}
+		},
+
 		addNewEmail() {
 			if (this.newEmail && this.newTimezone) {
 				this.selectedContacts.push({
