@@ -179,13 +179,15 @@ export default {
 		},
 
 		eventClick(event) {
-			this.selectedBooking = event.booking;
-			if (this.view == 'day') {
-				this.$refs.dayView.newEventDate = {};
-			} else if (this.view == 'week') {
-				this.$refs.weekView.newEventDate = {};
+			if ((event.booking || {}).type != 'blocked') {
+				this.selectedBooking = event.booking;
+				if (this.view == 'day') {
+					this.$refs.dayView.newEventDate = {};
+				} else if (this.view == 'week') {
+					this.$refs.weekView.newEventDate = {};
+				}
+				this.newEvent = false;
 			}
-			this.newEvent = false;
 		},
 
 		newEventClick(newEvent) {

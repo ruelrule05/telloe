@@ -24,6 +24,10 @@ export default {
 		dropdownWFull: {
 			type: Boolean,
 			default: false
+		},
+		vertical: {
+			type: Boolean,
+			default: false
 		}
 	},
 	components: {

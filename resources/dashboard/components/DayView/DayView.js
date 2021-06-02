@@ -6,6 +6,11 @@ const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 import GoogleIcon from '../../../icons/google.vue';
 dayjs.extend(IsSameOrAfter);
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
+import convertTime from '../../../js/plugins/convert-time';
+import ClickOutside from 'vue-click-outside';
+import Timerangepicker from '../../../components/timerangepicker/timerangepicker.vue';
+import CloseIcon from '../../../icons/close.vue';
+
 export default {
 	vuetify,
 	props: {
@@ -30,12 +35,20 @@ export default {
 	components: {
 		VCalendar,
 		GoogleIcon,
-		VueDropdown
+		VueDropdown,
+		Timerangepicker,
+		CloseIcon
+	},
+
+	directives: {
+		ClickOutside
 	},
 
 	data: () => ({
 		dayjs: dayjs,
-		newEvent: null
+		newEvent: null,
+		timeslotToBlock: {},
+		timeToBlock: {}
 	}),
 
 	watch: {
@@ -113,6 +126,19 @@ export default {
 				parsedBookings.push(dayEvent);
 			});
 
+			this.$root.auth.blocked_timeslots.forEach(timeslot => {
+				timeslot.type = 'blocked';
+				timeslot.id = `blocked-${timeslot.date}-${timeslot.start}-${timeslot.end}`;
+				parsedBookings.push({
+					booking: timeslot,
+					name: 'Blocked',
+					start: `${timeslot.date} ${timeslot.start}`,
+					end: `${timeslot.date} ${timeslot.end}`,
+					category: 'bookings',
+					color: 'bg-gray-50'
+				});
+			});
+
 			return parsedBookings.filter((v, i, a) => a.findIndex(t => (t.booking || {}).id === (v.booking || {}).id) === i);
 		}
 	},
@@ -121,15 +147,41 @@ export default {
 		this.getBookings({ date: dayjs(this.date).format('YYYY-MM-DD'), commit: false });
 	},
 
+	mounted() {
+		this.popupItem = this.$el;
+	},
+
 	methods: {
 		...mapActions({
 			getBookings: 'bookings/index'
 		}),
 
+		timeslotBlockChange(time, date) {
+			if (time.start && time.end) {
+				this.timeToBlock = {
+					date: date,
+					start: convertTime(time.start),
+					end: convertTime(time.end)
+				};
+			}
+		},
+
+		blockTimeslot() {
+			if (this.timeToBlock.date && this.timeToBlock.start && this.timeToBlock.end) {
+				this.timeslotToBlock.date = null;
+				if (!this.$root.auth.blocked_timeslots) {
+					this.$set(this.$root.auth, 'blocked_timeslots', []);
+				}
+				let exists = this.$root.auth.blocked_timeslots.find(x => x.date == this.timeToBlock.date && x.start == this.timeToBlock.start && x.end == this.timeToBlock.end);
+				if (!exists) {
+					this.$root.auth.blocked_timeslots.push({ date: this.timeToBlock.date, start: this.timeToBlock.start, end: this.timeToBlock.end });
+				}
+				this.$toast.open('Timeslot blocked.');
+				window.axios.post('/auth', this.$root.auth, { toast: true });
+			}
+		},
+
 		newEventAction(action, interval) {
-			let dateTimeslot = dayjs(`${interval.date} ${interval.time}`);
-			let start = dateTimeslot.format('HH:mm');
-			let end = dateTimeslot.add(1, 'hour').format('HH:mm');
 			/* eslint-disable */
 			switch (action) {
 				case 'Create booking':
@@ -137,15 +189,7 @@ export default {
 					break;
 
 				case 'Block timeslot':
-					if (!this.$root.auth.blocked_timeslots) {
-						this.$set(this.$root.auth, 'blocked_timeslots', []);
-					}
-					let exists = this.$root.auth.blocked_timeslots.find(x => x.date == interval.date && x.start == interval.time);
-					if (!exists) {
-						this.$root.auth.blocked_timeslots.push({ date: interval.date, start: start, end: end });
-					}
-					this.$toast.open('Timeslot blocked.');
-					window.axios.post('/auth', this.$root.auth, { toast: true });
+					this.timeslotToBlock = interval;
 					break;
 
 				case 'Unblock timeslot':

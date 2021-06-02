@@ -8,7 +8,7 @@ class BookingUser extends BaseModel
 
     protected $fillable = ['booking_id', 'user_id', 'email', 'guest'];    
     protected $casts = [
-        'guest' => 'object',
+        'guest' => 'array',
     ];
 
     public function booking()
