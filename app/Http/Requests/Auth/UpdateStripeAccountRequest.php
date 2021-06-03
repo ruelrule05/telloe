@@ -34,7 +34,6 @@ class UpdateStripeAccountRequest extends FormRequest
             'dob' => 'required|date',
             'account_number' => 'required',
             'account_holder_name' => 'required',
-            'routing_number' => 'required',
         ];
     }
 }

@@ -247,36 +247,36 @@
 								<div class="form">
 									<div class="flex justify-between form-inline">
 										<div class="form-field">
-											<label>Country</label>
-											<vue-select :disabled="stripeAccountForm.countryDisabled" v-model="stripeAccountForm.country" placeholder="Choose a country" :options="countries" required></vue-select>
+											<label required>Country</label>
+											<vue-select searchable :disabled="stripeAccountForm.countryDisabled" v-model="stripeAccountForm.country" placeholder="Choose a country" dropPosition="w-full" :options="countries" required></vue-select>
 											<p class="warning text-sm mt-1">Cannot be changed once set.</p>
 										</div>
 										<div class="form-field">
-											<label>Address</label>
+											<label required>Address</label>
 											<input type="text" placeholder="Your full address" v-model="stripeAccountForm.address" data-required />
 										</div>
 										<div class="form-field">
-											<label>City</label>
+											<label required>City</label>
 											<input type="text" placeholder="City name" v-model="stripeAccountForm.city" data-required />
 										</div>
 										<div class="form-field">
-											<label>State</label>
+											<label required>State</label>
 											<input type="text" placeholder="State" v-model="stripeAccountForm.state" data-required />
 										</div>
 										<div class="form-field">
-											<label>Postal code</label>
+											<label required>Postal code</label>
 											<input type="text" placeholder="Postal code" v-model="stripeAccountForm.postal" data-required />
 										</div>
 										<div class="form-field">
-											<label>Business website</label>
+											<label required>Business website</label>
 											<input type="text" placeholder="Business website" v-model="stripeAccountForm.website" data-required />
 										</div>
 										<div class="form-field">
-											<label>Phone number</label>
+											<label required>Phone number</label>
 											<input type="tel" placeholder="Phone number" v-model="stripeAccountForm.phone" data-required />
 										</div>
 										<div class="form-field">
-											<label>Date of birth</label>
+											<label required>Date of birth</label>
 											<v-date-picker is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob" :masks="masks">
 												<template v-slot="{ inputValue, inputEvents }">
 													<input type="text" readonly v-on="inputEvents" :value="inputValue" placeholder="Date of birth" data-required />
@@ -293,19 +293,19 @@
 								<div class="form">
 									<div class="flex flex-col justify-between form-inline">
 										<div class="form-field">
-											<label>Account number</label>
+											<label required>Account number</label>
 											<input type="text" v-model="stripeAccountForm.account_number" data-required />
 										</div>
 										<div class="form-field">
-											<label>Account holder name</label>
+											<label required>Account holder name</label>
 											<input type="text" v-model="stripeAccountForm.account_holder_name" data-required />
 										</div>
-										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ'" class="form-field">
-											<label>{{ routingNumber }}</label>
+										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ' && routingNumber" class="form-field">
+											<label required>{{ routingNumber }}</label>
 											<input type="text" v-model="stripeAccountForm.routing_number" data-required />
 										</div>
 										<div v-if="stripeAccountForm.country == 'CA'" class="form-field">
-											<label>Transit number</label>
+											<label required>Transit number</label>
 											<input type="text" v-model="stripeAccountForm.transit_number" data-required />
 										</div>
 										<div>

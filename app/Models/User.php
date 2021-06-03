@@ -56,7 +56,8 @@ class User extends Authenticatable implements JWTSubject
         'initials',
         'full_name',
         'dial_code',
-        'blocked_timeslots'
+        'blocked_timeslots',
+        'is_premium'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];

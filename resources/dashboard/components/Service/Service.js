@@ -21,6 +21,11 @@ export default {
 		createService: {
 			type: Boolean,
 			default: false
+		},
+
+		servicesCount: {
+			type: Number,
+			default: 0
 		}
 	},
 
@@ -208,6 +213,10 @@ export default {
 			let end = time.end ? convertTime(time.end, 'hh:mm') : time.end;
 			this.clonedService.days[day].breaktimeStart = start;
 			this.clonedService.days[day].breaktimeEnd = end;
+		},
+
+		goToPlans() {
+			this.$router.push('/dashboard/account?tab=plan');
 		}
 	}
 };

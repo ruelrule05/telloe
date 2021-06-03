@@ -79,6 +79,7 @@
 			v-show="serviceToEdit"
 			:createService="createService"
 			:service="serviceToEdit"
+			:servicesCount="services.length"
 			@close="
 				serviceToEdit = null;
 				resetNewService();

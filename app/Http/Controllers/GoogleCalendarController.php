@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\GoogleCalendarService;
-use Illuminate\Http\Request;
 use Auth;
+use Illuminate\Http\Request;
 
 class GoogleCalendarController extends Controller
 {
@@ -20,6 +20,9 @@ class GoogleCalendarController extends Controller
 
     public function getClient()
     {
+        if (! Auth::user()->is_premium) {
+            return abort(403, 'Please upgrade your account to integrate Google Calendar');
+        }
         return response()->json(GoogleCalendarService::getClient());
     }
 
@@ -28,12 +31,14 @@ class GoogleCalendarController extends Controller
         return response(GoogleCalendarService::remove());
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $this->validate($request, [
             'google_calendar_id' => 'required'
         ]);
         return GoogleCalendarService::update($request);
     }
+
     public function googleCalendarEvents()
     {
         return GoogleCalendarService::googleCalendarEvents();

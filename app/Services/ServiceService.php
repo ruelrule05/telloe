@@ -62,8 +62,12 @@ class ServiceService
 
     public static function store(StoreServiceRequest $request)
     {
+        $authUser = Auth::user();
+        if (! $authUser->is_premium && $authUser->services->count() > 0) {
+            return abort(403, 'Please upgrade your account to add more event types');
+        }
         $data = $request->all();
-        $data['user_id'] = Auth::user()->id;
+        $data['user_id'] = $authUser->id;
         $service = Service::create($data);
         $service = $service->fresh();
 

@@ -8,7 +8,7 @@
 				<div class="flex flex-col justify-center h-full pt-16 pb-16">
 					<p class="mb-6 text-lg tracking-tight text-body">Add an integration to power up your Telloe experience</p>
 
-					<div class="flex w-full p-8 mb-4 rounded-lg pb-9  bg-secondary-light">
+					<!-- <div class="flex w-full p-8 mb-4 rounded-lg pb-9  bg-secondary-light">
 						<div class="w-16 image">
 							<img src="/logos/zoom.png" alt="Zoom" height="80" />
 						</div>
@@ -18,7 +18,7 @@
 							<button v-if="$root.auth.zoom_token" :disabled="zoomLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeZoom"><span>Remove integration</span></button>
 							<button v-else :disabled="zoomLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateZoom"><span>Add integration</span></button>
 						</div>
-					</div>
+					</div> -->
 
 					<div class="flex w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
 						<div class="w-16 image">
@@ -28,7 +28,9 @@
 							<p class="mb-3 text-sm font-bold">Google Calendar</p>
 							<p class="mb-4 text-sm text-muted">Sync bookings with your Google Calendar</p>
 							<button v-if="$root.auth.google_calendar_token" :disabled="googleCalendarLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeGoogleCalendar"><span>Remove integration</span></button>
-							<button v-else :disabled="googleCalendarLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateGoogleCalendar"><span>Add integration</span></button>
+							<button v-else :disabled="googleCalendarLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateGoogleCalendar">
+								<span>{{ $root.auth.is_premium ? 'Add integration' : 'Upgrade Account' }}</span>
+							</button>
 						</div>
 					</div>
 
@@ -40,7 +42,9 @@
 							<p class="mb-3 text-sm font-bold">Outlook</p>
 							<p class="mb-4 text-sm text-muted">Sync bookings with your Outlook Calendar</p>
 							<button v-if="$root.auth.outlook_token" :disabled="outlookLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeOutlook"><span>Remove integration</span></button>
-							<button v-else :disabled="outlookLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateOutlook"><span>Add integration</span></button>
+							<button v-else :disabled="outlookLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateOutlook">
+								<span>{{ $root.auth.is_premium ? 'Add integration' : 'Upgrade Account' }}</span>
+							</button>
 						</div>
 					</div>
 

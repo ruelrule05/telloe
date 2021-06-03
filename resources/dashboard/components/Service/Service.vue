@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<vue-form-validate class="flex min-h-screen flex-col" v-if="clonedService" @submit="update">
+		<vue-form-validate v-if="clonedService" class="flex min-h-screen flex-col" @submit="update">
 			<div class="content-header border-bottom">
 				<span v-if="createService">CREATE EVENT TYPE</span>
 				<span v-else> EDITING: {{ service.name }}</span>
@@ -8,13 +8,22 @@
 					<button type="button" class="btn btn-md btn-outline-primary" @click="$emit('close')">
 						<span>Cancel</span>
 					</button>
-					<button type="submit" class="btn btn-md btn-primary">
+					<button v-if="$root.auth.is_premium || servicesCount == 0" type="submit" class="btn btn-md btn-primary">
 						<span>{{ createService ? 'Create' : 'Save' }}</span>
 					</button>
 				</div>
 			</div>
 
-			<div class="flex flex-grow">
+			<div v-if="createService && !$root.auth.is_premium && servicesCount > 0">
+				<div class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-4/12">
+					<div class="pl-4 -mt-1">
+						<p class="font-bold text-sm">Please upgrade your account to create more event types.</p>
+						<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="goToPlans()"><span>View Plans</span></button>
+					</div>
+				</div>
+			</div>
+
+			<div v-else class="flex flex-grow">
 				<div class="sidebar border-right px-6">
 					<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 				</div>
