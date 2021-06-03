@@ -166,6 +166,11 @@ class StripeAPI
                 $subscription->coupon = $this->referral_coupon;
                 $subscription->save();
                 break;
+
+            case 'retrieve' :
+                $subscription = \Stripe\Subscription::retrieve($data);
+                return $subscription;
+                break;
         }
     }
 
@@ -203,6 +208,17 @@ class StripeAPI
             case 'create' :
                 $charge = \Stripe\Charge::create($data);
                 return $charge;
+                break;
+        }
+    }
+
+    // Country specs
+    public function countrySpecs($action, $data = null)
+    {
+        switch ($action) {
+            case 'all' :
+                $countrySpecs = \Stripe\CountrySpec::all(['limit' => 100]);
+                return $countrySpecs;
                 break;
         }
     }

@@ -217,4 +217,14 @@ class StripeController extends Controller
 
         return response()->json($stripe_subscription);
     }
+
+    public function countrySpecs()
+    {
+        // 1209600 = 2 weeks
+        $countrySpecs = Cache::remember('stripe_country_specs', 1209600, function () {
+            $stripe_api = new StripeAPI();
+            return $stripe_api->countrySpecs('all');
+        });
+        return response()->json($countrySpecs->data ?? []);
+    }
 }

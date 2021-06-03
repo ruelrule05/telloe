@@ -300,7 +300,7 @@
 											<label required>Account holder name</label>
 											<input type="text" v-model="stripeAccountForm.account_holder_name" data-required />
 										</div>
-										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ'" class="form-field">
+										<div v-if="stripeAccountForm.country && stripeAccountForm.country != 'NZ' && routingNumber" class="form-field">
 											<label required>{{ routingNumber }}</label>
 											<input type="text" v-model="stripeAccountForm.routing_number" data-required />
 										</div>

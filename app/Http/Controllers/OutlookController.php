@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\OutlookService;
+use Auth;
 use Illuminate\Http\Request;
 
 class OutlookController extends Controller
@@ -24,6 +25,9 @@ class OutlookController extends Controller
 
     public function getClient()
     {
+        if (! Auth::user()->is_premium) {
+            return abort(403, 'Please upgrade your account to integrate Outlook Calendar');
+        }
         return response()->json(OutlookService::getClient());
     }
 }

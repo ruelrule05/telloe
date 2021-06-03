@@ -172,6 +172,7 @@ Route::group(
                     Route::get('subscriptions', 'StripeController@subscriptions');
                     Route::post('subscriptions', 'StripeController@storeSubscription');
                     Route::delete('subscriptions/{id}', 'StripeController@cancelSubscription');
+                    Route::get('country_specs', 'StripeController@countrySpecs');
                 });
             });
 

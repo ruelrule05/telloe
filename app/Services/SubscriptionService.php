@@ -68,6 +68,7 @@ class SubscriptionService
             ]);
 
             $user->has_subscribed = true;
+            $user->is_premium = true;
             $user->save();
 
             Mail::to($user->email)->queue(new Subscribed($plan));

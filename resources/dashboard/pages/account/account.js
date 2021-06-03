@@ -102,7 +102,8 @@ export default {
 			assigned_services: [],
 			sendToEmail: 1
 		},
-		csrf_token: ''
+		csrf_token: '',
+		countrySpecs: []
 	}),
 
 	watch: {
@@ -205,11 +206,13 @@ export default {
 		countries() {
 			let countries = [];
 			Object.entries(getNameList()).forEach(([name, code]) => {
-				countries.push({
-					text: name.replace(/\b\w/g, l => l.toUpperCase()),
-					value: code,
-					name: name
-				});
+				if (this.countrySpecs.find(x => x.id == code)) {
+					countries.push({
+						text: name.replace(/\b\w/g, l => l.toUpperCase()),
+						value: code,
+						name: name
+					});
+				}
 			});
 			countries = countries.sort((a, b) => {
 				return a.name.localeCompare(b.name);
@@ -218,17 +221,21 @@ export default {
 		},
 
 		routingNumber() {
-			let routingNumber = '';
+			let routingNumber = null;
 			switch (this.stripeAccountForm.country) {
 				case 'AU':
 					routingNumber = 'BSB';
 					break;
 
 				case 'US':
-					routingNumber = 'Routing Number';
+					routingNumber = 'ACH Routing Number';
 					break;
 
 				case 'UK':
+					routingNumber = 'Sort Code';
+					break;
+
+				case 'GB':
 					routingNumber = 'Sort Code';
 					break;
 
@@ -273,6 +280,10 @@ export default {
 		this.getMembers();
 		this.getStripeInvoices();
 		this.getServices();
+		this.getCountrySpecs();
+		if (this.$route.query.tab) {
+			this.activeMenu = this.$route.query.tab.charAt(0).toUpperCase() + this.$route.query.tab.slice(1);
+		}
 	},
 
 	mounted() {
@@ -288,6 +299,11 @@ export default {
 			storeMember: 'members/store',
 			deleteMember: 'members/delete'
 		}),
+
+		async getCountrySpecs() {
+			let response = await window.axios.get('/stripe/country_specs');
+			this.countrySpecs = response.data;
+		},
 
 		toggleAssignedService(service) {
 			let index = this.newMember.assigned_services.findIndex(x => x == service.id);

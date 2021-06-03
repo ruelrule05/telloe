@@ -42,12 +42,19 @@ export default {
 		},
 
 		async integrateOutlook() {
+			if (!this.$root.auth.is_premium) {
+				return this.$router.push('/dashboard/account?tab=plan');
+			}
 			this.outlookLoading = true;
-			let response = await window.axios.get('/outlook/client');
-			this.openAuthWindow(response.data.authUrl, async () => {
-				await this.getOutlookToken();
+			let response = await window.axios.get('/outlook/client', { toast: true }).catch(() => {});
+			if (response) {
+				this.openAuthWindow(response.data.authUrl, async () => {
+					await this.getOutlookToken();
+					this.outlookLoading = false;
+				});
+			} else {
 				this.outlookLoading = false;
-			});
+			}
 		},
 
 		async getOutlookToken() {
@@ -63,12 +70,19 @@ export default {
 		},
 
 		async integrateGoogleCalendar() {
+			if (!this.$root.auth.is_premium) {
+				return this.$router.push('/dashboard/account?tab=plan');
+			}
 			this.googleCalendarLoading = true;
-			let response = await window.axios.get('/google_calendar/client');
-			this.openAuthWindow(response.data.authUrl, async () => {
-				await this.getGoogleCalendarToken();
+			let response = await window.axios.get('/google_calendar/client', { toast: true }).catch(() => {});
+			if (response) {
+				this.openAuthWindow(response.data.authUrl, async () => {
+					await this.getGoogleCalendarToken();
+					this.googleCalendarLoading = false;
+				});
+			} else {
 				this.googleCalendarLoading = false;
-			});
+			}
 		},
 
 		async getGoogleCalendarToken() {
