@@ -27,6 +27,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use  Illuminate\Support\Facades\Mail;
 use Spatie\CalendarLinks\Link;
+use Webpatser\Uuid\Uuid;
 
 class BookingService
 {
@@ -59,8 +60,9 @@ class BookingService
         return $bookings;
     }
 
-    public static function show($id)
+    public static function show($uuid)
     {
+        $booking = Booking::where('uuid', $uuid)->firstOrFail();
         return ;
     }
 
@@ -69,6 +71,7 @@ class BookingService
         $service = Service::findOrfail($request->service_id);
         $data = $request->validated();
         $bookings = [];
+        $data['uuid'] = (string) Uuid::generate();
         $booking = Booking::create($data);
         $bookings[] = $booking;
 

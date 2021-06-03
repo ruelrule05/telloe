@@ -39,6 +39,7 @@ Route::group(
         Route::get('/contact', 'PageController@contact');
 
         Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
+        Route::get('/bookings/{uuid}', 'BookingController@show');
 
         Route::get('/ics', 'BookingController@downloadIcs');
 

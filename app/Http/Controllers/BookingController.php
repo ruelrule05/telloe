@@ -72,4 +72,9 @@ class BookingController extends Controller
     {
         return BookingService::contactBookings();
     }
+
+    public function show($uuid)
+    {
+        return BookingService::show($uuid);
+    }
 }
