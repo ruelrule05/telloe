@@ -4,7 +4,7 @@
 
 
 <div style="margin-bottom: 30px">
-    <h1 style="font-size: 32px; margin-bottom: 0; margin-top: 0" class="text-primary">{{ $bookings[0]->service->name }} is booked!</h1>
+    <h1 style="font-size: 32px; margin-bottom: 0; margin-top: 0; line-height: 38px" class="text-primary">{{ $bookings[0]->service->name }} is booked!</h1>
    
 </div>
 
@@ -51,29 +51,12 @@
             <a target="_blank"  class="text-primary" style="word-break: break-all" href="{{ $booking->zoom_link }}"><strong>Go to Zoom meeting</strong></a>
         </div>
         @endif
+        <a href="{{ $booking->url }}"
+            style="{{ $style['button'] }} margin-top: 20px; margin-bottom: 5px"
+            class="button"
+            target="_blank">
+            View Booking
+        </a>
     </div>
 @endforeach
-
-@if($actionUrl)
-<a href="{{ $actionUrl }}"
-    style="{{ $style['button'] }} margin-top: 20px; margin-bottom: 5px"
-    class="button"
-    target="_blank">
-    {{ $actionText }}
-</a>
-
-<!-- @if($booking->user)
-<small style="color: #888">Please <a href="{{ config('app.url') }}?auth=login" target="_blank" style="color: blue"><u>login</u></a> to your account to manage this booking.</small>
-@endif -->
-
-<div style="text-align: left; margin-top: 20px; border-top: solid 1px #ddd; padding-top: 20px;">
-     <p style="{{ $style['paragraph-sub'] }} margin-bottom: 0">
-        If you’re having trouble clicking the "{{ $actionText }}" button,
-        copy and paste the URL below into your web browser: <br />
-        <a style="{{ $style['text-primary'] }} text-decoration: underline;" href="{{ $actionUrl }}" target="_blank">
-            {{ $actionUrl }}
-        </a>
-    </p>
-</div>
-@endif
 @stop

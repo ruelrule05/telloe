@@ -8,7 +8,7 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 // Route::get('/email', function () {
-//     $email = new App\Mail\Subscribed(App\Models\Plan::find(2));
+//     $email = new App\Mail\NewBooking([App\Models\Booking::find(300), App\Models\Booking::find(301)], 'customer', 'clydewinux@gmail.com');
 //     return $email;
 // });
 
@@ -39,6 +39,7 @@ Route::group(
         Route::get('/contact', 'PageController@contact');
 
         Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
+        Route::get('/bookings/{uuid}', 'BookingController@show');
 
         Route::get('/ics', 'BookingController@downloadIcs');
 

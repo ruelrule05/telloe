@@ -27,6 +27,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use  Illuminate\Support\Facades\Mail;
 use Spatie\CalendarLinks\Link;
+use Webpatser\Uuid\Uuid;
 
 class BookingService
 {
@@ -59,9 +60,20 @@ class BookingService
         return $bookings;
     }
 
-    public static function show($id)
+    public static function show($uuid)
     {
-        return ;
+        $booking = Booking::with('service', 'bookingUsers')->where('uuid', $uuid)->firstOrFail();
+        $from = Carbon::parse("$booking->date $booking->start");
+        $to = $from->clone()->addMinute($booking->service->duration);
+        $link = Link::create($booking->service->name, $from, $to)
+            ->description($booking->service->description);
+
+        $booking->google_link = $link->google();
+        $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+        $booking->yahoo_link = $link->yahoo();
+        $booking->ical_link = $booking->outlook_link;
+
+        return view('booking', compact('booking'));
     }
 
     public static function store(StoreBookingRequest $request)
@@ -69,6 +81,7 @@ class BookingService
         $service = Service::findOrfail($request->service_id);
         $data = $request->validated();
         $bookings = [];
+        $data['uuid'] = (string) Uuid::generate();
         $booking = Booking::create($data);
         $bookings[] = $booking;
 
@@ -146,7 +159,8 @@ class BookingService
                         'start' => $start->format('H:i'),
                         'end' => $end->format('H:i'),
                         'meeting_type' => $request->meeting_type,
-                        'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
+                        'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
+                        'uuid' => (string) Uuid::generate()
                     ]);
                     $bookings[] = $booking;
                 }

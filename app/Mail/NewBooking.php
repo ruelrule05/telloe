@@ -6,7 +6,7 @@ use Auth;
 
 class NewBooking extends Mailer
 {
-    public $actionText = 'Manage Booking';
+    public $actionText = 'View Booking';
     public $actionUrl;
     public $email;
     public $emailMessage;
@@ -17,11 +17,14 @@ class NewBooking extends Mailer
     {
         $authUser = $authUser ?? Auth::user();
         $this->bookings = $bookings;
+        foreach ($this->bookings as $booking) {
+            $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
+        }
         $this->names = $bookings[0]->bookingUsers->map(function ($bookingUser) {
             return $bookingUser->user ? $bookingUser->user->full_name : $bookingUser->guest['email'];
         })->toArray();
         $this->actionText = 'Manage Bookings';
-        $this->actionUrl = config('app.url') . '?auth=login';
+        $this->actionUrl = config('app.url') . '/bookings/' . $bookings[0]->uuid;
 
         if ($target == 'serviceUser') {
             $this->email = $bookings[0]->service->coach->email;

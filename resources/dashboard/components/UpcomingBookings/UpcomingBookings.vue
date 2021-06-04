@@ -8,7 +8,7 @@
 						<div class="font-normal text-muted w-3/12">{{ booking.start }} - {{ booking.end }}</div>
 						<div class="leading-relaxed w-5/12">
 							<div v-for="bookingUser in booking.booking_users" :key="bookingUser.id" class="mxb-1">
-								<div class="font-bold">{{ bookingUser.user.full_name }}</div>
+								<div class="font-bold">{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}</div>
 							</div>
 							<div class="font-normal text-muted" v-if="booking.meet_link">Google Meet</div>
 							<div class="font-normal text-muted" v-if="booking.zoom_link">Zoom Meeting</div>
