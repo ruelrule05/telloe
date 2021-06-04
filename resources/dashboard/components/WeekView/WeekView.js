@@ -122,7 +122,7 @@ export default {
 				parsedBookings.push(dayEvent);
 			});
 
-			this.$root.auth.blocked_timeslots.forEach(timeslot => {
+			(this.$root.auth.blocked_timeslots || []).forEach(timeslot => {
 				timeslot.type = 'blocked';
 				timeslot.id = `blocked-${timeslot.date}-${timeslot.start}-${timeslot.end}`;
 				parsedBookings.push({
@@ -217,11 +217,13 @@ export default {
 		},
 
 		getWeekBookings() {
-			this.getBookings({
-				from: this.$refs.calendar.lastStart.date,
-				to: this.$refs.calendar.lastEnd.date,
-				commit: false
-			});
+			if (this.$refs.calendar) {
+				this.getBookings({
+					from: this.$refs.calendar.lastStart.date,
+					to: this.$refs.calendar.lastEnd.date,
+					commit: false
+				});
+			}
 		},
 
 		intervalFormat(interval) {
