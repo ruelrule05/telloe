@@ -189,6 +189,9 @@ class BookingService
                     ]
                 ]);
             }
+
+            // Check if Google Calendar is integrated
+            // Create event to selected google calendar with flag to tell it's a telloe booking
         }
 
         Mail::queue(new NewBooking($bookings, 'serviceUser'));

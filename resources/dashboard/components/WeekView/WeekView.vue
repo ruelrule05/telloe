@@ -26,7 +26,7 @@
 
 			<template #event="{ event }">
 				<div class="flex justify-between h-full relative">
-					<div>
+					<div class="overflow-hidden">
 						<div>{{ event.name }}</div>
 						<div>{{ dayjs(event.start).format('hh:mmA') }}&mdash;{{ dayjs(event.end).format('hh:mmA') }}</div>
 					</div>
