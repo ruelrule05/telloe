@@ -121,11 +121,11 @@
 							<div v-for="bookingUser in clonedBooking.booking_users" :key="bookingUser.id" class="flex items-center mb-3">
 								<div>
 									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + (bookingUser.user || {}).profile_image + ')' }">
-										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user.initials || bookingUser.guest.email[0] }}</span>
+										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user ? bookingUser.user.initials : bookingUser.guest.email[0] }}</span>
 									</div>
 								</div>
 								<div class="pl-1 text-sm font-semibold leading-tight">
-									{{ bookingUser.user.full_name || bookingUser.guest.email }}
+									{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}
 								</div>
 							</div>
 						</div>
@@ -225,11 +225,11 @@
 							<div v-for="bookingUser in clonedBooking.booking_users" :key="bookingUser.id" class="flex items-center mb-3">
 								<div>
 									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + (bookingUser.user || {}).profile_image + ')' }">
-										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user.initials || bookingUser.guest.email[0] }}</span>
+										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user ? bookingUser.user.initials : bookingUser.guest.email[0] }}</span>
 									</div>
 								</div>
 								<div class="pl-1 text-sm font-semibold leading-tight">
-									{{ bookingUser.user.full_name || bookingUser.guest.email }}
+									{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}
 								</div>
 							</div>
 						</div>
