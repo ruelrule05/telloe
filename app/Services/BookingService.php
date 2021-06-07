@@ -62,7 +62,7 @@ class BookingService
 
     public static function show($uuid)
     {
-        $booking = Booking::with('service', 'bookingUsers')->where('uuid', $uuid)->firstOrFail();
+        $booking = Booking::with('service.user', 'bookingUsers.user')->where('uuid', $uuid)->firstOrFail();
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);
         $link = Link::create($booking->service->name, $from, $to)
