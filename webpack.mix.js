@@ -44,7 +44,8 @@ mix.js('resources/js/page.js', 'js')
 	.js('resources/js/profile.js', 'js')
 	.js('resources/widget/index.js', 'js/widget/widget.js')
 	//.js('resources/js/organization.js', 'js')
-	.js('resources/js/booking-link.js', 'js');
+	.js('resources/js/booking-link.js', 'js')
+	.js('resources/js/booking.js', 'js');
 
 mix.options({
 	postCss: [require('tailwindcss')]

@@ -187,6 +187,7 @@ export default {
 					time_end = null;
 				}
 			}
+
 			let data = { start: time_start, end: time_end };
 			this.$emit('change', data);
 		}

@@ -12,6 +12,7 @@
 						<v-date-picker
 							is-required
 							v-model="clonedBooking.date"
+							:masks="masks"
 							@input="
 								$nextTick(() => {
 									emitNewBookingDateChange();
@@ -130,7 +131,7 @@
 							</div>
 						</div>
 
-						<v-date-picker v-model="clonedBooking.date">
+						<v-date-picker v-model="clonedBooking.date" :masks="masks">
 							<template v-slot="{ inputValue, inputEvents }">
 								<label>Date</label>
 								<div class="input-prefix">
@@ -162,7 +163,7 @@
 									</tr>
 								</table>
 							</div>
-							<timerangepicker v-else @change="updateTime" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
+							<timerangepicker v-else hideClearButton @change="updateTime" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2 mt-4"></timerangepicker>
 						</div>
 
 						<div class="my-4">

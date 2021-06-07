@@ -44,9 +44,6 @@ export default {
 	data: () => ({
 		clonedBooking: {},
 		open: false,
-		masks: {
-			input: 'MMM D, YYYY'
-		},
 		selectedContacts: [],
 		timeslots: [],
 		selectedTimeslot: {},
@@ -68,7 +65,10 @@ export default {
 			}
 		],
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-		includeGoogleCalendar: false
+		includeGoogleCalendar: false,
+		masks: {
+			input: 'MMMM D, YYYY'
+		}
 	}),
 
 	computed: {
