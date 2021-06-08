@@ -21,7 +21,7 @@ class NewBooking extends Mailer
             $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
         }
         $this->names = $bookings[0]->bookingUsers->map(function ($bookingUser) {
-            return $bookingUser->user ? $bookingUser->user->full_name : $bookingUser->guest['email'];
+            return $bookingUser->user ? $bookingUser->user->full_name : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
         })->toArray();
         $this->actionText = 'Manage Bookings';
         $this->actionUrl = config('app.url') . '/bookings/' . $bookings[0]->uuid;

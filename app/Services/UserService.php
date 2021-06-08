@@ -343,7 +343,7 @@ class UserService
                     'timeZone' => $booking->service->timezone,
                 ],
                 'attendees' => [
-                    ['email' => $bookingUser->user->email ?? $bookingUser->guest['email']],
+                    ['email' => $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null)],
                 ],
                 'conferenceData' => [
                     'createRequest' => [
