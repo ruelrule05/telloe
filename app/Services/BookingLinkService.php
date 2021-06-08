@@ -235,4 +235,43 @@ class BookingLinkService
             return response()->json($bookingLinkMessage->load('user'));
         }
     }
+
+    public static function associateUser($uuid)
+    {
+        $authUser = Auth::user();
+        $bookingLink = BookingLink::where('uuid', $uuid)->firstOrFail();
+
+        if (! in_array($authUser->email, Arr::pluck($bookingLink->emails, 'email'))) {
+            return abort(403);
+        }
+        $newEmails = [];
+        $emails = collect($bookingLink->emails);
+        $emailUser = $emails->firstWhere('email', $authUser->email);
+        foreach ($bookingLink->emails as $bookingEmail) {
+            if ($bookingEmail['email'] != $authUser->email) {
+                $newEmails[] = $bookingEmail;
+            }
+        }
+        $bookingLink->emails = $newEmails;
+        $bookingLink->save();
+
+        $contact = $bookingLink->bookingLinkContacts()->whereHas('contact.contactUser', function ($user) use ($authUser) {
+            $user->where('id', $authUser->id);
+        })->exists();
+        if (! $contact) {
+            $contact = Contact::create([
+                'first_name' => $authUser->first_name,
+                'last_name' => $authUser->last_name,
+                'email' => $authUser->email,
+                'contact_user_id' => $authUser->id,
+                'user_id' => $bookingLink->user_id,
+                'is_pending' => false
+            ]);
+            BookingLinkContact::create([
+                'booking_link_id' => $bookingLink->id,
+                'contact_id' => $contact->id,
+                'color' => $emailUser['color']
+            ]);
+        }
+    }
 }

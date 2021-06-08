@@ -70,4 +70,9 @@ class BookingLinkController extends Controller
         ]);
         return BookingLinkService::message($id, $request);
     }
+
+    public function associateUser($uuid)
+    {
+        return BookingLinkService::associateUser($uuid);
+    }
 }

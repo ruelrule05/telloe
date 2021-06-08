@@ -23,7 +23,7 @@
 						</tr>
 
 						<!-- You -->
-						<tr>
+						<tr v-if="auth">
 							<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
 								<div class="flex items-center py-3 -ml-3">
 									<div>
@@ -74,7 +74,7 @@
 
 						<!-- Contacts -->
 						<template v-for="contact in bookingLink.booking_link_contacts">
-							<tr v-if="contact.contact.contact_user_id != auth.id" :key="contact.id">
+							<tr v-if="contact.contact.contact_user_id != (auth || {}).id" :key="contact.id">
 								<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
@@ -175,7 +175,8 @@
 				<div class="mb-4">
 					<input type="password" v-model="loginForm.password" placeholder="Password" data-required />
 				</div>
-				<button class="btn btn-primary w-full" type="submit"><span>Log In</span></button>
+
+				<VueButton class="btn btn-primary w-full" :loading="loading" type="submit">Log In</VueButton>
 				<div class="text-center mt-2">
 					<button class="btn w-full btn-outline-primary" type="button" @click="authAction = 'register'"><span>Sign Up</span></button>
 				</div>
@@ -183,21 +184,26 @@
 
 			<vue-form-validate @submit="register" v-else-if="authAction == 'register'">
 				<div class="mb-4">
+					<label required>Email</label>
 					<input type="email" disabled readonly :value="email" data-required />
 				</div>
 				<div class="mb-4">
-					<input type="text" v-model="signupForm.firstName" placeholder="First Name" data-required />
+					<label required>Fist Name</label>
+					<input type="text" v-model="signupForm.first_name" placeholder="First Name" data-required />
 				</div>
 				<div class="mb-4">
-					<input type="text" v-model="signupForm.lastName" placeholder="Last Name" data-required />
+					<label required>Last Name</label>
+					<input type="text" v-model="signupForm.last_name" placeholder="Last Name" data-required />
 				</div>
 				<div class="mb-4">
+					<label required>Password</label>
 					<input type="password" v-model="signupForm.password" placeholder="Password" data-required />
 				</div>
-				<button class="w-full btn btn-primary" type="submit"><span>Sign Up</span></button>
-				<div class="text-center mt-2">
+
+				<VueButton class="btn btn-primary w-full" :loading="loading" type="submit">Sign Up</VueButton>
+				<!-- <div class="text-center mt-2">
 					<button class="btn w-full btn-outline-primary" type="button" @click="authAction = 'login'"><span>Log In</span></button>
-				</div>
+				</div> -->
 			</vue-form-validate>
 		</Modal>
 
