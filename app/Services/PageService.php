@@ -14,9 +14,9 @@ class PageService
     public static function homepage(Request $request)
     {
         checkRequestInviteToken($request);
-        if (Auth::check()) {
-            return redirect('/dashboard/calendar');
-        }
+        // if (Auth::check()) {
+        //     return redirect('/dashboard/calendar');
+        // }
 
         if ($request->auth == 'reset' && $request->token) {
             $passwordReset = PasswordReset::where('token', $request->token)->first();

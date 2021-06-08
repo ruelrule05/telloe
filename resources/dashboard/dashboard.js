@@ -214,6 +214,10 @@ window.app = new Vue({
 			getBookings: 'bookings/index'
 		}),
 
+		refresh() {
+			window.location.reload();
+		},
+
 		clickPrompt() {
 			this.promptCookie = false;
 			window.localStorage.setItem('telloe_cookie_accepted', true);

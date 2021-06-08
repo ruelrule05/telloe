@@ -35,7 +35,7 @@ class PackageService
             'price' => $request->price
         ]);
 
-        return $package;
+        return $package->refresh();
     }
 
     public static function update(Package $package, UpdatePackageRequest $request)

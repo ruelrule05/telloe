@@ -106,7 +106,7 @@ window.app = new Vue({
 				.then(response => {
 					if (response) {
 						this.auth = response.data;
-						window.location.replace('/dashboard/overview');
+						//window.location.replace('/dashboard/overview');
 					}
 				})
 				.catch(() => {});

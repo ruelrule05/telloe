@@ -7,9 +7,9 @@
             <div class="ml-auto flex">
                 <div class="flex align-middle items-center space-x-3">
                     <a href="/" class="navbar-item">HOME</a>
-                    <a href="#features" class="navbar-item">FEATURES</a>
-                    <a href="#about" class="navbar-item"><span>ABOUT</span></a>
-                    <a href="#pricing" class="navbar-item"><span>PRICING</span></a>
+                    <a href="/#features" class="navbar-item">FEATURES</a>
+                    <a href="/#about" class="navbar-item"><span>ABOUT</span></a>
+                    <a href="/#pricing" class="navbar-item"><span>PRICING</span></a>
                     <a href="/contact" class="navbar-item"><span>CONTACT US</span></a>
                     @auth
                     <a href="/dashboard/calendar" class="navbar-item"><span>DASHBOARD</span></a>

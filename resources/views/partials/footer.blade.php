@@ -8,7 +8,7 @@
 
 			<div class="col-span-2 mt-md-0 lg:mt-5 mt-8">
 				<h5 class="font-serif text-muted uppercase text-xs font-semibold lg:mb-4 mb-2">Product</h5>
-				<a href="#pricing" class="block mb-2 text-sm">Pricing</a>
+				<a href="/#pricing" class="block mb-2 text-sm">Pricing</a>
 				<a href="#" class="block text-sm" @click.prevent="auth = true; action = 'signup'">Try it for free</a>
 			</div>
 

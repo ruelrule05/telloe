@@ -23,9 +23,10 @@ use Auth;
 use Carbon\Carbon;
 use File;
 use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
-use  Illuminate\Support\Facades\Mail;
+use  Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Spatie\CalendarLinks\Link;
 use Webpatser\Uuid\Uuid;
 
@@ -98,12 +99,6 @@ class BookingService
         $to = $from->clone()->addMinute($booking->service->duration);
         $link = Link::create($booking->service->name, $from, $to)
             ->description($booking->service->description);
-
-        $booking->google_link = $link->google();
-        $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
-        $booking->yahoo_link = $link->yahoo();
-        $booking->ical_link = $booking->outlook_link;
-
         foreach ($booking->bookingUsers as $bookingUser) {
             if ($bookingUser->user_id) {
                 $user_id = $bookingUser->user_id;
@@ -169,13 +164,15 @@ class BookingService
         }
 
         foreach ($bookings as $booking) {
+            $attendees = [];
             foreach ($data['contact_ids'] as $contactID) {
                 $contact = Contact::findOrFail($contactID);
-                if (Auth::user()->can('show', $contact) && ! $contact->is_pending && $contact->contact_user_id) {
+                if (Auth::user()->can('show', $contact)) {
                     BookingUser::create([
                         'booking_id' => $booking->id,
                         'user_id' => $contact->contact_user_id,
                     ]);
+                    $attendees[] = ['email' => $contact->contactUser->email];
                 }
             }
 
@@ -188,17 +185,56 @@ class BookingService
                         'email' => $email
                     ]
                 ]);
+                $attendees[] = ['email' => $email];
             }
 
             // Check if Google Calendar is integrated
             // Create event to selected google calendar with flag to tell it's a telloe booking
+            if ($service->user->google_calendar_token && $service->user->google_calendar_id) {
+                $time = time();
+                $GoogleCalendarClient = new GoogleCalendarClient($service->user);
+                $client = $GoogleCalendarClient->client;
+                $googleService = new Google_Service_Calendar($client);
+                $event = new Google_Service_Calendar_Event([
+                    'id' => 'telloe' . $time,
+                    'summary' => $booking->service->name,
+                    'description' => $booking->service->description,
+                    'start' => [
+                        'dateTime' => Carbon::parse("$booking->date $booking->start")->toIso8601String(),
+                        'timeZone' => $booking->service->timezone,
+                    ],
+                    'end' => [
+                        'dateTime' => Carbon::parse("$booking->date $booking->end")->toIso8601String(),
+                        'timeZone' => $booking->service->timezone,
+                    ],
+                    'attendees' => $attendees,
+                    'conferenceData' => [
+                        'createRequest' => [
+                            'requestId' => $time
+                        ]
+                    ]
+                ]);
+
+                $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+                $booking->update([
+                    'meet_link' => $event->hangoutLink
+                ]);
+            }
+
+            $booking->google_link = $link->google();
+            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->yahoo_link = $link->yahoo();
+            $booking->ical_link = $booking->outlook_link;
         }
 
         Mail::queue(new NewBooking($bookings, 'serviceUser'));
         foreach ($bookings as &$booking) {
             $booking = $booking->refresh()->load('bookingUsers.user');
             foreach ($booking->bookingUsers as $bookingUser) {
-                Mail::queue(new NewBooking($bookings, 'customer', $bookingUser->user->email ?? $bookingUser->guest['email']));
+                $email = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+                if ($email) {
+                    Mail::queue(new NewBooking($bookings, 'customer', $email));
+                }
             }
         }
 

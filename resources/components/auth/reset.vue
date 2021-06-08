@@ -1,7 +1,7 @@
 <template>
 	<div class="row h-100 w-100 justify-content-center align-items-center mx-0" v-cloak>
 		<div class="col-md-8">
-			<div class="text-center" v-if="!resetForm.success">
+			<div class="text-center" v-if="resetForm.success">
 				<checkmark-icon class="fill-success" width="50" height="50"></checkmark-icon>
 				<div class="text-muted mb-4">Your password has been updated successfully</div>
 				<button class="btn btn-primary" type="button" @click="$root.action = 'login'"><span>Log In</span></button>

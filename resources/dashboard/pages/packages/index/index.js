@@ -98,11 +98,19 @@ export default {
 		},
 
 		update() {
+			if (!(this.clonedPackage.services || {}).length) {
+				this.$refs.servicesEdit.$el.querySelector('input').focus();
+				return;
+			}
 			this.updatePackage(this.clonedPackage);
 			this.$refs.editModal.hide();
 		},
 
 		submit() {
+			if (!(this.newPackage.services || {}).length) {
+				this.$refs.services.$el.querySelector('input').focus();
+				return;
+			}
 			this.newPackage.expiration_date = dayjs(this.newPackage.expiration_date).format('YYYY-MM-DD');
 			this.storePackage(this.newPackage);
 			this.$refs['addModal'].hide();

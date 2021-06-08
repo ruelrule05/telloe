@@ -75,17 +75,17 @@
 			<vue-form-validate @submit="update" v-if="clonedPackage">
 				<fieldset>
 					<div class="mb-4">
-						<label>Package name</label>
+						<label required>Package name</label>
 						<input type="text" v-model="clonedPackage.name" data-required />
 					</div>
 					<div class="mb-4">
-						<label>Description</label>
+						<label required>Description</label>
 						<textarea class="form-control resize-none" v-model="clonedPackage.description" data-required rows="3"></textarea>
 					</div>
 
 					<div class="mb-4">
-						<label>Services</label>
-						<multiselect v-model="clonedPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple>
+						<label required>Services</label>
+						<multiselect ref="servicesEdit" v-model="clonedPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<span slot="noResult" class="text-muted text-sm">No services found.</span>
 						</multiselect>
@@ -97,7 +97,7 @@
 					</div>
 
 					<div class="mb-4">
-						<label>Package Total</label>
+						<label required>Package Total</label>
 						<input type="number" step="0.01" v-model="clonedPackage.price" placeholder="Package Price" />
 					</div>
 				</fieldset>
@@ -144,17 +144,17 @@
 			<vue-form-validate @submit="submit">
 				<fieldset>
 					<div class="mb-4">
-						<label>Package name</label>
+						<label required>Package name</label>
 						<input type="text" v-model="newPackage.name" data-required />
 					</div>
 					<div class="mb-4">
-						<label>Description</label>
+						<label required>Description</label>
 						<textarea class="form-control resize-none" v-model="newPackage.description" data-required rows="3"></textarea>
 					</div>
 
 					<div class="mb-4">
-						<label>Services</label>
-						<multiselect v-model="newPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple>
+						<label required>Services</label>
+						<multiselect ref="services" v-model="newPackage.services" label="name" track-by="id" :options="servicesList" :showLabels="false" placeholder="" multiple required>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<span slot="noResult" class="text-muted text-sm">No services found.</span>
 						</multiselect>
@@ -166,8 +166,8 @@
 					</div>
 
 					<div class="mb-4">
-						<label>Package Total</label>
-						<input type="number" step="0.01" v-model="newPackage.price" placeholder="Package Price" />
+						<label required>Package Total</label>
+						<input type="number" step="0.01" v-model="newPackage.price" data-required placeholder="Package Price" />
 					</div>
 				</fieldset>
 				<div class="flex items-center justify-between mt-6">

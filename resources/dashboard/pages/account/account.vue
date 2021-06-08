@@ -30,20 +30,20 @@
 							</div>
 						</div>
 						<div class="mb-5">
-							<label>Username</label>
+							<label required>Username</label>
 							<input type="text" v-model="user.username" data-required />
 							<p class="text-muted text-xs mt-1">This is your unique username for your profile page URL. Spaces and special characters are not allowed.</p>
 						</div>
 						<div class="mb-5">
-							<label>First Name</label>
+							<label required>First Name</label>
 							<input type="text" v-model="user.first_name" data-required />
 						</div>
 						<div class="mb-5">
-							<label>Last Name</label>
+							<label required>Last Name</label>
 							<input type="text" v-model="user.last_name" data-required />
 						</div>
 						<div class="mb-5">
-							<label>Email</label>
+							<label required>Email</label>
 							<input type="email" v-model="user.email" data-required />
 						</div>
 						<div class="mb-5">
@@ -69,15 +69,15 @@
 					<h2 class="font-serif uppercase font-semibold mb-8">Security Settings</h2>
 					<vue-form-validate @submit="password">
 						<div class="mb-5">
-							<label>Current Password</label>
+							<label required>Current Password</label>
 							<input type="password" v-model="securityForm.current_password" placeholder="Current Password" data-required />
 						</div>
 						<div class="mb-5">
-							<label>New Password</label>
+							<label required>New Password</label>
 							<input type="password" v-model="securityForm.password" placeholder="New Password" data-required />
 						</div>
 						<div class="mb-5">
-							<label>Confirm Password</label>
+							<label required>Confirm Password</label>
 							<input type="password" v-model="securityForm.password_confirmation" placeholder="Confirm Password" data-required />
 						</div>
 
