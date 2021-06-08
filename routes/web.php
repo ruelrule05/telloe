@@ -64,6 +64,7 @@ Route::group(
             Route::post('fb_notify', 'InquiryController@messengerNotify');
             Route::put('auth/update_stripe_account', 'AuthController@updateStripeAccount');
             Route::post('auth/guest_account', 'AuthController@createGuestAccount');
+            Route::put('booking-links/{uuid}/associate_user', 'BookingLinkController@associateUser')->middleware('auth');
 
             // Authenticated routes
             Route::group([

@@ -19,9 +19,10 @@ import ChevronDownIcon from '../icons/chevron-down';
 const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';
+import VueButton from '../components/vue-button.vue';
 
 export default {
-	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom, ClockIcon, VueDropdown, ChevronDownIcon },
+	components: { CheckmarkIcon, VueSelect, Modal, VueFormValidate, MoreIcon, VueCheckbox, Chatroom, ClockIcon, VueDropdown, ChevronDownIcon, VueButton },
 
 	directives: { tooltip },
 
@@ -48,13 +49,14 @@ export default {
 			lastName: '',
 			password: ''
 		},
-		authAction: 'login',
+		authAction: 'register',
 		hoveredTimeslot: null,
 		dayjs: dayjs,
 		requestData: null,
 		acceptedContacts: 0,
 		selectedTimeslot: null,
-		booking: null
+		booking: null,
+		loading: false
 	}),
 
 	computed: {
@@ -239,12 +241,26 @@ export default {
 			});
 		},
 
-		login() {
-			this.$refs['loginModal'].hide();
+		async login() {
+			this.loading = true;
+			let response = await window.axios.post('/login', { email: this.email, password: this.loginForm.password }, { toast: true }).catch(() => {});
+			if (response) {
+				window.location.href = `/booking-links/${this.bookingLink.uuid}`;
+			}
+			this.loading = false;
 		},
 
-		register() {
-			this.$refs['loginModal'].hide();
+		async register() {
+			this.loading = true;
+			this.signupForm.email = this.email;
+			let response = await window.axios.post('/signup', this.signupForm, { toast: true }).catch(() => {});
+			if (response) {
+				let r = await window.axios.put(`/booking-links/${this.bookingLink.uuid}/associate_user`).catch(() => {});
+				if (r) {
+					window.location.href = `/booking-links/${this.bookingLink.uuid}`;
+				}
+			}
+			this.loading = false;
 		},
 
 		formatDate(date) {
