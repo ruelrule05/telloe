@@ -3,7 +3,7 @@
 		<h1 class="font-serif font-bold text-xl uppercase mb-6">{{ bookingLink.name }} ({{ bookingLink.duration }} mins)</h1>
 
 		<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
-		<div v-if="bookingLink.booking_link_contacts.length > 0">
+		<div>
 			<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
 				<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 			</div>

@@ -267,4 +267,5 @@
 		</script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>
 	</body>
+	@include('partials.social_scripts')
 </html>
