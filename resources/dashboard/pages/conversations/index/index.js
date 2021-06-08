@@ -84,7 +84,7 @@ export default {
 					let keywords = conversation.name || '';
 					keywords += ` ${conversation.user.full_name} ${conversation.user.email}`;
 					conversation.members.forEach(member => {
-						keywords += ` ${member.user.full_name} ${member.user.email}`;
+						keywords += ` ${member.full_name} ${member.email}`;
 					});
 					return keywords.toLowerCase().includes(search);
 				}

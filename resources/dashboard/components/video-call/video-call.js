@@ -420,6 +420,9 @@ export default {
 				this.$refs['cameraPreview'].muted = true;
 				this.$refs['cameraPreview'].volume = 0;
 				this.$refs['cameraPreview'].srcObject = new MediaStream(this.localStream.getVideoTracks());
+				this.localStream.getVideoTracks().forEach(track => {
+					track.enabled = !this.isVideoStopped;
+				});
 			}
 		},
 

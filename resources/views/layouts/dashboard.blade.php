@@ -9,7 +9,7 @@
 		<div id="app" class="flex overflow-hidden" v-cloak v-if="auth">
 			<div class="sidebar bg-secondary overflow-auto">
 				<div class="p-6 flex justify-between border-bottom">
-					<img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6">
+					<img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6 cursor-pointer" @click="refresh()">
 					<button class="rounded-full transition-colors hover:bg-gray-200 focus:outline-none p-1" type="button">
 						<bell-icon class="fill-current text-gray-400"></bell-icon>
 					</button>

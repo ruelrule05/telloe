@@ -42,9 +42,9 @@ class UpdateUserRequest extends FormRequest
             // 'google_id' => 'string|max:191',
 
             // 'timezone' => 'string|max:191',
-            'notify_message' => 'integer|max:1',
-            'notify_sms' => 'integer|max:1',
-            'notify_email' => 'integer|max:1',
+            'notify_message' => 'boolean',
+            'notify_sms' => 'boolean',
+            'notify_email' => 'boolean',
         ];
     }
 }

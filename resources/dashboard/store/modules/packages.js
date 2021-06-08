@@ -45,7 +45,7 @@ const actions = {
 	},
 
 	async store({ commit }, data) {
-		let response = await window.axios.post(`/${name}`, data);
+		let response = await window.axios.post(`/${name}`, data, { toast: true });
 		commit('store', response.data);
 	},
 
@@ -56,7 +56,7 @@ const actions = {
 	},
 
 	async update({ commit }, data) {
-		let response = await window.axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data, { toast: true });
 		commit('update', response.data);
 
 		return response;

@@ -31,7 +31,7 @@
 					</div>
 					<div class="col-span-2 form-field">
 						<label>Duration (min)</label>
-						<input type="number" min="1" v-model="duration" placeholder="Duration" data-required />
+						<input type="number" min="1" max="360" v-model="duration" placeholder="Duration" data-required />
 					</div>
 				</div>
 			</div>
