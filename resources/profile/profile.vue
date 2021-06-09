@@ -73,7 +73,7 @@
 			<div v-else-if="selectedServiceForTimeline && !step" class="container lg:my-12 my-6 flex justify-center time-selector" key="service">
 				<div class="bg-white rounded-2xl w-11/12">
 					<div class="lg:flex">
-						<div class="lg:w-5/12 lg:p-10 p-8 pb-4">
+						<div class="lg:w-5/12 lg:p-10 p-6 pb-4">
 							<h4 class="mb-1 font-serif font-semibold text-2xl text-primary">{{ selectedServiceForTimeline.name }}</h4>
 							<div class="text-muted font-bold text-sm">{{ selectedServiceForTimeline.duration }} min</div>
 						</div>
@@ -83,8 +83,12 @@
 					</div>
 
 					<div class="lg:flex border-top">
-						<div class="border-right lg:p-12 p-8 flex flex-col lg:w-4/12">
-							<div class="text-muted text-sm lg:mb-8 mb-2 widget-hide">Schedule a time with:</div>
+						<div class="border-right lg:p-12 p-6 flex flex-col lg:w-4/12">
+							<div class="mb-6">
+								<div class="text-muted text-sm mb-2">Your timezone:</div>
+								<vue-select :options="timezonesOptions" drop-position="top" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
+							</div>
+							<div class="text-muted text-sm mb-2 widget-hide">Schedule a time with:</div>
 
 							<div class="widget-hide mb-4">
 								<!-- Main Coach -->
@@ -133,15 +137,10 @@
 									</div>
 								</div>
 							</div>
-
-							<div class="lg:mt-auto">
-								<div class="text-muted text-sm lg:mb-4 mb-2">Your timezone:</div>
-								<vue-select :options="timezonesOptions" drop-position="top" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
-							</div>
 						</div>
 
 						<!-- Date/time selection -->
-						<div class="lg:p-12 pt-0 p-8 lg:w-8/12 date-time-selector">
+						<div class="lg:p-12 pt-0 p-6 lg:w-8/12 date-time-selector">
 							<div class="lg:flex items-center justify-between">
 								<div class="text-muted text-sm">Select one or more timeslots</div>
 								<div>

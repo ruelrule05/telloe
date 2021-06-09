@@ -9,7 +9,6 @@ import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import CheckmarkIcon from '../../../../icons/checkmark';
 import jstz from 'jstz';
 const timezone = jstz.determine();
-import tooltip from '../../../../js/directives/tooltip.js';
 import Paginate from '../../../../components/paginate/paginate.vue';
 import ShortcutIcon from '../../../../icons/shortcut';
 import MoreIcon from '../../../../icons/more';
@@ -25,10 +24,11 @@ dayjs.extend(IsSameOrAfter);
 import ClockIcon from '../../../../icons/clock';
 import CloseIcon from '../../../../icons/close';
 
+import { VTooltip } from 'v-tooltip';
+
 export default {
 	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox, ClockIcon, CloseIcon },
-
-	directives: { tooltip },
+	directives: { tooltip: VTooltip },
 
 	data: () => ({
 		bookingLink: null,

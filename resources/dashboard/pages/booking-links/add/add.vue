@@ -71,8 +71,8 @@
 												<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
 											</div>
 										</div>
-										<div class="pl-2">
-											<p class="text-sm whitespace-nowrap">{{ contact.contact_user.full_name }}</p>
+										<div class="pl-2 overflow-hidden">
+											<p class="text-sm whitespace-nowrap truncate">{{ contact.contact_user.full_name }}</p>
 											<p class="flex items-center tracking-wide text-xxs text-muted">{{ contact.contact_user.timezone }}</p>
 										</div>
 									</div>

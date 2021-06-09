@@ -33,7 +33,6 @@
 		.dropdown {
 			min-width: 150px;
 			height: 150px;
-			display: block !important;
 			z-index: -1;
 			@apply transform scale-95  origin-top overflow-hidden absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 transition-all ease-in-out;
 		}

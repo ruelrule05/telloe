@@ -1,5 +1,6 @@
 .messenger {
 	@apply bg-white shadow-lg p-6 h-screen fixed flex flex-col top-0 transition-all;
+	z-index: 101;
 
 	width: 450px;
 	right: -450px;
