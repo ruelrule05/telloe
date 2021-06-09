@@ -264,7 +264,10 @@ class UserService
             foreach ($bookings as &$booking) {
                 $booking = $booking->refresh()->load('bookingUsers.user');
                 foreach ($booking->bookingUsers as $bookingUser) {
-                    Mail::queue(new NewBooking($bookings, 'customer', $bookingUser->user->email));
+                    $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+                    if ($attendeeEmail) {
+                        Mail::queue(new NewBooking($bookings, 'customer', $attendeeEmail));
+                    }
                 }
             }
 
@@ -331,6 +334,13 @@ class UserService
             $GoogleCalendarClient = new GoogleCalendarClient($service->user);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
+            $attendees = [];
+            $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+            if ($attendeeEmail) {
+                $attendees[] = [
+                    'email' => $attendeeEmail
+                ];
+            }
             $event = new Google_Service_Calendar_Event([
                 'summary' => $booking->service->name,
                 'description' => $booking->service->description,
@@ -342,9 +352,7 @@ class UserService
                     'dateTime' => Carbon::parse("$booking->date $booking->end")->toIso8601String(),
                     'timeZone' => $booking->service->timezone,
                 ],
-                'attendees' => [
-                    ['email' => $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null)],
-                ],
+                'attendees' => $attendees,
                 'conferenceData' => [
                     'createRequest' => [
                         'requestId' => time()
