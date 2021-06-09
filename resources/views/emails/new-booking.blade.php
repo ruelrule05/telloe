@@ -19,9 +19,9 @@
         </h3>
         <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</div>
 
-        <div style="margin-top: 10px; color: #777">Guests</div>
+        <div style="margin-top: 10px; color: #777; margin-bottom: 5px">Guests</div>
         @foreach($names as $name)
-            <div>{{ $name }}</div>
+            <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block; margin-right: 5px; font-weight: 600">{{ $name }}</div>
         @endforeach
 
         @if($booking->recurring)
