@@ -15,7 +15,6 @@ import Modal from '../../../../components/modal/modal.vue';
 const ct = require('countries-and-timezones');
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const { getNameList } = require('country-list');
-
 import { VTooltip } from 'v-tooltip';
 
 export default {
