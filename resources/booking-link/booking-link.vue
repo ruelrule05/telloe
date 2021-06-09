@@ -22,8 +22,33 @@
 							</td>
 						</tr>
 
+						<!-- You -->
+						<tr v-if="auth">
+							<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
+								<div class="flex items-center py-3 -ml-3">
+									<div>
+										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + auth.profile_image + ')' }">
+											<span v-if="!auth.profile_image">{{ auth.initials }}</span>
+										</div>
+									</div>
+									<div class="pl-2">
+										<p class="text-sm whitespace-nowrap">You</p>
+										<p class="flex items-center tracking-wide text-xxs text-muted">{{ auth.timezone }}</p>
+									</div>
+								</div>
+							</td>
+
+							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
+								<div class="items-center column  mb-4 px-1 bg-primary-ultralight" v-tooltip.bottom="'Select this timeslot'">
+									<div class="timeslot-content selectable" :class="{ selected: hasSelected(auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
+										<p class="text-center" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
+									</div>
+								</div>
+							</td>
+						</tr>
+
 						<!-- Coach -->
-						<tr>
+						<tr v-if="!auth || auth.id != bookingLink.user_id">
 							<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
 								<div class="flex items-center py-3 -ml-3">
 									<div>
@@ -32,7 +57,7 @@
 										</div>
 									</div>
 									<div class="pl-2 overflow-hidden">
-										<p class="text-sm whitespace-nowrap truncate">{{ auth && auth.id == bookingLink.user.id ? 'You' : bookingLink.user.full_name }}</p>
+										<p class="text-sm whitespace-nowrap truncate">{{ bookingLink.user.full_name }}</p>
 										<p class="flex items-center tracking-wide text-xxs text-muted">{{ bookingLink.user.timezone }}</p>
 									</div>
 								</div>
