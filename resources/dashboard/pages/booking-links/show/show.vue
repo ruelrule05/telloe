@@ -71,8 +71,8 @@
 												<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 											</div>
 										</div>
-										<div class="pl-2">
-											<p class="text-sm whitespace-nowrap">{{ contact.contact.full_name }}</p>
+										<div class="pl-2 overflow-hidden">
+											<p class="text-sm whitespace-nowrap truncate">{{ contact.contact.full_name }}</p>
 											<p class="flex items-center tracking-wide text-xxs text-muted">{{ contact.contact.contact_user.timezone }}</p>
 										</div>
 									</div>
@@ -100,8 +100,8 @@
 												<span class="uppercase">{{ email.email[0] }}</span>
 											</div>
 										</div>
-										<div class="pl-2">
-											<p class="text-sm whitespace-nowrap">{{ email.email }}</p>
+										<div class="pl-2 overflow-hidden">
+											<p class="text-sm whitespace-nowrap truncate">{{ email.email }}</p>
 											<p class="flex items-center tracking-wide text-xxs text-muted">{{ email.timezone }}</p>
 										</div>
 									</div>

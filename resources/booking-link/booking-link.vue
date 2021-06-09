@@ -22,31 +22,6 @@
 							</td>
 						</tr>
 
-						<!-- You -->
-						<tr v-if="auth">
-							<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
-								<div class="flex items-center py-3 -ml-3">
-									<div>
-										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + auth.profile_image + ')' }">
-											<span v-if="!auth.profile_image">{{ auth.initials }}</span>
-										</div>
-									</div>
-									<div class="pl-2">
-										<p class="text-sm whitespace-nowrap">You</p>
-										<p class="flex items-center tracking-wide text-xxs text-muted">{{ auth.timezone }}</p>
-									</div>
-								</div>
-							</td>
-
-							<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-								<div class="items-center column  mb-4 px-1 bg-primary-ultralight" v-tooltip.bottom="'Select this timeslot'">
-									<div class="timeslot-content selectable" :class="{ selected: hasSelected(auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
-										<p class="text-center" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
-									</div>
-								</div>
-							</td>
-						</tr>
-
 						<!-- Coach -->
 						<tr>
 							<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
@@ -56,8 +31,8 @@
 											<span v-if="!bookingLink.user.profile_image">{{ bookingLink.user.initials }}</span>
 										</div>
 									</div>
-									<div class="pl-2">
-										<p class="text-sm whitespace-nowrap">{{ bookingLink.user.full_name }}</p>
+									<div class="pl-2 overflow-hidden">
+										<p class="text-sm whitespace-nowrap truncate">{{ auth && auth.id == bookingLink.user.id ? 'You' : bookingLink.user.full_name }}</p>
 										<p class="flex items-center tracking-wide text-xxs text-muted">{{ bookingLink.user.timezone }}</p>
 									</div>
 								</div>
@@ -82,8 +57,8 @@
 												<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 											</div>
 										</div>
-										<div class="pl-2">
-											<p class="text-sm whitespace-nowrap">{{ contact.contact.full_name }}</p>
+										<div class="pl-2 overflow-hidden">
+											<p class="text-sm whitespace-nowrap truncate">{{ contact.contact.full_name }}</p>
 											<p class="flex items-center tracking-wide text-xxs text-muted">{{ contact.contact.contact_user.timezone }}</p>
 										</div>
 									</div>
@@ -112,8 +87,8 @@
 											<span class="uppercase">{{ email.email[0] }}</span>
 										</div>
 									</div>
-									<div class="pl-2">
-										<p class="text-sm whitespace-nowrap">{{ email.email }}</p>
+									<div class="pl-2 overflow-hidden">
+										<p class="text-sm whitespace-nowrap truncate">{{ email.email }}</p>
 										<p class="flex items-center tracking-wide text-xxs text-muted">{{ email.timezone }}</p>
 									</div>
 								</div>
