@@ -142,7 +142,7 @@
 		</Modal>
 
 		<Modal ref="loginModal" size="sm" noBackdropHide>
-			<h4 class="font-serif font-semibold uppercase mb-3">{{ authAction }} to continue</h4>
+			<h4 class="font-serif font-semibold uppercase mb-3">{{ authAction }} to select meeting time with {{ bookingLink.user.full_name }}</h4>
 			<vue-form-validate @submit="login" v-if="authAction == 'login'">
 				<div class="mb-4">
 					<input type="email" disabled readonly :value="email" data-required />
@@ -151,7 +151,7 @@
 					<input type="password" v-model="loginForm.password" placeholder="Password" data-required />
 				</div>
 
-				<VueButton class="btn btn-primary w-full" :loading="loading" type="submit">Log In</VueButton>
+				<VueButton class="btn btn-primary w-full" :loading="loading" type="submit"><span>Log In</span></VueButton>
 				<div class="text-center mt-2">
 					<button class="btn w-full btn-outline-primary" type="button" @click="authAction = 'register'"><span>Sign Up</span></button>
 				</div>
@@ -175,7 +175,7 @@
 					<input type="password" v-model="signupForm.password" placeholder="Password" data-required />
 				</div>
 
-				<VueButton class="btn btn-primary w-full" :loading="loading" type="submit">Sign Up</VueButton>
+				<VueButton class="btn btn-primary w-full" :loading="loading" type="submit"><span>Sign Up</span></VueButton>
 				<!-- <div class="text-center mt-2">
 					<button class="btn w-full btn-outline-primary" type="button" @click="authAction = 'login'"><span>Log In</span></button>
 				</div> -->

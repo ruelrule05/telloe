@@ -30,6 +30,7 @@ use Illuminate\Http\Request;
 use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
+use Webpatser\Uuid\Uuid;
 
 class UserService
 {
@@ -313,6 +314,7 @@ class UserService
         //     return false;
         // }
 
+        $data['uuid'] = (string) Uuid::generate();
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->user->zoom_token) {
