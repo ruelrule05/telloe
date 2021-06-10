@@ -24,6 +24,7 @@ import store from './store';
 import intros from './intros.js';
 import echo from '../js/echo.js';
 import router from './router';
+const mobile = require('is-mobile');
 
 window.app = new Vue({
 	router: router,
@@ -71,7 +72,8 @@ window.app = new Vue({
 		showHelpWidget: true,
 
 		toggleKnowBase: false,
-		promptCookie: false
+		promptCookie: false,
+		isMobile: true
 	},
 
 	computed: {
@@ -187,6 +189,7 @@ window.app = new Vue({
 
 		this.getNotifications();
 		this.getBookings();
+		this.isMobile = mobile();
 	},
 
 	mounted() {

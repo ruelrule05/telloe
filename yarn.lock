@@ -5143,6 +5143,11 @@
   dependencies:
     "ip-regex" "^4.0.0"
 
+"is-mobile@^3.0.0":
+  "integrity" "sha512-UruBjgykgDJ5zRpJ8Zgh9ZUe4jQaHD8klX9FlkOt0oPyu3FpwJpxHvKg4+lhJOWGxSrMKsRuPFk60xeltvyliQ=="
+  "resolved" "https://registry.npmjs.org/is-mobile/-/is-mobile-3.0.0.tgz"
+  "version" "3.0.0"
+
 "is-negative-zero@^2.0.1":
   "integrity" "sha512-2z6JzQvZRa9A2Y7xC6dQQm4FSTSTNWjKIYYTt4246eMTJmIo0Q+ZyOsU66X8lxK1AbB92dFeglPLrhwpeRKO6w=="
   "resolved" "https://registry.npmjs.org/is-negative-zero/-/is-negative-zero-2.0.1.tgz"

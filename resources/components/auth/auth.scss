@@ -1,6 +1,6 @@
 .auth-container {
 	@apply transition-all opacity-0 top-0 left-0 bg-secondary fixed w-screen h-screen overflow-hidden;
-	z-index: 9000;
+	z-index: 999999;
 	padding-right: 5px;
 	&.open {
 		@apply opacity-100 overflow-auto;
