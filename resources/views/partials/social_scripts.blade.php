@@ -43,4 +43,22 @@ src="https://www.facebook.com/tr?id=621261285253190&ev=PageView
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WD8BDT3"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
+
+
+<script type="text/javascript">
+  (function(w,d){
+    w.HelpCrunch=function(){w.HelpCrunch.q.push(arguments)};w.HelpCrunch.q=[];
+    function r(){var s=document.createElement('script');s.async=1;s.type='text/javascript';s.src='https://widget.helpcrunch.com/';(d.body||d.head).appendChild(s);}
+    if(w.attachEvent){w.attachEvent('onload',r)}else{w.addEventListener('load',r,false)}
+  })(window, document)
+  </script>
+  
+  <script type="text/javascript">
+    HelpCrunch('init', 'telloe', {
+      applicationId: 1,
+      applicationSecret: 'HYahOyK1vO4D3ea4HpLWVHpaYj5YZjXSyFEeZrjzprYGPRrEcuQ5ungv7ZyJ0rXrFj855O/bQBygjA92KkFXMg=='
+    })
+  
+    HelpCrunch('showChatWidget');
+</script>
 @endif
