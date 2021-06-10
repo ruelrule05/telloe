@@ -57,6 +57,7 @@
 		"format-number": "^3.0.0",
 		"html2canvas": "^1.0.0-rc.7",
 		"intro.js": "^3.2.1",
+		"is-mobile": "^3.0.0",
 		"isemail": "^3.2.0",
 		"jstz": "^2.1.1",
 		"laravel-echo": "^1.10.0",

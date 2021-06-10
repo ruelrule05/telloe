@@ -93,7 +93,7 @@ class Service extends BaseModel
         DB::enableQueryLog();
         $timeslots = [];
         $holidays = $this->holidays;
-        $user = $this->user;
+        $user = $this->coach;
 
         //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')

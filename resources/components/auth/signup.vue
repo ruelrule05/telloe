@@ -51,7 +51,7 @@
 					</div>
 				</div>
 
-				<vue-button type="submit" :loading="loading" button_class="btn btn-primary w-full">Set and continue</vue-button>
+				<vue-button type="submit" :loading="loading" button_class="btn btn-primary w-full"><span>Set and continue</span></vue-button>
 			</vue-form-validate>
 		</template>
 
@@ -59,10 +59,10 @@
 		<template v-else-if="$root.signupStep == 2">
 			<vue-form-validate @submit="goToStep(3)">
 				<div class="mb-7">
-					<vue-select :options="timezonesOptions" placeholder="Set timezone" searchable v-model="$root.auth.timezone"></vue-select>
+					<vue-select :options="timezonesOptions" placeholder="Set timezone" dropPosition="w-full" searchable v-model="$root.auth.timezone"></vue-select>
 				</div>
 
-				<vue-button type="submit" :loading="loading" button_class="btn btn-primary w-full">Continue</vue-button>
+				<vue-button type="submit" :loading="loading" button_class="btn btn-primary w-full"><span>Continue</span></vue-button>
 			</vue-form-validate>
 		</template>
 
