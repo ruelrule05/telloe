@@ -20,10 +20,6 @@ class NewBooking extends Mailer
         foreach ($this->bookings as $booking) {
             $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
         }
-        $this->names = $bookings[0]->bookingUsers->map(function ($bookingUser) {
-            return $bookingUser->user->full_name ?? (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
-        })->toArray();
-        $this->names = array_filter($this->names, 'strlen');
         $this->actionText = 'Manage Bookings';
         $this->actionUrl = config('app.url') . '/bookings/' . $bookings[0]->uuid;
 

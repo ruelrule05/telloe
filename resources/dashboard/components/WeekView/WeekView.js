@@ -95,31 +95,33 @@ export default {
 			});
 
 			this.googleCalendarEvents.forEach(event => {
-				let color = 'bg-red-200 hover:bg-red-400 hover:text-white';
-				if (this.selectedBooking && this.selectedBooking.id == event.id) {
-					color = 'bg-red-600 text-white';
+				if (!event.id.includes('telloe-booking')) {
+					let color = 'bg-red-200 hover:bg-red-400 hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == event.id) {
+						color = 'bg-red-600 text-white';
+					}
+					event.type = 'google-event';
+					let start = this.dayjs(event.start.date || event.start.dateTime);
+					let end = this.dayjs(event.end.date || event.end.dateTime);
+					let diffInHours = end.diff(start, 'hour');
+					if (diffInHours >= 24) {
+						end = start.add(24, 'hour').subtract(1, 'second');
+					}
+					start = start.format('YYYY-MM-DD HH:mm');
+					end = end.format('YYYY-MM-DD HH:mm');
+					event.startDate = start;
+					event.endDate = end;
+					let dayEvent = {
+						booking: event,
+						name: event.summary,
+						type: 'google-event',
+						start: start,
+						end: end,
+						category: 'bookings',
+						color: color
+					};
+					parsedBookings.push(dayEvent);
 				}
-				event.type = 'google-event';
-				let start = this.dayjs(event.start.date || event.start.dateTime);
-				let end = this.dayjs(event.end.date || event.end.dateTime);
-				let diffInHours = end.diff(start, 'hour');
-				if (diffInHours >= 24) {
-					end = start.add(24, 'hour').subtract(1, 'second');
-				}
-				start = start.format('YYYY-MM-DD HH:mm');
-				end = end.format('YYYY-MM-DD HH:mm');
-				event.startDate = start;
-				event.endDate = end;
-				let dayEvent = {
-					booking: event,
-					name: event.summary,
-					type: 'google-event',
-					start: start,
-					end: end,
-					category: 'bookings',
-					color: color
-				};
-				parsedBookings.push(dayEvent);
 			});
 
 			(this.$root.auth.blocked_timeslots || []).forEach(timeslot => {

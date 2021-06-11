@@ -190,13 +190,13 @@ class BookingService
 
             // Check if Google Calendar is integrated
             // Create event to selected google calendar with flag to tell it's a telloe booking
-            if ($service->user->google_calendar_token && $service->user->google_calendar_id) {
+            if ($booking->meeting_type == 'Google Meet' && $service->user->google_calendar_token && $service->user->google_calendar_id) {
                 $time = time();
                 $GoogleCalendarClient = new GoogleCalendarClient($service->user);
                 $client = $GoogleCalendarClient->client;
                 $googleService = new Google_Service_Calendar($client);
                 $event = new Google_Service_Calendar_Event([
-                    'id' => 'telloe' . $time,
+                    'id' => 'telloe-booking-' . $booking->id . '-' . $time,
                     'summary' => $booking->service->name,
                     'description' => $booking->service->description,
                     'start' => [
