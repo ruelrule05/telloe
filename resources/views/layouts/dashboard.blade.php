@@ -153,9 +153,9 @@
 
 						<!-- Notifications -->
 						<div class="d-none mt-auto mb-2 sidebar-menu " hidden>
-							<div class="cursor-pointer d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" @click="toggleIntros()">
-								<span class="pl-3">Help Tool</span>
-							</div>
+							<a class="cursor-pointer d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" target="_blank" href="/contact">
+								<span class="pl-3">Contact Us</span>
+							</a>
 
 							<div class="dropright">
 								<div class="cursor-pointer d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" data-toggle="dropdown" data-offset="10, 5" ref="notificationsDropdown">
@@ -200,8 +200,8 @@
 						
 						<div v-if="$route.name != 'conversations'" class="border-top bg-white p-6 flex justify-between text-muted text-xs footer">
 							<div>
-								<button class="font-bold" type="button">Help Tool</button>
-								<button class="ml-6 font-bold" type="button">Get Support</button>
+								<a class="font-bold" target="_blank" href="/contact">Contact Us</a>
+								<a class="font-bold ml-6" target="_blank" href="https://telloe.crunch.help">Knowledge Base</a>
 							</div>
 							<div>
 								<a class="ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>

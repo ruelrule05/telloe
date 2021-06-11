@@ -9,6 +9,17 @@
         <h1 style="font-size: 26px; margin-bottom: 10px">{{ $full_name }}</h1>
         <table style="width: 100%; margin-bottom: 10px">
             <tr>
+                <td style="width: 25%">Guests</td>
+                <td>
+                    @foreach($booking->bookingUsers as $bookingUser)
+                        <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block;  font-weight: 600; margin-bottom: 5px">
+                            <div>{{ $bookingUser->user->full_name }}</div>
+                            <small style="font-weight: 400; display: block; margin-top: -4px; color: #555">{{ $bookingUser->user->email }}</small>
+                        </div>
+                    @endforeach
+                </td>
+            </tr>
+            <tr>
                 <td style="width: 25%">Service</td>
                 <td><strong>{{ $booking->service->name }}</strong></td>
             </tr>
@@ -35,6 +46,15 @@
             </tr>
             @endif
         </table>
+    </div>
+
+    <div style="text-align: center">
+        <a href="{{ $booking->url }}"
+            style="{{ $style['button'] }} margin-top: 20px; margin-bottom: 5px"
+            class="button"
+            target="_blank">
+            View Booking
+        </a>
     </div>
 </p>
 
