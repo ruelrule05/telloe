@@ -201,7 +201,7 @@
 						<div v-if="$route.name != 'conversations'" class="border-top bg-white p-6 flex justify-between text-muted text-xs footer">
 							<div>
 								<a class="font-bold" target="_blank" href="/contact">Contact Us</a>
-								<a class="font-bold ml-6" target="_blank" href="https://telloe.crunch.help">Knowledge Base</a>
+								<a class="font-bold ml-6" target="_blank" href="https://docs.telloe.com">Knowledge Base</a>
 							</div>
 							<div>
 								<a class="ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>
