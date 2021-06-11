@@ -25,6 +25,7 @@ class BookingUser extends BaseModel
                 $user->first_name = $guest['first_name'];
                 $user->last_name = $guest['last_name'];
                 $user->email = $guest['email'];
+                $user->timezone = 'Australia/Brisbane';
             }
         });
     }
