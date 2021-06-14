@@ -8,7 +8,7 @@
 					<button type="button" class="btn btn-md btn-outline-primary" @click="$emit('close')">
 						<span>Cancel</span>
 					</button>
-					<button v-if="$root.auth.is_premium || servicesCount == 0" type="submit" class="btn btn-md btn-primary">
+					<button v-if="$root.auth.is_premium || !createService" type="submit" class="btn btn-md btn-primary">
 						<span>{{ createService ? 'Create' : 'Save' }}</span>
 					</button>
 				</div>
