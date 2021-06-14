@@ -1,11 +1,13 @@
 <?php
 $admin_emails = env('ADMIN_EMAILS');
+$freemium_accounts = env('FREEMIUM_ACCOUNTS');
 return [
     'admin_emails' => $admin_emails ? explode(',', $admin_emails) : [],
     'conversation_cache_time' => 40,
     'link_preview_key' => env('LINK_PREVIEW_KEY'),
     'ffmpeg' => env('FFMPEG'),
     'stripe_default_mcc' => env('STRIPE_DEFAULT_MCC'),
+    'freemium_accounts' => $freemium_accounts ? explode(',', $freemium_accounts) : [],
 
     'user_cache_time' => 30,
     /*

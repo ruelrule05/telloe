@@ -55,11 +55,12 @@ class Kernel extends ConsoleKernel
 
     protected function checkSubscriptions()
     {
+        $freemiumAccounts = config('app.freemium_accounts');
         $users = collect(User::has('subscription')->get());
-        $users->each(function ($user) {
+        $users->each(function ($user) use ($freemiumAccounts) {
             $stripe_api = new StripeAPI();
             $subscription = $stripe_api->subscription('retrieve', $user->subscription->stripe_subscription_id);
-            $user->is_premium = $subscription->status == 'active' || $subscription->status == 'trialing';
+            $user->is_premium = $subscription->status == 'active' || $subscription->status == 'trialing' || in_array($user->id, $freemiumAccounts);
             $user->save();
         });
     }
