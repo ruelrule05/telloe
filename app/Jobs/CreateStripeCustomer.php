@@ -17,17 +17,19 @@ class CreateStripeCustomer implements ShouldQueue
 
     private $user;
     private $contact;
+    private $request;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user, Contact $contact)
+    public function __construct(User $user, Contact $contact, $request)
     {
         //
         $this->user = $user;
         $this->contact = $contact;
+        $this->request = $request;
     }
 
     /**
@@ -42,7 +44,13 @@ class CreateStripeCustomer implements ShouldQueue
         if ($this->contact->user->stripe_account && ! $this->contact->stripe_customer_id) {
             $stripe_api = new StripeAPI();
             ;
-            $data = ['email' => $this->contact->contactUser->email, 'name' => $this->contact->contactUser->full_name];
+            $data = [
+                'email' => $this->contact->contactUser->email, 
+                'name' => $this->contact->contactUser->full_name
+            ];
+            if ($this->request->referral) {
+                $data['metadata'] = ['referral' => $this->request->referral];
+            }
             $stripeCustomer = $stripe_api->customer('create', $data, ['stripe_account' => $this->user->stripe_account['id']]);
             $this->contact->update([
                 'stripe_customer_id' => $stripeCustomer->id,
