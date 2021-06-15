@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             $this->getUpcomingBookings();
-        })->everyMinute();
+        })->everyFiveMinutes();
 
         $schedule->call(function () {
             $this->checkSubscriptions();

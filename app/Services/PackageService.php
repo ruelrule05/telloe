@@ -51,7 +51,7 @@ class PackageService
             'services' => $request->services,
             'expiration_date' => Carbon::parse($request->expiration_date)->format('Y-m-d'),
             'price' => $request->price,
-            'in_widget' => $request->in_widget,
+            'in_widget' => $request->in_widget ?? false,
             'is_available' => $request->is_available,
         ]);
 
