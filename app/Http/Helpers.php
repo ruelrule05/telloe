@@ -12,7 +12,8 @@ function checkRequestInviteToken(Illuminate\Http\Request $request = null)
         $invite_token = session()->pull('invite_token');
         $member_invite_token = session()->pull('member_invite_token');
         if ($invite_token) {
-            checkInviteToken($user, $invite_token);
+            $request->invite_token = $invite_token;
+            checkInviteToken($user, $invite_token, $request);
         }
         if ($member_invite_token) {
             checkMemberInviteToken($user, $member_invite_token);
@@ -269,9 +270,9 @@ function compressVideo($source, $ouput)
     // print_r($output);
 }
 
-function checkInviteToken(App\Models\User $user, $invite_token)
+function checkInviteToken(App\Models\User $user, $request)
 {
-    $contact = App\Models\Contact::where('invite_token', $invite_token)->where('email', $user->email)->where('is_pending', true)->first();
+    $contact = App\Models\Contact::where('invite_token', $request->invite_token)->where('email', $user->email)->where('is_pending', true)->first();
     if ($contact) {
         $contact->update([
             'contact_user_id' => $user->id,
@@ -303,7 +304,7 @@ function checkInviteToken(App\Models\User $user, $invite_token)
         }
 
         if (! $contact->stripe_customer_id) {
-            App\Jobs\CreateStripeCustomer::dispatch($contact->user, $contact);
+            App\Jobs\CreateStripeCustomer::dispatch($contact->user, $contact, $request);
         }
 
         App\Models\Notification::create([

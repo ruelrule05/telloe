@@ -480,7 +480,7 @@ class AuthService
 
         // create Stripe customer for contacts
         foreach ($user->contacts()->whereNull('stripe_customer_id')->orWhere('stripe_customer_id', '')->get() as $contact) {
-            CreateStripeCustomer::dispatch($user, $contact);
+            CreateStripeCustomer::dispatch($user, $contact, $request);
         }
 
         $user->stripe_account = $account;

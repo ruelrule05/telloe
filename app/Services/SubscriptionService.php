@@ -36,7 +36,11 @@ class SubscriptionService
 
             // Create Stripe Customer ID if not set
             if (! $user->stripe_customer_id) {
-                $customer = $stripe_api->customer('create', ['email' => $user->email]);
+                $data = ['email' => $user->email];
+                if ($request->referral) {
+                    $data['metadata'] = ['referral' => $request->referral];
+                }
+                $customer = $stripe_api->customer('create', $data);
                 $user->stripe_customer_id = $customer->id;
                 $user->save();
             }

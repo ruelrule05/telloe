@@ -186,7 +186,8 @@ Route::group(
 
             // Booking page
             Route::group([
-                'prefix' => '@{username}'
+                'prefix' => '@{username}',
+                'name' => 'bookingPage'
             ], function () {
                 Route::get('', 'UserController@profile')->name('profile');
                 Route::get('/{service_id}/timeslots', 'UserController@serviceTimeslots')->name('profile.service.timeslots');
@@ -237,8 +238,8 @@ Route::group(
             });
         });
 
-        Route::get('/@{username}', 'UserController@profile');
-        Route::get('/@{username}/{service_id}', 'UserController@profile');
-        Route::get('/{organization}', 'OrganizationController@profile');
+        Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
+        Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
+        Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
     }
 );
