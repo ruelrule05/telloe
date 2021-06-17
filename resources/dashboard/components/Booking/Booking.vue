@@ -13,6 +13,7 @@
 							is-required
 							v-model="clonedBooking.date"
 							:masks="masks"
+							:popover="{ visibility: 'focus' }"
 							@input="
 								$nextTick(() => {
 									emitNewBookingDateChange();
@@ -122,7 +123,7 @@
 							<div v-for="bookingUser in clonedBooking.booking_users" :key="bookingUser.id" class="flex items-center mb-3">
 								<div>
 									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + (bookingUser.user || {}).profile_image + ')' }">
-										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user ? bookingUser.user.initials : bookingUser.guest.email[0] }}</span>
+										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user.initials }}</span>
 									</div>
 								</div>
 								<div class="pl-1 text-sm font-semibold leading-tight">
@@ -131,7 +132,7 @@
 							</div>
 						</div>
 
-						<v-date-picker v-model="clonedBooking.date" :masks="masks">
+						<v-date-picker v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
 							<template v-slot="{ inputValue, inputEvents }">
 								<label>Date</label>
 								<div class="input-prefix">
