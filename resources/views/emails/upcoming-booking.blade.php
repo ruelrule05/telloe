@@ -14,7 +14,7 @@
                     @foreach($booking->bookingUsers as $bookingUser)
                         <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block;  font-weight: 600; margin-bottom: 5px">
                             <div>{{ $bookingUser->user->full_name }}</div>
-                            <small style="font-weight: 400; display: block; margin-top: -4px; color: #555">{{ $bookingUser->user->email }}</small>
+                            <small style="font-weight: 400; display: block; margin-top: -6px; color: #555">{{ $bookingUser->user->email }}</small>
                         </div>
                     @endforeach
                 </td>
@@ -29,15 +29,15 @@
             </tr>
             <tr>
                 <td style="width: 25%">From</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->format('h:iA') }}</strong></td>
             </tr>
             <tr>
                 <td style="width: 25%">To</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->coach->timezone ?? null)->format('h:iA') }}</strong></td>
             </tr>
             <tr>
                 <td style="width: 25%">Timezone</td>
-                <td><strong>{{ $booking->user->timezone ?? config('app.timezone') }}</strong></td>
+                <td><strong>{{ $booking->service->coach->timezone ?? config('app.timezone') }}</strong></td>
             </tr>
             @if($booking->zoom_link)
             <tr>

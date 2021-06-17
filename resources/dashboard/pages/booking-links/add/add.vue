@@ -50,8 +50,13 @@
 				</v-date-picker>
 			</div>
 
-			<div v-if="selectedContacts.length > 0">
-				<div class="relative mt-4">
+			<div class="relative">
+				<div v-if="timeslotsLoading" class="bg-white z-50 w-full h-full absolute-center py-36 ">
+					<div class="absolute-center">
+						<div class="spinner spinner-sm"></div>
+					</div>
+				</div>
+				<div class="relative mt-4" :class="{ 'opacity-0': timeslotsLoading }">
 					<div class="overflow-x-scroll overflow-y-visible" style="margin-left: 200px">
 						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
@@ -63,6 +68,33 @@
 									</div>
 								</td>
 							</tr>
+
+							<!-- You -->
+							<tr>
+								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
+									<div class="flex items-center py-3 -ml-3">
+										<div>
+											<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
+												<span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
+											</div>
+										</div>
+										<div class="pl-2">
+											<p class="text-sm whitespace-nowrap">You</p>
+											<p class="flex items-center tracking-wide text-xxs text-muted">{{ $root.auth.timezone }}</p>
+										</div>
+									</div>
+								</td>
+
+								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
+									<div class="items-center column mb-2 px-1 bg-primary-ultralight">
+										<div class="timeslot-content selectable" :class="{ selected: dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							<!-- Selected contacts -->
 							<tr v-for="contact in selectedContacts" :key="contact.id">
 								<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
@@ -80,7 +112,7 @@
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
 									<div class="items-center column  mb-2 px-1" :style="{ backgroundColor: contact.color }">
 										<div class="timeslot-content" :class="{ selected: dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
-											<p class="text-center" v-html="timeslotTime(timeslot.time, contact)"></p>
+											<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact_user.timezone)"></p>
 										</div>
 									</div>
 								</td>
