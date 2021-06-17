@@ -18,15 +18,11 @@ class BookingUser extends BaseModel
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withDefault(function ($user) {
-            $guest = $this->attributes['guest'] ?? $this->guest;
-            if ($guest) {
-                $guest = json_decode($guest, true);
-                $user->first_name = $guest['first_name'] ?? '';
-                $user->last_name = $guest['last_name'] ?? '';
-                $user->email = $guest['email'];
-                $user->timezone = 'Australia/Brisbane';
-            }
+        return $this->belongsTo(User::class)->withDefault(function ($user, $model) {
+            $user->first_name = $model->guest['first_name'] ?? '';
+            $user->last_name = $model->guest['last_name'] ?? '';
+            $user->email = $model->guest['email'] ?? 'Guest';
+            $user->timezone = 'Australia/Brisbane';
         });
     }
 }

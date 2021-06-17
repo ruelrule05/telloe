@@ -95,7 +95,7 @@ export default {
 			});
 
 			this.googleCalendarEvents.forEach(event => {
-				if (!event.id.includes('telloe-booking')) {
+				if (!event.id.includes('telloebooking')) {
 					let color = 'bg-red-200 hover:bg-red-400 hover:text-white';
 					if (this.selectedBooking && this.selectedBooking.id == event.id) {
 						color = 'bg-red-600 text-white';

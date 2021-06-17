@@ -89,7 +89,7 @@ export default {
 		this.getGoogleCalendars().then(response => {
 			this.googleCalendars = response.data
 				.filter(calendar => {
-					return calendar.accessRole == 'owner' && !calendar.primary;
+					return calendar.accessRole == 'owner';
 				})
 				.map(calendar => {
 					return {

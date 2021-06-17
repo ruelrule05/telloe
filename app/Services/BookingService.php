@@ -171,6 +171,11 @@ class BookingService
                     BookingUser::create([
                         'booking_id' => $booking->id,
                         'user_id' => $contact->contact_user_id,
+                        'guest' => [
+                            'email' => $contact->email,
+                            'first_name' => $contact->first_name,
+                            'last_name' => $contact->last_name
+                        ]
                     ]);
                     $attendees[] = ['email' => $contact->contactUser->email];
                 }
@@ -196,7 +201,7 @@ class BookingService
                 $client = $GoogleCalendarClient->client;
                 $googleService = new Google_Service_Calendar($client);
                 $event = new Google_Service_Calendar_Event([
-                    'id' => 'telloe-booking-' . $booking->id . '-' . $time,
+                    'id' => 'telloebooking' . $booking->id . $time,
                     'summary' => $booking->service->name,
                     'description' => $booking->service->description,
                     'start' => [
@@ -215,14 +220,11 @@ class BookingService
                     ]
                 ]);
 
-                try {
-                    $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
-                    if ($booking->meeting_type == 'Google Meet') {
-                        $booking->update([
-                            'meet_link' => $event->hangoutLink
-                        ]);
-                    }
-                } catch (\Exception $e) {
+                $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+                if ($booking->meeting_type == 'Google Meet') {
+                    $booking->update([
+                        'meet_link' => $event->hangoutLink
+                    ]);
                 }
             }
 
