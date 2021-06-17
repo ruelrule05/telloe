@@ -17,16 +17,15 @@
         <h3 style="margin-top: 0; margin-bottom: 0">
             {{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }} ({{ \Carbon\Carbon::parse($booking->date)->format('l') }})
         </h3>
-        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</div>
+        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->coach->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->coach->timezone ?? null)->format('h:iA') }} ({{$booking->service->coach->timezone ?? ''}})</div>
 
         <div style="margin-top: 10px; color: #777; margin-bottom: 5px">Guests</div>
-        
         @foreach($booking->bookingUsers as $bookingUser)
-        <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block;  font-weight: 600; margin-bottom: 5px">
-            <div>{{ $bookingUser->user->full_name }}</div>
-            <small style="font-weight: 400; display: block; margin-top: -4px; color: #555">{{ $bookingUser->user->email }}</small>
-        </div>
-    @endforeach
+            <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block;  font-weight: 600; margin-bottom: 5px">
+                <div>{{ $bookingUser->user->full_name }}</div>
+                <small style="font-weight: 400; display: block; margin-top: -4px; color: #555">{{ $bookingUser->user->email }}</small>
+            </div>
+        @endforeach
 
         @if($booking->recurring)
         <div style="margin-top: 10px; display: flex; align-items: cexnter; flex-wrap: nowrap; font-size: 14px; line-height: 18px" class="text-muted">

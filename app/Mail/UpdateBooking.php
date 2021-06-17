@@ -22,9 +22,8 @@ class UpdateBooking extends Mailer
         $user = Auth::user();
         if ($target == 'client') { // if contact - send to client
             if ($booking->service->user->notify_email) {
-                $this->email = $booking->service->user->email;
-                $full_name = $booking->user ? $booking->user->full_name : $booking->contact->full_name;
-                $this->emailMessage = "<strong>{$full_name}</strong> has modified their booking with the following details:";
+                $this->email = $booking->service->coach->email;
+                $this->emailMessage = 'A booking has been modified with the following details:';
             }
         } elseif ($target == 'contact') { // if client - send to contact
             if (($booking->user && $booking->user->notify_email) || ($booking->contact && $booking->contact->user->notify_email)) {

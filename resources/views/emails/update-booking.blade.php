@@ -4,70 +4,53 @@
 
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
     {!! $emailMessage !!}
-    <div style="border-radius: .5rem; background-color: #F0F2F5; padding: 0.02rem 1rem; text-align-last: left; margin-top: 10px">
-        <h1 style="font-size: 26px; margin-bottom: 10px">{{ $booking->service->user->full_name }}</h1>
-        <table style="width: 100%; margin-bottom: 10px">
-            <tr>
-                <td style="width: 25%">Service</td>
-                <td><strong>{{ $booking->service->name }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">Date</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">From</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">To</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->user->timezone ?? null)->timezone($booking->user->timezone ?? null)->format('h:iA') }}</strong></td>
-            </tr>
-            <tr>
-                <td style="width: 25%">Timezone</td>
-                <td><strong>{{ $booking->user->timezone ?? config('app.timezone') }}</strong></td>
-            </tr>
-            @if($booking->zoom_link)
-            <tr>
-                <td style="width: 25%; vertical-align: top">Zoom link</td>
-                <td><u><a target="_blank" style="word-break: break-all" href="{{ $booking->zoom_link['join_url'] }}">Go to Zoom meeting</a></u></td>
-            </tr>
-            @endif
-        </table>
+    <div style="border-radius: 15px; background-color: #F8F8F9; padding: 20px; margin-top: 20px">
+        <h3 style="margin-top: 0; margin-bottom: 0">
+            {{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }} ({{ \Carbon\Carbon::parse($booking->date)->format('l') }})
+        </h3>
+        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->coach->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->coach->timezone ?? null)->format('h:iA') }} ({{$booking->service->coach->timezone ?? ''}})</div>
+
+        <div style="margin-top: 10px; color: #777; margin-bottom: 5px">Guests</div>
+        @foreach($booking->bookingUsers as $bookingUser)
+            <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block;  font-weight: 600; margin-bottom: 5px">
+                <div>{{ $bookingUser->user->full_name }}</div>
+                <small style="font-weight: 400; display: block; margin-top: -4px; color: #555">{{ $bookingUser->user->email }}</small>
+            </div>
+        @endforeach
+
+        @if($booking->recurring)
+        <div style="margin-top: 10px; display: flex; align-items: cexnter; flex-wrap: nowrap; font-size: 14px; line-height: 18px" class="text-muted">
+            <div>
+                <img src="{{ config('app.url') }}/images/refresh.png" style="margin-top: 5px" />
+            </div>
+            <div style="margin-left: 10px;">
+                Repeating booking every <strong>{{ implode(',', $booking->recurring_days) }}</strong> until <strong>{{ $booking->until }}</strong>.
+            </div>
+        </div>
+        @endif
+        <div style="margin-top: 10px">
+            Add to:&nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->google_link}}"><strong>Google Calendar</strong></a>
+            &nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->outlook_link }}"><strong>Outlook</strong></a>
+            &nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->yahoo_link }}"><strong>Yahoo!</strong></a>
+            &nbsp;&nbsp;
+            <a target="_blank" class="text-primary" href="{{ $booking->ical_link }}"><strong>iCal</strong></a>
+        </div>
+
+        @if($booking->zoom_link)
+        <div>
+            Zoom link:&nbsp;&nbsp;
+            <a target="_blank"  class="text-primary" style="word-break: break-all" href="{{ $booking->zoom_link }}"><strong>Go to Zoom meeting</strong></a>
+        </div>
+        @endif
+        <a href="{{ $booking->url }}"
+            style="{{ $style['button'] }} margin-top: 20px; margin-bottom: 5px"
+            class="button"
+            target="_blank">
+            View Booking
+        </a>
     </div>
 </p>
-
-<div style="margin-top: 20px;">
-Add this booking to: 
-<u><a target="_blank" href="{{ $link->google() }}">Google Calendar</a></u>
-&nbsp;|&nbsp;
-<!-- <u><a target="_blank" href="{{ str_replace(['&rru=addevent', '+'], ['', '%20'], $link->webOutlook()) }}">Outlook</a></u>
-&nbsp;|&nbsp; -->
-<u><a target="_blank" href="{{ url('/ics?name='.$booking->service->name.'&data=' . $link->ics()) }}">Outlook</a></u>
-&nbsp;|&nbsp;
-<u><a target="_blank" href="{{ $link->yahoo() }}">Yahoo!</a></u>
-&nbsp;|&nbsp;
-<u><a target="_blank" href="{{ url('/ics?name='.$booking->service->name.'&data=' . $link->ics()) }}">iCal</a></u>
-</div>
-
-@if($actionUrl)
-<a href="{{ $actionUrl }}"
-    style="{{ $style['button'] }}{{ $style['display-block'] }} margin-top: 20px; margin-bottom: 5px"
-    class="button"
-    target="_blank">
-    {{ $actionText }}
-</a>
-
-<!-- <small style="color: #888">Please <a href="{{ config('app.url') }}?auth=login" target="_blank" style="color: blue"><u>login</u></a> to your account to manage this booking.</small> -->
-
-<div style="text-align: left; margin-top: 20px; border-top: solid 1px #ddd; padding-top: 20px;">
-     <p style="{{ $style['paragraph-sub'] }} margin-bottom: 0">
-        If you’re having trouble clicking the "{{ $actionText }}" button,
-        copy and paste the URL below into your web browser: <br />
-        <a style="{{ $style['text-primary'] }} text-decoration: underline;" href="{{ $actionUrl }}" target="_blank">
-            {{ $actionUrl }}
-        </a>
-    </p>
-</div>
-@endif
 @stop
