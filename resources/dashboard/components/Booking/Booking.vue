@@ -56,6 +56,11 @@
 							</template>
 						</div>
 
+						<div class="my-4">
+							<label>Timezone</label>
+							<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
+						</div>
+
 						<label required>Guests</label>
 						<div v-if="contact">
 							{{ contact.contact_user.full_name }}
@@ -143,12 +148,8 @@
 								</div>
 							</template>
 						</v-date-picker>
-						<div class="my-4">
+						<div class="mb-4 mt-6">
 							<div class="flex justify-between">
-								<div>
-									<label>Time</label>
-									{{ clonedBooking.start }} - {{ clonedBooking.end }}
-								</div>
 								<VueCheckbox v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
 							</div>
 							<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-visible border bg-gray-50 rounded-lg">
@@ -164,7 +165,11 @@
 									</tr>
 								</table>
 							</div>
-							<timerangepicker v-else hideClearButton @change="updateTime" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2 mt-4"></timerangepicker>
+							<timerangepicker v-else hideClearButton @change="updateTime" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2 mt-2"></timerangepicker>
+						</div>
+						<div class="my-4">
+							<label>Timezone</label>
+							<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
 						</div>
 
 						<div class="my-4">
@@ -172,8 +177,8 @@
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 
-						<div>
-							<label>Type</label>
+						<div class="mb-4">
+							<label class="-mb-px">Type</label>
 							<div>{{ clonedBooking.meeting_type }}</div>
 						</div>
 

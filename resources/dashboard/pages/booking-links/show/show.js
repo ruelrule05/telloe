@@ -302,7 +302,6 @@ export default {
 		},
 
 		getTimeZoneOffset(date, timeZone) {
-			// Abuse the Intl API to get a local ISO 8601 string for a given time zone.
 			const options = { timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
 			const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
 			const parts = dateTimeFormat.formatToParts(date);

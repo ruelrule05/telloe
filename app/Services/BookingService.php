@@ -14,7 +14,6 @@ use App\Mail\DeleteBooking;
 use App\Mail\NewBooking;
 use App\Mail\UpdateBooking;
 use App\Models\Booking;
-use App\Models\BookingNote;
 use App\Models\BookingUser;
 use App\Models\Contact;
 use App\Models\Notification;
@@ -251,17 +250,7 @@ class BookingService
     public static function update($id, UpdateBookingRequest $request)
     {
         $booking = Booking::findOrfail($id);
-        $service = $booking->service;
-        $now = Carbon::now();
-        $startDate = Carbon::parse("$booking->date $booking->start");
         $booking->update($request->validated());
-
-        // if (isset($request->booking_note['note'])) {
-        //     BookingNote::updateOrCreate(
-        //         ['booking_id' => $booking->id],
-        //         ['note' => $request->booking_note['note']]
-        //     );
-        // }
 
         try {
             Mail::queue(new UpdateBooking($booking, 'client'));
