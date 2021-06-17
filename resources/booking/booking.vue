@@ -1,7 +1,7 @@
 <template>
 	<div class="container py-6">
 		<div class="flex justify-center">
-			<div class="lg:w-5/12 p-4">
+			<div class="lg:w-5/12 p-4" v-if="booking">
 				<div class="bg-white rounded-xl p-4 mb-4">
 					<h1 class="font-bold text-2xl">{{ booking.service.name }}</h1>
 					<h3 class="text-muted text-sm mb-4">
@@ -24,7 +24,7 @@
 						<div class="flex justify-between">
 							<div>
 								<label>Time</label>
-								{{ booking.start }} - {{ booking.end }}
+								{{ convertTime(booking.start, 'hh:mmA') }} - {{ convertTime(booking.end, 'hh:mmA') }} ({{ timezone }})
 							</div>
 							<VueCheckbox v-model="selectFromTimeslots" label="Select from timeslots"></VueCheckbox>
 						</div>

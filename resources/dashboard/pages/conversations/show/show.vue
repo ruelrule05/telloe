@@ -53,7 +53,7 @@
 			</div>
 
 			<div class="flex flex-grow h-full overflow-hidden">
-				<div class="conversation-messages flex-grow text-nowrap overflow-hidden relative h-full">
+				<div class="conversation-messages flex-grow text-nowrap overflow-hidden relative h-full bg-white">
 					<div class="h-full">
 						<Messages :conversation="conversation" :ready="ready" @scrollUp="scrollUp"></Messages>
 					</div>

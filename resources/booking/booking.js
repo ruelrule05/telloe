@@ -7,12 +7,15 @@ import convertTime from '../js/plugins/convert-time';
 import Timerangepicker from '../components/timerangepicker/timerangepicker.vue';
 import Modal from '../components/modal/modal.vue';
 import WarningIcon from '../icons/warning.vue';
+import jstz from 'jstz';
+const timezone = jstz.determine();
+import timezoneTime from '../js/helpers/TimezoneTime.js';
 
 export default {
 	components: { VDatePicker, CalendarIcon, VueCheckbox, Timerangepicker, Modal, WarningIcon },
 
 	data: () => ({
-		booking: BOOKING,
+		booking: null,
 		dayjs: dayjs,
 		masks: {
 			input: 'MMMM D, YYYY'
@@ -21,7 +24,8 @@ export default {
 		timeslots: [],
 		selectedTimeslot: {},
 		convertTime: convertTime,
-		changed: false
+		changed: false,
+		timezone: ''
 	}),
 
 	watch: {
@@ -31,6 +35,11 @@ export default {
 	},
 
 	created() {
+		this.timezone = timezone.name();
+		let booking = BOOKING;
+		booking.start = timezoneTime.get(`${booking.date} ${booking.start}`, booking.timezone, this.timezone);
+		booking.end = timezoneTime.get(`${booking.date} ${booking.end}`, booking.timezone, this.timezone);
+		this.booking = booking;
 		this.getTimeslots();
 	},
 
@@ -47,6 +56,10 @@ export default {
 		async update() {
 			let newData = JSON.parse(JSON.stringify(this.booking));
 			newData.date = dayjs(newData.date).format('YYYY-MM-DD');
+
+			newData.start = timezoneTime.get(`${newData.date} ${newData.start}`, this.timezone, newData.timezone);
+			newData.end = timezoneTime.get(`${newData.date} ${newData.end}`, this.timezone, newData.timezone);
+
 			await window.axios.put(`/bookings/${this.booking.id}`, newData);
 			this.$toast.open('Booking updated successfully.');
 		},

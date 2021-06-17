@@ -45,6 +45,7 @@ class StoreBookingRequest extends FormRequest
             'notes' => 'nullable|string',
             'contact_package_id' => 'nullable|exists:contact_packages,id',
             'meeting_type' => 'required',
+            'timezone' => 'required|string',
 
             // 'end' => 'required|string|max:20',
             // 'metadata' => 'nullable|json',

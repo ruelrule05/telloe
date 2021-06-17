@@ -150,7 +150,22 @@ export default {
 	},
 
 	mounted() {
+		let style = document.createElement('style');
+		style.appendChild(document.createTextNode('.helpcrunch-iframe-wrapper iframe{visibility: hidden !important}'));
+		document.head.appendChild(style);
+
+		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
+		if (helpcrunch) {
+			helpcrunch.style.setProperty('visibility', 'hidden');
+		}
 		this.popupItem = this.$el;
+	},
+
+	beforeDestroy: function() {
+		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
+		if (helpcrunch) {
+			helpcrunch.style.setProperty('visibility', 'visible', 'important');
+		}
 	},
 
 	methods: {

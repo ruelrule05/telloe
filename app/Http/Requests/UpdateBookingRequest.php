@@ -33,6 +33,7 @@ class UpdateBookingRequest extends FormRequest
             'start' => 'required|date_format:H:i',
             'end' => 'required|date_format:H:i',
             'notes' => 'nullable|string',
+            'timezone' => 'required|string',
 
             // 'end' => 'required|string|max:20',
             // 'metadata' => 'nullable|json',

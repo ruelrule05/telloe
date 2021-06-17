@@ -21,6 +21,7 @@ import GoogleMeetIcon from '../../../icons/google-meet.vue';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import PlusIcon from '../../../icons/plus';
 import vClickOutside from 'v-click-outside';
+const ct = require('countries-and-timezones');
 export default {
 	props: {
 		booking: {},
@@ -77,6 +78,22 @@ export default {
 			contacts: state => state.contacts.index
 		}),
 
+		availableTimezones() {
+			let timezones = [];
+			let countries = ct.getAllCountries();
+			Object.keys(countries).forEach(country => {
+				countries[country].timezones.forEach(timezone => {
+					timezones.push({
+						text: timezone,
+						value: timezone
+					});
+				});
+			});
+			return timezones.sort((a, b) => {
+				return a.text > b.text ? 1 : -1;
+			});
+		},
+
 		servicesOptions() {
 			return this.services.map(service => {
 				return { text: service.name, value: service.id };
@@ -125,6 +142,7 @@ export default {
 				this.open = true;
 				this.getServices();
 				this.getContacts({ nopaginate: true });
+				this.clonedBooking.timezone = this.$root.auth.timezone;
 			} else {
 				this.selectedContacts = [];
 			}
@@ -171,6 +189,7 @@ export default {
 		this.getServices();
 		if (this.newEvent) {
 			this.getContacts({ nopaginate: true });
+			this.clonedBooking.timezone = this.$root.auth.timezone;
 		}
 		if (this.contact) {
 			this.contact.value = this.contact.id;
