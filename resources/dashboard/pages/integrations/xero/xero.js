@@ -317,7 +317,7 @@ export default {
 					this.chooseXeroTenant = true;
 					this.$root.contentloading = false;
 				} else {
-					let response = await window.axios.get(`/xero/invoices?tenantId=${tenantId}`, { toasted: true }).catch(() => {});
+					let response = await window.axios.get(`/xero/invoices?tenantId=${tenantId}`, { toast: true }).catch(() => {});
 					if (response) {
 						this.invoices = response.data;
 					}

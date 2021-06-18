@@ -9,10 +9,15 @@ import VCalendar from 'v-calendar/lib/components/calendar.umd';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import axios from 'axios';
 const dayjs = require('dayjs');
+const ct = require('countries-and-timezones');
+import jstz from 'jstz';
+const timezone = jstz.determine();
+import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 export default {
 	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar },
 
 	data: () => ({
+		loading: true,
 		dayjs: dayjs,
 		selectedDate: null,
 		view: 'week',
@@ -20,7 +25,8 @@ export default {
 		newEvent: false,
 		googleCalendars: [],
 		googleCalendarEvents: [],
-		contactBookings: []
+		contactBookings: [],
+		timezone: ''
 	}),
 
 	computed: {
@@ -28,6 +34,23 @@ export default {
 			upcomingBookings: state => state.bookings.upcoming,
 			bookings: state => state.bookings.index
 		}),
+
+		upcomingBookingsTz() {
+			return this.bookingsTimezone(this.upcomingBookings);
+		},
+
+		contactBookingsTz() {
+			return this.bookingsTimezone(this.contactBookings);
+		},
+		googleCalendarEventsTz() {
+			let calendarEvents = this.googleCalendarEvents.map(event => {
+				event.date = dayjs(event.end.dateTime || event.end.date).format('YYYY-MM-DD');
+				event.start = dayjs(event.start.dateTime || event.start.date).format('HH:mm');
+				event.end = dayjs(event.end.dateTime || event.end.date).format('HH:mm');
+				return event;
+			});
+			return this.bookingsTimezone(calendarEvents);
+		},
 
 		calendarAttributes() {
 			let attributes = [];
@@ -73,6 +96,22 @@ export default {
 
 		weekToggleText() {
 			return (this.view == 'week' ? 'DAY' : 'WEEK') + ' VIEW';
+		},
+
+		availableTimezones() {
+			let timezones = [];
+			let countries = ct.getAllCountries();
+			Object.keys(countries).forEach(country => {
+				countries[country].timezones.forEach(timezone => {
+					timezones.push({
+						text: timezone,
+						value: timezone
+					});
+				});
+			});
+			return timezones.sort((a, b) => {
+				return a.text > b.text ? 1 : -1;
+			});
 		}
 	},
 
@@ -83,8 +122,9 @@ export default {
 	},
 
 	created() {
+		this.timezone = timezone.name();
 		//this.selectedDate = dayjs().toDate();
-		this.getUpcomingBookings();
+		this.getUpcomingBookingsData();
 		this.getContactBookings();
 		this.getGoogleCalendars().then(response => {
 			this.googleCalendars = response.data
@@ -98,9 +138,6 @@ export default {
 					};
 				});
 		});
-	},
-
-	mounted() {
 		this.getGoogleCalendarEvents();
 	},
 
@@ -109,6 +146,23 @@ export default {
 			getUpcomingBookings: 'bookings/getUpcomingBookings',
 			getGoogleCalendars: 'bookings/getGoogleCalendars'
 		}),
+
+		bookingsTimezone(bookings) {
+			let timezonedBookings = [];
+			bookings.forEach(booking => {
+				let parseBooking = JSON.parse(JSON.stringify(booking));
+				parseBooking.start = timezoneTime.get(`${booking.date} ${booking.start}`, booking.timezone, this.timezone);
+				parseBooking.end = timezoneTime.get(`${booking.date} ${booking.end}`, booking.timezone, this.timezone);
+				timezonedBookings.push(parseBooking);
+			});
+			return timezonedBookings;
+		},
+
+		async getUpcomingBookingsData() {
+			this.loading = true;
+			await this.getUpcomingBookings();
+			this.loading = false;
+		},
 
 		async getContactBookings() {
 			let response = await axios.get('/bookings/contact');
@@ -146,7 +200,10 @@ export default {
 
 		async updateGoogleCalendar(calendarId) {
 			let response = await axios.put('/google_calendar', { google_calendar_id: calendarId });
-			this.googleCalendarEvents = response.data;
+			this.googleCalendarEvents = response.data.map(event => {
+				event.timezone = event.start.timeZone;
+				return event;
+			});
 		},
 
 		toggleView() {

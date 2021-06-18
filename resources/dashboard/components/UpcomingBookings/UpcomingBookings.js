@@ -1,11 +1,24 @@
 import dayjs from 'dayjs';
+import convertTime from '../../../js/plugins/convert-time';
 export default {
 	props: {
+		loading: {
+			type: Boolean,
+			required: true
+		},
+
 		bookings: {
 			type: Array,
 			required: true
+		},
+		timezone: {
+			type: String
 		}
 	},
+
+	data: () => ({
+		convertTime: convertTime
+	}),
 
 	computed: {
 		days() {

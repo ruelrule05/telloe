@@ -25,6 +25,7 @@ class UserGoogleLoginRequest extends FormRequest
     {
         return [
             'timeslots' => 'required|array',
+            'timezone' => 'required|string',
         ];
     }
 }

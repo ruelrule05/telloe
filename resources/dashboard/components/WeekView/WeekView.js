@@ -10,6 +10,7 @@ dayjs.extend(IsSameOrAfter);
 import ClickOutside from 'vue-click-outside';
 import Timerangepicker from '../../../components/timerangepicker/timerangepicker.vue';
 import convertTime from '../../../js/plugins/convert-time';
+import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 export default {
 	vuetify,
 	props: {
@@ -26,6 +27,9 @@ export default {
 		},
 		contactBookings: {
 			type: Array
+		},
+		timezone: {
+			type: String
 		}
 	},
 
@@ -64,15 +68,16 @@ export default {
 		parsedBookings() {
 			let parsedBookings = [];
 			this.bookings.forEach(booking => {
+				let parsedBooking = JSON.parse(JSON.stringify(booking));
 				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
-				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
+				if (this.selectedBooking && this.selectedBooking.id == parsedBooking.id) {
 					color = 'bg-primary text-white';
 				}
 				parsedBookings.push({
-					booking: booking,
-					name: (booking.service || booking.booking_link).name,
-					start: `${booking.date} ${booking.start}`,
-					end: `${booking.date} ${booking.end}`,
+					booking: parsedBooking,
+					name: (parsedBooking.service || parsedBooking.booking_link).name,
+					start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
+					end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
 					category: 'bookings',
 					color: color
 				});

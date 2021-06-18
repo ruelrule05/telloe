@@ -86,7 +86,7 @@
 						<div class="border-right lg:p-12 p-6 flex flex-col lg:w-4/12">
 							<div class="mb-6">
 								<div class="text-muted text-sm mb-2">Your timezone:</div>
-								<vue-select :options="timezonesOptions" drop-position="top" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
+								<vue-select :options="timezonesOptions" drop-position="w-full" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
 							</div>
 							<div class="text-muted text-sm mb-2 widget-hide">Schedule a time with:</div>
 
@@ -108,7 +108,7 @@
 											<h6 class="text-primary font-bold">
 												{{ profile.full_name }}
 											</h6>
-											<div class="text-muted text-sm">{{ selectedService.timezone }}</div>
+											<div class="text-muted text-sm">{{ profile.timezone }}</div>
 										</div>
 									</div>
 								</div>
@@ -172,7 +172,7 @@
 														<template v-if="selectedService && timeslots && (timeslots[date.dayName] || []).length > 0">
 															<div v-for="(timeslot, timeslotIndex) in timeslots[date.dayName]" :key="timeslotIndex">
 																<button type="button" class="timeslot" :class="{ disabled: !timeslot.is_available, selected: selectedTimeslots.find(x => x.date.dayName == date.dayName && x.timeslot.time == timeslot.time) }" @click="setSelectedDateAndTimeslot(date, timeslot)">
-																	{{ timezoneTime(timeslot.time) }}
+																	{{ convertTime(timezoneTime.get(`${date.format} ${timeslot.time}`, selectedService.timezone, timezone), 'hh:mmA') }}
 																</button>
 															</div>
 														</template>
@@ -226,7 +226,7 @@
 								<div class="flex items-start justify-between">
 									<div>
 										<div class="font-bold">{{ dayjs(selectedTimeslot.date.format).format('MMMM D, YYYY') }} ({{ selectedTimeslot.date.dayName }})</div>
-										<div>{{ timezoneTime(selectedTimeslot.timeslot.time) }} - {{ endTime(selectedTimeslot.timeslot.time) }}</div>
+										<div>{{ convertTime(timezoneTime.get(`${selectedTimeslot.date.format} ${selectedTimeslot.timeslot.time}`, selectedService.timezone, timezone), 'hh:mmA') }} - {{ convertTime(endTime(selectedTimeslot), 'hh:mmA') }}</div>
 										<button
 											class="font-serif text-primary text-xxs font-semibold"
 											type="button"

@@ -71,6 +71,7 @@ import RefreshIcon from '../icons/refresh';
 import SocialLogin from '../js/helpers/SocialLogin';
 import PhoneIcon from '../icons/call-menu.vue';
 import SkypeIcon from '../icons/skype.vue';
+import timezoneTime from '../js/helpers/TimezoneTime.js';
 
 export default {
 	components: {
@@ -123,6 +124,7 @@ export default {
 	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
 
 	data: () => ({
+		timezoneTime: timezoneTime,
 		profile: PROFILE,
 		service: SERVICE,
 		timezone: TIMEZONE,
@@ -518,6 +520,8 @@ export default {
 					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
 				timeslot.type = timeslot.type.type;
+
+				// set timeslot time  based on timezone
 				return timeslot;
 			});
 
@@ -526,6 +530,7 @@ export default {
 			data.card_token = true;
 			data.phone = this.phone;
 			data.skype = this.skype;
+			data.timezone = this.timezone;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -689,15 +694,15 @@ export default {
 			}
 		},
 
-		endTime(time) {
+		endTime(selectedTimeslot) {
 			let endTime = '';
 			if (this.selectedService && this.startDate) {
-				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
+				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + selectedTimeslot.timeslot.time);
 				endTime = dayjs(startDate)
 					.add(this.selectedService.duration, 'minute')
 					.format('HH:mm');
 			}
-			return this.timezoneTime(endTime);
+			return this.timezoneTime.get(`${selectedTimeslot.date.format} ${endTime}`, this.selectedService.timezone, this.timezone);
 		},
 
 		previousWeek() {
@@ -736,15 +741,6 @@ export default {
 			}
 		},
 
-		timezoneTooltip(timezone, timeslot) {
-			return `
-				<div class="text-left py-1 line-height-base">
-					<div class="mb-2"><div>${timezone}</div><div><strong>${timeslot.label}</strong></div></div>
-					<div>${this.timezone}</div><div><strong>${this.timezoneTime(timeslot.time)}</strong></div>
-				</div>
-			`;
-		},
-
 		selectTimeslot(e) {
 			console.log(e.target);
 		},
@@ -769,54 +765,12 @@ export default {
 			}
 		},
 
-		timezoneTime(time) {
-			let profileTimezone = this.selectedService.timezone;
-			let timezoneTime;
-			if (profileTimezone != this.timezone) {
-				let profileTZ = this.getTimeZoneOffset(new Date(), profileTimezone);
-				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
-				let timeslotDate = `${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`;
-				timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
-			} else {
-				timezoneTime = dayjs(`${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`);
-			}
-			return timezoneTime.format('hh:mmA');
-		},
-
 		goToCoachSelection() {
 			this.assignedService = this.startDate = null;
 			this.selectedTimeslot = [];
 			this.calendarView = 'month';
 			this.authForm = false;
 			this.authError = '';
-		},
-
-		getTimeZoneOffset(date, timeZone) {
-			// Abuse the Intl API to get a local ISO 8601 string for a given time zone.
-			const options = { timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-			const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
-			const parts = dateTimeFormat.formatToParts(date);
-			const map = new Map(parts.map(x => [x.type, x.value]));
-			const year = map.get('year');
-			const month = map.get('month');
-			const day = map.get('day');
-			let hour = map.get('hour');
-			const minute = map.get('minute');
-			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
-			if (hour == '24') hour = '00';
-			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
-
-			// Lie to the Date object constructor that it's a UTC time.
-			const lie = new Date(iso + 'Z');
-
-			// Return the difference in timestamps, as minutes
-			// Positive values are West of GMT, opposite of ISO 8601
-			// this matches the output of `Date.getTimeZoneOffset`
-			return -(lie - date) / 60 / 1000;
 		},
 
 		reset() {

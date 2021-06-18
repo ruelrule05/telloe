@@ -30,6 +30,7 @@ class UserSignupAndBookRequest extends FormRequest
             'password' => 'required',
             'date' => 'required|date',
             'timeslots' => 'required|array',
+            'timezone' => 'required|string',
         ];
     }
 }

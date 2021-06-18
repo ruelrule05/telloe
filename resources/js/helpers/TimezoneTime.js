@@ -3,6 +3,8 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(timezone);
 dayjs.extend(utc);
+import jstz from 'jstz';
+const timezoneDetermine = jstz.determine();
 
 function getTimeZoneOffset(date, timeZone) {
 	const options = { timeZone, calendar: 'iso8601', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -27,6 +29,9 @@ function getTimeZoneOffset(date, timeZone) {
 
 export default {
 	get(datetime, from, to) {
+		let defaultTimezone = timezoneDetermine.name();
+		from = from || defaultTimezone;
+		to = to || defaultTimezone;
 		let fromTZ = getTimeZoneOffset(new Date(), from);
 		let toTZ = getTimeZoneOffset(new Date(), to);
 		let timezoneTime = dayjs.tz(datetime, to).add(toTZ - fromTZ, 'minute');

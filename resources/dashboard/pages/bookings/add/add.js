@@ -143,7 +143,7 @@ export default {
 					if (target) {
 						let url = `/@${service.user.username}/${service.id}/login_and_book?${target}`;
 						window.axios
-							.post(url, data, { toasted: true })
+							.post(url, data, { toast: true })
 							.then(response => {
 								this.bookingSuccess = true;
 								this.authForm = false;

@@ -1,7 +1,7 @@
 <template>
 	<button :type="type" class="btn relative" :class="button_class" :disabled="loading || disabled" @click="$emit('click')">
 		<div v-if="loading" class="absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 leading-none">
-			<div class="spinner spinner-sm spinner-light"></div>
+			<div class="spinner spinner-sm" :class="{ 'spinner-light': theme == 'light' }"></div>
 		</div>
 		<div :class="{ 'opacity-0': loading }">
 			<template v-if="icon"><i :class="icon"></i>&nbsp;&nbsp;</template><slot></slot>
@@ -40,6 +40,10 @@ export default {
 		disabled: {
 			type: Boolean,
 			default: false
+		},
+		theme: {
+			type: String,
+			default: 'light'
 		}
 	},
 

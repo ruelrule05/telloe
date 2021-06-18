@@ -22,6 +22,7 @@ import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import PlusIcon from '../../../icons/plus';
 import vClickOutside from 'v-click-outside';
 const ct = require('countries-and-timezones');
+import VueButton from '../../../components/vue-button.vue';
 export default {
 	props: {
 		booking: {},
@@ -38,11 +39,12 @@ export default {
 		}
 	},
 
-	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon },
+	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon, VueButton },
 
 	directives: { clickOutside: vClickOutside.directive },
 
 	data: () => ({
+		loading: false,
 		clonedBooking: {},
 		open: false,
 		selectedContacts: [],
@@ -351,21 +353,27 @@ export default {
 				this.$refs.selectedContacts.$el.querySelector('.multiselect__input').focus();
 				return;
 			}
+			this.loading = true;
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service;
 			data.contact_ids = this.selectedContacts.filter(x => x.type != 'email').map(x => x.id);
 			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.name);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
-			this.close();
 			let bookings = await this.storeBooking(data);
-			this.$emit('store', bookings);
+			if (bookings) {
+				this.$emit('store', bookings);
+				this.close();
+			}
+			this.loading = false;
 		},
 
-		update() {
+		async update() {
+			this.loading = true;
 			this.open = false;
 			let newData = JSON.parse(JSON.stringify(this.clonedBooking));
 			newData.date = dayjs(newData.date).format('YYYY-MM-DD');
-			this.updateBooking(newData);
+			await this.updateBooking(newData);
+			this.loading = false;
 			setTimeout(() => {
 				this.$emit('update', newData);
 			}, 150);

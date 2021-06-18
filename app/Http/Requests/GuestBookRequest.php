@@ -28,6 +28,7 @@ class GuestBookRequest extends FormRequest
             'last_name' => 'required',
             'email' => 'required|email',
             'timeslots' => 'required|array',
+            'timezone' => 'required|string',
         ];
     }
 }
