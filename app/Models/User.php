@@ -74,7 +74,6 @@ class User extends Authenticatable implements JWTSubject
         'id_documents' => 'array',
         'xero_token' => 'array',
         'zoom_token' => 'array',
-        'phone' => 'nullable|int',
         'default_availability' => 'array',
         'blocked_timeslots' => 'array'
     ];

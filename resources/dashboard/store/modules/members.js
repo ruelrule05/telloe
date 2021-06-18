@@ -52,7 +52,7 @@ const actions = {
 	},
 
 	async store({ commit }, data) {
-		let response = await window.axios.post(`/${name}`, data, { toasted: true });
+		let response = await window.axios.post(`/${name}`, data, { toast: true });
 		commit('store', response.data);
 	},
 

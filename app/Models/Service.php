@@ -4,9 +4,7 @@ namespace App\Models;
 
 use Cache;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Log;
 
 class Service extends BaseModel
 {
@@ -90,7 +88,6 @@ class Service extends BaseModel
 
     public function timeslots($dateString)
     {
-        DB::enableQueryLog();
         $timeslots = [];
         $holidays = $this->holidays;
         $user = $this->coach;
@@ -202,8 +199,6 @@ class Service extends BaseModel
         }
         //}
         //}
-
-        Log::debug(DB::getQueryLog());
 
         return $timeslots;
     }

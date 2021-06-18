@@ -2,7 +2,7 @@
 	<div class="min-h-full">
 		<div class="flex items-center border-bottom">
 			<div class="content-header">
-				<div v-if="!selectedDate" class="content-header">CALENDAR</div>
+				<div v-if="!selectedDate">CALENDAR</div>
 				<button
 					v-else
 					type="button"
@@ -16,7 +16,6 @@
 				</button>
 			</div>
 			<div class="ml-auto pr-6 flex items-center">
-				<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
 				<div class="ml-2" v-if="selectedDate">
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
@@ -29,9 +28,15 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="p-3 flex items-center justify-between border-bottom">
+			<VueSelect label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
+			<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
+		</div>
+
 		<div v-if="!selectedDate" class="flex">
 			<div class="w-1/2">
-				<UpcomingBookings :bookings="upcomingBookings"></UpcomingBookings>
+				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz"></UpcomingBookings>
 			</div>
 			<div class="w-1/2 py-6 px-3 border-left calendar-container">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
@@ -51,8 +56,8 @@
 		</div>
 
 		<div v-else>
-			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookings"></DayView>
-			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookings"></WeekView>
+			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEventsTz" :contactBookings="contactBookingsTz" :timezone="timezone"></DayView>
+			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEventsTz" :contactBookings="contactBookingsTz" :timezone="timezone"></WeekView>
 		</div>
 
 		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent"></Booking>

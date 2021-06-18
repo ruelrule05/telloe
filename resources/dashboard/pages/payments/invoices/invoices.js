@@ -323,7 +323,7 @@ export default {
 					this.chooseXeroTenant = true;
 					this.$root.contentloading = false;
 				} else {
-					let response = await window.axios.get(`/xero/invoices?tenantId=${tenantId}`, { toasted: true }).catch(() => {});
+					let response = await window.axios.get(`/xero/invoices?tenantId=${tenantId}`, { toast: true }).catch(() => {});
 					if (response) {
 						this.invoices = response.data;
 					}
@@ -408,7 +408,7 @@ export default {
 				return s.value;
 			});
 
-			let response = await window.axios.post('/stripe/invoices', data, { toasted: true }).catch(() => {
+			let response = await window.axios.post('/stripe/invoices', data, { toast: true }).catch(() => {
 				this.newInvoiceForm.loading = false;
 			});
 			if (response) {

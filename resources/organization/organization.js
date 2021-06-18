@@ -433,7 +433,7 @@ export default {
 						timezone: this.timezone
 					};
 					axios
-						.post(`/@${this.selectedService.coach.username}/${service.id}/signup_and_book`, data, { toasted: true })
+						.post(`/@${this.selectedService.coach.username}/${service.id}/signup_and_book`, data, { toast: true })
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
@@ -464,7 +464,7 @@ export default {
 						timeslots: this.selectedTimeslots
 					};
 					axios
-						.post(`/@${this.selectedService.coach.username}/${service.id}/login_and_book`, data, { toasted: true })
+						.post(`/@${this.selectedService.coach.username}/${service.id}/login_and_book`, data, { toast: true })
 						.then(response => {
 							this.bookingSuccess = true;
 							this.loginForm.loading = false;
@@ -498,7 +498,7 @@ export default {
 									data.timeslots = this.selectedTimeslots;
 
 									axios
-										.post(`/@${this.selectedService.coach.username}/${service.id}/facebook_login_and_book`, data, { toasted: true })
+										.post(`/@${this.selectedService.coach.username}/${service.id}/facebook_login_and_book`, data, { toast: true })
 										.then(response => {
 											this.bookingSuccess = true;
 											this.loginForm.loading = false;
@@ -551,7 +551,7 @@ export default {
 							};
 
 							axios
-								.post(`/@${this.selectedService.coach.username}/${service.id}/google_login_and_book`, data, { toasted: true })
+								.post(`/@${this.selectedService.coach.username}/${service.id}/google_login_and_book`, data, { toast: true })
 								.then(response => {
 									this.bookingSuccess = true;
 									this.loginForm.loading = false;

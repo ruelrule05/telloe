@@ -110,7 +110,7 @@
 						</div>
 					</div>
 					<div class="flex justify-between">
-						<button type="submit" class="btn btn-outline-primary btn-md"><span>Add booking</span></button>
+						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md"><span>Add booking</span></vue-button>
 						<button type="button" class="btn" @click="close">Cancel</button>
 					</div>
 				</vue-form-validate>
@@ -177,7 +177,7 @@
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 
-						<div class="mb-4">
+						<div>
 							<label class="-mb-px">Type</label>
 							<div>{{ clonedBooking.meeting_type }}</div>
 						</div>
@@ -187,8 +187,8 @@
 						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
 					</div>
 
-					<div class="flex justify-between">
-						<button type="button" class="btn btn-outline-primary btn-md" @click="update"><span>Save changes</span></button>
+					<div class="flex justify-between mt-4">
+						<vue-button type="button" theme="primary" :loading="loading" button_class="btn btn-outline-primary btn-md" @click="update"><span>Save changes</span></vue-button>
 						<button type="button" class="btn" @click="confirmDelete">DELETE</button>
 					</div>
 				</template>

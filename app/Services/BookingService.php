@@ -78,6 +78,9 @@ class BookingService
 
     public static function store(StoreBookingRequest $request)
     {
+        if (! isValidTimezone($request->timezone)) {
+            return abort(403, 'Invalid timezone');
+        }
         $service = Service::findOrfail($request->service_id);
         $data = $request->validated();
         $bookings = [];
@@ -548,8 +551,8 @@ class BookingService
     public static function upcoming()
     {
         $authUser = Auth::user();
-        $tomorrow = Carbon::now()->addDay(1);
-        $daysAgo = Carbon::now()->subDays(5);
+        $tomorrow = Carbon::now()->addDay(1)->format('Y-m-d');
+        $daysAgo = Carbon::now()->subDays(5)->format('Y-m-d');
         $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
         ->whereHas('service', function ($service) {
             $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {

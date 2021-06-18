@@ -168,6 +168,9 @@ class UserService
 
     public static function book($username, $service_id, $request, $customer, $guest = NULL)
     {
+        if (! isValidTimezone($request->timezone)) {
+            return abort(403, 'Invalid timezone');
+        }
         $bookings = [];
         $user = User::where('username', $username)->firstOrfail();
         $service = Service::where('id', $service_id)->where(function ($query) use ($user) {

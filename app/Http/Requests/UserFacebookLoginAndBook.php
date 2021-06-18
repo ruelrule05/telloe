@@ -25,6 +25,7 @@ class UserFacebookLoginAndBook extends FormRequest
     {
         return [
             'timeslots' => 'required|array',
+            'timezone' => 'required|string',
         ];
     }
 }

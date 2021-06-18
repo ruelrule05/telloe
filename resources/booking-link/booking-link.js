@@ -182,7 +182,7 @@ export default {
 		toggleSelectTimeslot(timeslot) {
 			let propName = `${this.auth.id}-${this.selectedDate}`;
 			this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
-			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink, { toasted: true });
+			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink, { toast: true });
 			this.channel.whisper('selectTimeslot', {
 				key: propName,
 				value: timeslot.time

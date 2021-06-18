@@ -10,6 +10,7 @@ import convertTime from '../../../js/plugins/convert-time';
 import ClickOutside from 'vue-click-outside';
 import Timerangepicker from '../../../components/timerangepicker/timerangepicker.vue';
 import CloseIcon from '../../../icons/close.vue';
+import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 
 export default {
 	vuetify,
@@ -29,6 +30,9 @@ export default {
 
 		contactBookings: {
 			type: Array
+		},
+		timezone: {
+			type: String
 		}
 	},
 
@@ -69,6 +73,7 @@ export default {
 		parsedBookings() {
 			let parsedBookings = [];
 			this.bookings.forEach(booking => {
+				let parsedBooking = JSON.parse(JSON.stringify(booking));
 				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
 				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
 					color = 'bg-primary text-white';
@@ -76,8 +81,8 @@ export default {
 				parsedBookings.push({
 					booking: booking,
 					name: (booking.service || booking.booking_link).name,
-					start: `${booking.date} ${booking.start}`,
-					end: `${booking.date} ${booking.end}`,
+					start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
+					end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
 					category: 'bookings',
 					color: color
 				});

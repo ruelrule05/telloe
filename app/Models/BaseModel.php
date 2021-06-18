@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Model;
-use Rennokki\QueryCache\Traits\QueryCacheable;
 
-class BaseModel extends Model
+abstract class BaseModel extends Model
 {
-    use QueryCacheable;
-    public $cacheFor = 43200; // 12 hours
-    protected static $flushCacheOnUpdate = true;
-    public $cacheDriver = 'redis';
+    use Cachable;
+    public $cacheCooldownSeconds = 43200;
 
     protected function castAttribute($key, $value)
     {
