@@ -204,7 +204,7 @@
 
 						<label class="-mb-px mt-4">Date/time</label>
 						<div>{{ dayjs(clonedBooking.date).format('MMMM DD, YYYY') }}</div>
-						<div>{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }}</div>
+						<div>{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }} ({{ clonedBooking.timezone }})</div>
 
 						<label class="-mb-px mt-4">Description</label>
 						<div>{{ clonedBooking.description || 'No description' }}</div>
