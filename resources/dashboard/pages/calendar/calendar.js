@@ -42,15 +42,6 @@ export default {
 		contactBookingsTz() {
 			return this.bookingsTimezone(this.contactBookings);
 		},
-		googleCalendarEventsTz() {
-			let calendarEvents = this.googleCalendarEvents.map(event => {
-				event.date = dayjs(event.end.dateTime || event.end.date).format('YYYY-MM-DD');
-				event.start = dayjs(event.start.dateTime || event.start.date).format('HH:mm');
-				event.end = dayjs(event.end.dateTime || event.end.date).format('HH:mm');
-				return event;
-			});
-			return this.bookingsTimezone(calendarEvents);
-		},
 
 		calendarAttributes() {
 			let attributes = [];
