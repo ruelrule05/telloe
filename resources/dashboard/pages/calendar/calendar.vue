@@ -56,8 +56,8 @@
 		</div>
 
 		<div v-else>
-			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEventsTz" :contactBookings="contactBookingsTz" :timezone="timezone"></DayView>
-			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEventsTz" :contactBookings="contactBookingsTz" :timezone="timezone"></WeekView>
+			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone"></DayView>
+			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone"></WeekView>
 		</div>
 
 		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent"></Booking>

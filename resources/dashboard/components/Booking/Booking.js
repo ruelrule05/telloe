@@ -44,6 +44,7 @@ export default {
 	directives: { clickOutside: vClickOutside.directive },
 
 	data: () => ({
+		convertTime: convertTime,
 		loading: false,
 		clonedBooking: {},
 		open: false,

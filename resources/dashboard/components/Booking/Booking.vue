@@ -203,8 +203,8 @@
 						<div v-for="attendee in clonedBooking.attendees" :key="attendee.email">{{ attendee.email }}</div>
 
 						<label class="-mb-px mt-4">Date/time</label>
-						<div>{{ dayjs(clonedBooking.startDate).format('MMMM DD, YYYY') }}</div>
-						<div>{{ dayjs(clonedBooking.startDate).format('hh:mmA') }} - {{ dayjs(clonedBooking.endDate).format('hh:mmA') }}</div>
+						<div>{{ dayjs(clonedBooking.date).format('MMMM DD, YYYY') }}</div>
+						<div>{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }}</div>
 
 						<label class="-mb-px mt-4">Description</label>
 						<div>{{ clonedBooking.description || 'No description' }}</div>

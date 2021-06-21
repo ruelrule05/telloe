@@ -28,7 +28,7 @@
 				<div class="flex justify-between h-full relative">
 					<div class="overflow-hidden">
 						<div>{{ event.name }}</div>
-						<div>{{ dayjs(event.start).format('hh:mmA') }}&mdash;{{ dayjs(event.end).format('hh:mmA') }}</div>
+						<div>{{ convertTime(event.start, 'hh:mmA') }}&mdash;{{ convertTime(event.end, 'hh:mmA') }}</div>
 					</div>
 					<GoogleIcon class="h-4 w-4" v-if="event.type == 'google-event'"></GoogleIcon>
 					<div v-if="event.booking && event.booking.type == 'blocked'" class="absolute w-full h-full">
