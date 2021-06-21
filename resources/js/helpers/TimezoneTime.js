@@ -30,12 +30,12 @@ function getTimeZoneOffset(date, timeZone) {
 export default {
 	get(datetime, from, to) {
 		let defaultTimezone = timezoneDetermine.name();
-		let timezoneTime = dayjs.tz(datetime, to);
 		from = from || defaultTimezone;
 		to = to || defaultTimezone;
 		let fromTZ = getTimeZoneOffset(new Date(), from);
 		let toTZ = getTimeZoneOffset(new Date(), to);
-		timezoneTime = timezoneTime.add(fromTZ - toTZ, 'minute');
+
+		let timezoneTime = dayjs.tz(datetime, to).add(fromTZ - toTZ, 'minute');
 		return timezoneTime.format('HH:mm');
 	}
 };
