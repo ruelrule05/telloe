@@ -36,7 +36,9 @@
 									Your public page shows all your active events in one place.
 								</p>
 
-								<strong class="text-primary text-sm font-bold block my-5">{{ `${$root.app_url.replace('https://', '')}/@${$root.auth.username}` }}</strong>
+								<strong class="text-primary text-sm font-bold block my-5">
+									<a :href="`/@${$root.auth.username}`" target="_blank" class="hover:underline">{{ `${$root.app_url.replace('https://', '')}/@${$root.auth.username}` }}</a>
+								</strong>
 								<button type="button" class="btn btn-sm btn-primary" @click="copyLink"><span>Copy Link</span></button>
 							</div>
 

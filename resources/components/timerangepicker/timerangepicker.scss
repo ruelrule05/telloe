@@ -57,7 +57,7 @@
 						@apply pointer-events-none;
 					}
 					&.active {
-						@apply bg-gray-300 font-semibold;
+						@apply font-bold;
 					}
 					&[disabled] {
 						@apply pointer-events-none text-gray-300;

@@ -10,9 +10,9 @@
 			<template v-if="!isMobile">
 				<div class="sidebar bg-secondary overflow-auto">
 					<div class="p-6 flex justify-between border-bottom">
-						<img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6 cursor-pointer" @click="refresh()">
-						<button class="rounded-full transition-colors hover:bg-gray-200 focus:outline-none p-1" type="button">
-							<bell-icon class="fill-current text-gray-400"></bell-icon>
+						<a href="/"><img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6"></a>
+						<button class="rounded-full transition-colors hover:bg-gray-200 hover:text-gray-500 focus:outline-none p-1" type="button">
+							<bell-icon class="fill-current"></bell-icon>
 						</button>
 					</div>
 
@@ -103,7 +103,7 @@
 							</router-link>
 
 
-							<div class="sidebar-heading mt-9">COMMUNICATION</div>
+							<div class="sidebar-heading mt-7">COMMUNICATION</div>
 							<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
 								<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
 							</router-link>
@@ -112,7 +112,7 @@
 							</router-link>
 							
 							
-							<div class="sidebar-heading mt-9">INTEGRATIONS</div>
+							<div class="sidebar-heading mt-7">INTEGRATIONS</div>
 							<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/integrations">
 								<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Add an Integration</div>
 							</router-link>
@@ -122,7 +122,7 @@
 
 
 
-							<div class="sidebar-heading mt-9">APPS</div>
+							<div class="sidebar-heading mt-7">APPS</div>
 							<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
 							</div>
 							<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/packages">
@@ -131,7 +131,7 @@
 
 
 
-							<!-- <div class="sidebar-heading mt-9">TEAM</div>
+							<!-- <div class="sidebar-heading mt-7">TEAM</div>
 							<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/organizations">
 								Organizations
 							</router-link>
@@ -141,7 +141,7 @@
 
 
 
-							<div class="sidebar-heading mt-9">PAYMENTS</div>
+							<div class="sidebar-heading mt-7">PAYMENTS</div>
 							<router-link custom v-slot="{ navigate, isActive }" class="sidebar-menu-item" to="/dashboard/payments/invoices">
 								<div @click="navigate" class="sidebar-menu-item" :class="{active: isActive}">Invoices</div>
 							</router-link>
@@ -189,14 +189,16 @@
 				</div>
 
 				<div class="flex flex-col flex-grow overflow-hidden">
-					<div class="dashboard-content position-relative h-full overflow-auto" ref="dashboardContent">
+					<div class="dashboard-content position-relative h-full overflow-auto flex flex-col" ref="dashboardContent">
 						{{-- <div class="contentloader position-absolute w-full h-full bg-light" v-if="$root.contentloading">
 							<div class="position-absolute-center">
 								<div class="spinner-border text-primary" role="status"></div>
 							</div> 
 						</div> --}}
 
-						<router-view></router-view>
+						<div class="flex-grow">
+							<router-view></router-view>
+						</div>
 						
 						<div v-if="$route.name != 'conversations'" class="border-top bg-white p-6 flex justify-between text-muted text-xs footer">
 							<div>

@@ -29,15 +29,15 @@
             </tr>
             <tr>
                 <td style="width: 25%">From</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->user->timezone ?? null)->format('h:iA') }}</strong></td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone ?? null)->format('h:iA') }}</strong></td>
             </tr>
             <tr>
                 <td style="width: 25%">To</td>
-                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->coach->timezone ?? null)->format('h:iA') }}</strong></td>
+                <td><strong>{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone ?? null)->format('h:iA') }}</strong></td>
             </tr>
             <tr>
                 <td style="width: 25%">Timezone</td>
-                <td><strong>{{ $booking->service->coach->timezone ?? config('app.timezone') }}</strong></td>
+                <td><strong>{{ $booking->timezone ?? config('app.timezone') }}</strong></td>
             </tr>
             @if($booking->zoom_link)
             <tr>

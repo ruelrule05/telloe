@@ -8,7 +8,7 @@
 	.sidebar-heading {
 		font-size: 10px;
 		line-height: 16px;
-		@apply opacity-40 font-serif font-semibold;
+		@apply opacity-40 font-serif font-semibold mb-2;
 	}
 }
 .profile-image {
@@ -51,7 +51,7 @@
 	}
 }
 .sidebar-menu-item {
-	@apply mt-4 cursor-pointer text-xs transition-all hover:text-primary;
+	@apply py-2 cursor-pointer text-xs transition-all hover:text-primary;
 	&.active {
 		@apply font-bold text-primary;
 	}

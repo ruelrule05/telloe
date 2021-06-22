@@ -17,7 +17,7 @@
         <h3 style="margin-top: 0; margin-bottom: 0">
             {{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }} ({{ \Carbon\Carbon::parse($booking->date)->format('l') }})
         </h3>
-        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->service->coach->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->service->coach->timezone ?? null)->format('h:iA') }} ({{$booking->service->coach->timezone ?? ''}})</div>
+        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone ?? null)->format('h:iA') }} ({{$booking->timezone ?? ''}})</div>
 
         <div style="margin-top: 10px; color: #777; margin-bottom: 5px">Guests</div>
         @foreach($booking->bookingUsers as $bookingUser)
