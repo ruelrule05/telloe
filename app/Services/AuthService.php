@@ -471,11 +471,19 @@ class AuthService
 
         if ($user->stripe_account) {
             $account_data['id'] = $user->stripe_account['id'];
-            $account = $stripe_api->account('update', $account_data);
+            try {
+                $account = $stripe_api->account('update', $account_data);
+            } catch (\Exception $e) {
+                return abort(403, str_replace('Stripe', 'payout',$e->getMessage()));
+            }
         } else {
             $account_data['country'] = $request->country;
             $account_data['type'] = 'custom';
-            $account = $stripe_api->account('create', $account_data);
+            try {
+                $account = $stripe_api->account('create', $account_data);
+            } catch (\Exception $e) {
+                return abort(403, str_replace('Stripe', 'payout',$e->getMessage()));
+            }
         }
 
         // create Stripe customer for contacts

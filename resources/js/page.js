@@ -8,6 +8,7 @@ import GreencheckIcon from '../icons/greencheck';
 import MessengerIcon from '../icons/messenger';
 import Vue from 'vue';
 import vClickOutside from 'v-click-outside';
+import SmoothScroll from 'smooth-scroll';
 
 Vue.component('pageloader', require('../components/pageloader.vue').default);
 window.app = new Vue({
@@ -112,4 +113,9 @@ window.app = new Vue({
 				.catch(() => {});
 		}
 	}
+});
+
+new SmoothScroll('a[href*="#"]', {
+	speed: 700,
+	speedAsDuration: true
 });

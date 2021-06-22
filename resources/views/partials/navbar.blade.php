@@ -1,5 +1,5 @@
 <nav class="bg-secondary">
-    <div class="hidden lg:block max-w-7xl mx-auto px-2 py-2 sm:px-4 lg:px-4">
+    <div class="hidden lg:block container mx-auto px-2 py-2 sm:px-4 lg:px-4">
         <div class="flex items-center justify-between h-16">
             <div>
                 <a href="{{ config('app.url') }}"><img class="h-7 w-auto" src="{{ asset('telloe.svg') }}" alt="{{ config('app.name') }}"></a>

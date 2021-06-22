@@ -53,6 +53,10 @@ export default {
 		dropPosition: {
 			type: String,
 			default: 'down'
+		},
+		noValuePlaceholder: {
+			type: String,
+			default: 'No options found'
 		}
 	},
 

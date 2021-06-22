@@ -31,7 +31,7 @@
 						</div>
 						<div class="mb-5">
 							<label required>Username</label>
-							<input type="text" v-model="user.username" data-required />
+							<input type="text" v-model="user.username" @keypress="validateUsername" data-required />
 							<p class="text-muted text-xs mt-1">This is your unique username for your profile page URL. Spaces and special characters are not allowed.</p>
 						</div>
 						<div class="mb-5">

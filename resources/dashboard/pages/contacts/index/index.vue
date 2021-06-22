@@ -22,49 +22,61 @@
 			</div>
 
 			<div class="flex h-full contact-content">
-				<div class="w-2/3 p-8 border-right">
-					<div class="flex items-center justify-between mb-3 header">
-						<div class="flex items-center">
-							<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
-							<multiselect v-model="filterTags" class="ml-2" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
+				<div class="w-2/3 p-8 border-right relative">
+					<template v-if="filteredContacts.length > 0">
+						<div class="flex items-center justify-between mb-3 header">
+							<div class="flex items-center">
+								<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
+								<multiselect v-model="filterTags" class="ml-2" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
+							</div>
+
+							<form @submit.prevent="getData()">
+								<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name, surname or e-mail" />
+							</form>
 						</div>
 
-						<form @submit.prevent="getData()">
-							<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name, surname or e-mail" />
-						</form>
-					</div>
-
-					<div class="flex items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
-						<div class="flex items-start">
-							<div class="mr-2">
-								<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
-									<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
-									<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status">&nbsp;</i>
+						<div class="flex items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
+							<div class="flex items-start">
+								<div class="mr-2">
+									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
+										<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
+										<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status">&nbsp;</i>
+									</div>
+								</div>
+								<div>
+									<router-link :to="`/dashboard/contacts/${contact.id}`" class="font-bold text-primary">{{ contact.contact_user.full_name }}</router-link>
+									<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
 								</div>
 							</div>
-							<div>
-								<router-link :to="`/dashboard/contacts/${contact.id}`" class="font-bold text-primary">{{ contact.contact_user.full_name }}</router-link>
-								<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
+							<div class="flex items-center">
+								<p class="mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
+								<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
+								<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
+									<MessageIcon class="fill-current text-gray-400"></MessageIcon>
+								</button>
+
+								<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
+									<template #button>
+										<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+											<CogIcon class="fill-current text-gray-400"></CogIcon>
+										</div>
+									</template>
+								</VueDropdown>
 							</div>
 						</div>
-						<div class="flex items-center">
-							<p class="mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
-							<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
-							<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
-								<MessageIcon class="fill-current text-gray-400"></MessageIcon>
-							</button>
 
-							<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
-								<template #button>
-									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-										<CogIcon class="fill-current text-gray-400"></CogIcon>
-									</div>
-								</template>
-							</VueDropdown>
+						<Paginate v-if="contacts.data.length > 0" :data="contacts" @change="p => (page = p)" class="mt-6"></Paginate>
+					</template>
+
+					<div v-else class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-6/12">
+						<div class="text-primary">
+							<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
+						</div>
+						<div class="pl-4 -mt-1">
+							<p class="font-bold text-sm">No contacts added yet. Add a contact by clicking the button below.</p>
+							<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="addContact = true"><span>Add Contact</span></button>
 						</div>
 					</div>
-
-					<Paginate v-if="contacts.data.length > 0" :data="contacts" @change="p => (page = p)" class="mt-6"></Paginate>
 
 					<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
 				</div>

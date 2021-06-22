@@ -103,7 +103,10 @@ class UserService
 
         $service = null;
         if ($service_id) {
-            $service = Service::with('user', 'assignedServices.member.memberUser')->where('is_available', true)->where('id', $service_id)->where('user_id', $profile->id)->firstOrFail();
+            $service = Service::with('user', 'assignedServices.member.memberUser')->where('is_available', true)->where('id', $service_id)->where('user_id', $profile->id)->first();
+            if (! $service) {
+                return abort(403, 'This event type is not available.');
+            }
         }
 
         $timezone = null;

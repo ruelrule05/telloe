@@ -23,6 +23,7 @@
 							{{ option.text }}
 						</span>
 					</div>
+					<div v-else class="text-sm py-2 text-muted text-center">{{ noValuePlaceholder }}</div>
 				</div>
 			</div>
 		</div>

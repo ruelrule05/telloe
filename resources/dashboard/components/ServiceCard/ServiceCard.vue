@@ -21,7 +21,7 @@
 				</VueDropdown>
 			</div>
 		</div>
-		<h6 class="text-primary font-bold mt-6 mb-1">{{ service.name }}</h6>
+		<h6 class="text-primary font-bold mt-6 mb-1 hover:underline cursor-pointer" @click="serviceAction('Edit')">{{ service.name }}</h6>
 		<div class="text-sm">
 			<strong class="text-gray-400 font-bold">{{ service.duration }} min</strong>
 			<span v-if="service.default_rate > 0" class="ml-2 text-muted"> $ {{ service.default_rate }} </span>

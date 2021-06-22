@@ -22,9 +22,11 @@ import CheckmarkIcon from '../../../../icons/checkmark-circle';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import MessageIcon from '../../../../icons/comment';
+import InfoCircleIcon from '../../../../icons/info-circle.vue';
 
 export default {
 	components: {
+		InfoCircleIcon,
 		MessageIcon,
 		CheckmarkIcon,
 		Multiselect,

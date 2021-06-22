@@ -13,7 +13,7 @@ function checkRequestInviteToken(Illuminate\Http\Request $request = null)
         $member_invite_token = session()->pull('member_invite_token');
         if ($invite_token) {
             $request->invite_token = $invite_token;
-            checkInviteToken($user, $invite_token, $request);
+            checkInviteToken($user, $request);
         }
         if ($member_invite_token) {
             checkMemberInviteToken($user, $member_invite_token);

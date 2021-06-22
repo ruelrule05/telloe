@@ -74,7 +74,7 @@
 						</multiselect>
 
 						<label class="mt-4" required>Meeting Type</label>
-						<VueSelect :disabled="!clonedBooking.service" required :options="meetingTypes" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
+						<VueSelect :disabled="!clonedBooking.service" required :options="meetingTypes" noValuePlaceholder="No meeting types available" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
 
 						<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
 

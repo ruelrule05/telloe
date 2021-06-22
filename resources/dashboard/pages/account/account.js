@@ -300,6 +300,14 @@ export default {
 			deleteMember: 'members/delete'
 		}),
 
+		validateUsername(e) {
+			let str = String.fromCharCode(e.keyCode);
+			let isValid = !/[~`!@#$%^&*()+=\-[\]\\';,/{}|\\":<>?]/g.test(str);
+			if (!isValid || e.which === 32) {
+				e.preventDefault();
+			}
+		},
+
 		async getCountrySpecs() {
 			let response = await window.axios.get('/stripe/country_specs');
 			this.countrySpecs = response.data;
