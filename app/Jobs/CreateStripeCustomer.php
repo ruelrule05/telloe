@@ -24,7 +24,7 @@ class CreateStripeCustomer implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $user, Contact $contact, $request)
+    public function __construct(User $user, Contact $contact, array $request)
     {
         //
         $this->user = $user;
@@ -48,8 +48,8 @@ class CreateStripeCustomer implements ShouldQueue
                 'email' => $this->contact->contactUser->email, 
                 'name' => $this->contact->contactUser->full_name
             ];
-            if ($this->request->referral) {
-                $data['metadata'] = ['referral' => $this->request->referral];
+            if ($this->request['referral']) {
+                $data['metadata'] = ['referral' => $this->request['referral']];
             }
             $stripeCustomer = $stripe_api->customer('create', $data, ['stripe_account' => $this->user->stripe_account['id']]);
             $this->contact->update([

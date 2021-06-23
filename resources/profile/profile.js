@@ -774,6 +774,7 @@ export default {
 		},
 
 		reset() {
+			window.location.href = `/@${this.profile.username}`;
 			this.bookings = [];
 			this.isBooking = false;
 			this.bookingSuccess = false;

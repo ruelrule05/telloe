@@ -483,9 +483,7 @@ export default {
 				data.website = `https://${data.website}`;
 			}
 
-			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true }).catch(e => {
-				console.log(e.message.errors);
-			});
+			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true });
 			if (response) {
 				this.$root.auth.stripe_account = response.data.stripe_account;
 				this.stripeAccountForm.countryDisabled = true;
