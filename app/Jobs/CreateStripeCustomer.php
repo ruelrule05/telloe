@@ -48,7 +48,7 @@ class CreateStripeCustomer implements ShouldQueue
                 'email' => $this->contact->contactUser->email, 
                 'name' => $this->contact->contactUser->full_name
             ];
-            if ($this->request['referral']) {
+            if (isset($this->request['referral'])) {
                 $data['metadata'] = ['referral' => $this->request['referral']];
             }
             $stripeCustomer = $stripe_api->customer('create', $data, ['stripe_account' => $this->user->stripe_account['id']]);

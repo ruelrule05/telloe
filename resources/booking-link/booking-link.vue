@@ -74,7 +74,7 @@
 
 						<!-- Contacts -->
 						<template v-for="contact in bookingLink.booking_link_contacts">
-							<tr v-if="contact.contact.contact_user_id != (auth || {}).id" :key="contact.id">
+							<tr v-if="contact.contact && contact.contact.contact_user_id != (auth || {}).id" :key="contact.id">
 								<td class="headcol contact-td mb-2 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
