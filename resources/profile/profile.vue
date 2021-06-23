@@ -499,7 +499,7 @@
 
 						<div class="bg-gray-50 rounded-2xl p-4 mt-5" v-for="booking in bookings" :key="booking.id">
 							<h6 class="font-semibold">{{ formatDate(booking.date) }} ({{ dayjs(booking.date).format('dddd') }})</h6>
-							<div>{{ timezoneTime(booking.start) }} - {{ endTime(booking.end) }}</div>
+							<div>{{ convertTime(timezoneTime.get(`${booking.date} ${booking.start}`, booking.timezone, timezone), 'hh:mmA') }} - {{ convertTime(timezoneTime.get(`${booking.date} ${booking.end}`, booking.timezone, timezone), 'hh:mmA') }}</div>
 							<div v-if="booking.recurring" class="text-muted text-xs flex xitems-center mt-4">
 								<RefreshIcon class="fill-current mr-2 mt-1"></RefreshIcon>
 								<div>
