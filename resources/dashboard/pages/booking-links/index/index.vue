@@ -59,11 +59,13 @@
 									</div>
 									<div class="flex items-center mt-3">
 										<div class="flex items-center">
-											<div v-for="contact in booking_link.booking_link_contacts" :key="contact.id" class="-mr-2">
-												<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
-													<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
+											<template v-for="contact in booking_link.booking_link_contacts">
+												<div v-if="contact.contact" :key="contact.id" class="-mr-2">
+													<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
+														<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
+													</div>
 												</div>
-											</div>
+											</template>
 											<div v-for="email in booking_link.emails" :key="email.email" class="-mr-2">
 												<div class="profile-image profile-image-sm profile-image-gray relative z-0 border border-white">
 													<span class="uppercase">{{ email.email[0] }}</span>
