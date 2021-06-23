@@ -562,6 +562,7 @@ export default {
 			data.card_token = true;
 			data.phone = this.phone;
 			data.skype = this.skype;
+			data.timezone = this.timezone;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -594,6 +595,7 @@ export default {
 				data.card_token = true;
 				data.phone = this.phone;
 				data.skype = this.skype;
+				data.timezone = this.timezone;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
@@ -627,6 +629,7 @@ export default {
 				data.card_token = true;
 				data.phone = this.phone;
 				data.skype = this.skype;
+				data.timezone = this.timezone;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
