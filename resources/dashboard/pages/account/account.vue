@@ -86,7 +86,7 @@
 				</div>
 
 				<div v-else-if="activeMenu == 'Plan'" class="p-6">
-					<div v-if="isTrial" class="bg-secondary p-3 mb-4 rounded-xl text-center text-sm free-trial">Your free trial will expire at {{ dayjs($root.auth.trial_expires_at).format('MMMM d, YYYY') }}</div>
+					<div v-if="isTrial" class="bg-secondary p-3 mb-4 rounded-xl text-center text-sm free-trial">Your free trial will expire at {{ dayjs($root.auth.trial_expires_at).format('MMMM D, YYYY') }}</div>
 
 					<h2 class="font-serif uppercase font-semibold mb-8">Plan</h2>
 					<div class="grid grid-cols-3 gap-x-6">
