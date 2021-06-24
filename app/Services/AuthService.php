@@ -33,6 +33,8 @@ use Mail;
 
 class AuthService
 {
+    protected static $defaultAvailability = '[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]';
+
     public static function socialiteCallback($driver)
     {
         $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
@@ -57,7 +59,11 @@ class AuthService
                 $data['username'] = self::generateUsername($data['first_name'], $data['last_name']);
                 $data[$driver_id] = $socialiteUser->user['id'];
                 $data['profile_image'] = "/$profile_image";
+                $data['trial_expires_at'] = Carbon::now()->add(14, 'day');
+                $data['default_availability'] = json_decode(self::$defaultAvailability);
                 $user = User::create($data);
+                $user->is_premium = true;
+                $user->save();
 
                 // update all ConversationMember with user_id
                 ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
@@ -164,9 +170,11 @@ class AuthService
             'email' => $request->email,
             'last_online' => null,
             'blocked_timeslots' => [],
-            'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
+            'default_availability' => json_decode(self::$defaultAvailability),
+            'trial_expires_at' => Carbon::now()->add(14, 'day')
         ]);
         $user->password = bcrypt($request->password);
+        $user->is_premium = true;
         $user->save();
         // update all ConversationMember with user_id
 
@@ -334,10 +342,13 @@ class AuthService
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'blocked_timeslots' => []
+                    'blocked_timeslots' => [],
+                    'default_availability' => json_decode(self::$defaultAvailability),
+                    'trial_expires_at' => Carbon::now()->add(14, 'day')
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->facebook_id = $request->id;
+                $user->is_premium = true;
                 $user->save();
                 // update all ConversationMember with user_id
                 ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
@@ -383,10 +394,13 @@ class AuthService
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
-                    'blocked_timeslots' => []
+                    'blocked_timeslots' => [],
+                    'default_availability' => json_decode(self::$defaultAvailability),
+                    'trial_expires_at' => Carbon::now()->add(14, 'day')
                 ]);
                 $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
                 $user->google_id = $request->id;
+                $user->is_premium = true;
                 $user->save();
                 // update all ConversationMember with user_id
                 ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
@@ -631,7 +645,8 @@ class AuthService
                 'email' => $request->email,
                 'last_online' => null,
                 'blocked_timeslots' => [],
-                'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]')
+                'default_availability' => json_decode(self::$defaultAvailability),
+                'trial_expires_at' => Carbon::now()->add(14, 'day')
             ]);
             // update all ConversationMember with user_id
             ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
@@ -640,6 +655,7 @@ class AuthService
 
             $password = Str::random(6);
             $newUser->password = bcrypt($password);
+            $newUser->is_premium = true;
             $newUser->save();
             Mail::to($newUser->email)->queue(new GuestAccount($password));
         }

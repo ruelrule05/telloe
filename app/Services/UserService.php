@@ -438,9 +438,12 @@ class UserService
             'email' => $request->email,
             'blocked_timeslots' => [],
             'last_online' => null,
+            'default_availability' => json_decode('[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]'),
+            'trial_expires_at' => Carbon::now()->add(14, 'day')
         ]);
         $user->password = bcrypt($request->password);
         $user->role_id = 3;
+        $user->is_premium = true;
         $user->save();
 
         if (isValidTimezone($request->timezone)) {

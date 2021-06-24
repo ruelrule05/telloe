@@ -56,6 +56,13 @@ class Kernel extends ConsoleKernel
     protected function checkSubscriptions()
     {
         $freemiumAccounts = config('app.freemium_accounts');
+
+        User::whereNotIn('email', $freemiumAccounts)
+            ->where('trial_expires_at', '<=', Carbon::now())
+            ->where('is_premium', true)
+            ->update([
+                'is_premium' => false
+            ]);
         $users = collect(User::has('subscription')->get());
         $users->each(function ($user) use ($freemiumAccounts) {
             $stripe_api = new StripeAPI();

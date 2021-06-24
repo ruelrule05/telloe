@@ -55,13 +55,14 @@ class SubscriptionService
                 'customer' => $user->stripe_customer_id,
                 'plan' => $plan->stripe_plan_id,
             ];
+            $data['trial_end'] = 'now';
             $trialExpiresAt = null;
-            if ($user->has_subscribed) {
-                $data['trial_end'] = 'now';
-            } else {
-                $trialExpiresAt = Carbon::now()->add(14, 'day');
-                $data['trial_period_days'] = 14;
-            }
+            // if ($user->has_subscribed) {
+            //     $data['trial_end'] = 'now';
+            // } else {
+            //     $trialExpiresAt = Carbon::now()->add(14, 'day');
+            //     $data['trial_period_days'] = 14;
+            // }
             $stripe_subscription = $stripe_api->subscription('create', $data);
             $subscription = Subscription::create([
                 'user_id' => $user->id,
