@@ -4,6 +4,8 @@ import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
+const isSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+dayjs.extend(isSameOrBefore);
 import ExclamationCircleIcon from '../../../icons/exclamation-circle';
 import CheckmarkCircleIcon from '../../../icons/checkmark-circle';
 const { getNameList } = require('country-list');
@@ -129,6 +131,10 @@ export default {
 			members: state => state.members.index,
 			services: state => state.services.index
 		}),
+
+		isTrial() {
+			return dayjs().isSameOrBefore(dayjs(this.$root.auth.trial_expires_at));
+		},
 
 		filteredInvoices() {
 			return this.stripeInvoices.filter(i => {

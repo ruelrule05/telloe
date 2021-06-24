@@ -86,6 +86,8 @@
 				</div>
 
 				<div v-else-if="activeMenu == 'Plan'" class="p-6">
+					<div v-if="isTrial" class="bg-secondary p-3 mb-4 rounded-xl text-center text-sm free-trial">Your free trial will expire at {{ dayjs($root.auth.trial_expires_at).format('MMMM d, YYYY') }}</div>
+
 					<h2 class="font-serif uppercase font-semibold mb-8">Plan</h2>
 					<div class="grid grid-cols-3 gap-x-6">
 						<div v-for="plan in plans" :key="plan.id" class="card-plan" :class="{ active: $root.auth.subscription && $root.auth.subscription.plan_id == plan.id, selected: plan.id == (selectedPlan || {}).id }">
@@ -103,10 +105,6 @@
 								<div class="bg-green-400 mt-5 rounded text-white p-3 font-semibold inline-block font-serif text-xs" :class="{ 'opacity-0': !plan.price_meta }">
 									<span class="relative -bottom-px">&nbsp;{{ plan.price_meta }}&nbsp;</span>
 								</div>
-							</div>
-							<div v-if="$root.auth.subscription && $root.auth.subscription.trial_expires_at" class="bg-secondary p-3 mb-2 rounded-xl text-center text-sm free-trial">Free Trial expires at {{ dayjs($root.auth.subscription.trial_expires_at).format('MMMM d, YYYY') }}</div>
-							<div class="plan-cancel-text mb-4">
-								<p>If you cancel a subscription you can continue using the features until 22 March 2021.</p>
 							</div>
 							<button type="button" class="btn btn-outline-primary w-full btn-cancel" @click="$refs.cancelSubscription.show()">
 								<span>Cancel</span>
