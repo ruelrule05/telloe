@@ -39,7 +39,7 @@ const actions = {
 			Vue.set(newMessage, 'sending', false);
 
 			let links = extractUrls(response.data.message);
-			if (links.length > 0) {
+			if (links && links.length > 0) {
 				window.axios.get(`/messages/${response.data.id}/generate_link_preview`).then(response => {
 					Vue.set(newMessage, 'link_preview', response.data);
 				});

@@ -304,7 +304,7 @@ function checkInviteToken(App\Models\User $user, $request)
         }
 
         if (! $contact->stripe_customer_id) {
-            App\Jobs\CreateStripeCustomer::dispatch($contact->user, $contact, $request);
+            App\Jobs\CreateStripeCustomer::dispatch($contact->user, $contact, $request->all());
         }
 
         App\Models\Notification::create([
