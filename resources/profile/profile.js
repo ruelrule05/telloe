@@ -124,6 +124,7 @@ export default {
 	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
 
 	data: () => ({
+		noServiceForWidget: false,
 		timezoneTime: timezoneTime,
 		profile: PROFILE,
 		service: SERVICE,
@@ -874,8 +875,12 @@ export default {
 		getData() {
 			window.axios.get(window.location.pathname + window.location.search).then(response => {
 				if (this.$root.widget) {
-					this.selectedService = response.data;
-					this.selectedServiceForTimeline = this.selectedService;
+					if (response.data.id) {
+						this.selectedService = response.data;
+						this.selectedServiceForTimeline = this.selectedService;
+					} else {
+						this.noServiceForWidget = true;
+					}
 				} else {
 					this.services = response.data.services;
 				}

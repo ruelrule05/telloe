@@ -19,6 +19,7 @@
 					<vue-form-validate @submit="save">
 						<div class="flex items-center mb-8 profile-photo">
 							<button class="mr-6 image relative overflow-hidden" type="button" :style="{ backgroundImage: 'url(' + user.profile_image + ')' }" @click="$refs['profileImageInput'].click()">
+								<span v-if="!user.profile_image" class="absolute-center text-gray-300 text-2xl">{{ user.initials }}</span>
 								<span class="absolute left-0 w-full h-1/2 opacity-80 bottom-0 bg-gradient-to-t from-black"></span>
 								<span class="absolute bottom-2 left-0 text-center w-full text-white text-xs">Edit</span>
 							</button>

@@ -29,7 +29,7 @@ class UpdateServiceRequest extends FormRequest
         return [
             'name' => 'nullable|string|max:191',
             'description' => 'nullable|string',
-            'duration' => 'required|integer',
+            'duration' => 'required|integer|min:5|max:360',
             'days' => 'required',
             'default_rate' => 'numeric',
         ];

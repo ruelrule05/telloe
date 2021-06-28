@@ -27,7 +27,7 @@
 
 							<div class="flex items-end justify-between mt-9">
 								<div>
-									<span class="px-3 py-1 mb-1 text-xs font-bold bg-gray-200 rounded-md text-muted">Accepted</span>
+									<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
 									<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Status</p>
 								</div>
 								<div>
