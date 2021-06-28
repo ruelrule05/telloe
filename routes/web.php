@@ -38,6 +38,8 @@ Route::group(
     function () {
         Route::get('/', 'PageController@homepage');
         Route::get('/contact', 'PageController@contact');
+        Route::get('/affiliates', 'PageController@affiliates');
+        Route::get('/affiliate-terms', 'PageController@affiliateTerms');
 
         Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
         Route::get('/bookings/{uuid}', 'BookingController@show');

@@ -14,8 +14,8 @@
 
 			<div class="col-span-2 mt-md-0 lg:mt-4 mt-8">
 				<h5 class="font-serif text-muted uppercase text-xs font-semibold lg:mb-4 mb-2">Company</h5>
-				<a href="/contact" class="block text-sm">Contact Us</a>
-				<a href="" class="block text-sm">Become an affiliate</a>
+				<a href="/contact" class="block text-sm mb-2">Contact Us</a>
+				<a href="/affiliates" class="block text-sm">Become an affiliate</a>
 			</div>
 
 			<div class="col-span-2 mt-md-0 lg:mt-4 mt-8">

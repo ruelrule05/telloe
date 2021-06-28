@@ -42,7 +42,7 @@
 							</div>
 							<div class="mb-5">
 								<label required>Meeting length (in minutes)</label>
-								<input type="number" min="5" v-model="clonedService.duration" data-required />
+								<input type="number" min="5" max="360" v-model="clonedService.duration" data-required />
 							</div>
 							<div>
 								<label required>Time gap between meetings (in minutes)</label>

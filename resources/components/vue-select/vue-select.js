@@ -109,6 +109,11 @@ export default {
 			if (value) {
 				this.search = '';
 				this.menuOpen = value;
+				if (this.searchable) {
+					this.$nextTick(() => {
+						this.$refs['input-searchable'].focus();
+					});
+				}
 			} else {
 				setTimeout(() => {
 					this.menuOpen = value;

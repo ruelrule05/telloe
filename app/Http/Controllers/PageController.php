@@ -27,4 +27,15 @@ class PageController extends Controller
     {
         return response(PageService::contact());
     }
+
+    public function affiliates()
+    {
+        return response(PageService::affiliates());
+    }
+
+    public function affiliateTerms()
+    {
+        return response(PageService::affiliateTerms());
+    }
 }
+

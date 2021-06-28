@@ -69,23 +69,13 @@ class PageService
         return view('pages.contact');
     }
 
-    public static function show($id)
+    public static function affiliates()
     {
-        return ;
+        return view('pages.affiliates');
     }
 
-    public static function store(Request $request)
+    public static function affiliateTerms()
     {
-        return ;
-    }
-
-    public static function update($id, Request $request)
-    {
-        return ;
-    }
-
-    public static function delete($id)
-    {
-        return ;
+        return view('pages.affiliate-terms');
     }
 }

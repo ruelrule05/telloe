@@ -419,7 +419,7 @@ export default {
 		},
 
 		formatDate(date) {
-			return dayjs.unix(date).format('MMM D, YYYY');
+			return date ? dayjs.unix(date).format('MMM D, YYYY') : '-';
 		}
 	}
 };

@@ -404,7 +404,6 @@ export default {
 			this.isLoading = true;
 			this.username = this.guid();
 			await this.getXirsys();
-			console.log(this.host);
 			this.isLoading = false;
 			this.xirsys();
 		},
