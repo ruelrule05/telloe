@@ -51,6 +51,7 @@ export default {
 	},
 
 	data: () => ({
+		banner: true,
 		filterTags: [],
 		actions: ['Edit', 'Delete'],
 		infoTab: '',

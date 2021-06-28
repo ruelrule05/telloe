@@ -10,7 +10,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <h1 class="font-heading mb-5">Affiliate Terms &amp; Conditions</h1>
-            <h3 class="h5">AFFILIATE AGREEMENET</h3>
+            <h3 class="h5">AFFILIATE AGREEMENT</h3>
             <p class="mb-4">
                 Primary Website: telloe.com<br/>Company: Telloe Pty Ltd Company<br/>ABN Registration: 69 643 268 946<br/>Location: Queensland, Australia
             </p>

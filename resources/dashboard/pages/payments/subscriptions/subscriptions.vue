@@ -15,6 +15,31 @@
 					<span>New Subscription</span>
 				</button>
 			</div>
+			<div v-if="banner" class="p-6 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+					<div class="font-serif w-1/4 font-semibold uppercase">
+						CREATE A SUBSCRIPTION
+					</div>
+					<div class="w-7/12">
+						<p class="text-muxted mb-4">
+							Create a subscription to make a group of events and do the billing for all your events in a monthly system.
+						</p>
+						<button
+							class="btn btn-md btn-outline-primary"
+							type="button"
+							@click="
+								resetInvoiceForm();
+								$refs.createSubscriptionModal.show();
+							"
+						>
+							<span>CREATE A SUBSCRIPTION</span>
+						</button>
+					</div>
+					<div class="font-serif">
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					</div>
+				</div>
+			</div>
 
 			<div v-show="!loading">
 				<div v-if="subscriptions.length > 0" class="px-6 pb-6">
@@ -31,7 +56,7 @@
 						</thead>
 						<paginate tag="tbody" name="subscriptions" :list="subscriptions" :per="15" ref="paginate">
 							<template v-for="subscription in paginated('subscriptions')">
-								<tr :key="subscription.id">
+								<tr v-if="subscription.contact" :key="subscription.id">
 									<td class="align-middle text-primary font-bold uppercase ">{{ subscription.subscription_id }}</td>
 									<td>{{ subscription.contact.full_name }}</td>
 									<td class="capitalize">{{ subscription.status }}</td>

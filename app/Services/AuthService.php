@@ -62,6 +62,9 @@ class AuthService
                 $data['trial_expires_at'] = Carbon::now()->add(14, 'day');
                 $data['default_availability'] = json_decode(self::$defaultAvailability);
                 $user = User::create($data);
+
+                self::createPresetService($user);
+
                 $user->is_premium = true;
                 $user->save();
 
@@ -657,6 +660,7 @@ class AuthService
             $newUser->password = bcrypt($password);
             $newUser->is_premium = true;
             $newUser->save();
+            self::createPresetService($newUser);
             Mail::to($newUser->email)->queue(new GuestAccount($password));
         }
 

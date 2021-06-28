@@ -25,8 +25,10 @@ import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import CloseIcon from '../../../../icons/close.vue';
 export default {
 	components: {
+		CloseIcon,
 		Multiselect,
 		CogIcon,
 		Modal,
@@ -49,6 +51,7 @@ export default {
 	directives: { Tooltip },
 
 	data: () => ({
+		banner: true,
 		newInvoiceForm: {
 			contact_id: '',
 			loading: false,

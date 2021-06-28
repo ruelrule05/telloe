@@ -13,8 +13,9 @@ const ct = require('countries-and-timezones');
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
+import CloseIcon from '../../../icons/close.vue';
 export default {
-	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar },
+	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon },
 
 	data: () => ({
 		loading: true,
@@ -26,7 +27,8 @@ export default {
 		googleCalendars: [],
 		googleCalendarEvents: [],
 		contactBookings: [],
-		timezone: ''
+		timezone: '',
+		banner: true
 	}),
 
 	computed: {

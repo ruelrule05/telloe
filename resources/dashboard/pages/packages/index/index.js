@@ -18,9 +18,11 @@ import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../icons/cog';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import CloseIcon from '../../../../icons/close.vue';
 export default {
-	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch, MoreIcon, VueCheckbox, InfoCircleIcon, VueDropdown, CogIcon, Multiselect },
+	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch, MoreIcon, VueCheckbox, InfoCircleIcon, VueDropdown, CogIcon, Multiselect, CloseIcon },
 	data: () => ({
+		banner: true,
 		newPackage: {},
 		clonedPackage: null,
 		selectedPackage: null,

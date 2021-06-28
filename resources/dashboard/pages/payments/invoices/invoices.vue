@@ -16,6 +16,25 @@
 				</button>
 			</div>
 
+			<div v-if="banner && !$root.auth.stripe_account" class="p-6 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+					<div class="font-serif w-1/4 font-semibold uppercase">
+						CREATE INVOICES FOR CONTACTS
+					</div>
+					<div class="w-7/12">
+						<p class="text-muxted mb-4">
+							Use invoices to bill your contacts once they have booked an event.
+						</p>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="$router.push('/dashboard/account?tab=payout')">
+							<span>SETUP YOUR PAYMENT INFORMATION</span>
+						</button>
+					</div>
+					<div class="font-serif">
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					</div>
+				</div>
+			</div>
+
 			<div v-show="!loading">
 				<div v-if="invoices.length > 0" class="px-6 pb-6">
 					<table class="table my-6">

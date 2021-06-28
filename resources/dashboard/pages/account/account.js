@@ -55,6 +55,7 @@ export default {
 	directives: { cardformat: VueCardFormat },
 
 	data: () => ({
+		banner: true,
 		invoiceSearch: '',
 		selectedMember: null,
 		app_name: window.APP_NAME,
