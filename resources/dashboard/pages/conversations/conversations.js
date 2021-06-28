@@ -35,7 +35,8 @@ export default {
 			members: []
 		},
 		userSearch: '',
-		isEmail: isEmail
+		isEmail: isEmail,
+		banner: true
 	}),
 
 	computed: {

@@ -21,6 +21,23 @@
 				</div>
 			</div>
 
+			<div v-if="banner" class="p-6 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+					<div class="font-serif w-1/4 font-semibold uppercase">
+						ADD NEW CONTACTS
+					</div>
+					<div class="w-7/12">
+						<p class="text-muxted mb-4">
+							Add contacts and start messaging them. Import them through a CSV file or enter their details.
+						</p>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="addContact = true"><span>ADD NEW CONTACTS</span></button>
+					</div>
+					<div class="font-serif">
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					</div>
+				</div>
+			</div>
+
 			<div class="flex h-full contact-content">
 				<div class="w-2/3 p-8 border-right relative">
 					<template v-if="filteredContacts.length > 0">

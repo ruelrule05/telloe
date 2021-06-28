@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="flex h-screen overflow-hidden flex-col">
+		<div class="flex overflow-hidden flex-col" :class="{ 'h-screen': !banner }">
 			<div>
 				<div class="content-header border-bottom">
 					MESSAGES
@@ -11,7 +11,24 @@
 					</div>
 				</div>
 			</div>
-			<div class="flex-grow flex h-full overflow-hidden">
+
+			<div v-if="banner" class="p-6 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+					<div class="font-serif w-1/4 font-semibold uppercase">
+						MESSAGING CONTACTS
+					</div>
+					<div class="w-7/12">
+						<p class="text-muxted mb-4">
+							Send messages, voice recordings, and make video calls with contacts, all with familiar features.
+						</p>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.newConversationModal.show()"><span>START A NEW CONVERSATION</span></button>
+					</div>
+					<div class="font-serif">
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					</div>
+				</div>
+			</div>
+			<div class="flex-grow flex h-full overflow-hidden" :class="{ 'h-screen': banner }">
 				<div class="border-right overflow-hidden h-full">
 					<index ref="conversationIndex"></index>
 				</div>

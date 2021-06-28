@@ -6,6 +6,7 @@ import Service from '../../components/Service/Service.vue';
 import copy from 'copy-text-to-clipboard';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
+import CloseIcon from '../../../icons/close.vue';
 export default {
 	components: {
 		ServiceCard,
@@ -13,14 +14,16 @@ export default {
 		Service,
 		Modal,
 		WarningIcon,
-		VueFormValidate
+		VueFormValidate,
+		CloseIcon
 	},
 
 	data: () => ({
 		serviceToEdit: null,
 		serviceToDelete: null,
 		newService: {},
-		createService: false
+		createService: false,
+		banner: true
 	}),
 
 	computed: {

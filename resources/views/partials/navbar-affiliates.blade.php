@@ -10,7 +10,7 @@
                 <div class="flex align-middle items-center space-x-3">
                     <a href="/affiliates" class="navbar-item">AFFILIATE HOME</a>
                     <a href="https://go.trackier.com/register.html" class="navbar-item">JOIN PROGRAM</a>
-                    <a href="/affiliate-terms" class="navbar-item">AFFILIATE TERMS AND CONDITIONS</a>
+                    <a href="/affiliate-terms" target="_blank" class="navbar-item">AFFILIATE TERMS AND CONDITIONS</a>
                     <button type="button" class="btn btn-primary btn-md" onclick="window.location.href='/?auth=login';"><span class="font-serif">LOGIN</span>
                     </button>
                 </div>

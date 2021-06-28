@@ -234,6 +234,22 @@
 				</div>
 
 				<div v-else-if="activeMenu == 'Payout'" class="p-6 payout-content">
+					<div v-if="banner && $root.auth.stripe_account" class="mb-6">
+						<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+							<div class="font-serif w-1/4 font-semibold uppercase">
+								SET UP YOUR BANKING DETAILS
+							</div>
+							<div class="w-7/12">
+								<p class="text-muxted mb-4">
+									Use subscriptions to make groups of events where contacts can subscribe to recurring bookings for a recurring cost.
+								</p>
+							</div>
+							<div class="font-serif">
+								<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+							</div>
+						</div>
+					</div>
+
 					<h2 class="font-serif uppercase font-semibold mb-8">Payout Settings</h2>
 					<p class="note text-sm">Please complete this form to make your account legible for payments and payouts. We might require additional documents for verification purposes.</p>
 

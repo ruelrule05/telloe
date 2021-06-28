@@ -18,6 +18,23 @@
 				</div>
 			</div>
 
+			<div v-if="banner" class="p-6 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+					<div class="font-serif w-1/4 font-semibold uppercase">
+						CREATE EVENT TYPES TO ENABLE SELF-SERVE BOOKINGS.
+					</div>
+					<div class="w-7/12">
+						<p class="text-muxted mb-4">
+							Change the Event Types visible to clients on your public page. Adjust your available times for event types to suit you.
+						</p>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="$router.push('/dashboard/integrations')"><span>EDIT DEFAULT EVENT TYPE</span></button>
+					</div>
+					<div class="font-serif">
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					</div>
+				</div>
+			</div>
+
 			<div v-show="ready" class="flex-grow flex">
 				<!-- Services list -->
 				<template>

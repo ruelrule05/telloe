@@ -54,6 +54,7 @@ export default {
 	directives: { Tooltip },
 
 	data: () => ({
+		banner: true,
 		format: format,
 		getSymbolFromCurrency: getSymbolFromCurrency,
 		newSubscriptionForm: {
@@ -113,7 +114,7 @@ export default {
 		stripeContacts() {
 			let contacts = [];
 			this.contacts.forEach(contact => {
-				if (!contact.is_pending) {
+				if (!contact.is_pending && contact.stripe_customer_id) {
 					contacts.push({
 						text: contact.contact_user.full_name,
 						value: contact.id
