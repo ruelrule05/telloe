@@ -7,29 +7,6 @@
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
-// Route::get('/email', function () {
-//     $booking = App\Models\Booking::find(327);
-//     $email = new App\Mail\UpdateBooking($booking, 'client');
-//     return $email;
-// });
-
-// Route::get('test', function () {
-//     $s3 = \Storage::disk('s3');
-//     $client = $s3->getDriver()->getAdapter()->getClient();
-//     $expiry = '+10 minutes';
-//     $command = $client->getCommand('GetObject', [
-//         'Bucket' => config('filesystems.disks.s3.bucket'),
-//         'Key' => 'file/in/s3/bucket'
-//     ]);
-
-//     $request = $client->createPresignedRequest($command, $expiry);
-
-//     return (string) $request->getUri();
-// });
-
-// Route::get('widget', function () {
-//     return view('widget', ['profile' => App\Models\User::find(3)]);
-// });
 
 Route::group(
     [
