@@ -349,7 +349,9 @@ class UserService
                     'email' => $attendeeEmail
                 ];
             }
+            $time = time();
             $event = new Google_Service_Calendar_Event([
+                'id' => 'telloebooking' . $booking->id . $time,
                 'summary' => $booking->service->name,
                 'description' => $booking->service->description,
                 'start' => [
