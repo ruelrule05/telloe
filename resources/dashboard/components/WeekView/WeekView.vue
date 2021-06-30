@@ -25,7 +25,7 @@
 			</template>
 
 			<template #event="{ event }">
-				<div class="flex justify-between h-full relative">
+				<div class="flex justify-between h-full relative" :data-booking-id="(event.booking || {}).id">
 					<div class="overflow-hidden">
 						<div>{{ event.name }}</div>
 						<div>{{ convertTime(event.start, 'hh:mmA') }}&mdash;{{ convertTime(event.end, 'hh:mmA') }}</div>

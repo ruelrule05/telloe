@@ -362,7 +362,6 @@ export default {
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			let bookings = await this.storeBooking(data);
 			if (bookings) {
-				this.$emit('store', bookings);
 				this.close();
 			}
 			this.loading = false;

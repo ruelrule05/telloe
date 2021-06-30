@@ -22,7 +22,7 @@
 				</div>
 			</template>
 			<template #event="{ event }">
-				<div class="flex justify-between h-full relative">
+				<div class="flex justify-between h-full relative" :data-booking-id="(event.booking || {}).id">
 					<div>
 						<div>{{ event.name }}</div>
 						<div>{{ dayjs(event.start).format('hh:mmA') }}&mdash;{{ dayjs(event.end).format('hh:mmA') }}</div>
