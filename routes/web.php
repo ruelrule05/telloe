@@ -167,8 +167,7 @@ Route::group(
             // Booking page
             Route::group([
                 'prefix' => '@{username}',
-                'name' => 'bookingPage',
-                'middleware' => 'iframe'
+                'name' => 'bookingPage'
             ], function () {
                 Route::get('', 'UserController@profile')->name('profile');
                 Route::get('/{service_id}/timeslots', 'UserController@serviceTimeslots')->name('profile.service.timeslots');
@@ -219,8 +218,8 @@ Route::group(
             });
         });
 
-        Route::get('/@{username}', 'UserController@profile')->name('bookingPage')->middleware('iframe');
-        Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage')->middleware('iframe');
+        Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
+        Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
     }
 );
