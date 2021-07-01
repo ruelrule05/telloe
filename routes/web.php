@@ -219,8 +219,8 @@ Route::group(
             });
         });
 
-        Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
-        Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
+        Route::get('/@{username}', 'UserController@profile')->name('bookingPage')->middleware('iframe');
+        Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage')->middleware('iframe');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
     }
 );
