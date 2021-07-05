@@ -68,7 +68,17 @@
 						<multiselect v-else v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
-								<button v-if="isEmail.validate(data.search)" type="button" @click="addEmail(data.search)" class="btn btn-sm btn-outline-primary"><span>Add this email</span></button>
+								<button
+									v-if="isEmail.validate(data.search)"
+									type="button"
+									@click="
+										emailToAdd.email = data.search;
+										$refs.addEmailModal.show();
+									"
+									class="btn btn-sm btn-outline-primary"
+								>
+									<span>Add this email</span>
+								</button>
 								<span v-else>No contacts found.</span>
 							</div>
 						</multiselect>
@@ -264,6 +274,33 @@
 					<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.deleteModal.hide()"><span>Cancel</span></button>
 					<button class="btn btn-sm btn-red" type="button" @click="confirmDeleteBooking"><span>Delete</span></button>
 				</div>
+			</Modal>
+
+			<Modal ref="addEmailModal" size="sm">
+				<h6 class="font-serif font-semibold mb-5 uppercase">Add Email</h6>
+				<vue-form-validate @submit="addEmail">
+					<div class="mb-4">
+						<label required>Email</label>
+						<input type="text" v-model="emailToAdd.email" data-required />
+					</div>
+
+					<div class="mb-4">
+						<label>First Name</label>
+						<input type="text" v-model="emailToAdd.first_name" />
+					</div>
+
+					<label>Last Name</label>
+					<input type="text" v-model="emailToAdd.last_name" />
+
+					<div class="mt-8 flex justify-between">
+						<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.addEmailModal.hide()">
+							<span>Cancel</span>
+						</button>
+						<button class="btn btn-primary btn-md" type="submit">
+							<span>Add</span>
+						</button>
+					</div>
+				</vue-form-validate>
 			</Modal>
 		</template>
 	</div>

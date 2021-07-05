@@ -39,7 +39,7 @@
 							<h6 class="mb-1 font-bold">{{ service.name }}</h6>
 							<span class="text-muted">Duration: {{ service.duration }} min</span>
 
-							<div class="flex items-center mt-4">
+							<div class="flex items-center mt-4 flex-wrap">
 								<!-- <div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(selectedService.bookings - packageItem.contact_packages.filter(p => p.service.id == service.id).length))" :key="index"> -->
 
 								<div class="mr-2 mb-2 inline-block" v-for="(block, index) in new Array(parseInt(service.bookings))" :key="index">

@@ -184,15 +184,17 @@ class BookingService
             }
 
             $emails = array_unique($data['emails']);
-            foreach ($emails as $email) {
+            foreach ($emails as $data) {
                 BookingUser::create([
                     'booking_id' => $booking->id,
                     'user_id' => null,
                     'guest' => [
-                        'email' => $email
+                        'email' => $data['email'],
+                        'first_name' => $data['first_name'],
+                        'last_name' => $data['last_name'],
                     ]
                 ]);
-                $attendees[] = ['email' => $email];
+                $attendees[] = ['email' => $data['email']];
             }
 
             // Check if Google Calendar is integrated

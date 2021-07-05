@@ -72,6 +72,11 @@ export default {
 		includeGoogleCalendar: false,
 		masks: {
 			input: 'MMMM D, YYYY'
+		},
+		emailToAdd: {
+			email: '',
+			first_name: '',
+			last_name: ''
 		}
 	}),
 
@@ -269,21 +274,23 @@ export default {
 			}
 		},
 
-		addEmail(email) {
-			let exists = this.selectedContacts.find(x => x.email == email);
+		addEmail() {
+			let exists = this.selectedContacts.find(x => x.email == this.emailToAdd);
 			if (!exists) {
 				this.selectedContacts.push({
-					id: email,
-					name: email,
+					id: this.emailToAdd.email,
+					name: this.emailToAdd.email,
 					contact_user: {
-						initials: email[0].toUpperCase(),
-						full_name: email,
+						initials: this.emailToAdd.email[0].toUpperCase(),
+						full_name: this.emailToAdd.email,
 						timezone: this.$root.auth.timezone
 					},
+					data: this.emailToAdd,
 					type: 'email'
 				});
 			}
 			this.$refs.selectedContacts.deactivate();
+			this.$refs.addEmailModal.hide();
 		},
 
 		selectTimeslot(timeslot) {
@@ -358,7 +365,7 @@ export default {
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service;
 			data.contact_ids = this.selectedContacts.filter(x => x.type != 'email').map(x => x.id);
-			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.name);
+			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			let bookings = await this.storeBooking(data);
 			if (bookings) {

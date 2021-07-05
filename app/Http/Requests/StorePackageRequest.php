@@ -27,7 +27,7 @@ class StorePackageRequest extends FormRequest
             'name' => 'required|max:191|string',
             'description' => 'required|max:255|string',
             'services' => 'required|array',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|min:1',
         ];
     }
 }

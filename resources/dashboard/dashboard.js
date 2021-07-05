@@ -174,6 +174,9 @@ window.app = new Vue({
 			this.appChannel = this.$echo.private('AppChannel');
 			this.appChannel.listenForWhisper('newMessage', message => {
 				this.newMessage(message);
+				if (this.callConversation && this.callConversation.id == message.conversation_id && this.$refs.videoCall) {
+					this.$refs.videoCall.hasNewMessage = true;
+				}
 			});
 
 			this.userChannel = this.$echo.private(`users.${this.auth.id}`);

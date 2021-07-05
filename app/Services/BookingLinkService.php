@@ -128,16 +128,19 @@ class BookingLinkService
         $user = Auth::user();
         $email = $user->email ?? $request->email;
         $bookingLinkContact = false;
-        if ($user) {
-            $bookingLinkContact = $bookingLink->whereHas('bookingLinkContacts', function ($bookingLinkContact) use ($user) {
-                $bookingLinkContact->whereHas('contact', function ($contact) use ($user) {
-                    $contact->where('contact_user_id', $user->id);
-                });
-            })->exists();
-        }
+        $bookingLinkContact = $bookingLink->bookingLinkContacts()->whereHas('contact', function ($contact) use ($email) {
+            $contact->where('email', $email);
+        })->first();
         $inEmails = in_array($email, Arr::pluck($bookingLink->emails, 'email'));
+        $authAction = 'signup';
+        if ($bookingLinkContact && $bookingLinkContact->contact->contact_user_id) {
+            $authAction = 'login';
+        }
+        if ($user) {
+            $authAction = null;
+        }
         if ($email == $bookingLink->user->email || $inEmails || $bookingLinkContact) {
-            return view('booking-link', compact('bookingLink', 'user', 'inEmails'));
+            return view('booking-link', compact('bookingLink', 'user', 'inEmails', 'authAction'));
         }
         return abort(403);
     }

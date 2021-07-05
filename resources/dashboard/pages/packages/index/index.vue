@@ -187,13 +187,13 @@
 
 						<div v-for="(service, index) in newPackage.services" :key="service.id" class="rounded-xl bg-gray-100 px-3 py-2 mt-2 flex items-center">
 							<h6 class="text-sm text-primary font-semibold">{{ service.name }}</h6>
-							<input type="number" class="w-1/3 ml-auto" data-required placeholder="Bookings" min="1" v-model="newPackage.services[index].bookings" value="1" />
+							<input type="number" min="1" max="50" class="w-1/3 ml-auto" data-required placeholder="Bookings" v-model="newPackage.services[index].bookings" value="1" />
 						</div>
 					</div>
 
 					<div class="mb-4">
 						<label required>Package Total</label>
-						<input type="number" step="0.01" v-model="newPackage.price" data-required placeholder="Package Price" />
+						<input type="number" min="1" step="0.01" v-model="newPackage.price" data-required placeholder="Package Price" />
 					</div>
 				</fieldset>
 				<div class="flex items-center justify-between mt-6">
