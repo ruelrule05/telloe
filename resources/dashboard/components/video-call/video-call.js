@@ -118,7 +118,8 @@ export default {
 		duration: 0,
 		timer: null,
 		isCalling: false,
-		showMessages: false
+		showMessages: false,
+		hasNewMessage: false
 	}),
 
 	watch: {
@@ -153,8 +154,8 @@ export default {
 					this.caller = conversation.member;
 					this.$root.callConversation = conversation;
 					this.remoteCallID = data.username;
-					if (!conversation.channel) {
-						conversation.channel = this.$echo.private(`conversations.${conversation.id}`);
+					if (!this.$root.callConversation.channel) {
+						this.$root.callConversation.channel = this.$echo.private(`conversations.${conversation.id}`);
 					}
 					this.incomingCall(conversation);
 				}

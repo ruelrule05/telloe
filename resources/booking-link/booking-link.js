@@ -1,6 +1,6 @@
 /* global AUTH */
 /* global BOOKING_LINK */
-/* global IN_EMAILS */
+/* global AUTH_ACTION */
 require('../js/bootstrap');
 import dayjs from 'dayjs';
 import jstz from 'jstz';
@@ -29,7 +29,6 @@ export default {
 	data: () => ({
 		auth: AUTH,
 		bookingLink: BOOKING_LINK,
-		in_emails: IN_EMAILS,
 		echo: echo,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		selectedTimeslots: [],
@@ -49,7 +48,7 @@ export default {
 			lastName: '',
 			password: ''
 		},
-		authAction: 'register',
+		authAction: AUTH_ACTION,
 		hoveredTimeslot: null,
 		dayjs: dayjs,
 		requestData: null,
@@ -162,15 +161,15 @@ export default {
 
 		this.selectedDate = Object.keys(this.bookingLink.dates)[0];
 
-		if (this.in_emails) {
+		if (this.authAction) {
 			let url = new URL(window.location.href);
 			this.email = url.searchParams.get('email');
 		}
 	},
 
 	mounted() {
-		if (this.in_emails) {
-			this.$refs.loginModal.show();
+		if (this.authAction) {
+			this.$refs.authModal.show();
 		}
 	},
 
