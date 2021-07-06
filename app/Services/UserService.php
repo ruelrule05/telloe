@@ -201,7 +201,7 @@ class UserService
                 'end' => $end->format('H:i'),
                 'meeting_type' => $timeslot['type'],
                 'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
-            ], $customer, $guest);
+            ], $customer, $guest, $request);
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
                 $timeslotDayName = Carbon::parse($timeslot['date']['format'])->format('l');
@@ -245,7 +245,7 @@ class UserService
                             'end' => $end->format('H:i'),
                             'meeting_type' => $timeslot['type'],
                             'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
-                        ], $customer, $guest);
+                        ], $customer, $guest, $request);
                         if ($recurringBooking) {
                             //$bookings[] = $recurringBooking;
                             $booking->recurring = true;
@@ -305,7 +305,7 @@ class UserService
         return $bookings;
     }
 
-    public static function createBooking($service, $data, $customer, $guest = NULL)
+    public static function createBooking($service, $data, $customer, $guest = NULL, $request)
     {
         $service->load('user');
         $availableTimeslots = $service->timeslots($data['date']);
@@ -337,6 +337,16 @@ class UserService
             'user_id' => $customer->id ?? NULL,
             'guest' => $guest
         ]);
+
+        if (count($request->guests) > 0) {
+            foreach ($request->guests as $email) {
+                $bookingUser = BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => NULL,
+                    'guest' => ['email' => $email]
+                ]);
+            }
+        }
 
         if ($service->user->google_calendar_token && $service->user->google_calendar_id) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->user);

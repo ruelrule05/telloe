@@ -173,3 +173,9 @@ input.is-invalid:not(:focus) {
 .input-cc {
 	@apply ring-0 ring-offset-0 #{!important};
 }
+
+::v-deep .multiselect__content {
+	> li:last-child {
+		@apply hidden;
+	}
+}

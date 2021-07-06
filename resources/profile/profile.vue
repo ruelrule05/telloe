@@ -385,9 +385,12 @@
 					</div>
 					<div class="lg:w-8/12 min-h-screen bg-white">
 						<div class="grid lg:grid-cols-2 border-bottom">
-							<div class="border-right lg:p-16 p-8">
-								<vue-form-validate @submit="bookGuest">
-									<h6 class="text-primary font-semibold font-serif text-3xl mb-8">Book as guest</h6>
+							<div class="border-right lg:p-8 p-4">
+								<div class="flex items-center justify-between">
+									<h6 class="font-semibold font-serif mb-8 cursor-pointer" :class="{ 'text-primary': authFormAction == 'asGuest' }" @click="authFormAction = 'asGuest'">Book as guest</h6>
+									<h6 class="font-semibold font-serif mb-8 cursor-pointer" :class="{ 'text-primary': authFormAction == 'logIn' }" @click="authFormAction = 'logIn'">Log In</h6>
+								</div>
+								<vue-form-validate v-if="authFormAction == 'asGuest'" @submit="bookGuest">
 									<div class="mb-4">
 										<label class="text-muted">First Name</label>
 										<input v-model="guest.first_name" type="text" data-required />
@@ -402,10 +405,8 @@
 									</div>
 									<button class="btn btn-primary" type="submit"><span>Book as guest</span></button>
 								</vue-form-validate>
-							</div>
-							<div class="lg:p-16 p-8">
-								<vue-form-validate @submit="LoginAndBook">
-									<h6 class="text-primary font-semibold font-serif text-3xl mb-4">Log In</h6>
+
+								<vue-form-validate v-else-if="authFormAction == 'logIn'" @submit="LoginAndBook">
 									<div class="text-muted mb-6">Book using an existing account</div>
 									<div class="mb-4">
 										<label class="text-muted">E-mail address</label>
@@ -425,6 +426,19 @@
 										</div>
 									</div>
 								</vue-form-validate>
+							</div>
+							<div class="lg:p-8 p-4">
+								<h6 class="font-semibold font-serif mb-8">Add guests</h6>
+
+								<multiselect v-model="guests" ref="guestsSelect" :options="[]" :showLabels="false" placeholder="Add an email" multiple clearOnSelect>
+									<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+									<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
+										<button v-if="isEmail.validate(data.search)" type="button" @click="addEmail(data.search)" class="btn btn-sm btn-outline-primary">
+											<span>Add this email</span>
+										</button>
+										<span v-else>Invalid email</span>
+									</div>
+								</multiselect>
 							</div>
 						</div>
 					</div>
