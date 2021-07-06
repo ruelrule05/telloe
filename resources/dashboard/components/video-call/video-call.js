@@ -119,7 +119,9 @@ export default {
 		timer: null,
 		isCalling: false,
 		showMessages: false,
-		hasNewMessage: false
+		hasNewMessage: false,
+		hasDevices: false,
+		gettingDevices: true
 	}),
 
 	watch: {
@@ -410,11 +412,7 @@ export default {
 		},
 
 		async addLocalStream() {
-			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(error => {
-				if (error) {
-					this.$toasted.error('Unable to capture your camera.');
-				}
-			});
+			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => {});
 			if (streams && !this.localStream && this.$refs['cameraPreview']) {
 				this.localStream = streams;
 				this.$refs['cameraPreview'].muted = true;
@@ -484,25 +482,35 @@ export default {
 		async outgoingCall(conversation, camera = true) {
 			this.isCalling = true;
 			this.open = true;
-			this.conversation = conversation;
 			this.action = 'outgoing';
-			this.isVideoStopped = !camera;
-			this.isIncoming = false;
-			clearTimeout(this.callTimeout);
+			this.hasDevices = await this.checkDevices();
+			if (this.hasDevices) {
+				this.conversation = conversation;
+				this.isVideoStopped = !camera;
+				this.isIncoming = false;
+				clearTimeout(this.callTimeout);
+				if (!this.$root.muted) this.notification_sound.play();
 
-			await this.initConnection();
-			if (!this.$root.muted) this.notification_sound.play();
-			this.$root.appChannel.whisper('liveCallIncoming', {
-				conversation_id: conversation.id,
-				user_id: this.$root.auth.id,
-				username: this.username
-			});
-			this.$root.callConversation = conversation;
-			this.callTimeout = setTimeout(() => {
-				if (!this.status) {
-					this.endCall();
-				}
-			}, 30000);
+				await this.initConnection();
+				this.$root.appChannel.whisper('liveCallIncoming', {
+					conversation_id: conversation.id,
+					user_id: this.$root.auth.id,
+					username: this.username
+				});
+				this.$root.callConversation = conversation;
+				this.callTimeout = setTimeout(() => {
+					if (!this.status) {
+						this.endCall();
+					}
+				}, 30000);
+			}
+		},
+
+		async checkDevices() {
+			this.gettingDevices = true;
+			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => {});
+			this.gettingDevices = false;
+			return streams ? true : false;
 		},
 
 		async sendMessage(message, broadcast = false) {
@@ -517,12 +525,15 @@ export default {
 			});
 		},
 
-		incomingCall(conversation) {
-			this.conversation = conversation;
-			this.open = true;
-			if (!this.$root.muted) this.notification_sound.play();
-			this.isIncoming = true;
-			this.action = 'incoming';
+		async incomingCall(conversation) {
+			this.hasDevices = await this.checkDevices();
+			if (this.hasDevices) {
+				this.conversation = conversation;
+				this.open = true;
+				if (!this.$root.muted) this.notification_sound.play();
+				this.isIncoming = true;
+				this.action = 'incoming';
+			}
 		},
 
 		answerCall() {
@@ -561,26 +572,6 @@ export default {
 						);
 					}
 				}
-				this.isCalling = false;
-				this.duration = 0;
-				this.caller = null;
-				this.timer = null;
-				this.localCameraReady = false;
-				this.remoteCameraReady = false;
-				this.isAnswered = false;
-				this.videoAnswer = null;
-				this.callRecorder = null;
-				this.status = '';
-				this.action = '';
-				this.open = false;
-				this.notification_sound.pause();
-				this.isMuted = false;
-				this.isVideoStopped = false;
-				this.isScreenSharing = false;
-				this.isFullScreen = false;
-				this.isIncoming = false;
-				this.isShrinked = false;
-				this.showMessages = false;
 
 				if (emit && this.$root.appChannel) {
 					this.$root.appChannel.whisper('liveCallEnd', {
@@ -588,27 +579,47 @@ export default {
 						uid: this.username
 					});
 				}
-
-				if (this.peer) {
-					this.peer.close();
-				}
-				if (this.signal) {
-					this.signal.close();
-				}
-
-				this.notification_sound.pause();
-				this.notification_sound.currentTime = 0;
-				this.$root.callConversation = null;
-
-				if (this.isRecording) this.recordCall();
-				else {
-					if (this.draggable) this.draggable.remove();
-					this.draggable = null;
-				}
-				//$(this.$refs['remoteStreams']).empty();
-				if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
-				this.stopLocalStream();
 			}
+			this.isCalling = false;
+			this.duration = 0;
+			this.caller = null;
+			this.timer = null;
+			this.localCameraReady = false;
+			this.remoteCameraReady = false;
+			this.isAnswered = false;
+			this.videoAnswer = null;
+			this.callRecorder = null;
+			this.status = '';
+			this.action = '';
+			this.open = false;
+			this.notification_sound.pause();
+			this.isMuted = false;
+			this.isVideoStopped = false;
+			this.isScreenSharing = false;
+			this.isFullScreen = false;
+			this.isIncoming = false;
+			this.isShrinked = false;
+			this.showMessages = false;
+
+			if (this.peer) {
+				this.peer.close();
+			}
+			if (this.signal) {
+				this.signal.close();
+			}
+
+			this.notification_sound.pause();
+			this.notification_sound.currentTime = 0;
+			this.$root.callConversation = null;
+
+			if (this.isRecording) this.recordCall();
+			else {
+				if (this.draggable) this.draggable.remove();
+				this.draggable = null;
+			}
+			//$(this.$refs['remoteStreams']).empty();
+			if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
+			this.stopLocalStream();
 		},
 
 		fullScreen(state) {

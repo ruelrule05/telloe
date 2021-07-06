@@ -15,24 +15,34 @@
 			<microphone-mute-icon class="hidden fill-current text-red-600" ref="microphoneMute"></microphone-mute-icon>
 			<!-- Outgoing -->
 			<div class="modal-body col-start-5 col-span-3 text-center bg-white" v-if="action == 'outgoing'">
-				<div class="p-6">
-					<h6 class="text-primary font-serif font-semibold mb-10">CALLING...</h6>
-					<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + $root.callConversation.member.profile_image + ')' }">
-						<span v-if="!$root.callConversation.member.profile_image">{{ $root.callConversation.member.initials }}</span>
+				<template v-if="!gettingDevices">
+					<template v-if="hasDevices">
+						<div class="p-6">
+							<h6 class="text-primary font-serif font-semibold mb-10">CALLING...</h6>
+							<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + $root.callConversation.member.profile_image + ')' }">
+								<span v-if="!$root.callConversation.member.profile_image">{{ $root.callConversation.member.initials }}</span>
+							</div>
+							<h3 class="mb-8">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h3>
+						</div>
+						<div class="bg-secondary-light p-6 flex items-center justify-center">
+							<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleVideo">
+								<video-muted-icon v-if="isVideoStopped" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></video-muted-icon>
+								<videocam-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></videocam-icon>
+							</button>
+							<button class="mx-2 bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="endCall(true, true)"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
+							<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleMic">
+								<microphone-mute-icon v-if="isMuted" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-mute-icon>
+								<microphone-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-icon>
+							</button>
+						</div>
+					</template>
+					<div v-else class="pt-10 pb-6 px-4 text-center">
+						<video-muted-icon height="30" width="30" class="fill-current text-gray-400 inline-block"></video-muted-icon>
+						<p class="text-sm mt-6 mb-6">There are no input devices found. Please connect your webcam and microphone to start a call. <br /><br />Click <a href="https://docs.telloe.com/communication" target="_blank" class="text-blue-500 underline">here</a> for more information.</p>
+
+						<button class="btn btn-md btn-outline-primary" type="button" @click="endCall(false)"><span>Close</span></button>
 					</div>
-					<h3 class="mb-8">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h3>
-				</div>
-				<div class="bg-secondary-light p-6 flex items-center justify-center">
-					<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleVideo">
-						<video-muted-icon v-if="isVideoStopped" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></video-muted-icon>
-						<videocam-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></videocam-icon>
-					</button>
-					<button class="mx-2 bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="endCall(true, true)"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
-					<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleMic">
-						<microphone-mute-icon v-if="isMuted" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-mute-icon>
-						<microphone-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></microphone-icon>
-					</button>
-				</div>
+				</template>
 			</div>
 
 			<!-- Incoming -->
@@ -44,10 +54,21 @@
 					</div>
 					<h3 class="mb-8">{{ caller.full_name || caller.name }}</h3>
 				</div>
-				<div class="bg-secondary-light p-6 flex items-center justify-center">
-					<button class="bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="rejectCall()"><close-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></close-icon></button>
-					<button class="ml-2 bg-green-600 border border-green-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="answerCall()"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
-				</div>
+
+				<template v-if="!gettingDevices">
+					<template v-if="hasDevices">
+						<div class="bg-secondary-light p-6 flex items-center justify-center">
+							<button class="bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="rejectCall()"><close-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></close-icon></button>
+							<button class="ml-2 bg-green-600 border border-green-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="answerCall()"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
+						</div>
+					</template>
+
+					<div v-else class="pb-6 px-4 text-center">
+						<p class="text-sm mb-6">There are no input devices found. Please connect your webcam and microphone to start a call. <br /><br />Click <a href="https://docs.telloe.com/communication" target="_blank" class="text-blue-500 underline">here</a> for more information.</p>
+
+						<button class="btn btn-md btn-outline-primary" type="button" @click="rejectCall()"><span>Close</span></button>
+					</div>
+				</template>
 			</div>
 
 			<!-- Ongoing -->

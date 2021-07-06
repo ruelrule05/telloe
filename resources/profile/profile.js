@@ -72,9 +72,13 @@ import SocialLogin from '../js/helpers/SocialLogin';
 import PhoneIcon from '../icons/call-menu.vue';
 import SkypeIcon from '../icons/skype.vue';
 import timezoneTime from '../js/helpers/TimezoneTime.js';
+import Multiselect from 'vue-multiselect';
+const isEmail = require('isemail');
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
 	components: {
+		Multiselect,
 		SkypeIcon,
 		PhoneIcon,
 		VueFormValidate,
@@ -124,6 +128,8 @@ export default {
 	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
 
 	data: () => ({
+		guests: [],
+		isEmail: isEmail,
 		noServiceForWidget: false,
 		timezoneTime: timezoneTime,
 		profile: PROFILE,
@@ -215,7 +221,8 @@ export default {
 		bookingLoading: false,
 		creatingAccount: false,
 		phone: '',
-		skype: ''
+		skype: '',
+		authFormAction: 'asGuest'
 	}),
 
 	computed: {
@@ -427,6 +434,11 @@ export default {
 	},
 
 	methods: {
+		addEmail(email) {
+			this.guests.push(email);
+			this.$refs.guestsSelect.$el.querySelector('input').blur();
+		},
+
 		addToCalendar(calendar, booking) {
 			switch (calendar) {
 				case 'Google Calendar':
@@ -532,6 +544,7 @@ export default {
 			data.phone = this.phone;
 			data.skype = this.skype;
 			data.timezone = this.timezone;
+			data.guests = this.guests;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -564,6 +577,7 @@ export default {
 			data.phone = this.phone;
 			data.skype = this.skype;
 			data.timezone = this.timezone;
+			data.guests = this.guests;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -597,6 +611,7 @@ export default {
 				data.phone = this.phone;
 				data.skype = this.skype;
 				data.timezone = this.timezone;
+				data.guests = this.guests;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
@@ -631,6 +646,7 @@ export default {
 				data.phone = this.phone;
 				data.skype = this.skype;
 				data.timezone = this.timezone;
+				data.guests = this.guests;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}

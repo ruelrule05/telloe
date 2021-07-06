@@ -235,16 +235,16 @@ fieldset.disabled input {
 }
 .multiselect {
 	.multiselect__tags-wrap {
-		@apply flex items-center;
+		@apply flex items-center flex-wrap;
+		padding-top: 5px;
+		padding-left: 5px;
 	}
 	.multiselect__select {
 		display: none !important;
 	}
 	.multiselect__tags {
-		@apply border border-gray-300 text-sm flex items-center rounded-md font-medium w-full outline-none p-0 transition-all ring-primary ring-offset-1 focus-within:border-gray-500 focus-within:ring-2 shadow-inner overflow-hidden #{!important};
-		.multiselect__tag:not(:nth-child(1)) {
-			@apply ml-0 #{!important};
-		}
+		@apply border border-gray-300 text-sm flex items-center rounded-md font-medium w-full outline-none p-0 transition-all flex-wrap ring-primary ring-offset-1 focus-within:border-gray-500 focus-within:ring-2 shadow-inner overflow-hidden #{!important};
+
 		&:focus-within {
 			.multiselect__input {
 				@apply opacity-100 pointer-events-auto #{!important};
@@ -256,7 +256,9 @@ fieldset.disabled input {
 		@apply w-64 #{!important};
 	}
 	.multiselect__tag {
-		@apply bg-gray-200 text-body mb-1 p-2 pr-7 m-1 cursor-pointer #{!important};
+		@apply bg-gray-200 text-body p-2 pr-7 cursor-pointer #{!important};
+		margin-bottom: 5px !important;
+		margin-right: 5px !important;
 	}
 	.multiselect__tag-icon {
 		@apply bg-gray-300 rounded-full hover:bg-red-600;
