@@ -19,6 +19,14 @@ class BookingsTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testGet()
+    {
+        $this->booking = \App\Models\Booking::first();
+        $uuid = $this->booking->uuid;
+        $response = $this->actingAs($this->user)->get($this->app_url . "/bookings/$uuid", $this->headers);
+        $response->assertStatus(200);
+    }
+
     public function testUpcomingBookings() 
     {
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/bookings/upcoming', $this->headers);
