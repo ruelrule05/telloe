@@ -28,7 +28,8 @@ export default {
 		googleCalendarEvents: [],
 		contactBookings: [],
 		timezone: '',
-		banner: true
+		banner: false,
+		cookieItem: 'telloe_calendar_banner'
 	}),
 
 	computed: {
@@ -132,9 +133,26 @@ export default {
 				});
 		});
 		this.getGoogleCalendarEvents();
+		this.checkCookie();
 	},
 
 	methods: {
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
+
 		...mapActions({
 			getUpcomingBookings: 'bookings/getUpcomingBookings',
 			getGoogleCalendars: 'bookings/getGoogleCalendars'

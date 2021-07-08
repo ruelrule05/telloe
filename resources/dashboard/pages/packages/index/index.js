@@ -22,13 +22,14 @@ import CloseIcon from '../../../../icons/close.vue';
 export default {
 	components: { Modal, VueFormValidate, VueSelect, PlusIcon, CalendarIcon, CoinIcon, PackageIcon, ToggleSwitch, MoreIcon, VueCheckbox, InfoCircleIcon, VueDropdown, CogIcon, Multiselect, CloseIcon },
 	data: () => ({
-		banner: true,
+		banner: false,
 		newPackage: {},
 		clonedPackage: null,
 		selectedPackage: null,
 		masks: {
 			input: 'MMMM D, YYYY'
-		}
+		},
+		cookieItem: 'telloe_packages_banner'
 	}),
 
 	computed: {
@@ -65,6 +66,7 @@ export default {
 		this.$root.contentloading = !this.ready;
 		this.getServices();
 		this.getPackages();
+		this.checkCookie();
 	},
 
 	mounted() {
@@ -85,6 +87,22 @@ export default {
 			updatePackage: 'packages/update',
 			deletePackage: 'packages/delete'
 		}),
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
 
 		packageAction(action, packageItem) {
 			switch (action) {

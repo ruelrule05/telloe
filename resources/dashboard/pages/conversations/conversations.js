@@ -4,6 +4,7 @@ import Show from './show/show.vue';
 import Modal from '../../../components/modal/modal.vue';
 import CloseIcon from '../../../icons/close';
 const isEmail = require('isemail');
+const dayjs = require('dayjs');
 export default {
 	components: { Index, Show, Modal, CloseIcon },
 	created() {
@@ -12,6 +13,7 @@ export default {
 		if (this.$route.query.tab) {
 			this.$root.detailsTab = this.$route.query.tab;
 		}
+		this.checkCookie();
 	},
 
 	mounted() {
@@ -36,7 +38,8 @@ export default {
 		},
 		userSearch: '',
 		isEmail: isEmail,
-		banner: true
+		banner: false,
+		cookieItem: 'telloe_conversations_banner'
 	}),
 
 	computed: {
@@ -92,6 +95,22 @@ export default {
 			getMembers: 'members/index',
 			storeConversation: 'conversations/store'
 		}),
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
 
 		createConversation() {
 			if (this.newConversation.members.length > 0) {

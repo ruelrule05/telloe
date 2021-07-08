@@ -11,7 +11,7 @@ function checkRequestInviteToken(Illuminate\Http\Request $request = null)
         $user = Auth::user();
         $invite_token = session()->pull('invite_token');
         $member_invite_token = session()->pull('member_invite_token');
-        if ($invite_token) {
+        if ($invite_token && $request) {
             $request->invite_token = $invite_token;
             checkInviteToken($user, $request);
         }

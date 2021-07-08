@@ -51,7 +51,7 @@ export default {
 	directives: { Tooltip },
 
 	data: () => ({
-		banner: true,
+		banner: false,
 		newInvoiceForm: {
 			contact_id: '',
 			loading: false,
@@ -123,7 +123,8 @@ export default {
 		invoiceToDelete: null,
 		invoiceToVoid: null,
 		invoiceToEdit: null,
-		loading: true
+		loading: true,
+		cookieItem: 'telloe_invoices_banner'
 	}),
 
 	computed: {
@@ -175,6 +176,7 @@ export default {
 		this.getUserContacts({ nopaginate: true });
 		this.getServices();
 		this.getStripeInvoices();
+		this.checkCookie();
 	},
 
 	mounted() {
@@ -197,6 +199,22 @@ export default {
 			storePendingInvoice: 'pending_invoices/store',
 			deletePendingInvoice: 'pending_invoices/delete'
 		}),
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
 
 		async invoiceAction(action, invoice) {
 			if (action.value == 'download') {

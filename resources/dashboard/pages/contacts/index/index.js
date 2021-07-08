@@ -23,6 +23,7 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import MessageIcon from '../../../../icons/comment';
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
+const dayjs = require('dayjs');
 
 export default {
 	components: {
@@ -51,7 +52,7 @@ export default {
 	},
 
 	data: () => ({
-		banner: true,
+		banner: false,
 		filterTags: [],
 		actions: ['Edit', 'Delete'],
 		infoTab: '',
@@ -112,7 +113,8 @@ export default {
 		],
 		csvContacts: [],
 		csvPreview: false,
-		page: 1
+		page: 1,
+		cookieItem: 'telloe_contacts_banner'
 	}),
 
 	computed: {
@@ -212,6 +214,7 @@ export default {
 				contact.is_pending = false;
 			}
 		});
+		this.checkCookie();
 		// this.$root.socket.on('invite_token', invite_token => {
 		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
 		// });
@@ -240,6 +243,22 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			storeConversation: 'conversations/store'
 		}),
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
 
 		async submitImportCsv() {
 			if (this.csvFile && this.csvContacts.length > 0) {

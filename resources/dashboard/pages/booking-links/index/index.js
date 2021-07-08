@@ -48,9 +48,10 @@ export default {
 		newTimezone: '',
 		timezonesOptions: [],
 		addLink: false,
-		banner: true,
+		banner: false,
 		selectedLink: null,
-		sendingEmail: false
+		sendingEmail: false,
+		cookieItem: 'telloe_bespoke_banner'
 	}),
 
 	computed: {
@@ -128,6 +129,7 @@ export default {
 				value: timezone
 			});
 		});
+		this.checkCookie();
 	},
 
 	methods: {
@@ -136,6 +138,22 @@ export default {
 			storeBookingLink: 'booking_links/store',
 			deleteBookingLink: 'booking_links/delete'
 		}),
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
 
 		copyToClipboard() {
 			if (copy(this.bookingLinkUrl)) {
