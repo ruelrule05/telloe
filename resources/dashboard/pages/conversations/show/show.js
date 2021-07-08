@@ -321,13 +321,23 @@ export default {
 		},
 
 		updateConversationName(e) {
+			if (e.type == 'keypress' && e.which != 13) {
+				return;
+			}
 			if (this.conversation) {
 				let newName = e.target.textContent.trim();
-				if (newName != this.conversation.name) {
+				if (newName.length > 0 && newName != this.conversation.name) {
 					this.conversation.name = newName;
-					this.updateConversation(this.conversation);
+					let data = {
+						id: this.conversation.id,
+						name: this.conversation.name
+					};
+					this.updateConversation(data);
+				} else {
+					e.target.textContent = this.conversation.name;
 				}
 			}
+			e.target.blur();
 		},
 
 		toggleDetailsTab() {

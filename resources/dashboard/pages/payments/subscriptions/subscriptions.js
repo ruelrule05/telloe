@@ -54,7 +54,7 @@ export default {
 	directives: { Tooltip },
 
 	data: () => ({
-		banner: true,
+		banner: false,
 		format: format,
 		getSymbolFromCurrency: getSymbolFromCurrency,
 		newSubscriptionForm: {
@@ -92,7 +92,8 @@ export default {
 		hasSubscriptions: false,
 		invoiceLoading: false,
 		loading: true,
-		subscriptions: []
+		subscriptions: [],
+		cookieItem: 'telloe_subscriptions_banner'
 	}),
 
 	computed: {
@@ -166,6 +167,7 @@ export default {
 		this.getContacts({ nopaginate: true });
 		this.getServices();
 		this.getSubscriptions();
+		this.checkCookie();
 	},
 
 	mounted() {
@@ -185,6 +187,22 @@ export default {
 			cancelContactSubscription: 'contacts/cancel_subscription',
 			getServices: 'services/index'
 		}),
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
 
 		subscriptionAction(action, subscription) {
 			let index = this.subscriptions.findIndex(x => x.id == subscription.id);

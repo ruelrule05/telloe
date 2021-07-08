@@ -73,7 +73,8 @@ window.app = new Vue({
 
 		toggleKnowBase: false,
 		promptCookie: false,
-		isMobile: true
+		isMobile: true,
+		cookieItem: 'telloe_cookie_accepted'
 	},
 
 	computed: {
@@ -206,9 +207,9 @@ window.app = new Vue({
 				intro.enabled = false;
 			});
 		}
-		if (!window.localStorage.getItem('telloe_cookie_accepted')) {
-			this.promptCookie = true;
-		}
+		setTimeout(() => {
+			this.checkCookie();
+		}, 2000);
 	},
 
 	methods: {
@@ -220,13 +221,24 @@ window.app = new Vue({
 			getBookings: 'bookings/index'
 		}),
 
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.promptCookie = true;
+			}
+		},
+
 		refresh() {
 			window.location.reload();
 		},
 
 		clickPrompt() {
 			this.promptCookie = false;
-			window.localStorage.setItem('telloe_cookie_accepted', true);
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
 		newMessage(message) {

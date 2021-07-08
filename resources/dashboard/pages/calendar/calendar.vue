@@ -41,7 +41,7 @@
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$router.push('/dashboard/integrations')"><span>INTEGRATE GOOGLE CALENDAR OR OUTLOOK</span></button>
 				</div>
 				<div class="font-serif">
-					<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+					<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 				</div>
 			</div>
 		</div>
@@ -53,7 +53,7 @@
 
 		<div v-if="!selectedDate" class="flex">
 			<div class="w-1/2">
-				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz"></UpcomingBookings>
+				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents"></UpcomingBookings>
 			</div>
 			<div class="w-1/2 py-6 px-3 border-left calendar-container">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">

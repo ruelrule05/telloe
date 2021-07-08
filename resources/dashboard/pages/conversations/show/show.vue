@@ -10,12 +10,13 @@
 						</div>
 					</div>
 					<div class="ml-2">
-						<h5 class="text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
+						<h5 v-if="conversation.members.length > 1" class="text-xl" contenteditable @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
+						<h5 v-else class="text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
 						<small v-if="conversation.member.is_pending" class="text-warning">Pending account</small>
 						<div class="flex items-center" v-else-if="conversation.member.id && conversation.member.last_online_format">
 							<small class="text-muted">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
 						</div>
-						<small v-else-if="conversation.members.length > 1" class="block text-muted"> {{ conversation.members.length }} members </small>
+						<small v-else-if="conversation.members.length > 1" class="block text-muted"> {{ conversation.members.map(m => m.user.full_name).join(', ') }} </small>
 						<small v-else class="block text-muted">
 							<template>{{ conversation.member.email }}</template>
 						</small>

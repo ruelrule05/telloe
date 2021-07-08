@@ -40,7 +40,7 @@
 						</button>
 					</div>
 					<div class="font-serif">
-						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 					</div>
 				</div>
 			</div>

@@ -178,9 +178,9 @@ class Service extends BaseModel
             // }
 
             $isBreaktime = false;
-            foreach ($this->days[$dayName]['breaktimes'] ?? [] as $breaktime) {
-                $start = str_replace(':', '', $breaktime['start']);
-                $end = str_replace(':', '', $breaktime['end']);
+            if (isset($this->days[$dayName]['breaktimeStart']) && isset($this->days[$dayName]['breaktimeEnd'])) {
+                $start = str_replace(':', '', $this->days[$dayName]['breaktimeStart']);
+                $end = str_replace(':', '', $this->days[$dayName]['breaktimeEnd']);
                 $time = str_replace(':', '', $timeslot['time']);
                 if ($time >= $start && $time <= $end) {
                     $isBreaktime = true;

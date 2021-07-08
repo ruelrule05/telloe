@@ -181,8 +181,11 @@ export default {
 				data.ends_at = dayjs(data.ends_at).format('YYYY-MM-DD');
 			}
 			if (!data.types || !data.types.length) {
-				this.$refs.meetingTypes.$el.querySelector('.btn-dropdown').click();
-				document.querySelector('.dashboard-content').scrollTo(0, document.querySelector('.dashboard-content').scrollHeight);
+				this.activeMenu = 'General Settings';
+				this.$nextTick(() => {
+					this.$refs.meetingTypes.$el.querySelector('.btn-dropdown').click();
+					document.querySelector('.dashboard-content').scrollTo(0, document.querySelector('.dashboard-content').scrollHeight);
+				});
 				return;
 			}
 			if (!data.timezone) {

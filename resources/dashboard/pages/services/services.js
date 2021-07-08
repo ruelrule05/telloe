@@ -7,6 +7,7 @@ import copy from 'copy-text-to-clipboard';
 import Modal from '../../../components/modal/modal.vue';
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import CloseIcon from '../../../icons/close.vue';
+const dayjs = require('dayjs');
 export default {
 	components: {
 		ServiceCard,
@@ -23,7 +24,8 @@ export default {
 		serviceToDelete: null,
 		newService: {},
 		createService: false,
-		banner: true
+		banner: false,
+		cookieItem: 'telloe_event_types_banner'
 	}),
 
 	computed: {
@@ -43,6 +45,7 @@ export default {
 
 	created() {
 		this.getServices();
+		this.checkCookie();
 	},
 
 	methods: {
@@ -51,6 +54,22 @@ export default {
 			storeService: 'services/store',
 			deleteService: 'services/delete'
 		}),
+
+		hideBanner() {
+			this.banner = false;
+			let expires =
+				dayjs()
+					.add(2, 'year')
+					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
+		},
+
+		checkCookie() {
+			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
+			if (!match) {
+				this.banner = true;
+			}
+		},
 
 		confirmAddService() {
 			this.storeService(this.newService);

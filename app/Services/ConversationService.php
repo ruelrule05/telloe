@@ -11,12 +11,13 @@ use App\Models\Member;
 use App\Models\User;
 use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mail;
 
 class ConversationService
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, ValidatesRequests;
 
     public static function index()
     {
@@ -137,32 +138,34 @@ class ConversationService
 
     public function update($id, Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|string|max:100'
+        ]);
         $conversation = Conversation::findOrfail($id);
         $this->authorize('update', $conversation);
 
-        $custom_fields = [];
-        foreach ($request->custom_fields as $custom_field) {
-            if ($custom_field['name'] && $custom_field['value'] && isset($custom_field['is_visible'])) {
-                $custom_fields[] = $custom_field;
-            }
-        }
+        // $custom_fields = [];
+        // foreach ($request->custom_fields as $custom_field) {
+        //     if ($custom_field['name'] && $custom_field['value'] && isset($custom_field['is_visible'])) {
+        //         $custom_fields[] = $custom_field;
+        //     }
+        // }
 
-        $archive_users = $conversation->archive_users;
-        if ($request->archive) {
-            if (! in_array(Auth::user()->id, $archive_users)) {
-                $archive_users[] = Auth::user()->id;
-            }
-        } else {
-            $archive_users = array_values(array_diff($archive_users, [Auth::user()->id]));
-        }
+        // $archive_users = $conversation->archive_users;
+        // if ($request->archive) {
+        //     if (! in_array(Auth::user()->id, $archive_users)) {
+        //         $archive_users[] = Auth::user()->id;
+        //     }
+        // } else {
+        //     $archive_users = array_values(array_diff($archive_users, [Auth::user()->id]));
+        // }
 
-        $conversation->archive_users = $archive_users;
-        $conversation->save();
+        // $conversation->archive_users = $archive_users;
+        // $conversation->save();
 
         $conversation->update([
             'name' => $request->name,
             'tags' => $request->tags,
-            'custom_fields' => $custom_fields,
         ]);
 
         return $conversation;

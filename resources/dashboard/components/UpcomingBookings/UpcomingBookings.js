@@ -11,6 +11,12 @@ export default {
 			type: Array,
 			required: true
 		},
+
+		googleCalendarEvents: {
+			type: Array,
+			required: true
+		},
+
 		timezone: {
 			type: String
 		}
@@ -48,9 +54,12 @@ export default {
 		}
 	},
 
+	created() {},
+
 	methods: {
 		dayBookings(date) {
-			return this.bookings.filter(booking => booking.date == date);
+			let dayBookings = this.bookings.filter(booking => booking.date == date);
+			return dayBookings;
 		}
 	}
 };

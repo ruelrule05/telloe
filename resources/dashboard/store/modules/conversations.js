@@ -82,7 +82,7 @@ const actions = {
 	},
 
 	async update({ commit }, data) {
-		let response = await window.axios.put(`/${name}/${data.id}`, data);
+		let response = await window.axios.put(`/${name}/${data.id}`, data, { toast: true });
 		await commit('update', response.data);
 	}
 };
