@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Carbon\Carbon;
 
 class BookingsTest extends TestCase
 {
@@ -27,6 +28,47 @@ class BookingsTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testStore() {
+        $this->booking = \App\Models\Booking::first();
+        $service_id = $this->booking->service_id;
+        $data = [
+            'service_id' => $service_id,
+            'contact_ids' => [],
+            'emails' => [],
+            'date' => '2021-08-10',
+            'start' => Carbon::now()->addDay(1)->format('H:i'),
+            'end' => Carbon::now()->addDay(1)->format('H:i'),
+            'notes' => 'Test notes',
+            'contact_package_id' => '',
+            'meeting_type' => 'Phone',
+            'timezone' => "Australia/Brisbane",
+        ];
+        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/bookings", $data, $this->headers);
+        $response->assertStatus(200);
+    }
+
+    public function testUpdate() {
+        $this->booking = \App\Models\Booking::latest('id')->first();
+        $id = $this->booking->id;
+        $data = [
+            'date' => '2021-08-10',
+            'start' => Carbon::now()->addDay(1)->format('H:i'),
+            'end' => Carbon::now()->addDay(1)->format('H:i'),
+            'notes' => 'Edited test notes',
+            'timezone' => "Australia/Brisbane",
+        ];
+        $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/bookings/" . $id, $data, $this->headers);
+        $response->assertStatus(200);
+    }
+
+    public function testDelete() {
+        $this->booking = \App\Models\Booking::latest('id')->first();
+        $id = $this->booking->id;
+        $response = $this->actingAs($this->user)->json("DELETE", $this->app_url . '/ajax/bookings/' . $id, $this->headers);
+        
+        $response->assertStatus(200);
+    }
+
     public function testUpcomingBookings() 
     {
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/bookings/upcoming', $this->headers);
@@ -43,8 +85,9 @@ class BookingsTest extends TestCase
     {
         $this->booking = \App\Models\Booking::first();
         $id = $this->booking->id;
+        $service_id = $this->booking->service_id;
         $data = [
-            'service_id' => $this->booking->service_id
+            'service_id' => $service_id
         ];
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/bookings/$id/assign_to_member", $data, $this->headers);
         $response->assertStatus(200);
