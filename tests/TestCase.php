@@ -27,4 +27,14 @@ abstract class TestCase extends BaseTestCase
         $this->user = \App\Models\User::first();
         $this->faker = Faker::create();
     }
+
+    public function withoutAuthorization()
+    {
+        \Gate::before(function () {
+            return true;
+        });
+
+        return $this;
+    }
+
 }
