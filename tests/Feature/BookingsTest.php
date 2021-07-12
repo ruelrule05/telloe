@@ -28,7 +28,9 @@ class BookingsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testStore() {
+    public function testStore() 
+    {
+        $this->withoutAuthorization();
         $this->booking = \App\Models\Booking::first();
         $service_id = $this->booking->service_id;
         $data = [
@@ -41,13 +43,14 @@ class BookingsTest extends TestCase
             'notes' => 'Test notes',
             'contact_package_id' => '',
             'meeting_type' => 'Phone',
-            'timezone' => "Australia/Brisbane",
+            'timezone' => "Australia/Brisbane"
         ];
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/bookings", $data, $this->headers);
         $response->assertStatus(200);
     }
 
-    public function testUpdate() {
+    public function testUpdate() 
+    {
         $this->booking = \App\Models\Booking::latest('id')->first();
         $id = $this->booking->id;
         $data = [
@@ -57,16 +60,26 @@ class BookingsTest extends TestCase
             'notes' => 'Edited test notes',
             'timezone' => "Australia/Brisbane",
         ];
+        $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/bookings/" . $id, $data, $this->headers);
         $response->assertStatus(200);
     }
 
-    public function testDelete() {
+    public function testDelete() 
+    {
+        $this->withoutMiddleware();
+        $this->booking = \App\Models\Booking::latest('id')->first();
+        $id = $this->booking->id;
+        $response = $this->actingAs($this->user)->delete($this->app_url . '/ajax/bookings/' . $id, $this->headers);
+        $response->assertStatus(200);
+    }
+
+    public function testDeleteWithAuth() 
+    {
         $this->booking = \App\Models\Booking::latest('id')->first();
         $id = $this->booking->id;
         $response = $this->actingAs($this->user)->json("DELETE", $this->app_url . '/ajax/bookings/' . $id, $this->headers);
-        
-        $response->assertStatus(200);
+        $response->assertStatus(403);
     }
 
     public function testUpcomingBookings() 
@@ -83,6 +96,7 @@ class BookingsTest extends TestCase
 
     public function testAssignToMember() 
     {
+        $this->withoutAuthorization();
         $this->booking = \App\Models\Booking::first();
         $id = $this->booking->id;
         $service_id = $this->booking->service_id;
