@@ -35,7 +35,11 @@ class NotesTest extends TestCase
     {
         $this->note = \App\Models\Note::first();
         $id = $this->note->id;
-        $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/notes/' . $id, $this->headers);
+        $data = [
+            'notes' => 'Test notes',
+            'tags' => json_decode('[]', true),
+        ];
+        $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/notes/' . $id, $data, $this->headers);
         $response->assertStatus(200);
     }
 
