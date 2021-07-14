@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Organization extends BaseModel
 {
-    //
+    use HasFactory;
     protected $fillable = ['user_id', 'name', 'slug', 'show_user_services'];
     protected $casts = [
         'show_user_services' => 'boolean',
