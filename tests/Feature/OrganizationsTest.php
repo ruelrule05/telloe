@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class OrganizationsTest extends TestCase
 {
@@ -22,8 +23,8 @@ class OrganizationsTest extends TestCase
     public function testStore() 
     {
         $data = [
-            'slug' => $this->faker->randomElements(['male', 'female']),
-            'name' => 'Sample name',
+            'slug' => $this->faker->slug,
+            'name' => $this->faker->company,
             'members' => [],
         ];
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/organizations", $data, $this->headers);
@@ -35,17 +36,17 @@ class OrganizationsTest extends TestCase
         $this->org = \App\Models\Organization::latest('id')->first();
         $id = $this->org->id;
         $data = [
-            'slug' => $this->faker->randomElements(['male', 'female']),
-            'name' => 'Edited sample name',
+            'slug' => $this->faker->slug,
+            'name' => $this->faker->company,
             'show_user_services' => 2,
         ];
-        $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/organizations" . $id, $data, $this->headers);
+        $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/organizations", $data, $this->headers);
         $response->assertStatus(200);
     }
 
     public function testDeleteMember() 
     {
-        $id = 1;
+        $id = 2;
         $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/organizations/$id/delete_member", $this->headers);
         $response->assertStatus(200);
     }
