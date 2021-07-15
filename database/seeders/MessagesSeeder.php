@@ -3,10 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use App\Models\Conversation;
+use App\Models\Message;
 
-class ConversationSeeder extends Seeder
+class MessagesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +14,6 @@ class ConversationSeeder extends Seeder
      */
     public function run()
     {
-        Conversation::factory(2)->create();
+        Message::factory(2)->create();
     }
 }
