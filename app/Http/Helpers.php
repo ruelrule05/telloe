@@ -255,8 +255,13 @@ function countryDialCode($country)
         'Zambia' => '+260',
         'Zimbabwe' => '+263',
     ];
-
-    return $countryArray[$country];
+    try 
+    {
+        return $countryArray[$country];
+    } catch(Exception $err) 
+    {
+        return false;
+    }
 }
 
 function compressVideo($source, $ouput)
