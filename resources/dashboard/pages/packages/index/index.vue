@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="min-h-screen flex flex-col relative" v-if="ready">
-			<div class="content-header border-bottom flex items-center justify-between">
+			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-20">
 				<div>
 					PACKAGES
 				</div>
@@ -18,7 +18,7 @@
 					</button>
 				</div>
 			</div>
-
+			<div class="h-20 lg:hidden block" />
 			<div v-if="banner" class="p-6 border-bottom">
 				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
 					<div class="font-serif w-1/4 font-semibold uppercase">
@@ -58,7 +58,7 @@
 			</div>
 
 			<div v-else class="flex-grow">
-				<div class="grid grid-cols-4 gap-6 p-6">
+				<div class="grid grid-cols-1 gap-6 p-4 md:grid-cols-3 lg:grid-cols-4">
 					<div v-for="packageItem in packages" class="rounded-2xl bg-secondary-light p-4 w-full" :key="packageItem.id">
 						<div class="flex justify-between">
 							<div class="overflow-hidden">
@@ -164,9 +164,9 @@
 			</template>
 		</Modal>
 
-		<Modal ref="addModal" :close-button="false" size="modal-lg">
+		<Modal ref="addModal" :close-button="false" size="modal-lg ">
 			<h6 class="font-serif font-semibold mb-5">ADD PACKAGE</h6>
-
+			
 			<vue-form-validate @submit="submit">
 				<fieldset>
 					<div class="mb-4">
