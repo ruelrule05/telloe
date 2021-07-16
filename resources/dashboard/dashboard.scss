@@ -10,6 +10,9 @@
 		line-height: 16px;
 		@apply opacity-40 font-serif font-semibold mb-2;
 	}
+	@media (max-width: 768px) {
+		width: 260px;
+	}
 }
 .profile-image {
 	@apply bg-cover bg-center bg-no-repeat rounded-full bg-primary relative;
