@@ -53,11 +53,18 @@ export default {
 		selectedContacts: [],
 		timeslots: [],
 		selectedTimeslot: {},
-		selectFromTimeslots: true, // false
+		selectFromTimeslots: false, // false
 		disableServiceSelect: false,
 		isEmail: isEmail,
 		dayjs: dayjs,
-		meetingTypes: [],
+		meetingTypes: [
+			{ text: 'Google Meet', value: 'Google Meet' },
+			{ text: 'Zoom', value: 'Zoom' },
+			{ text: 'Face-to-face', value: 'Face-to-face' },
+			{ text: 'Phone', value: 'Phone' },
+			{ text: 'Skype', value: 'Skype' },
+			{ text: 'Telloe Video Call', value: 'Telloe Video Call' }
+		],
 		recurringMenu: false,
 
 		recurringFrequencies: [
@@ -142,8 +149,8 @@ export default {
 					this.disableServiceSelect = false;
 				}
 				if (this.clonedBooking.type == 'google-event') {
-					let included = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
-					this.includeGoogleCalendar = included ? true : false;
+					let notIncluded = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
+					this.includeGoogleCalendar = notIncluded ? false : true;
 				}
 			}
 		},
@@ -159,19 +166,30 @@ export default {
 		},
 		'clonedBooking.service': function(service) {
 			let meetingTypes = [];
-			if (this.newEvent && service) {
-				let serviceOption = this.services.find(x => x.id == service);
-				let start = dayjs(`${this.clonedBooking.date} ${this.clonedBooking.start}`);
-				this.clonedBooking.end = start.add(serviceOption.duration, 'minute').format('HH:mm');
-				this.$set(this.clonedBooking, 'service', service);
-				let serviceData = this.services.find(x => x.id == service);
-				if (serviceData) {
-					serviceData.types.forEach(sd => {
-						meetingTypes.push({
-							text: sd.type,
-							value: sd.type
+			if (this.newEvent) {
+				if (service) {
+					let serviceOption = this.services.find(x => x.id == service);
+					let start = dayjs(`${this.clonedBooking.date} ${this.clonedBooking.start}`);
+					this.clonedBooking.end = start.add(serviceOption.duration, 'minute').format('HH:mm');
+					this.$set(this.clonedBooking, 'service', service);
+					let serviceData = this.services.find(x => x.id == service);
+					if (serviceData) {
+						serviceData.types.forEach(sd => {
+							meetingTypes.push({
+								text: sd.type,
+								value: sd.type
+							});
 						});
-					});
+					}
+				} else {
+					meetingTypes = [
+						{ text: 'Google Meet', value: 'Google Meet' },
+						{ text: 'Zoom', value: 'Zoom' },
+						{ text: 'Face-to-face', value: 'Face-to-face' },
+						{ text: 'Phone', value: 'Phone' },
+						{ text: 'Skype', value: 'Skype' },
+						{ text: 'Telloe Video Call', value: 'Telloe Video Call' }
+					];
 				}
 			}
 			this.meetingTypes = meetingTypes;
@@ -187,8 +205,8 @@ export default {
 				this.disableServiceSelect = false;
 			}
 			if (this.clonedBooking && this.clonedBooking.type == 'google-event') {
-				let included = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
-				this.includeGoogleCalendar = included ? true : false;
+				let notIncluded = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
+				this.includeGoogleCalendar = notIncluded ? false : true;
 			}
 		}
 	},
@@ -229,9 +247,9 @@ export default {
 					this.$root.auth.google_calendar_events = [];
 				}
 				let index = (this.$root.auth.google_calendar_events || []).findIndex(x => x == this.clonedBooking.id);
-				if (state && index < 0) {
+				if (!state && index < 0) {
 					this.$root.auth.google_calendar_events.push(this.clonedBooking.id);
-				} else if (!state && index >= 0) {
+				} else if (state && index >= 0) {
 					this.$root.auth.google_calendar_events.splice(index, 1);
 				}
 				window.axios.post('/auth', this.$root.auth, { toast: true });

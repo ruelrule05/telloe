@@ -66,10 +66,6 @@ export default {
 
 		googleBookings(date) {
 			let now = dayjs(date).format('YYYY-MM-DD');
-
-			console.log(now);
-			console.log(this.googleCalendarEvents);
-
 			return this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now);
 		}
 	}

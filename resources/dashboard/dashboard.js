@@ -273,7 +273,6 @@ window.app = new Vue({
 			//     intro.enabled = true;
 			// });
 
-			console.log(this.$route.name);
 			let intro = this.intros[this.$route.name];
 			if (intro) {
 				intro.intro.start();

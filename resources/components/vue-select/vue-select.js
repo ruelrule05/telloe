@@ -1,8 +1,10 @@
 import ChevronDownIcon from '../../icons/chevron-down';
+import CloseIcon from '../../icons/close';
 import ClickOutside from 'vue-click-outside';
 export default {
 	components: {
-		ChevronDownIcon
+		ChevronDownIcon,
+		CloseIcon
 	},
 	directives: {
 		ClickOutside
@@ -57,6 +59,10 @@ export default {
 		noValuePlaceholder: {
 			type: String,
 			default: 'No options found'
+		},
+		clearable: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -133,6 +139,10 @@ export default {
 	},
 
 	methods: {
+		clear() {
+			this.selected_value = null;
+			this.$emit('input', null);
+		},
 		onBlur() {
 			this.show = false;
 		},

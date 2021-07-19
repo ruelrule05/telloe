@@ -557,8 +557,7 @@ class AuthService
 
     public static function createPresetService(User $user)
     {
-        $presetService = $user->services()->where('is_preset', true)->first();
-        if (! $presetService) {
+        if (! $user->services()->where('is_preset', true)->first()) {
             Service::create([
                 'user_id' => $user->id,
                 'name' => '60 Minute Call',
@@ -607,16 +606,17 @@ class AuthService
             ]);
         }
 
-        Service::create([
-            'user_id' => $user->id,
-            'name' => 'default',
-            'description' => 'default',
-            'duration' => 60,
-            'type' => 'default',
-            'interval' => 10,
-            'is_preset' => 0,
-            'is_available' => 1,
-            'days' => json_decode('{
+        if (! $user->services()->where('type', 'default')->first()) {
+            Service::create([
+                'user_id' => $user->id,
+                'name' => 'default',
+                'description' => 'default',
+                'duration' => 60,
+                'type' => 'default',
+                'interval' => 10,
+                'is_preset' => 0,
+                'is_available' => 1,
+                'days' => json_decode('{
                 "Friday": {
                     "end": "17:00",
                     "start": "08:00",
@@ -653,7 +653,8 @@ class AuthService
                     "isOpen": true
                 }
             }')
-        ]);
+            ]);
+        }
 
         if ($user->id == 118) {
             return;

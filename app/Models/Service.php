@@ -146,7 +146,7 @@ class Service extends BaseModel
             foreach ($googleEventsList as $event) {
                 $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
                 if ($eventDate == $dateString) {
-                    if (in_array($event['id'], $googleCalendarEvents)) {
+                    if (! in_array($event['id'], $googleCalendarEvents)) {
                         $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('H:i');
                         $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'])->format('H:i');
                         if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {

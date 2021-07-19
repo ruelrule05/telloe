@@ -41,8 +41,9 @@ class BookingsSetName extends Command
         $this->info('Updating Bookings Table...');
         $services = Service::with('bookings')->get();
         foreach ($services as $service) {
-            $service->bookings()->where('service_id', $service->id)->where('name', '')->update(['name' => $service->name]);
+            $service->bookings()->where(function ($query) {
+                $query->where('name', '')->orWhereNull('name');
+            })->update(['name' => $service->name]);
         }
-        echo 'Done';
     }
 }

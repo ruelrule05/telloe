@@ -85,6 +85,7 @@ class BookingService
         $data = $request->validated();
         $bookings = [];
         $data['uuid'] = (string) Uuid::generate();
+        $data['name'] = $data['name'] ?? $service->name;
         $booking = Booking::create($data);
         $bookings[] = $booking;
 
@@ -151,6 +152,7 @@ class BookingService
                 }
                 if ($createBooking) {
                     $booking = Booking::create([
+                        'name' => $data['name'] ?? $service->name,
                         'service_id' => $service->id,
                         'date' => $currentDate->clone()->format('Y-m-d'),
                         'start' => $start->format('H:i'),

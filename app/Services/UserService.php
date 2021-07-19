@@ -333,6 +333,7 @@ class UserService
         // }
 
         $data['uuid'] = (string) Uuid::generate();
+        $data['name'] = $service->name;
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->user->zoom_token) {
