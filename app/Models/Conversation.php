@@ -5,10 +5,11 @@ namespace App\Models;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Conversation extends BaseModel
 {
-    //
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags'];

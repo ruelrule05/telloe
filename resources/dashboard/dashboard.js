@@ -74,7 +74,9 @@ window.app = new Vue({
 		toggleKnowBase: false,
 		promptCookie: false,
 		isMobile: true,
-		cookieItem: 'telloe_cookie_accepted'
+		cookieItem: 'telloe_cookie_accepted',
+
+		isSidebarOpen: false
 	},
 
 	computed: {
@@ -514,6 +516,11 @@ window.app = new Vue({
 				this.sendMessage(message);
 				this.closeRecorder('video');
 			}
+		},
+
+		toggleSidebar(path) {
+			this.isSidebarOpen = false;
+			if (this.$route.path !== path) this.$router.push(path);
 		}
 	}
 });
