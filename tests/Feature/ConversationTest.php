@@ -5,6 +5,7 @@ namespace App\Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ConversationTest extends TestCase
 {
@@ -26,9 +27,8 @@ class ConversationTest extends TestCase
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/conversations/' . $conversation->id, $this->headers);
         $response->assertStatus(200);
 
-
-        $conversation = \App\Models\Conversation::find(358);
-        $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/conversations/' . $conversation->id, $this->headers);
+        $conversation_id = 2;
+        $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/conversations/' . $conversation_id, $this->headers);
         $response->assertStatus(403);
 
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/conversations/1116', $this->headers);

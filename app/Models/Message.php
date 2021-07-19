@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Message extends BaseModel
 {
-    //
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'link_preview', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
