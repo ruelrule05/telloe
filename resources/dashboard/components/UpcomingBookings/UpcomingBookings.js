@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import convertTime from '../../../js/plugins/convert-time';
+
 export default {
 	props: {
 		loading: {
@@ -59,7 +60,17 @@ export default {
 	methods: {
 		dayBookings(date) {
 			let dayBookings = this.bookings.filter(booking => booking.date == date);
+
 			return dayBookings;
+		},
+
+		googleBookings(date) {
+			let now = dayjs(date).format('YYYY-MM-DD');
+
+			console.log(now);
+			console.log(this.googleCalendarEvents);
+
+			return this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now);
 		}
 	}
 };

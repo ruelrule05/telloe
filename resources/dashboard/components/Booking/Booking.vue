@@ -214,10 +214,15 @@
 
 						<label class="-mb-px mt-4">Date/time</label>
 						<div>{{ dayjs(clonedBooking.date).format('MMMM DD, YYYY') }}</div>
-						<div>{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }} ({{ clonedBooking.timezone }})</div>
+						<div>
+							{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }}
+							<div v-if="clonedBooking.timezone">({{ clonedBooking.timezone }} )</div>
+						</div>
 
 						<label class="-mb-px mt-4">Description</label>
-						<div>{{ clonedBooking.description || 'No description' }}</div>
+						<div>
+							<p v-html="decode(clonedBooking.description)"></p>
+						</div>
 
 						<label class="-mb-px mt-4">Location</label>
 						<div>{{ clonedBooking.location || 'No location' }}</div>

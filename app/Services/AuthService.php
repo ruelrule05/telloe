@@ -607,6 +607,54 @@ class AuthService
             ]);
         }
 
+        Service::create([
+            'user_id' => $user->id,
+            'name' => 'default',
+            'description' => 'default',
+            'duration' => 60,
+            'type' => 'default',
+            'interval' => 10,
+            'is_preset' => 0,
+            'is_available' => 1,
+            'days' => json_decode('{
+                "Friday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Monday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Sunday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": false
+                },
+                "Tuesday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Saturday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": false
+                },
+                "Thursday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Wednesday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                }
+            }')
+        ]);
+
         if ($user->id == 118) {
             return;
         } // john@telloe.com

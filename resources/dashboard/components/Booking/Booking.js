@@ -23,6 +23,7 @@ import PlusIcon from '../../../icons/plus';
 import vClickOutside from 'v-click-outside';
 const ct = require('countries-and-timezones');
 import VueButton from '../../../components/vue-button.vue';
+import { decode } from 'html-entities';
 export default {
 	props: {
 		booking: {},
@@ -44,6 +45,7 @@ export default {
 	directives: { clickOutside: vClickOutside.directive },
 
 	data: () => ({
+		decode: decode,
 		convertTime: convertTime,
 		loading: false,
 		clonedBooking: {},
