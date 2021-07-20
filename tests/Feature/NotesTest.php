@@ -45,6 +45,8 @@ class NotesTest extends TestCase
 
     public function testDelete()
     {
+        $this->note = \App\Models\Note::latest('id')->first();
+        $id = $this->note->id;
         $response = $this->actingAs($this->user)->delete($this->app_url . '/ajax/notes/' . $id, $this->headers);
         $response->assertStatus(200);
     }
