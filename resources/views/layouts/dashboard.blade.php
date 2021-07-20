@@ -9,7 +9,7 @@
 		<div id="app" class="flex overflow-hidden" v-cloak v-if="auth">
 			<div :class="isSidebarOpen ? 'block' : 'hidden'" @click="isSidebarOpen = false"  class="fixed z-20 inset-0 bg-black opacity-50 transition-opacity lg:hidden"></div>
 			
-			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary overflow-auto w-full fixed z-30 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0">
+			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary overflow-auto w-full fixed z-40 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0">
 				<div class="p-6 flex justify-between border-bottom">
 					<a href="/"><img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6"></a>
 					<button class="rounded-full transition-colors hover:bg-gray-200 hover:text-gray-500 focus:outline-none p-1" type="button">
@@ -190,7 +190,7 @@
 			</div>
 
 			<div class="flex flex-col flex-grow overflow-hidden">
-				<div class="absolute h-20 ml-5 flex items-center z-10">
+				<div class="absolute h-20 ml-4 flex items-center z-30">
 					<button @click="isSidebarOpen = true" class="text-gray-500 focus:outline-none lg:hidden">
 						<svg class="h-6 w-6" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -211,13 +211,13 @@
 					</div>
 					
 					<div v-if="$route.name != 'conversations'" class="border-top bg-white p-6 flex justify-between text-muted text-xs footer">
-						<div>
+						<div class="flex flex-col md:flex-row">
 							<a class="font-bold" target="_blank" href="/contact">Contact Us</a>
-							<a class="font-bold ml-6" target="_blank" href="https://docs.telloe.com">Knowledge Base</a>
+							<a class="font-bold ml-0 md:ml-6" target="_blank" href="https://docs.telloe.com">Knowledge Base</a>
 						</div>
-						<div>
-							<a class="ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>
-							<a class="ml-6" target="_blank" href="/terms-of-service">Terms of Service</a>
+						<div class="flex flex-col md:flex-row">
+							<a class="ml-0 md:ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>
+							<a class="ml-0 md:ml-6" target="_blank" href="/terms-of-service">Terms of Service</a>
 						</div>
 					</div>
 				</div>

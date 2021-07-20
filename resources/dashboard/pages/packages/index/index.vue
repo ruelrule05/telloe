@@ -1,20 +1,21 @@
 <template>
 	<div>
 		<div class="min-h-screen flex flex-col relative" v-if="ready">
-			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-20">
-				<div>
+			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0">
 					PACKAGES
 				</div>
 				<div>
 					<button
 						type="button"
-						class="btn btn-md btn-primary"
+						class="btn btn-md btn-primary flex items-center"
 						@click="
 							newPackage = {};
 							$refs.addModal.show();
 						"
 					>
-						<span>Add Package</span>
+						<span>Add</span>
+						<span class="hidden md:block ml-1">Package</span>
 					</button>
 				</div>
 			</div>

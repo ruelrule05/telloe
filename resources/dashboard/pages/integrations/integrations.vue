@@ -1,8 +1,11 @@
 <template>
 	<div class="h-100">
-		<div class="content-header border-bottom">
-			INTEGRATIONS
+		<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+			<span class="ml-7 lg:ml-0">
+				INTEGRATIONS
+			</span>
 		</div>
+		<div class="h-20 lg:hidden block" />
 		<div class="page-integrations">
 			<div class="mx-auto integration-container">
 				<div class="flex flex-col justify-center h-full pt-16 pb-16">
@@ -20,11 +23,11 @@
 						</div>
 					</div> -->
 
-					<div class="flex w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
-						<div class="w-16 image">
+					<div class="flex flex-col md:flex-row md:items-start items-center w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
+						<div class="w-16 image mb-5 md:mb-0">
 							<img src="/logos/google-calendar.png" alt="Zoom" height="80" />
 						</div>
-						<div class="flex-1 ml-6">
+						<div class="flex-1 ml-0 md:ml-6">
 							<p class="mb-3 text-sm font-bold">Google Calendar</p>
 							<p class="mb-4 text-sm text-muted">Sync bookings with your Google Calendar</p>
 							<button v-if="$root.auth.google_calendar_token" :disabled="googleCalendarLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeGoogleCalendar"><span>Remove integration</span></button>
@@ -34,11 +37,11 @@
 						</div>
 					</div>
 
-					<div class="flex w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
-						<div class="w-16 image">
+					<div class="flex flex-col md:flex-row md:items-start items-center w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
+						<div class="w-16 image mb-5 md:mb-0">
 							<img src="/logos/outlook.png" alt="Zoom" height="80" />
 						</div>
-						<div class="flex-1 ml-6">
+						<div class="flex-1 ml-0 md:ml-6">
 							<p class="mb-3 text-sm font-bold">Outlook</p>
 							<p class="mb-4 text-sm text-muted">Sync bookings with your Outlook Calendar</p>
 							<button v-if="$root.auth.outlook_token" :disabled="outlookLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeOutlook"><span>Remove integration</span></button>
