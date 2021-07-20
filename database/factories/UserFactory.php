@@ -34,10 +34,11 @@ class UserFactory extends Factory
     {
         $json = (Object)[];
         return [
-            'first_name' => $this->faker->firstName(),
-            'last_name' => $this->faker->lastName(),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => $this->faker->unique()->safeEmail(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'username' => $firstName . $lastName,
             'blocked_timeslots' => json_encode($json)
         ];
     }
