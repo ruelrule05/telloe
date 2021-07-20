@@ -3,6 +3,8 @@
 namespace App\Mail;
 
 use Auth;
+use Carbon\Carbon;
+use Spatie\CalendarLinks\Link;
 
 class NewBooking extends Mailer
 {
@@ -36,6 +38,22 @@ class NewBooking extends Mailer
                 // $this->actionText = 'Create an account';
             }
         }
+
+        $this->bookings = collect($bookings);
+        $this->bookings->map(function ($booking) {
+            $from = Carbon::parse("$booking->date $booking->start");
+            $to = $from->clone()->addMinute($booking->service->duration);
+            $link = Link::create($booking->service->name, $from, $to)
+                ->description($booking->service->description);
+
+            $booking->google_link = $link->google();
+            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->yahoo_link = $link->yahoo();
+            $booking->ical_link = $booking->outlook_link;
+            return $booking;
+        });
+
+        return $this->bookings;
     }
 
     /**

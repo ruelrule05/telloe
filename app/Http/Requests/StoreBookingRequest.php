@@ -25,7 +25,12 @@ class StoreBookingRequest extends FormRequest
             }
         }
         $service = Service::find($this->service_id);
-        return $validContacts && $this->user()->can('addBooking', $service);
+        $canAddBookingToService = true;
+        if ($service) {
+            $canAddBookingToService = $this->user()->can('addBooking', $service) ;
+        }
+
+        return $validContacts && $canAddBookingToService;
     }
 
     /**
@@ -36,7 +41,8 @@ class StoreBookingRequest extends FormRequest
     public function rules()
     {
         return [
-            'service_id' => 'required|exists:services,id',
+            'name' => 'required|string|max:255',
+            'service_id' => 'nullable|exists:services,id',
             'contact_ids' => 'nullable|array',
             'emails' => 'nullable|array',
             'date' => 'required|date',

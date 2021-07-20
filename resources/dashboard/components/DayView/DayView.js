@@ -250,7 +250,7 @@ export default {
 			let end = dayjs(`${interval.date} ${interval.time}`)
 				.add(1, 'hour')
 				.format('HH:mm');
-			this.newEvent = { date: interval.date, start: interval.time, end: end };
+			this.newEvent = { date: interval.date, start: interval.time, end: end, timezone: this.timezone };
 			this.$emit('newEvent', JSON.parse(JSON.stringify(this.newEvent)));
 		}
 	}

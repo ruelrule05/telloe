@@ -183,6 +183,7 @@ class BookingLinkService
             $end = $start->copy()->add('minute', $bookingLink->duration);
 
             $booking = Booking::create([
+                'name' => $bookingLink->name,
                 'booking_link_id' => $bookingLink->id,
                 'date' => $request->date,
                 'start' => $start->format('H:i'),

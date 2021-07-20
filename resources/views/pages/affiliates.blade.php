@@ -173,8 +173,9 @@
     <span class="font-serif text-xs font-semibold">UNPARALLELED EXPERIENCE</span>
     <h2 class="text-primary lg:text-5xl text-2xl font-bold lg:mt-5 lg:mb-20 mb-10">Why work with Telloe?</h2>
     <div class="lg:pl-10 lg:pr-10 lg:mt-0 mt-4" style="padding-left: 0; margin-left: 0">
-        <p class="lg:text-xl text-muted lg:mt-5" style="padding-left: 0; margin-left: 0">The founder of Telloe has more than 20 successes in business and affiliate marketing. His goal is to make the best product with the best customer support in the segment. He strives continuously to push his business to deliver the best
-            live time value from its customers and the best revenue for you as an affiliate.<br /><br /><i style="color: #39445b">"I think to get
+        <p class="lg:text-xl text-muted lg:mt-5" style="padding-left: 0; margin-left: 0">As the founder of Telloe I have more than 20 successes in business and affiliate marketing behind me. My goal is to make the best product with the best customer support in the segment. I strive continuously to push my business to deliver the best life time value from its customers and the best revenue for you as an affiliate.
+        
+        <br /><br /><i style="color: #39445b">"I think to get
                 richer, you want to be making money while you're asleep, and with affiliate marketing, you can
                 do just that"</i></p>
         <p class="lg:text-xl text-muted lg:mt-5" style="padding-left: 0; margin-left: 0">Roo Wright

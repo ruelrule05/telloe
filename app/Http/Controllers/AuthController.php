@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\ChangePasswordRequest;
-use App\Http\Requests\Auth\LoginFacebookRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Requests\Auth\UpdateStripeAccountRequest;
@@ -59,11 +58,6 @@ class AuthController extends Controller
     public function updatePassword(ChangePasswordRequest $request)
     {
         return response(AuthService::updatePassword($request));
-    }
-
-    public function loginFacebook(LoginFacebookRequest $request)
-    {
-        return response(AuthService::loginFacebook($request));
     }
 
     public function updateStripeAccount(UpdateStripeAccountRequest $request)

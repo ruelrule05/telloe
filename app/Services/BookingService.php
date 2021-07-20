@@ -65,11 +65,11 @@ class BookingService
         $booking = Booking::with('service.user', 'bookingUsers.user')->where('uuid', $uuid)->firstOrFail();
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);
-        $link = Link::create($booking->service->name, $from, $to)
+        $link = Link::create($booking->name, $from, $to)
             ->description($booking->service->description);
 
         $booking->google_link = $link->google();
-        $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+        $booking->outlook_link = url('/ics?name=' . $booking->name . '&data=' . $link->ics());
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
 
@@ -81,15 +81,22 @@ class BookingService
         if (! isValidTimezone($request->timezone)) {
             return abort(403, 'Invalid timezone');
         }
-        $service = Service::findOrfail($request->service_id);
+
+        if ($request->service_id) {
+            $service = Service::findOrFail($request->service_id);
+        } else {
+            $service = Service::where('type', 'default')->where('user_id', Auth::user()->id)->firstOrFail();
+        }
         $data = $request->validated();
         $bookings = [];
         $data['uuid'] = (string) Uuid::generate();
+        $data['name'] = $data['name'] ?? $service->name;
+        $data['service_id'] = $service->id;
         $booking = Booking::create($data);
         $bookings[] = $booking;
 
-        if ($service->create_zoom_link && $service->user->zoom_token) {
-            $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+        if ($service && $service->create_zoom_link && $service->user->zoom_token) {
+            $zoomLink = Zoom::createMeeting($service->user, $data['name'], Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
                 $booking->update([
                     'zoom_link' => $zoomLink['join_url']
@@ -98,8 +105,8 @@ class BookingService
         }
 
         $from = Carbon::parse("$booking->date $booking->start");
-        $to = $from->clone()->addMinute($booking->service->duration);
-        $link = Link::create($booking->service->name, $from, $to)
+        $to = $from->clone()->addMinute($booking->service->duration ?? 30);
+        $link = Link::create($data['name'], $from, $to)
             ->description($booking->service->description);
         foreach ($booking->bookingUsers as $bookingUser) {
             if ($bookingUser->user_id) {
@@ -114,7 +121,7 @@ class BookingService
         }
         if (isset($request->is_recurring) && isset($request->frequency) && isset($request->end_date) && isset($request->days)) {
             $start = Carbon::parse("{$request->date} {$request->start}");
-            $end = $start->copy()->add('minute', $service->duration);
+            $end = $start->copy()->add('minute', $service->duration ?? 30);
             $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             $timeslotDayName = Carbon::parse($request->date)->format('l');
             $currentDate = Carbon::now()->addDay(1);
@@ -151,7 +158,8 @@ class BookingService
                 }
                 if ($createBooking) {
                     $booking = Booking::create([
-                        'service_id' => $service->id,
+                        'name' => $data['name'] ?? $service->name,
+                        'service_id' => $service->id ?? null,
                         'date' => $currentDate->clone()->format('Y-m-d'),
                         'start' => $start->format('H:i'),
                         'end' => $end->format('H:i'),
@@ -199,14 +207,14 @@ class BookingService
 
             // Check if Google Calendar is integrated
             // Create event to selected google calendar with flag to tell it's a telloe booking
-            if ($service->user->google_calendar_token && $service->user->google_calendar_id) {
+            if ($service && $service->user->google_calendar_token && $service->user->google_calendar_id) {
                 $time = time();
                 $GoogleCalendarClient = new GoogleCalendarClient($service->user);
                 $client = $GoogleCalendarClient->client;
                 $googleService = new Google_Service_Calendar($client);
                 $event = new Google_Service_Calendar_Event([
                     'id' => 'telloebooking' . $booking->id . $time,
-                    'summary' => $booking->service->name,
+                    'summary' => $data['name'],
                     'description' => $booking->service->description,
                     'start' => [
                         'dateTime' => Carbon::parse("$booking->date $booking->start")->toIso8601String(),
@@ -233,7 +241,7 @@ class BookingService
             }
 
             $booking->google_link = $link->google();
-            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->outlook_link = url('/ics?name=' . $data['name'] . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
             $booking->ical_link = $booking->outlook_link;
         }
