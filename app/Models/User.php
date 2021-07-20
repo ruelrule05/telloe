@@ -4,12 +4,12 @@ namespace App\Models;
 
 use App\Mail\NewUser;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Http;
 use Mail;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -141,7 +141,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function services()
     {
-        return $this->hasMany(Service::class);
+        return $this->hasMany(Service::class)->where('type', 'custom');
     }
 
     public function organizations()

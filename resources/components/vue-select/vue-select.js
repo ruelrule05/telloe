@@ -142,6 +142,7 @@ export default {
 		clear() {
 			this.selected_value = null;
 			this.$emit('input', null);
+			this.show = false;
 		},
 		onBlur() {
 			this.show = false;

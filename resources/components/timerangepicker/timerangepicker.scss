@@ -65,5 +65,12 @@
 				}
 			}
 		}
+		.custom-icon {
+			@apply absolute top-1/2 transform -translate-y-1/2 left-3;
+		}
+
+		&.clock-icon input {
+			@apply pl-9 #{!important};
+		}
 	}
 }

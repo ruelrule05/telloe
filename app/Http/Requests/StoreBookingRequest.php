@@ -25,7 +25,12 @@ class StoreBookingRequest extends FormRequest
             }
         }
         $service = Service::find($this->service_id);
-        return $validContacts && $this->user()->can('addBooking', $service);
+        $canAddBookingToService = true;
+        if ($service) {
+            $canAddBookingToService = $this->user()->can('addBooking', $service) ;
+        }
+
+        return $validContacts && $canAddBookingToService;
     }
 
     /**

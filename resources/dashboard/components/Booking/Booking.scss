@@ -56,3 +56,24 @@
 		@apply bg-primary text-white border-primary;
 	}
 }
+.btn-tabs {
+	.btn-tab {
+		font-size: 9px;
+		@apply cursor-pointer transition-colors hover:bg-gray-50 flex-grow p-3 font-serif border border-gray-300 font-semibold text-center;
+		&.active {
+			@apply border-primary ring-1 ring-primary ring-inset;
+		}
+		&:first-child {
+			@apply rounded-tl-md rounded-bl-md;
+		}
+		&:last-child {
+			@apply rounded-tr-md rounded-br-md;
+		}
+		&.disabled {
+			@apply pointer-events-none opacity-75;
+		}
+		> span {
+			@apply inline-block relative -bottom-px;
+		}
+	}
+}

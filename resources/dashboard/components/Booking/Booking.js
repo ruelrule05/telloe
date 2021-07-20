@@ -159,7 +159,6 @@ export default {
 				this.open = true;
 				this.getServices();
 				this.getContacts({ nopaginate: true });
-				this.clonedBooking.timezone = this.$root.auth.timezone;
 			} else {
 				this.selectedContacts = [];
 			}
@@ -217,7 +216,6 @@ export default {
 		this.getServices();
 		if (this.newEvent) {
 			this.getContacts({ nopaginate: true });
-			this.clonedBooking.timezone = this.$root.auth.timezone;
 		}
 		if (this.contact) {
 			this.contact.value = this.contact.id;
@@ -313,15 +311,24 @@ export default {
 			this.$refs.addEmailModal.hide();
 		},
 
-		selectTimeslot(timeslot) {
-			this.selectedTimeslot = timeslot;
-			this.clonedBooking.start = timeslot.time;
-			let startDate = dayjs(dayjs(this.clonedBooking.date).format('YYYY-MM-DD') + ' ' + timeslot.time);
-			let serviceOption = this.services.find(x => x.id == this.clonedBooking.service);
-			let endTime = dayjs(startDate)
-				.add(serviceOption.duration, 'minute')
-				.format('HH:mm');
-			this.clonedBooking.end = endTime;
+		selectTimeslot(state, timeslot) {
+			if (state) {
+				this.selectedTimeslot = timeslot;
+				this.clonedBooking.start = timeslot.time;
+				let startDate = dayjs(dayjs(this.clonedBooking.date).format('YYYY-MM-DD') + ' ' + timeslot.time);
+				let serviceOption = this.services.find(x => x.id == this.clonedBooking.service);
+				let duration = 30;
+				if (serviceOption) {
+					duration = serviceOption.duration;
+				}
+				let endTime = dayjs(startDate)
+					.add(duration, 'minute')
+					.format('HH:mm');
+				this.clonedBooking.end = endTime;
+			} else {
+				this.clonedBooking.start = this.booking.start;
+				this.clonedBooking.end = this.booking.end;
+			}
 		},
 
 		timeslotTime(timeslot) {
@@ -413,7 +420,9 @@ export default {
 
 		close() {
 			this.open = false;
-			this.$emit('close');
+			setTimeout(() => {
+				this.$emit('close');
+			}, 150);
 			if (!this.contact) {
 				setTimeout(() => {
 					this.selectedContacts = [];

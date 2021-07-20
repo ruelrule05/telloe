@@ -22,7 +22,9 @@ class ServiceService
         $member_ids = Member::select('id')->where('member_user_id', $auth_user->id)->get()->toArray();
         $services = Service::with('user', 'assignedServices.member.memberUser')->where(function ($query) use ($auth_user, $member_ids) {
             $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
-        })->orderBy('created_at', 'DESC');
+        })
+        ->where('type', 'custom')
+        ->latest();
         if ($request->paginate) {
             $services = $services->paginate(2);
         } else {

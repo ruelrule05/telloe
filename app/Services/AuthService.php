@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Http\Requests\Auth\ChangePasswordRequest;
-use App\Http\Requests\Auth\LoginFacebookRequest;
-use App\Http\Requests\Auth\LoginGoogleRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\SignupRequest;
 use App\Http\Requests\Auth\UpdateStripeAccountRequest;
@@ -63,8 +61,6 @@ class AuthService
                 $data['default_availability'] = json_decode(self::$defaultAvailability);
                 $user = User::create($data);
 
-                self::createPresetService($user);
-
                 $user->is_premium = true;
                 $user->save();
 
@@ -72,9 +68,11 @@ class AuthService
                 ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
                     'user_id' => $user->id
                 ]);
+                self::createPresetService($user);
                 self::createInitialConversations($user);
                 Mail::queue(new Welcome($user));
             }
+            self::createDefaultService($user);
             Auth::login($user);
             $user->makeVisible(['default_availability']);
         }
@@ -146,7 +144,7 @@ class AuthService
                     checkMemberInviteToken($user, $request);
                 }
 
-                self::createPresetService($user);
+                self::createDefaultService($user);
                 self::createInitialConversations($user);
                 self::createDefaultField($user);
 
@@ -194,6 +192,7 @@ class AuthService
 
         self::createInitialConversations($user);
         self::createPresetService($user);
+        self::createDefaultService($user);
         self::createDefaultField($user);
 
         $user = $user->refresh();
@@ -329,110 +328,6 @@ class AuthService
         return ['success' => true];
     }
 
-    public static function loginFacebook(LoginFacebookRequest $request)
-    {
-        $user = User::where('email', $request->email)->first();
-        if (! $user || $user->facebook_id == $request->id) {
-            $isNew = false;
-            if (! $user) {
-                $isNew = true;
-                $time = time();
-                $profile_image = 'http://graph.facebook.com/' . $request->id . '/picture?type=normal';
-                Image::make($profile_image)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $username = self::generateUsername($request->first_name, $request->last_name);
-                $user = User::create([
-                    'username' => $username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                    'blocked_timeslots' => [],
-                    'default_availability' => json_decode(self::$defaultAvailability),
-                    'trial_expires_at' => Carbon::now()->add(14, 'day')
-                ]);
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->facebook_id = $request->id;
-                $user->is_premium = true;
-                $user->save();
-                // update all ConversationMember with user_id
-                ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
-                    'user_id' => $user->id
-                ]);
-
-                Mail::queue(new Welcome($user));
-                self::createDefaultField($user);
-            }
-
-            Auth::login($user);
-
-            if ($request->invite_token) {
-                checkInviteToken($user, $request, $isNew);
-            } elseif ($request->member_invite_token) {
-                checkMemberInviteToken($user, $request);
-            }
-
-            self::createInitialConversations($user);
-            self::createPresetService($user);
-            return $user;
-        }
-
-        $message = "There's no user associated with this Facebook account.";
-        if ($request->action == 'signup' && $user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
-    }
-
-    public static function loginGoogle(LoginGoogleRequest $request)
-    {
-        $user = User::where('email', $request->email)->first();
-        if (! $user || $user->google_id == $request->id) {
-            $isNew = false;
-            if (! $user) {
-                $isNew = true;
-                $time = time();
-                Image::make($request->image_url)->save(public_path('storage/profile-images/' . $time . '.jpeg'));
-                $username = self::generateUsername($request->first_name, $request->last_name);
-                $user = User::create([
-                    'username' => $username,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                    'blocked_timeslots' => [],
-                    'default_availability' => json_decode(self::$defaultAvailability),
-                    'trial_expires_at' => Carbon::now()->add(14, 'day')
-                ]);
-                $user->profile_image = '/storage/profile-images/' . $time . '.jpeg';
-                $user->google_id = $request->id;
-                $user->is_premium = true;
-                $user->save();
-                // update all ConversationMember with user_id
-                ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
-                    'user_id' => $user->id
-                ]);
-
-                Mail::queue(new Welcome($user));
-                self::createDefaultField($user);
-            }
-            Auth::login($user);
-
-            if ($request->invite_token) {
-                checkInviteToken($user, $request, $isNew);
-            } elseif ($request->member_invite_token) {
-                checkMemberInviteToken($user, $request);
-            }
-
-            self::createInitialConversations($user);
-            self::createPresetService($user);
-            return $user;
-        }
-
-        $message = "There's no user associated with this Google account.";
-        if ($request->action == 'signup' && $user) {
-            $message = 'Email is already registered to another account.';
-        }
-        return abort(403, $message);
-    }
-
     public static function updateStripeAccount(UpdateStripeAccountRequest $request)
     {
         $user = Auth::user();
@@ -555,9 +450,62 @@ class AuthService
         }
     }
 
+    public static function createDefaultService(User $user)
+    {
+        if (! $user->services()->where('type', 'default')->exists()) {
+            Service::create([
+                'user_id' => $user->id,
+                'name' => 'Default Event',
+                'description' => '',
+                'duration' => 60,
+                'type' => 'default',
+                'interval' => 10,
+                'is_preset' => 0,
+                'is_available' => 1,
+                'days' => json_decode('{
+                "Friday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Monday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Sunday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": false
+                },
+                "Tuesday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Saturday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": false
+                },
+                "Thursday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                },
+                "Wednesday": {
+                    "end": "17:00",
+                    "start": "08:00",
+                    "isOpen": true
+                }
+            }')
+            ]);
+        }
+    }
+
     public static function createPresetService(User $user)
     {
-        if (! $user->services()->where('is_preset', true)->first()) {
+        if (! $user->services()->where('is_preset', true)->exists()) {
             Service::create([
                 'user_id' => $user->id,
                 'name' => '60 Minute Call',
@@ -605,60 +553,6 @@ class AuthService
                 }')
             ]);
         }
-
-        if (! $user->services()->where('type', 'default')->first()) {
-            Service::create([
-                'user_id' => $user->id,
-                'name' => 'default',
-                'description' => 'default',
-                'duration' => 60,
-                'type' => 'default',
-                'interval' => 10,
-                'is_preset' => 0,
-                'is_available' => 1,
-                'days' => json_decode('{
-                "Friday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": true
-                },
-                "Monday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": true
-                },
-                "Sunday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": false
-                },
-                "Tuesday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": true
-                },
-                "Saturday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": false
-                },
-                "Thursday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": true
-                },
-                "Wednesday": {
-                    "end": "17:00",
-                    "start": "08:00",
-                    "isOpen": true
-                }
-            }')
-            ]);
-        }
-
-        if ($user->id == 118) {
-            return;
-        } // john@telloe.com
 
         // Set timezone
         $timezone = config('app.timezone');
@@ -710,6 +604,7 @@ class AuthService
             $newUser->is_premium = true;
             $newUser->save();
             self::createPresetService($newUser);
+            self::createDefaultService($newUser);
             Mail::to($newUser->email)->queue(new GuestAccount($password));
         }
 
