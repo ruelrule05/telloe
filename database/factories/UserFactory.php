@@ -33,6 +33,8 @@ class UserFactory extends Factory
     public function definition()
     {
         $json = (Object)[];
+        $firstName = $this->faker->firstName();
+        $lastName = $this->faker->lastName();
         return [
             'first_name' => $firstName,
             'last_name' => $lastName,
