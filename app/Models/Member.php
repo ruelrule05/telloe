@@ -5,10 +5,11 @@ namespace App\Models;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Member extends BaseModel
 {
-    //
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'member_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token'];

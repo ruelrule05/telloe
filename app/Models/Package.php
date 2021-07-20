@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Package extends BaseModel
 {
-    //
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'name', 'description', 'services', 'expiration_date', 'price', 'is_available', 'in_widget'];

@@ -53,7 +53,7 @@ class PackagesTest extends TestCase
     {
         $this->package = \App\Models\Package::latest('id')->first();
         $id = $this->package->id;
-        $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/packages" . $id, $this->headers);
+        $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/packages/" . $id, $this->headers);
         $response->assertStatus(200);
     }
 }
