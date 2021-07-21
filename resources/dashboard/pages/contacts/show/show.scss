@@ -146,3 +146,12 @@
 		}
 	}
 }
+
+.contact-booking {
+	@media (max-width: 768px) {
+		@apply z-10;
+	}
+	@media (max-width: 425px) {
+		width: 100%;
+	}
+}

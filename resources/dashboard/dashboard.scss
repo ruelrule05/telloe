@@ -19,7 +19,8 @@
 	width: 36px;
 	height: 36px;
 	> span {
-		@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-sm font-bold text-white leading-tight;
+		@apply absolute transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 text-sm font-bold text-white leading-tight;
+		z-index: 8;
 	}
 	&.profile-image-xs {
 		width: 22px;

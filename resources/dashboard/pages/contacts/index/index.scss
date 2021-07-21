@@ -1,3 +1,8 @@
+.contact-header {
+	@media (max-width: 767px) {
+		@apply h-28;
+	}
+}
 .contact-content {
 	> * {
 		@apply h-full;
@@ -12,6 +17,13 @@
 		}
 	}
 
+	.contact-fields {
+		@media (max-width: 768px) {
+			height: auto;
+			min-height: auto;
+		}
+	}
+
 	.contact-row {
 		@apply py-5;
 
@@ -21,9 +33,10 @@
 			height: 28px;
 
 			> span {
-				@apply absolute transform -translate-x-1/2 -translate-y-1/2 z-10 left-1/2 top-1/2 text-xs font-bold text-white leading-tight;
+				@apply absolute transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 text-xs font-bold text-white leading-tight;
 				padding-bottom: 0.5px;
 				padding-left: 1px;
+				z-index: 8;
 			}
 		}
 
