@@ -3,6 +3,10 @@
 	width: 200px;
 	left: 0;
 	top: auto;
+
+	@media (max-width: 375px) {
+		width: 150px;
+	}
 }
 
 .timeslots-table {
@@ -40,4 +44,12 @@
 }
 .suggested {
 	@apply border-l-2 border-r-2 border-b-2 absolute bottom-3 z-50 left-0 w-full h-3 text-center;
+}
+
+.booking-links__timeslots {
+	margin-left: 200px;
+
+	@media (max-width: 375px) {
+		margin-left: 150px;
+	}
 }

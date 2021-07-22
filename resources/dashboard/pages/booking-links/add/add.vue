@@ -1,14 +1,14 @@
 <template>
 	<div class="p-6">
-		<h3 class="mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke meeting link</h3>
+		<h3 class="mb-5 lg:mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke meeting link</h3>
 		<vue-form-validate @submit="storeLink">
 			<div class="form">
-				<div class="grid grid-cols-12 gap-x-8 justify-between form-inline">
-					<div class="col-span-4 form-field">
+				<div class="flex flex-col lg:grid grid-cols-12 gap-x-8 justify-between form-inline">
+					<div class="col-span-4 form-field mb-3 lg:mb-0">
 						<label>Name</label>
 						<input type="text" v-model="name" placeholder="Enter a name for your custom link" data-required />
 					</div>
-					<div class="col-span-6 form-field">
+					<div class="col-span-6 form-field mb-3 lg:mb-0">
 						<label>Add Contacts or email</label>
 						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="" multiple clearOnSelect>
 							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
@@ -36,7 +36,7 @@
 				</div>
 			</div>
 
-			<div class="flex items-center mt-4">
+			<div class="grid grid-cols-3 gap-2 lg:flex items-center mt-4">
 				<div v-for="(date, dateKey) in dates" :key="dateKey" class="mr-2 cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs flex items-center" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
 					<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 					<div v-if="Object.keys(dates).length > 1" @click.stop="removeDate(dateKey)" class="ml-2">
@@ -57,7 +57,7 @@
 					</div>
 				</div>
 				<div class="relative mt-4" :class="{ 'opacity-0': timeslotsLoading }">
-					<div class="overflow-x-scroll overflow-y-visible" style="margin-left: 200px">
+					<div class="overflow-x-scroll overflow-y-visible booking-links__timeslots">
 						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>

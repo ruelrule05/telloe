@@ -4,6 +4,11 @@
 
 	width: 450px;
 	right: -450px;
+
+	@media (max-width: 768px) {
+		width: 100%;
+		right: -768px;
+	}
 	&.open {
 		right: 0;
 	}

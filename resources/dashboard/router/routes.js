@@ -34,6 +34,7 @@ const routes = [
 			},
 			{
 				path: 'booking-links/:id',
+				name: 'Booking Links Show',
 				component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/show/show.vue')
 			},
 			{
