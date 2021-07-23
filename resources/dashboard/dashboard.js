@@ -76,7 +76,8 @@ window.app = new Vue({
 		isMobile: true,
 		cookieItem: 'telloe_cookie_accepted',
 
-		isSidebarOpen: false
+		isSidebarOpen: false,
+		isChildPage: false
 	},
 
 	computed: {
@@ -141,6 +142,8 @@ window.app = new Vue({
 			this.contentloading = true;
 			if (value) {
 				document.title = value.charAt(0).toUpperCase() + value.slice(1) + ' | ' + process.env.MIX_APP_NAME;
+
+				this.isChildPage = value.includes("Show") ? true : false;
 			}
 			if (this.$refs.dashboardContent) {
 				this.$refs.dashboardContent.scroll(0, 0);

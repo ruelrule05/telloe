@@ -1,6 +1,6 @@
 <template>
 	<div v-if="contact" class="min-h-screen flex flex-col">
-		<div class="content-header border-bottom flex items-center justify-between">
+		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white md:z-0 z-10">
 			<div class="flex items-center">
 				<router-link to="/dashboard/contacts" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 				CONTACT DETAILS
@@ -9,9 +9,10 @@
 				<button type="button" class="btn btn-md btn-primary" @click="createNewEvent"><span>Add Booking</span></button>
 			</div>
 		</div>
+		<div class="h-20 lg:hidden block"/>
 
-		<div class="flex items-stretch h-full contact-content flex-grow">
-			<div class="w-5/12 min-h-full border-right">
+		<div class="flex flex-col lg:flex-row items-stretch h-full contact-content flex-grow">
+			<div class="w-full lg:w-5/12 min-h-full border-r-0 lg:border-r border-b lg:border-b-0">
 				<div class="p-6 contact-detail bg-secondary-light">
 					<div class="flex items-start contact-profile">
 						<div class="mr-4">
@@ -24,20 +25,21 @@
 						<div class="flex-1 pt-2">
 							<h2 class="mb-1 text-xl font-bold">{{ contact.contact_user.full_name }}</h2>
 							<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
-
-							<div class="flex items-end justify-between mt-9">
-								<div>
-									<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
-									<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Status</p>
-								</div>
-								<div>
-									<span class="flex mb-1 font-bold">{{ contact.bookings.total }}</span>
-									<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Bookings</p>
-								</div>
-								<div>
-									<span class="flex mb-1">{{ formatDate(contact.created_at) }}</span>
-									<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Added</p>
-								</div>
+						</div>
+					</div>
+					<div class="flex justify-end">
+						<div class="w-full lg:w-4/5 flex items-end justify-between mt-9">
+							<div>
+								<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
+								<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Status</p>
+							</div>
+							<div>
+								<span class="flex mb-1 font-bold">{{ contact.bookings.total }}</span>
+								<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Bookings</p>
+							</div>
+							<div>
+								<span class="flex mb-1">{{ formatDate(contact.created_at) }}</span>
+								<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Added</p>
 							</div>
 						</div>
 					</div>
@@ -224,8 +226,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="w-7/12 p-6">
-				<div class="flex items-center justify-between mb-6 filters">
+			<div class="w-full lg:w-7/12 p-6">
+				<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 filters">
 					<h5 class="font-serif text-sm font-bold tracking-tighter uppercase">Bookings</h5>
 					<div class="flex-grow flex items-center justify-end">
 						<vue-select :options="servicesList" button_class="mr-2 border-0 bg-light shadow-none" v-model="selectedService" label="Service" placeholder="All" @input="filterBookings"></vue-select>
@@ -256,7 +258,7 @@
 			</div>
 		</div>
 
-		<Booking :contact="contact" :service="packageService" @store="newBookingStored" :newEvent="newEvent" :booking="selectedBooking" @update="bookingUpdated" @close="selectedBooking = null" @delete="bookingDeleted"></Booking>
+		<Booking class="contact-booking" :contact="contact" :service="packageService" @store="newBookingStored" :newEvent="newEvent" :booking="selectedBooking" @update="bookingUpdated" @close="selectedBooking = null" @delete="bookingDeleted"></Booking>
 
 		<modal ref="editModal" :close-button="false">
 			<h5 class="font-heading mb-3">Edit Contact</h5>

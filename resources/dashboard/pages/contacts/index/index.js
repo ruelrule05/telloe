@@ -24,6 +24,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 import MessageIcon from '../../../../icons/comment';
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
 const dayjs = require('dayjs');
+const mobile = require('is-mobile');
 
 export default {
 	components: {
@@ -114,7 +115,8 @@ export default {
 		csvContacts: [],
 		csvPreview: false,
 		page: 1,
-		cookieItem: 'telloe_contacts_banner'
+		cookieItem: 'telloe_contacts_banner',
+		isContactFormTab: true
 	}),
 
 	computed: {
@@ -215,6 +217,7 @@ export default {
 			}
 		});
 		this.checkCookie();
+		this.isMobile = mobile();
 		// this.$root.socket.on('invite_token', invite_token => {
 		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
 		// });

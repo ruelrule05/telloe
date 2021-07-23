@@ -46,10 +46,12 @@ const routes = [
 				children: [
 					{
 						path: '/',
+						name: 'Contacts Index',
 						component: () => import(/* webpackChunkName: "dashboard-contacts" */ '../pages/contacts/index/index.vue')
 					},
 					{
 						path: ':id',
+						name: 'Contacts Show',
 						component: () => import(/* webpackChunkName: "dashboard-contacts" */ '../pages/contacts/show/show.vue')
 					}
 				]
@@ -60,11 +62,12 @@ const routes = [
 				children: [
 					{
 						path: '/',
+						name: 'Packages Index',
 						component: () => import(/* webpackChunkName: "dashboard-packages" */ '../pages/packages/index/index.vue')
 					},
 					{
 						path: ':id',
-						name: 'Packages',
+						name: 'Packages Show',
 						component: () => import(/* webpackChunkName: "dashboard-bookings-packages-show" */ '../pages/packages/show/show.vue')
 					}
 				]

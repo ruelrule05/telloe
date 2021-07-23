@@ -191,7 +191,7 @@
 
 			<div class="flex flex-col flex-grow overflow-hidden">
 				<div class="absolute h-20 ml-4 flex items-center z-30">
-					<button @click="isSidebarOpen = true" class="text-gray-500 focus:outline-none lg:hidden">
+					<button @click="isSidebarOpen = true" class="text-gray-500 focus:outline-none lg:hidden" :class="{hidden: isChildPage}">
 						<svg class="h-6 w-6" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
 								stroke-linejoin="round"></path>
