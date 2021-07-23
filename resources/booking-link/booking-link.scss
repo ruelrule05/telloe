@@ -3,6 +3,10 @@
 	width: 200px;
 	left: 0;
 	top: auto;
+
+	@media (max-width: 375px) {
+		width: 150px;
+	}
 }
 
 .timeslots-table {

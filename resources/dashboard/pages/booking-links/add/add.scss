@@ -315,6 +315,18 @@
 	width: 200px;
 	left: 0;
 	top: auto;
+
+	@media (max-width: 375px) {
+		width: 150px;
+	}
+}
+
+.booking-links__timeslots {
+	margin-left: 200px;
+
+	@media (max-width: 375px) {
+		margin-left: 150px;
+	}
 }
 
 .timeslots-table {
