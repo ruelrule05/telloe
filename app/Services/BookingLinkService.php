@@ -94,7 +94,7 @@ class BookingLinkService
 
         $bookingLink->update([
             'dates' => $request->dates,
-            'selected_timeslots' => count($request->selected_timeslots) > 0 ? $request->selected_timeslots : NULL,
+            'selected_timeslots' => count($request->selected_timeslots) > 0 ? $request->selected_timeslots : null,
         ]);
         return response($bookingLink->fresh()->load('bookingLinkContacts.contact.contactUser'));
     }
@@ -167,7 +167,7 @@ class BookingLinkService
     public static function book($uuid, Request $request)
     {
         $bookingLink = BookingLink::where('uuid', $uuid)->with('bookingLinkContacts.contact.contactUser')->where('is_booked', false)->firstOrFail();
-        $user = Auth::user(); 
+        $user = Auth::user();
         $email = $user->email ?? $request->email;
         $bookingLinkContact = false;
         if ($user) {
@@ -222,7 +222,7 @@ class BookingLinkService
     public static function message($id, Request $request)
     {
         $bookingLink = BookingLink::where('id', $id)->firstOrFail();
-        $user = Auth::user(); 
+        $user = Auth::user();
         $bookingLinkContact = $bookingLink->whereHas('bookingLinkContacts', function ($bookingLinkContact) use ($user) {
             $bookingLinkContact->whereHas('contact', function ($contact) use ($user) {
                 $contact->where('contact_user_id', $user->id);

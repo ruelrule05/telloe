@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mail;
+use Str;
 
 class ConversationService
 {
@@ -93,9 +94,15 @@ class ConversationService
             return abort(403, 'Failed creating a conversation. One of the member IDs is invalid.');
         }
 
+        $slug = Str::random(32);
+        while (Conversation::where('slug', $slug)->exists()) {
+            $slug = Str::random(32);
+        }
+
         if (count($members) > 0) {
             $conversation = Conversation::create([
                 'user_id' => Auth::user()->id,
+                'slug' => $slug,
             ]);
             foreach ($members as $user_id) {
                 ConversationMember::create([
@@ -108,13 +115,14 @@ class ConversationService
                 $userExists = User::where('email', $request->email)->first();
                 $conversation = Conversation::create([
                     'user_id' => Auth::user()->id,
+                    'slug' => $slug,
                 ]);
                 ConversationMember::create([
                     'conversation_id' => $conversation->id,
                     'email' => $request->email,
-                    'user_id' => $userExists->id ?? NULL
+                    'user_id' => $userExists->id ?? null
                 ]);
-                $emailToSend = NULL;
+                $emailToSend = null;
                 if ($userExists && $userExists->email && $userExists->notify_message) {
                     $emailToSend = $userExists->email;
                 } elseif (! $userExists) {
@@ -182,5 +190,25 @@ class ConversationService
     public static function delete($id)
     {
         return ;
+    }
+
+    public static function slug($slug)
+    {
+        $authUser = Auth::user();
+
+        if (! $authUser) {
+            return view('pages.conversation');
+        }
+
+        $conversation = Conversation::where('slug', $slug)->firstOrFail();
+
+        $isOwner = $conversation->user_id == $authUser->id;
+        $member = $conversation->members()->where('user_id', $authUser->id)->exists();
+
+        if ($isOwner || $member) {
+            return view('pages.conversation', compact('authUser', 'conversation'));
+        }
+
+        return abort(403);
     }
 }

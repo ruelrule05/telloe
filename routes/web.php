@@ -52,6 +52,7 @@ Route::group(
             ], function () {
                 // Resource
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
+
                 Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
                 Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
                 Route::get('services/contact_services', 'ServiceController@contactServices');
@@ -221,5 +222,6 @@ Route::group(
         Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
-    }
+    },
+    Route::get('conversations/{slug}', 'ConversationController@slug'),
 );

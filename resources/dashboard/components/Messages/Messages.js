@@ -251,6 +251,10 @@ export default {
 		},
 
 		initScreenRecorder() {
+			// console.log(this.$root);
+
+			// return;
+
 			if (!this.$root.screenRecorder.conversation_id) {
 				this.$root.screenRecorder.conversation_id = this.conversation.id;
 				this.$nextTick(() => {
@@ -322,8 +326,10 @@ export default {
 		},
 
 		messageFormMounted() {
-			if (this.$refs['messageInput'] && this.$route.query.focus == 'message_input') {
-				this.$refs['messageInput'].focus();
+			if (this.$route && this.$route.query.focus) {
+				if (this.$refs['messageInput'] && this.$route.query.focus == 'message_input') {
+					this.$refs['messageInput'].focus();
+				}
 			}
 		},
 

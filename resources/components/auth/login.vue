@@ -8,7 +8,7 @@
 			<div class="mb-7">
 				<div class="flex align-center">
 					<label class="text-muted" required>Enter Your Password</label>
-					<label class="small text-primary ml-auto cursor-pointer hover:underline" @click="$root.action = 'recover'">Forgot password?</label>
+					<label class="small text-primary ml-auto cursor-pointer hover:underline forgot-password" @click="$root.action = 'recover'">Forgot password?</label>
 				</div>
 				<input type="password" v-model="loginForm.password" data-required />
 			</div>
@@ -23,9 +23,11 @@
 			</div>
 		</div>
 
-		<hr class="mb-8" />
+		<div class="auth-footer">
+			<hr class="mb-8" />
 
-		<div class="text-center text-muted">Don't have an account? <span class="text-primary cursor-pointer hover:underline" @click="$root.action = 'signup'">Create one</span></div>
+			<div class="text-center text-muted">Don't have an account? <span class="text-primary cursor-pointer hover:underline" @click="$root.action = 'signup'">Create one</span></div>
+		</div>
 	</div>
 </template>
 
@@ -70,15 +72,20 @@ export default {
 	},
 
 	methods: {
-		login() {
+		async login() {
 			if (!this.loading) {
 				this.loading = true;
+
 				if (this.contact && this.contact.email) this.loginForm.email = this.contact.email;
-				window.axios
+				await window.axios
 					.post('/login', this.loginForm, { toast: true })
 					.then(() => {
 						setTimeout(() => {
-							window.location.replace('/dashboard/calendar');
+							if (this.$root.action == 'conversation') {
+								window.location.reload();
+							} else {
+								window.location.replace('/dashboard/calendar');
+							}
 						}, 150);
 					})
 					.catch(() => {

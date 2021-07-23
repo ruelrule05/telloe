@@ -35,4 +35,10 @@ class ConversationController extends Controller
         $contactService = new ConversationService();
         return $contactService->files($id);
     }
+
+    public function slug($slug)
+    {
+        return ConversationService::slug($slug);
+        // return $contactService->show($id);
+    }
 }
