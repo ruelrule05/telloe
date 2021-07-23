@@ -37,7 +37,7 @@ export default {
 		masks: {
 			input: 'MMMM D, YYYY'
 		},
-		menus: ['General Settings', 'Availability', 'Payment', 'Advanced'],
+		menus: ['General Settings', 'Availability', 'Payment', 'Advanced', 'Questions'],
 		activeMenu: 'General Settings',
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

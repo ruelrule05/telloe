@@ -10,6 +10,7 @@ const IgnoreVuetifyStylesPlugin = require('./resources/js/plugins/ignoreVuetifyR
 //require('laravel-mix-purgecss');
 //require('laravel-mix-merge-manifest');
 let timestamp = '';
+// const Webpack = require('webpack');
 
 if (mix.inProduction()) {
 	timestamp = '-' + new Date().valueOf();
@@ -83,6 +84,16 @@ if (mix.inProduction()) {
 		});
 	}
 }
+
+mix.js('resources/js/form-builder.js', 'public/js');
+mix.autoload({
+    jquery: ['$', 'window.jQuery', 'jQuery']
+});
+
+mix.scripts([
+    'node_modules/formBuilder/dist/form-builder.min.js',
+    'node_modules/formBuilder/dist/form-render.min.js'
+],'public/js/formbuilder.js');
 
 mix.webpackConfig({
 	plugins: [new ESLintPlugin(), new IgnoreVuetifyStylesPlugin()],

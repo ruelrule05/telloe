@@ -174,6 +174,19 @@
 							</div>
 						</div>
 					</div>
+					
+
+
+
+					<!-- Questions -->
+					<div v-show="activeMenu == 'Questions'">
+						<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>
+						<!-- <div class="w-5/12"> -->
+							<!-- <div id="fb-editor">Will it Show?</div> -->
+							<!-- <div id="fb-controls"></div> -->
+							<div id="fb-editor"></div>
+						<!-- </div> -->
+					</div>
 				</div>
 			</div>
 		</vue-form-validate>
