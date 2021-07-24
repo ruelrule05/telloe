@@ -10,6 +10,7 @@ import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import CloseIcon from '../../../icons/close';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
+import VFormBuilder from "./formBuilder";
 const ct = require('countries-and-timezones');
 const { getNameList } = require('country-list');
 export default {
@@ -29,7 +30,7 @@ export default {
 		}
 	},
 
-	components: { VDatePicker, VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect, PlusIcon, VueDropdown, CloseIcon },
+	components: { VDatePicker, VueFormValidate, ToggleSwitch, Timerangepicker, VueCheckbox, VueSelect, PlusIcon, VueDropdown, CloseIcon, VFormBuilder },
 
 	data: () => ({
 		dayjs: dayjs,

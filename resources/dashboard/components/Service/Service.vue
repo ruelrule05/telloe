@@ -184,7 +184,8 @@
 						<!-- <div class="w-5/12"> -->
 							<!-- <div id="fb-editor">Will it Show?</div> -->
 							<!-- <div id="fb-controls"></div> -->
-							<div id="fb-editor"></div>
+							<!-- <div id="fb-editor"></div> -->
+							<v-form-builder @on-save="onSave"></v-form-builder>
 						<!-- </div> -->
 					</div>
 				</div>
