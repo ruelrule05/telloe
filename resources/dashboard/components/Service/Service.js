@@ -96,7 +96,6 @@ export default {
 					});
 				}
 			});
-
 			// this.allowed_countries.forEach(code => {
 			// 	let countryTimezones = ct.getTimezonesForCountry(code);
 			// 	if (countryTimezones) {
@@ -221,6 +220,17 @@ export default {
 
 		goToPlans() {
 			this.$router.push('/dashboard/account?tab=plan');
-		}
+		},
+
+		// onSave() {
+		// 	$('#form-render').formRender({formData:fBuilder.formData});
+		// 	self.$emit('on-save', fBuilder.formData);
+		// 	console.log("onSave", fBuilder.formData);
+		// }
+		onSave(){ 
+            // $('#form-render').formRender({formData:fBuilder.formData});
+			// self.$emit('click', fBuilder.formData);
+            // console.log(fBuilder.formData);
+        }
 	}
 };
