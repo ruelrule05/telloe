@@ -5,6 +5,9 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Mail;
+use Mockery;
+use Mockery\MockInterface;
 
 class MembersTest extends TestCase
 {
@@ -35,21 +38,14 @@ class MembersTest extends TestCase
     public function testResend() 
     {
         $id = 1;
+        $this->withoutMiddleware();
+        Mail::fake();
+        Mail::assertNothingQueued();
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/members/$id/resend", $this->headers);
         $response->assertStatus(200);
 
-        $id = 2;
+        $id = 55;
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/members/$id/resend", $this->headers);
-        $response->assertStatus(403);
-    }
-
-    public function testAssignService()
-    {
-        $id = 2;
-        $data = [
-            'service_id' => 1
-        ];
-        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/members/$id/assign_service", $data, $this->headers);
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
 }
