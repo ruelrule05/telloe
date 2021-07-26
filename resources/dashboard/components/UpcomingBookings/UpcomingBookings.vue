@@ -20,7 +20,7 @@
 					<div class="badge truncate max-w-full">{{ googleEvent.summary }}</div>
 				</div>
 
-				<div v-if="dayBookings(upcomingDay.value).length == 0 || googleBookings(upcomingDay.value).length == 0" class="bg-gray-100 px-6 py-8 rounded-md text-center text-muted">No meetings scheduled for {{ upcomingDay.day }}</div>
+				<div v-if="dayBookings(upcomingDay.value).length == 0 && googleBookings(upcomingDay.value).length == 0" class="bg-gray-100 px-6 py-8 rounded-md text-center text-muted">No meetings scheduled for {{ upcomingDay.day }}</div>
 			</div>
 		</div>
 	</div>
