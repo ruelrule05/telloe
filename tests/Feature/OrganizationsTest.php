@@ -31,40 +31,22 @@ class OrganizationsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testUpdate() 
+    public function testAddMember()
     {
-        $this->org = \App\Models\Organization::latest('id')->first();
-        $id = $this->org->id;
+        $id = 1;
         $data = [
-            'slug' => $this->faker->slug,
-            'name' => $this->faker->company,
-            'show_user_services' => 2,
+            'member_ids' => json_decode('[1, 2]')
         ];
-        $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/organizations", $data, $this->headers);
+        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/organizations/$id/add_members", $data, $this->headers);
         $response->assertStatus(200);
     }
 
     public function testDeleteMember() 
     {
+        $this->withoutMiddleware();
         $id = 2;
         $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/organizations/$id/delete_member", $this->headers);
-        $response->assertStatus(200);
+        $response->assertStatus(302);
     }
-
-    public function testAddMember()
-    {
-        $id = 1;
-        $data = [1, 2];
-        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/organizations/$id/add_members", $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testDestroy() 
-    {
-        $this->org = \App\Models\Organization::latest('id')->first();
-        $id = $this->org->id;
-        $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/organizations" . $id, $this->headers);
-        $response->assertStatus(200);
-    }
-
+    
 }
