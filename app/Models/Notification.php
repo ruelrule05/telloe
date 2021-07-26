@@ -3,10 +3,11 @@
 namespace App\Models;
 use Carbon\Carbon;
 use App\Events\NewNotificationEvent;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Notification extends BaseModel
 {
-    //
+    use HasFactory;
     protected $fillable = ['user_id', 'description', 'link', 'is_read'];
 
     public function user()
