@@ -20,6 +20,12 @@
 	}
 	&.open {
 		width: 384px;
+
+		@media (max-width: 768px) {
+			@apply w-full absolute bg-white h-full top-20;
+			z-index: 8;
+			overflow: auto !important;
+		}
 	}
 }
 .note {
@@ -35,7 +41,7 @@
 
 .btn-actions {
 	button {
-		@apply mx-1 border border-primary rounded-full p-3 focus:outline-none transition-colors;
+		@apply mx-0 md:mx-1 mb-1 border border-primary rounded-full p-2 md:p-3 focus:outline-none transition-colors;
 		svg {
 			@apply h-4 w-4;
 		}
@@ -45,5 +51,9 @@
 		&.active {
 			@apply text-white bg-primary;
 		}
+	}
+
+	@media (max-width: 375px) {
+		@apply w-1/4
 	}
 }

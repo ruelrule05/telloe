@@ -116,6 +116,10 @@
 		.message-metalabel {
 			right: 10px;
 		}
+
+		@media (max-width: 425px) {
+			padding-left: 0;
+		}
 	}
 
 	/* Incoming message */

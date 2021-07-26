@@ -1,39 +1,41 @@
 <template>
 	<div>
 		<div class="flex overflow-hidden flex-col" :class="{ 'h-screen': !banner }">
-			<div>
-				<div class="content-header border-bottom">
+			<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0">
 					MESSAGES
-					<div class="ml-auto">
-						<button type="button" class="btn btn-md btn-primary" @click="$refs.newConversationModal.show()">
-							<span>NEW CONVERSATION</span>
-						</button>
-					</div>
+				</div>
+				<div class="ml-auto">
+					<button type="button" class="btn btn-md btn-primary flex items-center" @click="$refs.newConversationModal.show()">
+						<span>NEW</span>
+						<span class="ml-2 hidden md:block">CONVERSATION</span>
+					</button>
 				</div>
 			</div>
+			<div class="h-20 lg:hidden block" />
 
 			<div v-if="banner" class="p-8 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
-					<div class="font-serif w-1/4 font-semibold uppercase">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6 flex-col md:flex-row relative">
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						MESSAGING CONTACTS
 					</div>
-					<div class="w-7/12">
+					<div class="w-full md:w-9/12 ml-0">
 						<p class="text-muxted mb-4">
 							Send messages, voice recordings, and make video calls with contacts, all with familiar features.
 						</p>
 						<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.newConversationModal.show()"><span>START A NEW CONVERSATION</span></button>
 					</div>
-					<div class="font-serif">
+					<div class="font-serif absolute top-5 right-6">
 						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 					</div>
 				</div>
 			</div>
 			<div class="flex-grow flex h-full overflow-hidden" :class="{ 'h-screen': banner }">
 				<div class="border-right overflow-hidden h-full">
-					<index ref="conversationIndex"></index>
+					<index ref="conversationIndex" :showConversationList="isShowConversationList" @conversationList="toggleConversationList()"></index>
 				</div>
 				<div class="flex-1 overflow-hidden h-full">
-					<show @ready="showReady()"></show>
+					<show @ready="showReady()" @conversationList="toggleConversationList()"></show>
 				</div>
 			</div>
 		</div>
