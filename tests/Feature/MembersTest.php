@@ -44,7 +44,7 @@ class MembersTest extends TestCase
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/members/$id/resend", $this->headers);
         $response->assertStatus(200);
 
-        $id = 55;
+        $id = 5555;
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/members/$id/resend", $this->headers);
         $response->assertStatus(404);
     }
