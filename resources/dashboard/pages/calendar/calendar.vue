@@ -63,7 +63,7 @@
 
 		<div v-if="!selectedDate" class="flex">
 			<div class="w-1/2">
-				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents"></UpcomingBookings>
+				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
 			<div class="w-1/2 py-6 px-3 border-left calendar-container">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">

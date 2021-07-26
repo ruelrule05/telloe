@@ -286,6 +286,19 @@ export default {
 				this.$refs.weekView.newEvent.start = newBooking.start;
 				this.$refs.weekView.newEvent.end = newBooking.end;
 			}
+		},
+
+		upcomingEventClick(booking, type) {
+			booking = JSON.parse(JSON.stringify(booking));
+			if (type == 'booking') {
+				booking.date = dayjs(booking.date).toDate();
+				this.selectedDate = booking.date;
+			} else if (type == 'google-event') {
+				this.selectedDate = dayjs(booking.start.dateTime).toDate();
+			}
+			this.$nextTick(() => {
+				document.querySelector('.dashboard-content').scrollTo(0, 0);
+			});
 		}
 	}
 };

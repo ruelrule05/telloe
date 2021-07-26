@@ -222,8 +222,11 @@
 							<div>{{ clonedBooking.meeting_type }}</div>
 						</div>
 
-						<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
-						<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
+						<template v-if="booking.metadata">
+							<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
+							<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
+						</template>
+
 						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
 					</div>
 

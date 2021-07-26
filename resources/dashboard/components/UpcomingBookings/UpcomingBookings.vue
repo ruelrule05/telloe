@@ -7,52 +7,20 @@
 		</div>
 
 		<div v-else v-for="upcomingDay in days" :key="upcomingDay.value" class="flex">
-			<div class="upcoming-day-label border-right py-6 text-muted" :class="{ active: upcomingDay.today }">{{ upcomingDay.text }}</div>
-			<div class="p-8 flex-grow">
-				<div v-if="dayBookings(upcomingDay.value).length > 0">
-					<div v-for="(booking, bookingIndex) in dayBookings(upcomingDay.value)" :key="booking.id" class="flex" :class="{ 'mt-4': bookingIndex > 0 }">
-						<div class="font-normal text-muted w-4/12">{{ convertTime(booking.start, 'hh:mmA') }} - {{ convertTime(booking.end, 'hh:mmA') }}</div>
-						<div class="leading-relaxed w-4/12">
-							<div v-for="bookingUser in booking.booking_users" :key="bookingUser.id" class="mxb-1">
-								<div class="font-bold">{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}</div>
-							</div>
+			<div class="upcoming-day-label border-right py-8 text-muted" :class="{ active: upcomingDay.today }">{{ upcomingDay.text }}</div>
+			<div class="p-5 flex-grow">
+				<div v-for="booking in dayBookings(upcomingDay.value)" :key="booking.id" class="flex items-center mb-1 transition-colors hover:bg-gray-100 p-2 cursor-pointer rounded-lg" @click="$emit('eventClick', booking, 'booking')">
+					<div class="font-normal text-muted flex-grow">{{ convertTime(booking.start, 'hh:mmA') }} - {{ convertTime(booking.end, 'hh:mmA') }}</div>
 
-							<div class="font-normal text-muted" v-if="booking.meet_link">Google Meet</div>
-							<div class="font-normal text-muted" v-if="booking.zoom_link">Zoom Meeting</div>
-						</div>
-						<div class="text-right w-4/12">
-							<div class="badge truncate max-w-full">{{ (booking.service || booking.booking_link).name }}</div>
-						</div>
-					</div>
-
-					<div v-for="(googleEvent, googleEventIndex) in googleBookings(upcomingDay.value)" :key="googleEvent.id" class="flex" :class="{ 'mt-4': googleEventIndex > 0 }">
-						<div class="font-normal text-muted w-4/12">{{ convertTime(googleEvent.start.dateTime, 'hh:mmA') }} - {{ convertTime(googleEvent.end.dateTime, 'hh:mmA') }}</div>
-						<div class="leading-relaxed w-4/12">
-							<div v-for="(googleAttend, googleAttendiesIndex) in googleEvent.attendees" :key="googleAttendiesIndex" class="mxb-1">
-								<div class="font-bold">{{ googleAttend.email }}</div>
-							</div>
-						</div>
-						<div class="text-right w-4/12">
-							<div class="badge truncate max-w-full">{{ googleEvent.summary }}</div>
-						</div>
-					</div>
+					<div class="badge truncate max-w-full">{{ booking.name }}</div>
 				</div>
 
-				<div v-else-if="googleBookings(upcomingDay.value).length > 0">
-					<div v-for="(googleEvent, googleEventIndex) in googleBookings(upcomingDay.value)" :key="googleEvent.id" class="flex" :class="{ 'mt-4': googleEventIndex > 0 }">
-						<div class="font-normal text-muted w-4/12">{{ convertTime(googleEvent.start.dateTime, 'hh:mmA') }} - {{ convertTime(googleEvent.end.dateTime, 'hh:mmA') }}</div>
-						<div class="leading-relaxed w-4/12">
-							<div v-for="(googleAttend, googleAttendiesIndex) in googleEvent.attendees" :key="googleAttendiesIndex" class="mxb-1">
-								<div class="font-bold">{{ googleAttend.email }}</div>
-							</div>
-						</div>
-						<div class="text-right w-4/12">
-							<div class="badge truncate max-w-full">{{ googleEvent.summary }}</div>
-						</div>
-					</div>
+				<div v-for="googleEvent in googleBookings(upcomingDay.value)" :key="googleEvent.id" class="flex items-center mb-1 transition-colors hover:bg-gray-100 p-2 cursor-pointer rounded-lg" @click="$emit('eventClick', googleEvent, 'google-event')">
+					<div class="font-normal text-muted flex-grow">{{ convertTime(googleEvent.start.dateTime, 'hh:mmA') }} - {{ convertTime(googleEvent.end.dateTime, 'hh:mmA') }}</div>
+					<div class="badge truncate max-w-full">{{ googleEvent.summary }}</div>
 				</div>
 
-				<div v-else class="bg-gray-100 px-6 py-8 rounded-md text-center text-muted">No meetings scheduled for {{ upcomingDay.day }}</div>
+				<div v-if="dayBookings(upcomingDay.value).length == 0 || googleBookings(upcomingDay.value).length == 0" class="bg-gray-100 px-6 py-8 rounded-md text-center text-muted">No meetings scheduled for {{ upcomingDay.day }}</div>
 			</div>
 		</div>
 	</div>
