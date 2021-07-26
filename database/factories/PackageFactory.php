@@ -22,7 +22,7 @@ class PackageFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'Tedt Package',
+            'name' => 'Test Package',
             'description' => 'Sample description',
             'user_id' => 1,
             'services' => 'Sample services',
