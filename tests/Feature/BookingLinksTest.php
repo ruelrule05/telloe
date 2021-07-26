@@ -22,9 +22,12 @@ class BookingLinksTest extends TestCase
 
     public function testGetAllTimeslots() 
     {
-        $currentDate = Carbon::now()->addDay(1);
-        $response = $this->actingAs($this->user)->get($this->app_url . "/ajax/booking-links/get_all_timeslots?date=$currentDate", $this->headers);
-        $response->assertStatus(200);
+        $this->withoutMiddleware();
+        $data = [
+          'date' => '2021-07-10 08:00'
+        ];
+        $response = $this->actingAs($this->user)->get($this->app_url . "/ajax/booking-links/get_all_timeslots", $data, $this->headers);
+        $response->assertStatus(302);
     }
 
     public function testStore() 
