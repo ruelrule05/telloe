@@ -6,7 +6,7 @@ use Carbon\Carbon;
 class PendingInvoice extends BaseModel
 {
     //
-    protected $fillable = ['user_id', 'contact_id', 'service_ids', 'amount', 'currency'];
+    protected $fillable = ['user_id', 'contact_id', 'service_ids', 'amount']; // , 'currency'
     protected $appends = ['created', 'is_pending'];
     protected $casts = [
         'service_ids' => 'array',
