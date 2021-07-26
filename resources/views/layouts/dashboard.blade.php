@@ -10,14 +10,14 @@
 			<div :class="isSidebarOpen ? 'block' : 'hidden'" @click="isSidebarOpen = false"  class="fixed z-20 inset-0 bg-black opacity-50 transition-opacity lg:hidden"></div>
 			
 			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary overflow-auto w-full fixed z-40 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0">
-				<div class="p-6 flex justify-between border-bottom">
+				<div class="p-8 flex justify-between border-bottom">
 					<a href="/"><img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6"></a>
 					<button class="rounded-full transition-colors hover:bg-gray-200 hover:text-gray-500 focus:outline-none p-1" type="button">
 						<bell-icon class="fill-current"></bell-icon>
 					</button>
 				</div>
 
-				<div class="flex flex-col p-6">
+				<div class="flex flex-col p-8">
 					<router-link to="/dashboard/account"  class="cursor-pointer flex items-center justify-center">
 						<div class="profile-image profile-image-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
 							<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
@@ -210,7 +210,7 @@
 						<router-view></router-view>
 					</div>
 					
-					<div v-if="$route.name != 'conversations'" class="border-top bg-white p-6 flex justify-between text-muted text-xs footer">
+					<div v-if="$route.name != 'conversations'" class="border-top bg-white p-8 flex justify-between text-muted text-xs footer">
 						<div class="flex flex-col md:flex-row">
 							<a class="font-bold" target="_blank" href="/contact">Contact Us</a>
 							<a class="font-bold ml-0 md:ml-6" target="_blank" href="https://docs.telloe.com">Knowledge Base</a>

@@ -17,14 +17,14 @@
 			<div class="modal-body col-start-5 col-span-3 text-center bg-white" v-if="action == 'outgoing'">
 				<template v-if="!gettingDevices">
 					<template v-if="hasDevices">
-						<div class="p-6">
+						<div class="p-8">
 							<h6 class="text-primary font-serif font-semibold mb-10">CALLING...</h6>
 							<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + $root.callConversation.member.profile_image + ')' }">
 								<span v-if="!$root.callConversation.member.profile_image">{{ $root.callConversation.member.initials }}</span>
 							</div>
 							<h3 class="mb-8">{{ $root.callConversation.member.full_name || $root.callConversation.name }}</h3>
 						</div>
-						<div class="bg-secondary-light p-6 flex items-center justify-center">
+						<div class="bg-secondary-light p-8 flex items-center justify-center">
 							<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="toggleVideo">
 								<video-muted-icon v-if="isVideoStopped" height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></video-muted-icon>
 								<videocam-icon v-else height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></videocam-icon>
@@ -47,7 +47,7 @@
 
 			<!-- Incoming -->
 			<div class="modal-body col-start-5 col-span-3 text-center bg-white" v-else-if="action == 'incoming'">
-				<div class="p-6">
+				<div class="p-8">
 					<h6 class="text-primary font-serif font-semibold mb-10 uppercase">{{ caller.first_name }} IS CALLING...</h6>
 					<div class="profile-image profile-image-xl mb-1 inline-block" :style="{ backgroundImage: 'url(' + caller.profile_image + ')' }">
 						<span v-if="!caller.profile_image">{{ caller.initials }}</span>
@@ -57,7 +57,7 @@
 
 				<template v-if="!gettingDevices">
 					<template v-if="hasDevices">
-						<div class="bg-secondary-light p-6 flex items-center justify-center">
+						<div class="bg-secondary-light p-8 flex items-center justify-center">
 							<button class="bg-red-600 border border-red-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="rejectCall()"><close-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></close-icon></button>
 							<button class="ml-2 bg-green-600 border border-green-600 rounded-full p-4 focus:outline-none text-white" type="button" data-action="login" @click="answerCall()"><call-menu-icon height="10" width="10" transform="scale(1.6)" class="fill-current"></call-menu-icon></button>
 						</div>
@@ -137,7 +137,7 @@
 			</div>
 
 			<div v-if="conversation" class="messages-container" :class="{ open: showMessages }">
-				<div class="border-bottom flex items-center justify-between p-6">
+				<div class="border-bottom flex items-center justify-between p-8">
 					<div class="font-serif text-muted font-semibold">MESSAGES</div>
 					<button type="button" @click="showMessages = false" class="rounded-full p-2 border text-gray-600 ml-1 transition-colors hover:bg-gray-200 focus:outline-none"><CloseIcon class="fill-current"></CloseIcon></button>
 				</div>

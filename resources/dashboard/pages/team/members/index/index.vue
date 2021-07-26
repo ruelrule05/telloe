@@ -9,7 +9,7 @@
 			</div>
 		</div>
 
-		<div class="h-full contact-content p-6">
+		<div class="h-full contact-content p-8">
 			<div>
 				<div class="flex items-center justify-between mb-3 header">
 					<VueSelect :options="memberStatuses" v-model="memberStatus" @input="getData" label="Status"></VueSelect>
@@ -45,7 +45,7 @@
 
 				<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
 			</div>
-			<div class="hidden w-1/3 p-6">
+			<div class="hidden w-1/3 p-8">
 				<p class="text-sm text-muted">Members information can be upgraded with custom fields. That gives you the option to have specific fields for contacts that match your needs.</p>
 				<button type="button" class="btn btn-sm btn-outline-primary mt-6"><span>Manage fields</span></button>
 			</div>

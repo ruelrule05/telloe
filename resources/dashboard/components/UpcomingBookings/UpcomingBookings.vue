@@ -8,7 +8,7 @@
 
 		<div v-else v-for="upcomingDay in days" :key="upcomingDay.value" class="flex">
 			<div class="upcoming-day-label border-right py-6 text-muted" :class="{ active: upcomingDay.today }">{{ upcomingDay.text }}</div>
-			<div class="p-6 flex-grow">
+			<div class="p-8 flex-grow">
 				<div v-if="dayBookings(upcomingDay.value).length > 0">
 					<div v-for="(booking, bookingIndex) in dayBookings(upcomingDay.value)" :key="booking.id" class="flex" :class="{ 'mt-4': bookingIndex > 0 }">
 						<div class="font-normal text-muted w-4/12">{{ convertTime(booking.start, 'hh:mmA') }} - {{ convertTime(booking.end, 'hh:mmA') }}</div>

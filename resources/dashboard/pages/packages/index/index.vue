@@ -20,7 +20,7 @@
 				</div>
 			</div>
 			<div class="h-20 lg:hidden block" />
-			<div v-if="banner" class="p-6 border-bottom">
+			<div v-if="banner" class="p-8 border-bottom">
 				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
 					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						CREATE A NEW PACKAGE
@@ -46,7 +46,7 @@
 				</div>
 			</div>
 
-			<div v-if="packages.length == 0" class="flex-grow p-6">
+			<div v-if="packages.length == 0" class="flex-grow p-8">
 				<div class="absolute-center p-6 bg-secondary rounded-xl flex items-start lg:w-4/12 md:5/12 sm:w-6/12 w-10/12" :class="{ packages: banner }">
 					<div class="text-primary">
 						<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
@@ -59,7 +59,7 @@
 			</div>
 
 			<div v-else class="flex-grow">
-				<div class="grid grid-cols-1 gap-6 p-4 md:grid-cols-3 lg:grid-cols-4">
+				<div class="grid grid-cols-1 gap-8 p-4 md:grid-cols-3 lg:grid-cols-4">
 					<div v-for="packageItem in packages" class="rounded-2xl bg-secondary-light p-4 w-full" :key="packageItem.id">
 						<div class="flex justify-between">
 							<div class="overflow-hidden">
@@ -167,7 +167,7 @@
 
 		<Modal ref="addModal" :close-button="false" size="modal-lg ">
 			<h6 class="font-serif font-semibold mb-5">ADD PACKAGE</h6>
-			
+
 			<vue-form-validate @submit="submit">
 				<fieldset>
 					<div class="mb-4">

@@ -2,64 +2,78 @@
 
 @section('content')
 
-
-<div style="margin-bottom: 30px">
-    <h1 style="font-size: 32px; margin-bottom: 0; margin-top: 0; line-height: 38px" class="text-primary">{{ $bookings[0]->service->name }} is booked!</h1>
-   
-</div>
-
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0">
 {!! $emailMessage !!}
 </p>
 
 @foreach($bookings as $booking) 
-    <div style="border-radius: 15px; background-color: #F8F8F9; padding: 20px; margin-top: 20px">
-        <h3 style="margin-top: 0; margin-bottom: 0">
-            {{ \Carbon\Carbon::parse($booking->date)->format('M d, Y') }} ({{ \Carbon\Carbon::parse($booking->date)->format('l') }})
-        </h3>
-        <div style="font-size: 16px">{{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone ?? null)->format('h:iA') }} -  {{ \Carbon\Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone ?? null)->format('h:iA') }} ({{$booking->timezone ?? ''}})</div>
-
-        <div style="margin-top: 10px; color: #777; margin-bottom: 5px">Guests</div>
-        @foreach($booking->bookingUsers as $bookingUser)
-            <div style="border-radius: 5px; padding: 3px 8px; background-color: #ddd; display: inline-block;  font-weight: 600; margin-bottom: 5px">
-                <div>{{ $bookingUser->user->full_name }}</div>
-                <small style="font-weight: 400; display: block; margin-top: -4px; color: #555">{{ $bookingUser->user->email }}</small>
-            </div>
-        @endforeach
-
-        @if($booking->recurring)
-        <div style="margin-top: 10px; display: flex; align-items: cexnter; flex-wrap: nowrap; font-size: 14px; line-height: 18px" class="text-muted">
-            <div>
-                <img src="{{ config('app.url') }}/images/refresh.png" style="margin-top: 5px" />
-            </div>
-            <div style="margin-left: 10px;">
-                Repeating booking every <strong>{{ implode(',', $booking->recurring_days) }}</strong> until <strong>{{ $booking->until }}</strong>.
-            </div>
-        </div>
+<div style="text-align-last: left; margin-top: 10px">
+    <div style="margin-top: 20px;">
+        <h1 style="font-size: 26px; margin-bottom: 2px; margin-top: 0">{{ $booking->name }}</h1>
+        @if($booking->service)
+        <div style="color: #838EA6">{{ $booking->duration }} min event with <span style="font-weight: 600">{{ $booking->service->coach->full_name }}</span></div>
         @endif
-        <div style="margin-top: 10px">
-            Add to:&nbsp;&nbsp;
-            <a target="_blank" class="text-primary" href="{{ $booking->google_link}}"><strong>Google Calendar</strong></a>
-            &nbsp;&nbsp;
-            <a target="_blank" class="text-primary" href="{{ $booking->outlook_link }}"><strong>Outlook</strong></a>
-            &nbsp;&nbsp;
-            <a target="_blank" class="text-primary" href="{{ $booking->yahoo_link }}"><strong>Yahoo!</strong></a>
-            &nbsp;&nbsp;
-            <a target="_blank" class="text-primary" href="{{ $booking->ical_link }}"><strong>iCal</strong></a>
+        
+        <label style="color: #838EA6; margin-top: 15px; display: block">Date</label>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->date }}</div>
+
+
+        <label style="color: #838EA6">Time</label>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->start }} - {{ $booking->end }} ({{ $booking->timezone }})</div>
+
+        <label style="color: #838EA6">Guests</label>
+        <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">
+            @foreach($booking->bookingUsers as $bookingUser)
+            <div style="display: inline-block;border-radius: 5px; padding: 3px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-bottom: 5px;">
+                {{ $bookingUser->user->full_name }}
+            </div>
+            @endforeach
         </div>
+
+        <label style="color: #838EA6">Meeting Type</label>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->meeting_type }}</div>
+
+        @if($booking->notes)
+        <label style="color: #838EA6">Notes</label>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->notes }}</div>
+        @endif
+
 
         @if($booking->zoom_link)
-        <div>
-            Zoom link:&nbsp;&nbsp;
-            <a target="_blank"  class="text-primary" style="word-break: break-all" href="{{ $booking->zoom_link }}"><strong>Go to Zoom meeting</strong></a>
-        </div>
+            <label style="color: #838EA6">Zoom link</label>
+            <div style="margin-bottom: 15px; margin-top: -2px">
+                <a href="{{ $booking->zoom_link }}" target="_blank" style="font-weight: 500; color: #0000EE"><u>Go to Zoom meeting</u></a>
+            </div>
         @endif
-        <a href="{{ $booking->url }}"
-            style="{{ $style['button'] }} margin-top: 20px; margin-bottom: 5px"
-            class="button"
-            target="_blank">
-            View Booking
-        </a>
+
+        @if($booking->meet_link)
+            <label style="color: #838EA6">Google Meet link</label>
+            <div style="margin-bottom: 15px; margin-top: -2px">
+               <a href="{{ $booking->meet_link }}" target="_blank" style="font-weight: 500; color: #0000EE"><u>Go to Meet conference</u></a>
+            </div>
+        @endif
+
+
+        <label style="color: #838EA6">Add to Calendar</label>
+        <div style="font-weight: 500; margin-bottom: 15px; margin-top: -2px">
+            <a href="{{ $booking->google_link }}" target="_blank" style="font-weight: 500; color: #3167e3"><u>Google Calendar</u></a>
+            &nbsp;&nbsp;
+            <a href="{{ $booking->outlook_link }}" target="_blank" style="font-weight: 500; color: #3167e3"><u>Outlook</u></a>
+            &nbsp;&nbsp;
+            <a href="{{ $booking->yahoo_link }}" target="_blank" style="font-weight: 500; color: #3167e3"><u>Yahoo!</u></a>&nbsp;&nbsp;
+            <a href="{{ $booking->ical_link }}" target="_blank" style="font-weight: 500; color: #3167e3"><u>iCal</u></a>
+        </div>
+
     </div>
+</div>
+
+<div style="text-align: center">
+    <a href="{{ $booking->url }}"
+        style="{{ $style['button'] }} margin-top: 20px;"
+        class="button"
+        target="_blank">
+        View Booking
+    </a>
+</div>
 @endforeach
 @stop

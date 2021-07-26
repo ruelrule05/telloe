@@ -1,5 +1,5 @@
 <template>
-	<div class="p-6 flex flex-col h-full conversations-list overflow-hidden">
+	<div class="p-8 flex flex-col h-full conversations-list overflow-hidden">
 		<input type="text" placeholder="Search conversations" v-model="search" />
 
 		<div class="overflow-auto flex-grow mt-12 relative" v-if="ready">

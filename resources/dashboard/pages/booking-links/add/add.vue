@@ -1,5 +1,5 @@
 <template>
-	<div class="p-6">
+	<div class="p-8">
 		<h3 class="mb-5 lg:mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke meeting link</h3>
 		<vue-form-validate @submit="storeLink">
 			<div class="form">

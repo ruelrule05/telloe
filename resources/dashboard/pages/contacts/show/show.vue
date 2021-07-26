@@ -9,11 +9,11 @@
 				<button type="button" class="btn btn-md btn-primary" @click="createNewEvent"><span>Add Booking</span></button>
 			</div>
 		</div>
-		<div class="h-20 lg:hidden block"/>
+		<div class="h-20 lg:hidden block" />
 
 		<div class="flex flex-col lg:flex-row items-stretch h-full contact-content flex-grow">
 			<div class="w-full lg:w-5/12 min-h-full border-r-0 lg:border-r border-b lg:border-b-0">
-				<div class="p-6 contact-detail bg-secondary-light">
+				<div class="p-8 contact-detail bg-secondary-light">
 					<div class="flex items-start contact-profile">
 						<div class="mr-4">
 							<div class="profile-image profile-image-xl" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
@@ -226,7 +226,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="w-full lg:w-7/12 p-6">
+			<div class="w-full lg:w-7/12 p-8">
 				<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 filters">
 					<h5 class="font-serif text-sm font-bold tracking-tighter uppercase">Bookings</h5>
 					<div class="flex-grow flex items-center justify-end">

@@ -15,8 +15,8 @@
 					<span>New Subscription</span>
 				</button>
 			</div>
-			<div v-if="banner" class="p-6 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+			<div v-if="banner" class="p-8 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 					<div class="font-serif w-1/4 font-semibold uppercase">
 						CREATE A SUBSCRIPTION
 					</div>
@@ -98,7 +98,7 @@
 				</div>
 			</div>
 		</div>
-		<div v-else class="absolute-center p-6 bg-secondary rounded-xl flex items-start" style="width: 450px">
+		<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start" style="width: 450px">
 			<div class="text-primary">
 				<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 			</div>

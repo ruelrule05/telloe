@@ -32,6 +32,15 @@
       }
       .text-muted{color: #838ea6;}
       .text-primary{color: #3167e3}
+      .o_email_content {
+        background: #ffffff; padding: 60px; box-sizing: border-box;border-radius: 15px
+      }
+      
+	    @media (max-width: 991px) {
+        .o_email_content {
+          padding: 30px;
+        }
+      }
     </style>
     <!--[if mso]>
     <style>
@@ -52,10 +61,10 @@
     <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="margin-top: 10px; background-color: #fae6e2;">
       <tbody>
         <tr>
-          <td class="o_bg-white o_px-md o_py" align="center" style="padding-left: 24px;padding-right: 24px;padding-top: 16px;padding-bottom: 6px;">
+          <td class="o_bg-white o_px-md o_py" align="center" style="padding-left: 24px;padding-right: 24px;padding-top: 24px;padding-bottom: 24px;">
             <!--[if mso]><table width="584" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td align="center"><![endif]-->
             <div class="o_col-6s o_sans o_text o_text-secondary o_center" style="font-family: {{ $fontFamily }};margin-top: 0px;margin-bottom: 0px;font-size: 15px;line-height: 24px;max-width: 584px; text-align: left;">
-              <div style="background: #ffffff; padding: 60px; box-sizing: border-box;border-radius: 15px">
+              <div class="o_email_content">
                 <a class="o_text-primary" target="_blank" href="{{ config('app.url') }}" style="text-decoration: none;outline: none;color: #126de5;"><img src="{{ config('app.url') }}/logo.png" height="25"></a>
                   <div style="margin-top: 25px">&nbsp;</div>
                   @yield('content')

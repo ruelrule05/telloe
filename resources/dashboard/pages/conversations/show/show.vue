@@ -80,7 +80,7 @@
 				</div>
 			</div>
 
-			<div class="p-6 overflow-auto flex-grow">
+			<div class="p-8 overflow-auto flex-grow">
 				<vue-form-validate v-if="addNewNote" @submit="addNote" class="mb-4">
 					<textarea rows="3" v-model="newNote" placeholder="Write a note.." class="resize-none" data-required></textarea>
 					<div class="flex justify-between mt-2">

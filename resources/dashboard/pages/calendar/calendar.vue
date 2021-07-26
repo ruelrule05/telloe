@@ -22,15 +22,25 @@
 					</button>
 					<div class="button-date-nav">
 						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-						<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
+
+						<div class="px-2">
+							<v-date-picker :popover="{ placement: 'bottom', visibility: 'click' }" v-model="selectedDate" :masks="masks">
+								<template v-slot="{ inputValue, inputEvents }">
+									<button type="button" class="uppercase font-semibold" v-on="inputEvents">
+										<span>{{ inputValue }}</span>
+									</button>
+								</template>
+							</v-date-picker>
+						</div>
+
 						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div v-if="banner" class="p-6 border-bottom">
-			<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+		<div v-if="banner" class="p-8 border-bottom">
+			<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 				<div class="font-serif w-1/4 font-semibold uppercase">
 					CHECK YOUR MEETINGS AND AVAILABLE TIMES.
 				</div>

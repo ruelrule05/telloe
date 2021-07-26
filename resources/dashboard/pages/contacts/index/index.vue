@@ -17,12 +17,12 @@
 					>
 						<span>Import</span>
 					</button>
-					<button type="button" class="btn btn-md btn-primary flex items-center justify-center w-6/12 md:w-auto" @click="addContact = true">Add contact</button>
+					<button type="button" class="btn btn-md btn-primary flex items-center justify-center w-6/12 md:w-auto" @click="addContact = true"><span>Add contact</span></button>
 				</div>
 			</div>
-			<div class="h-28 md:h-20 lg:hidden block"/>
+			<div class="h-28 md:h-20 lg:hidden block" />
 
-			<div v-if="banner" class="p-6 border-bottom">
+			<div v-if="banner" class="p-8 border-bottom">
 				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
 					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						ADD NEW CONTACTS
@@ -88,7 +88,7 @@
 						<Paginate v-if="contacts.data.length > 0" :data="contacts" @change="p => (page = p)" class="mt-6"></Paginate>
 					</template>
 
-					<div v-else class="absolute-center p-6 bg-secondary rounded-xl flex items-start lg:w-6/12 md:5/12 sm:w-6/12 w-10/12">
+					<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-6/12 md:5/12 sm:w-6/12 w-10/12">
 						<div class="text-primary">
 							<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 						</div>
@@ -100,7 +100,7 @@
 
 					<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
 				</div>
-				<div class="contact-fields w-full lg:w-1/3 p-6">
+				<div class="contact-fields w-full lg:w-1/3 p-8">
 					<p class="text-sm text-muted mb-2">Contacts information can be upgraded with custom fields. That gives you the option to have specific fields for contacts that match your needs.</p>
 					<div v-for="(custom_field, index) in userCustomFields" :key="index" class="mr-1 mt-2 py-2 px-3 bg-gray-50 rounded-lg text-xs inline-block">
 						{{ custom_field }}
@@ -119,13 +119,13 @@
 				</div>
 			</div>
 			<div class="h-20 lg:hidden block" />
-			<vue-form-validate @submit="store" class="p-6">
+			<vue-form-validate @submit="store" class="p-8">
 				<div class="flex block lg:hidden w-full">
-					<h2 class="font-serif uppercase font-semibold mb-4 text-xs w-6/12" @click="isContactFormTab = true" :class="{ 'text-primary' : isContactFormTab }">Contact Details</h2>
-					<h2 class="font-serif uppercase font-semibold mb-4 text-xs w-6/12" @click="isContactFormTab = false" :class="{ 'text-primary' : !isContactFormTab }">Available Services</h2>
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs w-6/12" @click="isContactFormTab = true" :class="{ 'text-primary': isContactFormTab }">Contact Details</h2>
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs w-6/12" @click="isContactFormTab = false" :class="{ 'text-primary': !isContactFormTab }">Available Services</h2>
 				</div>
 				<div class="flex">
-					<div class="w-full lg:w-5/12" :class="{hidden: !isContactFormTab && isMobile}">
+					<div class="w-full lg:w-5/12" :class="{ hidden: !isContactFormTab && isMobile }">
 						<h2 class="font-serif uppercase font-semibold mb-4 text-xs hidden lg:block">Contact Details</h2>
 						<div class="pr-3">
 							<div class="mb-4">
@@ -151,13 +151,13 @@
 							</div>
 						</div>
 
-						<div class="d-flex mt-5" >
+						<div class="d-flex mt-5">
 							<button class="btn btn-outline-primary btn-sm" type="button" @click="addContact = false"><span>Cancel</span></button>
 							<button class="btn-sm btn btn-primary" type="submit"><span>Add</span></button>
 						</div>
 					</div>
 
-					<div class="w-full lg:w-4/12 pl-0 lg:pl-6" :class="{hidden: isContactFormTab && isMobile}">
+					<div class="w-full lg:w-4/12 pl-0 lg:pl-6" :class="{ hidden: isContactFormTab && isMobile }">
 						<h2 class="font-serif uppercase font-semibold mb-4 text-xs hidden lg:block">Available Services</h2>
 						<div v-for="service in services" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
 							<h6 class="font-semibold text-primary">{{ service.name }}</h6>

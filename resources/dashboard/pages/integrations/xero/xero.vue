@@ -36,7 +36,7 @@
 				</div>
 			</div>
 
-			<div v-else class="p-6">
+			<div v-else class="p-8">
 				<div class="flex items-center mb-3">
 					<vue-select v-if="organizations.length > 0" :disabled="tableLoading" :options="organizations" v-model="tenantId" label="Organization" @input="changeTenant()"></vue-select>
 					<vue-select :options="invoiceStatuses" class="ml-6" v-model="invoiceStatus" label="Status"></vue-select>

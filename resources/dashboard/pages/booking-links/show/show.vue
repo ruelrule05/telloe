@@ -4,8 +4,8 @@
 			<router-link to="/dashboard/booking-links" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 			{{ bookingLink.name }} ({{ bookingLink.duration }} mins)
 		</div>
-		<div class="h-20 lg:hidden block"/>
-		<div class="p-6">
+		<div class="h-20 lg:hidden block" />
+		<div class="p-8">
 			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
 			<div>
 				<div class="flex flex-col lg:flex-row justify-between items-end lg:items-center">

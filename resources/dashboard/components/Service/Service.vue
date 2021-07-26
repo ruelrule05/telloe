@@ -15,7 +15,7 @@
 			</div>
 
 			<div v-if="createService && !$root.auth.is_premium && servicesCount > 0">
-				<div class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-4/12">
+				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-4/12">
 					<div class="pl-4 -mt-1">
 						<p class="font-bold text-sm">Please upgrade your account to create more event types.</p>
 						<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="goToPlans()"><span>View Plans</span></button>
@@ -24,10 +24,10 @@
 			</div>
 
 			<div v-else class="flex flex-grow">
-				<div class="sidebar border-right px-6">
+				<div class="sidebar border-right px-6 pt-4">
 					<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 				</div>
-				<div class="flex-grow p-6">
+				<div class="flex-grow p-8">
 					<!-- General Settings -->
 					<div v-show="activeMenu == 'General Settings'">
 						<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>

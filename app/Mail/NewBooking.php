@@ -14,6 +14,7 @@ class NewBooking extends Mailer
     public $emailMessage;
     public $names;
     public $bookings;
+    public $duration;
 
     public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
@@ -50,10 +51,14 @@ class NewBooking extends Mailer
             $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
             $booking->ical_link = $booking->outlook_link;
+            $booking->date = Carbon::parse($booking->date)->format('M d, Y');
+            $booking->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
+
+            $booking->start = Carbon::parse("$booking->date $booking->start")->format('h:iA');
+            $booking->end = Carbon::parse("$booking->date $booking->end")->format('h:iA');
+
             return $booking;
         });
-
-        return $this->bookings;
     }
 
     /**

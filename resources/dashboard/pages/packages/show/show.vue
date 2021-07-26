@@ -5,9 +5,9 @@
 				<router-link to="/dashboard/packages" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 				PACKAGE OVERVIEW
 			</div>
-			<div class="h-20 lg:hidden block"/>
+			<div class="h-20 lg:hidden block" />
 
-			<div class="border-bottom p-6 flex flex-col lg:grid grid-cols-12">
+			<div class="border-bottom p-8 flex flex-col lg:grid grid-cols-12">
 				<div class="col-span-5">
 					<h1 class="text-2xl text-primary font-bold font-serif">{{ packageItem.name }}</h1>
 					<p class="text-sm text-muted">{{ packageItem.description }}</p>

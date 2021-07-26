@@ -14,8 +14,9 @@ import jstz from 'jstz';
 const timezone = jstz.determine();
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 import CloseIcon from '../../../icons/close.vue';
+import { DatePicker } from 'v-calendar';
 export default {
-	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon },
+	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon, 'v-date-picker': DatePicker },
 
 	data: () => ({
 		loading: true,
@@ -29,7 +30,10 @@ export default {
 		contactBookings: [],
 		timezone: '',
 		banner: false,
-		cookieItem: 'telloe_calendar_banner'
+		cookieItem: 'telloe_calendar_banner',
+		masks: {
+			input: 'MMMM D, YYYY'
+		}
 	}),
 
 	computed: {
@@ -264,9 +268,9 @@ export default {
 		},
 
 		bookingClosed() {
-			if (this.view == 'day') {
+			if (this.view == 'day' && this.$refs.dayView) {
 				this.$refs.dayView.newEvent = null;
-			} else if (this.view == 'week') {
+			} else if (this.view == 'week' && this.$refs.weekView) {
 				this.$refs.weekView.newEvent = null;
 			}
 			this.selectedBooking = null;
