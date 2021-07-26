@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ContactPackageSeeder::class,
             MemberSeeder::class,
             ServiceSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }
