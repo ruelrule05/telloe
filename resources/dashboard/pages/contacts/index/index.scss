@@ -142,6 +142,12 @@
 		}
 	}
 
+	.contact-status {
+		@media (max-width: 768px) {
+			width: 100%;
+		}
+	}
+
 	.note-row {
 		.action-popup {
 			top: 50px;
