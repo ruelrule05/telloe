@@ -35,7 +35,7 @@ class ConversationService
 
     public function show($id)
     {
-        $conversation = Conversation::withTrashed()->with('contact', 'notes')->with('user.services', 'members.user')->findOrfail($id);
+        $conversation = Conversation::with('contact', 'notes', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 
         //if ($request->is_read) :
