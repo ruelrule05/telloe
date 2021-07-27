@@ -5,10 +5,11 @@ namespace App\Models;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Service extends BaseModel
 {
-    //
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment', 'types', 'starts_at', 'ends_at', 'timezone', 'type'];

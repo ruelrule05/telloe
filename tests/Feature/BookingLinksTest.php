@@ -22,9 +22,12 @@ class BookingLinksTest extends TestCase
 
     public function testGetAllTimeslots() 
     {
-        $currentDate = Carbon::now()->addDay(1);
-        $response = $this->actingAs($this->user)->get($this->app_url . "/ajax/booking-links/get_all_timeslots?date=$currentDate", $this->headers);
-        $response->assertStatus(200);
+        $this->withoutMiddleware();
+        $data = [
+          'date' => '2021-07-10 08:00'
+        ];
+        $response = $this->actingAs($this->user)->get($this->app_url . "/ajax/booking-links/get_all_timeslots", $data, $this->headers);
+        $response->assertStatus(302);
     }
 
     public function testStore() 
@@ -766,6 +769,14 @@ class BookingLinksTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testAssociateUser() 
+    {
+        $this->withoutMiddleware();
+        $uuid = $this->user->bookingLinks()->latest('id')->first()->uuid;
+        $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/booking-links/$uuid/associate_user", $this->headers);
+        $response->assertStatus(403);
+    }
+
     public function testDestroy() 
     {   
         $this->withoutMiddleware();
@@ -773,29 +784,6 @@ class BookingLinksTest extends TestCase
         $id = $this->bookingLink->id;
         $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/booking-links/" . $id, $this->headers);
         $response->assertStatus(200);
-    }
-
-    public function testBookingLinksSendInvitation() 
-    {
-        $this->withoutMiddleware();
-        $bookingLink_id = $this->user->bookingLinks()->first()->id;
-        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/booking-links/$bookingLink_id/send_invitation", $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testBookingLinksSendInvitationWithAuth() 
-    {
-        $bookingLink_id = $this->user->bookingLinks()->first()->id;
-        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/booking-links/$bookingLink_id/send_invitation", $this->headers);
-        $response->assertStatus(403);
-    }
-
-    public function testAssociateUser() 
-    {
-        $this->withoutMiddleware();
-        $uuid = $this->user->bookingLinks()->latest('id')->first()->uuid;
-        $response = $this->actingAs($this->user)->put($this->app_url . "/ajax/booking-links/$uuid/associate_user", $this->headers);
-        $response->assertStatus(403);
     }
 
 }

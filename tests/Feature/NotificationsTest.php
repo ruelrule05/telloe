@@ -29,6 +29,7 @@ class NotificationsTest extends TestCase
 
     public function testUpdate()
     {
+        $this->withoutMiddleware();
         $this->notification = \App\Models\Notification::first();
         $id = $this->notification->id;
         $response = $this->actingAs($this->user)->put($this->app_url . '/ajax/notifications/' . $id, $this->headers);

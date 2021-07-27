@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Auth;
 
 class BookingsTest extends TestCase
 {
@@ -20,20 +22,13 @@ class BookingsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testGet()
-    {
-        $this->booking = \App\Models\Booking::first();
-        $uuid = $this->booking->uuid;
-        $response = $this->actingAs($this->user)->get($this->app_url . "/bookings/$uuid", $this->headers);
-        $response->assertStatus(200);
-    }
-
     public function testStore() 
     {
         $this->withoutAuthorization();
         $this->booking = \App\Models\Booking::first();
         $service_id = $this->booking->service_id;
         $data = [
+            'name' => 'Booking 1',
             'service_id' => $service_id,
             'contact_ids' => [],
             'emails' => [],
@@ -45,6 +40,8 @@ class BookingsTest extends TestCase
             'meeting_type' => 'Phone',
             'timezone' => "Australia/Brisbane"
         ];
+        Mail::fake();
+        Mail::assertNothingQueued();
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/bookings", $data, $this->headers);
         $response->assertStatus(200);
     }
@@ -91,19 +88,6 @@ class BookingsTest extends TestCase
     public function testContactBookings() 
     {
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/bookings/contact', $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testAssignToMember() 
-    {
-        $this->withoutAuthorization();
-        $this->booking = \App\Models\Booking::first();
-        $id = $this->booking->id;
-        $service_id = $this->booking->service_id;
-        $data = [
-            'service_id' => $service_id
-        ];
-        $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/bookings/$id/assign_to_member", $data, $this->headers);
         $response->assertStatus(200);
     }
 

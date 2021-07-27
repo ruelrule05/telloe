@@ -57,6 +57,7 @@ class ConversationService
     public static function store(StoreConversationRequest $request)
     {
         $authUser = Auth::user();
+        $conversation = null;
         if (count($request->members ?? []) == 1) {
             $user = User::findOrFail($request->members[0]);
             $contact = Contact::where('user_id', $authUser->id)->where('contact_user_id', $user->id)->where('is_pending', false)->first();
@@ -141,7 +142,7 @@ class ConversationService
             $conversation->update(['name' => 'New group chat']);
         }
 
-        return $conversation->load('members.user');
+        return response()->json($conversation->load('members.user'));
     }
 
     public function update($id, Request $request)

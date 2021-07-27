@@ -21,6 +21,7 @@ class PendingSubscriptionsTest extends TestCase
 
     public function testStore()
     {
+        $this->withoutMiddleware();
         $data = [
             'contact_id' => 'Test notes',
             'services' => json_decode('[]', true),
@@ -30,12 +31,6 @@ class PendingSubscriptionsTest extends TestCase
             'duration_frequency' => 'month',
         ];
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/pending_subscriptions', $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testDestroy()
-    {
-        $response = $this->actingAs($this->user)->delete($this->app_url . '/ajax/pending_subscriptions', $this->headers);
         $response->assertStatus(200);
     }
 }

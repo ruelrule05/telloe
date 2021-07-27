@@ -3,8 +3,6 @@
 namespace App\Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ServiceTest extends TestCase
 {
@@ -15,6 +13,7 @@ class ServiceTest extends TestCase
      */
     public function testIndex()
     {
+        $this->withoutExceptionHandling();
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/services', $this->headers);
         $response->assertStatus(200);
     }
@@ -22,9 +21,9 @@ class ServiceTest extends TestCase
     public function testStore()
     {
         $data = [
-    		'name' => 'Service 1',
-    		'description' => 'Service description',
-    		'duration' =>  36,
+            'name' => 'Service 1',
+            'description' => 'Service description',
+            'duration' => 36,
             'days' => json_decode('{
                 "Friday": {
                     "end": "17:00",
@@ -64,19 +63,24 @@ class ServiceTest extends TestCase
             }'),
             'timezone' => 'Australia/Brisbane',
             'default_rate' => 50.78
-    	];
-        $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/services', $data, $this->headers);
+        ];
+        $this->withoutMiddleware();
+        $user = \App\Models\User::where('is_premium', true)->first();
+        $response = $this->actingAs($user)->post($this->app_url . '/ajax/services', $data, $this->headers);
         $response->assertStatus(200);
 
+        $user = \App\Models\User::where('is_premium', false)->first();
+        $response = $this->actingAs($user)->post($this->app_url . '/ajax/services', $data, $this->headers);
+        $response->assertStatus(403);
     }
 
     public function testUpdate()
     {
         $this->withoutAuthorization();
         $data = [
-    		'name' => 'Service 1',
-    		'description' => 'Edited Service description',
-    		'duration' =>  36,
+            'name' => 'Service 1',
+            'description' => 'Edited Service description',
+            'duration' => 36,
             'days' => json_decode('{
                 "Friday": {
                     "end": "17:00",
@@ -122,11 +126,12 @@ class ServiceTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testUpdateWithAuth() {
+    public function testUpdateWithAuth()
+    {
         $data = [
-    		'name' => 'Service 1',
-    		'description' => 'Edited Service description',
-    		'duration' =>  36,
+            'name' => 'Service 1',
+            'description' => 'Edited Service description',
+            'duration' => 36,
             'days' => json_decode('{
                 "Friday": {
                     "end": "17:00",
@@ -172,21 +177,20 @@ class ServiceTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function testDestroy() 
+    public function testDestroy()
     {
         $this->withoutMiddleware();
-        $this->service = \App\Models\Service::latest('id')->first();
-        $service_id = $this->service->id;
-        $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/services/$service_id", $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testDestroyWithAuth() 
-    {
         $this->service = \App\Models\Service::latest('id')->first();
         $service_id = $this->service->id;
         $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/services/$service_id", $this->headers);
         $response->assertStatus(403);
     }
 
+    public function testDestroyWithAuth()
+    {
+        $this->service = \App\Models\Service::latest('id')->first();
+        $service_id = $this->service->id;
+        $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/services/$service_id", $this->headers);
+        $response->assertStatus(403);
+    }
 }

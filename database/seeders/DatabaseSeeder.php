@@ -17,6 +17,11 @@ class DatabaseSeeder extends Seeder
             ContactsSeeder::class,
             ConversationSeeder::class,
             OrganizationsSeeder::class,
+            PackageSeeder::class,
+            ContactPackageSeeder::class,
+            MemberSeeder::class,
+            ServiceSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }

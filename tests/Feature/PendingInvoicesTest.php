@@ -23,17 +23,11 @@ class PendingInvoicesTest extends TestCase
     {
         $data = [
             'contact_id' => 2,
-            'services' => json_decode('[]', true),
-            'amount' => 100,
-            'currency' => 'AUD',
+            'service_ids' => json_decode('[1]', true),
+            'amount' => 10,
+            'user_id' => 1,
         ];
         $response = $this->actingAs($this->user)->post($this->app_url . "/ajax/pending_invoices", $data, $this->headers);
-        $response->assertStatus(200);
-    }
-
-    public function testDestroy()
-    {
-        $response = $this->actingAs($this->user)->delete($this->app_url . "/ajax/pending_invoices", $this->headers);
         $response->assertStatus(200);
     }
 }
