@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Models\Conversation;
+use Illuminate\Database\Seeder;
 
 class ConversationSeeder extends Seeder
 {
@@ -16,5 +15,10 @@ class ConversationSeeder extends Seeder
     public function run()
     {
         Conversation::factory(2)->create();
+        Conversation::create([
+            'user_id' => 2,
+            'name' => 'Sample convo 2',
+            'created_at' => '2021-07-11 07:30:39',
+        ]);
     }
 }

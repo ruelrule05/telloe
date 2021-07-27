@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Faker\Generator as Faker;
-use Illuminate\Support\Str;
-
+use Illuminate\Database\Seeder;
 
 class UsersSeeder extends Seeder
 {
@@ -19,5 +16,14 @@ class UsersSeeder extends Seeder
     public function run(Faker $faker)
     {
         User::factory(2)->create();
+        User::create([
+            'first_name' => 'Premium',
+            'last_name' => 'User',
+            'email' => 'premium@user.com',
+            'username' => 'premiumuser',
+            'password' => '$2y$10$KrKjrMAiyji.iXRxQWoOreQbCTGhlrQWhgT.LZx2d3Eh6srJ1hd/O', // password
+            'blocked_timeslots' => json_encode([]),
+            'is_premium' => true
+        ]);
     }
 }

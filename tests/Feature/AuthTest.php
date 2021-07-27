@@ -2,15 +2,11 @@
 
 namespace App\Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\PasswordReset;
-use Laravel\Socialite\Facades\Socialite; 
-use Mockery;
-use Mockery\MockInterface;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
+use App\Models\PasswordReset;
+use Illuminate\Support\Facades\Mail;
+use Mockery;
+use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
@@ -18,15 +14,12 @@ class AuthTest extends TestCase
      * A basic feature test example.
      *
      * @return void
-     */
-    
-    
+     */        
     public function testGet() // vendor/bin/phpunit --filter AuthTest::testGet
     {
         $response = $this->actingAs($this->user)->get($this->app_url . '/ajax/auth', $this->headers);
         $response->assertStatus(200);
     }
-
 
     public function testUpdate()
     {
@@ -34,7 +27,6 @@ class AuthTest extends TestCase
         $response = $this->actingAs($this->user)->post($this->app_url . '/ajax/auth', $data, $this->headers);
         $response->assertStatus(200);
     }
-
 
     public function testUpdatePassword()
     {
@@ -51,9 +43,8 @@ class AuthTest extends TestCase
         }
     }
 
-
     public function testLogin()
-    {   
+    {
         // Form
         $this->refreshApplication();
         $data = [
@@ -93,9 +84,8 @@ class AuthTest extends TestCase
         $this->get('/dashboard');
     }
 
-
     public function testSignup()
-    {   
+    {
         // Form
         $this->refreshApplication();
         $data = [
@@ -110,7 +100,6 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
     }
 
-    
     public function testRecover()
     {
         $data = [
@@ -119,7 +108,6 @@ class AuthTest extends TestCase
         $response = $this->post($this->app_url . '/ajax/recover', $data, $this->headers);
         $response->assertStatus(200);
 
-
         $data = [
             'email' => 'gaa@dsd.comx',
         ];
@@ -127,12 +115,12 @@ class AuthTest extends TestCase
         $response->assertStatus(404);
     }
 
-
-    
     public function testReset()
     {
         $passwordReset = PasswordReset::first();
-        if(!$passwordReset) return $this->assertTrue(true);
+        if (! $passwordReset) {
+            return $this->assertTrue(true);
+        }
 
         $data = [
             'token' => $passwordReset->token,
@@ -143,7 +131,9 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
 
         $passwordReset = PasswordReset::first();
-        if(!$passwordReset) return $this->assertTrue(true);
+        if (! $passwordReset) {
+            return $this->assertTrue(true);
+        }
         $data = [
             'token' => $passwordReset->token,
             'password' => 'admin',
@@ -182,7 +172,6 @@ class AuthTest extends TestCase
         $response = $this->actingAs($this->user)->put($this->app_url . '/ajax/auth/update_stripe_account', $data, $this->headers);
         $response->assertStatus(200);
     }
-
 
     public function testLogout()
     {

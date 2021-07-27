@@ -32,15 +32,15 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $json = (Object)[];
+        $json = (object)[];
         $firstName = $this->faker->firstName();
         $lastName = $this->faker->lastName();
         return [
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => $this->faker->unique()->safeEmail(),
+            'username' => strtolower($firstName),
             'password' => '$2y$10$KrKjrMAiyji.iXRxQWoOreQbCTGhlrQWhgT.LZx2d3Eh6srJ1hd/O', // password
-            'username' => $firstName . $lastName,
             'blocked_timeslots' => json_encode($json)
         ];
     }
