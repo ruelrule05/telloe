@@ -17,9 +17,11 @@ import PackageIcon from '../../../../../icons/package';
 import VueDropdown from '../../../../../components/vue-dropdown/vue-dropdown.vue';
 import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import CogIcon from '../../../../../icons/cog';
+import InfoCircleIcon from '../../../../../icons/info-circle.vue';
 
 export default {
 	components: {
+		InfoCircleIcon,
 		CogIcon,
 		VueDropdown,
 		VueSelect,

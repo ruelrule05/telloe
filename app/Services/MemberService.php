@@ -58,9 +58,7 @@ class MemberService
             }
         }
 
-        $bookings = Booking::with('bookingNote')->where(function ($query) {
-            $query->whereHas('user');
-        })->with('service.assignedServices', 'service.parentService.assignedServices', 'user')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
+        $bookings = Booking::with('service.assignedServices', 'service.parentService.assignedServices', 'bookingUsers')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
         $member->bookings = $bookings;
 
         return $member;
