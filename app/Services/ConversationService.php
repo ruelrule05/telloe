@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mail;
+use Str;
 
 class ConversationService
 {
@@ -34,7 +35,7 @@ class ConversationService
 
     public function show($id)
     {
-        $conversation = Conversation::withTrashed()->with('contact', 'notes')->with('user.services', 'members.user')->findOrfail($id);
+        $conversation = Conversation::with('contact', 'notes', 'members.user')->findOrfail($id);
         $this->authorize('show', $conversation);
 
         //if ($request->is_read) :
@@ -56,6 +57,7 @@ class ConversationService
     public static function store(StoreConversationRequest $request)
     {
         $authUser = Auth::user();
+        $conversation = null;
         if (count($request->members ?? []) == 1) {
             $user = User::findOrFail($request->members[0]);
             $contact = Contact::where('user_id', $authUser->id)->where('contact_user_id', $user->id)->where('is_pending', false)->first();
@@ -93,9 +95,15 @@ class ConversationService
             return abort(403, 'Failed creating a conversation. One of the member IDs is invalid.');
         }
 
+        $slug = Str::random(32);
+        while (Conversation::where('slug', $slug)->exists()) {
+            $slug = Str::random(32);
+        }
+
         if (count($members) > 0) {
             $conversation = Conversation::create([
                 'user_id' => Auth::user()->id,
+                'slug' => $slug,
             ]);
             foreach ($members as $user_id) {
                 ConversationMember::create([
@@ -108,13 +116,14 @@ class ConversationService
                 $userExists = User::where('email', $request->email)->first();
                 $conversation = Conversation::create([
                     'user_id' => Auth::user()->id,
+                    'slug' => $slug,
                 ]);
                 ConversationMember::create([
                     'conversation_id' => $conversation->id,
                     'email' => $request->email,
-                    'user_id' => $userExists->id ?? NULL
+                    'user_id' => $userExists->id ?? null
                 ]);
-                $emailToSend = NULL;
+                $emailToSend = null;
                 if ($userExists && $userExists->email && $userExists->notify_message) {
                     $emailToSend = $userExists->email;
                 } elseif (! $userExists) {
@@ -133,7 +142,7 @@ class ConversationService
             $conversation->update(['name' => 'New group chat']);
         }
 
-        return $conversation->load('members.user');
+        return response()->json($conversation->load('members.user'));
     }
 
     public function update($id, Request $request)
@@ -182,5 +191,25 @@ class ConversationService
     public static function delete($id)
     {
         return ;
+    }
+
+    public static function slug($slug)
+    {
+        $authUser = Auth::user();
+
+        if (! $authUser) {
+            return view('pages.conversation');
+        }
+
+        $conversation = Conversation::where('slug', $slug)->firstOrFail();
+
+        $isOwner = $conversation->user_id == $authUser->id;
+        $member = $conversation->members()->where('user_id', $authUser->id)->exists();
+
+        if ($isOwner || $member) {
+            return view('pages.conversation', compact('authUser', 'conversation'));
+        }
+
+        return abort(403);
     }
 }

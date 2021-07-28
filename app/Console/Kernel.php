@@ -90,27 +90,27 @@ class Kernel extends ConsoleKernel
                     if ($diffInMinutes <= 120 && ! $booking->notified_2) { // 2 hours notif
                         $booking->notified_2 = true;
                         $booking->save();
-                        if ($booking->service->coach->notify_email) {
+                        if ($booking->service && $booking->service->coach->notify_email) {
                             Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $full_name));
                         }
-                        if ($bookingUser->user && $bookingUser->user->notify_email) {
+                        if ($booking->service && $bookingUser->user && $bookingUser->user->notify_email) {
                             Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $booking->service->coach->full_name));
                         }
 
                         // SendSMS
-                        if ($booking->service->coach->notify_sms && $booking->service->coach->dial_code && $booking->service->coach->phone) {
+                        if ($booking->service && $booking->service->coach->notify_sms && $booking->service->coach->dial_code && $booking->service->coach->phone) {
                             SendSMS::dispatch($booking->service->coach->dial_code . $booking->service->coach->phone, 'You have an upcoming booking in less than 2 hours.');
                         }
-                        if ($bookingUser->user && $bookingUser->user->notify_sms && $bookingUser->user->dial_code && $bookingUser->user->phone) {
+                        if ($booking->service && $bookingUser->user && $bookingUser->user->notify_sms && $bookingUser->user->dial_code && $bookingUser->user->phone) {
                             SendSMS::dispatch($bookingUser->user->dial_code . $bookingUser->phone, 'You have an upcoming booking in less than 2 hours.');
                         }
                     } elseif ($diffInMinutes <= 1440 && ! $booking->notified_24 && $diffInMinutes && $diffInMinutes > 120) { // 24 hours notif
                         $booking->notified_24 = true;
                         $booking->save();
-                        if ($booking->service->coach->notify_email) {
+                        if ($booking->service && $booking->service->coach->notify_email) {
                             Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $full_name));
                         }
-                        if ($bookingUser->user && $bookingUser->user->notify_email) {
+                        if ($booking->service && $bookingUser->user && $bookingUser->user->notify_email) {
                             Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $booking->service->coach->full_name));
                         }
                     }

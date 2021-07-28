@@ -74,7 +74,10 @@ window.app = new Vue({
 		toggleKnowBase: false,
 		promptCookie: false,
 		isMobile: true,
-		cookieItem: 'telloe_cookie_accepted'
+		cookieItem: 'telloe_cookie_accepted',
+
+		isSidebarOpen: false,
+		isChildPage: false
 	},
 
 	computed: {
@@ -139,6 +142,8 @@ window.app = new Vue({
 			this.contentloading = true;
 			if (value) {
 				document.title = value.charAt(0).toUpperCase() + value.slice(1) + ' | ' + process.env.MIX_APP_NAME;
+
+				this.isChildPage = value.includes("Show") ? true : false;
 			}
 			if (this.$refs.dashboardContent) {
 				this.$refs.dashboardContent.scroll(0, 0);
@@ -271,7 +276,6 @@ window.app = new Vue({
 			//     intro.enabled = true;
 			// });
 
-			console.log(this.$route.name);
 			let intro = this.intros[this.$route.name];
 			if (intro) {
 				intro.intro.start();
@@ -514,6 +518,11 @@ window.app = new Vue({
 				this.sendMessage(message);
 				this.closeRecorder('video');
 			}
+		},
+
+		toggleSidebar(path) {
+			this.isSidebarOpen = false;
+			if (this.$route.path !== path) this.$router.push(path);
 		}
 	}
 });

@@ -1,14 +1,14 @@
 <template>
 	<div class="h-100" v-if="$root.auth && ready">
 		<div v-show="!addContact">
-			<div class="content-header border-bottom flex items-center justify-between">
-				<div>
+			<div class="content-header contact-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0 absolute md:static top-7">
 					CONTACTS
 				</div>
-				<div>
+				<div class="flex absolute md:static bottom-4 justify-center w-11/12 md:w-auto">
 					<button
 						type="button"
-						class="mr-2 btn btn-md btn-outline-primary"
+						class="mr-2 btn btn-md btn-outline-primary w-6/12 md:w-auto"
 						@click="
 							csvFile = null;
 							csvPreview = false;
@@ -17,43 +17,44 @@
 					>
 						<span>Import</span>
 					</button>
-					<button type="button" class="btn btn-md btn-primary" @click="addContact = true"><span>Add contact</span></button>
+					<button type="button" class="btn btn-md btn-primary flex items-center justify-center w-6/12 md:w-auto" @click="addContact = true"><span>Add contact</span></button>
 				</div>
 			</div>
+			<div class="h-28 md:h-20 lg:hidden block" />
 
-			<div v-if="banner" class="p-6 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
-					<div class="font-serif w-1/4 font-semibold uppercase">
+			<div v-if="banner" class="p-8 border-bottom">
+				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						ADD NEW CONTACTS
 					</div>
-					<div class="w-7/12">
+					<div class="w-full md:w-7/12 ml-0 md:ml-20">
 						<p class="text-muxted mb-4">
 							Add contacts and start messaging them. Import them through a CSV file or enter their details.
 						</p>
 						<button class="btn btn-md btn-outline-primary" type="button" @click="addContact = true"><span>ADD NEW CONTACTS</span></button>
 					</div>
-					<div class="font-serif">
+					<div class="font-serif absolute top-5 right-6">
 						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 					</div>
 				</div>
 			</div>
 
-			<div class="flex h-full contact-content">
-				<div class="w-2/3 p-8 border-right relative">
+			<div class="flex flex-col lg:flex-row h-full contact-content">
+				<div class="w-full lg:w-2/3 p-6 lg:p-8 border-b lg:border-b-0 border-r-0 lg:border-r relative">
 					<template v-if="filteredContacts.length > 0">
-						<div class="flex items-center justify-between mb-3 header">
+						<div class="flex lg:items-center items-normal justify-between mb-3 header flex-col lg:flex-row w-full">
 							<div class="flex items-center">
 								<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
 								<multiselect v-model="filterTags" class="ml-2" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
 							</div>
 
-							<form @submit.prevent="getData()">
+							<form @submit.prevent="getData()" class="mt-2 lg:mt-0">
 								<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name, surname or e-mail" />
 							</form>
 						</div>
 
-						<div class="flex items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
-							<div class="flex items-start">
+						<div class="flex w-full flex-col md:flex-row xs:flex-row items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
+							<div class="flex w-full sm:w-6/12 items-start">
 								<div class="mr-2">
 									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
 										<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
@@ -65,39 +66,41 @@
 									<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
 								</div>
 							</div>
-							<div class="flex items-center">
-								<p class="mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
-								<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
-								<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
-									<MessageIcon class="fill-current text-gray-400"></MessageIcon>
-								</button>
+							<div class="flex w-full sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
+								<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
+								<div class="flex items-center">
+									<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
+									<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
+										<MessageIcon class="fill-current text-gray-400"></MessageIcon>
+									</button>
 
-								<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
-									<template #button>
-										<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-											<CogIcon class="fill-current text-gray-400"></CogIcon>
-										</div>
-									</template>
-								</VueDropdown>
+									<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
+										<template #button>
+											<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+												<CogIcon class="fill-current text-gray-400"></CogIcon>
+											</div>
+										</template>
+									</VueDropdown>
+								</div>
 							</div>
 						</div>
 
 						<Paginate v-if="contacts.data.length > 0" :data="contacts" @change="p => (page = p)" class="mt-6"></Paginate>
 					</template>
 
-					<div v-else class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-6/12">
+					<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-6/12 md:5/12 sm:w-6/12 w-10/12">
 						<div class="text-primary">
 							<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 						</div>
 						<div class="pl-4 -mt-1">
 							<p class="font-bold text-sm">No contacts added yet. Add a contact by clicking the button below.</p>
-							<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="addContact = true"><span>Add Contact</span></button>
+							<button type="button" class="btn btn-outline-primary btn-md mt-4 whitespace-pre" @click="addContact = true"><span>Add Contact</span></button>
 						</div>
 					</div>
 
 					<!-- <paginate @change="getData" :data="contacts" class="ml-2"></paginate> -->
 				</div>
-				<div class="w-1/3 p-6">
+				<div class="contact-fields w-full lg:w-1/3 p-8">
 					<p class="text-sm text-muted mb-2">Contacts information can be upgraded with custom fields. That gives you the option to have specific fields for contacts that match your needs.</p>
 					<div v-for="(custom_field, index) in userCustomFields" :key="index" class="mr-1 mt-2 py-2 px-3 bg-gray-50 rounded-lg text-xs inline-block">
 						{{ custom_field }}
@@ -110,13 +113,20 @@
 		</div>
 
 		<div v-if="addContact">
-			<div class="content-header border-bottom">
-				ADD CONTACT
+			<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0">
+					ADD CONTACT
+				</div>
 			</div>
-			<vue-form-validate @submit="store" class="p-6">
+			<div class="h-20 lg:hidden block" />
+			<vue-form-validate @submit="store" class="p-8">
+				<div class="flex block lg:hidden w-full">
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs w-6/12" @click="isContactFormTab = true" :class="{ 'text-primary': isContactFormTab }">Contact Details</h2>
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs w-6/12" @click="isContactFormTab = false" :class="{ 'text-primary': !isContactFormTab }">Available Services</h2>
+				</div>
 				<div class="flex">
-					<div class="w-5/12">
-						<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Contact Details</h2>
+					<div class="w-full lg:w-5/12" :class="{ hidden: !isContactFormTab && isMobile }">
+						<h2 class="font-serif uppercase font-semibold mb-4 text-xs hidden lg:block">Contact Details</h2>
 						<div class="pr-3">
 							<div class="mb-4">
 								<label required>Email</label>
@@ -140,10 +150,15 @@
 								</div>
 							</div>
 						</div>
+
+						<div class="d-flex mt-5">
+							<button class="btn btn-outline-primary btn-sm" type="button" @click="addContact = false"><span>Cancel</span></button>
+							<button class="btn-sm btn btn-primary" type="submit"><span>Add</span></button>
+						</div>
 					</div>
 
-					<div class="w-4/12 pl-6">
-						<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Available Services</h2>
+					<div class="w-full lg:w-4/12 pl-0 lg:pl-6" :class="{ hidden: isContactFormTab && isMobile }">
+						<h2 class="font-serif uppercase font-semibold mb-4 text-xs hidden lg:block">Available Services</h2>
 						<div v-for="service in services" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
 							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
 							<div class="mt-2 flex items-center">
@@ -163,11 +178,6 @@
 							</div>
 						</div>
 					</div>
-				</div>
-
-				<div class="d-flex">
-					<button class="btn btn-outline-primary btn-sm" type="button" @click="addContact = false"><span>Cancel</span></button>
-					<button class="btn-sm btn btn-primary" type="submit"><span>Add</span></button>
 				</div>
 			</vue-form-validate>
 		</div>

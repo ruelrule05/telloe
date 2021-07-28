@@ -1,19 +1,20 @@
 <template>
 	<div class="min-h-screen" v-if="bookingLink">
-		<div class="content-header border-bottom flex items-center">
+		<div class="content-header border-bottom flex items-center lg:static fixed w-full bg-white z-10">
 			<router-link to="/dashboard/booking-links" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 			{{ bookingLink.name }} ({{ bookingLink.duration }} mins)
 		</div>
-		<div class="p-6">
+		<div class="h-20 lg:hidden block" />
+		<div class="p-8">
 			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
 			<div>
-				<div class="flex justify-between items-center">
-					<div>
-						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
+				<div class="flex flex-col lg:flex-row justify-between items-end lg:items-center">
+					<div class="order-2 mt-5 lg:order-none lg:mt-0 w-full lg:w-8/12">
+						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2 mb-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 						</div>
 					</div>
-					<div class="flex items-center">
+					<div class="flex items-center order-1 lg:order-none">
 						<button type="button" class="btn btn-sm btn-outline-primary" @click="$refs.sendModal.show()"><span>Send email invitation</span></button>
 						<button type="button" class="btn btn-sm btn-outline-primary mx-2" @click="copyToClipboard()"><span>Copy link</span></button>
 						<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action">
@@ -26,7 +27,7 @@
 					</div>
 				</div>
 				<div class="relative mt-8">
-					<div class="overflow-x-scroll overflow-y-visible pb-4" style="margin-left: 200px">
+					<div class="overflow-x-scroll overflow-y-visible pb-4 booking-links__timeslots">
 						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>

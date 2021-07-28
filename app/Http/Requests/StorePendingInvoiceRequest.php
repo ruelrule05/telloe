@@ -27,7 +27,7 @@ class StorePendingInvoiceRequest extends FormRequest
             'contact_id' => 'required|exists:contacts,id',
             'service_ids' => 'nullable|array',
             'amount' => 'required|numeric',
-            'currency' => 'required|min:3|max:3',
+            // 'currency' => 'required|min:3|max:3',
         ];
     }
 }

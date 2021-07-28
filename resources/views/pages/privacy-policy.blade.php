@@ -16,7 +16,7 @@
 					<br /><br />
 					A number of areas on our website invite you to provide us with personal information, for example the “Join Now” and “Contact” pages. The purposes of the information collection is apparent at the point that you provide your personal information.
 					<br /><br />
-					If you sign up to receive our newsletter you agree to receive information relating to us and our services. You can ask to be removed or unsubscribe from our newsletter mailing list at any time by sending an email to us at hello@telloe.com.
+					If you sign up to receive our newsletter you agree to receive information relating to us and our services. You can ask to be removed or unsubscribe from our newsletter mailing list at any time by sending an email to us at admin@telloe.com.
 					<br /><br />
 					Our website uses server logs and web analytic tools (such as “cookies”). Cookies are small text files that are downloaded to your device by websites that you visit. When you use this website, these tools collect information such as what browser and operating system you use, the internet protocol address of the device you have used to access the website, search terms, your location and what content you view when visiting our website.
 					<br /><br />

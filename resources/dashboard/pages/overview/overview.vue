@@ -2,8 +2,8 @@
 	<div class="min-h-full">
 		<div v-show="!serviceToEdit">
 			<div class="content-header border-bottom">OVERVIEW</div>
-			<div v-if="banner" class="p-6 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+			<div v-if="banner" class="p-8 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 					<div class="font-serif w-1/4">
 						SIMPLIFY YOUR MONDAY TO FRIDAY.
 					</div>
@@ -21,7 +21,7 @@
 
 			<div class="flex">
 				<div class="w-6/12">
-					<div class="p-6 py-8 border-bottom">
+					<div class="p-8 py-8 border-bottom">
 						<h6 class="font-serif text-sm font-semibold">UPCOMING EVENTS</h6>
 					</div>
 					<div>
@@ -31,7 +31,7 @@
 				<div class="w-6/12 px-6 py-8 border-left">
 					<h6 class="font-serif text-sm font-semibold mb-8">RECENT EVENT TYPES</h6>
 
-					<div class="grid grid-cols-2 gap-6">
+					<div class="grid grid-cols-2 gap-8">
 						<div v-for="service in services" :key="service.id">
 							<ServiceCard :service="service" @click="serviceAction($event, service)"></ServiceCard>
 						</div>

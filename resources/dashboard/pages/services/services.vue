@@ -18,8 +18,8 @@
 				</div>
 			</div>
 
-			<div v-if="banner" class="p-6 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+			<div v-if="banner" class="p-8 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 					<div class="font-serif w-1/4 font-semibold uppercase">
 						CREATE EVENT TYPES TO ENABLE SELF-SERVE BOOKINGS.
 					</div>
@@ -39,14 +39,14 @@
 				<!-- Services list -->
 				<template>
 					<template v-if="services.length > 0">
-						<div class="w-7/12 border-right p-6 ">
-							<div class="grid grid-cols-2 gap-6">
+						<div class="w-7/12 border-right p-8">
+							<div class="grid grid-cols-2 gap-8">
 								<div v-for="service in services" :key="service.id">
 									<ServiceCard :service="service" @click="serviceAction($event, service)"></ServiceCard>
 								</div>
 							</div>
 						</div>
-						<div class="w-5/12 p-6">
+						<div class="w-5/12 p-8">
 							<h6 class="font-serif font-semibold text-xs">YOUR PUBLIC PAGE</h6>
 							<div class="card card-secondary mt-4">
 								<p class="text-sm text-muted">
@@ -70,7 +70,7 @@
 						</div>
 					</template>
 
-					<div v-else class="absolute-center p-6 bg-secondary rounded-xl flex items-start" style="width: 450px">
+					<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start" style="width: 450px">
 						<div class="text-primary">
 							<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 						</div>

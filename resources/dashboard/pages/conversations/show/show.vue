@@ -50,6 +50,7 @@
 						</button>
 					</template>
 					<button class="text-primary" :data-intro="$root.intros.conversations.steps[4]" data-step="5" :class="{ active: showNotes }" @click="showNotes = true"><note-icon class="fill-current"></note-icon></button>
+					<button class="text-primary" @click="copyConvoLink()"><link-icon class="fill-current transform scale-125"></link-icon></button>
 				</div>
 			</div>
 
@@ -79,7 +80,7 @@
 				</div>
 			</div>
 
-			<div class="p-6 overflow-auto flex-grow">
+			<div class="p-8 overflow-auto flex-grow">
 				<vue-form-validate v-if="addNewNote" @submit="addNote" class="mb-4">
 					<textarea rows="3" v-model="newNote" placeholder="Write a note.." class="resize-none" data-required></textarea>
 					<div class="flex justify-between mt-2">

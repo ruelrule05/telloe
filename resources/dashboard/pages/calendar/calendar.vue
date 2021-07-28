@@ -22,15 +22,25 @@
 					</button>
 					<div class="button-date-nav">
 						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-						<span>{{ dayjs(selectedDate).format('MMMM D, YYYY') }}</span>
+
+						<div class="px-2">
+							<v-date-picker :popover="{ placement: 'bottom', visibility: 'click' }" v-model="selectedDate" :masks="masks">
+								<template v-slot="{ inputValue, inputEvents }">
+									<button type="button" class="uppercase font-semibold" v-on="inputEvents">
+										<span>{{ inputValue }}</span>
+									</button>
+								</template>
+							</v-date-picker>
+						</div>
+
 						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div v-if="banner" class="p-6 border-bottom">
-			<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+		<div v-if="banner" class="p-8 border-bottom">
+			<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 				<div class="font-serif w-1/4 font-semibold uppercase">
 					CHECK YOUR MEETINGS AND AVAILABLE TIMES.
 				</div>
@@ -53,7 +63,7 @@
 
 		<div v-if="!selectedDate" class="flex">
 			<div class="w-1/2">
-				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents"></UpcomingBookings>
+				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
 			<div class="w-1/2 py-6 px-3 border-left calendar-container">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">

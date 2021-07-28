@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import convertTime from '../../../js/plugins/convert-time';
+import GoogleIcon from '../../../icons/google.vue';
+
 export default {
 	props: {
 		loading: {
@@ -21,6 +23,8 @@ export default {
 			type: String
 		}
 	},
+
+	components: { GoogleIcon },
 
 	data: () => ({
 		convertTime: convertTime
@@ -59,7 +63,13 @@ export default {
 	methods: {
 		dayBookings(date) {
 			let dayBookings = this.bookings.filter(booking => booking.date == date);
+
 			return dayBookings;
+		},
+
+		googleBookings(date) {
+			let now = dayjs(date).format('YYYY-MM-DD');
+			return this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now);
 		}
 	}
 };

@@ -617,9 +617,9 @@ export default {
 				if (this.draggable) this.draggable.remove();
 				this.draggable = null;
 			}
-			//$(this.$refs['remoteStreams']).empty();
 			if (this.$refs['cameraPreview']) this.$refs['cameraPreview'].srcObject = null;
 			this.stopLocalStream();
+			this.$refs['remoteStreams'].innerHTML = '';
 		},
 
 		fullScreen(state) {

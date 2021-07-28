@@ -80,7 +80,7 @@ export default {
 				}
 				parsedBookings.push({
 					booking: parsedBooking,
-					name: (parsedBooking.service || parsedBooking.booking_link).name,
+					name: parsedBooking.name,
 					start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
 					end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
 					category: 'bookings',
@@ -96,7 +96,7 @@ export default {
 				booking.type = 'contact-booking';
 				parsedBookings.push({
 					booking: booking,
-					name: (booking.service || booking.booking_link).name,
+					name: booking.name,
 					start: `${booking.date} ${booking.start}`,
 					end: `${booking.date} ${booking.end}`,
 					category: 'bookings',
@@ -271,7 +271,7 @@ export default {
 			let end = dayjs(`${interval.date} ${interval.time}`)
 				.add(1, 'hour')
 				.format('HH:mm');
-			this.newEvent = { date: interval.date, start: interval.time, end: end };
+			this.newEvent = { date: interval.date, start: interval.time, end: end, timezone: this.timezone };
 			this.$emit('newEvent', JSON.parse(JSON.stringify(this.newEvent)));
 		}
 	}

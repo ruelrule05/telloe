@@ -1,3 +1,4 @@
+require('../../../js/bootstrap');
 import dayjs from 'dayjs';
 import PlainDraggable from '../../../js/plugins/plain-draggable.min';
 import Tooltip from '../../../js/directives/tooltip';
@@ -33,24 +34,17 @@ export default {
 	},
 
 	beforeDestroy() {
-		navigator.mediaDevices
-			.getUserMedia({ audio: true })
-			.then(stream => {
-				if (stream) {
-					if (this.streams.getTracks) {
-						this.streams.getTracks().forEach(function(track) {
-							track.stop();
-						});
-					} else {
-						this.$toasted.error('User Cancelled...');
-					}
+		navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+			if (stream) {
+				if (this.streams.getTracks) {
+					this.streams.getTracks().forEach(function(track) {
+						track.stop();
+					});
+				} else {
+					this.$toast.error('No input devices found.');
 				}
-			})
-			.catch(error => {
-				if (error) {
-					this.$toasted.error('No Device Found...');
-				}
-			});
+			}
+		});
 	},
 
 	mounted() {

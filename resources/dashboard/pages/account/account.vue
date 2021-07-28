@@ -5,7 +5,7 @@
 		</div>
 
 		<div class="flex flex-grow">
-			<div class="sidebar border-right px-6">
+			<div class="sidebar border-right px-6 pt-4">
 				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 
 				<form action="/logout" method="POST">
@@ -14,7 +14,7 @@
 				</form>
 			</div>
 			<div class="flex-grow">
-				<div v-if="activeMenu == 'Profile'" class="w-6/12 p-6">
+				<div v-if="activeMenu == 'Profile'" class="w-6/12 p-8">
 					<h2 class="font-serif uppercase font-semibold mb-8">Profile Settings</h2>
 					<vue-form-validate @submit="save">
 						<div class="flex items-center mb-8 profile-photo">
@@ -66,7 +66,7 @@
 					</vue-form-validate>
 				</div>
 
-				<div v-else-if="activeMenu == 'Security'" class="w-5/12 p-6">
+				<div v-else-if="activeMenu == 'Security'" class="w-5/12 p-8">
 					<h2 class="font-serif uppercase font-semibold mb-8">Security Settings</h2>
 					<vue-form-validate @submit="password">
 						<div class="mb-5">
@@ -86,7 +86,7 @@
 					</vue-form-validate>
 				</div>
 
-				<div v-else-if="activeMenu == 'Plan'" class="p-6">
+				<div v-else-if="activeMenu == 'Plan'" class="p-8">
 					<div v-if="isTrial" class="bg-secondary p-3 mb-4 rounded-xl text-center text-sm free-trial">Your free trial will expire at {{ dayjs($root.auth.trial_expires_at).format('MMMM D, YYYY') }}</div>
 
 					<h2 class="font-serif uppercase font-semibold mb-8">Plan</h2>
@@ -121,7 +121,7 @@
 					<template v-if="$root.auth.subscription">
 						<div class="flex items-stretch w-full border-bottom">
 							<div class="billing-setting border-right">
-								<div class="p-6">
+								<div class="p-8">
 									<h2 class="font-serif uppercase font-semibold mb-6">Billing Setting</h2>
 
 									<div class="flex justify-between billing-row border-bottom">
@@ -151,7 +151,7 @@
 								</div> -->
 								</div>
 							</div>
-							<div class="members p-6">
+							<div class="members p-8">
 								<div class="flex items-center justify-between mb-4">
 									<h2 class="font-serif uppercase font-semibold">
 										Members
@@ -233,9 +233,9 @@
 					</div>
 				</div>
 
-				<div v-else-if="activeMenu == 'Payout'" class="p-6 payout-content">
+				<div v-else-if="activeMenu == 'Payout'" class="p-8 payout-content">
 					<div v-if="banner && $root.auth.stripe_account" class="mb-6">
-						<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+						<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 							<div class="font-serif w-1/4 font-semibold uppercase">
 								SET UP YOUR BANKING DETAILS
 							</div>
@@ -333,7 +333,7 @@
 					</vue-form-validate>
 				</div>
 
-				<div v-else-if="activeMenu == 'Notifications'" class="p-6">
+				<div v-else-if="activeMenu == 'Notifications'" class="p-8">
 					<div class="notification-content account-body">
 						<h2 class="font-serif uppercase font-semibold mb-8">Notification Settings</h2>
 

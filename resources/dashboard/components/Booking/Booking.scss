@@ -1,5 +1,5 @@
 .booking {
-	@apply absolute top-0  bg-white p-6 shadow-lg h-full overflow-auto transition-all ease-in-out flex flex-col;
+	@apply absolute top-0  bg-white p-8 shadow-lg h-full overflow-auto transition-all ease-in-out flex flex-col;
 	width: 416px;
 	right: -456px;
 	&.open {
@@ -54,5 +54,26 @@
 	@apply cursor-pointer rounded-full bg-white w-7 h-7 relative border p-2 font-serif text-muted text-xs font-semibold transition-colors hover:bg-gray-200;
 	&.active {
 		@apply bg-primary text-white border-primary;
+	}
+}
+.btn-tabs {
+	.btn-tab {
+		font-size: 9px;
+		@apply cursor-pointer transition-colors hover:bg-gray-50 flex-grow p-3 font-serif border border-gray-300 font-semibold text-center;
+		&.active {
+			@apply border-primary ring-1 ring-primary ring-inset;
+		}
+		&:first-child {
+			@apply rounded-tl-md rounded-bl-md;
+		}
+		&:last-child {
+			@apply rounded-tr-md rounded-br-md;
+		}
+		&.disabled {
+			@apply pointer-events-none opacity-75;
+		}
+		> span {
+			@apply inline-block relative -bottom-px;
+		}
 	}
 }

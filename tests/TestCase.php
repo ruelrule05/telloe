@@ -2,19 +2,17 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Faker\Factory as Faker;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
-
     public $app_url;
     public $headers;
     public $user;
     public $faker;
-
 
     public function setUp() : void
     {
@@ -26,5 +24,14 @@ abstract class TestCase extends BaseTestCase
         ];
         $this->user = \App\Models\User::first();
         $this->faker = Faker::create();
+    }
+
+    public function withoutAuthorization()
+    {
+        \Gate::before(function () {
+            return true;
+        });
+
+        return $this;
     }
 }

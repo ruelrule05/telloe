@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ContactPackage extends BaseModel
 {
-    //
+    use HasFactory;
 
     protected $fillable = ['package_id', 'contact_id', 'service'];
     protected $casts = [

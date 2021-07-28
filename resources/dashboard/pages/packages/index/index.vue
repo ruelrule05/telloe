@@ -1,30 +1,31 @@
 <template>
 	<div>
 		<div class="min-h-screen flex flex-col relative" v-if="ready">
-			<div class="content-header border-bottom flex items-center justify-between">
-				<div>
+			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0">
 					PACKAGES
 				</div>
 				<div>
 					<button
 						type="button"
-						class="btn btn-md btn-primary"
+						class="btn btn-md btn-primary flex items-center"
 						@click="
 							newPackage = {};
 							$refs.addModal.show();
 						"
 					>
-						<span>Add Package</span>
+						<span>Add</span>
+						<span class="hidden md:block ml-1">Package</span>
 					</button>
 				</div>
 			</div>
-
-			<div v-if="banner" class="p-6 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
-					<div class="font-serif w-1/4 font-semibold uppercase">
+			<div class="h-20 lg:hidden block" />
+			<div v-if="banner" class="p-8 border-bottom">
+				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						CREATE A NEW PACKAGE
 					</div>
-					<div class="w-7/12">
+					<div class="w-full md:w-7/12 ml-0 md:ml-20">
 						<p class="text-muxted mb-4">
 							Create packages of event types and assign them to contacts.
 						</p>
@@ -39,14 +40,14 @@
 							<span>CREATE A NEW PACKAGE</span>
 						</button>
 					</div>
-					<div class="font-serif">
+					<div class="font-serif absolute top-5 right-6">
 						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 					</div>
 				</div>
 			</div>
 
-			<div v-if="packages.length == 0" class="flex-grow">
-				<div class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-4/12">
+			<div v-if="packages.length == 0" class="flex-grow p-8">
+				<div class="absolute-center p-6 bg-secondary rounded-xl flex items-start lg:w-4/12 md:5/12 sm:w-6/12 w-10/12" :class="{ packages: banner }">
 					<div class="text-primary">
 						<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 					</div>
@@ -58,7 +59,7 @@
 			</div>
 
 			<div v-else class="flex-grow">
-				<div class="grid grid-cols-4 gap-6 p-6">
+				<div class="grid grid-cols-1 gap-8 p-4 md:grid-cols-3 lg:grid-cols-4">
 					<div v-for="packageItem in packages" class="rounded-2xl bg-secondary-light p-4 w-full" :key="packageItem.id">
 						<div class="flex justify-between">
 							<div class="overflow-hidden">
@@ -164,7 +165,7 @@
 			</template>
 		</Modal>
 
-		<Modal ref="addModal" :close-button="false" size="modal-lg">
+		<Modal ref="addModal" :close-button="false" size="modal-lg ">
 			<h6 class="font-serif font-semibold mb-5">ADD PACKAGE</h6>
 
 			<vue-form-validate @submit="submit">

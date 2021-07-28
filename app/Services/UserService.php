@@ -169,7 +169,7 @@ class UserService
         return ;
     }
 
-    public static function book($username, $service_id, $request, $customer, $guest = NULL)
+    public static function book($username, $service_id, $request, $customer, $guest = null)
     {
         if (! isValidTimezone($request->timezone)) {
             return abort(403, 'Invalid timezone');
@@ -301,11 +301,23 @@ class UserService
                 }
             }
         }
+        $bookings = collect($bookings);
+        $bookings->map(function ($booking) {
+            $from = Carbon::parse("$booking->date $booking->start");
+            $to = $from->clone()->addMinute($booking->service->duration);
+            $link = Link::create($booking->service->name, $from, $to)
+                ->description($booking->service->description);
 
+            $booking->google_link = $link->google();
+            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->yahoo_link = $link->yahoo();
+            $booking->ical_link = $booking->outlook_link;
+            return $booking;
+        });
         return $bookings;
     }
 
-    public static function createBooking($service, $data, $customer, $guest = NULL, $request)
+    public static function createBooking($service, $data, $customer, $guest = null, $request)
     {
         $service->load('user');
         $availableTimeslots = $service->timeslots($data['date']);
@@ -321,6 +333,7 @@ class UserService
         // }
 
         $data['uuid'] = (string) Uuid::generate();
+        $data['name'] = $service->name;
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->user->zoom_token) {
@@ -334,7 +347,7 @@ class UserService
 
         $bookingUser = BookingUser::create([
             'booking_id' => $booking->id,
-            'user_id' => $customer->id ?? NULL,
+            'user_id' => $customer->id ?? null,
             'guest' => $guest
         ]);
 
@@ -342,7 +355,7 @@ class UserService
             foreach ($request->guests as $email) {
                 $bookingUser = BookingUser::create([
                     'booking_id' => $booking->id,
-                    'user_id' => NULL,
+                    'user_id' => null,
                     'guest' => ['email' => $email]
                 ]);
             }
@@ -424,14 +437,14 @@ class UserService
             } else {
                 $stripe_api = new StripeAPI();
                 $charge = $stripe_api->charge('create', [
-                    'amount' => $service->default_rate * 100, 
+                    'amount' => $service->default_rate * 100,
                     'currency' => strtolower($service->currency),
                     'source' => $request->card_token
                 ]);
             }
         }
 
-        return self::book($username, $service_id, $request, NULL, $request->only('email', 'first_name', 'last_name'));
+        return self::book($username, $service_id, $request, null, $request->only('email', 'first_name', 'last_name'));
     }
 
     public static function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)

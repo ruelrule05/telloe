@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Mail\NewUser;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Http;
@@ -13,6 +14,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -139,7 +141,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function services()
     {
-        return $this->hasMany(Service::class);
+        return $this->hasMany(Service::class)->where('type', 'custom');
     }
 
     public function organizations()

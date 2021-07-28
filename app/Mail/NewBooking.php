@@ -3,6 +3,8 @@
 namespace App\Mail;
 
 use Auth;
+use Carbon\Carbon;
+use Spatie\CalendarLinks\Link;
 
 class NewBooking extends Mailer
 {
@@ -12,6 +14,7 @@ class NewBooking extends Mailer
     public $emailMessage;
     public $names;
     public $bookings;
+    public $duration;
 
     public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
@@ -36,6 +39,26 @@ class NewBooking extends Mailer
                 // $this->actionText = 'Create an account';
             }
         }
+
+        $this->bookings = collect($bookings);
+        $this->bookings->map(function ($booking) {
+            $from = Carbon::parse("$booking->date $booking->start");
+            $to = $from->clone()->addMinute($booking->service->duration);
+            $link = Link::create($booking->service->name, $from, $to)
+                ->description($booking->service->description);
+
+            $booking->google_link = $link->google();
+            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->yahoo_link = $link->yahoo();
+            $booking->ical_link = $booking->outlook_link;
+            $booking->date = Carbon::parse($booking->date)->format('M d, Y');
+            $booking->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
+
+            $booking->start = Carbon::parse("$booking->date $booking->start")->format('h:iA');
+            $booking->end = Carbon::parse("$booking->date $booking->end")->format('h:iA');
+
+            return $booking;
+        });
     }
 
     /**

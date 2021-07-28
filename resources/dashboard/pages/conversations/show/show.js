@@ -26,14 +26,15 @@ import VideocamIcon from '../../../../icons/videocam';
 import DocumentAltIcon from '../../../../icons/document-alt';
 import DownloadIcon from '../../../../icons/download';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
-//import WeekView from '../../../components/WeekView/WeekView.vue';
 
 import Tooltip from '../../../../js/directives/tooltip';
 import Messages from '../../../components/Messages/Messages.vue';
+import LinkIcon from '../../../../icons/link';
+import copy from 'copy-text-to-clipboard';
 
 export default {
 	components: {
-		//WeekView,
+		LinkIcon,
 		VueFormValidate,
 		Modal,
 
@@ -131,7 +132,13 @@ export default {
 		}),
 
 		conversation() {
-			return this.getConversation(this.$route.params.id);
+			let conversationID = null;
+			if (this.$route && this.$route.params.id) {
+				conversationID = this.$route.params.id;
+			} else if (window.CONVERSATION_ID) {
+				conversationID = window.CONVERSATION_ID;
+			}
+			return this.getConversation(conversationID);
 		}
 	},
 
@@ -154,8 +161,24 @@ export default {
 			deleteNote: 'notes/delete'
 		}),
 
+		copyConvoLink() {
+			if (copy(`${process.env.MIX_APP_URL}/conversations/${this.conversation.slug}`)) {
+				this.$toast.open('Conversation link copied to clipboard');
+			}
+		},
+
 		async scrollUp(page) {
-			await this.showConversation({ id: this.$route.params.id, page: page }).catch(() => {});
+			let conversationID = null;
+
+			if (this.$route && this.$route.params.id) {
+				conversationID = this.$route.params.id;
+			} else if (window.CONVERSATION_ID) {
+				conversationID = window.CONVERSATION_ID;
+			} else {
+				return;
+			}
+
+			await this.showConversation({ id: conversationID, page: page }).catch(() => {});
 			// let initialHeight = this.$refs['message-group-container'].scrollHeight;
 			// this.$nextTick(() => {
 			// 	this.$refs['message-group-container'].scrollTop = this.$refs['message-group-container'].scrollHeight - initialHeight;
@@ -185,12 +208,22 @@ export default {
 		},
 
 		initChannel() {
-			if (!this.$route.params.id) return;
+			let conversationID = null;
+
+			if (this.$route && this.$route.params.id) {
+				conversationID = this.$route.params.id;
+			} else if (window.CONVERSATION_ID) {
+				conversationID = window.CONVERSATION_ID;
+			} else {
+				return;
+			}
+
+			// if (!conversationID) return;
 			this.typingUsers = {};
 			if (this.channel) {
 				this.$echo.leaveChannel(this.channel.name);
 			}
-			this.channel = this.$echo.private(`conversations.${this.$route.params.id}`);
+			this.channel = this.$echo.private(`conversations.${conversationID}`);
 			this.$set(this.conversation, 'channel', this.channel);
 
 			this.channel.listenForWhisper('readLastMessage', e => {
@@ -301,8 +334,14 @@ export default {
 		},
 
 		async checkConversation() {
-			if (this.$route.params.id) {
-				await this.showConversation({ id: this.$route.params.id }).catch(() => {
+			let conversationID = null;
+			if (this.$route && this.$route.params.id) {
+				conversationID = this.$route.params.id;
+			} else if (window.CONVERSATION_ID) {
+				conversationID = window.CONVERSATION_ID;
+			}
+			if (conversationID) {
+				await this.showConversation({ id: conversationID }).catch(() => {
 					this.$router.push('/dashboard/bookings/calendar');
 				});
 			}

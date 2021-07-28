@@ -7,6 +7,14 @@
 <meta property="og:site_name" content="{{ config('app.name') }}" />
 <meta name="twitter:card" content="summary_large_image" />
 
+<meta property="og:title" content="The Intelligent Way To Manage Your Clients&#039; Conversations, In One Place" />
+ <meta property="og:type" content="website" />
+ <meta property="og:url" content="https://telloe.com/" />
+ <meta property="og:description" content="Organize meetings with people on different video calling platforms across multiple time zones; without needless back and forth." />
+ <meta property="og:image" content="{{ config('app.url') }}/images/og-image.png" />
+ <meta property="og:image:alt" content="" />
+
+
 <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
 <link rel="canonical" href="{{ url()->current() }}" />
 <link rel="alternate" href="{{ url()->current() }}" hreflang="en" />
@@ -19,7 +27,6 @@
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-WD8BDT3');</script>
     <!-- End Google Tag Manager -->
-
 
     <script>(function(w,r){w._rwq=r;w[r]=w[r]||function(){(w[r].q=w[r].q||[]).push(arguments)}})(window,'rewardful');</script>
     <script async src='https://r.wdfl.co/rw.js' data-rewardful='3b8ca5'></script>

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import ChevronDownIcon from '../../icons/chevron-down';
+import ClockIcon from '../../icons/clock';
 import VueSelect from '../vue-select/vue-select.vue';
 import VueTimepicker from 'vue2-timepicker';
 import convertTime from '../../js/plugins/convert-time';
@@ -28,12 +29,17 @@ export default {
 		vertical: {
 			type: Boolean,
 			default: false
+		},
+		clockIcon: {
+			type: Boolean,
+			default: false
 		}
 	},
 	components: {
 		ChevronDownIcon,
 		VueSelect,
-		VueTimepicker
+		VueTimepicker,
+		ClockIcon
 	},
 	data: () => ({
 		time_start: null,

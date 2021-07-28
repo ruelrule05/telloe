@@ -27,7 +27,7 @@
 						<!-- Services -->
 						<div class="mt-10 lg:mt-20">
 							<h6 v-if="services.length == 0" class="text-gray-400 text-center font-weight-light">No services available</h6>
-							<div v-else class="grid lg:grid-cols-2 lg:gap-10 gap-6">
+							<div v-else class="grid lg:grid-cols-2 lg:gap-10 gap-8">
 								<div v-for="service in services" :key="service.id">
 									<div
 										class="bg-gray-50 rounded-2xl p-4 cursor-pointer transition-colors hover:bg-gray-100 border-2 border-primary border-opacity-0 hover:border-opacity-100"
@@ -77,7 +77,7 @@
 				<div v-else-if="selectedServiceForTimeline && !step" class="container lg:my-12 my-6 flex justify-center time-selector" key="service">
 					<div class="bg-white rounded-2xl w-11/12">
 						<div class="lg:flex">
-							<div class="lg:w-5/12 lg:p-10 p-6 pb-4">
+							<div class="lg:w-5/12 lg:p-10 p-8 pb-4">
 								<h4 class="mb-1 font-serif font-semibold text-2xl text-primary">{{ selectedServiceForTimeline.name }}</h4>
 								<div class="text-muted font-bold text-sm">{{ selectedServiceForTimeline.duration }} min</div>
 							</div>
@@ -87,7 +87,7 @@
 						</div>
 
 						<div class="lg:flex border-top">
-							<div class="border-right lg:p-12 p-6 flex flex-col lg:w-4/12">
+							<div class="border-right lg:p-12 p-8 flex flex-col lg:w-4/12">
 								<div class="mb-6">
 									<div class="text-muted text-sm mb-2">Your timezone:</div>
 									<vue-select :options="timezonesOptions" drop-position="w-full" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
@@ -144,7 +144,7 @@
 							</div>
 
 							<!-- Date/time selection -->
-							<div class="lg:p-12 pt-0 p-6 lg:w-8/12 date-time-selector">
+							<div class="lg:p-12 pt-0 p-8 lg:w-8/12 date-time-selector">
 								<div class="lg:flex items-center justify-between">
 									<div class="text-muted text-sm">Select one or more timeslots</div>
 									<div>
@@ -322,6 +322,7 @@
 											</div>
 											<div>
 												<ZoomIcon v-if="type.type == 'Zoom'" class="w-5 h-5"></ZoomIcon>
+												<img src="/logo.svg" v-else-if="type.type == 'Telloe Video Call'" class="w-5 h-5" />
 												<GoogleMeetIcon v-else-if="type.type == 'Google Meet'" class="w-5 h-5"></GoogleMeetIcon>
 												<MapMarkerIcon v-else-if="type.type == 'Face-to-face'" class="w-5 h-5 fill-current text-primary"></MapMarkerIcon>
 												<PhoneIcon v-else-if="type.type == 'Phone'" class="w-5 h-5 fill-current text-primary"></PhoneIcon>
@@ -446,7 +447,7 @@
 
 				<!-- Booked Signup -->
 				<div v-else-if="step == 'booked-signup'" class="container lg:my-12 my-6 flex items-center justify-center booked-signup" key="booked-signup">
-					<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
+					<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-8">
 						<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-4">EVENT BOOKED. SIGN UP FOR FREE!</h6>
 						<p class="text-muted">
 							Hey there, thank you for scheduling a meeting with Telloe as a guest. If you sign up you can start using Telloe now and enjoy:
@@ -491,7 +492,7 @@
 
 				<!-- Account Created -->
 				<div v-else-if="step == 'account-created'" class="container lg:my-12 my-6 flex items-center justify-center" key="payment">
-					<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-6">
+					<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-8">
 						<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">NICE! YOUR TELLOE ACCOUNT IS NOW CREATED.</h6>
 						<p class="text-muted mb-8">
 							Thanks for creating a Telloe account. Once you finish this booking you can login to your Telloe account. A temporary passsword is sent to your e-mail address with additional information. <br /><br />
@@ -505,7 +506,7 @@
 				<!-- Bookings -->
 				<div v-else-if="step == 'bookings'" class="container lg:my-12 my-6 flex items-center justify-center bookings" key="bookings">
 					<div class="lg:w-5/12 w-11/12">
-						<div class="bg-white rounded-2xl p-6">
+						<div class="bg-white rounded-2xl p-8">
 							<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
 							<p class="mb-8">
 								A calendar invite is on it’s way to your e-mail address.

@@ -1,9 +1,9 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
+
 use App\Models\User;
-use Faker\Generator as Faker;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,12 +16,32 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
-    return [
-        'first_name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'email_verified_at' => now(),
-        'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        'remember_token' => Str::random(10),
-    ];
-});
+class UserFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = User::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        $json = (object)[];
+        $firstName = $this->faker->firstName();
+        $lastName = $this->faker->lastName();
+        return [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $this->faker->unique()->safeEmail(),
+            'username' => strtolower($firstName),
+            'password' => '$2y$10$KrKjrMAiyji.iXRxQWoOreQbCTGhlrQWhgT.LZx2d3Eh6srJ1hd/O', // password
+            'blocked_timeslots' => json_encode($json)
+        ];
+    }
+}

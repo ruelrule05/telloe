@@ -10,7 +10,7 @@
 		</div>
 
 		<div v-if="organizations.length == 0" class="flex-grow">
-			<div class="absolute-center p-6 bg-secondary rounded-xl flex items-start w-4/12">
+			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-4/12">
 				<div class="text-primary">
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 				</div>
@@ -22,7 +22,7 @@
 		</div>
 
 		<div v-else class="flex-grow">
-			<div class="grid grid-cols-4 gap-6 p-6">
+			<div class="grid grid-cols-4 gap-8 p-8">
 				<div v-for="organization in organizations" class="rounded-2xl bg-secondary-light p-4 w-full" :key="organization.id">
 					<div class="flex justify-between">
 						<div class="overflow-hidden">

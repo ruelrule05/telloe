@@ -12,8 +12,8 @@
 				</div>
 			</div>
 
-			<div v-if="banner" class="p-6 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-6">
+			<div v-if="banner" class="p-8 border-bottom">
+				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
 					<div class="font-serif w-1/4 font-semibold uppercase">
 						MESSAGING CONTACTS
 					</div>

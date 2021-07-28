@@ -17,6 +17,8 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        $app->loadEnvironmentFrom('.env.testing');
+
         return $app;
     }
 }
