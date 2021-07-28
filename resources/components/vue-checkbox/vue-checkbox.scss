@@ -1,5 +1,5 @@
 .checkbox {
-	@apply inline-block align-bottom;
+	@apply inline-block align-bottom overflow-hidden;
 }
 .checkbox label {
 	cursor: pointer;
@@ -50,5 +50,8 @@
 	pointer-events: none !important;
 	span {
 		opacity: 0.3;
+	}
+	.cr {
+		@apply bg-gray-300;
 	}
 }

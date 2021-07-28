@@ -155,7 +155,11 @@ export default {
 			});
 
 			this.channel.listenForWhisper('selectTimeslot', data => {
-				this.$set(this.bookingLink.selected_timeslots, data.key, data.value);
+				if (data.selected) {
+					this.$set(this.bookingLink.selected_timeslots, data.key, data.value);
+				} else {
+					this.$delete(this.bookingLink.selected_timeslots, data.key, data);
+				}
 			});
 		}
 
@@ -178,13 +182,18 @@ export default {
 			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
 		},
 
-		toggleSelectTimeslot(timeslot) {
+		toggleSelectTimeslot(state, timeslot) {
 			let propName = `${this.auth.id}-${this.selectedDate}`;
-			this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			if (state) {
+				this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			} else {
+				this.$delete(this.bookingLink.selected_timeslots, propName);
+			}
 			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink, { toast: true });
 			this.channel.whisper('selectTimeslot', {
 				key: propName,
-				value: timeslot.time
+				value: timeslot.time,
+				selected: state
 			});
 		},
 
@@ -231,14 +240,14 @@ export default {
 			this.$refs.requestModal.show();
 		},
 
-		async toggleTimeslot(state, timeslot) {
-			this.$set(timeslot, 'is_suggested', state);
-			this.channel.whisper('suggestTimeslot', {
-				userId: this.auth.id,
-				timeslot: timeslot,
-				is_suggested: state
-			});
-		},
+		// toggleTimeslot(state, timeslot) {
+		// 	this.$set(timeslot, 'is_suggested', state);
+		// 	this.channel.whisper('suggestTimeslot', {
+		// 		userId: this.auth.id,
+		// 		timeslot: timeslot,
+		// 		is_suggested: state
+		// 	});
+		// },
 
 		async login() {
 			this.loading = true;

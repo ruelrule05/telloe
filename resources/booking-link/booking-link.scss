@@ -23,29 +23,26 @@
 	}
 }
 .timeslot-content {
-	@apply px-1 flex flex-col justify-center h-full border border-transparent  rounded-lg relative;
+	@apply px-1 flex flex-col justify-center h-full relative;
 	&.selectable {
 		@apply cursor-pointer hover:border-primary-light transition-colors;
 	}
-	&:after {
-		content: '';
-		width: 1px;
-		height: 17px;
-		top: -17px;
-		z-index: -1;
-		@apply absolute bg-primary transform -translate-x-1/2 left-1/2 transition-opacity opacity-0;
-	}
 	&.selected {
-		@apply border-primary border-opacity-100 #{!important};
+		::v-deep span {
+			color: #27d898 !important;
+		}
 		&:after {
-			@apply opacity-100;
+			content: '';
+			height: 4px;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background-color: #27d898 !important;
 		}
 	}
 	&.suggested {
 		@apply border-opacity-100;
-		&:after {
-			@apply opacity-100;
-		}
 	}
 }
 .profile-image {
