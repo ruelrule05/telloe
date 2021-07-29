@@ -90,7 +90,9 @@ export default {
 				return false;
 			} else {
 				// You
-				let propName = `${this.$root.auth.id}-${this.selectedDate}`;
+				let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
+				let userID = emailData ? emailData.id : this.auth.id;
+				let propName = `${userID}-${this.selectedDate}`;
 				if (this.bookingLink.selected_timeslots[propName]) {
 					suggestedTimeslots.push(this.bookingLink.selected_timeslots[propName]);
 				}
@@ -102,14 +104,14 @@ export default {
 						suggestedTimeslots.push(this.bookingLink.selected_timeslots[propName]);
 					}
 				});
+
+				// Emails
 				this.bookingLink.emails.forEach(email => {
-					let propName = `${email}-${this.selectedDate}`;
+					let propName = `${email.id}-${this.selectedDate}`;
 					if (this.bookingLink.selected_timeslots[propName]) {
 						suggestedTimeslots.push(this.bookingLink.selected_timeslots[propName]);
 					}
 				});
-
-				// Emails
 			}
 			return suggestedTimeslots.length == participantsCount && suggestedTimeslots.every(v => v === suggestedTimeslots[0]);
 		}
@@ -208,24 +210,30 @@ export default {
 	},
 
 	methods: {
-		async book(timeslot) {
-			if (!this.canBeBooked) return false;
-			console.log(timeslot);
+		async book() {
+			let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
+			let userID = emailData ? emailData.id : this.auth.id;
+			let propName = `${userID}-${this.selectedDate}`;
+			if (!this.canBeBooked || !this.bookingLink.selected_timeslots[propName]) return false;
 
-			// this.channel.whisper('creatingBooking', {});
-			// let data = {
-			// 	date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
-			// 	start: timeslot.time
-			// };
-			// let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
-			// if (response.data) {
-			// 	this.booking = response.data;
-			// 	this.$refs.bookingSuccessModal.show();
-			// 	this.bookingLink.is_booked = true;
-			// 	this.channel.whisper('bookingSuccess', {
-			// 		booking: this.booking
-			// 	});
-			// }
+			this.$refs.requestingModal.hide(true);
+			this.$refs.requestModal.hide(true);
+			this.$refs.bookingModal.show();
+
+			this.channel.whisper('creatingBooking', {});
+			let data = {
+				date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+				start: this.bookingLink.selected_timeslots[propName]
+			};
+			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
+			if (response.data) {
+				this.booking = response.data;
+				this.$refs.bookingSuccessModal.show();
+				this.bookingLink.is_booked = true;
+				this.channel.whisper('bookingSuccess', {
+					booking: this.booking
+				});
+			}
 		},
 
 		isBookable(timeslot) {
@@ -234,7 +242,7 @@ export default {
 				isBookable = false;
 			} else {
 				// You
-				let propName = `${this.$root.auth.id}-${this.selectedDate}`;
+				let propName = `${this.auth.id}-${this.selectedDate}`;
 				if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
 					isBookable = false;
 				}
@@ -258,12 +266,16 @@ export default {
 			return isBookable;
 		},
 
-		hasSelected(userID, timeslot) {
+		hasSelected(user, timeslot) {
+			let emailData = this.bookingLink.emails.find(x => x.email == user.email);
+			let userID = emailData ? emailData.id : user.id;
 			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
 		},
 
 		toggleSelectTimeslot(state, timeslot) {
-			let propName = `${this.auth.id}-${this.selectedDate}`;
+			let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
+			let userID = emailData ? emailData.id : this.auth.id;
+			let propName = `${userID}-${this.selectedDate}`;
 			if (state) {
 				this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
 			} else {

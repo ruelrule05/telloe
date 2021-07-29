@@ -37,7 +37,7 @@
 									<td></td>
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 										<div v-if="!bookingLink.is_booked && editable" class="text-center px-2 pb-2 bg-white relative z-10">
-											<VueCheckbox :disabled="timeslot.is_available ? false : true" :value="hasSelected(auth.id, timeslot)" @input="toggleSelectTimeslot($event, timeslot)"></VueCheckbox>
+											<VueCheckbox :disabled="timeslot.is_available ? false : true" :value="hasSelected(auth, timeslot)" @input="toggleSelectTimeslot($event, timeslot)"></VueCheckbox>
 										</div>
 									</td>
 								</tr>
@@ -60,7 +60,7 @@
 
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
 										<div class="items-center column  mt-4 bg-primary-ultralight">
-											<div class="timeslot-content" :class="{ selected: hasSelected(auth.id, timeslot) }">
+											<div class="timeslot-content" :class="{ selected: hasSelected(auth, timeslot) }">
 												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
 											</div>
 										</div>
@@ -85,7 +85,7 @@
 
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
 										<div class="items-center column  mt-4 bg-primary-ultralight">
-											<div class="timeslot-content" :class="{ selected: hasSelected(bookingLink.user.id, timeslot) }">
+											<div class="timeslot-content" :class="{ selected: hasSelected(bookingLink.user, timeslot) }">
 												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, bookingLink.user.timezone)"></p>
 											</div>
 										</div>
@@ -115,7 +115,7 @@
 												</div>
 											</span>
 											<div class="items-center column mt-4" :style="{ backgroundColor: contact.color }">
-												<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user_id, timeslot) }">
+												<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user, timeslot) }">
 													<p class="text-center px-1" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
 												</div>
 											</div>
@@ -124,33 +124,35 @@
 								</template>
 
 								<!-- Emails -->
-								<tr v-for="email in bookingLink.emails" :key="email.email">
-									<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
-										<div class="flex items-center py-3 -ml-3">
-											<div>
-												<div class="profile-image profile-image-sm">
-													<span class="uppercase">{{ email.email[0] }}</span>
+								<template v-for="email in bookingLink.emails">
+									<tr :key="email.email" v-if="email.email != auth.email">
+										<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
+											<div class="flex items-center py-3 -ml-3">
+												<div>
+													<div class="profile-image profile-image-sm">
+														<span class="uppercase">{{ email.email[0] }}</span>
+													</div>
+												</div>
+												<div class="pl-2 overflow-hidden">
+													<p class="text-sm whitespace-nowrap truncate">{{ email.email }}</p>
+													<p class="flex items-center tracking-wide text-xxs text-muted">{{ email.timezone }}</p>
 												</div>
 											</div>
-											<div class="pl-2 overflow-hidden">
-												<p class="text-sm whitespace-nowrap truncate">{{ email.email }}</p>
-												<p class="flex items-center tracking-wide text-xxs text-muted">{{ email.timezone }}</p>
+										</td>
+										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
+											<span v-if="(email.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: email.color.replace('0.1', '1') }">
+												<div class="profile-image profile-image-xs inline-block -mt-1">
+													<span>{{ email.email[0] }}</span>
+												</div>
+											</span>
+											<div class="items-center column mt-4" :style="{ backgroundColor: email.color }">
+												<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
+													<p class="text-center px-1" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
+												</div>
 											</div>
-										</div>
-									</td>
-									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-										<span v-if="(email.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: email.color.replace('0.1', '1') }">
-											<div class="profile-image profile-image-xs inline-block -mt-1">
-												<span>{{ email.email[0] }}</span>
-											</div>
-										</span>
-										<div class="items-center column mt-4" :style="{ backgroundColor: email.color }">
-											<div class="timeslot-content">
-												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
-											</div>
-										</div>
-									</td>
-								</tr>
+										</td>
+									</tr>
+								</template>
 
 								<tr>
 									<td></td>
@@ -165,7 +167,7 @@
 								</tr>
 							</table>
 						</div>
-						<button class="btn btn-primary btn-md mt-2" type="button" :disabled="!canBeBooked">
+						<button class="btn btn-primary btn-md mt-2" type="button" :disabled="!canBeBooked" @click="book">
 							<span>Confirm Meeting</span>
 						</button>
 					</div>
@@ -261,7 +263,7 @@
 							<h6 class="font-semibold">{{ formatDate(booking.date) }} ({{ dayjs(booking.date).format('dddd') }})</h6>
 							<div>{{ timezoneTime(booking.start, auth.timezone) }} - {{ timezoneTime(booking.end, auth.timezone) }}</div>
 
-							<VueDropdown @click="addToCalendar($event, booking)" :options="['Google Calendar', 'MS Outlook', 'Yahoo', 'iCal (.ics file download)']" class="mt-4">
+							<VueDropdown dropPosition="top" @click="addToCalendar($event, booking)" :options="['Google Calendar', 'MS Outlook', 'Yahoo', 'iCal (.ics file download)']" class="mt-4">
 								<template #button>
 									<button class="btn btn-primary btn-sm flex items-center" type="button"><span>Add To Calendar</span><ChevronDownIcon class="fill-current"></ChevronDownIcon></button>
 								</template>
