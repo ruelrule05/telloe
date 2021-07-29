@@ -221,5 +221,6 @@ Route::group(
         Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
+        Route::get('conversations/{slug}', 'ConversationController@slug');
     }
 );

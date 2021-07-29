@@ -67,14 +67,16 @@ export default {
 		contactsOptions() {
 			let colors = [];
 			let colorOptions = { luminosity: 'bright', format: 'rgba', alpha: 0.1 };
-			return this.contacts.map(contact => {
-				let contactColor = color(colorOptions);
-				while (colors.indexOf(contactColor) > -1) {
-					contactColor = color(colorOptions);
-				}
-				colors.push(color);
-				return { name: contact.contact_user.full_name, value: contact.id, id: contact.id, contact_user: contact.contact_user, color: contactColor };
-			});
+			return this.contacts
+				.filter(contact => !contact.is_pending)
+				.map(contact => {
+					let contactColor = color(colorOptions);
+					while (colors.indexOf(contactColor) > -1) {
+						contactColor = color(colorOptions);
+					}
+					colors.push(color);
+					return { name: contact.contact_user.full_name, value: contact.id, id: contact.id, contact_user: contact.contact_user, color: contactColor };
+				});
 		}
 	},
 
