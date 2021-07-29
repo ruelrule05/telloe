@@ -62,7 +62,7 @@
 		<div
 			v-if="!open"
 			:class="{ bouncing: bouncing }"
-			class="btn-toggle bg-white badge-pill p-1 line-height-0 position-fixed"
+			class="btn-toggle"
 			role="button"
 			@click="
 				open = true;

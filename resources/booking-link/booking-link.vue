@@ -31,7 +31,7 @@
 					</div>
 
 					<div class="relative mt-10">
-						<div class="overflow-x-scroll overflow-y-visible pb-4" style="margin-left: 200px">
+						<div class="overflow-x-scroll overflow-y-visible pb-1" style="margin-left: 200px">
 							<table class="timeslots-table" cellspacing="0" cellpadding="0">
 								<tr>
 									<td></td>
@@ -61,7 +61,7 @@
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
 										<div class="items-center column  mt-4 bg-primary-ultralight">
 											<div class="timeslot-content" :class="{ selected: hasSelected(auth.id, timeslot) }">
-												<p class="text-center" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
+												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
 											</div>
 										</div>
 									</td>
@@ -84,9 +84,9 @@
 									</td>
 
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-										<div class="items-center column  mb-4 bg-primary-ultralight">
+										<div class="items-center column  mt-4 bg-primary-ultralight">
 											<div class="timeslot-content" :class="{ selected: hasSelected(bookingLink.user.id, timeslot) }">
-												<p class="text-center" v-html="timeslotTime(timeslot.time, bookingLink.user.timezone)"></p>
+												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, bookingLink.user.timezone)"></p>
 											</div>
 										</div>
 									</td>
@@ -94,7 +94,7 @@
 
 								<!-- Contacts -->
 								<template v-for="contact in bookingLink.booking_link_contacts">
-									<tr v-if="contact.contact && contact.contact.contact_user_id != (auth || {}).id" :key="contact.id">
+									<tr v-if="contact.contact && contact.contact.contact_user_id != (auth || {}).id && contact.contact.email != auth.email" :key="contact.id">
 										<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 											<div class="flex items-center py-3 -ml-3">
 												<div>
@@ -114,9 +114,9 @@
 													<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 												</div>
 											</span>
-											<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: contact.color }">
+											<div class="items-center column mt-4" :style="{ backgroundColor: contact.color }">
 												<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user_id, timeslot) }">
-													<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
+													<p class="text-center px-1" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
 												</div>
 											</div>
 										</td>
@@ -144,15 +144,30 @@
 												<span>{{ email.email[0] }}</span>
 											</div>
 										</span>
-										<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: email.color }">
-											<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
-												<p class="text-center" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
+										<div class="items-center column mt-4" :style="{ backgroundColor: email.color }">
+											<div class="timeslot-content">
+												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
 											</div>
+										</div>
+									</td>
+								</tr>
+
+								<tr>
+									<td></td>
+									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex">
+										<div class="timeslots-matched" :class="{ show: isBookable(timeslot) }">
+											<div>
+												<span><CheckmarkIcon class="absolute-center w-3 h-3"/></span>
+											</div>
+											<span class="text-sm">Matched</span>
 										</div>
 									</td>
 								</tr>
 							</table>
 						</div>
+						<button class="btn btn-primary btn-md mt-2" type="button" :disabled="!canBeBooked">
+							<span>Confirm Meeting</span>
+						</button>
 					</div>
 				</div>
 

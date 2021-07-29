@@ -110,7 +110,7 @@
 	}
 }
 .btn-toggle {
-	@apply absolute bottom-4 right-4 z-50 shadow-lg rounded-full border border-gray-200 p-2 transition-colors hover:bg-gray-100;
+	@apply fixed bottom-4 bg-white right-4 z-50 shadow-lg rounded-full border border-gray-200 p-2 transition-colors hover:bg-gray-100;
 
 	&.bouncing {
 		animation: bounce 0.5s infinite alternate;

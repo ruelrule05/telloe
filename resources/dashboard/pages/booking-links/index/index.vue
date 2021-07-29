@@ -96,10 +96,9 @@
 								</div>
 								<div class="flex flex-col ml-4">
 									<span class="text-muted text-sm">Dates:</span>
-									<div class="grid grid-cols-3 lg:grid-cols-6 md:grid-cols-5 gap-2">
-										<div v-for="(date, dateKey, dateIndex) in booking_link.dates" :key="dateKey" class="text-sm flex">
-											<span class="mr-0 lg:mr-2">{{ formatDate(dateKey) }} </span>
-											<span v-if="Object.keys(booking_link.dates).length != dateIndex + 1" class="text-muted hidden">|</span>
+									<div class="flex items-center mt-1">
+										<div v-for="(date, dateKey) in booking_link.dates" :key="dateKey" class="badge text-sm flex mr-1">
+											{{ formatDate(dateKey) }}
 										</div>
 									</div>
 								</div>
