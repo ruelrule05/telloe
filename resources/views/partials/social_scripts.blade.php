@@ -44,7 +44,8 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-  @if(request()->route()->getName() != 'bookingPage')
+  @php $uri = request()->route()->uri() @endphp
+  @if(request()->route()->getName() != 'bookingPage' && $uri != 'affiliates' && $uri != 'affiliate-terms')
   <script type="text/javascript">
     (function(w,d){
       w.HelpCrunch=function(){w.HelpCrunch.q.push(arguments)};w.HelpCrunch.q=[];
