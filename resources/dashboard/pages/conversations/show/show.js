@@ -381,6 +381,10 @@ export default {
 
 		toggleDetailsTab() {
 			this.$root.detailsTab = this.$root.detailsTab ? '' : 'profile';
+		},
+
+		toggleConversationList() {
+			this.$emit('conversationList');
 		}
 	}
 };

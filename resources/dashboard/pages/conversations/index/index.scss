@@ -1,6 +1,15 @@
 @import '../../../../sass/variables';
 .conversations-list {
 	width: 350px;
+
+	@media(max-width: 768px) {
+		display: none;
+
+		&.show {
+			@apply w-full block absolute bg-white h-full top-20;
+			z-index: 11;
+		}
+	}
 }
 .conversation-preview {
 	@apply rounded-2xl flex items-start p-4 cursor-pointer border border-gray-200 transition-colors hover:bg-gray-200;

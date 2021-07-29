@@ -2,7 +2,14 @@
 	<div class="h-full flex overflow-hidden" v-if="conversation">
 		<div class="h-full flex flex-col flex-grow">
 			<div class="p-4 border-bottom relative flex items-center">
-				<div class="flex items-center">
+					
+				<button @click="toggleConversationList()" class="text-gray-500 focus:outline-none lg:hidden">
+					<svg class="h-6 w-6" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</button>
+				<div class="flex items-center w-3/6 ml-2 lg:ml-0">
 					<div>
 						<div class="profile-image profile-image-md" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 							<span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
@@ -10,19 +17,19 @@
 						</div>
 					</div>
 					<div class="ml-2">
-						<h5 v-if="conversation.members.length > 1" class="text-xl" contenteditable @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
-						<h5 v-else class="text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
+						<h5 v-if="conversation.members.length > 1" class="font-bold md:font-normal text-sm sm:text-xs md:text-xl" contenteditable @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
+						<h5 v-else class="font-bold md:font-normal text-sm sm:text-xs md:text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
 						<small v-if="conversation.member.is_pending" class="text-warning">Pending account</small>
 						<div class="flex items-center" v-else-if="conversation.member.id && conversation.member.last_online_format">
-							<small class="text-muted">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
+							<small class="text-muted text-xs md:text-sm">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
 						</div>
-						<small v-else-if="conversation.members.length > 1" class="block text-muted"> {{ conversation.members.map(m => m.user.full_name).join(', ') }} </small>
-						<small v-else class="block text-muted">
+						<small v-else-if="conversation.members.length > 1" class="block text-muted text-xs md:text-sm"> {{ conversation.members.map(m => m.user.full_name).join(', ') }} </small>
+						<small v-else class="block text-muted text-xs md:text-sm">
 							<template>{{ conversation.member.email }}</template>
 						</small>
 					</div>
 				</div>
-				<div class="ml-auto btn-actions">
+				<div class="ml-auto btn-actions w-1/5 md:w-auto">
 					<template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
 						<button
 							class="text-primary"
@@ -71,7 +78,7 @@
 			</div>
 		</div>
 
-		<div class="notes-container border-left overflow-hidden flex flex-col" :class="{ open: showNotes }">
+		<div class="notes-container border-left overflow-auto lg:overflow-hidden flex flex-col" :class="{ open: showNotes }">
 			<div class="notes-header border-bottom px-6 flex justify-between">
 				<span class="text-muted font-bold">NOTES</span>
 				<div class="flex items-center">
@@ -80,7 +87,7 @@
 				</div>
 			</div>
 
-			<div class="p-8 overflow-auto flex-grow">
+			<div class="p-8 overflow-auto flex-grow pb-24 md:pb-8">
 				<vue-form-validate v-if="addNewNote" @submit="addNote" class="mb-4">
 					<textarea rows="3" v-model="newNote" placeholder="Write a note.." class="resize-none" data-required></textarea>
 					<div class="flex justify-between mt-2">
