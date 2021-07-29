@@ -2,7 +2,7 @@
 	<div class="h-100" v-if="$root.auth && ready">
 		<div v-show="!addContact">
 			<div class="content-header contact-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-				<div class="ml-7 lg:ml-0 absolute md:static top-7">
+				<div class="ml-7 lg:ml-0 absolute md:static top-7 right-5">
 					CONTACTS
 				</div>
 				<div class="flex absolute md:static bottom-4 justify-center w-11/12 md:w-auto">
@@ -17,7 +17,7 @@
 					>
 						<span>Import</span>
 					</button>
-					<button type="button" class="btn btn-md btn-primary flex items-center justify-center w-6/12 md:w-auto" @click="addContact = true"><span>Add contact</span></button>
+					<button type="button" class="btn btn-md btn-primary flex items-center justify-center w-6/12 md:w-auto whitespace-pre" @click="addContact = true"><span>Add contact</span></button>
 				</div>
 			</div>
 			<div class="h-28 md:h-20 lg:hidden block" />
@@ -43,9 +43,9 @@
 				<div class="w-full lg:w-2/3 p-6 lg:p-8 border-b lg:border-b-0 border-r-0 lg:border-r relative">
 					<template v-if="filteredContacts.length > 0">
 						<div class="flex lg:items-center items-normal justify-between mb-3 header flex-col lg:flex-row w-full">
-							<div class="flex items-center">
-								<VueSelect :options="contactStatuses" dropPosition="w-full" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
-								<multiselect v-model="filterTags" class="ml-2" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
+							<div class="flex items-center flex-col md:flex-row">
+								<VueSelect :options="contactStatuses" dropPosition="w-full" class="contact-status" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
+								<multiselect v-model="filterTags" class="ml-0 md:ml-2 w-6/12 md:w-full mt-2 md:mt-0" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
 							</div>
 
 							<form @submit.prevent="getData()" class="mt-2 lg:mt-0">
@@ -66,7 +66,7 @@
 									<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
 								</div>
 							</div>
-							<div class="flex w-full sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
+							<div class="flex w-10/12 sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
 								<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
 								<div class="flex items-center">
 									<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
