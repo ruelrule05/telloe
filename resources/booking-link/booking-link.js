@@ -155,6 +155,8 @@ export default {
 							contact.suggestedTimeslots.splice(index, 1);
 						}
 					}
+				} else if (data.userId == this.auth.id) {
+					(this.bookingLink.selected_timeslots || [])[`${data.userID}-${this.selectedDate}`] = data.value;
 				}
 			});
 
@@ -331,15 +333,6 @@ export default {
 			this.acceptedContacts++;
 			this.$refs.requestModal.show();
 		},
-
-		// toggleTimeslot(state, timeslot) {
-		// 	this.$set(timeslot, 'is_suggested', state);
-		// 	this.channel.whisper('suggestTimeslot', {
-		// 		userId: this.auth.id,
-		// 		timeslot: timeslot,
-		// 		is_suggested: state
-		// 	});
-		// },
 
 		async login() {
 			this.loading = true;

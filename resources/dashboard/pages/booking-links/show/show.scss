@@ -22,34 +22,44 @@
 		}
 	}
 }
+
 .timeslot-content {
-	@apply px-1 flex flex-col justify-center h-full border border-transparent  rounded-lg relative;
+	@apply px-1 flex flex-col justify-center h-full relative;
 	&.selectable {
 		@apply cursor-pointer hover:border-primary-light transition-colors;
 	}
-	&:after {
-		content: '';
-		width: 1px;
-		height: 17px;
-		top: -17px;
-		z-index: -1;
-		@apply absolute bg-primary transform -translate-x-1/2 left-1/2 transition-opacity opacity-0;
-	}
 	&.selected {
-		@apply border-primary;
+		::v-deep span {
+			color: #27d898 !important;
+		}
 		&:after {
-			@apply opacity-100;
+			content: '';
+			height: 4px;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			background-color: #27d898 !important;
 		}
 	}
+	&.suggested {
+		@apply border-opacity-100;
+	}
 }
-.suggested {
-	@apply border-l-2 border-r-2 border-b-2 absolute bottom-3 z-50 left-0 w-full h-3 text-center;
-}
-
 .booking-links__timeslots {
 	margin-left: 200px;
 
 	@media (max-width: 375px) {
 		margin-left: 150px;
+	}
+}
+.btn-open-timeslot {
+	@apply opacity-0;
+}
+.timeslot-heading {
+	&:hover {
+		.btn-open-timeslot {
+			@apply opacity-100;
+		}
 	}
 }

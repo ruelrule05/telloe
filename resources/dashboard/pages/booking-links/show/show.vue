@@ -31,16 +31,19 @@
 						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>
-								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
-									<div class="text-center px-2 pb-2 bg-white relative z-10">
-										<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-if="!bookingLink.is_booked && editable" v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right timeslot-heading">
+									<div class="text-center px-2 bg-white relative z-10">
+										<div v-if="!timeslot.is_available" class="absolute top-px z-10 left-0 w-full px-1">
+											<button class="bg-primary btn-open-timeslot rounded-full text-xs text-white py-1 w-full" type="button" @click="toggleTimeslot(timeslot)"><span>Open</span></button>
+										</div>
+										<VueCheckbox v-if="!bookingLink.is_booked && editable" :disabled="timeslot.is_available ? false : true" :value="hasSelected($root.auth, timeslot)" @input="toggleSelectTimeslot($event, timeslot)"></VueCheckbox>
 									</div>
 								</td>
 							</tr>
 
 							<!-- You -->
 							<tr>
-								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
+								<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
 											<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
@@ -55,8 +58,8 @@
 								</td>
 
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-									<div class="items-center column mb-4 px-1 bg-primary-ultralight" v-tooltip.bottom="'Select this timeslot'">
-										<div class="timeslot-content selectable" :class="{ selected: hasSelected($root.auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
+									<div class="items-center column mt-4 bg-primary-ultralight">
+										<div class="timeslot-content" :class="{ selected: hasSelected($root.auth, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
 										</div>
 									</div>
@@ -66,7 +69,7 @@
 							<!-- Contacts -->
 							<template v-for="contact in bookingLink.booking_link_contacts">
 								<tr v-if="contact.contact" :key="contact.id">
-									<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
+									<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 										<div class="flex items-center py-3 -ml-3">
 											<div>
 												<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
@@ -85,8 +88,8 @@
 												<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 											</div>
 										</span>
-										<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: contact.color }">
-											<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user_id, timeslot) }">
+										<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: contact.color }">
+											<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user, timeslot) }">
 												<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
 											</div>
 										</div>
@@ -96,7 +99,7 @@
 
 							<!-- Emails -->
 							<tr v-for="email in bookingLink.emails" :key="email.email">
-								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
+								<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
 											<div class="profile-image profile-image-sm">
@@ -115,7 +118,7 @@
 											<span>{{ email.email[0] }}</span>
 										</div>
 									</span>
-									<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: email.color }">
+									<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: email.color }">
 										<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
 										</div>

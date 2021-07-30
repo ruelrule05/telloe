@@ -36,7 +36,7 @@
 								<tr>
 									<td></td>
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
-										<div v-if="!bookingLink.is_booked && editable" class="text-center px-2 pb-2 bg-white relative z-10">
+										<div v-if="!bookingLink.is_booked && editable" class="text-center px-2 bg-white relative z-10">
 											<VueCheckbox :disabled="timeslot.is_available ? false : true" :value="hasSelected(auth, timeslot)" @input="toggleSelectTimeslot($event, timeslot)"></VueCheckbox>
 										</div>
 									</td>
@@ -109,11 +109,6 @@
 											</div>
 										</td>
 										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-											<span v-if="(contact.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: contact.color.replace('0.1', '1') }">
-												<div class="profile-image profile-image-xs inline-block -mt-1" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
-													<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
-												</div>
-											</span>
 											<div class="items-center column mt-4" :style="{ backgroundColor: contact.color }">
 												<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user, timeslot) }">
 													<p class="text-center px-1" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
@@ -140,11 +135,6 @@
 											</div>
 										</td>
 										<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-											<span v-if="(email.suggestedTimeslots || []).find(s => s.time == timeslot.time)" class="suggested" :style="{ borderColor: email.color.replace('0.1', '1') }">
-												<div class="profile-image profile-image-xs inline-block -mt-1">
-													<span>{{ email.email[0] }}</span>
-												</div>
-											</span>
 											<div class="items-center column mt-4" :style="{ backgroundColor: email.color }">
 												<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
 													<p class="text-center px-1" v-html="timeslotTime(timeslot.time, email.timezone)"></p>

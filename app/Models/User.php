@@ -115,6 +115,7 @@ class User extends Authenticatable implements JWTSubject
         $first_name = $this->attributes['first_name'] ?? $this->first_name;
         $last_name = $this->attributes['last_name'] ?? $this->last_name;
         $email = $this->attributes['email'] ?? $this->email;
+        $email = is_array($email) ? $email['email'] : $email;
         return $first_name || $last_name ? strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) : strtoupper(substr($email, 0, 1));
     }
 
