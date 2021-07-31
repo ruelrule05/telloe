@@ -70,4 +70,32 @@
 			@apply hidden;
 		}
 	}
+	&.open {
+		display: block !important;
+	}
+}
+.calendar-header {
+	@media (max-width: 767px) {
+		@apply h-28;
+	}
+}
+.calendar-buttons__header {
+	@media (max-width: 425px) {
+		.btn-md {
+			height: 26px;
+			font-size: 9px;
+		}
+		.button-date-nav {
+			font-size: 9px;
+		}
+		button {
+			height: 26px;
+		}
+	}
+}
+.calendar-booking {
+	@apply z-40;
+	@media (max-width: 425px) {
+		width: 100% !important;	
+	}
 }
