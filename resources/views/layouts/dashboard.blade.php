@@ -18,13 +18,15 @@
 				</div>
 
 				<div class="flex flex-col p-8">
-					<router-link to="/dashboard/account"  class="cursor-pointer flex items-center justify-center">
-						<div class="profile-image profile-image-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
-							<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
-						</div>
-						<div class="pl-2 overflow-hidden flex-1 leading-tight text-xs">
-							<div class="text-ellipsis font-bold">@{{ auth.full_name }}</div>
-							<div class="text-muted text-ellipsis">@{{ '@' + auth.username  }}</div>
+					<router-link custom to="/dashboard/account">
+						<div @click="toggleSidebar('/dashboard/account')" class="cursor-pointer flex items-center justify-center">
+							<div class="profile-image profile-image-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
+								<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
+							</div>
+							<div class="pl-2 overflow-hidden flex-1 leading-tight text-xs">
+								<div class="text-ellipsis font-bold">@{{ auth.full_name }}</div>
+								<div class="text-muted text-ellipsis">@{{ '@' + auth.username  }}</div>
+							</div>
 						</div>
 					</router-link >
 					
