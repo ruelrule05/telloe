@@ -141,9 +141,9 @@
 					</multiselect>
 				</div>
 
-				<div class="mb-4 mt-4">
+				<!-- <div class="mb-4 mt-4">
 					<vue-checkbox v-model="clonedOrganization.show_user_services" label="Include my services in this organization"></vue-checkbox>
-				</div>
+				</div> -->
 
 				<div class="flex justify-between mt-6">
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.editModal.hide()">

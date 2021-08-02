@@ -126,9 +126,11 @@ export default {
 
 		memberAction(action, member) {
 			this.selectedMember = member;
+			let clonedMember = JSON.parse(JSON.stringify(member));
 			switch (action) {
 				case 'Edit':
-					this.clonedMember = Object.assign({}, member);
+					clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
+					this.clonedMember = clonedMember;
 					this.$refs.editModal.show();
 					break;
 				case 'Delete':

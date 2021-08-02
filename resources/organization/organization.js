@@ -1,3 +1,5 @@
+/* global ORGANIZATION */
+/* global AUTH */
 require('../js/bootstrap');
 
 import Vue from 'vue';
@@ -46,9 +48,13 @@ import MapMarkerIcon from '../icons/map-marker';
 import ArrowRightIcon from '../icons/arrow-right';
 import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
 import MoreIcon from '../icons/more-h';
+const ct = require('countries-and-timezones');
+import VueSelect from '../components/vue-select/vue-select.vue';
+import timezoneTime from '../js/helpers/TimezoneTime.js';
 
 export default {
 	components: {
+		VueSelect,
 		VueFormValidate,
 		Modal,
 		ClockIcon,
@@ -79,6 +85,9 @@ export default {
 	directives: { tooltip },
 
 	data: () => ({
+		timezoneTime: timezoneTime,
+		timezonesOptions: [],
+		bookingLoading: false,
 		organization: ORGANIZATION,
 		auth: AUTH,
 		ready: false,
@@ -91,7 +100,7 @@ export default {
 				contentClass: 'bg-primary'
 			}
 		},
-		step: 1,
+		step: false,
 		selectedServiceForTimeline: null,
 		selectedService: null,
 		startDate: null,
@@ -170,7 +179,7 @@ export default {
 
 		'selectedServiceForTimeline.id': function(value) {
 			if (value) {
-				this.selectedCoachId = this.selectedServiceForTimeline.member_services[0].member_id;
+				this.selectedCoachId = this.selectedServiceForTimeline.assigned_services[0].member_id;
 				this.error = null;
 				this.authError = '';
 				this.selectedTimeslot = null;
@@ -180,7 +189,7 @@ export default {
 			}
 		},
 
-		selectedCoachId: function(value) {
+		selectedCoachId: function() {
 			this.selectedTimeslots = [];
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
@@ -196,11 +205,12 @@ export default {
 		this.timezone = timezone.name();
 		this.startDate = dayjs().toDate();
 
-		if (typeof gapi != 'undefined') {
-			gapi.load('auth2', () => {
-				this.GoogleAuth = gapi.auth2.init({ client_id: '187405864135-kboqmukelf9sio1dsjpu09of30r90ia1.apps.googleusercontent.com' });
+		Object.keys(ct.getAllTimezones()).forEach(timezone => {
+			this.timezonesOptions.push({
+				text: timezone,
+				value: timezone
 			});
-		}
+		});
 	},
 
 	mounted() {
@@ -280,7 +290,6 @@ export default {
 
 		availableTimeslots(service, timeslot) {
 			let startParts = timeslot.split(':');
-			let timeslotEls = '';
 			let availableTimeslots = (service.timeslots || []).filter(x => {
 				let serviceStartParts = x.time.split(':');
 				return startParts[0] == serviceStartParts[0];
@@ -292,26 +301,11 @@ export default {
 		moveSelector(e) {
 			let selector = this.$refs['selector'];
 			let rect = e.target.getBoundingClientRect();
-			let selectorWidth = selector.offsetWidth / 2;
 			let x = e.clientX - rect.left;
 			console.log(x);
 			if (x >= 0 && x <= e.srcElement.offsetWidth - selector.offsetWidth) {
 				selector.style.left = `${x}px`;
 			}
-		},
-
-		timezoneTime(time) {
-			let selectedServiceTimezone = this.selectedService.coach.timezone;
-			let timezoneTime;
-			if (selectedServiceTimezone != this.timezone) {
-				let profileTZ = this.getTimeZoneOffset(new Date(), selectedServiceTimezone);
-				let localTZ = this.getTimeZoneOffset(new Date(), this.timezone);
-				let timeslotDate = `${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`;
-				timezoneTime = dayjs(timeslotDate).add(profileTZ - localTZ, 'minute');
-			} else {
-				timezoneTime = dayjs(`${dayjs(this.startDate).format('YYYY-MM-DD')} ${time}`);
-			}
-			return timezoneTime.format('hh:mmA');
 		},
 
 		goToCoachSelection() {
@@ -388,6 +382,7 @@ export default {
 		adjustSlider(step) {
 			let weekdaySlider = this.$refs['weekday-slider'];
 
+			/* eslint-disable */
 			let translateX = new WebKitCSSMatrix(weekdaySlider.style.webkitTransform).m41 - this.sliderItemSize;
 			if ((step == -1 && translateX < this.sliderItemSize * -1) || step == 1) {
 				this.sliderNavIndex += step;

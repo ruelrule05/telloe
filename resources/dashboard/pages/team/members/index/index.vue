@@ -85,8 +85,8 @@
 						<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
 							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
 							<div class="mt-2 flex items-center">
-								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Inactive' : 'Active' }}</span>
-								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? false : true" @input="toggleMemberAssignedService(service)"></toggle-switch>
+								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Active' : 'Inactive' }}</span>
+								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>
