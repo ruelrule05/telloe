@@ -336,8 +336,8 @@ class UserService
         $data['name'] = $service->name;
         $booking = Booking::create($data);
 
-        if ($service->create_zoom_link && $service->user->zoom_token) {
-            $zoomLink = Zoom::createMeeting($service->user, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+        if ($service->create_zoom_link && $service->coach->zoom_token) {
+            $zoomLink = Zoom::createMeeting($service->coach, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
                 $booking->update([
                     'zoom_link' => $zoomLink['join_url']
@@ -361,8 +361,8 @@ class UserService
             }
         }
 
-        if ($service->user->google_calendar_token && $service->user->google_calendar_id) {
-            $GoogleCalendarClient = new GoogleCalendarClient($service->user);
+        if ($service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+            $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
             $attendees = [];
@@ -393,7 +393,7 @@ class UserService
                 ]
             ]);
 
-            $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+            $event = $googleService->events->insert($service->coach->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
             $booking->update([
                 'meet_link' => $event->hangoutLink
             ]);
@@ -409,7 +409,7 @@ class UserService
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
 
-        return $booking;
+        return $booking->refresh();
     }
 
     public static function loginAndBook($username, $service_id, UserBookRequest $request)

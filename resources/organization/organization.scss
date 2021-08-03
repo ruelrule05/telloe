@@ -44,3 +44,46 @@
 		@apply border-opacity-100;
 	}
 }
+.booking-type {
+	@apply border rounded-xl p-4 flex mt-2 cursor-pointer transition-colors hover:bg-gray-100;
+	&.selected {
+		@apply border-primary;
+		.type-checkbox {
+			@apply border-primary;
+			> div {
+				@apply bg-primary;
+			}
+		}
+	}
+}
+
+.type-checkbox {
+	@apply border h-5 w-5 relative rounded-full;
+	> div {
+		@apply w-2 h-2 rounded-full scale-0 transition-colors;
+	}
+}
+
+.timeslot-menu {
+	z-index: -1;
+	@apply absolute top-0 lg:left-9 lg:right-auto left-auto right-7 transform scale-95  origin-left rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out whitespace-nowrap p-4;
+	&.show {
+		@apply z-50 opacity-100 scale-100;
+	}
+}
+
+.badge-day {
+	@apply cursor-pointer rounded-full w-7 h-7 relative border p-2 font-serif text-muted text-xs font-semibold transition-colors hover:bg-gray-200;
+	&.active {
+		@apply bg-primary text-white border-primary;
+	}
+}
+
+.feature-check {
+	width: 36px;
+	height: 36px;
+	@apply bg-green-400 rounded-full relative text-white;
+	svg {
+		@apply h-3 w-3 stroke-current;
+	}
+}

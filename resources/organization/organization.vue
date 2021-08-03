@@ -265,10 +265,14 @@
 											</div>
 											<span class="text-black font-bold" v-if="type.type == 'Face-to-face'">{{ type.data }}</span>
 											<div class="mt-1" v-else-if="type.type == 'Phone'">
-												<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="phone" />
+												<div class="w-2/3">
+													<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="mb-3" v-model="phone" />
+												</div>
 											</div>
 											<div class="mt-1" v-else-if="type.type == 'Skype'">
-												<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="w-2/3" v-model="skype" placeholder="Add your Skype ID" />
+												<div class="w-2/3">
+													<input type="tel" :disabled="selectedTimeslot.type != type" :data-required="selectedTimeslot.type == type" class="mb-3" v-model="skype" placeholder="Add your Skype ID" />
+												</div>
 											</div>
 
 											<span v-else-if="type.type == 'Telloe Video Call'">
