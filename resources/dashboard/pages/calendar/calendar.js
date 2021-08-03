@@ -253,7 +253,6 @@ export default {
 		},
 
 		eventClick(event) {
-			console.log('ddwa');
 			if ((event.booking || {}).type != 'blocked') {
 				this.selectedBooking = event.booking;
 				if (this.view == 'day') {
