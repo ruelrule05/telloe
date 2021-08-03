@@ -259,7 +259,7 @@
 					<vue-form-validate @submit="updateStripeAccount()">
 						<fieldset :disabled="stripeAccountForm.loading">
 							<div class="flex flex-col md:flex-row">
-								<div class="payout-sidebar border-r-0 md:border-right">
+								<div class="payout-sidebar border-r-0 md:border-r">
 									<h2 class="text-xs">Identity</h2>
 								</div>
 								<div class="form">
@@ -305,7 +305,7 @@
 								</div>
 							</div>
 							<div class="flex flex-col md:flex-row mt-8">
-								<div class="payout-sidebar border-right">
+								<div class="payout-sidebar border-r-0 md:border-r">
 									<h2 class="text-xs">Bank details</h2>
 								</div>
 								<div class="form">
