@@ -1,20 +1,23 @@
 <template>
 	<div class="flex min-h-screen flex-col">
-		<div class="content-header border-bottom">
-			MY ACCOUNT
+		<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+			<div class="ml-7 lg:ml-0">
+				MY ACCOUNT
+			</div>
 		</div>
+		<div class="h-20 lg:hidden block" />
 
-		<div class="flex flex-grow">
-			<div class="sidebar border-right px-6 pt-4">
+		<div class="flex flex-grow flex-col md:flex-row">
+			<div class="sidebar account-sidebar border-r-0 md:border-r px-6 pt-4">
 				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 
-				<form action="/logout" method="POST">
+				<form action="/logout" method="POST" class="sidebar-menu-item">
 					<input type="hidden" name="_token" :value="csrf_token" />
-					<button class="sidebar-menu-item" type="submit">Log Out</button>
+					<button type="submit">Log Out</button>
 				</form>
 			</div>
 			<div class="flex-grow">
-				<div v-if="activeMenu == 'Profile'" class="w-6/12 p-8">
+				<div v-if="activeMenu == 'Profile'" class="w-full md:w-6/12 p-6 md:p-8">
 					<h2 class="font-serif uppercase font-semibold mb-8">Profile Settings</h2>
 					<vue-form-validate @submit="save">
 						<div class="flex items-center mb-8 profile-photo">
@@ -66,7 +69,7 @@
 					</vue-form-validate>
 				</div>
 
-				<div v-else-if="activeMenu == 'Security'" class="w-5/12 p-8">
+				<div v-else-if="activeMenu == 'Security'" class="w-full md:w-5/12 p-6 md:p-8">
 					<h2 class="font-serif uppercase font-semibold mb-8">Security Settings</h2>
 					<vue-form-validate @submit="password">
 						<div class="mb-5">
@@ -90,7 +93,7 @@
 					<div v-if="isTrial" class="bg-secondary p-3 mb-4 rounded-xl text-center text-sm free-trial">Your free trial will expire at {{ dayjs($root.auth.trial_expires_at).format('MMMM D, YYYY') }}</div>
 
 					<h2 class="font-serif uppercase font-semibold mb-8">Plan</h2>
-					<div class="grid grid-cols-3 gap-x-6">
+					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6">
 						<div v-for="plan in plans" :key="plan.id" class="card-plan" :class="{ active: $root.auth.subscription && $root.auth.subscription.plan_id == plan.id, selected: plan.id == (selectedPlan || {}).id }">
 							<div class="flex justify-between">
 								<div class="text-muted font-serif uppercase font-semibold text-xs">{{ plan.name }}</div>
@@ -255,8 +258,8 @@
 
 					<vue-form-validate @submit="updateStripeAccount()">
 						<fieldset :disabled="stripeAccountForm.loading">
-							<div class="flex">
-								<div class="payout-sidebar border-right">
+							<div class="flex flex-col md:flex-row">
+								<div class="payout-sidebar border-r-0 md:border-r">
 									<h2 class="text-xs">Identity</h2>
 								</div>
 								<div class="form">
@@ -301,8 +304,8 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex mt-8">
-								<div class="payout-sidebar border-right">
+							<div class="flex flex-col md:flex-row mt-8">
+								<div class="payout-sidebar border-r-0 md:border-r">
 									<h2 class="text-xs">Bank details</h2>
 								</div>
 								<div class="form">
