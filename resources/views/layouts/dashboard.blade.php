@@ -132,13 +132,13 @@
 
 
 
-						<!-- <div class="sidebar-heading mt-7">TEAM</div>
+						<div class="sidebar-heading mt-7">TEAM</div>
 						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/organizations">
 							Organizations
 						</router-link>
 						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/members">
 							Members
-						</router-link> -->
+						</router-link>
 
 
 

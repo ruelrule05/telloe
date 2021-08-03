@@ -17,9 +17,11 @@ import PackageIcon from '../../../../../icons/package';
 import VueDropdown from '../../../../../components/vue-dropdown/vue-dropdown.vue';
 import VueSelect from '../../../../../components/vue-select/vue-select.vue';
 import CogIcon from '../../../../../icons/cog';
+import InfoCircleIcon from '../../../../../icons/info-circle.vue';
 
 export default {
 	components: {
+		InfoCircleIcon,
 		CogIcon,
 		VueDropdown,
 		VueSelect,
@@ -124,9 +126,11 @@ export default {
 
 		memberAction(action, member) {
 			this.selectedMember = member;
+			let clonedMember = JSON.parse(JSON.stringify(member));
 			switch (action) {
 				case 'Edit':
-					this.clonedMember = Object.assign({}, member);
+					clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
+					this.clonedMember = clonedMember;
 					this.$refs.editModal.show();
 					break;
 				case 'Delete':

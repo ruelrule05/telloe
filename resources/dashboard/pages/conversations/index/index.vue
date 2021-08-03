@@ -13,7 +13,7 @@
 				<template v-for="conversation in orderedConversations">
 					<div :key="conversation.id" class="conversation-preview mb-2" :class="{ active: conversation.id == $route.params.id }" @click="setConversation(conversation), toggleConversationList()">
 						<div>
-							<div class="profile-image profile-image-sm relative" :class="{ 'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1 }" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
+							<div class="profile-image profile-image-sm relative" :class="{ 'bg-light border border-gray-200': conversation.members.length > 1 }" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 								<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
 								<span v-else-if="conversation.members.length > 1">GC</span>
 								<!-- <div class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">

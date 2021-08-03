@@ -15,11 +15,11 @@
         @endif
         
         <label style="color: #838EA6; margin-top: 15px; display: block">Date</label>
-        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->date }}</div>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->formattedDate }}</div>
 
 
         <label style="color: #838EA6">Time</label>
-        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->start }} - {{ $booking->end }} ({{ $booking->timezone }})</div>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->startFormat }} - {{ $booking->endFormat }} ({{ $booking->timezone }})</div>
 
         <label style="color: #838EA6">Guests</label>
         <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">
