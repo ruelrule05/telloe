@@ -40,22 +40,22 @@
 
 										<div class="flex items-center mt-5">
 											<div
-												class="profile-image profile-image-sm"
+												class="profile-image profile-image-sm -mr-2"
 												:style="{
 													backgroundImage: 'url(' + profile.profile_image + ')'
 												}"
 											>
 												<span v-if="!profile.profile_image">{{ profile.initials }}</span>
 											</div>
-											<div
-												v-for="assignedService in service.assigned_services"
-												:key="assignedService.id"
-												class="profile-image profile-image-sm -ml-2"
-												:style="{
-													backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
-												}"
-											>
-												<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+											<div v-for="assignedService in service.assigned_services" :key="assignedService.id" class="-mr-2 border-2 border-gray-50 rounded-full relative">
+												<div
+													class="profile-image profile-image-sm"
+													:style="{
+														backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
+													}"
+												>
+													<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+												</div>
 											</div>
 										</div>
 

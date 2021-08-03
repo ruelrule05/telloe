@@ -145,7 +145,11 @@ class BookingLinkService
         if ($email == $bookingLink->user->email || $inEmails || $bookingLinkContact) {
             return view('booking-link', compact('bookingLink', 'user', 'inEmails', 'authAction'));
         }
-        return abort(403);
+        if($user && !$inEmails) {
+            return abort(403);
+        }
+        $authAction = 'login';
+        return view('booking-link', compact('bookingLink', 'user', 'inEmails', 'authAction'));
     }
 
     public function sendInvitation($id)

@@ -1,5 +1,5 @@
 <template>
-	<div class="min-h-screen" v-if="ready">
+	<div class="min-h-screen relative" v-if="ready">
 		<div class="content-header border-bottom flex items-center justify-between">
 			<div>
 				MEMBERS
@@ -9,7 +9,18 @@
 			</div>
 		</div>
 
-		<div class="h-full contact-content p-8">
+		<div v-if="members.length == 0" class="flex-grow">
+			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-4/12">
+				<div class="text-primary">
+					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
+				</div>
+				<div class="pl-4 -mt-1">
+					<p class="font-bold text-sm">No members added yet. Add a member for your organization by clicking the button below.</p>
+					<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="$refs.addModal.show()"><span>Add New</span></button>
+				</div>
+			</div>
+		</div>
+		<div v-else class="h-full contact-content p-8">
 			<div>
 				<div class="flex items-center justify-between mb-3 header">
 					<VueSelect :options="memberStatuses" v-model="memberStatus" @input="getData" label="Status"></VueSelect>
@@ -74,8 +85,8 @@
 						<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
 							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
 							<div class="mt-2 flex items-center">
-								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Inactive' : 'Active' }}</span>
-								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? false : true" @input="toggleMemberAssignedService(service)"></toggle-switch>
+								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Active' : 'Inactive' }}</span>
+								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>

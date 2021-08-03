@@ -18,9 +18,14 @@ import VueButton from '../../../../../components/vue-button.vue';
 import VCalendar from 'v-calendar';
 import ZoomIcon from '../../../../../icons/zoom';
 import ShortcutIcon from '../../../../../icons/shortcut';
+import ChevronLeftIcon from '../../../../../icons/chevron-left';
+import VueDropdown from '../../../../../components/vue-dropdown/vue-dropdown.vue';
+import CogIcon from '../../../../../icons/cog';
 
 export default {
 	components: {
+		VueDropdown,
+		ChevronLeftIcon,
 		ArrowLeftIcon,
 		ClockIcon,
 		CheckmarkCircleIcon,
@@ -33,14 +38,16 @@ export default {
 		VueButton,
 		ZoomIcon,
 		ShortcutIcon,
-		VCalendar
+		VCalendar,
+		CogIcon
 	},
 
 	data: () => ({
+		actions: ['Edit', 'Delete'],
 		member: null,
 		convertTime: convertTime,
 		clonedMember: null,
-		filterServices: [],
+		filterServices: null,
 		selectedBooking: null,
 		dayjs: dayjs,
 		timeslots: [],
@@ -55,7 +62,11 @@ export default {
 		}),
 
 		servicesList() {
-			let servicesList = [];
+			let servicesList = [
+				{
+					text: 'All'
+				}
+			];
 			this.member.assigned_services.forEach(service => {
 				servicesList.push({
 					text: service.name,
@@ -98,6 +109,21 @@ export default {
 			updateBooking: 'bookings/update',
 			deleteBooking: 'bookings/delete'
 		}),
+
+		memberAction(action, member) {
+			this.selectedMember = member;
+			let clonedMember = JSON.parse(JSON.stringify(member));
+			clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
+			switch (action) {
+				case 'Edit':
+					this.clonedMember = clonedMember;
+					this.$refs.editModal.show();
+					break;
+				case 'Delete':
+					this.$refs.deleteModal.show();
+					break;
+			}
+		},
 
 		confirmDeleteBooking(booking) {
 			this.deleteBooking(booking);
@@ -186,9 +212,12 @@ export default {
 			this.timeslots = response.data;
 		},
 
-		async filterByServices(services) {
-			let serviceIds = services.map(x => x.id);
-			let response = await window.axios.get(`/members/${this.member.id}?page=${this.member.bookings.current_page}&services=${serviceIds}`);
+		async filterByServices(service) {
+			let serviceQuery = '';
+			if (service) {
+				serviceQuery = `&services=${service.id}`;
+			}
+			let response = await window.axios.get(`/members/${this.member.id}?page=${this.member.bookings.current_page}${serviceQuery}`);
 			this.member.bookings = response.data.bookings;
 		},
 
@@ -207,9 +236,12 @@ export default {
 		},
 
 		async update() {
+			this.$refs['editModal'].hide();
 			let member = await this.updateMember(this.clonedMember);
 			this.member = member;
-			this.$refs['editModal'].hide();
+			let clonedMember = JSON.parse(JSON.stringify(member));
+			clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
+			this.clonedMember = clonedMember;
 		},
 
 		formatDate(date) {

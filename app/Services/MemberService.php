@@ -58,9 +58,7 @@ class MemberService
             }
         }
 
-        $bookings = Booking::with('bookingNote')->where(function ($query) {
-            $query->whereHas('user');
-        })->with('service.assignedServices', 'service.parentService.assignedServices', 'user')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
+        $bookings = Booking::with('service.assignedServices', 'service.parentService.assignedServices', 'bookingUsers')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
         $member->bookings = $bookings;
 
         return $member;
@@ -159,8 +157,11 @@ class MemberService
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
         ]);
+        $serviceIds = $member->assignedServices()->pluck('id')->toArray();
+        $bookings = Booking::with('service.assignedServices', 'service.parentService.assignedServices', 'bookingUsers')->whereIn('service_id', $serviceIds)->orderBy('date', 'DESC')->paginate(10);
+        $member->bookings = $bookings;
 
-        return response()->json($member->load('memberUser', 'assignedServices.bookings.user'));
+        return $member->load('memberUser', 'assignedServices');
     }
 
     public function destroy(Member $member)

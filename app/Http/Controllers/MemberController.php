@@ -30,7 +30,7 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
         $memberService = new MemberService();
-        return response($memberService->update($request, $member));
+        return response()->json($memberService->update($request, $member));
     }
 
     public function destroy(Member $member)

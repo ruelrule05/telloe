@@ -1,29 +1,25 @@
 <template>
-	<div v-if="member" class="w-100 h-100 overflow-hidden">
-		<div class="overflow-auto h-100">
-			<div class="p-4 d-flex align-items-center">
-				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/team/members')">
-					<arrow-left-icon width="30" height="30"></arrow-left-icon>
-				</button>
-
-				<div class="dropdown ml-auto">
-					<button :data-intro="$root.intros.members_show.steps[0]" data-step="1" class="btn p-2 btn-white badge-pill shadow-sm" data-toggle="dropdown" data-offset="-130, 10">
-						<more-icon width="20" height="20" transform="scale(0.75)"></more-icon>
-					</button>
-					<div class="dropdown-menu">
-						<span class="dropdown-item cursor-pointer" @click="$refs['editModal'].show()">
-							Edit
-						</span>
-						<span class="dropdown-item cursor-pointer" @click="$refs['deleteModal'].show()">
-							Delete
-						</span>
-					</div>
-				</div>
+	<div v-if="member" class="min-h-screen flex flex-col">
+		<div class="border-bottom flex items-center justify-between lg:static fixed w-full bg-white md:z-0 z-10">
+			<div class="content-header flex items-center">
+				<router-link to="/dashboard/team/members" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
+				MEMBER DETAILS
 			</div>
+			<div class="pr-6">
+				<VueDropdown :options="actions" @click="memberAction($event, member)" class="-mr-2 ml-1">
+					<template #button>
+						<button class="bg-primary rounded-full p-3 text-white">
+							<span><MoreIcon width="20" height="20" class="fill-current"/></span>
+						</button>
+					</template>
+				</VueDropdown>
+			</div>
+		</div>
 
-			<div class="text-center mt-n5 mb-3">
+		<div class="overflow-auto flex-grow">
+			<div class="text-center pt-12">
 				<div
-					class="user-profile-image d-inline-block"
+					class="profile-image profile-image-xl inline-block relative"
 					:style="{
 						backgroundImage: 'url(' + member.member_user.profile_image + ')'
 					}"
@@ -32,52 +28,52 @@
 						{{ member.member_user.initials }}
 					</span>
 
-					<i v-if="$root.isOnline(member.member_user_id)" class="online-status bg-success">&nbsp;</i>
+					<i v-if="$root.isOnline(member.member_user_id)" class="online-status">&nbsp;</i>
 				</div>
-				<h1 class="h3 font-heading mt-2 mb-0">{{ member.full_name }}</h1>
+				<h1 class="font-semibold text-xl">{{ member.full_name }}</h1>
 				<div class="text-muted mb-1">{{ member.email }}</div>
-				<div class="flex-grow-1">
-					<div class="badge badge-icon d-inline-flex align-items-center" :class="[member.is_pending ? 'bg-warning-light text-warning' : 'bg-primary-light text-primary']">
-						<clock-icon v-if="member.is_pending" height="12" width="12"></clock-icon>
-						<checkmark-circle-icon v-else height="12" width="12"></checkmark-circle-icon>
-						&nbsp;{{ member.is_pending ? 'Pending' : 'Accepted' }}
-					</div>
-				</div>
+				<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[member.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ member.is_pending ? 'Pending' : 'Accepted' }}</span>
 			</div>
 
 			<!-- Bookings -->
-			<div class="d-flex align-items-center px-4">
-				<h5 class="mt-4 font-heading mb-3">Bookings</h5>
+			<div class="flex items-center px-4">
+				<h5 class="mt-4 mb-3">Bookings</h5>
 				<div class="ml-auto d-flex align-items-center">
-					<div class="d-inline-flex align-items-center mx-2">
-						<vue-select :options="servicesList" multiple button_class="border-0 bg-white shadow-sm" v-model="filterServices" label="Services" placeholder="All" @input="filterByServices"></vue-select>
+					<div class="inline-flex items-center mx-2">
+						<vue-select :options="servicesList" multiple button_class="border-0 bg-white shadow-sm" dropPosition="w-full" v-model="filterServices" label="Services" placeholder="All" @input="filterByServices"></vue-select>
 					</div>
-					<paginate @change="getData" :data="member.bookings"></paginate>
 				</div>
 			</div>
 
 			<div class="px-4 mb-4" v-if="member.bookings.data.length > 0">
-				<table class="table table-borderless mb-0">
+				<table class="table">
 					<thead>
 						<tr>
-							<th class="pl-0">User</th>
+							<th class="pl-0">Guests</th>
 							<th>Service</th>
 							<th>Date</th>
 							<th>Time</th>
+							<th>Timezone</th>
 						</tr>
 					</thead>
 					<tbody>
 						<template v-for="booking in member.bookings.data">
 							<tr :key="booking.id">
-								<td class="align-middle">{{ (booking.user || booking.contact.contact_user).full_name }}</td>
-								<td class="align-middle">{{ booking.service.name }}</td>
+								<td class="align-middle">
+									<span class="badge mr-1" v-for="bookingUser in booking.booking_users" :key="bookingUser.id">{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}</span>
+								</td>
+								<td class="align-middle">{{ booking.name }}</td>
 								<td class="align-middle">
 									{{ formatDate(booking.date) }}
 								</td>
 								<td class="align-middle">
-									{{ convertTime(booking.start, 'hh:MMA') }}
+									{{ convertTime(booking.start, 'hh:MMA') }} -
+									{{ convertTime(booking.end, 'hh:MMA') }}
 								</td>
 								<td class="align-middle">
+									{{ booking.timezone }}
+								</td>
+								<!-- <td class="align-middle">
 									<div class="flex-grow-1 text-right">
 										<div class="dropleft">
 											<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
@@ -90,14 +86,15 @@
 											</div>
 										</div>
 									</div>
-								</td>
+								</td> -->
 							</tr>
 						</template>
 					</tbody>
 				</table>
+				<paginate @change="getData" :data="member.bookings" class="mt-3"></paginate>
 			</div>
 			<div v-else class="px-4 mb-4">
-				<div class="rounded bg-white shadow-sm text-center py-3 text-muted">
+				<div class="text-center pt-16 text-muted">
 					No bookings found.
 				</div>
 			</div>
@@ -221,52 +218,50 @@
 			</template>
 		</modal>
 
-		<modal ref="editModal" :close-button="false">
-			<h5 class="font-heading mb-3">Edit Member</h5>
+		<Modal ref="editModal" size="sm">
+			<h4 class="font-serif uppercase font-semibold mb-4">EDIT MEMBER</h4>
 			<vue-form-validate v-if="clonedMember" @submit="update">
-				<div class="form-group">
+				<div class="mb-4">
 					<label class="form-label">Email</label>
 					<input :disabled="!clonedMember.is_pending" type="email" class="form-control" v-model="clonedMember.email" data-required />
 				</div>
-				<div class="form-row form-group">
-					<div class="col">
+				<div class="grid grid-cols-2 gap-x-4 mb-4">
+					<div>
 						<label class="form-label">First Name (Optional)</label>
 						<input :disabled="!clonedMember.is_pending" type="text" class="form-control" v-model="clonedMember.first_name" />
 					</div>
-					<div class="col">
+					<div>
 						<label class="form-label">Last Name (Optional)</label>
 						<input :disabled="!clonedMember.is_pending" type="text" class="form-control" v-model="clonedMember.last_name" />
 					</div>
 				</div>
-				<div class="form-group">
-					<strong class="d-block mb-2 font-weight-bold">Assign Services</strong>
+				<div class="mb-4">
+					<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Assign Services</h2>
 					<template v-for="service in services">
-						<div :key="service.id" class="d-flex align-items-center mb-2 rounded p-3 bg-light">
-							<div>
-								<h6 class="font-heading mb-0">{{ service.name }}</h6>
-								<small class="text-gray d-block">{{ service.duration }} minutes</small>
-							</div>
-							<div class="ml-auto">
-								<toggle-switch active-class="bg-primary" :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
+						<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
+							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
+							<div class="mt-2 flex items-center">
+								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Active' : 'Inactive' }}</span>
+								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>
 				</div>
 
-				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex mt-6 justify-between">
+					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.editModal.hide()">
+						<span>Cancel</span>
 					</button>
-					<button class="ml-auto btn btn-primary" type="submit">
-						Save
+					<button class="btn btn-md btn-primary" type="submit">
+						<span>Save</span>
 					</button>
 				</div>
 			</vue-form-validate>
-		</modal>
+		</Modal>
 
-		<modal ref="deleteModal" :close-button="false">
+		<Modal ref="deleteModal">
 			<template v-if="member">
-				<h5 class="font-heading text-center">Delete Member</h5>
+				<h4 class="font-serif uppercase font-semibold mb-4 text-center">DELETE MEMBER</h4>
 				<p class="text-center mt-3">
 					Are you sure to delete member
 					<strong>{{ member.full_name.trim() || member.email }}</strong>
@@ -274,23 +269,24 @@
 					<br />
 					<span class="text-danger">This action cannot be undone</span>
 				</p>
-				<div class="d-flex justify-content-end">
-					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex justify-between mt-4">
+					<button class="btn btn-outline-primary btn-md" @click="$refs.deleteModal.hide()">
+						<span>Cancel</span>
 					</button>
 					<button
-						class="btn btn-danger ml-auto"
+						class="btn btn-red btn-md"
 						type="button"
 						@click="
 							deleteMember(member).then(() => $router.push('/dashboard/team/members'));
-							$refs['deleteModal'].hide();
+							$refs.deleteModal.hide();
+							member = null;
 						"
 					>
-						Delete
+						<span>Delete</span>
 					</button>
 				</div>
 			</template>
-		</modal>
+		</Modal>
 	</div>
 </template>
 
