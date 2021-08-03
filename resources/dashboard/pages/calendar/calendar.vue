@@ -66,6 +66,7 @@
 				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
 			<div class="w-1/2 py-6 px-3 border-left calendar-container">
+				<h4 class="font-serif uppercase font-semibold pl-5 mb-2">{{ dayjs(selectedDate).format('MMMM YYYY') }}</h4>
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 					<div slot="day-content" slot-scope="data">
 						<div class="day-content text-center">
