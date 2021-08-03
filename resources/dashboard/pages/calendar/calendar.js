@@ -19,6 +19,7 @@ export default {
 	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon, 'v-date-picker': DatePicker },
 
 	data: () => ({
+		overview: true,
 		loading: true,
 		dayjs: dayjs,
 		selectedDate: null,
@@ -121,7 +122,7 @@ export default {
 
 	created() {
 		this.timezone = timezone.name();
-		//this.selectedDate = dayjs().toDate();
+		this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookingsData();
 		this.getContactBookings();
 		this.getGoogleCalendars().then(response => {
@@ -226,6 +227,7 @@ export default {
 		},
 
 		dayClick(date) {
+			this.overview = false;
 			this.selectedDate = date;
 		},
 
@@ -251,6 +253,7 @@ export default {
 		},
 
 		eventClick(event) {
+			console.log('ddwa');
 			if ((event.booking || {}).type != 'blocked') {
 				this.selectedBooking = event.booking;
 				if (this.view == 'day') {
@@ -289,6 +292,7 @@ export default {
 		},
 
 		upcomingEventClick(booking, type) {
+			this.overview = false;
 			booking = JSON.parse(JSON.stringify(booking));
 			if (type == 'booking') {
 				booking.date = dayjs(booking.date).toDate();

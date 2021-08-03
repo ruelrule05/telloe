@@ -8,7 +8,7 @@
 					type="button"
 					class="btn btn-md btn-outline-primary"
 					@click="
-						selectedDate = null;
+						overview = true;
 						$refs.bookingComponent.close();
 					"
 				>
@@ -16,7 +16,7 @@
 				</button>
 			</div>
 			<div class="ml-auto pr-6 flex items-center">
-				<div class="ml-2" v-if="selectedDate">
+				<div class="ml-2" v-if="!overview">
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
 					</button>
@@ -61,7 +61,7 @@
 			<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
 		</div>
 
-		<div v-if="!selectedDate" class="flex">
+		<div v-if="overview" class="flex">
 			<div class="w-1/2">
 				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
