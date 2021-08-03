@@ -36,58 +36,63 @@
 			</div>
 
 			<!-- Bookings -->
-			<template v-if="member.bookings.data.length > 0">
-				<div class="flex items-center px-4">
-					<h5 class="mt-4 mb-3">Bookings</h5>
-					<div class="ml-auto d-flex align-items-center">
-						<div class="inline-flex items-center mx-2">
-							<vue-select :options="servicesList" multiple button_class="border-0 bg-white shadow-sm" dropPosition="w-full" v-model="filterServices" label="Services" placeholder="All" @input="filterByServices"></vue-select>
-						</div>
+			<div class="flex items-center px-4">
+				<h5 class="mt-4 mb-3">Bookings</h5>
+				<div class="ml-auto d-flex align-items-center">
+					<div class="inline-flex items-center mx-2">
+						<vue-select :options="servicesList" multiple button_class="border-0 bg-white shadow-sm" dropPosition="w-full" v-model="filterServices" label="Services" placeholder="All" @input="filterByServices"></vue-select>
 					</div>
 				</div>
+			</div>
 
-				<div class="px-4 mb-4">
-					<table class="table table-borderless mb-0">
-						<thead>
-							<tr>
-								<th class="pl-0">User</th>
-								<th>Service</th>
-								<th>Date</th>
-								<th>Time</th>
-							</tr>
-						</thead>
-						<tbody>
-							<template v-for="booking in member.bookings.data">
-								<tr :key="booking.id">
-									<td class="align-middle">{{ (booking.user || booking.contact.contact_user).full_name }}</td>
-									<td class="align-middle">{{ booking.service.name }}</td>
-									<td class="align-middle">
-										{{ formatDate(booking.date) }}
-									</td>
-									<td class="align-middle">
-										{{ convertTime(booking.start, 'hh:MMA') }}
-									</td>
-									<td class="align-middle">
-										<div class="flex-grow-1 text-right">
-											<div class="dropleft">
-												<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
-													<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
-												</button>
-												<div class="dropdown-menu dropdown-menu-right">
-													<span class="dropdown-item cursor-pointer" @click="editBooking(booking)">
-														Edit
-													</span>
-												</div>
+			<div class="px-4 mb-4" v-if="member.bookings.data.length > 0">
+				<table class="table">
+					<thead>
+						<tr>
+							<th class="pl-0">Guests</th>
+							<th>Service</th>
+							<th>Date</th>
+							<th>Time</th>
+							<th>Timezone</th>
+						</tr>
+					</thead>
+					<tbody>
+						<template v-for="booking in member.bookings.data">
+							<tr :key="booking.id">
+								<td class="align-middle">
+									<span class="badge mr-1" v-for="bookingUser in booking.booking_users" :key="bookingUser.id">{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}</span>
+								</td>
+								<td class="align-middle">{{ booking.name }}</td>
+								<td class="align-middle">
+									{{ formatDate(booking.date) }}
+								</td>
+								<td class="align-middle">
+									{{ convertTime(booking.start, 'hh:MMA') }} -
+									{{ convertTime(booking.end, 'hh:MMA') }}
+								</td>
+								<td class="align-middle">
+									{{ booking.timezone }}
+								</td>
+								<!-- <td class="align-middle">
+									<div class="flex-grow-1 text-right">
+										<div class="dropleft">
+											<button class="btn btn-white p-1 line-height-0" data-toggle="dropdown">
+												<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray-500"></more-icon>
+											</button>
+											<div class="dropdown-menu dropdown-menu-right">
+												<span class="dropdown-item cursor-pointer" @click="editBooking(booking)">
+													Edit
+												</span>
 											</div>
 										</div>
-									</td>
-								</tr>
-							</template>
-						</tbody>
-					</table>
-					<paginate @change="getData" :data="member.bookings"></paginate>
-				</div>
-			</template>
+									</div>
+								</td> -->
+							</tr>
+						</template>
+					</tbody>
+				</table>
+				<paginate @change="getData" :data="member.bookings" class="mt-3"></paginate>
+			</div>
 			<div v-else class="px-4 mb-4">
 				<div class="text-center pt-16 text-muted">
 					No bookings found.
