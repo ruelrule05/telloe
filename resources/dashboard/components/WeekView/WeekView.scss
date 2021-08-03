@@ -29,6 +29,9 @@
 			@apply text-white #{!important};
 		}
 	}
+	@media (max-width: 768px) {
+		@apply h-full flex items-center justify-center flex-col whitespace-pre;
+	}
 }
 .day-interval {
 	@apply w-full h-full transition-colors hover:bg-gray-100;
@@ -49,6 +52,26 @@
 	&.open {
 		.block-dropdown-menu {
 			@apply z-50 scale-100 opacity-100;
+		}
+	}
+}
+.calendar-week {
+	@media (max-width: 768px) {
+		width: 100%;
+		height: 1218px;
+		overflow-x: scroll;
+
+		.v-calendar {
+			width: 763px;
+			height: 100%;
+		}
+		::v-deep {
+			.v-calendar-daily__scroll-area {
+				overflow-y: inherit;
+			}
+			.v-event-timed-container {
+				margin-right: 0;
+			}
 		}
 	}
 }

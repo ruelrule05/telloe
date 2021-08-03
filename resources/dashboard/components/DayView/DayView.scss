@@ -37,3 +37,15 @@
 		}
 	}
 }
+.calendar-daily {
+	@media (max-width: 768px) {
+		::v-deep {
+			.v-calendar-daily__scroll-area {
+				overflow-y: inherit;
+			}
+			.v-event-timed-container {
+				overflow: hidden;
+			}
+		}
+	}
+}

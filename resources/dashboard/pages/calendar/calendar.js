@@ -5,6 +5,8 @@ import WeekView from '../../components/WeekView/WeekView.vue';
 import Booking from '../../components/Booking/Booking.vue';
 import ArrowLeftIcon from '../../../icons/arrow-left.vue';
 import ArrowRightIcon from '../../../icons/arrow-right.vue';
+import CalendarIcon from '../../../icons/calendar.vue';
+import CalendarDayIcon from '../../../icons/calendar-day.vue';
 import VCalendar from 'v-calendar/lib/components/calendar.umd';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import axios from 'axios';
@@ -15,8 +17,9 @@ const timezone = jstz.determine();
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 import CloseIcon from '../../../icons/close.vue';
 import { DatePicker } from 'v-calendar';
+
 export default {
-	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon, 'v-date-picker': DatePicker },
+	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon, 'v-date-picker': DatePicker, CalendarIcon, CalendarDayIcon },
 
 	data: () => ({
 		overview: true,
@@ -34,7 +37,9 @@ export default {
 		cookieItem: 'telloe_calendar_banner',
 		masks: {
 			input: 'MMMM D, YYYY'
-		}
+		},
+		isMobile: false,
+		showCalendarMobile: false
 	}),
 
 	computed: {
@@ -94,7 +99,7 @@ export default {
 		},
 
 		weekToggleText() {
-			return (this.view == 'week' ? 'DAY' : 'WEEK') + ' VIEW';
+			return (this.view == 'week' ? 'DAY' : 'WEEK') + (!this.isMobile ? ' VIEW' : '');
 		},
 
 		availableTimezones() {

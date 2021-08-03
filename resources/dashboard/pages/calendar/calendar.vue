@@ -1,26 +1,27 @@
 <template>
 	<div class="min-h-full">
-		<div class="flex items-center border-bottom">
-			<div class="content-header">
-				<div v-if="!selectedDate">CALENDAR</div>
+		<div class="flex items-center border-bottom lg:static fixed w-full bg-white z-10" :class="{'flex-col lg:flex-row': !overview}">
+			<div class="content-header" :class="{'calendar-header': !overview}">
+				<div v-if="overview" class="ml-7 lg:ml-0 absolute md:static top-7">CALENDAR</div>
 				<button
 					v-else
 					type="button"
-					class="btn btn-md btn-outline-primary"
+					class="btn btn-md btn-outline-primary absolute lg:static top-6 left-12"
 					@click="
 						overview = true;
 						$refs.bookingComponent.close();
+						showCalendarMobile = false;
 					"
 				>
 					<span>OVERVIEW</span>
 				</button>
 			</div>
-			<div class="ml-auto pr-6 flex items-center">
-				<div class="ml-2" v-if="!overview">
+			<div class="ml-auto px-5 md:pr-6 flex items-center">
+				<div class="ml-0 md:ml-2 flex calendar-buttons__header absolute lg:static bottom-2 right-5" v-if="!overview">
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
 					</button>
-					<div class="button-date-nav">
+					<div class="button-date-nav ml-2 md:ml-0">
 						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
 
 						<div class="px-2">
@@ -36,8 +37,14 @@
 						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 					</div>
 				</div>
+				<div v-else>
+					<div class="border p-3 border-primary rounded-full block md:hidden" :class="{'bg-primary': showCalendarMobile}" @click="showCalendarMobile = !showCalendarMobile">
+						<CalendarIcon class="fill-current text-primary" :class="{'text-white': showCalendarMobile}"></CalendarIcon>
+					</div>
+				</div>
 			</div>
 		</div>
+		<div class="lg:hidden block" :class="overview ? 'h-20' : 'h-28 md:h-20'" />
 
 		<div v-if="banner" class="p-8 border-bottom">
 			<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
@@ -56,17 +63,16 @@
 			</div>
 		</div>
 
-		<div class="p-3 flex items-center justify-between border-bottom">
-			<VueSelect label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
-			<VueSelect label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
+		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
+			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
+			<VueSelect class="w-full md:w-auto mt-1 md:mt-0" label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id"></VueSelect>
 		</div>
 
-		<div v-if="overview" class="flex">
-			<div class="w-1/2">
+		<div v-if="overview" class="flex calendar-display">
+			<div class="w-full lg:w-1/2" :class=" !showCalendarMobile ? 'block' : 'hidden' ">
 				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
-			<div class="w-1/2 py-6 px-3 border-left calendar-container">
-				<h4 class="font-serif uppercase font-semibold pl-5 mb-2">{{ dayjs(selectedDate).format('MMMM YYYY') }}</h4>
+			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{'open': showCalendarMobile}">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 					<div slot="day-content" slot-scope="data">
 						<div class="day-content text-center">
@@ -84,11 +90,11 @@
 		</div>
 
 		<div v-else>
-			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone"></DayView>
-			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone"></WeekView>
+			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone" class="calendar-daily"></DayView>
+			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone" class="calendar-week"></WeekView>
 		</div>
 
-		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent"></Booking>
+		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent" class="calendar-booking"></Booking>
 	</div>
 </template>
 
