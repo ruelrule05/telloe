@@ -53,6 +53,22 @@ export default {
 		end: function() {
 			this.setTimeRanges();
 		}
+		// time_start: function(value) {
+		// 	let start = value;
+		// 	let parts = start.split(':');
+		// 	let period = start.slice(-2).toLowerCase();
+		// 	if (period == 'pm' && parts[0] < 12) {
+		// 		parts[0] = parseInt(parts[0]) + 12;
+		// 	}
+		// 	start = parseInt(parts[0] * 60) + parseInt(parts[1]);
+		// 	if (start <= 1380) {
+		// 		start += 60;
+		// 	}
+		// 	let hh = Math.floor(start / 60);
+		// 	let mm = start % 60;
+		// 	let timeslot = convertTime(('' + (hh == 12 ? 12 : hh)).slice(-2) + ':' + ('0' + mm).slice(-2)).toUpperCase();
+		// 	this.time_end = timeslot;
+		// }
 	},
 
 	computed: {
@@ -166,6 +182,31 @@ export default {
 	},
 
 	methods: {
+		timeslots(start) {
+			if (start) {
+				let parts = start.split(':');
+				let period = start.slice(-2).toLowerCase();
+				if (period == 'pm' && parts[0] < 12) {
+					parts[0] = parseInt(parts[0]) + 12;
+				}
+				start = parseInt(parts[0] * 60) + parseInt(parts[1]);
+			} else {
+				start = 0;
+			}
+			let timeslots = [];
+			for (var i = 0; start < 24 * 60; i++) {
+				let hh = Math.floor(start / 60);
+				let mm = start % 60;
+				let timeslot = convertTime(('' + (hh == 12 ? 12 : hh)).slice(-2) + ':' + ('0' + mm).slice(-2)).toUpperCase();
+				timeslots[i] = {
+					text: timeslot,
+					value: timeslot
+				};
+				start = start + 15;
+			}
+			return timeslots;
+		},
+
 		setTimeRanges() {
 			if (this.start) this.time_start = convertTime(this.start, 'hh:mm A');
 			if (this.end) this.time_end = convertTime(this.end, 'hh:mm A');

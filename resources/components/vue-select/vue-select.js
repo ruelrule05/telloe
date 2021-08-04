@@ -119,6 +119,13 @@ export default {
 					this.$nextTick(() => {
 						this.$refs['input-searchable'].focus();
 					});
+				} else {
+					let activeItem = this.$refs.selectMenu.querySelector('.select-item.active');
+					if (activeItem) {
+						this.$nextTick(() => {
+							this.$refs.selectMenu.scrollTop = activeItem.offsetTop - 76;
+						});
+					}
 				}
 			} else {
 				setTimeout(() => {
