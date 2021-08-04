@@ -2,7 +2,7 @@
 	<div class="relative">
 		<button type="button" class="select" :id="`select-${_uid}`" :class="{ show: show }" :disabled="disabled" @click="show = !show" v-click-outside="onBlur">
 			<span v-if="label" class="text-sm text-muted">{{ label }}:&nbsp;</span>
-			<span class="mr-2 text-sm whitespace-nowrap truncate" :class="{ 'text-gray-400': !value }">{{ text_value }}</span>
+			<span class="mr-2 text-sm whitespace-nowrap truncate" :class="{ 'text-gray-400': !value }">{{ text_value || '&nbsp;' }}</span>
 			<div class="ml-auto line-height-0 text-gray-400">
 				<chevron-down-icon v-if="!noCaret && (!clearable || (clearable && !value))" class="ml-2 fill-current" width="8" height="8" transform="scale(3)"></chevron-down-icon>
 				<button v-if="clearable && value" @click.stop="clear" type="button" class="bg-gray-100 rounded-full p-1 -mr-1 hover:bg-gray-200 transition-colors absolute top-1/2 transform -translate-y-1/2 right-3 h-5 w-5"><close-icon class="fill-current absolute-center"></close-icon></button>
