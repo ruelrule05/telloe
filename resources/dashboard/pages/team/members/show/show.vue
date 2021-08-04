@@ -15,6 +15,7 @@
 				</VueDropdown>
 			</div>
 		</div>
+		<div class="h-20 lg:hidden block" />
 
 		<div class="overflow-auto flex-grow">
 			<div class="text-center pt-12">

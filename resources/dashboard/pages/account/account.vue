@@ -238,16 +238,16 @@
 
 				<div v-else-if="activeMenu == 'Payout'" class="p-8 payout-content">
 					<div v-if="banner && $root.auth.stripe_account" class="mb-6">
-						<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
-							<div class="font-serif w-1/4 font-semibold uppercase">
+						<div class="bg-primary-ultralight justify-between rounded-xl flex p-6 flex-col md:flex-row relative">
+							<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 								SET UP YOUR BANKING DETAILS
 							</div>
-							<div class="w-7/12">
+							<div class="w-full md:w-7/12 ml-0 md:ml-20">
 								<p class="text-muxted mb-4">
 									Use subscriptions to make groups of events where contacts can subscribe to recurring bookings for a recurring cost.
 								</p>
 							</div>
-							<div class="font-serif">
+							<div class="font-serif absolute top-5 right-6">
 								<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 							</div>
 						</div>
