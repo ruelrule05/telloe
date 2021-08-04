@@ -12,3 +12,13 @@
 		}
 	}
 }
+
+.invoices-table {
+	@media (max-width: 768px) {
+		@apply w-full overflow-x-scroll overflow-y-hidden mb-3;
+
+		.table {
+			width: 1000px;
+		}
+	}
+}

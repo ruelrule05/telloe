@@ -1,27 +1,31 @@
 <template>
 	<div class="min-h-screen flex flex-col relative">
 		<div v-if="$root.auth.stripe_account">
-			<div class="content-header border-bottom flex items-center justify-between">
-				<div>INVOICES</div>
+			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0">
+					INVOICES
+				</div>
 
 				<button
-					class="btn btn-primary btn-md"
+					class="btn btn-primary btn-md flex items-center"
 					type="button"
 					@click="
 						resetInvoiceForm();
 						$refs.createInvoiceModal.show();
 					"
 				>
-					<span>New Invoice</span>
+					<span>New</span>
+					<span class="ml-1 hidden md:block">Invoice</span>
 				</button>
 			</div>
+			<div class="h-20 lg:hidden block" />
 
 			<div v-if="banner && !$root.auth.stripe_account" class="p-8 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
-					<div class="font-serif w-1/4 font-semibold uppercase">
+				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						CREATE INVOICES FOR CONTACTS
 					</div>
-					<div class="w-7/12">
+					<div class="w-full md:w-7/12 ml-0 md:ml-20">
 						<p class="text-muxted mb-4">
 							Use invoices to bill your contacts once they have booked an event.
 						</p>
@@ -29,54 +33,55 @@
 							<span>SETUP YOUR PAYMENT INFORMATION</span>
 						</button>
 					</div>
-					<div class="font-serif">
+					<div class="font-serif absolute top-5 right-6">
 						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 					</div>
 				</div>
 			</div>
-
 			<div v-show="!loading">
 				<div v-if="invoices.length > 0" class="px-6 pb-6">
-					<table class="table my-6">
-						<thead>
-							<tr>
-								<th>Invoice No.</th>
-								<th>To</th>
-								<th>Date</th>
-								<th>Due Date</th>
-								<th>Paid</th>
-								<th>Due</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
-							<template v-for="invoice in paginated('invoices')">
-								<tr :key="invoice.InvoiceID">
-									<td class="align-middle text-primary font-bold">{{ invoice.number }}</td>
-									<td class="align-middle text-gray-600">{{ invoice.customer_name }}</td>
-									<td class="align-middle text-gray-600">{{ formatDate(invoice.created) }}</td>
-									<td class="align-middle text-gray-600">{{ formatDate(invoice.due_date) }}</td>
-									<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_paid / 100) }}</td>
-									<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_due / 100) }}</td>
-									<td class="align-middle">
-										<div v-if="invoice.statusLoading" class="spinner spinner-sm"></div>
-										<span v-else class="badge capitalize">{{ invoice.status }}</span>
-									</td>
-									<td class="text-right align-middle">
-										<div v-if="stripeInvoiceStatuses(invoice).length > 0" class="text-left inline-block">
-											<VueDropdown :options="stripeInvoiceStatuses(invoice)" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
-												<template #button>
-													<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-														<CogIcon class="fill-current text-gray-400"></CogIcon>
-													</div>
-												</template>
-											</VueDropdown>
-										</div>
-									</td>
+					<div class="invoices-table">
+						<table class="table my-6">
+							<thead>
+								<tr>
+									<th>Invoice No.</th>
+									<th>To</th>
+									<th>Date</th>
+									<th>Due Date</th>
+									<th>Paid</th>
+									<th>Due</th>
+									<th>Status</th>
 								</tr>
-							</template>
-						</paginate>
-					</table>
+							</thead>
+							<paginate tag="tbody" name="invoices" :list="invoices" :per="15" ref="paginate">
+								<template v-for="invoice in paginated('invoices')">
+									<tr :key="invoice.InvoiceID">
+										<td class="align-middle text-primary font-bold">{{ invoice.number }}</td>
+										<td class="align-middle text-gray-600">{{ invoice.customer_name }}</td>
+										<td class="align-middle text-gray-600">{{ formatDate(invoice.created) }}</td>
+										<td class="align-middle text-gray-600">{{ formatDate(invoice.due_date) }}</td>
+										<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_paid / 100) }}</td>
+										<td class="align-middle">{{ getSymbolFromCurrency(invoice.currency) }}{{ format({ padRight: 2 })(invoice.amount_due / 100) }}</td>
+										<td class="align-middle">
+											<div v-if="invoice.statusLoading" class="spinner spinner-sm"></div>
+											<span v-else class="badge capitalize">{{ invoice.status }}</span>
+										</td>
+										<td class="text-right align-middle">
+											<div v-if="stripeInvoiceStatuses(invoice).length > 0" class="text-left inline-block">
+												<VueDropdown :options="stripeInvoiceStatuses(invoice)" @click="invoiceAction($event, invoice)" class="ml-1" v-show="!invoice.statusLoading">
+													<template #button>
+														<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+															<CogIcon class="fill-current text-gray-400"></CogIcon>
+														</div>
+													</template>
+												</VueDropdown>
+											</div>
+										</td>
+									</tr>
+								</template>
+							</paginate>
+						</table>
+					</div>
 
 					<paginate-links
 						:step-links="{
