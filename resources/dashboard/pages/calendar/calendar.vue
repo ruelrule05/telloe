@@ -1,7 +1,7 @@
 <template>
 	<div class="min-h-full">
-		<div class="flex items-center border-bottom lg:static fixed w-full bg-white z-10" :class="{'flex-col lg:flex-row': !overview}">
-			<div class="content-header" :class="{'calendar-header': !overview}">
+		<div class="flex items-center border-bottom lg:static fixed w-full bg-white z-10" :class="{ 'flex-col lg:flex-row': !overview }">
+			<div class="content-header" :class="{ 'calendar-header': !overview }">
 				<div v-if="overview" class="ml-7 lg:ml-0 absolute md:static top-7">CALENDAR</div>
 				<button
 					v-else
@@ -21,7 +21,7 @@
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
 					</button>
-					<div class="button-date-nav ml-2 md:ml-0">
+					<div class="button-date-nav ml-2">
 						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
 
 						<div class="px-2">
@@ -38,8 +38,8 @@
 					</div>
 				</div>
 				<div v-else>
-					<div class="border p-3 border-primary rounded-full block md:hidden" :class="{'bg-primary': showCalendarMobile}" @click="showCalendarMobile = !showCalendarMobile">
-						<CalendarIcon class="fill-current text-primary" :class="{'text-white': showCalendarMobile}"></CalendarIcon>
+					<div class="border p-3 border-primary rounded-full block md:hidden" :class="{ 'bg-primary': showCalendarMobile }" @click="showCalendarMobile = !showCalendarMobile">
+						<CalendarIcon class="fill-current text-primary" :class="{ 'text-white': showCalendarMobile }"></CalendarIcon>
 					</div>
 				</div>
 			</div>
@@ -69,10 +69,10 @@
 		</div>
 
 		<div v-if="overview" class="flex calendar-display">
-			<div class="w-full lg:w-1/2" :class=" !showCalendarMobile ? 'block' : 'hidden' ">
+			<div class="w-full lg:w-1/2" :class="!showCalendarMobile ? 'block' : 'hidden'">
 				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
-			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{'open': showCalendarMobile}">
+			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{ open: showCalendarMobile }">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 					<div slot="day-content" slot-scope="data">
 						<div class="day-content text-center">

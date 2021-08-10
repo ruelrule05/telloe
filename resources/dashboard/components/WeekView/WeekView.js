@@ -154,8 +154,8 @@ export default {
 				parsedBookings.push({
 					newEvent: true,
 					name: 'New Event',
-					start: `${this.newEvent.date} ${this.newEvent.start}`,
-					end: `${this.newEvent.date} ${this.newEvent.end}`,
+					start: this.newEvent.date + ' ' + timezoneTime.get(`${this.newEvent.date} ${this.newEvent.start}`, this.newEvent.timezone, this.timezone),
+					end: this.newEvent.date + ' ' + timezoneTime.get(`${this.newEvent.date} ${this.newEvent.end}`, this.newEvent.timezone, this.timezone),
 					color: 'bg-gray-200'
 				});
 			}

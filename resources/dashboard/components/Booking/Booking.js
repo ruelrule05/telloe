@@ -196,6 +196,9 @@ export default {
 		'clonedBooking.date': function() {
 			this.getTimeslots();
 		},
+		'clonedBooking.timezone': function() {
+			this.$emit('newBookingChange', this.clonedBooking);
+		},
 		service: function(value) {
 			if (value && this.clonedBooking) {
 				this.clonedBooking.service = this.service.id;

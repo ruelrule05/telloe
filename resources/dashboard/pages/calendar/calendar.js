@@ -284,14 +284,18 @@ export default {
 		},
 
 		newBookingChange(newBooking) {
-			if (this.view == 'day') {
-				this.$refs.dayView.newEvent.date = newBooking.date;
-				this.$refs.dayView.newEvent.start = newBooking.start;
-				this.$refs.dayView.newEvent.end = newBooking.end;
-			} else if (this.view == 'week') {
-				this.$refs.weekView.newEvent.date = newBooking.date;
-				this.$refs.weekView.newEvent.start = newBooking.start;
-				this.$refs.weekView.newEvent.end = newBooking.end;
+			if (newBooking) {
+				if (this.view == 'day' && this.$refs.dayView.newEvent) {
+					this.$refs.dayView.newEvent.date = newBooking.date;
+					this.$refs.dayView.newEvent.start = newBooking.start;
+					this.$refs.dayView.newEvent.end = newBooking.end;
+					this.$refs.dayView.newEvent.timezone = newBooking.timezone;
+				} else if (this.view == 'week' && this.$refs.weekView.newEvent) {
+					this.$refs.weekView.newEvent.date = newBooking.date;
+					this.$refs.weekView.newEvent.start = newBooking.start;
+					this.$refs.weekView.newEvent.end = newBooking.end;
+					this.$refs.weekView.newEvent.timezone = newBooking.timezone;
+				}
 			}
 		},
 
