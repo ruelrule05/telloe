@@ -1,16 +1,20 @@
 <template>
 	<div class="min-h-screen flex flex-col relative" v-if="ready">
-		<div class="content-header border-bottom flex items-center justify-between">
-			<div>
+		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+			<div class="ml-7 lg:ml-0">
 				ORGANIZATIONS
 			</div>
 			<div>
-				<button type="button" class="btn btn-md btn-primary" @click="$refs.addModal.show()"><span>Add Organization</span></button>
+				<button type="button" class="btn btn-md btn-primary flex items-center" @click="$refs.addModal.show()">
+					<span>Add</span>
+					<span class="ml-1 hidden md:block">Organization</span>
+				</button>
 			</div>
 		</div>
+		<div class="h-20 lg:hidden block" />
 
 		<div v-if="organizations.length == 0" class="flex-grow">
-			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-4/12">
+			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
 				<div class="text-primary">
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 				</div>
@@ -22,11 +26,11 @@
 		</div>
 
 		<div v-else class="flex-grow">
-			<div class="grid grid-cols-4 gap-8 p-8">
+			<div class="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-6 md:gap-8 p-6 md:p-8">
 				<div v-for="organization in organizations" class="rounded-2xl bg-secondary-light p-4 w-full" :key="organization.id">
 					<div class="flex justify-between">
 						<div class="overflow-hidden">
-							<h5 class="text-primary font-bold truncate">{{ organization.name }}</h5>
+							<router-link :to="`/dashboard/team/organizations/${organization.id}`" class="text-primary font-bold truncate">{{ organization.name }}</router-link>
 							<p class="text-muted text-sm font-bold truncate">{{ organization.slug }}</p>
 						</div>
 						<div>

@@ -135,11 +135,11 @@
 
 
 						<div class="sidebar-heading mt-7">TEAM</div>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/organizations">
-							Organizations
+						<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/organizations">
+							<div @click="toggleSidebar('/dashboard/team/organizations')" :class="{active: isActive}">Organizations</div>
 						</router-link>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/members">
-							Members
+						<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/members">
+							<div @click="toggleSidebar('/dashboard/team/members')" :class="{active: isActive}">Members</div>
 						</router-link>
 
 

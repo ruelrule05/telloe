@@ -1,16 +1,20 @@
 <template>
 	<div class="min-h-screen relative" v-if="ready">
-		<div class="content-header border-bottom flex items-center justify-between">
-			<div>
+		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+			<div class="ml-7 lg:ml-0">
 				MEMBERS
 			</div>
 			<div>
-				<button type="button" class="btn btn-md btn-primary" @click="$refs.addModal.show()"><span>Add Member</span></button>
+				<button type="button" class="btn btn-md btn-primary flex items-center" @click="$refs.addModal.show()">
+					<span>Add</span>
+					<span class="ml-1 hidden md:block lg:block">Member</span>
+				</button>
 			</div>
 		</div>
+		<div class="h-20 lg:hidden block" />
 
 		<div v-if="members.length == 0" class="flex-grow">
-			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-4/12">
+			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
 				<div class="text-primary">
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 				</div>
