@@ -85,7 +85,7 @@ class OrgranizationsService
         ]);
         $members_count = 0;
         foreach ($request->members as $member) {
-            $member = Member::where('id', $member['id'])->where('user_id', $authUser->id)->first();
+            $member = Member::where('id', $member['id'])->where('user_id', $authUser->id)->where('is_pending', false)->first();
             if ($member) {
                 OrganizationMember::create([
                     'organization_id' => $organization->id,
@@ -132,7 +132,7 @@ class OrgranizationsService
         $organization->update([
             'name' => $request->name,
             'slug' => $request->slug,
-            'show_user_services' => $request->show_user_services,
+            'show_user_services' => $request->show_user_services ?? false,
         ]);
 
         return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));

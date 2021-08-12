@@ -43,12 +43,15 @@
 							</div>
 						</div>
 						<div>
-							<router-link :to="`/dashboard/team/members/${member.id}`" class="font-bold text-primary">{{ member.member_user.full_name }}</router-link>
+							<div class="flex items-center">
+								<router-link :to="`/dashboard/team/members/${member.id}`" class="font-bold text-primary">{{ member.member_user.full_name }}</router-link>
+								<span v-if="member.is_pending" class="ml-2 px-3 py-1 text-xs font-bold rounded text-muted bg-yellow-200">Pending</span>
+							</div>
 							<p class="text-xs text-muted">{{ member.member_user.email }}</p>
 						</div>
 					</div>
 					<div class="flex items-center">
-						<VueDropdown :options="actions" @click="memberAction($event, member)" class="-mr-2 ml-1">
+						<VueDropdown :options="actions(member)" @click="memberAction($event, member)" class="-mr-2 ml-1">
 							<template #button>
 								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
 									<CogIcon class="fill-current text-gray-400"></CogIcon>
@@ -66,7 +69,7 @@
 			</div>
 		</div>
 
-		<Modal ref="editModal" size="sm">
+		<Modal ref="editModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT MEMBER</h4>
 			<vue-form-validate v-if="clonedMember" @submit="update">
 				<div class="mb-4">
@@ -107,7 +110,7 @@
 			</vue-form-validate>
 		</Modal>
 
-		<Modal ref="addModal" size="sm">
+		<Modal ref="addModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">ADD MEMBER</h4>
 			<vue-form-validate @submit="store">
 				<div class="mb-4">
@@ -158,18 +161,18 @@
 
 		<Modal ref="resendModal">
 			<template v-if="selectedMember">
-				<h5 class="font-heading text-center">Resend Invitation</h5>
+				<h4 class="font-serif uppercase font-semibold mb-4 text-center">RESEND INVITATION</h4>
 				<p class="text-center mt-3">
 					Are you sure to resend the invitation email to member
 					<strong>{{ selectedMember.full_name.trim() || selectedMember.email }}</strong>
 					?
 					<br />
 				</p>
-				<div class="d-flex justify-content-end">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex justify-between mt-7">
+					<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.resendModal.hide()">
+						<span>Cancel</span>
 					</button>
-					<vue-button button_class="btn btn-primary ml-auto" :loading="resendLoading" type="button" @click="resendEmail(selectedMember)">Resend Invitation</vue-button>
+					<vue-button button_class="btn btn-primary btn-md" :loading="resendLoading" type="button" @click="resendEmail(selectedMember)">Resend Invitation</vue-button>
 				</div>
 			</template>
 		</Modal>

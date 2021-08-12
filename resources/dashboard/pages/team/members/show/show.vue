@@ -6,7 +6,7 @@
 				MEMBER DETAILS
 			</div>
 			<div class="pr-6">
-				<VueDropdown :options="actions" @click="memberAction($event, member)" class="-mr-2 ml-1">
+				<VueDropdown :options="actions(member)" @click="memberAction($event, member)" class="-mr-2 ml-1">
 					<template #button>
 						<button class="bg-primary rounded-full p-3 text-white">
 							<span><MoreIcon width="20" height="20" class="fill-current"/></span>
@@ -219,7 +219,7 @@
 			</template>
 		</modal>
 
-		<Modal ref="editModal" size="sm">
+		<Modal ref="editModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT MEMBER</h4>
 			<vue-form-validate v-if="clonedMember" @submit="update">
 				<div class="mb-4">
@@ -287,6 +287,22 @@
 					</button>
 				</div>
 			</template>
+		</Modal>
+
+		<Modal ref="resendModal">
+			<h4 class="font-serif uppercase font-semibold mb-4 text-center">RESEND INVITATION</h4>
+			<p class="text-center mt-3">
+				Are you sure to resend the invitation email to member
+				<strong>{{ member.full_name.trim() || member.email }}</strong>
+				?
+				<br />
+			</p>
+			<div class="flex justify-between mt-7">
+				<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.resendModal.hide()">
+					<span>Cancel</span>
+				</button>
+				<vue-button button_class="btn btn-primary btn-md" :loading="resendLoading" type="button" @click="resendEmail(member)">Resend Invitation</vue-button>
+			</div>
 		</Modal>
 	</div>
 </template>

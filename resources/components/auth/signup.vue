@@ -227,6 +227,13 @@ export default {
 
 		signup() {
 			if (!this.loading) {
+				const queryString = window.location.search;
+				const urlParams = new URLSearchParams(queryString);
+
+				if (urlParams.get('member_invite_token')) {
+					this.signupForm.member_invite_token = urlParams.get('member_invite_token');
+				}
+
 				this.loading = true;
 				if (this.contact && this.contact.email) this.signupForm.email = this.contact.email;
 				else if (this.member && this.member.email) this.signupForm.email = this.member.email;

@@ -42,7 +42,6 @@ export default {
 	},
 
 	data: () => ({
-		actions: ['Edit', 'Delete'],
 		infoTab: '',
 		selectedMember: null,
 		manageMember: false,
@@ -124,6 +123,14 @@ export default {
 			getMemberFromInviteToken: 'members/get_member_from_invite_token'
 		}),
 
+		actions(member) {
+			let actions = ['Edit', 'Delete'];
+			if (member.is_pending) {
+				actions = ['Edit', 'Resend Invitation', 'Delete'];
+			}
+			return actions;
+		},
+
 		memberAction(action, member) {
 			this.selectedMember = member;
 			let clonedMember = JSON.parse(JSON.stringify(member));
@@ -132,6 +139,9 @@ export default {
 					clonedMember.assigned_services = clonedMember.assigned_services.map(x => x.parent_service_id);
 					this.clonedMember = clonedMember;
 					this.$refs.editModal.show();
+					break;
+				case 'Resend Invitation':
+					this.$refs.resendModal.show();
 					break;
 				case 'Delete':
 					this.$refs.deleteModal.show();
@@ -155,7 +165,7 @@ export default {
 			window.axios.post(`/members/${member.id}/resend`).then(() => {
 				this.resendLoading = false;
 				this.$refs['resendModal'].hide();
-				this.$toasted.show('Invitation email has been sent successfully.');
+				this.$toast.open('Invitation email has been sent successfully.');
 			});
 		},
 

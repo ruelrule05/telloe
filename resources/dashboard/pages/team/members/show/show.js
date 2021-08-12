@@ -43,7 +43,6 @@ export default {
 	},
 
 	data: () => ({
-		actions: ['Edit', 'Delete'],
 		member: null,
 		convertTime: convertTime,
 		clonedMember: null,
@@ -53,7 +52,8 @@ export default {
 		timeslots: [],
 		bookingModalLoading: false,
 		createZoomLoading: false,
-		serviceMembers: []
+		serviceMembers: [],
+		resendLoading: false
 	}),
 
 	computed: {
@@ -110,6 +110,23 @@ export default {
 			deleteBooking: 'bookings/delete'
 		}),
 
+		actions(member) {
+			let actions = ['Edit', 'Delete'];
+			if (member.is_pending) {
+				actions = ['Edit', 'Resend Invitation', 'Delete'];
+			}
+			return actions;
+		},
+
+		resendEmail(member) {
+			this.resendLoading = true;
+			window.axios.post(`/members/${member.id}/resend`).then(() => {
+				this.resendLoading = false;
+				this.$refs['resendModal'].hide();
+				this.$toast.open('Invitation email has been sent successfully.');
+			});
+		},
+
 		memberAction(action, member) {
 			this.selectedMember = member;
 			let clonedMember = JSON.parse(JSON.stringify(member));
@@ -118,6 +135,9 @@ export default {
 				case 'Edit':
 					this.clonedMember = clonedMember;
 					this.$refs.editModal.show();
+					break;
+				case 'Resend Invitation':
+					this.$refs.resendModal.show();
 					break;
 				case 'Delete':
 					this.$refs.deleteModal.show();
