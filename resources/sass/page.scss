@@ -43,7 +43,7 @@
 	z-index: -1;
 	@apply absolute top-12 left-0 scale-95 transform w-screen origin-top transition-all opacity-0 ease-in-out whitespace-nowrap text-muted font-semibold font-serif text-sm p-2 pointer-events-none;
 	&.open {
-		@apply z-50 opacity-100 scale-100;
+		@apply z-50 opacity-100 scale-100 pointer-events-auto;
 	}
 	a,
 	.a {
