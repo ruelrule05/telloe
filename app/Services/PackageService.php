@@ -13,7 +13,7 @@ class PackageService
 {
     public static function index(Request $request)
     {
-        return Auth::user()->packages;
+        return Auth::user()->packages()->get();
     }
 
     public static function show(Package $package, Request $request)
