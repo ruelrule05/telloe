@@ -45,6 +45,9 @@ class UpdateUserRequest extends FormRequest
             'notify_message' => 'boolean',
             'notify_sms' => 'boolean',
             'notify_email' => 'boolean',
+            'packages' => 'boolean',
+            'team' => 'boolean',
+            'payments' => 'boolean',
         ];
     }
 }

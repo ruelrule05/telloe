@@ -304,6 +304,10 @@ class AuthService
             $data['profile_image'] = '/storage/profile-images/' . $fileName;
         }
 
+        $data['packages'] = $request->input('packages');
+        $data['team'] = $request->input('team');
+        $data['payments'] = $request->input('payments');
+
         $user->update($data);
         return self::get($request, false);
     }
@@ -386,7 +390,7 @@ class AuthService
             try {
                 $account = $stripe_api->account('update', $account_data);
             } catch (\Exception $e) {
-                return abort(403, str_replace('Stripe', 'payout',$e->getMessage()));
+                return abort(403, str_replace('Stripe', 'payout', $e->getMessage()));
             }
         } else {
             $account_data['country'] = $request->country;
@@ -394,7 +398,7 @@ class AuthService
             try {
                 $account = $stripe_api->account('create', $account_data);
             } catch (\Exception $e) {
-                return abort(403, str_replace('Stripe', 'payout',$e->getMessage()));
+                return abort(403, str_replace('Stripe', 'payout', $e->getMessage()));
             }
         }
 

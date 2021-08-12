@@ -82,7 +82,7 @@ export default {
 		},
 		numbersOnly: numbersOnly,
 		phone: phone,
-		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications'],
+		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications', 'My Menu'],
 		activeMenu: 'Profile',
 		selectedPlan: null,
 		cardForm: {
@@ -560,6 +560,20 @@ export default {
 					this.user.profile_image = this.$root.auth.profile_image;
 				}
 			}
+		},
+
+		async saveMenuSettings() {
+			this.loading = true;
+			let user = Object.assign({}, this.user);
+
+			user.packages = this.$root.auth.packages = this.user.packages ?? false;
+			user.team = this.$root.auth.team = this.user.team ?? false;
+			user.payments = this.$root.auth.payments = this.user.payments ?? false;
+
+			let response = await window.axios.put('/auth', user, { toast: true });
+			this.loading = false;
+
+			return response;
 		}
 	}
 };

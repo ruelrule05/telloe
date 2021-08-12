@@ -40,7 +40,10 @@ class User extends Authenticatable implements JWTSubject
         'default_availability',
         'google_calendar_events',
         'blocked_timeslots',
-        'trial_expires_at'
+        'trial_expires_at',
+        'packages',
+        'team',
+        'payments',
     ];
 
     /**
@@ -61,7 +64,10 @@ class User extends Authenticatable implements JWTSubject
         'dial_code',
         'blocked_timeslots',
         'is_premium',
-        'trial_expires_at'
+        'trial_expires_at',
+        'packages',
+        'team',
+        'payments',
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];

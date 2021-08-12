@@ -124,33 +124,38 @@
 						</router-link> --}}
 
 
-
-						<div class="sidebar-heading mt-7">APPS</div>
-						<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
-						</div>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/packages">
-							<div @click="toggleSidebar('/dashboard/packages')" class="sidebar-menu-item" :class="{active: isActive}">Packages</div>
-						</router-link>
-
-
-
-						<div class="sidebar-heading mt-7">TEAM</div>
-						<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/organizations">
-							<div @click="toggleSidebar('/dashboard/team/organizations')" :class="{active: isActive}">Organizations</div>
-						</router-link>
-						<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/members">
-							<div @click="toggleSidebar('/dashboard/team/members')" :class="{active: isActive}">Members</div>
-						</router-link>
+						<template v-if="$root.auth.packages">
+							<div class="sidebar-heading mt-7">APPS</div>
+							<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
+							</div>
+							<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/packages">
+								<div @click="toggleSidebar('/dashboard/packages')" class="sidebar-menu-item" :class="{active: isActive}">Packages</div>
+							</router-link>
+						</template>
 
 
+						
+						<template v-if="$root.auth.team">
+							<div class="sidebar-heading mt-7">TEAM</div>
+							<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/organizations">
+								<div @click="toggleSidebar('/dashboard/team/organizations')" :class="{active: isActive}">Organizations</div>
+							</router-link>
+							<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/members">
+								<div @click="toggleSidebar('/dashboard/team/members')" :class="{active: isActive}">Members</div>
+							</router-link>
+						</template>
 
-						<div class="sidebar-heading mt-7">PAYMENTS</div>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/payments/invoices">
-							<div @click="toggleSidebar('/dashboard/payments/invoices')" class="sidebar-menu-item" :class="{active: isActive}">Invoices</div>
-						</router-link>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/payments/subscriptions">
-							<div @click="toggleSidebar('/dashboard/payments/subscriptions')" class="sidebar-menu-item" :class="{active: isActive}">Subscriptions</div>
-						</router-link>
+
+
+						<template v-if="$root.auth.payments">
+							<div class="sidebar-heading mt-7">PAYMENTS</div>
+							<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/payments/invoices">
+								<div @click="toggleSidebar('/dashboard/payments/invoices')" class="sidebar-menu-item" :class="{active: isActive}">Invoices</div>
+							</router-link>
+							<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/payments/subscriptions">
+								<div @click="toggleSidebar('/dashboard/payments/subscriptions')" class="sidebar-menu-item" :class="{active: isActive}">Subscriptions</div>
+							</router-link>
+						</template>
 					</div>
 
 

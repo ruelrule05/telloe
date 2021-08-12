@@ -356,6 +356,27 @@
 						</vue-form-validate>
 					</div>
 				</div>
+
+				<div v-else-if="activeMenu == 'My Menu'" class="p-8">
+					<div class="notification-content account-body">
+						<h2 class="font-serif uppercase font-semibold mb-8">My Menu</h2>
+
+						<vue-form-validate @submit="saveMenuSettings">
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.packages" label="Packages"></vue-checkbox>
+							</div>
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.team" label="Team"></vue-checkbox>
+							</div>
+							<div class="form-group">
+								<vue-checkbox v-model="user.payments" label="Payments"></vue-checkbox>
+							</div>
+							<div class="mt-5">
+								<vue-button :loading="loading" type="submit" button_class="btn btn-primary"><span>Save</span></vue-button>
+							</div>
+						</vue-form-validate>
+					</div>
+				</div>
 			</div>
 		</div>
 
