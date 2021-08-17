@@ -145,7 +145,7 @@ class BookingLinkService
         if ($email == $bookingLink->user->email || $inEmails || $bookingLinkContact) {
             return view('booking-link', compact('bookingLink', 'user', 'inEmails', 'authAction'));
         }
-        if($user && !$inEmails) {
+        if ($user && ! $inEmails) {
             return abort(403);
         }
         $authAction = 'login';
