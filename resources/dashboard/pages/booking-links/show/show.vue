@@ -5,7 +5,7 @@
 			{{ bookingLink.name }} ({{ bookingLink.duration }} mins)
 		</div>
 		<div class="h-20 lg:hidden block" />
-		<div class="p-8">
+		<div class="p-6 md:p-8">
 			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
 			<div>
 				<div class="flex flex-col lg:flex-row justify-between items-end lg:items-center">
@@ -14,12 +14,12 @@
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 						</div>
 					</div>
-					<div class="flex items-center order-1 lg:order-none">
+					<div class="flex items-center order-1 lg:order-none service__show-menus">
 						<button type="button" class="btn btn-sm btn-outline-primary" @click="$refs.sendModal.show()"><span>Send email invitation</span></button>
-						<button type="button" class="btn btn-sm btn-outline-primary mx-2" @click="copyToClipboard()"><span>Copy link</span></button>
+						<button type="button" class="btn btn-sm btn-outline-primary mx-2 mt-1 md:mt-0" @click="copyToClipboard()"><span>Copy link</span></button>
 						<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action">
 							<template #button>
-								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 service__show-menus_extra">
 									<MoreIcon class="w-4 h-4"></MoreIcon>
 								</div>
 							</template>

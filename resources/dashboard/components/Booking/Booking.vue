@@ -130,7 +130,10 @@
 						</div>
 					</div>
 					<div class="flex justify-between items-center pb-6">
-						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md"><span>Add booking</span></vue-button>
+						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md flex items-center">
+							<span>Add</span>
+							<span class="hidden md:block ml-2">booking</span>
+						</vue-button>
 						<button type="button" class="btn" @click="close">Cancel</button>
 					</div>
 				</vue-form-validate>

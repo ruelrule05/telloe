@@ -63,3 +63,17 @@
 		}
 	}
 }
+
+.service__show-menus {
+	@media (max-width: 375px) {
+		@apply relative flex-col items-start w-full;
+
+		button {
+			@apply w-11/12 mx-0
+		}
+		
+		.dropdown {
+			@apply absolute top-0 -right-2;
+		}
+	}
+}

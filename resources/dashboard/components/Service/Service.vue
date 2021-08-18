@@ -27,7 +27,9 @@
 			</div>
 
 			<div v-else class="flex flex-grow flex-col lg:flex-row">
-				<div class="sidebar service-sidebar border-right px-0 lg:px-6 pt-0 lg:pt-4">
+				<VueSelect class="w-11/12 mx-auto block lg:hidden mt-5" :options="menusMobile" drop-position="w-full lg:px-6 pt-0 lg:pt-4" v-model="activeMenu"></VueSelect>
+
+				<div class="sidebar service-sidebar border-r-0 lg:border-right px-0 lg:px-6 pt-0 lg:pt-4 hidden lg:block">
 					<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 				</div>
 				<div class="flex-grow p-6 lg:p-8 w-full lg:w-auto">

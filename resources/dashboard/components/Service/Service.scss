@@ -5,14 +5,14 @@
 }
 
 .service-sidebar {
-  @media (max-width: 1024px) {
-    @apply w-full flex-wrap flex;
-    flex: 0;
+  // @media (max-width: 1024px) {
+  //   @apply w-full flex-wrap flex;
+  //   flex: 0;
 
-    .sidebar-menu-item {
-      @apply w-2/4 flex justify-center border-b border-r;
-    }
-  }
+  //   .sidebar-menu-item {
+  //     @apply w-2/4 flex justify-center border-b border-r;
+  //   }
+  // }
 }
 
 .service-title {

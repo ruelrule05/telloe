@@ -92,6 +92,22 @@
 			height: 26px;
 		}
 	}
+	@media (max-width: 320px) {
+		.btn-md {
+			padding: 0 12px;
+		}
+		.button-date-nav {
+			button {
+				padding: 0 4px;
+			}
+			div {
+				padding: 0 2px;
+			}
+		}
+		button {
+			@apply whitespace-pre
+		}
+	}
 }
 .calendar-booking {
 	@apply z-40;

@@ -25,7 +25,10 @@ import CallMenuIcon from '../../../../icons/call-menu';
 import VideocamIcon from '../../../../icons/videocam';
 import DocumentAltIcon from '../../../../icons/document-alt';
 import DownloadIcon from '../../../../icons/download';
+import MoreIcon from '../../../../icons/more';
+import ChevronLeftIcon from '../../../../icons/chevron-left';
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 
 import Tooltip from '../../../../js/directives/tooltip';
 import Messages from '../../../components/Messages/Messages.vue';
@@ -59,6 +62,9 @@ export default {
 		DocumentAltIcon,
 		DownloadIcon,
 		Messages,
+		ChevronLeftIcon,
+		MoreIcon,
+		VueDropdown,
 
 		info: () => import(/* webpackChunkName: "dashboard-conversations-show-info" */ './info/info.vue')
 		//'video-recorder-modal': () => import(/* webpackChunkName: "modals-videorecorder" */ '../../../../modals/video-recorder'),
@@ -385,6 +391,23 @@ export default {
 
 		toggleConversationList() {
 			this.$emit('conversationList');
+		},
+
+		action(action) {
+			switch (action) {
+				case 'Copy Link':
+					this.copyConvoLink();
+					break;
+
+				case 'Notes':
+					this.showNotes = true;
+					break;
+
+				case 'Audio Call':
+					this.$root.callConversation = this.conversation;
+					this.$root.$refs['videoCall'].outgoingCall(this.conversation, false);
+					break;
+			}
 		}
 	}
 };

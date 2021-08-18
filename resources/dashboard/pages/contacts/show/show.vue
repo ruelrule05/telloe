@@ -6,7 +6,11 @@
 				CONTACT DETAILS
 			</div>
 			<div>
-				<button type="button" class="btn btn-md btn-primary" @click="createNewEvent"><span>Add Booking</span></button>
+				<button type="button" class="btn btn-md btn-primary flex items-center" @click="createNewEvent">
+					<span class="hidden md:block">Add</span>
+					<span class="block md:hidden">+</span>
+					<span class="ml-2">Booking</span>
+				</button>
 			</div>
 		</div>
 		<div class="h-20 lg:hidden block" />
