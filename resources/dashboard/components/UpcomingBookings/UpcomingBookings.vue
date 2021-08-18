@@ -7,7 +7,9 @@
 		</div>
 
 		<div v-else v-for="upcomingDay in days" :key="upcomingDay.value" class="flex">
-			<div class="upcoming-day-label border-right py-8 text-muted" :class="{ active: upcomingDay.today }">{{ upcomingDay.text }}</div>
+			<div class="border-right ">
+				<div class="upcoming-day-label py-8 text-muted" style="flex: 0 100px" :class="{ active: upcomingDay.today }">{{ upcomingDay.text }}</div>
+			</div>
 			<div class="p-5 flex-grow">
 				<div v-for="booking in dayBookings(upcomingDay.value)" :key="booking.id" class="flex items-center mb-1 transition-colors hover:bg-gray-100 p-2 cursor-pointer rounded-lg" @click="$emit('eventClick', booking, 'booking')">
 					<div class="font-normal text-muted flex-grow">{{ convertTime(booking.start, 'hh:mmA') }} - {{ convertTime(booking.end, 'hh:mmA') }}</div>

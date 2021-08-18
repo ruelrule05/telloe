@@ -95,9 +95,9 @@
 					<!-- Availability -->
 					<div v-if="mounted" v-show="activeMenu == 'Availability'">
 						<div class="w-full lg:w-8/12">
-							<div class="flex justify-between">
-								<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>
-								<span v-if="activeMenu == 'Availability'" class="text-muted text-sm">Select your available timeslots.</span>
+							<div class="lg:flex justify-between">
+								<div class="font-serif uppercase font-semibold text-xs lg:mb-10">{{ activeMenu }}</div>
+								<span v-if="activeMenu == 'Availability'" class="text-muted text-sm block lg:mb-0 mb-10">Select your available timeslots.</span>
 							</div>
 							<div v-for="day in days" :key="day" class="mb-16">
 								<div class="flex justify-between">

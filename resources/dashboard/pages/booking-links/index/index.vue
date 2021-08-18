@@ -1,7 +1,7 @@
 <template>
 	<div class="min-h-screen flex flex-col relative bespoke" v-if="$root.auth && ready">
 		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-			<div class="ml-7 lg:ml-0">
+			<div class="ml-9 lg:ml-0">
 				BESPOKE MEETINGS
 			</div>
 			<div>

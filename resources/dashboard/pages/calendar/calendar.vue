@@ -6,7 +6,7 @@
 				<button
 					v-else
 					type="button"
-					class="btn btn-md btn-outline-primary absolute lg:static top-6 left-12"
+					class="btn btn-md btn-outline-primary absolute lg:static top-6 lg:left-12 right-3 left-auto"
 					@click="
 						overview = true;
 						$refs.bookingComponent.close();
@@ -70,7 +70,7 @@
 
 		<div v-if="overview" class="flex calendar-display">
 			<div class="w-full lg:w-1/2" :class="!showCalendarMobile ? 'block' : 'hidden'">
-				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
+				<UpcomingBookings :timezone="timezone" :loading="true" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
 			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{ open: showCalendarMobile }">
 				<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">

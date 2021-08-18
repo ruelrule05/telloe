@@ -119,6 +119,7 @@ class BookingService
                 ]);
             }
         }
+
         if (isset($request->is_recurring) && isset($request->frequency) && isset($request->end_date) && isset($request->days)) {
             $start = Carbon::parse("{$request->date} {$request->start}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration ?? 30);
