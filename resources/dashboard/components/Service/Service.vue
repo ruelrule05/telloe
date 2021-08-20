@@ -27,7 +27,7 @@
 			</div>
 
 			<div v-else class="flex flex-grow flex-col lg:flex-row">
-				<div class="sidebar service-sidebar border-r-0 lg:border-right px-0 lg:px-6 pt-0 lg:pt-4">
+				<div class="sidebar service-sidebar border-right px-0 lg:px-6 pt-0 lg:pt-4">
 					<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 				</div>
 				<div class="flex-grow p-6 lg:p-8 w-full lg:w-auto">
@@ -174,19 +174,10 @@
 							</div>
 						</div>
 					</div>
-					
 
-
-
-					<!-- Questions -->
-					<div v-show="activeMenu == 'Questions'">
-						<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>
-						<!-- <div class="w-5/12"> -->
-							<!-- <div id="fb-editor">Will it Show?</div> -->
-							<!-- <div id="fb-controls"></div> -->
-							<!-- <div id="fb-editor"></div> -->
-							<v-form-builder @click="onSave"></v-form-builder>
-						<!-- </div> -->
+					<!-- Form Builder -->
+					<div v-show="activeMenu == 'Form Builder'" class="-m-8 overflow-hidden">
+						<v-form-builder v-model="clonedService.form_builder"></v-form-builder>
 					</div>
 				</div>
 			</div>

@@ -75,9 +75,11 @@ import timezoneTime from '../js/helpers/TimezoneTime.js';
 import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import FormField from './formField.vue';
 
 export default {
 	components: {
+		FormField,
 		Multiselect,
 		SkypeIcon,
 		PhoneIcon,
@@ -222,7 +224,8 @@ export default {
 		creatingAccount: false,
 		phone: '',
 		skype: '',
-		authFormAction: 'asGuest'
+		authFormAction: 'asGuest',
+		formData: {}
 	}),
 
 	computed: {
@@ -399,7 +402,7 @@ export default {
 		},
 
 		step: function() {
-			window.scrollTo(0, 0);
+			document.querySelector('#app').scrollTo(0, 0);
 		}
 	},
 

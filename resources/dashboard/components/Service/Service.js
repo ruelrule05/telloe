@@ -10,7 +10,7 @@ import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import CloseIcon from '../../../icons/close';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
-import VFormBuilder from "./formBuilder";
+import VFormBuilder from './formBuilder';
 const ct = require('countries-and-timezones');
 const { getNameList } = require('country-list');
 export default {
@@ -38,7 +38,7 @@ export default {
 		masks: {
 			input: 'MMMM D, YYYY'
 		},
-		menus: ['General Settings', 'Availability', 'Payment', 'Advanced', 'Questions'],
+		menus: ['General Settings', 'Availability', 'Payment', 'Advanced', 'Form Builder'],
 		activeMenu: 'General Settings',
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -222,15 +222,8 @@ export default {
 			this.$router.push('/dashboard/account?tab=plan');
 		},
 
-		// onSave() {
-		// 	$('#form-render').formRender({formData:fBuilder.formData});
-		// 	self.$emit('on-save', fBuilder.formData);
-		// 	console.log("onSave", fBuilder.formData);
-		// }
-		onSave(){ 
-            // $('#form-render').formRender({formData:fBuilder.formData});
-			// self.$emit('click', fBuilder.formData);
-            // console.log(fBuilder.formData);
-        }
+		formData(formData) {
+			this.clonedService.form_builder = formData;
+		}
 	}
 };

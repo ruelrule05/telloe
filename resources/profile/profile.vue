@@ -216,7 +216,11 @@
 						<vue-form-validate
 							@submit="
 								() => {
-									step = selectedService.require_payment ? 'payment' : 'authenticate';
+									if (selectedService.form_builder && JSON.parse(selectedService.form_builder).length > 0) {
+										step = 'form_builder';
+									} else {
+										step = selectedService.require_payment ? 'payment' : 'authenticate';
+									}
 								}
 							"
 						>
@@ -330,6 +334,27 @@
 											</div>
 										</div>
 									</div>
+								</div>
+							</div>
+
+							<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="submit">
+								<span>Continue <span v-if="selectedService.require_payment">to payment</span></span>
+							</button>
+						</vue-form-validate>
+					</div>
+				</div>
+
+				<!-- Form builder -->
+				<div v-else-if="step == 'form_builder'" class="lg:flex summary" key="form_builder">
+					<div class="border w-4/12 lg:p-16 p-8 bg-secondary">
+						<h6 class="text-primary font-serif text-4xl font-semibold leading-none lg:mb-10 mb-5">COMPLETE FORM</h6>
+						<button class="btn btn-outline-primary flex items-center" type="button" @click="step = 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
+					</div>
+					<div class="lg:w-8/12 min-h-screen bg-white lg:p-16 p-8">
+						<vue-form-validate @submit="() => {}">
+							<div class="lg:w-8/12">
+								<div v-for="(field, fieldIndex) in JSON.parse(selectedService.form_builder)" :key="fieldIndex" class="mt-8">
+									<FormField v-model="formData[field.name]" :field="field" />
 								</div>
 							</div>
 

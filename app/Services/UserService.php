@@ -192,7 +192,7 @@ class UserService
 
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         foreach ($request->timeslots as $timeslot) {
-            $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}");
+            $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration);
             $booking = self::createBooking($service, [
                 'service_id' => $service->id,
@@ -204,9 +204,9 @@ class UserService
             ], $customer, $guest, $request);
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
-                $timeslotDayName = Carbon::parse($timeslot['date']['format'])->format('l');
-                $currentDate = Carbon::now()->addDay(1);
-                $endDate = Carbon::parse($timeslot['end_date']);
+                $timeslotDayName = Carbon::parse($timeslot['date']['format'], $request->timezone)->format('l');
+                $currentDate = Carbon::parse($timeslot['date']['format'], $request->timezone)->addDay(1);
+                $endDate = Carbon::parse($timeslot['end_date'], $request->timezone);
                 $weekOfMonth = 0;
                 if (isset($timeslot['day_in_month'])) {
                     switch ($timeslot['day_in_month']) {
@@ -249,12 +249,12 @@ class UserService
                         if ($recurringBooking) {
                             //$bookings[] = $recurringBooking;
                             $booking->recurring = true;
-                            $booking->until = Carbon::parse($recurringBooking->date)->format('M d, Y');
+                            $booking->until = Carbon::parse($recurringBooking->date, $request->timezone)->format('M d, Y');
                             if (! $booking->recurring_days) {
                                 $booking->recurring_days = [];
                             }
                             $recurringDays = $booking->recurring_days;
-                            $recurringDays[] = Carbon::parse($recurringBooking->date)->format('l');
+                            $recurringDays[] = Carbon::parse($recurringBooking->date, $request->timezone)->format('l');
                             $booking->recurring_days = $recurringDays;
                         }
                     }
@@ -302,8 +302,8 @@ class UserService
             }
         }
         $bookings = collect($bookings);
-        $bookings->map(function ($booking) {
-            $from = Carbon::parse("$booking->date $booking->start");
+        $bookings->map(function ($booking) use ($request) {
+            $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
             $to = $from->clone()->addMinute($booking->service->duration);
             $link = Link::create($booking->service->name, $from, $to)
                 ->description($booking->service->description);
