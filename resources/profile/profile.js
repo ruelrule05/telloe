@@ -75,9 +75,11 @@ import timezoneTime from '../js/helpers/TimezoneTime.js';
 import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import FormField from './formField.vue';
 
 export default {
 	components: {
+		FormField,
 		Multiselect,
 		SkypeIcon,
 		PhoneIcon,
@@ -222,7 +224,8 @@ export default {
 		creatingAccount: false,
 		phone: '',
 		skype: '',
-		authFormAction: 'asGuest'
+		authFormAction: 'asGuest',
+		formData: {}
 	}),
 
 	computed: {
@@ -399,7 +402,7 @@ export default {
 		},
 
 		step: function() {
-			window.scrollTo(0, 0);
+			document.querySelector('#app').scrollTo(0, 0);
 		}
 	},
 
@@ -533,11 +536,10 @@ export default {
 					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
 				timeslot.type = timeslot.type.type;
+				timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
 
-				// set timeslot time  based on timezone
 				return timeslot;
 			});
-
 			let data = JSON.parse(JSON.stringify(this.guest));
 			data.timeslots = timeslots;
 			data.card_token = true;
@@ -545,6 +547,7 @@ export default {
 			data.skype = this.skype;
 			data.timezone = this.timezone;
 			data.guests = this.guests;
+			data.formData = this.formData;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -578,6 +581,7 @@ export default {
 			data.skype = this.skype;
 			data.timezone = this.timezone;
 			data.guests = this.guests;
+			data.formData = this.formData;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -612,6 +616,7 @@ export default {
 				data.skype = this.skype;
 				data.timezone = this.timezone;
 				data.guests = this.guests;
+				data.formData = this.formData;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
@@ -647,6 +652,7 @@ export default {
 				data.skype = this.skype;
 				data.timezone = this.timezone;
 				data.guests = this.guests;
+				data.formData = this.formData;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}

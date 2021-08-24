@@ -27,9 +27,11 @@ use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Mail;
 use Response;
 use Spatie\CalendarLinks\Link;
+use Storage;
 use Webpatser\Uuid\Uuid;
 
 class UserService
@@ -190,9 +192,84 @@ class UserService
             return abort(403, 'You are not allowed to book using your own account.');
         }
 
+        $formData = null;
+
+        // parse formData
+        if ($service->form_builder) {
+            $formData = [];
+            $formBuilder = json_decode($service->form_builder, true);
+            foreach ($formBuilder as $formField) {
+                if (isset($formField['name'])) {
+                    $value = $request->formData[$formField['name']] ?? null;
+                    if ($value) {
+                        switch ($formField['type']) {
+                            case 'checkbox-group';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => implode(', ', $value),
+                                    'type' => $formField['type']
+                                ];
+                                break;
+
+                            case 'date';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => Carbon::parse($value)->format('Y-m-d'),
+                                    'type' => $formField['type']
+                                ];
+                                break;
+
+                            case 'file';
+                                $mime = str_replace('data:', '', explode(';', $value)[0]);
+                                $extension = mime2ext($mime);
+                                $time = Str::random(15) . '-' . time();
+                                $folderName = $time . '-formdata';
+                                $filename = Str::random(15) . '.' . $extension;
+                                $targetPath = "message-media/$folderName/$filename";
+                                $file = base64_decode(substr($value, strpos($value, ',') + 1));
+                                Storage::disk('s3')->put($targetPath, $file, 'public');
+                                $path = Storage::disk('s3')->url($targetPath);
+
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => $path,
+                                    'type' => $formField['type']
+                                ];
+                                break;
+
+                            case 'select';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => $value,
+                                    'type' => $formField['type']
+                                ];
+                                break;
+
+                            case 'text';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => $value,
+                                    'type' => $formField['type']
+                                ];
+                                break;
+
+                            case 'textarea';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => $value,
+                                    'type' => $formField['type']
+                                ];
+                                break;
+                        }
+                    }
+                }
+            }
+            $formData = json_encode($formData);
+        }
+
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         foreach ($request->timeslots as $timeslot) {
-            $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}");
+            $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration);
             $booking = self::createBooking($service, [
                 'service_id' => $service->id,
@@ -200,13 +277,15 @@ class UserService
                 'start' => $start->format('H:i'),
                 'end' => $end->format('H:i'),
                 'meeting_type' => $timeslot['type'],
-                'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
+                'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
+                'form_data' => $formData,
+                'timezone' => $request->timezone
             ], $customer, $guest, $request);
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
-                $timeslotDayName = Carbon::parse($timeslot['date']['format'])->format('l');
-                $currentDate = Carbon::now()->addDay(1);
-                $endDate = Carbon::parse($timeslot['end_date']);
+                $timeslotDayName = Carbon::parse($timeslot['date']['format'], $request->timezone)->format('l');
+                $currentDate = Carbon::parse($timeslot['date']['format'], $request->timezone)->addDay(1);
+                $endDate = Carbon::parse($timeslot['end_date'], $request->timezone);
                 $weekOfMonth = 0;
                 if (isset($timeslot['day_in_month'])) {
                     switch ($timeslot['day_in_month']) {
@@ -244,17 +323,19 @@ class UserService
                             'start' => $start->format('H:i'),
                             'end' => $end->format('H:i'),
                             'meeting_type' => $timeslot['type'],
-                            'metadata' => ['phone' => $request->phone, 'skype' => $request->skype]
+                            'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
+                            'form_data' => $formData,
+                            'timezone' => $request->timezone
                         ], $customer, $guest, $request);
                         if ($recurringBooking) {
                             //$bookings[] = $recurringBooking;
                             $booking->recurring = true;
-                            $booking->until = Carbon::parse($recurringBooking->date)->format('M d, Y');
+                            $booking->until = Carbon::parse($recurringBooking->date, $request->timezone)->format('M d, Y');
                             if (! $booking->recurring_days) {
                                 $booking->recurring_days = [];
                             }
                             $recurringDays = $booking->recurring_days;
-                            $recurringDays[] = Carbon::parse($recurringBooking->date)->format('l');
+                            $recurringDays[] = Carbon::parse($recurringBooking->date, $request->timezone)->format('l');
                             $booking->recurring_days = $recurringDays;
                         }
                     }
@@ -302,8 +383,8 @@ class UserService
             }
         }
         $bookings = collect($bookings);
-        $bookings->map(function ($booking) {
-            $from = Carbon::parse("$booking->date $booking->start");
+        $bookings->map(function ($booking) use ($request) {
+            $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
             $to = $from->clone()->addMinute($booking->service->duration);
             $link = Link::create($booking->service->name, $from, $to)
                 ->description($booking->service->description);

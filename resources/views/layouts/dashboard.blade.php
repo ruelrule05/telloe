@@ -277,8 +277,6 @@
 				</div>
 			</div>
 		</div>
-
-
 		<!-- <script src="/js/leader-line.min.js"></script> -->
 		<script>
 			window.APP_NAME = '{{ config("app.name") }}';
@@ -286,6 +284,10 @@
 			window.WS_URL = '{{ config("app.websocket_url") }}';
 		</script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+		<script  src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
+		<script src="{{ mix('/js/formbuilder.js') }}"></script>
 	</body>
 	@include('partials.social_scripts')
 </html>

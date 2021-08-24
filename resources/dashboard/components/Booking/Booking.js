@@ -242,6 +242,17 @@ export default {
 			getContacts: 'contacts/index'
 		}),
 
+		parsedFormData(formData) {
+			switch (formData.type) {
+				case 'date':
+					return dayjs(formData.value).format('MMMM DD, YYYY');
+				case 'file':
+					return `<a class="text-blue-600" href="${formData.value}" target="_blank"><u>${formData.value}</u></a>`;
+				default:
+					return formData.value;
+			}
+		},
+
 		toggleIncludeGoogleCalendar(state) {
 			if (this.clonedBooking && this.clonedBooking.type == 'google-event') {
 				if (!this.$root.auth.google_calendar_events) {
