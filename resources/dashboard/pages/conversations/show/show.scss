@@ -53,6 +53,16 @@
 		}
 	}
 
+	@media (max-width: 768px) {
+		button {
+			@apply mb-0;
+		}
+
+		.dropdown {
+			@apply h-full m-auto;
+		}
+	}
+
 	@media (max-width: 375px) {
 		@apply w-1/4
 	}

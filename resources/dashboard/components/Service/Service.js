@@ -38,7 +38,15 @@ export default {
 		masks: {
 			input: 'MMMM D, YYYY'
 		},
+
 		menus: ['General Settings', 'Availability', 'Payment', 'Advanced', 'Form Builder'],
+		menusMobile: [
+			{ text: 'General Settings', value: 'General Settings' },
+			{ text: 'Availability', value: 'Availability' },
+			{ text: 'Payment', value: 'Payment' },
+			{ text: 'Advanced', value: 'Advanced' },
+			{ text: 'Form Builder', value: 'Form Builder' }
+		],
 		activeMenu: 'General Settings',
 		clonedService: null,
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

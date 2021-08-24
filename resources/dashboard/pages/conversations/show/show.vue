@@ -3,9 +3,7 @@
 		<div class="h-full flex flex-col flex-grow">
 			<div class="p-4 border-bottom relative flex items-center">
 				<button @click="toggleConversationList()" class="text-gray-500 focus:outline-none lg:hidden">
-					<svg class="h-6 w-6" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path d="M4 6H20M4 12H20M4 18H20M4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-					</svg>
+					<ChevronLeftIcon class="fill-current"></ChevronLeftIcon>
 				</button>
 				<div class="flex items-center w-3/6 ml-2 lg:ml-0">
 					<div>
@@ -27,10 +25,10 @@
 						</small>
 					</div>
 				</div>
-				<div class="ml-auto btn-actions w-1/5 md:w-auto">
+				<div class="ml-auto btn-actions w-1/6 md:w-auto flex">
 					<template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
 						<button
-							class="text-primary"
+							class="text-primary hidden lg:block"
 							:data-intro="$root.intros.conversations.steps[3]"
 							data-step="4"
 							@click="
@@ -54,8 +52,15 @@
 							<videocam-icon class="fill-current"></videocam-icon>
 						</button>
 					</template>
-					<button class="text-primary" :data-intro="$root.intros.conversations.steps[4]" data-step="5" :class="{ active: showNotes }" @click="showNotes = true"><note-icon class="fill-current"></note-icon></button>
-					<button class="text-primary" @click="copyConvoLink()"><link-icon class="fill-current transform scale-125"></link-icon></button>
+					<button class="text-primary hidden lg:block" :data-intro="$root.intros.conversations.steps[4]" data-step="5" :class="{ active: showNotes }" @click="showNotes = true"><note-icon class="fill-current"></note-icon></button>
+					<button class="text-primary hidden lg:block" @click="copyConvoLink()"><link-icon class="fill-current transform scale-125"></link-icon></button>
+					<VueDropdown :options="['Audio Call', 'Notes', 'Copy Link']"  @click="action">
+						<template #button>
+							<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 block lg:hidden justify-center">
+								<MoreIcon class="w-4 h-4"></MoreIcon>
+							</div>
+						</template>
+					</VueDropdown>
 				</div>
 			</div>
 
