@@ -20,7 +20,7 @@ export default {
 		let fbOptions = {
 			scrollToFieldOnAdd: false,
 			disabledActionButtons: ['data', 'clear', 'save'],
-			disableFields: ['button', 'hidden']
+			disableFields: ['button', 'hidden', 'autocomplete']
 		};
 		this.fbuilder = $('#form-editor').formBuilder(fbOptions);
 		setTimeout(() => {
@@ -147,6 +147,20 @@ export default {
 		@apply flex items-center;
 		label {
 			@apply mb-0;
+		}
+	}
+	.formbuilder-header {
+		h1 {
+			@apply text-3xl;
+		}
+		h2 {
+			@apply text-2xl;
+		}
+		h3 {
+			@apply text-xl;
+		}
+		h4 {
+			@apply text-lg;
 		}
 	}
 }

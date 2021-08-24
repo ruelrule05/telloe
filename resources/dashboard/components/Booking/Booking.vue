@@ -223,11 +223,20 @@
 						</div>
 
 						<template v-if="booking.metadata">
-							<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
-							<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
+							<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
+							<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
 						</template>
 
-						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
+						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
+
+						<div v-if="clonedBooking.form_data" class="mt-4">
+							<label class="-mb-px">Form Data</label>
+							<div v-for="(formData, key) in JSON.parse(clonedBooking.form_data)" :key="key" class="mt-3">
+								<strong class="block -mb-px text-sm">{{ formData.label }}</strong>
+								<small class="block text-gray-400">{{ key }}</small>
+								<div class="text-sm" v-html="parsedFormData(formData)"></div>
+							</div>
+						</div>
 					</div>
 
 					<div class="flex justify-between mt-4 items-center">

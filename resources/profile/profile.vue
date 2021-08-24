@@ -351,7 +351,13 @@
 						<button class="btn btn-outline-primary flex items-center" type="button" @click="step = 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
 					</div>
 					<div class="lg:w-8/12 min-h-screen bg-white lg:p-16 p-8">
-						<vue-form-validate @submit="() => {}">
+						<vue-form-validate
+							@submit="
+								() => {
+									step = selectedService.require_payment ? 'payment' : 'authenticate';
+								}
+							"
+						>
 							<div class="lg:w-8/12">
 								<div v-for="(field, fieldIndex) in JSON.parse(selectedService.form_builder)" :key="fieldIndex" class="mt-8">
 									<FormField v-model="formData[field.name]" :field="field" />
