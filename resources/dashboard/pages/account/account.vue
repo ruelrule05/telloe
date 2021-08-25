@@ -8,10 +8,12 @@
 		<div class="h-20 lg:hidden block" />
 
 		<div class="flex flex-grow flex-col md:flex-row">
-			<div class="sidebar account-sidebar border-r-0 md:border-r px-6 pt-4">
-				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+			<VueSelect class="w-11/12 mx-auto block md:hidden mt-5" :options="menusMobile" drop-position="w-full lg:px-6 pt-0 lg:pt-4" v-model="activeMenu"></VueSelect>
 
-				<form action="/logout" method="POST" class="sidebar-menu-item">
+			<div class="sidebar account-sidebar border-r-0 md:border-r px-6 pt-4">
+				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item hidden md:block" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+
+				<form action="/logout" method="POST" class="sidebar-menu-item logout">
 					<input type="hidden" name="_token" :value="csrf_token" />
 					<button type="submit">Log Out</button>
 				</form>

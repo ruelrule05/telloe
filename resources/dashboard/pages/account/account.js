@@ -83,6 +83,15 @@ export default {
 		numbersOnly: numbersOnly,
 		phone: phone,
 		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications', 'My Menu'],
+		menusMobile: [
+			{ text: 'Profile', value: 'Profile' },
+			{ text: 'Security', value: 'Security' },
+			{ text: 'Plan', value: 'Plan' },
+			{ text: 'Billing', value: 'Billing' },
+			{ text: 'Payout', value: 'Payout' },
+			{ text: 'Notifications', value: 'Notifications' },
+			{ text: 'My Menu', value: 'My Menu' }
+		],
 		activeMenu: 'Profile',
 		selectedPlan: null,
 		cardForm: {
