@@ -235,8 +235,7 @@
 						<div v-if="clonedBooking.form_data" class="mt-4">
 							<label class="-mb-px">Form Data</label>
 							<div v-for="(formData, key) in JSON.parse(clonedBooking.form_data)" :key="key" class="mt-3">
-								<strong class="block -mb-px text-sm">{{ formData.label }}</strong>
-								<small class="block text-gray-400">{{ key }}</small>
+								<strong class="-mb-px text-sm">{{ formData.label }} <span v-tooltip.right="key" class="tooltip-info"></span></strong>
 								<div class="text-sm" v-html="parsedFormData(formData)"></div>
 							</div>
 						</div>

@@ -24,6 +24,8 @@ import vClickOutside from 'v-click-outside';
 const ct = require('countries-and-timezones');
 import VueButton from '../../../components/vue-button.vue';
 import { decode } from 'html-entities';
+import tooltip from '../../../js/directives/tooltip.js';
+
 export default {
 	props: {
 		booking: {},
@@ -42,7 +44,7 @@ export default {
 
 	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon, VueButton },
 
-	directives: { clickOutside: vClickOutside.directive },
+	directives: { clickOutside: vClickOutside.directive, tooltip },
 
 	data: () => ({
 		decode: decode,

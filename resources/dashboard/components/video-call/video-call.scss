@@ -133,7 +133,7 @@
 				border-top-color: transparent !important;
 				border-bottom-color: transparent !important;
 				left: -4px;
-				top: 50%;
+				top: calc(50% - 5px);
 				transform: translateY(-50%);
 				margin-left: 0;
 				margin-right: 0;
@@ -151,7 +151,7 @@
 				border-right-color: transparent !important;
 				border-bottom-color: transparent !important;
 				right: -4px;
-				top: 50%;
+				top: calc(50% - 5px);
 				transform: translateY(-50%);
 				margin-left: 0;
 				margin-right: 0;
