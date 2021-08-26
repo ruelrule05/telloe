@@ -196,7 +196,7 @@ class Service extends BaseModel
                 $timeslot['is_blocked'] = true;
             }
             $timeslots[] = $timeslot;
-            $timeStart->add($this->attributes['interval'], 'minute');
+            $timeStart->add($this->attributes['interval'] + $this->attributes['duration'], 'minute');
         }
         //}
         //}

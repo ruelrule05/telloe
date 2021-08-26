@@ -8,20 +8,22 @@
 	@yield('styles')
 	<link rel="stylesheet" href="{{ mix('css/page.css') }}">
 </head>
-<body>
+<body class="bg-transparent">
 	<div id="app" class="overflow-hidden">
-		@if ($navbar ?? true)
-			@include('partials.navbar')
-		@endif
+		<template v-if="!mobileApp">
+			@if ($navbar ?? true)
+				@include('partials.navbar')
+			@endif
 
+			@yield('content')
 
-		@yield('content')
+			@if ($footer ?? true)
+				@include('partials.footer')
+			@endif
+		</template>
 		
 		<auth v-if="auth" ref="authForm"></auth>
 		
-		@if ($footer ?? true)
-			@include('partials.footer')
-		@endif
 	</div>
 
 

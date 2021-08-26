@@ -12,7 +12,7 @@
                     <a href="/#pricing" class="navbar-item"><span>PRICING</span></a>
                     <a href="/contact" class="navbar-item"><span>CONTACT US</span></a>
                     @auth
-                    <a href="/dashboard/calendar" class="btn btn-primary btn-md"><span class="mt-2 block">DASHBOARD</span></a>
+                    <a href="/dashboard/calendar" class="btn btn-primary btn-md"><span class="block">DASHBOARD</span></a>
                     @endauth
                     @guest
                     <button type="button" class="navbar-item" @click="auth = true; action = 'login'"><span>LOGIN</span></button>

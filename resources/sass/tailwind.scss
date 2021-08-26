@@ -44,7 +44,8 @@ body.modal-open {
 		position: relative;
 		bottom: -1px;
 	}
-	@apply px-8 py-3 rounded-full transition-colors font-semibold focus:outline-none font-serif uppercase text-xs;
+	padding: 10px 24px;
+	@apply rounded-full transition-colors font-semibold focus:outline-none font-serif uppercase text-xs;
 	&.btn-primary {
 		@apply bg-primary hover:bg-primary-light focus:bg-primary-dark focus:text-muted text-white;
 	}
@@ -58,14 +59,12 @@ body.modal-open {
 		@apply bg-transparent hover:bg-red-600 hover:text-white focus:bg-red-800 focus:text-muted text-red-600 border-solid border border-red-600;
 	}
 	&.btn-sm {
-		height: 28px;
-		padding: 0 18px;
+		padding: 6px 18px;
 		font-size: 9px;
 		letter-spacing: 0.35px;
 	}
 	&.btn-md {
-		height: 32px;
-		padding: 0 24px;
+		padding: 8px 24px;
 	}
 	&:disabled,
 	&.disabled {

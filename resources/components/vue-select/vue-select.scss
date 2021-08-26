@@ -1,5 +1,5 @@
 .select {
-	@apply border border-gray-300 cursor-pointer rounded-md inline-flex justify-center items-center w-full px-3 py-2 transition ring-primary ring-offset-1 focus:outline-none overflow-hidden shadow-inner;
+	@apply border border-gray-300 cursor-pointer rounded-md inline-flex justify-center items-center w-full px-3 py-2 transition ring-primary ring-offset-1 focus:outline-none overflow-hidden shadow-inner whitespace-nowrap;
 	&.show {
 		@apply border-gray-500 ring-2;
 	}

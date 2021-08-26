@@ -60,6 +60,9 @@
 	background-color: #0083ff;
 	color: white;
 }
+[v-cloak] {
+	@apply opacity-0;
+}
 //@import '../sass/bootstrap';
 // @each $breakpoint, $value in $grid-breakpoints {
 // 	@media screen and (max-width: #{$value}) {

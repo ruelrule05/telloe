@@ -199,10 +199,12 @@
 			<div class="flex flex-col flex-grow overflow-hidden">
 				<div class="absolute h-20 ml-4 flex items-center z-30">
 					<button @click="isSidebarOpen = true" class="text-gray-500 focus:outline-none lg:hidden" :class="{hidden: isChildPage}">
-						<svg class="h-6 w-6" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M4 6H20M4 12H20M4 18H20M4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-								stroke-linejoin="round"></path>
+						<svg width="20" height="16" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M15.75 6C15.75 5.58579 15.4142 5.25 15 5.25H1C0.585786 5.25 0.25 5.58579 0.25 6C0.25 6.41421 0.585786 6.75 1 6.75H15C15.4142 6.75 15.75 6.41421 15.75 6Z" fill="#282F3E"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M15.75 1C15.75 0.585786 15.4142 0.25 15 0.25H1C0.585786 0.25 0.25 0.585786 0.25 1C0.25 1.41421 0.585786 1.75 1 1.75H15C15.4142 1.75 15.75 1.41421 15.75 1Z" fill="#282F3E"/>
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M15.75 11C15.75 10.5858 15.4142 10.25 15 10.25H1C0.585786 10.25 0.25 10.5858 0.25 11C0.25 11.4142 0.585786 11.75 1 11.75H15C15.4142 11.75 15.75 11.4142 15.75 11Z" fill="#282F3E"/>
 						</svg>
+							
 					</button>
 				</div>
 
@@ -267,13 +269,15 @@
 				<knowledge-base></knowledge-base>
 			</div>
 
-			<div v-if="$root.promptCookie" v-cloak class="fixed z-50 bottom-5 left-5 w-96 bg-white rounded-xl px-5 py-4 text-sm shadow-lg">
-				This website stores cookies on your computer. These cookies are used to collect information about how you interact with our website and allow us to remember you. We use this information in order to improve and customize your browsing experience and for analytics and metrics about our visitors both on this website and other media. To find out more about the cookies we use, see our <u><a href="/privacy-policy" target="_blank">Privacy Policy</a></u>. <br /><br />
-				If you decline, your information won’t be tracked when you visit this website. A single cookie will be used in your browser to remember your preference not to be tracked.
+			<div v-if="$root.promptCookie" v-cloak class="cookie-prompt">
+				<div>
+					This website stores cookies on your computer. These cookies are used to collect information about how you interact with our website and allow us to remember you. We use this information in order to improve and customize your browsing experience and for analytics and metrics about our visitors both on this website and other media. To find out more about the cookies we use, see our <u><a href="/privacy-policy" target="_blank">Privacy Policy</a></u>. <br /><br />
+					If you decline, your information won’t be tracked when you visit this website. A single cookie will be used in your browser to remember your preference not to be tracked.
 
-				<div class="flex justify-between mt-4">
-					<button class="btn btn-sm btn-outline-primary" type="button" @click="$root.clickPrompt()"><span>Disagree</span></button>
-					<button class="btn btn-sm btn-primary" type="button" @click="$root.clickPrompt()"><span>Agree</span></button>
+					<div class="flex justify-between mt-4">
+						<button class="btn btn-sm btn-outline-primary" type="button" @click="$root.clickPrompt()"><span>Disagree</span></button>
+						<button class="btn btn-sm btn-primary" type="button" @click="$root.clickPrompt()"><span>Agree</span></button>
+					</div>
 				</div>
 			</div>
 		</div>
