@@ -312,8 +312,8 @@
 	@media (max-width: 768px) {
 		@apply w-full flex-none flex flex-wrap p-0;
 
-		.sidebar-menu-item {
-			@apply w-4/12 border-r border-b text-center -mt-1 pt-2.5;
+		.logout {
+			@apply w-full px-6;
 		}
 	}
 }
