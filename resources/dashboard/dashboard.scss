@@ -77,6 +77,24 @@
 		@apply bg-white rounded-xl px-5 py-4 text-sm shadow-lg;
 	}
 }
+.notifications {
+	@apply absolute top-0  h-screen overflow-auto bg-white shadow-md z-10 opacity-0 pointer-events-none;
+	width: 250px;
+	&.open {
+		@apply opacity-100 pointer-events-auto;
+		right: -250px;
+	}
+}
+
+@media (max-width: 991px) {
+	.notifications {
+		@apply w-screen;
+		&.open {
+			right: auto;
+			left: 0;
+		}
+	}
+}
 // .vc-highlight {
 // 	// background-color: $primary !important;
 // }

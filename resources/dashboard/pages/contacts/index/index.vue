@@ -113,7 +113,7 @@
 		</div>
 
 		<div v-if="addContact">
-			<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+			<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
 				<div class="ml-7 lg:ml-0">
 					ADD CONTACT
 				</div>

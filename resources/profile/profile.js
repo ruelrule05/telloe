@@ -191,7 +191,7 @@ export default {
 		],
 		bookings: [],
 		masks: {
-			input: 'MMM D, YYYY'
+			input: 'MMMM D, YYYY'
 		},
 		timezonesOptions: [],
 		authenticate: false,

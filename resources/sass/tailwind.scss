@@ -90,6 +90,11 @@ body.modal-open {
 		@apply border-transparent;
 		border-top-color: white;
 	}
+	&.spinner-xs {
+		@apply border;
+		width: 15px;
+		height: 15px;
+	}
 }
 .button-date-nav {
 	@apply lg:inline-flex flex items-center align-bottom rounded-full font-semibold border-solid border border-primary font-serif uppercase text-xs text-primary;

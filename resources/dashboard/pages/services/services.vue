@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div v-show="!serviceToEdit" class="min-h-screen flex flex-col relative">
-			<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+			<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
 				<div class="ml-7 lg:ml-0 absolute lg:static top-7">
 					EVENT TYPES
 				</div>

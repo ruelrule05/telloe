@@ -1,4 +1,7 @@
 ::v-deep {
+	.v-calendar-daily__head {
+		border-right: none !important;
+	}
 	.v-calendar-events .v-event-timed {
 		@apply border-none p-2 transition-colors shadow-inner overflow-visible #{!important};
 		min-height: 48px !important;
@@ -15,6 +18,7 @@
 	}
 	.theme--light.v-calendar-daily {
 		border-top: none !important;
+		border-left: none !important;
 	}
 	.v-calendar-daily__intervals-head,
 	.v-calendar-daily__intervals-body {

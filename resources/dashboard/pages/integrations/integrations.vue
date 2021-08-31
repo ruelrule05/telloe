@@ -1,6 +1,6 @@
 <template>
 	<div class="h-100">
-		<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+		<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
 			<span class="ml-7 lg:ml-0">
 				INTEGRATIONS
 			</span>

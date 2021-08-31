@@ -10,7 +10,7 @@
 			<div>
 				<div class="flex flex-col lg:flex-row justify-between items-end lg:items-center">
 					<div class="order-2 mt-5 lg:order-none lg:mt-0 w-full lg:w-8/12">
-						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2 mb-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
+						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2 mb-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 						</div>
 					</div>

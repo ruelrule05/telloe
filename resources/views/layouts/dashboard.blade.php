@@ -9,12 +9,32 @@
 		<div id="app" class="flex overflow-hidden" v-cloak v-if="auth">
 			<div :class="isSidebarOpen ? 'block' : 'hidden'" @click="isSidebarOpen = false"  class="fixed z-20 inset-0 bg-black opacity-50 transition-opacity lg:hidden"></div>
 			
-			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary overflow-auto w-full fixed z-40 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0">
+			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary fixed z-40 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0">
 				<div class="p-8 flex justify-between border-bottom">
 					<a href="/"><img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6"></a>
-					<button class="rounded-full transition-colors hover:bg-gray-200 hover:text-gray-500 focus:outline-none p-1" type="button">
+					<button class="rounded-full transition-colors hover:bg-gray-200 hover:text-gray-500 focus:outline-none p-1" :class="{'bg-gray-200 text-gray-500': notificationsOpen}" type="button" @click="notificationsOpen = !notificationsOpen">
 						<bell-icon class="fill-current"></bell-icon>
 					</button>
+
+					<!-- Notifications -->
+					<div class="notifications" :class="{open: notificationsOpen}">
+						<div class="lg:hidden text-black absolute top-5 right-5 z-20"  @click="notificationsOpen = false">
+							<close-icon class="fill-current w-4 h-4"></close-icon>
+						</div>
+						<template v-if="notifications.length > 0">
+							<div class="flex items-center text-sm p-3">
+								<h6 class="font-bold">New Notifications</h6>
+								{{-- <u class="text-blue-400 ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u> --}}
+							</div>
+							<div v-for="(notification, index) in notifications" v-if="!notification.is_read" class="cursor-pointer border-bottom hover:bg-gray-100 transition-colors" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
+								<div class="text-sm p-3">
+									<div v-html="notification.description" class="leading-tight text-xs"></div>
+									<small class="text-muted">@{{ notification.created_at }}</small>
+								</div>
+							</div>
+						</template>
+						<div v-else class="text-muted absolute-center text-sm w-full text-center z-10">No new notifications.</div>
+					</div>
 				</div>
 
 				<div class="flex flex-col p-8">
@@ -159,40 +179,6 @@
 					</div>
 
 
-					<!-- Notifications -->
-					<div class="d-none mt-auto mb-2 sidebar-menu " hidden>
-						<a class="cursor-pointer d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" target="_blank" href="/contact">
-							<span class="pl-3">Contact Us</span>
-						</a>
-
-						<div class="dropright">
-							<div class="cursor-pointer d-flex align-items-center list-group-item border-0 rounded-0 m-0 px-4" data-toggle="dropdown" data-offset="10, 5" ref="notificationsDropdown">
-								<bell-icon height="18" width="18" class="sidebar-icon" transform="scale(1.3)"></bell-icon>
-								<span class="pl-3">Notifications</span>
-								<small class="badge badge-danger text-white ml-auto message-count">@{{ notificationsCount }}</small>
-							</div>
-							<div class="dropdown-menu overflow-auto mh-100vh cursor-auto">
-								<template v-if="notifications.length > 0">
-									<div class="d-flex align-items-center pb-2 pt-1 position-sticky">
-										<h6 class="mb-0 font-heading">New Notifications</h6>
-										<u class="text-link ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u>
-									</div>
-									<div v-for="(notification, index) in notifications" v-if="!notification.is_read" class="dropdown-item cursor-pointer mt-2" :class="{'bg-light': !notification.is_read}" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
-										<div class="d-flex">
-											<div>
-												<div v-html="notification.description"></div>
-												<small class="text-secondary">@{{ notification.created_at }}</small>
-											</div>
-											<div class="ml-auto">
-												<button class="btn btn-light shadow-none p-0 badge-pill line-height-0 close mr-n1 mt-n1 float-none" @click.stop="notification.is_read = true; updateNotification(notification); notifications.splice(index, 1); jQuery($refs['notificationsDropdown']).dropdown('update')"><close-icon width="18" height="18" transform="scale(1.2)"></close-icon></button>
-											</div>
-										</div>
-									</div>
-								</template>
-								<div v-else class="text-secondary dropdown-item disabled">No new notifications.</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 

@@ -1,9 +1,11 @@
 .calendar-container {
 	.v-calendar {
 		@apply h-full border-0;
-		.vc-header,
+		.vc-header {
+			@apply mb-4 pt-0;
+		}
 		.vc-arrows-container {
-			@apply hidden;
+			@apply pt-0;
 		}
 		.vc-title {
 			font-family: 'Avenir Next';
@@ -105,13 +107,13 @@
 			}
 		}
 		button {
-			@apply whitespace-pre
+			@apply whitespace-pre;
 		}
 	}
 }
 .calendar-booking {
 	@apply z-40;
 	@media (max-width: 425px) {
-		width: 100% !important;	
+		width: 100% !important;
 	}
 }

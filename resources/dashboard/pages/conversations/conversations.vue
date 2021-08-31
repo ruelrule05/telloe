@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="flex overflow-hidden flex-col" :class="{ 'h-screen': !banner }">
-			<div class="content-header border-bottom lg:static fixed w-full bg-white z-10">
+			<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
 				<div class="ml-7 lg:ml-0">
 					MESSAGES
 				</div>

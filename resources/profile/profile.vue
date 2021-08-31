@@ -128,7 +128,7 @@
 											selectedService = assignedService;
 										"
 									>
-										<div class="flex items-center">
+										<div class="flex">
 											<div class="profile-image profile-image-sm" :style="{ 'background-image': `url(${assignedService.coach.profile_image})` }">
 												<span v-if="!assignedService.coach.profile_image">{{ assignedService.coach.initials }}</span>
 											</div>
@@ -136,7 +136,7 @@
 												<h6 class="text-primary font-bold">
 													{{ assignedService.coach.full_name }}
 												</h6>
-												<small class="text-muted text-sm">{{ assignedService.coach.timezone }}</small>
+												<div class="text-muted text-sm">{{ assignedService.coach.timezone }}</div>
 											</div>
 										</div>
 									</div>
@@ -150,7 +150,17 @@
 									<div>
 										<div class="button-date-nav lg:mt-0 mt-2">
 											<button type="button" @click="previousWeek()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-											<span class="flex-grow text-center">{{ dayjs(startDate).format('MMMM D, YYYY') }}</span>
+
+											<div class="px-2">
+												<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
+													<template v-slot="{ inputValue, inputEvents }">
+														<button type="button" class="uppercase font-semibold" v-on="inputEvents">
+															<span>{{ inputValue }}</span>
+														</button>
+													</template>
+												</v-date-picker>
+											</div>
+
 											<button type="button" @click="nextWeek()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 										</div>
 									</div>

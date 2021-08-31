@@ -77,7 +77,8 @@ window.app = new Vue({
 		cookieItem: 'telloe_cookie_accepted',
 
 		isSidebarOpen: false,
-		isChildPage: false
+		isChildPage: false,
+		notificationsOpen: false
 	},
 
 	computed: {

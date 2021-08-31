@@ -63,6 +63,10 @@ export default {
 		clearable: {
 			type: Boolean,
 			default: false
+		},
+		loading: {
+			type: Boolean,
+			default: false
 		}
 	},
 

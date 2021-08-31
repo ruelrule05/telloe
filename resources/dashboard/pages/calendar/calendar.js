@@ -39,7 +39,8 @@ export default {
 			input: 'MMMM D, YYYY'
 		},
 		isMobile: false,
-		showCalendarMobile: false
+		showCalendarMobile: false,
+		googleCalendarEventsLoading: false
 	}),
 
 	computed: {
@@ -216,6 +217,10 @@ export default {
 			if (this.$root.auth.google_calendar_id) {
 				let response = await axios.get('/google_calendar_events');
 				this.googleCalendarEvents = response.data;
+				this.googleCalendarEventsLoading = true;
+				response = await axios.get('/google_calendar_events', { params: { refresh: true } });
+				this.googleCalendarEvents = response.data;
+				this.googleCalendarEventsLoading = false;
 			}
 		},
 
@@ -234,6 +239,20 @@ export default {
 		dayClick(date) {
 			this.overview = false;
 			this.selectedDate = date;
+		},
+
+		prevMonth() {
+			this.selectedDate = dayjs(this.selectedDate)
+				.subtract(1, 'month')
+				.toDate();
+			this.$refs['v-calendar'].move(this.selectedDate);
+		},
+
+		nextMonth() {
+			this.selectedDate = dayjs(this.selectedDate)
+				.add(1, 'month')
+				.toDate();
+			this.$refs['v-calendar'].move(this.selectedDate);
 		},
 
 		prevDate() {

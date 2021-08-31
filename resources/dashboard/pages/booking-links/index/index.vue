@@ -52,21 +52,17 @@
 						<div class="border-bottom py-4">
 							<div class="flex justify-between relative">
 								<div class="lg:w-full w-6/12">
-									<div class="text-primary font-bold lg:w-6/12 w-auto">
-										{{ booking_link.name }}
-									</div>
+									<router-link :to="`/dashboard/booking-links/${booking_link.id}`" custom v-slot="{ navigate }">
+										<div class="text-primary font-bold lg:w-6/12 w-auto cursor-pointer hover:underline" @click="navigate">
+											{{ booking_link.name }}
+										</div>
+									</router-link>
 									<div class="text-muted text-xs flex flex-col lg:flex-row lg:w-6/12 w-auto">
 										Created: {{ formatDate(booking_link.created_at) }} <span class="ml-0 lg:ml-3">Duration: {{ booking_link.duration }} mins</span>
 									</div>
 								</div>
 								<div class="flex lg:block items-start justify-end absolute lg:static right-0 top-0">
 									<div class="flex items-center">
-										<router-link :to="`/dashboard/booking-links/${booking_link.id}`" custom v-slot="{ navigate }">
-											<button type="button" class="btn btn-sm btn-outline-primary mr-2 flex items-center" @click="navigate">
-												<span>Show</span>
-												<span class="hidden md:block ml-1">Details</span>
-											</button>
-										</router-link>
 										<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action($event, booking_link)">
 											<template #button>
 												<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">

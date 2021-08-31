@@ -1,5 +1,5 @@
 <template>
-	<div class="min-h-full flex flex-col overflow-x-hidden">
+	<div class="min-h-full flex flex-col overflow-x-hidden border">
 		<div class="flex items-center border-bottom lg:static fixed w-full bg-white z-10" :class="{ 'flex-col lg:flex-row': !overview }">
 			<div class="content-header" :class="{ 'calendar-header': !overview }">
 				<div v-if="overview" class="ml-7 lg:ml-0 absolute md:static top-7">CALENDAR</div>
@@ -47,7 +47,7 @@
 		<div class="lg:hidden block" :class="overview ? 'h-20' : 'h-28 md:h-20'" />
 
 		<div v-if="banner" class="p-4 lg:p-8 border-bottom relative">
-			<div class="font-serif absolute lg:top-10 lg:right-10 top-6 right-6 z-10">
+			<div class="font-serif absolute lg:top-10 lg:right-10 top-6 right-6 z-5">
 				<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 			</div>
 			<div class="bg-primary-ultralight justify-between rounded-xl lg:flex p-8">
@@ -65,7 +65,7 @@
 
 		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
 			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
-			<VueSelect class="w-full md:w-auto mt-1 md:mt-0" label="Google Calendar" v-if="googleCalendars.length" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
+			<VueSelect v-if="googleCalendars.length" label="Google Calendar" :loading="googleCalendarEventsLoading" class=" w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
 		</div>
 
 		<div v-if="overview" class="flex flex-grow">
@@ -73,7 +73,6 @@
 				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
 			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{ open: showCalendarMobile }">
-				<h6 class="font-serif uppercase px-5 font-semibold text-sm mb-3">{{ dayjs(selectedDate).format('MMMM DD, YYYY') }}</h6>
 				<div>
 					<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 						<div slot="day-content" slot-scope="data">

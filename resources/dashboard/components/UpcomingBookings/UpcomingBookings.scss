@@ -6,3 +6,9 @@
 		@apply border-primary text-primary;
 	}
 }
+
+@media (max-width: 991px) {
+	.upcoming-day-label {
+		@apply w-full;
+	}
+}

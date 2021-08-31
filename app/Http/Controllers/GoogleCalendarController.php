@@ -39,9 +39,9 @@ class GoogleCalendarController extends Controller
         return GoogleCalendarService::update($request);
     }
 
-    public function googleCalendarEvents()
+    public function googleCalendarEvents(Request $request)
     {
-        return GoogleCalendarService::googleCalendarEvents();
+        return GoogleCalendarService::googleCalendarEvents($request);
     }
 
     public function googleCalendarList(Request $request)

@@ -13,7 +13,7 @@
 						</div>
 					</div>
 					<div class="ml-2">
-						<h5 v-if="conversation.members.length > 1" class="font-bold md:font-normal text-sm sm:text-xs md:text-xl" contenteditable @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
+						<h5 v-if="conversation.members.length > 1" class="font-bold md:font-normal text-sm sm:text-xs md:text-xl" @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
 						<h5 v-else class="font-bold md:font-normal text-sm sm:text-xs md:text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
 						<small v-if="conversation.member.is_pending" class="text-warning">Pending account</small>
 						<div class="flex items-center" v-else-if="conversation.member.id && conversation.member.last_online_format">
@@ -54,7 +54,7 @@
 					</template>
 					<button class="text-primary hidden lg:block" :data-intro="$root.intros.conversations.steps[4]" data-step="5" :class="{ active: showNotes }" @click="showNotes = true"><note-icon class="fill-current"></note-icon></button>
 					<button class="text-primary hidden lg:block" @click="copyConvoLink()"><link-icon class="fill-current transform scale-125"></link-icon></button>
-					<VueDropdown :options="['Audio Call', 'Notes', 'Copy Link']"  @click="action">
+					<VueDropdown :options="['Audio Call', 'Notes', 'Copy Link']" @click="action">
 						<template #button>
 							<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 block lg:hidden justify-center">
 								<MoreIcon class="w-4 h-4"></MoreIcon>
