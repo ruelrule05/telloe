@@ -58,21 +58,23 @@ class GoogleCalendarService
                     $GoogleCalendarClient = new GoogleCalendarClient($user);
                     $client = $GoogleCalendarClient->client;
                     $service = new Google_Service_Calendar($client);
-                    $eventsList = $service->events->listEvents($user->google_calendar_id);
-                    while (true) {
-                        foreach ($eventsList->getItems() as $event) {
-                            if (! isset($event->getExtendedProperties()->private['booking'])) {
-                                $events[] = $event;
+                    foreach ($user->google_calendar_id as $calendarID) {
+                        $eventsList = $service->events->listEvents($calendarID);
+                        while (true) {
+                            foreach ($eventsList->getItems() as $event) {
+                                if (! isset($event->getExtendedProperties()->private['booking'])) {
+                                    $events[] = $event;
+                                }
                             }
-                        }
-                        $pageToken = $eventsList->getNextPageToken();
-                        if ($pageToken) {
-                            $optParams = ['pageToken' => $pageToken];
-                            $eventsList = $service->events->listEvents($user->google_calendar_id, $optParams);
-                        } else {
-                            break;
-                        }
-                    };
+                            $pageToken = $eventsList->getNextPageToken();
+                            if ($pageToken) {
+                                $optParams = ['pageToken' => $pageToken];
+                                $eventsList = $service->events->listEvents($user->google_calendar_id, $optParams);
+                            } else {
+                                break;
+                            }
+                        };
+                    }
 
                     return $events;
                 }

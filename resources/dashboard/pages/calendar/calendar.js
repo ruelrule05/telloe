@@ -224,12 +224,14 @@ export default {
 			}
 		},
 
-		async updateGoogleCalendar(calendarId) {
-			let response = await axios.put('/google_calendar', { google_calendar_id: calendarId });
+		async updateGoogleCalendar(calendars) {
+			this.googleCalendarEventsLoading = true;
+			let response = await axios.put('/google_calendar', { google_calendar_id: calendars });
 			this.googleCalendarEvents = response.data.map(event => {
 				event.timezone = event.start.timeZone;
 				return event;
 			});
+			this.googleCalendarEventsLoading = false;
 		},
 
 		toggleView() {

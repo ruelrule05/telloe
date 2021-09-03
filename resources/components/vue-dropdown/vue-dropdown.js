@@ -38,7 +38,6 @@ export default {
 
 		emitClick(option) {
 			this.$emit('click', option);
-			this.open = false;
 		}
 	}
 };

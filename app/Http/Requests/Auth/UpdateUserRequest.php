@@ -48,6 +48,7 @@ class UpdateUserRequest extends FormRequest
             'packages' => 'boolean',
             'team' => 'boolean',
             'payments' => 'boolean',
+            'blocked_timeslots' => 'nullable|array'
         ];
     }
 }

@@ -85,7 +85,8 @@ class User extends Authenticatable implements JWTSubject
         'xero_token' => 'array',
         'zoom_token' => 'array',
         'default_availability' => 'array',
-        'blocked_timeslots' => 'array'
+        'blocked_timeslots' => 'array',
+        'google_calendar_id' => 'array'
     ];
 
     public function subscription()

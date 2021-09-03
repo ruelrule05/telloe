@@ -19,6 +19,13 @@
 					<div class="block-dropdown-menu w-11/12 -top-12">
 						<button type="button" @click="timeslotToBlock.date = null" class="absolute top-1 right-1 rounded-full p-1 border text-gray-600 ml-1 transition-colors hover:bg-gray-200 focus:outline-none"><CloseIcon class="fill-current h-2 w-2"></CloseIcon></button>
 						<timerangepicker @change="timeslotBlockChange($event, interval.date)" :hideClearButton="true" :vertical="true" :start="interval.time"></timerangepicker>
+						<div class="-mt-px">
+							<v-date-picker @input="timeslotBlockEndDateChange" :value="interval.date" :min-date="interval.date" :popover="{ visibility: 'click', placement: 'right' }" :masks="masks">
+								<template v-slot="{ inputValue, inputEvents }">
+									<span v-on="inputEvents" class="text-blue-400 text-xs cursor-pointer hover:underline">{{ inputValue }}</span>
+								</template>
+							</v-date-picker>
+						</div>
 						<button class="btn btn-sm btn-outline-primary mt-2 w-full" type="button" @click="blockTimeslot"><span>Block</span></button>
 					</div>
 				</div>
@@ -28,11 +35,15 @@
 				<div class="flex justify-between h-full relative" :data-booking-id="(event.booking || {}).id">
 					<div class="overflow-hidden">
 						<div>{{ event.name }}</div>
-						<div>{{ convertTime(event.start, 'hh:mmA') }}&mdash;{{ convertTime(event.end, 'hh:mmA') }}</div>
+						<div v-if="dayjs(event.start).format('YYYY-MM-DD') == dayjs(event.end).format('YYYY-MM-DD')">{{ convertTime(event.start, 'hh:mmA') }}&mdash;{{ convertTime(event.end, 'hh:mmA') }}</div>
+						<div v-else>
+							<div>{{ dayjs(event.start).format('MMM DD, YYYY hh:mmA') }}</div>
+							<div>{{ dayjs(event.end).format('MMM DD, YYYY hh:mmA') }}</div>
+						</div>
 					</div>
 					<GoogleIcon class="h-4 w-4" v-if="event.type == 'google-event'"></GoogleIcon>
 					<div v-if="event.booking && event.booking.type == 'blocked'" class="absolute w-full h-full">
-						<VueDropdown :options="['Unblock timeslot']" @click="newEventAction($event, event.booking)" class="w-full h-full"> </VueDropdown>
+						<VueDropdown :options="['Unblock timeslot']" @click="newEventAction($event, event.booking)" class="w-full h-full" dropPosition="right"> </VueDropdown>
 					</div>
 				</div>
 			</template>

@@ -27,6 +27,32 @@
 .select-item {
 	@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
 	&.active {
-		@apply bg-primary text-white;
+		&:not(.multiple) {
+			@apply bg-primary text-white;
+		}
+		.checkbox .cr {
+			border-color: theme('colors.primary.DEFAULT');
+			background-color: theme('colors.primary.DEFAULT');
+			svg {
+				@apply opacity-100;
+			}
+		}
 	}
+}
+.checkbox .cr {
+	@apply transition-all mr-2 cursor-pointer;
+	position: relative;
+	border: 1px solid #ddd;
+	border-radius: 0.43em;
+	width: 1.4em;
+	height: 1.4em;
+	float: left;
+}
+.checkbox .cr svg {
+	@apply transition-all opacity-0;
+	position: absolute;
+	line-height: 0;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }

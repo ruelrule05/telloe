@@ -10,6 +10,9 @@
 		&.top {
 			@apply origin-bottom top-auto bottom-10;
 		}
+		&.right {
+			@apply origin-left top-0 -right-36;
+		}
 	}
 	.dropdown-item {
 		@apply block cursor-pointer rounded transition-colors px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900;

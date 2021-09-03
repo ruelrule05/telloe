@@ -91,7 +91,7 @@ class Service extends BaseModel
     {
         $timeslots = [];
         $holidays = $this->holidays;
-        $user = $this->coach;
+        $user = User::find($this->user_id);
 
         //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
@@ -131,7 +131,9 @@ class Service extends BaseModel
                 'is_booked' => false,
             ];
             foreach ($user->blocked_timeslots ?? [] as $blockedTimeslot) {
-                if ($blockedTimeslot['date'] == $dateString && $blockedTimeslot['start'] <= $timeslot['time'] && $blockedTimeslot['end'] >= $timeslot['time']) {
+                $blockedStart = Carbon::parse($blockedTimeslot['start']);
+                $blockedEnd = Carbon::parse($blockedTimeslot['end']);
+                if ($blockedStart->lessThanOrEqualTo($timeStart) && $blockedEnd->greaterThanOrEqualTo($timeStart)) {
                     $timeslotBlocked = true;
                     break;
                 }

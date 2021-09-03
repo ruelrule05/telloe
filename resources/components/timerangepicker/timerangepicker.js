@@ -182,14 +182,14 @@ export default {
 	},
 
 	methods: {
-		timeslots(start) {
+		timeslots(start, add = 0) {
 			if (start) {
 				let parts = start.split(':');
 				let period = start.slice(-2).toLowerCase();
 				if (period == 'pm' && parts[0] < 12) {
 					parts[0] = parseInt(parts[0]) + 12;
 				}
-				start = parseInt(parts[0] * 60) + parseInt(parts[1]);
+				start = parseInt(parts[0] * 60) + parseInt(parts[1]) + add;
 			} else {
 				start = 0;
 			}

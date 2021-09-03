@@ -34,7 +34,7 @@ class GoogleCalendarController extends Controller
     public function update(Request $request)
     {
         $this->validate($request, [
-            'google_calendar_id' => 'required'
+            'google_calendar_id' => 'nullable|array'
         ]);
         return GoogleCalendarService::update($request);
     }

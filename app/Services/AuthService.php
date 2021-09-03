@@ -279,7 +279,7 @@ class AuthService
         $data = $request->except('profile_image');
         $data['username'] = str_replace(' ', '', $request->username);
         $user = Auth::user();
-        $data['blocked_timeslots'] = $user->blocked_timeslots ?? [];
+        $data['blocked_timeslots'] = $data['blocked_timeslots'] ?? [];
 
         if (isValidTimezone($request->timezone)) {
             $data['timezone'] = $request->timezone;

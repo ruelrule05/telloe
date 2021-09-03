@@ -1,10 +1,15 @@
 import ChevronDownIcon from '../../icons/chevron-down';
 import CloseIcon from '../../icons/close';
 import ClickOutside from 'vue-click-outside';
+import VueCheckbox from '../vue-checkbox/vue-checkbox.vue';
+import CheckmarkIcon from '../../icons/checkmark';
+
 export default {
 	components: {
 		ChevronDownIcon,
-		CloseIcon
+		CloseIcon,
+		VueCheckbox,
+		CheckmarkIcon
 	},
 	directives: {
 		ClickOutside
@@ -67,6 +72,10 @@ export default {
 		loading: {
 			type: Boolean,
 			default: false
+		},
+		multiple: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -82,6 +91,13 @@ export default {
 	computed: {
 		text_value() {
 			let value = this.options.find(x => x.value == this.selected_value);
+			if (this.multiple && this.selected_value) {
+				if (this.selected_value.length > 1) {
+					return this.selected_value.length + ' selected';
+				} else if (this.selected_value.length == 0) {
+					return this.placeholder;
+				}
+			}
 			return (value || {}).text || this.value || this.placeholder;
 		},
 
@@ -150,6 +166,10 @@ export default {
 	},
 
 	methods: {
+		optionActive(option) {
+			return option.value == this.selected_value || (this.selected_value && typeof this.selected_value == 'object' && this.selected_value.find(x => x == option.value));
+		},
+
 		clear() {
 			this.selected_value = null;
 			this.$emit('input', null);
@@ -160,12 +180,30 @@ export default {
 		},
 
 		updateValue(option) {
-			this.show = false;
+			if (!this.multiple) {
+				this.show = false;
+			}
 			if (!this.noSetValue) {
-				this.selected_value = option.value;
+				if (this.multiple) {
+					if (!this.selected_value) {
+						this.selected_value = [];
+					}
+					let index = this.selected_value.findIndex(x => x == option.value);
+					if (index > -1) {
+						this.selected_value.splice(index, 1);
+					} else {
+						this.selected_value.push(option.value);
+					}
+				} else {
+					this.selected_value = option.value;
+				}
 			}
 			this.hiddenValue = option.value;
-			this.$emit('input', option.value);
+			if (this.multiple) {
+				this.$emit('input', this.selected_value);
+			} else {
+				this.$emit('input', option.value);
+			}
 		}
 	}
 };

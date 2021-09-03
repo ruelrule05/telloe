@@ -23,7 +23,14 @@
 						No results found
 					</div>
 					<div v-if="filtered_options.length > 0">
-						<span v-for="(option, index) in filtered_options" :key="index" class="select-item overflow-hidden truncate" :class="{ active: option.value == selected_value }" @click.prevent="updateValue(option)"> {{ option.text }}</span>
+						<span v-for="(option, index) in filtered_options" :key="index" class="select-item overflow-hidden truncate flex items-center" :class="{ active: optionActive(option), multiple: multiple }" @click.prevent="updateValue(option)">
+							<div class="checkbox" v-if="multiple">
+								<label class="mb-0">
+									<span class="cr"><CheckmarkIcon /></span>
+								</label>
+							</div>
+							{{ option.text }}
+						</span>
 					</div>
 					<div v-else class="text-sm py-2 text-muted text-center">{{ noValuePlaceholder }}</div>
 				</div>

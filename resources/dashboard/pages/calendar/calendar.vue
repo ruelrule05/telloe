@@ -65,7 +65,7 @@
 
 		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
 			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
-			<VueSelect v-if="googleCalendars.length" label="Google Calendar" :loading="googleCalendarEventsLoading" class=" w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Google Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
+			<VueSelect v-if="googleCalendars.length" multiple label="Google Calendar" :loading="googleCalendarEventsLoading" class=" w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
 		</div>
 
 		<div v-if="overview" class="flex flex-grow">
