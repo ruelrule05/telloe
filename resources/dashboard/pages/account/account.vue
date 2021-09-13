@@ -54,7 +54,7 @@
 						</div>
 						<div class="mb-5">
 							<label>Timezone</label>
-							<vue-select :options="availableTimezones" drop-position="top" searchable v-model="user.timezone"></vue-select>
+							<vue-select :options="availableTimezones" drop-position="w-full" searchable v-model="user.timezone"></vue-select>
 						</div>
 						<div class="mb-5">
 							<label>Mobile No.</label>

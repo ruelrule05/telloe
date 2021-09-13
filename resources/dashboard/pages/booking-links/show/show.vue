@@ -6,7 +6,7 @@
 		</div>
 		<div class="h-20 lg:hidden block" />
 		<div class="p-6 md:p-8">
-			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
+			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This match up link has been booked already.</div>
 			<div>
 				<div class="flex flex-col lg:flex-row justify-between items-end lg:items-center">
 					<div class="order-2 mt-5 lg:order-none lg:mt-0 w-full lg:w-8/12">
@@ -139,9 +139,9 @@
 		</div>
 
 		<Modal ref="deleteModal">
-			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Booking Link</h6>
+			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Match Up Link</h6>
 			<p class="text-center mt-3">
-				Are you sure to delete this booking link?
+				Are you sure to delete this match up link?
 			</p>
 			<div class="flex items-center justify-between mt-6">
 				<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.deleteModal.hide()">

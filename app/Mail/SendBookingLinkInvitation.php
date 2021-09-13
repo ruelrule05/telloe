@@ -13,7 +13,7 @@ class SendBookingLinkInvitation extends Mailer
     public function __construct(BookingLink $bookingLink, $email = null)
     {
         $this->actionUrl = url("/booking-links/$bookingLink->uuid");
-        $this->emailMessage = "<strong>{$bookingLink->user->full_name}</strong> has invited you in a booking link.";
+        $this->emailMessage = $bookingLink->message ? $bookingLink->message : "<strong>{$bookingLink->user->full_name}</strong> has sent you a range of times to select that match up with your time zone and when {$bookingLink->user->first_name} is available to meet.";
         if ($email) {
             $this->actionUrl .= "?email={$email}";
         }

@@ -19,9 +19,6 @@
 					<input v-if="searchable" type="text" spellcheck="false" v-model="search" class="search-input" ref="input-searchable" placeholder="Search..." />
 				</div>
 				<div class="overflow-auto h-full" ref="selectMenu">
-					<div class="text-center text-gray-400 text-sm mb-2" v-if="filtered_options.length == 0 && searchable">
-						No results found
-					</div>
 					<div v-if="filtered_options.length > 0">
 						<span v-for="(option, index) in filtered_options" :key="index" class="select-item overflow-hidden truncate flex items-center" :class="{ active: optionActive(option), multiple: multiple }" @click.prevent="updateValue(option)">
 							<div class="checkbox" v-if="multiple">

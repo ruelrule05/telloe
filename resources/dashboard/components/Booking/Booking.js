@@ -121,7 +121,11 @@ export default {
 
 		contactsOptions() {
 			return this.contacts.map(contact => {
-				return { name: contact.contact_user.full_name, value: contact.id, id: contact.id, contact_user: contact.contact_user };
+				let email = '';
+				if (contact.contact_user.full_name != contact.contact_user.email) {
+					email = ` (${contact.contact_user.email})`;
+				}
+				return { name: `${contact.contact_user.full_name}${email}`, value: contact.id, id: contact.id, contact_user: contact.contact_user };
 			});
 		}
 	},

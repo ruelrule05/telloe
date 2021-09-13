@@ -45,7 +45,7 @@
     <!-- End Google Tag Manager (noscript) -->
 
   @php $uri = request()->route()->uri() @endphp
-  @if(request()->route()->getName() != 'bookingPage' && $uri != 'affiliates' && $uri != 'affiliate-terms')
+  @if(request()->route()->getName() != 'bookingPage' && $uri != 'affiliates' && $uri != 'affiliate-terms' && $uri != 'booking-links/{uuid}')
   <script type="text/javascript">
     (function(w,d){
       w.HelpCrunch=function(){w.HelpCrunch.q.push(arguments)};w.HelpCrunch.q=[];

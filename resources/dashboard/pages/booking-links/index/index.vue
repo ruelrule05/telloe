@@ -2,7 +2,7 @@
 	<div class="min-h-screen flex flex-col relative bespoke" v-if="$root.auth && ready">
 		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
 			<div class="ml-9 lg:ml-0">
-				BESPOKE MEETINGS
+				MATCH UP MEETINGS
 			</div>
 			<div>
 				<button type="button" ref="toggleAddLinkBtn" class="btn btn-md whitespace-pre" :class="[addLink ? 'btn-outline-primary' : 'btn-primary']" @click="addLink = !addLink">
@@ -25,9 +25,9 @@
 					</div>
 					<div class="w-full md:w-7/12 ml-0 md:ml-10">
 						<p class="text-muxted mb-4">
-							Create a Bespoke suggested meeting time selector link that shows your available times, enables invited guests to select a time that works for them or suggest an alternative.
+							Create a Match Up suggested meeting time selector link that shows your available times, enables invited guests to select a time that works for them or suggest an alternative.
 						</p>
-						<button class="btn btn-md btn-outline-primary" type="button" @click="addLink = true"><span>CREATE A BESPOKE MEETING LINK</span></button>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="addLink = true"><span>CREATE A MATCH UP MEETING LINK</span></button>
 					</div>
 				</div>
 			</div>
@@ -37,14 +37,14 @@
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 				</div>
 				<div class="pl-4 -mt-1">
-					<p class="font-bold text-sm">You haven't created any bespoke links yet. Use the custom links creation form to set up a new custom link.</p>
+					<p class="font-bold text-sm">You haven't created any match up links yet. Use the custom links creation form to set up a new custom link.</p>
 					<button type="button" class="btn btn-outline-primary btn-md mt-4 whitespace-pre" @click="addLink = true"><span>Add New</span></button>
 				</div>
 			</div>
 
 			<div v-else class="flex flex-grow flex-col lg:flex-row">
 				<div class="w-full lg:w-4/12 p-8 border-r-0 lg:border-r border-b lg:border-b-0">
-					<p class="text-muted text-sm">Bespoke meetings are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
+					<p class="text-muted text-sm">Match up meetings are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
 				</div>
 
 				<div class="w-full lg:w-8/12 px-6 py-2">
@@ -106,9 +106,9 @@
 		</template>
 
 		<Modal ref="deleteModal">
-			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Booking Link</h6>
+			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Match Up Link</h6>
 			<p class="text-center mt-3">
-				Are you sure to delete this booking link?
+				Are you sure to delete this match up link?
 			</p>
 			<div class="flex items-center justify-between mt-6">
 				<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.deleteModal.hide()">

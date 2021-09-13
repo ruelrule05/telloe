@@ -75,6 +75,7 @@ class BookingLinkService
             'uuid' => Uuid::generate(),
             'emails' => $emails,
             'duration' => $request->duration,
+            'message' => $request->message
         ]);
 
         foreach ($contacts as $contact) {

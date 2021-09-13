@@ -205,12 +205,6 @@ export default {
 		}
 	},
 
-	mounted() {
-		if (this.authAction) {
-			this.$refs.authModal.show();
-		}
-	},
-
 	methods: {
 		async book() {
 			let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
@@ -275,6 +269,9 @@ export default {
 		},
 
 		toggleSelectTimeslot(state, timeslot) {
+			if (this.authAction) {
+				return this.$refs.authModal.show();
+			}
 			let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
 			let userID = emailData ? emailData.id : this.auth.id;
 			let propName = `${userID}-${this.selectedDate}`;

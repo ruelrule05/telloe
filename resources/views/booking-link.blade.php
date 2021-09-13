@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<title>Booking Link | {{ config('app.name')}}</title>
+	<title>Match Up Link | {{ config('app.name')}}</title>
 	@include('partials.meta_tags')
 	@include('partials.styles')
 	<link rel="stylesheet" href="{{ mix('css/booking-link.css') }}">
@@ -12,7 +12,7 @@
 	</div>
 	@include('partials.social_scripts')
 	<script>
-		const AUTH = {!! json_encode($user) !!};
+		const AUTH = {!! json_encode($user ?? ['email' => request()->input('email')]) !!};
 		const BOOKING_LINK = {!! json_encode($bookingLink) !!};
 		const AUTH_ACTION = '{{ $authAction }}';
 	</script>

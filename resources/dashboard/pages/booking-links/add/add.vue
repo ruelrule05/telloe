@@ -1,6 +1,6 @@
 <template>
 	<div class="p-8">
-		<h3 class="mb-5 lg:mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a bespoke meeting link</h3>
+		<h3 class="mb-5 lg:mb-10 font-serif font-extrabold tracking-tighter uppercase text-body text-xs">Create a match up meeting link</h3>
 		<vue-form-validate @submit="storeLink">
 			<div class="form">
 				<div class="flex flex-col lg:grid grid-cols-12 gap-x-8 justify-between form-inline">
@@ -11,7 +11,6 @@
 					<div class="col-span-6 form-field mb-3 lg:mb-0">
 						<label>Add Contacts or email</label>
 						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="" multiple clearOnSelect>
-							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
 								<button
 									v-if="isEmail.validate(data.search)"
@@ -63,7 +62,7 @@
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 									<div class="text-center px-2 pb-2 bg-white">
-										<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-if="timeslot.is_available || !timeslot.is_booked" v-model="timeslot.is_selected" @input="addTimeslot($event, timeslot)"></VueCheckbox>
+										<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-model="timeslot.is_available"></VueCheckbox>
 										<span v-if="timeslot.is_booked" class="text-xxs text-muted">Booked</span>
 									</div>
 								</td>
@@ -87,7 +86,7 @@
 
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
 									<div class="items-center column mb-2 px-1 bg-primary-ultralight">
-										<div class="timeslot-content selectable" :class="{ selected: dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+										<div class="timeslot-content selectable " :class="{ selected: timeslot.is_available }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
 										</div>
 									</div>
@@ -111,7 +110,7 @@
 								</td>
 								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
 									<div class="items-center column  mb-2 px-1" :style="{ backgroundColor: contact.color }">
-										<div class="timeslot-content" :class="{ selected: dates[selectedDate].selectedTimeslots.find(x => x.time == timeslot.time) }">
+										<div class="timeslot-content" :class="{ selected: timeslot.is_available }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact_user.timezone)"></p>
 										</div>
 									</div>
@@ -120,6 +119,9 @@
 						</table>
 					</div>
 				</div>
+
+				<label class="mt-6">Invitation Message</label>
+				<textarea v-model="message" :placeholder="`${$root.auth.full_name} has sent you a range of times to select that match up with your time zone and when ${$root.auth.first_name} is available to meet.`" class="resize-none lg:w-4/12" rows="4"></textarea>
 				<button type="submit" class="btn btn-md btn-primary mt-8"><span>Save</span></button>
 			</div>
 		</vue-form-validate>

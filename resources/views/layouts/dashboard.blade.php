@@ -9,7 +9,7 @@
 		<div id="app" class="flex overflow-hidden" v-cloak v-if="auth">
 			<div :class="isSidebarOpen ? 'block' : 'hidden'" @click="isSidebarOpen = false"  class="fixed z-20 inset-0 bg-black opacity-50 transition-opacity lg:hidden"></div>
 			
-			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary fixed z-40 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0">
+			<div :class="isSidebarOpen ? 'translate-x-0 ease-out w-full' : '-translate-x-full ease-in'" class="sidebar bg-secondary fixed z-40 inset-y-0 left-0 w-64 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0  flex flex-col">
 				<div class="p-8 flex justify-between border-bottom">
 					<a href="/"><img src="/logo.svg" alt="{{ config('app.url') }}" class="h-6"></a>
 					<button class="rounded-full transition-colors hover:bg-gray-200 hover:text-gray-500 focus:outline-none p-1" :class="{'bg-gray-200 text-gray-500': notificationsOpen}" type="button" @click="notificationsOpen = !notificationsOpen">
@@ -37,7 +37,7 @@
 					</div>
 				</div>
 
-				<div class="flex flex-col p-8">
+				<div class="flex flex-col p-8 flex-grow overflow-auto">
 					<router-link custom to="/dashboard/account">
 						<div @click="toggleSidebar('/dashboard/account')" class="cursor-pointer flex items-center justify-center">
 							<div class="profile-image profile-image-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
@@ -122,7 +122,7 @@
 							<div @click="toggleSidebar('/dashboard/services')" class="sidebar-menu-item" :class="{active: isActive}">Event Types</div>
 						</router-link>
 						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/booking-links">
-							<div @click="toggleSidebar('/dashboard/booking-links')" class="sidebar-menu-item" :class="{active: isActive}">Bespoke</div>
+							<div @click="toggleSidebar('/dashboard/booking-links')" class="sidebar-menu-item" :class="{active: isActive}">Match Up</div>
 						</router-link>
 
 
