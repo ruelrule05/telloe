@@ -76,14 +76,14 @@ window.app = new Vue({
 				this.auth = true;
 			}
 			this.videoOpen = videoOpen == 'true';
-			if (this.mobileApp) {
-				this.auth = true;
-			}
 
 			const email = urlParams.get('email');
 			if (email) this.email = email;
 		}
 		this.mobileApp = mobileApp == 'true';
+		if (this.mobileApp) {
+			this.auth = true;
+		}
 	},
 
 	mounted() {

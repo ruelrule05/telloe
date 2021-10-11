@@ -243,12 +243,36 @@ export default {
 						this.$root.auth = response.data;
 						this.$root.signupStep = 1;
 						this.loading = false;
+						this.trackier();
 					})
 					.catch(e => {
 						this.loading = false;
 						this.$parent.error = e.response.data.message;
 					});
 			}
+		},
+
+		trackier() {
+			let clickId = this.getCookieVal('click_id') || '';
+			if (clickId) {
+				var a = document.createElement('iframe');
+				a.setAttribute('src', 'https://trk.telloe.com/pixel?av=60c7d6899e6fbd61962cc603&sale_amount=AMOUNT&currency=USD&goal_value=Registration&click_id=' + clickId);
+				a.style.width = '1';
+				a.style.height = '1';
+				document.body.appendChild(a);
+			}
+		},
+
+		getCookieVal(name) {
+			const allCookies = document.cookie.split('; ');
+			var result = null;
+			allCookies.forEach(function(v) {
+				if (v.indexOf(name + '=') !== -1) {
+					result = v.split('=')[1];
+					return false;
+				}
+			});
+			return result;
 		}
 	}
 };

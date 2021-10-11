@@ -427,6 +427,7 @@ export default {
 				if (response) {
 					this.$refs.paymentModal.hide(true);
 					this.$root.auth.subscription = response.data;
+					this.trackier();
 				}
 			}
 			this.paymentLoading = false;
@@ -583,6 +584,34 @@ export default {
 			this.loading = false;
 
 			return response;
+		},
+
+		trackier() {
+			let clickId = this.getCookieVal('click_id') || '';
+			if (clickId) {
+				let amount = this.selectedPlan.price;
+				let goal_value = '';
+				if (this.selectedPlan.name == 'Annually') {
+					goal_value = '&goal_value=Yearly';
+				}
+				var a = document.createElement('iframe');
+				a.setAttribute('src', `https://trk.telloe.com/pixel?av=60c7d6899e6fbd61962cc603&sale_amount=${amount}&currency=USD${goal_value}&click_id=${clickId}`);
+				a.style.width = '1';
+				a.style.height = '1';
+				document.body.appendChild(a);
+			}
+		},
+
+		getCookieVal(name) {
+			const allCookies = document.cookie.split('; ');
+			var result = null;
+			allCookies.forEach(function(v) {
+				if (v.indexOf(name + '=') !== -1) {
+					result = v.split('=')[1];
+					return false;
+				}
+			});
+			return result;
 		}
 	}
 };
