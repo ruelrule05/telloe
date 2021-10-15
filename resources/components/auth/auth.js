@@ -5,7 +5,8 @@ import Reset from './reset.vue';
 import CloseIcon from '../../icons/close.vue';
 import jstz from 'jstz';
 const timezone = jstz.determine();
-import SocialLogin from '../../js/helpers/SocialLogin';
+import axios from 'axios';
+
 export default {
 	components: {
 		Login,
@@ -57,30 +58,14 @@ export default {
 
 		async FacebookLogin() {
 			this.pageloading = true;
-			let response = await SocialLogin.FacebookLogin();
-			this.pageloading = false;
-			if (response.data.user) {
-				if (this.$root.action == 'login') {
-					window.location.replace('/dashboard/calendar');
-				} else if (this.$root.action == 'signup') {
-					this.$root.auth = response.data.user;
-					this.$root.signupStep = 1;
-				}
-			}
+			let response = await axios.get('/auth/facebook/redirect');
+			window.location.href = response.data;
 		},
 
 		async GoogleSignin() {
 			this.pageloading = true;
-			let response = await SocialLogin.GoogleSignin();
-			this.pageloading = false;
-			if (response.data.user) {
-				if (this.$root.action == 'login') {
-					window.location.replace('/dashboard/calendar');
-				} else if (this.$root.action == 'signup') {
-					this.$root.auth = response.data.user;
-					this.$root.signupStep = 1;
-				}
-			}
+			let response = await axios.get('/auth/google/redirect');
+			window.location.href = response.data;
 		}
 	}
 };

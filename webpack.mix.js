@@ -47,7 +47,8 @@ mix.js('resources/js/page.js', 'js')
 	.js('resources/js/organization.js', 'js')
 	.js('resources/js/booking-link.js', 'js')
 	.js('resources/js/booking.js', 'js')
-	.js('resources/js/conversation.js', 'js');
+	.js('resources/js/conversation.js', 'js')
+	.js('resources/js/account-setup.js', 'js');
 
 mix.options({
 	postCss: [require('tailwindcss')]
@@ -87,13 +88,10 @@ if (mix.inProduction()) {
 
 mix.js('resources/js/form-builder.js', 'public/js');
 mix.autoload({
-    jquery: ['$', 'window.jQuery', 'jQuery']
+	jquery: ['$', 'window.jQuery', 'jQuery']
 });
 
-mix.scripts([
-    'node_modules/formBuilder/dist/form-builder.min.js',
-    'node_modules/formBuilder/dist/form-render.min.js'
-],'public/js/formbuilder.js');
+mix.scripts(['node_modules/formBuilder/dist/form-builder.min.js', 'node_modules/formBuilder/dist/form-render.min.js'], 'public/js/formbuilder.js');
 
 mix.webpackConfig({
 	plugins: [new ESLintPlugin(), new IgnoreVuetifyStylesPlugin()],

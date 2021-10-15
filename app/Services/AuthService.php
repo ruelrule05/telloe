@@ -37,6 +37,7 @@ class AuthService
     {
         $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
         $user = null;
+        $redirect = '/dashboard/calendar';
         if ($socialiteUser) {
             $data = Arr::except($socialiteUser->user, ['id']);
             $data['first_name'] = $data['first_name'] ?? $data['given_name'];
@@ -51,6 +52,7 @@ class AuthService
                     ]);
                 }
             } else {
+                $redirect = '/account/setup';
                 $time = time();
                 $profile_image = 'storage/profile-images/' . $time . '.jpeg';
                 Image::make($socialiteUser->getAvatar())->save(public_path($profile_image));
@@ -77,11 +79,7 @@ class AuthService
             $user->makeVisible(['default_availability']);
         }
 
-        echo '
-        <script>
-            window.opener.postMessage({user: ' . json_encode($user) . '});
-            window.close();
-        </script>';
+        return redirect($redirect);
     }
 
     public static function get(Request $request, $last_online = true)
@@ -613,5 +611,11 @@ class AuthService
         }
 
         return response(['user' => $user]);
+    }
+
+    public static function setup()
+    {
+        $authUser = Auth::user();
+        return view('pages.account-setup', compact('authUser'));
     }
 }

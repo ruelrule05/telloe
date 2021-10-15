@@ -222,5 +222,6 @@ Route::group(
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
         Route::get('conversations/{slug}', 'ConversationController@slug');
+        Route::get('/account/setup', 'AuthController@setup')->middleware('auth');
     }
 );

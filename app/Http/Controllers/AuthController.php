@@ -74,4 +74,9 @@ class AuthController extends Controller
         ]);
         return AuthService::createGuestAccount($request);
     }
+
+    public function setup()
+    {
+        return AuthService::setup();
+    }
 }
