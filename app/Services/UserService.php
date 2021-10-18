@@ -474,10 +474,13 @@ class UserService
                 ]
             ]);
 
-            $event = $googleService->events->insert($service->coach->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
-            $booking->update([
-                'meet_link' => $event->hangoutLink
-            ]);
+            try {
+                $event = $googleService->events->insert($service->coach->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+                $booking->update([
+                    'meet_link' => $event->hangoutLink
+                ]);
+            } catch (\Exception $e) {
+            }
         }
 
         $from = Carbon::parse("$booking->date $booking->start");
@@ -525,7 +528,7 @@ class UserService
             }
         }
 
-        return self::book($username, $service_id, $request, null, $request->only('email', 'first_name', 'last_name'));
+        return self::book($username, $service_id, $request, null, $request->only('email', 'first_name', 'last_name', 'timezone'));
     }
 
     public static function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)

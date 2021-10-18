@@ -445,6 +445,10 @@
 										<label class="text-muted">E-mail address</label>
 										<input v-model="guest.email" type="email" data-required />
 									</div>
+									<div class="mb-6">
+										<label class="text-muted">Timezone</label>
+										<vue-select :options="timezonesOptions" drop-position="w-full" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
+									</div>
 									<button class="btn btn-primary" type="submit"><span>Book as guest</span></button>
 								</vue-form-validate>
 
