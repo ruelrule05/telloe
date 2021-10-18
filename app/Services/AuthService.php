@@ -33,7 +33,7 @@ class AuthService
 {
     protected static $defaultAvailability = '[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]';
 
-    public static function socialiteCallback($driver)
+    public static function socialiteCallback($driver, Request $request)
     {
         $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
         $user = null;
@@ -77,9 +77,17 @@ class AuthService
             self::createDefaultService($user);
             Auth::login($user);
             $user->makeVisible(['default_availability']);
-        }
 
-        return redirect($redirect);
+            if ($request->state == 'popup') {
+                echo '
+                <script>
+                    window.opener.postMessage({user: ' . json_encode($user) . '});
+                    window.close();
+                </script>';
+            } else {
+                return redirect($redirect);
+            }
+        }
     }
 
     public static function get(Request $request, $last_online = true)
