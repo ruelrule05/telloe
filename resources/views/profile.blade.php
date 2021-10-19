@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<title>{{ $profile->full_name }} | {{ config('app.name')}}</title>
+	<title>Schedule a meeting time that works for you based on availability | Meet Telloe</title>
 	@include('partials.meta_tags')
 	@include('partials.styles')
 	<link rel="stylesheet" href="{{ mix('css/profile.css') }}">
