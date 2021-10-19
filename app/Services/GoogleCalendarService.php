@@ -45,34 +45,41 @@ class GoogleCalendarService
         return ['removed' => true];
     }
 
-    public static function googleCalendarEvents()
+    public static function googleCalendarEvents(Request $request)
     {
         $events = [];
         $user = Auth::user();
         if ($user->google_calendar_id && $user->google_calendar_token) {
-            $events = Cache::rememberForever("{$user->id}_google_calendar_events", function () use ($user) {
-                $events = [];
-                $GoogleCalendarClient = new GoogleCalendarClient($user);
-                $client = $GoogleCalendarClient->client;
-                $service = new Google_Service_Calendar($client);
-                $eventsList = $service->events->listEvents($user->google_calendar_id);
-                while (true) {
-                    foreach ($eventsList->getItems() as $event) {
-                        if (! isset($event->getExtendedProperties()->private['booking'])) {
-                            $events[] = $event;
-                        }
+            if ($request->fresh) {
+                $events = Cache::get("{$user->id}_google_calendar_events", []);
+            } else {
+                $events = Cache::rememberForever("{$user->id}_google_calendar_events", function () use ($user) {
+                    $events = [];
+                    $GoogleCalendarClient = new GoogleCalendarClient($user);
+                    $client = $GoogleCalendarClient->client;
+                    $service = new Google_Service_Calendar($client);
+                    foreach ($user->google_calendar_id as $calendarID) {
+                        $eventsList = $service->events->listEvents($calendarID);
+                        while (true) {
+                            foreach ($eventsList->getItems() as $event) {
+                                if (! isset($event->getExtendedProperties()->private['booking'])) {
+                                    $events[] = $event;
+                                }
+                            }
+                            $pageToken = $eventsList->getNextPageToken();
+                            if ($pageToken) {
+                                $optParams = ['pageToken' => $pageToken];
+                                $eventsList = $service->events->listEvents($user->google_calendar_id, $optParams);
+                            } else {
+                                break;
+                            }
+                        };
                     }
-                    $pageToken = $eventsList->getNextPageToken();
-                    if ($pageToken) {
-                        $optParams = ['pageToken' => $pageToken];
-                        $eventsList = $service->events->listEvents($user->google_calendar_id, $optParams);
-                    } else {
-                        break;
-                    }
-                };
 
-                return $events;
-            });
+                    return $events;
+                }
+                );
+            }
         }
 
         GoogleCalendarEvents::dispatch($user);
@@ -121,6 +128,6 @@ class GoogleCalendarService
         $authUser->google_calendar_id = $request->google_calendar_id;
         Cache::forget("{$authUser->id}_google_calendar_events");
         $authUser->save();
-        return self::googleCalendarEvents();
+        return self::googleCalendarEvents($request);
     }
 }

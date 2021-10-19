@@ -5,21 +5,21 @@
 			{{ bookingLink.name }} ({{ bookingLink.duration }} mins)
 		</div>
 		<div class="h-20 lg:hidden block" />
-		<div class="p-8">
-			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This booking link has been booked already.</div>
+		<div class="p-6 md:p-8">
+			<div class="text-sm text-muted mb-4" v-if="bookingLink.is_booked">This match up link has been booked already.</div>
 			<div>
 				<div class="flex flex-col lg:flex-row justify-between items-end lg:items-center">
 					<div class="order-2 mt-5 lg:order-none lg:mt-0 w-full lg:w-8/12">
-						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2 mb-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" type="button" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
+						<div v-for="(date, dateKey) in bookingLink.dates" :key="dateKey" class="cursor-pointer border border-primary rounded-md text-center py-2 px-3 uppercase text-primary font-semibold font-serif text-xs tems-center inline-block mr-2 mb-2" :class="{ 'bg-primary text-white': dateKey == selectedDate }" @click="selectedDate = dayjs(dateKey).format('YYYY-MM-DD')">
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 						</div>
 					</div>
-					<div class="flex items-center order-1 lg:order-none">
+					<div class="flex items-center order-1 lg:order-none service__show-menus">
 						<button type="button" class="btn btn-sm btn-outline-primary" @click="$refs.sendModal.show()"><span>Send email invitation</span></button>
-						<button type="button" class="btn btn-sm btn-outline-primary mx-2" @click="copyToClipboard()"><span>Copy link</span></button>
+						<button type="button" class="btn btn-sm btn-outline-primary mx-2 mt-1 md:mt-0" @click="copyToClipboard()"><span>Copy link</span></button>
 						<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action">
 							<template #button>
-								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 service__show-menus_extra">
 									<MoreIcon class="w-4 h-4"></MoreIcon>
 								</div>
 							</template>
@@ -31,16 +31,19 @@
 						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>
-								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
-									<div class="text-center px-2 pb-2 bg-white relative z-10">
-										<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-if="!bookingLink.is_booked && editable" v-model="timeslot.is_available" @input="toggleTimeslot($event, timeslot)"></VueCheckbox>
+								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right timeslot-heading">
+									<div class="text-center px-2 bg-white relative z-10">
+										<div v-if="!timeslot.is_available" class="absolute top-px z-10 left-0 w-full px-1">
+											<button class="bg-primary btn-open-timeslot rounded-full text-xs text-white py-1 w-full" type="button" @click="toggleTimeslot(timeslot)"><span>Open</span></button>
+										</div>
+										<VueCheckbox v-if="!bookingLink.is_booked && editable" :disabled="timeslot.is_available ? false : true" :value="hasSelected($root.auth, timeslot)" @input="toggleSelectTimeslot($event, timeslot)"></VueCheckbox>
 									</div>
 								</td>
 							</tr>
 
 							<!-- You -->
 							<tr>
-								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
+								<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
 											<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
@@ -55,8 +58,8 @@
 								</td>
 
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-									<div class="items-center column mb-4 px-1 bg-primary-ultralight" v-tooltip.bottom="'Select this timeslot'">
-										<div class="timeslot-content selectable" :class="{ selected: hasSelected($root.auth.id, timeslot) }" @click="toggleSelectTimeslot(timeslot)">
+									<div class="items-center column mt-4 bg-primary-ultralight">
+										<div class="timeslot-content" :class="{ selected: hasSelected($root.auth, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
 										</div>
 									</div>
@@ -66,7 +69,7 @@
 							<!-- Contacts -->
 							<template v-for="contact in bookingLink.booking_link_contacts">
 								<tr v-if="contact.contact" :key="contact.id">
-									<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
+									<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: contact.color }">
 										<div class="flex items-center py-3 -ml-3">
 											<div>
 												<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact.profile_image + ')' }">
@@ -85,8 +88,8 @@
 												<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 											</div>
 										</span>
-										<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: contact.color }">
-											<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user_id, timeslot) }">
+										<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: contact.color }">
+											<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user, timeslot) }">
 												<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
 											</div>
 										</div>
@@ -96,7 +99,7 @@
 
 							<!-- Emails -->
 							<tr v-for="email in bookingLink.emails" :key="email.email">
-								<td class="headcol contact-td mb-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
+								<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg" :style="{ backgroundColor: email.color }">
 									<div class="flex items-center py-3 -ml-3">
 										<div>
 											<div class="profile-image profile-image-sm">
@@ -115,7 +118,7 @@
 											<span>{{ email.email[0] }}</span>
 										</div>
 									</span>
-									<div class="items-center column  mb-4 px-1" :style="{ backgroundColor: email.color }">
+									<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: email.color }">
 										<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
 										</div>
@@ -136,9 +139,9 @@
 		</div>
 
 		<Modal ref="deleteModal">
-			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Booking Link</h6>
+			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Match Up Link</h6>
 			<p class="text-center mt-3">
-				Are you sure to delete this booking link?
+				Are you sure to delete this match up link?
 			</p>
 			<div class="flex items-center justify-between mt-6">
 				<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.deleteModal.hide()">

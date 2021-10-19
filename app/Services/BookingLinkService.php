@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Mail;
 use Spatie\CalendarLinks\Link;
+use Str;
 use Webpatser\Uuid\Uuid;
 
 class BookingLinkService
@@ -49,6 +50,7 @@ class BookingLinkService
         $contacts = [];
         $emails = [];
         foreach ($request->contacts as $requestContact) {
+            $time = time();
             if (! isset($requestContact['type']) || $requestContact['type'] != 'email') {
                 $contact = Contact::findOrFail($requestContact['id']);
                 $contact->color = $requestContact['color'] ?? '#3167e3';
@@ -57,6 +59,7 @@ class BookingLinkService
             } else {
                 if (isset($requestContact['type']) && $requestContact['type'] == 'email') {
                     $emails[] = [
+                        'id' => Str::random(8) . $time,
                         'email' => $requestContact['id'],
                         'timezone' => $requestContact['timezone'],
                         'color' => $requestContact['color'],
@@ -72,6 +75,7 @@ class BookingLinkService
             'uuid' => Uuid::generate(),
             'emails' => $emails,
             'duration' => $request->duration,
+            'message' => $request->message
         ]);
 
         foreach ($contacts as $contact) {
@@ -142,7 +146,11 @@ class BookingLinkService
         if ($email == $bookingLink->user->email || $inEmails || $bookingLinkContact) {
             return view('booking-link', compact('bookingLink', 'user', 'inEmails', 'authAction'));
         }
-        return abort(403);
+        if ($user && ! $inEmails) {
+            return abort(403);
+        }
+        $authAction = 'login';
+        return view('booking-link', compact('bookingLink', 'user', 'inEmails', 'authAction'));
     }
 
     public function sendInvitation($id)

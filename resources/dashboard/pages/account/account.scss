@@ -252,6 +252,10 @@
 		h2 {
 			@apply flex justify-between font-serif uppercase tracking-tighter font-bold text-muted;
 		}
+
+		@media (max-width: 768px) {
+			@apply w-full flex-none mb-5;
+		}
 	}
 
 	.form {
@@ -296,6 +300,20 @@
 					}
 				}
 			}
+		}
+
+		@media (max-width: 768px) {
+			@apply pl-0;
+		}
+	}
+}
+
+.account-sidebar {
+	@media (max-width: 768px) {
+		@apply w-full flex-none flex flex-wrap p-0;
+
+		.logout {
+			@apply w-full px-6;
 		}
 	}
 }

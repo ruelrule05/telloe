@@ -19,6 +19,7 @@
 					</button>
 				</div>
 			</div>
+			<div class="h-20 lg:hidden block" />
 
 			<div class="text-center">
 				<h1 class="font-heading h3 mb-1">{{ organization.name }}</h1>

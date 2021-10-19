@@ -77,7 +77,8 @@ window.app = new Vue({
 		cookieItem: 'telloe_cookie_accepted',
 
 		isSidebarOpen: false,
-		isChildPage: false
+		isChildPage: false,
+		notificationsOpen: false
 	},
 
 	computed: {
@@ -143,7 +144,7 @@ window.app = new Vue({
 			if (value) {
 				document.title = value.charAt(0).toUpperCase() + value.slice(1) + ' | ' + process.env.MIX_APP_NAME;
 
-				this.isChildPage = value.includes("Show") ? true : false;
+				this.isChildPage = value.includes('Show') ? true : false;
 			}
 			if (this.$refs.dashboardContent) {
 				this.$refs.dashboardContent.scroll(0, 0);
@@ -205,7 +206,7 @@ window.app = new Vue({
 		if (!window.localStorage.getItem('telloe_has_logged_in')) {
 			window.localStorage.setItem('telloe_has_logged_in', true);
 			window.onload = () => {
-				this.introJS.start();
+				//this.introJS.start();
 			};
 		} else {
 			Object.values(this.intros).map(intro => {

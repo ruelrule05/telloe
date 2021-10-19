@@ -40,7 +40,10 @@ class User extends Authenticatable implements JWTSubject
         'default_availability',
         'google_calendar_events',
         'blocked_timeslots',
-        'trial_expires_at'
+        'trial_expires_at',
+        'packages',
+        'team',
+        'payments',
     ];
 
     /**
@@ -61,7 +64,10 @@ class User extends Authenticatable implements JWTSubject
         'dial_code',
         'blocked_timeslots',
         'is_premium',
-        'trial_expires_at'
+        'trial_expires_at',
+        'packages',
+        'team',
+        'payments',
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];
@@ -79,7 +85,8 @@ class User extends Authenticatable implements JWTSubject
         'xero_token' => 'array',
         'zoom_token' => 'array',
         'default_availability' => 'array',
-        'blocked_timeslots' => 'array'
+        'blocked_timeslots' => 'array',
+        'google_calendar_id' => 'array'
     ];
 
     public function subscription()
@@ -115,6 +122,7 @@ class User extends Authenticatable implements JWTSubject
         $first_name = $this->attributes['first_name'] ?? $this->first_name;
         $last_name = $this->attributes['last_name'] ?? $this->last_name;
         $email = $this->attributes['email'] ?? $this->email;
+        $email = is_array($email) ? $email['email'] : $email;
         return $first_name || $last_name ? strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) : strtoupper(substr($email, 0, 1));
     }
 

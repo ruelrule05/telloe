@@ -24,6 +24,8 @@ import vClickOutside from 'v-click-outside';
 const ct = require('countries-and-timezones');
 import VueButton from '../../../components/vue-button.vue';
 import { decode } from 'html-entities';
+import tooltip from '../../../js/directives/tooltip.js';
+
 export default {
 	props: {
 		booking: {},
@@ -42,7 +44,7 @@ export default {
 
 	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon, VueButton },
 
-	directives: { clickOutside: vClickOutside.directive },
+	directives: { clickOutside: vClickOutside.directive, tooltip },
 
 	data: () => ({
 		decode: decode,
@@ -119,7 +121,11 @@ export default {
 
 		contactsOptions() {
 			return this.contacts.map(contact => {
-				return { name: contact.contact_user.full_name, value: contact.id, id: contact.id, contact_user: contact.contact_user };
+				let email = '';
+				if (contact.contact_user.full_name != contact.contact_user.email) {
+					email = ` (${contact.contact_user.email})`;
+				}
+				return { name: `${contact.contact_user.full_name}${email}`, value: contact.id, id: contact.id, contact_user: contact.contact_user };
 			});
 		}
 	},
@@ -196,6 +202,9 @@ export default {
 		'clonedBooking.date': function() {
 			this.getTimeslots();
 		},
+		'clonedBooking.timezone': function() {
+			this.$emit('newBookingChange', this.clonedBooking);
+		},
 		service: function(value) {
 			if (value && this.clonedBooking) {
 				this.clonedBooking.service = this.service.id;
@@ -238,6 +247,17 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index'
 		}),
+
+		parsedFormData(formData) {
+			switch (formData.type) {
+				case 'date':
+					return dayjs(formData.value).format('MMMM DD, YYYY');
+				case 'file':
+					return `<a class="text-blue-600" href="${formData.value}" target="_blank"><u>${formData.value}</u></a>`;
+				default:
+					return formData.value;
+			}
+		},
 
 		toggleIncludeGoogleCalendar(state) {
 			if (this.clonedBooking && this.clonedBooking.type == 'google-event') {

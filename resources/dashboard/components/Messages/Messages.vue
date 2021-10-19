@@ -187,7 +187,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="flex items-center">
+			<div class="flex items-start md:items-center flex-col md:flex-row">
 				<div class="overflow-hidden flex items-center text-primary">
 					<button :data-intro="$root.intros.conversations.steps[5]" data-step="6" data-position="top" type="button" class="line-height-sm p-0 focus:outline-none" @blur="emojipicker = false" :class="{ 'emojipicker-open': emojipicker }">
 						<emojipicker @select="selectEmoji"></emojipicker>
@@ -201,7 +201,7 @@
 						<screenshare-icon class="fill-current"></screenshare-icon>
 					</button>
 				</div>
-				<div class="flex-1 pl-4">
+				<div class="flex-1 pl-0 md:pl-4 w-full md:w-auto">
 					<vue-form-validate @submit="sendText" class="flex items-center rounded-full bg-gray-200 p-1" ref="messageForm" @mounted="messageFormMounted">
 						<div class="py-2 px-4 message-input h-auto overflow-auto flex-grow focus:outline-none " contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
 						<button type="submit" class="rounded-full bg-white p-3 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current"></SendIcon></button>

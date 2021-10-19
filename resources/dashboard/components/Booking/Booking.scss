@@ -77,3 +77,15 @@
 		}
 	}
 }
+.tooltip-info {
+	@apply text-white bg-gray-400 rounded-full hover:bg-black cursor-pointer relative inline-block;
+	font-size: 10px;
+	width: 13px;
+	height: 13px;
+	&:before {
+		@apply text-white absolute transform -translate-x-1/2 -translate-y-1/2;
+		top: 49%;
+		left: 50%;
+		content: '?';
+	}
+}

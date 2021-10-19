@@ -1,8 +1,8 @@
 <template>
 	<div class="min-h-screen flex flex-col relative bespoke" v-if="$root.auth && ready">
 		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-			<div class="ml-7 lg:ml-0">
-				BESPOKE MEETINGS
+			<div class="ml-9 lg:ml-0">
+				MATCH UP MEETINGS
 			</div>
 			<div>
 				<button type="button" ref="toggleAddLinkBtn" class="btn btn-md whitespace-pre" :class="[addLink ? 'btn-outline-primary' : 'btn-primary']" @click="addLink = !addLink">
@@ -15,19 +15,19 @@
 		<Add v-if="addLink"></Add>
 
 		<template v-else>
-			<div v-if="banner" class="p-8" :class="booking_links.data.length == 0 ? 'border-b-0 sm:border-b' : 'border-bottom'">
+			<div v-if="banner" class="p-4 lg:p-8 border-bottom relative" :class="booking_links.data.length == 0 ? 'border-b-0 sm:border-b' : 'border-bottom'">
+				<div class="font-serif absolute lg:top-10 lg:right-10 top-6 right-6 z-10">
+					<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+				</div>
 				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
 					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						Collaborate and agree on a time.
 					</div>
 					<div class="w-full md:w-7/12 ml-0 md:ml-10">
 						<p class="text-muxted mb-4">
-							Create a Bespoke suggested meeting time selector link that shows your available times, enables invited guests to select a time that works for them or suggest an alternative.
+							Create a Match Up suggested meeting time selector link that shows your available times, enables invited guests to select a time that works for them or suggest an alternative.
 						</p>
-						<button class="btn btn-md btn-outline-primary banner-button" type="button" @click="addLink = true"><span>CREATE A BESPOKE MEETING LINK</span></button>
-					</div>
-					<div class="font-serif absolute top-5 right-6">
-						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+						<button class="btn btn-md btn-outline-primary" type="button" @click="addLink = true"><span>CREATE A MATCH UP MEETING LINK</span></button>
 					</div>
 				</div>
 			</div>
@@ -37,14 +37,14 @@
 					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 				</div>
 				<div class="pl-4 -mt-1">
-					<p class="font-bold text-sm">You haven't created any bespoke links yet. Use the custom links creation form to set up a new custom link.</p>
+					<p class="font-bold text-sm">You haven't created any match up links yet. Use the custom links creation form to set up a new custom link.</p>
 					<button type="button" class="btn btn-outline-primary btn-md mt-4 whitespace-pre" @click="addLink = true"><span>Add New</span></button>
 				</div>
 			</div>
 
 			<div v-else class="flex flex-grow flex-col lg:flex-row">
 				<div class="w-full lg:w-4/12 p-8 border-r-0 lg:border-r border-b lg:border-b-0">
-					<p class="text-muted text-sm">Bespoke meetings are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
+					<p class="text-muted text-sm">Match up meetings are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>
 				</div>
 
 				<div class="w-full lg:w-8/12 px-6 py-2">
@@ -52,21 +52,17 @@
 						<div class="border-bottom py-4">
 							<div class="flex justify-between relative">
 								<div class="lg:w-full w-6/12">
-									<div class="text-primary font-bold lg:w-6/12 w-auto">
-										{{ booking_link.name }}
-									</div>
+									<router-link :to="`/dashboard/booking-links/${booking_link.id}`" custom v-slot="{ navigate }">
+										<div class="text-primary font-bold lg:w-6/12 w-auto cursor-pointer hover:underline" @click="navigate">
+											{{ booking_link.name }}
+										</div>
+									</router-link>
 									<div class="text-muted text-xs flex flex-col lg:flex-row lg:w-6/12 w-auto">
 										Created: {{ formatDate(booking_link.created_at) }} <span class="ml-0 lg:ml-3">Duration: {{ booking_link.duration }} mins</span>
 									</div>
 								</div>
 								<div class="flex lg:block items-start justify-end absolute lg:static right-0 top-0">
 									<div class="flex items-center">
-										<router-link :to="`/dashboard/booking-links/${booking_link.id}`" custom v-slot="{ navigate }">
-											<button type="button" class="btn btn-sm btn-outline-primary mr-2 flex items-center" @click="navigate">
-												<span>Show</span>
-												<span class="hidden md:block ml-1">Details</span>
-											</button>
-										</router-link>
 										<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action($event, booking_link)">
 											<template #button>
 												<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
@@ -96,10 +92,9 @@
 								</div>
 								<div class="flex flex-col ml-4">
 									<span class="text-muted text-sm">Dates:</span>
-									<div class="grid grid-cols-3 lg:grid-cols-6 md:grid-cols-5 gap-2">
-										<div v-for="(date, dateKey, dateIndex) in booking_link.dates" :key="dateKey" class="text-sm flex">
-											<span class="mr-0 lg:mr-2">{{ formatDate(dateKey) }} </span>
-											<span v-if="Object.keys(booking_link.dates).length != dateIndex + 1" class="text-muted hidden">|</span>
+									<div class="flex items-center mt-1">
+										<div v-for="(date, dateKey) in booking_link.dates" :key="dateKey" class="badge text-sm flex mr-1">
+											{{ formatDate(dateKey) }}
 										</div>
 									</div>
 								</div>
@@ -111,9 +106,9 @@
 		</template>
 
 		<Modal ref="deleteModal">
-			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Booking Link</h6>
+			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Match Up Link</h6>
 			<p class="text-center mt-3">
-				Are you sure to delete this booking link?
+				Are you sure to delete this match up link?
 			</p>
 			<div class="flex items-center justify-between mt-6">
 				<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.deleteModal.hide()">

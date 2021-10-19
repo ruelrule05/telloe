@@ -96,7 +96,7 @@ class BookingService
         $bookings[] = $booking;
 
         if ($service && $service->create_zoom_link && $service->user->zoom_token) {
-            $zoomLink = Zoom::createMeeting($service->user, $data['name'], Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+            $zoomLink = Zoom::createMeeting($service->user, $data['name'], Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601ZuluString());
             if ($zoomLink) {
                 $booking->update([
                     'zoom_link' => $zoomLink['join_url']
@@ -104,7 +104,7 @@ class BookingService
             }
         }
 
-        $from = Carbon::parse("$booking->date $booking->start");
+        $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
         $to = $from->clone()->addMinute($booking->service->duration ?? 30);
         $link = Link::create($data['name'], $from, $to)
             ->description($booking->service->description);
@@ -119,13 +119,14 @@ class BookingService
                 ]);
             }
         }
+
         if (isset($request->is_recurring) && isset($request->frequency) && isset($request->end_date) && isset($request->days)) {
-            $start = Carbon::parse("{$request->date} {$request->start}");
+            $start = Carbon::parse("{$request->date} {$request->start}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration ?? 30);
             $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            $timeslotDayName = Carbon::parse($request->date)->format('l');
-            $currentDate = Carbon::now()->addDay(1);
-            $endDate = Carbon::parse($request->end_date);
+            $timeslotDayName = Carbon::parse($request->date, $request->timezone)->format('l');
+            $currentDate = Carbon::parse($request->date, $request->timezone)->addDay(1);
+            $endDate = Carbon::parse($request->end_date, $request->timezone);
             $weekOfMonth = 0;
             if (isset($request->day_in_month)) {
                 switch ($request->day_in_month) {
@@ -165,7 +166,8 @@ class BookingService
                         'end' => $end->format('H:i'),
                         'meeting_type' => $request->meeting_type,
                         'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
-                        'uuid' => (string) Uuid::generate()
+                        'uuid' => (string) Uuid::generate(),
+                        'timezone' => $request->timezone
                     ]);
                     $bookings[] = $booking;
                 }
@@ -217,11 +219,11 @@ class BookingService
                     'summary' => $data['name'],
                     'description' => $booking->service->description,
                     'start' => [
-                        'dateTime' => Carbon::parse("$booking->date $booking->start")->toIso8601String(),
+                        'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
                         'timeZone' => $booking->service->timezone,
                     ],
                     'end' => [
-                        'dateTime' => Carbon::parse("$booking->date $booking->end")->toIso8601String(),
+                        'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
                         'timeZone' => $booking->service->timezone,
                     ],
                     'attendees' => $attendees,

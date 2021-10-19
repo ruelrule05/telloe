@@ -3,7 +3,7 @@
 		@apply absolute;
 		z-index: 100;
 	}
-	@apply transition-all fixed w-screen h-screen top-0 left-0 grid grid-cols-11 auto-cols-max items-center justify-center opacity-0;
+	@apply transition-all fixed w-screen h-screen top-0 left-0 flex md:grid grid-cols-11 auto-cols-max items-center justify-center opacity-0;
 	z-index: -1;
 	.modal-body {
 		box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);
@@ -133,7 +133,7 @@
 				border-top-color: transparent !important;
 				border-bottom-color: transparent !important;
 				left: -4px;
-				top: 50%;
+				top: calc(50% - 5px);
 				transform: translateY(-50%);
 				margin-left: 0;
 				margin-right: 0;
@@ -151,7 +151,7 @@
 				border-right-color: transparent !important;
 				border-bottom-color: transparent !important;
 				right: -4px;
-				top: 50%;
+				top: calc(50% - 5px);
 				transform: translateY(-50%);
 				margin-left: 0;
 				margin-right: 0;

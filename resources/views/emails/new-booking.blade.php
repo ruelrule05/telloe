@@ -15,17 +15,20 @@
         @endif
         
         <label style="color: #838EA6; margin-top: 15px; display: block">Date</label>
-        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->date }}</div>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->formattedDate }}</div>
 
 
         <label style="color: #838EA6">Time</label>
-        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->start }} - {{ $booking->end }} ({{ $booking->timezone }})</div>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->startFormat }} - {{ $booking->endFormat }} ({{ $booking->timezone }})</div>
 
         <label style="color: #838EA6">Guests</label>
         <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">
             @foreach($booking->bookingUsers as $bookingUser)
             <div style="display: inline-block;border-radius: 5px; padding: 3px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-bottom: 5px;">
-                {{ $bookingUser->user->full_name }}
+                <div>{{ $bookingUser->user->full_name }}</div>
+                @if($bookingUser->user->email)
+                <div style="font-weight: 400; margin-top: -5px">{{ $bookingUser->user->email }}</div>
+                @endif
             </div>
             @endforeach
         </div>

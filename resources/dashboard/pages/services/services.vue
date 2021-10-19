@@ -1,54 +1,58 @@
 <template>
 	<div>
 		<div v-show="!serviceToEdit" class="min-h-screen flex flex-col relative">
-			<div class="content-header border-bottom">
-				EVENT TYPES
+			<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
+				<div class="ml-7 lg:ml-0 absolute lg:static top-7">
+					EVENT TYPES
+				</div>
 				<div class="ml-auto">
 					<button
 						type="button"
-						class="btn btn-md btn-outline-primary"
+						class="btn btn-md btn-outline-primary flex items-center justify-center"
 						@click="
 							resetNewService();
 							createService = true;
 							serviceToEdit = newService;
 						"
 					>
-						<span>Add Event type</span>
+						<span>Add</span>
+						<span class="hidden md:block ml-1">Event type</span>
 					</button>
 				</div>
 			</div>
+			<div class="h-20 lg:hidden block" />
 
-			<div v-if="banner" class="p-8 border-bottom">
-				<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
-					<div class="font-serif w-1/4 font-semibold uppercase">
+			<div v-if="banner" class="p-4 lg:p-8 border-bottom relative">
+				<div class="font-serif absolute lg:top-10 lg:right-10 top-6 right-6 z-10">
+					<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+				</div>
+				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 						CREATE EVENT TYPES TO ENABLE SELF-SERVE BOOKINGS.
 					</div>
-					<div class="w-7/12">
+					<div class="w-full md:w-2/4 ml-0 md:ml-10">
 						<p class="text-muxted mb-4">
 							Change the Event Types visible to clients on your public page. Adjust your available times for event types to suit you.
 						</p>
 						<button class="btn btn-md btn-outline-primary" type="button" @click="$router.push('/dashboard/integrations')"><span>EDIT DEFAULT EVENT TYPE</span></button>
 					</div>
-					<div class="font-serif">
-						<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
-					</div>
 				</div>
 			</div>
 
-			<div v-show="ready" class="flex-grow flex">
+			<div v-show="ready" class="flex-grow flex flex-col lg:flex-row">
 				<!-- Services list -->
 				<template>
 					<template v-if="services.length > 0">
-						<div class="w-7/12 border-right p-8">
-							<div class="grid grid-cols-2 gap-8">
+						<div class="w-full lg:w-7/12 border-r-0 lg:border-r border-bottom lg:border-b-0 p-6 md:p-8">
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
 								<div v-for="service in services" :key="service.id">
 									<ServiceCard :service="service" @click="serviceAction($event, service)"></ServiceCard>
 								</div>
 							</div>
 						</div>
-						<div class="w-5/12 p-8">
+						<div class="w-full lg:w-5/12 p-6 md:p-">
 							<h6 class="font-serif font-semibold text-xs">YOUR PUBLIC PAGE</h6>
-							<div class="card card-secondary mt-4">
+							<div class="services-card card card-secondary mt-4">
 								<p class="text-sm text-muted">
 									Your public page shows all your active events in one place.
 								</p>
@@ -70,7 +74,7 @@
 						</div>
 					</template>
 
-					<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start" style="width: 450px">
+					<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-6/12 md:5/12 sm:w-6/12 w-10/12">
 						<div class="text-primary">
 							<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
 						</div>

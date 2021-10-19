@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Cache;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment', 'types', 'starts_at', 'ends_at', 'timezone', 'type'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment', 'types', 'starts_at', 'ends_at', 'timezone', 'type', 'form_builder'];
 
     protected $casts = [
         'days' => 'array',
@@ -91,7 +91,7 @@ class Service extends BaseModel
     {
         $timeslots = [];
         $holidays = $this->holidays;
-        $user = $this->coach;
+        $user = User::find($this->user_id);
 
         //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
@@ -131,7 +131,9 @@ class Service extends BaseModel
                 'is_booked' => false,
             ];
             foreach ($user->blocked_timeslots ?? [] as $blockedTimeslot) {
-                if ($blockedTimeslot['date'] == $dateString && $blockedTimeslot['start'] <= $timeslot['time'] && $blockedTimeslot['end'] >= $timeslot['time']) {
+                $blockedStart = Carbon::parse($blockedTimeslot['start']);
+                $blockedEnd = Carbon::parse($blockedTimeslot['end']);
+                if ($blockedStart->lessThanOrEqualTo($timeStart) && $blockedEnd->greaterThanOrEqualTo($timeStart)) {
                     $timeslotBlocked = true;
                     break;
                 }
@@ -196,7 +198,7 @@ class Service extends BaseModel
                 $timeslot['is_blocked'] = true;
             }
             $timeslots[] = $timeslot;
-            $timeStart->add($this->attributes['interval'], 'minute');
+            $timeStart->add($this->attributes['interval'] + $this->attributes['duration'], 'minute');
         }
         //}
         //}

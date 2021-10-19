@@ -44,7 +44,8 @@ body.modal-open {
 		position: relative;
 		bottom: -1px;
 	}
-	@apply px-8 py-3 rounded-full transition-colors font-semibold focus:outline-none font-serif uppercase text-xs;
+	padding: 10px 24px;
+	@apply rounded-full transition-colors font-semibold focus:outline-none font-serif uppercase text-xs;
 	&.btn-primary {
 		@apply bg-primary hover:bg-primary-light focus:bg-primary-dark focus:text-muted text-white;
 	}
@@ -58,14 +59,12 @@ body.modal-open {
 		@apply bg-transparent hover:bg-red-600 hover:text-white focus:bg-red-800 focus:text-muted text-red-600 border-solid border border-red-600;
 	}
 	&.btn-sm {
-		height: 28px;
-		padding: 0 18px;
+		padding: 6px 18px;
 		font-size: 9px;
 		letter-spacing: 0.35px;
 	}
 	&.btn-md {
-		height: 32px;
-		padding: 0 24px;
+		padding: 8px 24px;
 	}
 	&:disabled,
 	&.disabled {
@@ -90,6 +89,11 @@ body.modal-open {
 	&.spinner-light {
 		@apply border-transparent;
 		border-top-color: white;
+	}
+	&.spinner-xs {
+		@apply border;
+		width: 15px;
+		height: 15px;
 	}
 }
 .button-date-nav {
@@ -402,140 +406,5 @@ fieldset.disabled input {
 	}
 	.tooltip-arrow {
 		z-index: 1;
-	}
-}
-[data-tooltip-wrapper] {
-	.tooltip {
-		position: absolute;
-		width: auto;
-		white-space: nowrap;
-		font-weight: normal !important;
-		font-size: 13px;
-		pointer-events: none;
-		transition: opacity 0.25s;
-		opacity: 0;
-		z-index: 999;
-
-		.tooltip-inner {
-			background: black;
-			color: white;
-			border-radius: 16px;
-			padding: 4px 10px;
-			overflow: hidden;
-		}
-
-		.tooltip-arrow {
-			width: 0;
-			height: 0;
-			border-style: solid;
-			position: absolute;
-			border-color: black;
-			z-index: 1;
-		}
-
-		&[x-placement^='top'] {
-			bottom: 100%;
-			left: 50%;
-			transform: translateX(-50%);
-
-			.tooltip-arrow {
-				border-width: 5px 5px 0 5px;
-				border-left-color: transparent !important;
-				border-right-color: transparent !important;
-				border-bottom-color: transparent !important;
-				bottom: -4px;
-				left: 50%;
-				transform: translateX(-50%);
-				margin-top: 0;
-				margin-bottom: 0;
-			}
-		}
-
-		&[x-placement^='bottom'] {
-			margin-top: 5px;
-			left: 50%;
-			transform: translateX(-50%);
-
-			.tooltip-arrow {
-				border-width: 0 5px 5px 5px;
-				border-left-color: transparent !important;
-				border-right-color: transparent !important;
-				border-top-color: transparent !important;
-				top: -4px;
-				left: 50%;
-				transform: translateX(-50%);
-				margin-top: 0;
-				margin-bottom: 0;
-			}
-		}
-
-		&[x-placement^='right'] {
-			margin-left: calc(100% + 7px);
-			top: 50%;
-			transform: translateY(-50%);
-
-			.tooltip-arrow {
-				border-width: 5px 5px 5px 0;
-				border-left-color: transparent !important;
-				border-top-color: transparent !important;
-				border-bottom-color: transparent !important;
-				left: -4px;
-				top: 50%;
-				transform: translateY(-50%);
-				margin-left: 0;
-				margin-right: 0;
-			}
-		}
-
-		&[x-placement^='left'] {
-			right: calc(100% + 7px);
-			top: 50%;
-			transform: translateY(-50%);
-
-			.tooltip-arrow {
-				border-width: 5px 0 5px 5px;
-				border-top-color: transparent !important;
-				border-right-color: transparent !important;
-				border-bottom-color: transparent !important;
-				right: -4px;
-				top: 50%;
-				transform: translateY(-50%);
-				margin-left: 0;
-				margin-right: 0;
-			}
-		}
-
-		&.popover {
-			$color: #f9f9f9;
-
-			.popover-inner {
-				//background: $color;
-				color: black;
-				padding: 24px;
-				border-radius: 5px;
-				box-shadow: 0 5px 30px rgba(black, 0.1);
-			}
-
-			.popover-arrow {
-				//border-color: $color;
-			}
-		}
-
-		&[aria-hidden='true'] {
-			visibility: hidden;
-			opacity: 0;
-			transition: opacity 0.15s, visibility 0.15s;
-		}
-
-		&[aria-hidden='false'] {
-			visibility: visible;
-			opacity: 1;
-			transition: opacity 0.15s;
-		}
-	}
-	&:hover {
-		.tooltip {
-			opacity: 1 !important;
-		}
 	}
 }

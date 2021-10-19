@@ -3,10 +3,11 @@
 <head>
 	<title>{{ $organization->name }} | {{ config('app.name')}}</title>
 	@include('partials.meta_tags')
+	@include('partials.styles')
 	<link rel="stylesheet" href="{{ mix('css/organization.css') }}">
 </head>
-<body class="h-100vh w-100vw">
-	<div id="app" class="py-md-5 bg-light w-100 h-100vh" v-cloak>
+<body class="w-screen min-h-screen h-screen overflow-x-hidden">
+	<div id="app" class="min-h-full h-full overflow-auto bg-secondary" v-cloak>
 		<organization></organization>
 	</div>
 	@include('partials.social_scripts')

@@ -1,7 +1,14 @@
 .upcoming-day-label {
+	width: 120px;
 	@apply px-6 font-serif uppercase text-xs;
 	flex: 0 120px;
 	&.active {
 		@apply border-primary text-primary;
+	}
+}
+
+@media (max-width: 991px) {
+	.upcoming-day-label {
+		@apply w-full;
 	}
 }

@@ -18,11 +18,7 @@ class NewBooking extends Mailer
 
     public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
-        $authUser = $authUser ?? Auth::user();
-        $this->bookings = $bookings;
-        foreach ($this->bookings as $booking) {
-            $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
-        }
+ 
         $this->actionText = 'Manage Bookings';
         $this->actionUrl = config('app.url') . '/bookings/' . $bookings[0]->uuid;
 
@@ -42,6 +38,7 @@ class NewBooking extends Mailer
 
         $this->bookings = collect($bookings);
         $this->bookings->map(function ($booking) {
+            $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
             $from = Carbon::parse("$booking->date $booking->start");
             $to = $from->clone()->addMinute($booking->service->duration);
             $link = Link::create($booking->service->name, $from, $to)
@@ -51,11 +48,11 @@ class NewBooking extends Mailer
             $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
             $booking->ical_link = $booking->outlook_link;
-            $booking->date = Carbon::parse($booking->date)->format('M d, Y');
+            $booking->formattedDate = Carbon::parse($booking->date)->format('M d, Y');
             $booking->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
 
-            $booking->start = Carbon::parse("$booking->date $booking->start")->format('h:iA');
-            $booking->end = Carbon::parse("$booking->date $booking->end")->format('h:iA');
+            $booking->startFormat = Carbon::parse("$booking->date $booking->start")->format('h:iA');
+            $booking->endFormat = Carbon::parse("$booking->date $booking->end")->format('h:iA');
 
             return $booking;
         });

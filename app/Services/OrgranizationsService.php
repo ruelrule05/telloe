@@ -10,8 +10,10 @@ use App\Http\Requests\UpdateOrganizationRequest;
 use App\Models\Member;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
+use App\Models\Service;
 use Arr;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OrgranizationsService
@@ -30,7 +32,7 @@ class OrgranizationsService
                 $data['services'][$userService->id]['duration'] = $userService->duration;
                 $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
                 $data['services'][$userService->id]['currency'] = $userService->currency;
-                $data['services'][$userService->id]['member_services'][] = $userService;
+                $data['services'][$userService->id]['assigned_services'][] = $userService;
             }
         }
         if ($request->ajax() || $request->wantsJson()) {
@@ -45,7 +47,7 @@ class OrgranizationsService
                     $data['services'][$service->parent_service_id]['duration'] = $service->parentService->duration;
                     $data['services'][$service->parent_service_id]['default_rate'] = $service->parentService->default_rate;
                     $data['services'][$service->parent_service_id]['currency'] = $service->parentService->currency;
-                    $data['services'][$service->parent_service_id]['member_services'][] = $service;
+                    $data['services'][$service->parent_service_id]['assigned_services'][] = $service;
                 }
             }
 
@@ -83,7 +85,7 @@ class OrgranizationsService
         ]);
         $members_count = 0;
         foreach ($request->members as $member) {
-            $member = Member::where('id', $member['id'])->where('user_id', $authUser->id)->first();
+            $member = Member::where('id', $member['id'])->where('user_id', $authUser->id)->where('is_pending', false)->first();
             if ($member) {
                 OrganizationMember::create([
                     'organization_id' => $organization->id,
@@ -130,7 +132,7 @@ class OrgranizationsService
         $organization->update([
             'name' => $request->name,
             'slug' => $request->slug,
-            'show_user_services' => $request->show_user_services,
+            'show_user_services' => $request->show_user_services ?? false,
         ]);
 
         return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));

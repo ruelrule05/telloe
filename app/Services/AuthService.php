@@ -33,10 +33,11 @@ class AuthService
 {
     protected static $defaultAvailability = '[{"day": "Monday", "is_available": true}, {"day": "Tuesday", "is_available": true}, {"day": "Wednesday", "is_available": true}, {"day": "Thursday", "is_available":true}, {"day": "Friday", "is_available": true}, {"day": "Saturday", "is_available": false}, {"day": "Sunday", "is_available": false}]';
 
-    public static function socialiteCallback($driver)
+    public static function socialiteCallback($driver, Request $request)
     {
         $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
         $user = null;
+        $redirect = '/dashboard/calendar';
         if ($socialiteUser) {
             $data = Arr::except($socialiteUser->user, ['id']);
             $data['first_name'] = $data['first_name'] ?? $data['given_name'];
@@ -51,6 +52,7 @@ class AuthService
                     ]);
                 }
             } else {
+                $redirect = '/account/setup';
                 $time = time();
                 $profile_image = 'storage/profile-images/' . $time . '.jpeg';
                 Image::make($socialiteUser->getAvatar())->save(public_path($profile_image));
@@ -75,13 +77,17 @@ class AuthService
             self::createDefaultService($user);
             Auth::login($user);
             $user->makeVisible(['default_availability']);
-        }
 
-        echo '
-        <script>
-            window.opener.postMessage({user: ' . json_encode($user) . '});
-            window.close();
-        </script>';
+            if ($request->state == 'popup') {
+                echo '
+                <script>
+                    window.opener.postMessage({user: ' . json_encode($user) . '});
+                    window.close();
+                </script>';
+            } else {
+                return redirect($redirect);
+            }
+        }
     }
 
     public static function get(Request $request, $last_online = true)
@@ -279,7 +285,7 @@ class AuthService
         $data = $request->except('profile_image');
         $data['username'] = str_replace(' ', '', $request->username);
         $user = Auth::user();
-        $data['blocked_timeslots'] = $user->blocked_timeslots ?? [];
+        $data['blocked_timeslots'] = $data['blocked_timeslots'] ?? [];
 
         if (isValidTimezone($request->timezone)) {
             $data['timezone'] = $request->timezone;
@@ -303,6 +309,10 @@ class AuthService
             $img->save($destinationPath . $fileName);
             $data['profile_image'] = '/storage/profile-images/' . $fileName;
         }
+
+        $data['packages'] = $request->input('packages');
+        $data['team'] = $request->input('team');
+        $data['payments'] = $request->input('payments');
 
         $user->update($data);
         return self::get($request, false);
@@ -386,7 +396,7 @@ class AuthService
             try {
                 $account = $stripe_api->account('update', $account_data);
             } catch (\Exception $e) {
-                return abort(403, str_replace('Stripe', 'payout',$e->getMessage()));
+                return abort(403, str_replace('Stripe', 'payout', $e->getMessage()));
             }
         } else {
             $account_data['country'] = $request->country;
@@ -394,7 +404,7 @@ class AuthService
             try {
                 $account = $stripe_api->account('create', $account_data);
             } catch (\Exception $e) {
-                return abort(403, str_replace('Stripe', 'payout',$e->getMessage()));
+                return abort(403, str_replace('Stripe', 'payout', $e->getMessage()));
             }
         }
 
@@ -609,5 +619,11 @@ class AuthService
         }
 
         return response(['user' => $user]);
+    }
+
+    public static function setup()
+    {
+        $authUser = Auth::user();
+        return view('pages.account-setup', compact('authUser'));
     }
 }

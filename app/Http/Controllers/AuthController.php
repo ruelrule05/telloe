@@ -12,9 +12,9 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function socialiteCallback($driver)
+    public function socialiteCallback($driver, Request $request)
     {
-        return AuthService::socialiteCallback($driver);
+        return AuthService::socialiteCallback($driver, $request);
     }
 
     public function get(Request $request, $last_online = true)
@@ -73,5 +73,10 @@ class AuthController extends Controller
             'email' => 'required|email'
         ]);
         return AuthService::createGuestAccount($request);
+    }
+
+    public function setup()
+    {
+        return AuthService::setup();
     }
 }

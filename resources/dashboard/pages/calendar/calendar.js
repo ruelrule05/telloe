@@ -5,6 +5,8 @@ import WeekView from '../../components/WeekView/WeekView.vue';
 import Booking from '../../components/Booking/Booking.vue';
 import ArrowLeftIcon from '../../../icons/arrow-left.vue';
 import ArrowRightIcon from '../../../icons/arrow-right.vue';
+import CalendarIcon from '../../../icons/calendar.vue';
+import CalendarDayIcon from '../../../icons/calendar-day.vue';
 import VCalendar from 'v-calendar/lib/components/calendar.umd';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import axios from 'axios';
@@ -15,10 +17,12 @@ const timezone = jstz.determine();
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 import CloseIcon from '../../../icons/close.vue';
 import { DatePicker } from 'v-calendar';
+
 export default {
-	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon, 'v-date-picker': DatePicker },
+	components: { VueSelect, UpcomingBookings, DayView, WeekView, ArrowLeftIcon, ArrowRightIcon, Booking, VCalendar, CloseIcon, 'v-date-picker': DatePicker, CalendarIcon, CalendarDayIcon },
 
 	data: () => ({
+		overview: true,
 		loading: true,
 		dayjs: dayjs,
 		selectedDate: null,
@@ -33,7 +37,10 @@ export default {
 		cookieItem: 'telloe_calendar_banner',
 		masks: {
 			input: 'MMMM D, YYYY'
-		}
+		},
+		isMobile: false,
+		showCalendarMobile: false,
+		googleCalendarEventsLoading: false
 	}),
 
 	computed: {
@@ -93,7 +100,7 @@ export default {
 		},
 
 		weekToggleText() {
-			return (this.view == 'week' ? 'DAY' : 'WEEK') + ' VIEW';
+			return (this.view == 'week' ? 'DAY' : 'WEEK') + (!this.isMobile ? ' VIEW' : '');
 		},
 
 		availableTimezones() {
@@ -121,7 +128,7 @@ export default {
 
 	created() {
 		this.timezone = timezone.name();
-		//this.selectedDate = dayjs().toDate();
+		this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookingsData();
 		this.getContactBookings();
 		this.getGoogleCalendars().then(response => {
@@ -210,15 +217,21 @@ export default {
 			if (this.$root.auth.google_calendar_id) {
 				let response = await axios.get('/google_calendar_events');
 				this.googleCalendarEvents = response.data;
+				this.googleCalendarEventsLoading = true;
+				response = await axios.get('/google_calendar_events', { params: { refresh: true } });
+				this.googleCalendarEvents = response.data;
+				this.googleCalendarEventsLoading = false;
 			}
 		},
 
-		async updateGoogleCalendar(calendarId) {
-			let response = await axios.put('/google_calendar', { google_calendar_id: calendarId });
+		async updateGoogleCalendar(calendars) {
+			this.googleCalendarEventsLoading = true;
+			let response = await axios.put('/google_calendar', { google_calendar_id: calendars });
 			this.googleCalendarEvents = response.data.map(event => {
 				event.timezone = event.start.timeZone;
 				return event;
 			});
+			this.googleCalendarEventsLoading = false;
 		},
 
 		toggleView() {
@@ -226,7 +239,22 @@ export default {
 		},
 
 		dayClick(date) {
+			this.overview = false;
 			this.selectedDate = date;
+		},
+
+		prevMonth() {
+			this.selectedDate = dayjs(this.selectedDate)
+				.subtract(1, 'month')
+				.toDate();
+			this.$refs['v-calendar'].move(this.selectedDate);
+		},
+
+		nextMonth() {
+			this.selectedDate = dayjs(this.selectedDate)
+				.add(1, 'month')
+				.toDate();
+			this.$refs['v-calendar'].move(this.selectedDate);
 		},
 
 		prevDate() {
@@ -277,18 +305,23 @@ export default {
 		},
 
 		newBookingChange(newBooking) {
-			if (this.view == 'day') {
-				this.$refs.dayView.newEvent.date = newBooking.date;
-				this.$refs.dayView.newEvent.start = newBooking.start;
-				this.$refs.dayView.newEvent.end = newBooking.end;
-			} else if (this.view == 'week') {
-				this.$refs.weekView.newEvent.date = newBooking.date;
-				this.$refs.weekView.newEvent.start = newBooking.start;
-				this.$refs.weekView.newEvent.end = newBooking.end;
+			if (newBooking) {
+				if (this.view == 'day' && this.$refs.dayView.newEvent) {
+					this.$refs.dayView.newEvent.date = newBooking.date;
+					this.$refs.dayView.newEvent.start = newBooking.start;
+					this.$refs.dayView.newEvent.end = newBooking.end;
+					this.$refs.dayView.newEvent.timezone = newBooking.timezone;
+				} else if (this.view == 'week' && this.$refs.weekView.newEvent) {
+					this.$refs.weekView.newEvent.date = newBooking.date;
+					this.$refs.weekView.newEvent.start = newBooking.start;
+					this.$refs.weekView.newEvent.end = newBooking.end;
+					this.$refs.weekView.newEvent.timezone = newBooking.timezone;
+				}
 			}
 		},
 
 		upcomingEventClick(booking, type) {
+			this.overview = false;
 			booking = JSON.parse(JSON.stringify(booking));
 			if (type == 'booking') {
 				booking.date = dayjs(booking.date).toDate();

@@ -21,9 +21,15 @@ import VolumeMaxIcon from '../../../../icons/volume-max';
 import VolumeMinIcon from '../../../../icons/volume-min';
 import BellSlashIcon from '../../../../icons/bell-slash';
 import EditSquareIcon from '../../../../icons/edit-square';
+import ChatIcon from '../../../../icons/chat';
 import dayjs from 'dayjs';
 
 export default {
+	props: {
+		showConversationList: {
+			default: false
+		}
+	},
 	components: {
 		Modal,
 		VueFormValidate,
@@ -45,7 +51,8 @@ export default {
 		VolumeMaxIcon,
 		VolumeMinIcon,
 		BellSlashIcon,
-		EditSquareIcon
+		EditSquareIcon,
+		ChatIcon
 	},
 
 	data: () => ({
@@ -170,6 +177,10 @@ export default {
 
 		setConversation(conversation) {
 			if (conversation.id != this.$route.params.id) this.$router.replace(`/dashboard/conversations/${conversation.id}`);
+		},
+
+		toggleConversationList() {
+			this.$emit('conversationList');
 		}
 	}
 };

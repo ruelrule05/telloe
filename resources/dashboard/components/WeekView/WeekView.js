@@ -15,6 +15,7 @@ import ClickOutside from 'vue-click-outside';
 import Timerangepicker from '../../../components/timerangepicker/timerangepicker.vue';
 import convertTime from '../../../js/plugins/convert-time';
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
+import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 export default {
 	vuetify,
 	props: {
@@ -42,6 +43,7 @@ export default {
 	},
 
 	components: {
+		VDatePicker,
 		VCalendar,
 		GoogleIcon,
 		VueDropdown,
@@ -50,6 +52,9 @@ export default {
 	},
 
 	data: () => ({
+		masks: {
+			input: 'MMM D, YYYY'
+		},
 		dayjs: dayjs,
 		newEvent: null,
 		timeslotToBlock: {},
@@ -139,12 +144,12 @@ export default {
 
 			(this.$root.auth.blocked_timeslots || []).forEach(timeslot => {
 				timeslot.type = 'blocked';
-				timeslot.id = `blocked-${timeslot.date}-${timeslot.start}-${timeslot.end}`;
+				timeslot.id = `blocked-${timeslot.start}-${timeslot.end}`;
 				parsedBookings.push({
 					booking: timeslot,
 					name: 'Blocked',
-					start: `${timeslot.date} ${timeslot.start}`,
-					end: `${timeslot.date} ${timeslot.end}`,
+					start: timeslot.start,
+					end: timeslot.end,
 					category: 'bookings',
 					color: 'bg-gray-50'
 				});
@@ -154,8 +159,8 @@ export default {
 				parsedBookings.push({
 					newEvent: true,
 					name: 'New Event',
-					start: `${this.newEvent.date} ${this.newEvent.start}`,
-					end: `${this.newEvent.date} ${this.newEvent.end}`,
+					start: this.newEvent.date + ' ' + timezoneTime.get(`${this.newEvent.date} ${this.newEvent.start}`, this.newEvent.timezone, this.timezone),
+					end: this.newEvent.date + ' ' + timezoneTime.get(`${this.newEvent.date} ${this.newEvent.end}`, this.newEvent.timezone, this.timezone),
 					color: 'bg-gray-200'
 				});
 			}
@@ -193,12 +198,21 @@ export default {
 
 		timeslotBlockChange(time, date) {
 			if (time.start && time.end) {
+				date = dayjs(date).format('YYYY-MM-DD');
 				this.timeToBlock = {
-					date: date,
-					start: convertTime(time.start),
-					end: convertTime(time.end)
+					start: `${date} ${convertTime(time.start)}`,
+					end: `${this.timeslotBlockEndDate} ${convertTime(time.end)}`,
+					timezone: this.timezone
 				};
 			}
+		},
+		timeslotBlockEndDateChange(date) {
+			date = dayjs(date).format('YYYY-MM-DD');
+			if (this.timeToBlock && this.timeToBlock.end) {
+				let end = dayjs(this.timeToBlock.end).format('HH:mm');
+				this.timeToBlock.end = `${date} ${end}`;
+			}
+			this.timeslotBlockEndDate = date;
 		},
 
 		isPrevious(interval) {
@@ -212,15 +226,12 @@ export default {
 		},
 
 		blockTimeslot() {
-			if (this.timeToBlock.date && this.timeToBlock.start && this.timeToBlock.end) {
+			if (this.timeToBlock.start && this.timeToBlock.end) {
 				this.timeslotToBlock.date = null;
 				if (!this.$root.auth.blocked_timeslots) {
 					this.$set(this.$root.auth, 'blocked_timeslots', []);
 				}
-				let exists = this.$root.auth.blocked_timeslots.find(x => x.date == this.timeToBlock.date && x.start == this.timeToBlock.start && x.end == this.timeToBlock.end);
-				if (!exists) {
-					this.$root.auth.blocked_timeslots.push({ date: this.timeToBlock.date, start: this.timeToBlock.start, end: this.timeToBlock.end });
-				}
+				this.$root.auth.blocked_timeslots.push(this.timeToBlock);
 				this.$toast.open('Timeslot blocked.');
 				window.axios.post('/auth', this.$root.auth, { toast: true });
 			}
@@ -235,6 +246,7 @@ export default {
 
 				case 'Block timeslot':
 					this.timeslotToBlock = interval;
+					this.timeslotBlockEndDate = dayjs(interval.date).format('YYYY-MM-DD');
 					break;
 
 				case 'Unblock timeslot':

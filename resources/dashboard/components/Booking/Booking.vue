@@ -129,8 +129,11 @@
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 					</div>
-					<div class="flex justify-between">
-						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md"><span>Add booking</span></vue-button>
+					<div class="flex justify-between items-center pb-6">
+						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md flex items-center">
+							<span>Add</span>
+							<span class="hidden md:block ml-2">booking</span>
+						</vue-button>
 						<button type="button" class="btn" @click="close">Cancel</button>
 					</div>
 				</vue-form-validate>
@@ -223,14 +226,22 @@
 						</div>
 
 						<template v-if="booking.metadata">
-							<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
-							<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
+							<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
+							<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
 						</template>
 
-						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-4 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
+						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
+
+						<div v-if="clonedBooking.form_data" class="mt-4">
+							<label class="-mb-px">Form Data</label>
+							<div v-for="(formData, key) in JSON.parse(clonedBooking.form_data)" :key="key" class="mt-3">
+								<strong class="-mb-px text-sm">{{ formData.label }} <span v-tooltip.right="key" class="tooltip-info"></span></strong>
+								<div class="text-sm" v-html="parsedFormData(formData)"></div>
+							</div>
+						</div>
 					</div>
 
-					<div class="flex justify-between mt-4">
+					<div class="flex justify-between mt-4 items-center">
 						<vue-button type="button" theme="primary" :loading="loading" button_class="btn btn-outline-primary btn-md" @click="update"><span>Save changes</span></vue-button>
 						<button type="button" class="btn" @click="confirmDelete">DELETE</button>
 					</div>

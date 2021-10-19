@@ -34,14 +34,14 @@ class GoogleCalendarController extends Controller
     public function update(Request $request)
     {
         $this->validate($request, [
-            'google_calendar_id' => 'required'
+            'google_calendar_id' => 'nullable|array'
         ]);
         return GoogleCalendarService::update($request);
     }
 
-    public function googleCalendarEvents()
+    public function googleCalendarEvents(Request $request)
     {
-        return GoogleCalendarService::googleCalendarEvents();
+        return GoogleCalendarService::googleCalendarEvents($request);
     }
 
     public function googleCalendarList(Request $request)

@@ -82,7 +82,16 @@ export default {
 		},
 		numbersOnly: numbersOnly,
 		phone: phone,
-		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications'],
+		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications', 'My Menu'],
+		menusMobile: [
+			{ text: 'Profile', value: 'Profile' },
+			{ text: 'Security', value: 'Security' },
+			{ text: 'Plan', value: 'Plan' },
+			{ text: 'Billing', value: 'Billing' },
+			{ text: 'Payout', value: 'Payout' },
+			{ text: 'Notifications', value: 'Notifications' },
+			{ text: 'My Menu', value: 'My Menu' }
+		],
 		activeMenu: 'Profile',
 		selectedPlan: null,
 		cardForm: {
@@ -418,6 +427,7 @@ export default {
 				if (response) {
 					this.$refs.paymentModal.hide(true);
 					this.$root.auth.subscription = response.data;
+					this.trackier();
 				}
 			}
 			this.paymentLoading = false;
@@ -560,6 +570,48 @@ export default {
 					this.user.profile_image = this.$root.auth.profile_image;
 				}
 			}
+		},
+
+		async saveMenuSettings() {
+			this.loading = true;
+			let user = Object.assign({}, this.user);
+
+			user.packages = this.$root.auth.packages = this.user.packages ?? false;
+			user.team = this.$root.auth.team = this.user.team ?? false;
+			user.payments = this.$root.auth.payments = this.user.payments ?? false;
+
+			let response = await window.axios.put('/auth', user, { toast: true });
+			this.loading = false;
+
+			return response;
+		},
+
+		trackier() {
+			let clickId = this.getCookieVal('click_id') || '';
+			if (clickId) {
+				let amount = this.selectedPlan.price;
+				let goal_value = '';
+				if (this.selectedPlan.name == 'Annually') {
+					goal_value = '&goal_value=Yearly';
+				}
+				var a = document.createElement('iframe');
+				a.setAttribute('src', `https://trk.telloe.com/pixel?av=60c7d6899e6fbd61962cc603&sale_amount=${amount}&currency=USD${goal_value}&click_id=${clickId}`);
+				a.style.width = '1';
+				a.style.height = '1';
+				document.body.appendChild(a);
+			}
+		},
+
+		getCookieVal(name) {
+			const allCookies = document.cookie.split('; ');
+			var result = null;
+			allCookies.forEach(function(v) {
+				if (v.indexOf(name + '=') !== -1) {
+					result = v.split('=')[1];
+					return false;
+				}
+			});
+			return result;
 		}
 	}
 };

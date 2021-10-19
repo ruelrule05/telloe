@@ -26,14 +26,15 @@ export default {
 		timeslotsLoading: false,
 		dayjs: dayjs,
 		startDate: null,
-		name: 'My new bespoke link',
+		name: 'My new match up link',
 		duration: 30,
 		isEmail: isEmail,
 		emailToAdd: {
 			email: '',
 			timezone: ''
 		},
-		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US']
+		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US'],
+		message: ''
 	}),
 
 	directives: { tooltip: VTooltip },
@@ -67,14 +68,16 @@ export default {
 		contactsOptions() {
 			let colors = [];
 			let colorOptions = { luminosity: 'bright', format: 'rgba', alpha: 0.1 };
-			return this.contacts.map(contact => {
-				let contactColor = color(colorOptions);
-				while (colors.indexOf(contactColor) > -1) {
-					contactColor = color(colorOptions);
-				}
-				colors.push(color);
-				return { name: contact.contact_user.full_name, value: contact.id, id: contact.id, contact_user: contact.contact_user, color: contactColor };
-			});
+			return this.contacts
+				.filter(contact => !contact.is_pending)
+				.map(contact => {
+					let contactColor = color(colorOptions);
+					while (colors.indexOf(contactColor) > -1) {
+						contactColor = color(colorOptions);
+					}
+					colors.push(color);
+					return { name: `${contact.contact_user.full_name} (${contact.contact_user.email})`, value: contact.id, id: contact.id, contact_user: contact.contact_user, color: contactColor };
+				});
 		}
 	},
 
@@ -84,22 +87,14 @@ export default {
 				let dateFormat = dayjs(value).format('YYYY-MM-DD');
 				let exists = this.dates[dateFormat];
 				if (!exists) {
-					this.$set(this.dates, dateFormat, { timeslots: [], selectedTimeslots: [] });
+					let timeslots = this.timeslots();
+					let lastDate = this.dates[Object.keys(this.dates)[0]];
+					if (lastDate) {
+						timeslots = JSON.parse(JSON.stringify(lastDate.timeslots));
+					}
+					this.$set(this.dates, dateFormat, { timeslots: timeslots, selectedTimeslots: [] });
 				}
 				this.selectedDate = dateFormat;
-			}
-		},
-		selectedDate: async function() {
-			await this.getAllTimeslots();
-			if (!this.dates[this.selectedDate].defaultTimeslotsAdded) {
-				let availableTimeslots = this.dates[this.selectedDate].timeslots.filter(x => x.is_available && !x.is_booked);
-				if (availableTimeslots.length > 0) {
-					this.addTimeslot(true, availableTimeslots[0]);
-				}
-				if (availableTimeslots.length > 1) {
-					this.addTimeslot(true, availableTimeslots[1]);
-				}
-				this.dates[this.selectedDate].defaultTimeslotsAdded = true;
 			}
 		},
 		contacts: function() {
@@ -109,10 +104,16 @@ export default {
 			if (this.contactsOptions.length > 1) {
 				this.selectedContacts.push(this.contactsOptions[1]);
 			}
+		},
+		duration: function() {
+			Object.keys(this.dates).forEach(key => {
+				this.dates[key].timeslots = this.timeslots();
+			});
 		}
 	},
 
 	created() {
+		this.message = `${this.$root.auth.full_name} has sent you a range of times to select that match up with your time zone and when ${this.$root.auth.first_name} is available to meet.`;
 		this.timezone = timezone.name();
 		this.$root.contentloading = !this.ready;
 		this.startDate = dayjs()
@@ -120,7 +121,7 @@ export default {
 			.toDate();
 		let formatDate = dayjs(this.startDate).format('YYYY-MM-DD');
 		this.selectedDate = formatDate;
-		this.$set(this.dates, formatDate, { timeslots: [], selectedTimeslots: [] });
+		this.$set(this.dates, formatDate, { timeslots: this.timeslots(), selectedTimeslots: [] });
 		this.getContacts({ nopaginate: true });
 	},
 
@@ -129,6 +130,29 @@ export default {
 			getContacts: 'contacts/index',
 			storeBookingLink: 'booking_links/store'
 		}),
+
+		timeslots() {
+			let start = '06:00';
+			let parts = start.split(':');
+			let period = start.slice(-2).toLowerCase();
+			if (period == 'pm' && parts[0] < 12) {
+				parts[0] = parseInt(parts[0]) + 12;
+			}
+			let end = 18; // 6PM
+			start = parseInt(parts[0] * 60) + parseInt(parts[1]);
+			let timeslots = [];
+			for (var i = 0; start <= end * 60; i++) {
+				let hh = Math.floor(start / 60);
+				let mm = start % 60;
+				let timeslot = ('0' + (hh == 12 ? 12 : hh)).slice(-2) + ':' + ('0' + mm).slice(-2);
+				timeslots.push({
+					time: timeslot,
+					is_available: false
+				});
+				start = start + parseInt(this.duration);
+			}
+			return timeslots;
+		},
 
 		addEmail() {
 			let exists = this.selectedContacts.find(x => x.email == this.emailToAdd.email);
@@ -152,21 +176,6 @@ export default {
 			}
 			this.$refs.selectedContacts.deactivate();
 			this.$refs.addEmailModal.hide();
-		},
-
-		addTimeslot(state, timeslot) {
-			if (!timeslot.is_available && timeslot.is_booked) return false;
-
-			timeslot.is_available = true;
-
-			if (state) {
-				this.dates[this.selectedDate].selectedTimeslots.push(timeslot);
-				timeslot.is_selected = true;
-			} else {
-				let index = this.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
-				this.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
-				timeslot.is_selected = false;
-			}
 		},
 
 		timeslotTime(time, timezone) {
@@ -206,16 +215,7 @@ export default {
 
 		async storeLink() {
 			this.$parent.timeslotsLoading = true;
-			let dates = {};
-			Object.keys(this.dates).forEach(d => {
-				let date = JSON.parse(JSON.stringify(this.dates[d]));
-				date.timeslots.forEach(t => {
-					if (!date.selectedTimeslots.find(s => s.time == t.time)) {
-						t.is_available = false;
-					}
-				});
-				dates[d] = date;
-			});
+
 			let data = {
 				name: this.name,
 				contacts: this.selectedContacts.map(c => {
@@ -226,8 +226,9 @@ export default {
 						color: c.color
 					};
 				}),
-				dates: dates,
-				duration: this.duration
+				dates: this.dates,
+				duration: this.duration,
+				message: this.message
 			};
 			await window.axios.post('/booking-links', data);
 			this.$parent.getBookingLinks({ paginate: true });
@@ -239,22 +240,6 @@ export default {
 			this.$delete(this.dates, date);
 			if (date == this.selectedDate) {
 				this.selectedDate = Object.keys(this.dates)[0];
-			}
-		},
-
-		async getAllTimeslots() {
-			if (this.selectedDate && Object.keys(this.dates).length) {
-				this.timeslotsLoading = true;
-				let response = await window.axios.get(`/booking-links/get_all_timeslots?date=${this.selectedDate}`);
-				if (response) {
-					this.dates[this.selectedDate].timeslots = response.data.map(t => {
-						if (this.dates[this.selectedDate].selectedTimeslots.find(s => s.time == t.time)) {
-							t.is_selected = true;
-						}
-						return t;
-					});
-				}
-				this.timeslotsLoading = false;
 			}
 		}
 	}

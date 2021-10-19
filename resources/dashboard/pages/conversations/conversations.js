@@ -5,6 +5,8 @@ import Modal from '../../../components/modal/modal.vue';
 import CloseIcon from '../../../icons/close';
 const isEmail = require('isemail');
 const dayjs = require('dayjs');
+const mobile = require('is-mobile');
+
 export default {
 	components: { Index, Show, Modal, CloseIcon },
 	created() {
@@ -14,6 +16,7 @@ export default {
 			this.$root.detailsTab = this.$route.query.tab;
 		}
 		this.checkCookie();
+		this.isMobile = mobile();
 	},
 
 	mounted() {
@@ -39,7 +42,9 @@ export default {
 		userSearch: '',
 		isEmail: isEmail,
 		banner: false,
-		cookieItem: 'telloe_conversations_banner'
+		cookieItem: 'telloe_conversations_banner',
+		isMobile: true,
+		isShowConversationList: false
 	}),
 
 	computed: {
@@ -140,6 +145,12 @@ export default {
 						this.$root.intros.conversations.intro.start();
 					}
 				}, 500);
+			}
+		},
+
+		toggleConversationList() {
+			if (this.isMobile) {
+				this.isShowConversationList = !this.isShowConversationList;
 			}
 		}
 	}

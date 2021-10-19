@@ -40,22 +40,22 @@
 
 										<div class="flex items-center mt-5">
 											<div
-												class="profile-image profile-image-sm"
+												class="profile-image profile-image-sm -mr-2"
 												:style="{
 													backgroundImage: 'url(' + profile.profile_image + ')'
 												}"
 											>
 												<span v-if="!profile.profile_image">{{ profile.initials }}</span>
 											</div>
-											<div
-												v-for="assignedService in service.assigned_services"
-												:key="assignedService.id"
-												class="profile-image profile-image-sm -ml-2"
-												:style="{
-													backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
-												}"
-											>
-												<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+											<div v-for="assignedService in service.assigned_services" :key="assignedService.id" class="-mr-2 border-2 border-gray-50 rounded-full relative">
+												<div
+													class="profile-image profile-image-sm"
+													:style="{
+														backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
+													}"
+												>
+													<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+												</div>
 											</div>
 										</div>
 
@@ -128,7 +128,7 @@
 											selectedService = assignedService;
 										"
 									>
-										<div class="flex items-center">
+										<div class="flex">
 											<div class="profile-image profile-image-sm" :style="{ 'background-image': `url(${assignedService.coach.profile_image})` }">
 												<span v-if="!assignedService.coach.profile_image">{{ assignedService.coach.initials }}</span>
 											</div>
@@ -136,7 +136,7 @@
 												<h6 class="text-primary font-bold">
 													{{ assignedService.coach.full_name }}
 												</h6>
-												<small class="text-muted text-sm">{{ assignedService.coach.timezone }}</small>
+												<div class="text-muted text-sm">{{ assignedService.coach.timezone }}</div>
 											</div>
 										</div>
 									</div>
@@ -150,7 +150,17 @@
 									<div>
 										<div class="button-date-nav lg:mt-0 mt-2">
 											<button type="button" @click="previousWeek()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
-											<span class="flex-grow text-center">{{ dayjs(startDate).format('MMMM D, YYYY') }}</span>
+
+											<div class="px-2">
+												<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
+													<template v-slot="{ inputValue, inputEvents }">
+														<button type="button" class="uppercase font-semibold" v-on="inputEvents">
+															<span>{{ inputValue }}</span>
+														</button>
+													</template>
+												</v-date-picker>
+											</div>
+
 											<button type="button" @click="nextWeek()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
 										</div>
 									</div>
@@ -216,7 +226,11 @@
 						<vue-form-validate
 							@submit="
 								() => {
-									step = selectedService.require_payment ? 'payment' : 'authenticate';
+									if (selectedService.form_builder && JSON.parse(selectedService.form_builder).length > 0) {
+										step = 'form_builder';
+									} else {
+										step = selectedService.require_payment ? 'payment' : 'authenticate';
+									}
 								}
 							"
 						>
@@ -340,6 +354,33 @@
 					</div>
 				</div>
 
+				<!-- Form builder -->
+				<div v-else-if="step == 'form_builder'" class="lg:flex summary" key="form_builder">
+					<div class="border w-4/12 lg:p-16 p-8 bg-secondary">
+						<h6 class="text-primary font-serif text-4xl font-semibold leading-none lg:mb-10 mb-5">COMPLETE FORM</h6>
+						<button class="btn btn-outline-primary flex items-center" type="button" @click="step = 'summary'"><ChevronLeftIcon class="fill-current mr-4"></ChevronLeftIcon><span>Back</span></button>
+					</div>
+					<div class="lg:w-8/12 min-h-screen bg-white lg:p-16 p-8">
+						<vue-form-validate
+							@submit="
+								() => {
+									step = selectedService.require_payment ? 'payment' : 'authenticate';
+								}
+							"
+						>
+							<div class="lg:w-8/12">
+								<div v-for="(field, fieldIndex) in JSON.parse(selectedService.form_builder)" :key="fieldIndex" class="mt-8">
+									<FormField v-model="formData[field.name]" :field="field" />
+								</div>
+							</div>
+
+							<button :disabled="selectedTimeslots.length == 0" class="mt-8 btn btn-primary" type="submit">
+								<span>Continue <span v-if="selectedService.require_payment">to payment</span></span>
+							</button>
+						</vue-form-validate>
+					</div>
+				</div>
+
 				<!-- Payment -->
 				<div v-else-if="step == 'payment'" class="container lg:my-12 my-6 flex items-center justify-center payment" key="payment">
 					<div class="lg:w-5/12 bg-white rounded-2xl lg:p-14 p-8">
@@ -403,6 +444,10 @@
 									<div class="mb-6">
 										<label class="text-muted">E-mail address</label>
 										<input v-model="guest.email" type="email" data-required />
+									</div>
+									<div class="mb-6">
+										<label class="text-muted">Timezone</label>
+										<vue-select :options="timezonesOptions" drop-position="w-full" searchable button_class="btn btn-white mx-1 shadow-sm" v-model="timezone"></vue-select>
 									</div>
 									<button class="btn btn-primary" type="submit"><span>Book as guest</span></button>
 								</vue-form-validate>

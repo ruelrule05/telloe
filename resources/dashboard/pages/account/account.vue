@@ -1,20 +1,25 @@
 <template>
 	<div class="flex min-h-screen flex-col">
-		<div class="content-header border-bottom">
-			MY ACCOUNT
+		<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
+			<div class="ml-7 lg:ml-0">
+				MY ACCOUNT
+			</div>
 		</div>
+		<div class="h-20 lg:hidden block" />
 
-		<div class="flex flex-grow">
-			<div class="sidebar border-right px-6 pt-4">
-				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+		<div class="flex flex-grow flex-col md:flex-row">
+			<VueSelect class="w-11/12 mx-auto block md:hidden mt-5" :options="menusMobile" drop-position="w-full lg:px-6 pt-0 lg:pt-4" v-model="activeMenu"></VueSelect>
 
-				<form action="/logout" method="POST">
+			<div class="sidebar account-sidebar border-r-0 md:border-r px-6 pt-4">
+				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item hidden md:block" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+
+				<form action="/logout" method="POST" class="sidebar-menu-item logout">
 					<input type="hidden" name="_token" :value="csrf_token" />
-					<button class="sidebar-menu-item" type="submit">Log Out</button>
+					<button type="submit">Log Out</button>
 				</form>
 			</div>
 			<div class="flex-grow">
-				<div v-if="activeMenu == 'Profile'" class="w-6/12 p-8">
+				<div v-if="activeMenu == 'Profile'" class="w-full md:w-6/12 p-6 md:p-8">
 					<h2 class="font-serif uppercase font-semibold mb-8">Profile Settings</h2>
 					<vue-form-validate @submit="save">
 						<div class="flex items-center mb-8 profile-photo">
@@ -49,7 +54,7 @@
 						</div>
 						<div class="mb-5">
 							<label>Timezone</label>
-							<vue-select :options="availableTimezones" drop-position="top" searchable v-model="user.timezone"></vue-select>
+							<vue-select :options="availableTimezones" drop-position="w-full" searchable v-model="user.timezone"></vue-select>
 						</div>
 						<div class="mb-5">
 							<label>Mobile No.</label>
@@ -66,7 +71,7 @@
 					</vue-form-validate>
 				</div>
 
-				<div v-else-if="activeMenu == 'Security'" class="w-5/12 p-8">
+				<div v-else-if="activeMenu == 'Security'" class="w-full md:w-5/12 p-6 md:p-8">
 					<h2 class="font-serif uppercase font-semibold mb-8">Security Settings</h2>
 					<vue-form-validate @submit="password">
 						<div class="mb-5">
@@ -90,7 +95,7 @@
 					<div v-if="isTrial" class="bg-secondary p-3 mb-4 rounded-xl text-center text-sm free-trial">Your free trial will expire at {{ dayjs($root.auth.trial_expires_at).format('MMMM D, YYYY') }}</div>
 
 					<h2 class="font-serif uppercase font-semibold mb-8">Plan</h2>
-					<div class="grid grid-cols-3 gap-x-6">
+					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6">
 						<div v-for="plan in plans" :key="plan.id" class="card-plan" :class="{ active: $root.auth.subscription && $root.auth.subscription.plan_id == plan.id, selected: plan.id == (selectedPlan || {}).id }">
 							<div class="flex justify-between">
 								<div class="text-muted font-serif uppercase font-semibold text-xs">{{ plan.name }}</div>
@@ -235,16 +240,16 @@
 
 				<div v-else-if="activeMenu == 'Payout'" class="p-8 payout-content">
 					<div v-if="banner && $root.auth.stripe_account" class="mb-6">
-						<div class="bg-primary-ultralight justify-between rounded-xl flex p-8">
-							<div class="font-serif w-1/4 font-semibold uppercase">
+						<div class="bg-primary-ultralight justify-between rounded-xl flex p-6 flex-col md:flex-row relative">
+							<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
 								SET UP YOUR BANKING DETAILS
 							</div>
-							<div class="w-7/12">
+							<div class="w-full md:w-7/12 ml-0 md:ml-20">
 								<p class="text-muxted mb-4">
 									Use subscriptions to make groups of events where contacts can subscribe to recurring bookings for a recurring cost.
 								</p>
 							</div>
-							<div class="font-serif">
+							<div class="font-serif absolute top-5 right-6">
 								<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 							</div>
 						</div>
@@ -255,8 +260,8 @@
 
 					<vue-form-validate @submit="updateStripeAccount()">
 						<fieldset :disabled="stripeAccountForm.loading">
-							<div class="flex">
-								<div class="payout-sidebar border-right">
+							<div class="flex flex-col md:flex-row">
+								<div class="payout-sidebar border-r-0 md:border-r">
 									<h2 class="text-xs">Identity</h2>
 								</div>
 								<div class="form">
@@ -301,8 +306,8 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex mt-8">
-								<div class="payout-sidebar border-right">
+							<div class="flex flex-col md:flex-row mt-8">
+								<div class="payout-sidebar border-r-0 md:border-r">
 									<h2 class="text-xs">Bank details</h2>
 								</div>
 								<div class="form">
@@ -346,6 +351,27 @@
 							</div>
 							<div class="form-group">
 								<vue-checkbox v-model="user.notify_message" label="Notify me by email for each new message when I'm offline."></vue-checkbox>
+							</div>
+							<div class="mt-5">
+								<vue-button :loading="loading" type="submit" button_class="btn btn-primary"><span>Save</span></vue-button>
+							</div>
+						</vue-form-validate>
+					</div>
+				</div>
+
+				<div v-else-if="activeMenu == 'My Menu'" class="p-8">
+					<div class="notification-content account-body">
+						<h2 class="font-serif uppercase font-semibold mb-8">My Menu</h2>
+
+						<vue-form-validate @submit="saveMenuSettings">
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.packages" label="Packages"></vue-checkbox>
+							</div>
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.team" label="Team"></vue-checkbox>
+							</div>
+							<div class="form-group">
+								<vue-checkbox v-model="user.payments" label="Payments"></vue-checkbox>
 							</div>
 							<div class="mt-5">
 								<vue-button :loading="loading" type="submit" button_class="btn btn-primary"><span>Save</span></vue-button>

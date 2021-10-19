@@ -71,6 +71,30 @@
 	border: solid 1px white;
 	@apply bg-green-600 bottom-0 right-0 rounded-full absolute;
 }
+.cookie-prompt {
+	@apply fixed z-50 bottom-0 left-0 lg:w-96 w-screen p-4;
+	> div {
+		@apply bg-white rounded-xl px-5 py-4 text-sm shadow-lg;
+	}
+}
+.notifications {
+	@apply absolute top-0  h-screen overflow-auto bg-white shadow-md z-10 opacity-0 pointer-events-none;
+	width: 250px;
+	&.open {
+		@apply opacity-100 pointer-events-auto;
+		right: -250px;
+	}
+}
+
+@media (max-width: 991px) {
+	.notifications {
+		@apply w-screen;
+		&.open {
+			right: auto;
+			left: 0;
+		}
+	}
+}
 // .vc-highlight {
 // 	// background-color: $primary !important;
 // }

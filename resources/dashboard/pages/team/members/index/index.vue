@@ -1,15 +1,30 @@
 <template>
-	<div class="min-h-screen" v-if="ready">
-		<div class="content-header border-bottom flex items-center justify-between">
-			<div>
+	<div class="min-h-screen relative" v-if="ready">
+		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+			<div class="ml-7 lg:ml-0">
 				MEMBERS
 			</div>
 			<div>
-				<button type="button" class="btn btn-md btn-primary" @click="$refs.addModal.show()"><span>Add Member</span></button>
+				<button type="button" class="btn btn-md btn-primary flex items-center" @click="$refs.addModal.show()">
+					<span>Add</span>
+					<span class="ml-1 hidden md:block lg:block">Member</span>
+				</button>
 			</div>
 		</div>
+		<div class="h-20 lg:hidden block" />
 
-		<div class="h-full contact-content p-8">
+		<div v-if="members.length == 0" class="flex-grow">
+			<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
+				<div class="text-primary">
+					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
+				</div>
+				<div class="pl-4 -mt-1">
+					<p class="font-bold text-sm">No members added yet. Add a member for your organization by clicking the button below.</p>
+					<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="$refs.addModal.show()"><span>Add New</span></button>
+				</div>
+			</div>
+		</div>
+		<div v-else class="h-full contact-content p-8">
 			<div>
 				<div class="flex items-center justify-between mb-3 header">
 					<VueSelect :options="memberStatuses" v-model="memberStatus" @input="getData" label="Status"></VueSelect>
@@ -28,12 +43,15 @@
 							</div>
 						</div>
 						<div>
-							<router-link :to="`/dashboard/team/members/${member.id}`" class="font-bold text-primary">{{ member.member_user.full_name }}</router-link>
+							<div class="flex items-center">
+								<router-link :to="`/dashboard/team/members/${member.id}`" class="font-bold text-primary">{{ member.member_user.full_name }}</router-link>
+								<span v-if="member.is_pending" class="ml-2 px-3 py-1 text-xs font-bold rounded text-muted bg-yellow-200">Pending</span>
+							</div>
 							<p class="text-xs text-muted">{{ member.member_user.email }}</p>
 						</div>
 					</div>
 					<div class="flex items-center">
-						<VueDropdown :options="actions" @click="memberAction($event, member)" class="-mr-2 ml-1">
+						<VueDropdown :options="actions(member)" @click="memberAction($event, member)" class="-mr-2 ml-1">
 							<template #button>
 								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
 									<CogIcon class="fill-current text-gray-400"></CogIcon>
@@ -51,7 +69,7 @@
 			</div>
 		</div>
 
-		<Modal ref="editModal" size="sm">
+		<Modal ref="editModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT MEMBER</h4>
 			<vue-form-validate v-if="clonedMember" @submit="update">
 				<div class="mb-4">
@@ -74,8 +92,8 @@
 						<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
 							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
 							<div class="mt-2 flex items-center">
-								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Inactive' : 'Active' }}</span>
-								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? false : true" @input="toggleMemberAssignedService(service)"></toggle-switch>
+								<span class="text-xs mr-2">{{ clonedMember.assigned_services.find(x => x == service.id) ? 'Active' : 'Inactive' }}</span>
+								<toggle-switch :value="clonedMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleMemberAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>
@@ -92,7 +110,7 @@
 			</vue-form-validate>
 		</Modal>
 
-		<Modal ref="addModal" size="sm">
+		<Modal ref="addModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">ADD MEMBER</h4>
 			<vue-form-validate @submit="store">
 				<div class="mb-4">
@@ -143,18 +161,18 @@
 
 		<Modal ref="resendModal">
 			<template v-if="selectedMember">
-				<h5 class="font-heading text-center">Resend Invitation</h5>
+				<h4 class="font-serif uppercase font-semibold mb-4 text-center">RESEND INVITATION</h4>
 				<p class="text-center mt-3">
 					Are you sure to resend the invitation email to member
 					<strong>{{ selectedMember.full_name.trim() || selectedMember.email }}</strong>
 					?
 					<br />
 				</p>
-				<div class="d-flex justify-content-end">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
+				<div class="flex justify-between mt-7">
+					<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.resendModal.hide()">
+						<span>Cancel</span>
 					</button>
-					<vue-button button_class="btn btn-primary ml-auto" :loading="resendLoading" type="button" @click="resendEmail(selectedMember)">Resend Invitation</vue-button>
+					<vue-button button_class="btn btn-primary btn-md" :loading="resendLoading" type="button" @click="resendEmail(selectedMember)">Resend Invitation</vue-button>
 				</div>
 			</template>
 		</Modal>

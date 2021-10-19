@@ -9,9 +9,9 @@
             <div class="ml-auto flex">
                 <div class="flex align-middle items-center space-x-3">
                     <a href="/affiliates" class="navbar-item">AFFILIATE HOME</a>
-                    <a href="https://go.trackier.com/register.html" class="navbar-item">JOIN PROGRAM</a>
+                    <a href="https://go.telloe.com/register.html" class="navbar-item">JOIN PROGRAM</a>
                     <a href="/affiliate-terms" target="_blank" class="navbar-item">AFFILIATE TERMS AND CONDITIONS</a>
-                    <button type="button" class="btn btn-primary btn-md" onclick="window.location.href='/?auth=login';"><span class="font-serif">LOGIN</span>
+                    <button type="button" class="btn btn-primary btn-md" onclick="window.location.href='https://go.telloe.com';"><span class="font-serif">AFFILIATE LOGIN</span>
                     </button>
                 </div>
             </div>
@@ -35,10 +35,10 @@
             <div class="navbar-mobile-menu" :class="{open: dropdownOpen}" style="padding-top: 30px;">
                 <div class="rounded-xl shadow-md bg-white py-2 px-2">
                     <a href="/affiliates">AFFILIATE HOME</a>
-                    <a href="https://go.trackier.com/register.html">JOIN PROGRAM</a>
+                    <a href="https://go.telloe.com/register.html">JOIN PROGRAM</a>
                     <a href="/affiliate-terms">AFFILIATE TERMS AND CONDITIONS</a>
                     <div class="px-2 pb-2">
-                        <button type="button" class="btn btn-primary btn-md w-full" onclick="window.location.href='https://go.telloe.com';"><span>LOGIN</span></button>
+                        <button type="button" class="btn btn-primary btn-md w-full" onclick="window.location.href='https://go.telloe.com';"><span>AFFILIATE LOGIN</span></button>
                     </div>
                 </div>
             </div>

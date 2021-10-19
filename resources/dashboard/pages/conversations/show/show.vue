@@ -2,7 +2,10 @@
 	<div class="h-full flex overflow-hidden" v-if="conversation">
 		<div class="h-full flex flex-col flex-grow">
 			<div class="p-4 border-bottom relative flex items-center">
-				<div class="flex items-center">
+				<button @click="toggleConversationList()" class="text-gray-500 focus:outline-none lg:hidden">
+					<ChevronLeftIcon class="fill-current"></ChevronLeftIcon>
+				</button>
+				<div class="flex items-center w-3/6 ml-2 lg:ml-0">
 					<div>
 						<div class="profile-image profile-image-md" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 							<span v-if="!conversation.member.profile_image">{{ conversation.member.initials }}</span>
@@ -10,22 +13,22 @@
 						</div>
 					</div>
 					<div class="ml-2">
-						<h5 v-if="conversation.members.length > 1" class="text-xl" contenteditable @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
-						<h5 v-else class="text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
+						<h5 v-if="conversation.members.length > 1" class="font-bold md:font-normal text-sm sm:text-xs md:text-xl" @blur="updateConversationName" @keypress="updateConversationName">{{ conversation.name }}</h5>
+						<h5 v-else class="font-bold md:font-normal text-sm sm:text-xs md:text-xl">{{ conversation.member.full_name || conversation.name }}</h5>
 						<small v-if="conversation.member.is_pending" class="text-warning">Pending account</small>
 						<div class="flex items-center" v-else-if="conversation.member.id && conversation.member.last_online_format">
-							<small class="text-muted">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
+							<small class="text-muted text-xs md:text-sm">{{ $root.isOnline(conversation.member.id) ? 'Online' : `Last online ${conversation.member.last_online_format}` }}</small>
 						</div>
-						<small v-else-if="conversation.members.length > 1" class="block text-muted"> {{ conversation.members.map(m => m.user.full_name).join(', ') }} </small>
-						<small v-else class="block text-muted">
+						<small v-else-if="conversation.members.length > 1" class="block text-muted text-xs md:text-sm"> {{ conversation.members.map(m => m.user.full_name).join(', ') }} </small>
+						<small v-else class="block text-muted text-xs md:text-sm">
 							<template>{{ conversation.member.email }}</template>
 						</small>
 					</div>
 				</div>
-				<div class="ml-auto btn-actions">
+				<div class="ml-auto btn-actions w-1/6 md:w-auto flex">
 					<template v-if="!conversation.member.is_pending && (conversation.member.role || {}).role != 'support'">
 						<button
-							class="text-primary"
+							class="text-primary hidden lg:block"
 							:data-intro="$root.intros.conversations.steps[3]"
 							data-step="4"
 							@click="
@@ -49,8 +52,15 @@
 							<videocam-icon class="fill-current"></videocam-icon>
 						</button>
 					</template>
-					<button class="text-primary" :data-intro="$root.intros.conversations.steps[4]" data-step="5" :class="{ active: showNotes }" @click="showNotes = true"><note-icon class="fill-current"></note-icon></button>
-					<button class="text-primary" @click="copyConvoLink()"><link-icon class="fill-current transform scale-125"></link-icon></button>
+					<button class="text-primary hidden lg:block" :data-intro="$root.intros.conversations.steps[4]" data-step="5" :class="{ active: showNotes }" @click="showNotes = true"><note-icon class="fill-current"></note-icon></button>
+					<button class="text-primary hidden lg:block" @click="copyConvoLink()"><link-icon class="fill-current transform scale-125"></link-icon></button>
+					<VueDropdown :options="['Audio Call', 'Notes', 'Copy Link']" @click="action">
+						<template #button>
+							<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100 block lg:hidden justify-center">
+								<MoreIcon class="w-4 h-4"></MoreIcon>
+							</div>
+						</template>
+					</VueDropdown>
 				</div>
 			</div>
 
@@ -71,7 +81,7 @@
 			</div>
 		</div>
 
-		<div class="notes-container border-left overflow-hidden flex flex-col" :class="{ open: showNotes }">
+		<div class="notes-container border-left overflow-auto lg:overflow-hidden flex flex-col" :class="{ open: showNotes }">
 			<div class="notes-header border-bottom px-6 flex justify-between">
 				<span class="text-muted font-bold">NOTES</span>
 				<div class="flex items-center">
@@ -80,7 +90,7 @@
 				</div>
 			</div>
 
-			<div class="p-8 overflow-auto flex-grow">
+			<div class="p-8 overflow-auto flex-grow pb-24 md:pb-8">
 				<vue-form-validate v-if="addNewNote" @submit="addNote" class="mb-4">
 					<textarea rows="3" v-model="newNote" placeholder="Write a note.." class="resize-none" data-required></textarea>
 					<div class="flex justify-between mt-2">

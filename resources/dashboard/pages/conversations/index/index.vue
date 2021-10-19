@@ -1,16 +1,19 @@
 <template>
-	<div class="p-8 flex flex-col h-full conversations-list overflow-hidden">
-		<input type="text" placeholder="Search conversations" v-model="search" />
+	<div class="p-4 md:p-8 flex flex-col h-full conversations-list pb-24 md:pb-8" :class="showConversationList ? 'show overflow-auto' : 'overflow-hidden' ">
+		<div class="flex">
+			<input type="text" placeholder="Search conversations" v-model="search" class="w-11/12 lg:w-full" />
+			<button class="text-primary w-1/12 items-center justify-end flex lg:hidden ml-1" @click="toggleConversationList()"><chat-icon class="fill-current transform scale-125"></chat-icon></button>
+		</div>
 
-		<div class="overflow-auto flex-grow mt-12 relative" v-if="ready">
+		<div class="overflow-auto flex-grow mt-8 md:mt-12 relative" v-if="ready">
 			<div v-if="conversations.length == 0" class="absolute-center w-full text-center text-muted text-sm">
 				You don't have any conversations yet.
 			</div>
 			<template v-else-if="orderedConversations.length > 0">
 				<template v-for="conversation in orderedConversations">
-					<div :key="conversation.id" class="conversation-preview mb-2" :class="{ active: conversation.id == $route.params.id }" @click="setConversation(conversation)">
+					<div :key="conversation.id" class="conversation-preview mb-2" :class="{ active: conversation.id == $route.params.id }" @click="setConversation(conversation), toggleConversationList()">
 						<div>
-							<div class="profile-image profile-image-sm relative" :class="{ 'bg-light border border-gray-200 overflow-hidden': conversation.members.length > 1 }" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
+							<div class="profile-image profile-image-sm relative" :class="{ 'bg-light border border-gray-200': conversation.members.length > 1 }" :style="{ backgroundImage: 'url(' + conversation.member.profile_image + ')' }">
 								<span v-if="conversation.members.length <= 1 && !conversation.member.profile_image">{{ conversation.member.initials }}</span>
 								<span v-else-if="conversation.members.length > 1">GC</span>
 								<!-- <div class="position-absolute-center w-100 d-flex flex-wrap justify-content-center">

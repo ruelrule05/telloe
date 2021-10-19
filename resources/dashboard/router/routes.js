@@ -34,7 +34,7 @@ const routes = [
 			},
 			{
 				path: 'booking-links/:id',
-				name: 'Booking Links Show',
+				name: 'Match Up Links Show',
 				component: () => import(/* webpackChunkName: "dashboard-bookings-booking-links" */ '../pages/booking-links/show/show.vue')
 			},
 			{
@@ -89,6 +89,7 @@ const routes = [
 					},
 					{
 						path: 'organizations/:id',
+						name: 'Team Organization Show',
 						component: () => import(/* webpackChunkName: "dashboard-team-organizations-show" */ '../pages/team/organizations/show/show.vue')
 					},
 					{
@@ -98,7 +99,7 @@ const routes = [
 					},
 					{
 						path: 'members/:id',
-						name: '',
+						name: 'Team Members Show',
 						component: () => import(/* webpackChunkName: "dashboard-team-members-show" */ '../pages/team/members/show/show.vue')
 					}
 				]

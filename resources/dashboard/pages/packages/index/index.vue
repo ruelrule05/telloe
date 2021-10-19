@@ -165,7 +165,7 @@
 			</template>
 		</Modal>
 
-		<Modal ref="addModal" :close-button="false" size="modal-lg ">
+		<Modal ref="addModal" :close-button="false" size="modal-lg">
 			<h6 class="font-serif font-semibold mb-5">ADD PACKAGE</h6>
 
 			<vue-form-validate @submit="submit">

@@ -28,15 +28,15 @@
 		</div>
 
 		<div class="mt-5 members-container">
-			<div
-				v-for="assignedService in service.assigned_services"
-				:key="assignedService.id"
-				class="profile-image profile-image-sm"
-				:style="{
-					backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
-				}"
-			>
-				<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+			<div v-for="assignedService in service.assigned_services" :key="assignedService.id" class="-mr-2 border-2 border-gray-50 rounded-full relative">
+				<div
+					class="profile-image profile-image-sm"
+					:style="{
+						backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
+					}"
+				>
+					<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+				</div>
 			</div>
 		</div>
 

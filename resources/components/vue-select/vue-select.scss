@@ -1,5 +1,5 @@
 .select {
-	@apply border border-gray-300 cursor-pointer rounded-md inline-flex justify-center items-center w-full px-3 py-2 transition ring-primary ring-offset-1 focus:outline-none overflow-hidden shadow-inner;
+	@apply border border-gray-300 cursor-pointer rounded-md inline-flex justify-center items-center w-full px-3 py-2 transition ring-primary ring-offset-1 focus:outline-none overflow-hidden shadow-inner whitespace-nowrap;
 	&.show {
 		@apply border-gray-500 ring-2;
 	}
@@ -9,7 +9,7 @@
 }
 .select-menu {
 	> div {
-		max-height: 200px;
+		max-height: 190px;
 	}
 	@apply transform scale-95  origin-top overflow-hidden absolute right-0 top-9 whitespace-nowrap mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out;
 	z-index: -1;
@@ -27,6 +27,32 @@
 .select-item {
 	@apply block cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
 	&.active {
-		@apply bg-primary text-white;
+		&:not(.multiple) {
+			@apply bg-primary text-white;
+		}
+		.checkbox .cr {
+			border-color: theme('colors.primary.DEFAULT');
+			background-color: theme('colors.primary.DEFAULT');
+			svg {
+				@apply opacity-100;
+			}
+		}
 	}
+}
+.checkbox .cr {
+	@apply transition-all mr-2 cursor-pointer;
+	position: relative;
+	border: 1px solid #ddd;
+	border-radius: 0.43em;
+	width: 1.4em;
+	height: 1.4em;
+	float: left;
+}
+.checkbox .cr svg {
+	@apply transition-all opacity-0;
+	position: absolute;
+	line-height: 0;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }

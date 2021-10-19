@@ -14,7 +14,7 @@
                 <h1 class="font-serif text-primary font-semibold sm:text-home-heading text-2xl">SHOW YOU THE MONEY!
                 </h1>
                 <p class="text-xl lg:my-16 mt-4 mb-8 text-muted lg:pr-36" style="color: #3d445e;">Earn <b style="color: #346ce2;">35% on every sale and $50 CPA</b> for customers you refer that upgrade to an annual subscription.</p>
-                <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" onclick="window.location.href='https://go.trackier.com/register.html'"><span class="relative -bottom-px">JOIN
+                <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" onclick="window.location.href='https://go.telloe.com/register.html'"><span class="relative -bottom-px">JOIN
                         NOW</span></button>
             </div>
             <div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6">
@@ -160,7 +160,7 @@
                     <p class="text-muted mt-2">Decide how you want to promote Telloe to suitable audiences to earn great CPA and Revenue Share with the Telloe Affiliate Program.</p>
                 </div>
             </div>
-            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" style="margin-top: 60px;" onclick="window.location.href='https://go.trackier.com/register.html'"><span
+            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" style="margin-top: 60px;" onclick="window.location.href='https://go.telloe.com/register.html'"><span
                     class="relative -bottom-px">JOIN NOW</span></button>
         </div>
         <div class="lg:col-span-5 col-span-12 order-1 lg:order-2 lg:px-0 px-10">
@@ -193,7 +193,7 @@
                 </h4>
                 <p class="text-white lg:text-xl mb-10">Open the door to big earning opportunities and start now!
                 </p>
-                <button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs" onclick="window.location.href='https://go.trackier.com/register.html'"><span class="relative -bottom-px">JOIN
+                <button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs" onclick="window.location.href='https://go.telloe.com/register.html'"><span class="relative -bottom-px">JOIN
                         NOW</span></button>
             </div>
         </div>

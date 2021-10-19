@@ -152,6 +152,12 @@ export default {
 			deleteBookingLink: 'booking_links/delete'
 		}),
 
+		hasSelected(user, timeslot) {
+			let emailData = this.bookingLink.emails.find(x => x.email == user.email);
+			let userID = emailData ? emailData.id : user.id;
+			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
+		},
+
 		async book(timeslot) {
 			this.channel.whisper('creatingBooking', {});
 
@@ -200,18 +206,19 @@ export default {
 			return isBookable;
 		},
 
-		toggleSelectTimeslot(timeslot) {
+		toggleSelectTimeslot(state, timeslot) {
 			let propName = `${this.$root.auth.id}-${this.selectedDate}`;
-			this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			if (state) {
+				this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			} else {
+				this.$delete(this.bookingLink.selected_timeslots, propName);
+			}
 			this.updateBookingLink(this.bookingLink);
 			this.channel.whisper('selectTimeslot', {
 				key: propName,
-				value: timeslot.time
+				value: timeslot.time,
+				selected: state
 			});
-		},
-
-		hasSelected(userID, timeslot) {
-			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
 		},
 
 		timeslotTime(time, timezone) {
@@ -240,20 +247,12 @@ export default {
 			this.$router.push(`/dashboard/booking-links`);
 		},
 
-		async toggleTimeslot(state, timeslot) {
-			let index = this.bookingLink.dates[this.selectedDate].selectedTimeslots.findIndex(x => x.time == timeslot.time);
-			if (state) {
-				if (index == -1) {
-					this.bookingLink.dates[this.selectedDate].selectedTimeslots.push(timeslot);
-				}
-			} else {
-				if (index >= 0) {
-					this.bookingLink.dates[this.selectedDate].selectedTimeslots.splice(index, 1);
-				}
+		async toggleTimeslot(timeslot) {
+			let index = this.bookingLink.dates[this.selectedDate].timeslots.findIndex(x => x.time == timeslot.time);
+			if (index != -1) {
+				this.bookingLink.dates[this.selectedDate].timeslots[index].is_available = true;
 			}
-			if (this.bookingLink.selected_timeslots.length == 0) {
-				this.bookingLink.selected_timeslots = {};
-			}
+
 			// update bookingLink
 			await this.updateBookingLink(this.bookingLink);
 

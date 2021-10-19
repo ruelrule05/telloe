@@ -82,6 +82,38 @@ export default {
 				});
 			}
 			return dateOptions;
+		},
+		canBeBooked() {
+			let participantsCount = 1 + this.bookingLink.booking_link_contacts.length + this.bookingLink.emails.length;
+			let suggestedTimeslots = [];
+			if (!this.editable) {
+				return false;
+			} else {
+				// You
+				let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
+				let userID = emailData ? emailData.id : this.auth.id;
+				let propName = `${userID}-${this.selectedDate}`;
+				if (this.bookingLink.selected_timeslots[propName]) {
+					suggestedTimeslots.push(this.bookingLink.selected_timeslots[propName]);
+				}
+
+				// Contacts
+				this.bookingLink.booking_link_contacts.forEach(bookingLinkContact => {
+					let propName = `${bookingLinkContact.contact.contact_user_id}-${this.selectedDate}`;
+					if (this.bookingLink.selected_timeslots[propName]) {
+						suggestedTimeslots.push(this.bookingLink.selected_timeslots[propName]);
+					}
+				});
+
+				// Emails
+				this.bookingLink.emails.forEach(email => {
+					let propName = `${email.id}-${this.selectedDate}`;
+					if (this.bookingLink.selected_timeslots[propName]) {
+						suggestedTimeslots.push(this.bookingLink.selected_timeslots[propName]);
+					}
+				});
+			}
+			return suggestedTimeslots.length == participantsCount && suggestedTimeslots.every(v => v === suggestedTimeslots[0]);
 		}
 	},
 
@@ -123,6 +155,8 @@ export default {
 							contact.suggestedTimeslots.splice(index, 1);
 						}
 					}
+				} else if (data.userId == this.auth.id) {
+					(this.bookingLink.selected_timeslots || [])[`${data.userID}-${this.selectedDate}`] = data.value;
 				}
 			});
 
@@ -155,7 +189,11 @@ export default {
 			});
 
 			this.channel.listenForWhisper('selectTimeslot', data => {
-				this.$set(this.bookingLink.selected_timeslots, data.key, data.value);
+				if (data.selected) {
+					this.$set(this.bookingLink.selected_timeslots, data.key, data.value);
+				} else {
+					this.$delete(this.bookingLink.selected_timeslots, data.key, data);
+				}
 			});
 		}
 
@@ -167,24 +205,86 @@ export default {
 		}
 	},
 
-	mounted() {
-		if (this.authAction) {
-			this.$refs.authModal.show();
-		}
-	},
-
 	methods: {
-		hasSelected(userID, timeslot) {
+		async book() {
+			let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
+			let userID = emailData ? emailData.id : this.auth.id;
+			let propName = `${userID}-${this.selectedDate}`;
+			if (!this.canBeBooked || !this.bookingLink.selected_timeslots[propName]) return false;
+
+			this.$refs.requestingModal.hide(true);
+			this.$refs.requestModal.hide(true);
+			this.$refs.bookingModal.show();
+
+			this.channel.whisper('creatingBooking', {});
+			let data = {
+				date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
+				start: this.bookingLink.selected_timeslots[propName]
+			};
+			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
+			if (response.data) {
+				this.booking = response.data;
+				this.$refs.bookingSuccessModal.show();
+				this.bookingLink.is_booked = true;
+				this.channel.whisper('bookingSuccess', {
+					booking: this.booking
+				});
+			}
+		},
+
+		isBookable(timeslot) {
+			let isBookable = true;
+			if (!this.editable) {
+				isBookable = false;
+			} else {
+				// You
+				let propName = `${this.auth.id}-${this.selectedDate}`;
+				if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
+					isBookable = false;
+				}
+
+				// Contacts
+				this.bookingLink.booking_link_contacts.forEach(bookingLinkContact => {
+					let propName = `${bookingLinkContact.contact.contact_user_id}-${this.selectedDate}`;
+					if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
+						isBookable = false;
+					}
+				});
+				this.bookingLink.emails.forEach(email => {
+					let propName = `${email}-${this.selectedDate}`;
+					if (!this.bookingLink.selected_timeslots[propName] || this.bookingLink.selected_timeslots[propName] != timeslot.time) {
+						isBookable = false;
+					}
+				});
+
+				// Emails
+			}
+			return isBookable;
+		},
+
+		hasSelected(user, timeslot) {
+			let emailData = this.bookingLink.emails.find(x => x.email == user.email);
+			let userID = emailData ? emailData.id : user.id;
 			return (this.bookingLink.selected_timeslots || [])[`${userID}-${this.selectedDate}`] == timeslot.time;
 		},
 
-		toggleSelectTimeslot(timeslot) {
-			let propName = `${this.auth.id}-${this.selectedDate}`;
-			this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+		toggleSelectTimeslot(state, timeslot) {
+			if (this.authAction) {
+				return this.$refs.authModal.show();
+			}
+			let emailData = this.bookingLink.emails.find(x => x.email == this.auth.email);
+			let userID = emailData ? emailData.id : this.auth.id;
+			let propName = `${userID}-${this.selectedDate}`;
+			if (state) {
+				this.$set(this.bookingLink.selected_timeslots, propName, timeslot.time);
+			} else {
+				this.$delete(this.bookingLink.selected_timeslots, propName);
+			}
 			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink, { toast: true });
 			this.channel.whisper('selectTimeslot', {
 				key: propName,
-				value: timeslot.time
+				value: timeslot.time,
+				selected: state
 			});
 		},
 
@@ -229,15 +329,6 @@ export default {
 			});
 			this.acceptedContacts++;
 			this.$refs.requestModal.show();
-		},
-
-		async toggleTimeslot(state, timeslot) {
-			this.$set(timeslot, 'is_suggested', state);
-			this.channel.whisper('suggestTimeslot', {
-				userId: this.auth.id,
-				timeslot: timeslot,
-				is_suggested: state
-			});
 		},
 
 		async login() {

@@ -43,7 +43,8 @@ window.app = new Vue({
 		showVideo: true,
 		dropdownOpen: false,
 		videoOpen: false,
-		WistiaPlayer: null
+		WistiaPlayer: null,
+		mobileApp: true
 	},
 
 	watch: {
@@ -55,11 +56,13 @@ window.app = new Vue({
 	created() {
 		//this.checkAuth();
 		const queryString = window.location.search;
+		let mobileApp = false;
 		if (queryString) {
 			const urlParams = new URLSearchParams(queryString);
 			const invite_token = urlParams.get('invite_token');
 			const member_invite_token = urlParams.get('member_invite_token');
 			const authTab = urlParams.get('auth');
+			mobileApp = urlParams.get('mobile_app');
 			const videoOpen = urlParams.get('video');
 			if (authTab) {
 				this.action = authTab;
@@ -76,6 +79,10 @@ window.app = new Vue({
 
 			const email = urlParams.get('email');
 			if (email) this.email = email;
+		}
+		this.mobileApp = mobileApp == 'true';
+		if (this.mobileApp) {
+			this.auth = true;
 		}
 	},
 

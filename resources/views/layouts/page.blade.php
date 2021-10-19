@@ -8,20 +8,20 @@
 	@yield('styles')
 	<link rel="stylesheet" href="{{ mix('css/page.css') }}">
 </head>
-<body>
+<body class="bg-transparent">
 	<div id="app" class="overflow-hidden">
-		@if ($navbar ?? true)
-			@include('partials.navbar')
-		@endif
+		<template v-if="!mobileApp">
+			@if ($navbar ?? true)
+				@include('partials.navbar')
+			@endif
+			@yield('content')
 
-
-		@yield('content')
+			@if ($footer ?? true)
+				@include('partials.footer')
+			@endif
+		</template>
 		
 		<auth v-if="auth" ref="authForm"></auth>
-		
-		@if ($footer ?? true)
-			@include('partials.footer')
-		@endif
 	</div>
 
 
@@ -33,6 +33,22 @@
 	<script>
 		window.CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
 		window.MEMBER = {!! isset($member) ? "JSON.parse('".json_encode($member)."');" : 'null' !!};
+	</script>
+
+	<script>
+		(function() {
+			function getParameterByName(name) {
+				name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+				var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+					results = regex.exec(location.search);
+
+				return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+			}
+			var click_id = getParameterByName('sub1');
+			if (click_id) {
+				document.cookie = 'click_id=' + click_id + ';path=/;';
+			}
+		})();
 	</script>
 	@yield('scripts')
 </body>
