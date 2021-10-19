@@ -78,15 +78,15 @@ class AuthService
             Auth::login($user);
             $user->makeVisible(['default_availability']);
 
-            if ($request->state == 'popup') {
-                echo '
+            echo '
                 <script>
-                    window.opener.postMessage({user: ' . json_encode($user) . '});
-                    window.close();
+                    if (window.opener && window.opener !== window) {
+                        window.opener.postMessage({user: ' . json_encode($user) . '});
+                        window.close();
+                    } else {
+                        window.location.href = "' . $redirect . '";
+                    }
                 </script>';
-            } else {
-                return redirect($redirect);
-            }
         }
     }
 
