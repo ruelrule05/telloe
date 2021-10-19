@@ -51,7 +51,7 @@
 							</div>
 							<div>
 								<label required>Time gap between meetings (in minutes)</label>
-								<input type="number" min="5" v-model="clonedService.interval" data-required />
+								<input type="number" min="0" v-model="clonedService.interval" data-required />
 							</div>
 						</div>
 						<div class="font-serif uppercase font-semibold text-xs mt-10">MEETING TYPE</div>
