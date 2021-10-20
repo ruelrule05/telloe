@@ -134,7 +134,7 @@ export default {
 				}
 			});
 
-			this.$root.auth.blocked_timeslots.forEach(timeslot => {
+			(this.$root.auth.blocked_timeslots || []).forEach(timeslot => {
 				timeslot.type = 'blocked';
 				timeslot.id = `blocked-${timeslot.date}-${timeslot.start}-${timeslot.end}`;
 				parsedBookings.push({

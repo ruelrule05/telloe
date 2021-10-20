@@ -10,7 +10,7 @@
 					<button type="button" class="btn btn-md btn-outline-primary w-2/4 lg:w-auto mr-2" @click="$emit('close')">
 						<span>Cancel</span>
 					</button>
-					<button v-if="$root.auth.is_premium || !createService" type="submit" class="btn btn-md btn-primary w-2/4 lg:w-auto">
+					<button v-if="$root.auth.is_premium || !createService || (!$root.auth.is_premium && servicesCount == 0)" type="submit" class="btn btn-md btn-primary w-2/4 lg:w-auto">
 						<span>{{ createService ? 'Create' : 'Save' }}</span>
 					</button>
 				</div>
