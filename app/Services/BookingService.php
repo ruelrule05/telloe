@@ -92,6 +92,13 @@ class BookingService
         $data['uuid'] = (string) Uuid::generate();
         $data['name'] = $data['name'] ?? $service->name;
         $data['service_id'] = $service->id;
+        if ($request->meeting_type == 'Zoom') {
+            $types = collect($service->types);
+            $type = $types->firstWhere('type', 'Zoom');
+            if ($type && $type['data']) {
+                $data['zoom_link'] = $type['data'];
+            }
+        }
         $booking = Booking::create($data);
         $bookings[] = $booking;
 
@@ -158,6 +165,14 @@ class BookingService
                     }
                 }
                 if ($createBooking) {
+                    $zoomLink = null;
+                    if ($request->meeting_type == 'Zoom') {
+                        $types = collect($service->types);
+                        $type = $types->firstWhere('type', 'Zoom');
+                        if ($type && $type['data']) {
+                            $zoomLink = $type['data'];
+                        }
+                    }
                     $booking = Booking::create([
                         'name' => $data['name'] ?? $service->name,
                         'service_id' => $service->id ?? null,
@@ -167,7 +182,8 @@ class BookingService
                         'meeting_type' => $request->meeting_type,
                         'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
                         'uuid' => (string) Uuid::generate(),
-                        'timezone' => $request->timezone
+                        'timezone' => $request->timezone,
+                        'zoom_link' => $zoomLink
                     ]);
                     $bookings[] = $booking;
                 }
@@ -209,7 +225,7 @@ class BookingService
 
             // Check if Google Calendar is integrated
             // Create event to selected google calendar with flag to tell it's a telloe booking
-            if ($service && $service->user->google_calendar_token && $service->user->google_calendar_id) {
+            if ($booking->meeting_type == 'Google Meet' && $service && $service->user->google_calendar_token && $service->user->google_calendar_id) {
                 $time = time();
                 $GoogleCalendarClient = new GoogleCalendarClient($service->user);
                 $client = $GoogleCalendarClient->client;
@@ -235,11 +251,9 @@ class BookingService
                 ]);
 
                 $event = $googleService->events->insert($service->user->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
-                if ($booking->meeting_type == 'Google Meet') {
-                    $booking->update([
-                        'meet_link' => $event->hangoutLink
-                    ]);
-                }
+                $booking->update([
+                    'meet_link' => $event->hangoutLink
+                ]);
             }
 
             $booking->google_link = $link->google();

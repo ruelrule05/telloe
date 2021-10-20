@@ -415,6 +415,13 @@ class UserService
 
         $data['uuid'] = (string) Uuid::generate();
         $data['name'] = $service->name;
+        if ($request->meeting_type == 'Zoom') {
+            $types = collect($service->types);
+            $type = $types->firstWhere('type', 'Zoom');
+            if ($type && $type['data']) {
+                $data['zoom_link'] = $type['data'];
+            }
+        }
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->coach->zoom_token) {
@@ -442,7 +449,7 @@ class UserService
             }
         }
 
-        if ($service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+        if ($booking->meeting_type == 'Google Meet' && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
