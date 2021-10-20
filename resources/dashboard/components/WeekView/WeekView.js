@@ -148,8 +148,8 @@ export default {
 				parsedBookings.push({
 					booking: timeslot,
 					name: 'Blocked',
-					start: timeslot.start,
-					end: timeslot.end,
+					start: `${timeslot.date} ${timeslot.start}`,
+					end: `${timeslot.date} ${timeslot.end}`,
 					category: 'bookings',
 					color: 'bg-gray-50'
 				});
