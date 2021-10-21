@@ -9,7 +9,7 @@
 @foreach($bookings as $booking) 
 <div style="text-align-last: left; margin-top: 10px">
     <div style="margin-top: 20px;">
-        <h1 style="font-size: 26px; margin-bottom: 2px; margin-top: 0">{{ $booking->name }}</h1>
+        <h1 style="font-size: 26px; margin-bottom: 2px; margin-top: 0">{{ $booking->customName ?? $booking->name }}</h1>
         @if($booking->service)
         <div style="color: #838EA6">{{ $booking->duration }} min event with <span style="font-weight: 600">{{ $booking->service->coach->full_name }}</span></div>
         @endif

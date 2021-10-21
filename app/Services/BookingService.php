@@ -9,7 +9,6 @@ use App\Http\Requests\IndexBookingRequest;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Requests\UpdateOutlookCalendarEventsRequest;
-use App\Http\Zoom;
 use App\Mail\DeleteBooking;
 use App\Mail\NewBooking;
 use App\Mail\UpdateBooking;
@@ -101,15 +100,6 @@ class BookingService
         }
         $booking = Booking::create($data);
         $bookings[] = $booking;
-
-        if ($service && $service->create_zoom_link && $service->user->zoom_token) {
-            $zoomLink = Zoom::createMeeting($service->user, $data['name'], Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601ZuluString());
-            if ($zoomLink) {
-                $booking->update([
-                    'zoom_link' => $zoomLink['join_url']
-                ]);
-            }
-        }
 
         $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
         $to = $from->clone()->addMinute($booking->service->duration ?? 30);

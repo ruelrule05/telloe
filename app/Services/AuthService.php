@@ -605,7 +605,7 @@ class AuthService
                 'trial_expires_at' => Carbon::now()->add(14, 'day')
             ]);
             // update all ConversationMember with user_id
-            ConversationMember::whereNull('user_id')->where('email', $user->email)->update([
+            ConversationMember::whereNull('user_id')->where('email', $newUser->email)->update([
                 'user_id' => $newUser->id
             ]);
 
