@@ -18,6 +18,7 @@ import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import GoogleMeetIcon from '../../../icons/google-meet.vue';
+import ZoomIcon from '../../../icons/zoom.vue';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import PlusIcon from '../../../icons/plus';
 import vClickOutside from 'v-click-outside';
@@ -42,7 +43,7 @@ export default {
 		}
 	},
 
-	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon, VueButton },
+	components: { PlusIcon, VueDropdown, Multiselect, CallMenuIcon, SkypeIcon, VueCheckbox, CalendarIcon, CloseIcon, Timerangepicker, VueSelect, VueFormValidate, Modal, WarningIcon, VDatePicker, GoogleMeetIcon, VueButton, ZoomIcon },
 
 	directives: { clickOutside: vClickOutside.directive, tooltip },
 

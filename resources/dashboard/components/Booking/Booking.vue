@@ -130,9 +130,8 @@
 						</div>
 					</div>
 					<div class="flex justify-between items-center pb-6">
-						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md flex items-center">
-							<span>Add</span>
-							<span class="hidden md:block ml-2">booking</span>
+						<vue-button type="submit" :loading="loading" theme="primary" button_class="btn btn-outline-primary btn-md">
+							<span>Add booking</span>
 						</vue-button>
 						<button type="button" class="btn" @click="close">Cancel</button>
 					</div>
@@ -231,6 +230,8 @@
 						</template>
 
 						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
+
+						<a v-if="booking.zoom_link" :href="booking.zoom_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><ZoomIcon class="w-4 h-4 mr-1 fill-current text-primary"></ZoomIcon> Zoom Meeting</a>
 
 						<div v-if="clonedBooking.form_data" class="mt-4">
 							<label class="-mb-px">Form Data</label>
