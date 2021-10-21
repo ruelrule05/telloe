@@ -271,6 +271,15 @@ class UserService
         foreach ($request->timeslots as $timeslot) {
             $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration);
+
+            $zoomLink = null;
+            if ($timeslot['type'] == 'Zoom') {
+                $types = collect($service->types);
+                $type = $types->firstWhere('type', 'Zoom');
+                if ($type && $type['data']) {
+                    $zoomLink = $type['data'];
+                }
+            }
             $booking = self::createBooking($service, [
                 'service_id' => $service->id,
                 'date' => $timeslot['date']['format'],
@@ -279,7 +288,8 @@ class UserService
                 'meeting_type' => $timeslot['type'],
                 'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
                 'form_data' => $formData,
-                'timezone' => $request->timezone
+                'timezone' => $request->timezone,
+                'zoom_link' => $zoomLink
             ], $customer, $guest, $request);
 
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
@@ -354,7 +364,14 @@ class UserService
                 foreach ($booking->bookingUsers as $bookingUser) {
                     $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
                     if ($attendeeEmail) {
-                        Mail::queue(new NewBooking($bookings, 'customer', $attendeeEmail));
+                        $customerBookings = [];
+                        foreach ($bookings as $booking) {
+                            $booking = clone $booking;
+                            $guestName = $bookingUser->user ? $bookingUser->user->full_name : $bookingUser->guest['first_name'] . ' ' . $bookingUser->guest['last_name'];
+                            $booking->customName = 'Meeting with ' . $guestName;
+                            $customerBookings[] = $booking;
+                        }
+                        Mail::queue(new NewBooking($customerBookings, 'customer', $attendeeEmail));
                     }
                 }
             }
@@ -414,14 +431,11 @@ class UserService
         // }
 
         $data['uuid'] = (string) Uuid::generate();
-        $data['name'] = $service->name;
-        if ($request->meeting_type == 'Zoom') {
-            $types = collect($service->types);
-            $type = $types->firstWhere('type', 'Zoom');
-            if ($type && $type['data']) {
-                $data['zoom_link'] = $type['data'];
-            }
+        $name = $service->name;
+        if ($guest && isset($guest['first_name']) && isset($guest['last_name'])) {
+            $name = $guest['first_name'] . ' ' . $guest['last_name'];
         }
+        $data['name'] = $name;
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->coach->zoom_token) {
@@ -499,8 +513,7 @@ class UserService
         $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
-
-        return $booking->refresh();
+        return $booking->refresh()->load('bookingUsers');
     }
 
     public static function loginAndBook($username, $service_id, UserBookRequest $request)

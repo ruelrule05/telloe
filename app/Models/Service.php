@@ -99,7 +99,7 @@ class Service extends BaseModel
         ->where('date', $dateString)->get());
 
         //if (! array_search($dateString, $holidays) && $user) {
-        $date = Carbon::parse($dateString);
+        $date = Carbon::parse($dateString)->timezone($user->timezone);
         $days = json_decode($this->attributes['days'], true);
         $dayName = $date->format('l');
 
@@ -139,10 +139,17 @@ class Service extends BaseModel
                 }
             }
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
-            $bookings = $serviceBookings
-            ->where('start', '<=', $timeslot['time'])
-            ->where('end', '>=', $timeslot['time'])
+            $bookings = $serviceBookings->filter(function ($booking) use ($user, $timeslot) {
+                $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($user->timezone)->format('H:i');
+                $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($user->timezone)->format('H:i');
+                return $start <= $timeslot['time'] && $end >= $timeslot['time'];
+            })
             ->all();
+
+            if ($dateString == '2021-10-21') {
+                echo $timeslot['time'] . '=' . count($bookings) . '-----';
+            }
+            $timeslot['bookingsCount'] = count($bookings);
 
             // google calendar events
             $googleEvents = [];

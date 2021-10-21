@@ -18,7 +18,6 @@ class NewBooking extends Mailer
 
     public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
- 
         $this->actionText = 'Manage Bookings';
         $this->actionUrl = config('app.url') . '/bookings/' . $bookings[0]->uuid;
 
