@@ -91,7 +91,7 @@ class Service extends BaseModel
     {
         $timeslots = [];
         $holidays = $this->holidays;
-        $user = User::find($this->user_id);
+        $user = $this->coach;
 
         //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')

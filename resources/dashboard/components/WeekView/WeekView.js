@@ -144,12 +144,22 @@ export default {
 
 			(this.$root.auth.blocked_timeslots || []).forEach(timeslot => {
 				timeslot.type = 'blocked';
-				timeslot.id = `blocked-${timeslot.start}-${timeslot.end}`;
+				let start;
+				let end;
+				if (timeslot.date) {
+					timeslot.id = `blocked${timeslot.date}-${timeslot.start}-${timeslot.end}`;
+					start = `${timeslot.date} ${timeslot.start}`;
+					end = `${timeslot.date} ${timeslot.end}`;
+				} else {
+					timeslot.id = `blocked-${timeslot.start}-${timeslot.end}`;
+					start = `${timeslot.start}`;
+					end = `${timeslot.end}`;
+				}
 				parsedBookings.push({
 					booking: timeslot,
 					name: 'Blocked',
-					start: `${timeslot.date} ${timeslot.start}`,
-					end: `${timeslot.date} ${timeslot.end}`,
+					start: start,
+					end: end,
 					category: 'bookings',
 					color: 'bg-gray-50'
 				});

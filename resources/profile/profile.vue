@@ -103,6 +103,7 @@
 											selectedCoachId = profile.id;
 											selectedService = selectedServiceForTimeline;
 										"
+										v-tooltip.right="profile.timezone"
 									>
 										<div class="flex">
 											<div class="profile-image profile-image-sm" :style="{ 'background-image': `url(${profile.profile_image})` }">
@@ -112,7 +113,6 @@
 												<h6 class="text-primary font-bold">
 													{{ profile.full_name }}
 												</h6>
-												<div class="text-muted text-sm">{{ profile.timezone }}</div>
 											</div>
 										</div>
 									</div>
@@ -127,6 +127,7 @@
 											selectedCoachId = assignedService.coach.id;
 											selectedService = assignedService;
 										"
+										v-tooltip.right="assignedService.coach.timezone"
 									>
 										<div class="flex">
 											<div class="profile-image profile-image-sm" :style="{ 'background-image': `url(${assignedService.coach.profile_image})` }">
@@ -136,7 +137,6 @@
 												<h6 class="text-primary font-bold">
 													{{ assignedService.coach.full_name }}
 												</h6>
-												<div class="text-muted text-sm">{{ assignedService.coach.timezone }}</div>
 											</div>
 										</div>
 									</div>

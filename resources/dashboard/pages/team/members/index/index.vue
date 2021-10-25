@@ -134,7 +134,7 @@
 							<h6 class="font-semibold text-primary">{{ service.name }}</h6>
 							<div class="mt-2 flex items-center">
 								<span class="text-xs mr-2">{{ newMember.assigned_services.find(x => x == service.id) ? 'Inactive' : 'Active' }}</span>
-								<toggle-switch :value="newMember.assigned_services.find(x => x == service.id) ? false : true" @input="toggleAssignedService(service)"></toggle-switch>
+								<toggle-switch :value="newMember.assigned_services.find(x => x == service.id) ? true : false" @input="toggleAssignedService(service)"></toggle-switch>
 							</div>
 						</div>
 					</template>
