@@ -95,7 +95,11 @@ class UserService
                         $endsAt->whereNull('ends_at')->orWhereDate('ends_at', '>', $now);
                     });
                 });
-            }])->services->load('user', 'assignedServices.member.memberUser');
+            }])->services->load(['user', 'assignedServices' => function ($assignedServices) {
+                $assignedServices->whereHas('member', function ($member) {
+                    $member->where('is_pending', false);
+                });
+            }]);
 
             $data = [];
             $data['services'] = $services;
@@ -105,7 +109,11 @@ class UserService
 
         $service = null;
         if ($service_id) {
-            $service = Service::with('user', 'assignedServices.member.memberUser')->where('is_available', true)->where('id', $service_id)->where('user_id', $profile->id)->first();
+            $service = Service::with(['user', 'assignedServices' => function ($assignedServices) {
+                $assignedServices->whereHas('member', function ($member) {
+                    $member->where('is_pending', false);
+                });
+            }])->where('is_available', true)->where('id', $service_id)->where('user_id', $profile->id)->first();
             if (! $service) {
                 return abort(403, 'This event type is not available.');
             }

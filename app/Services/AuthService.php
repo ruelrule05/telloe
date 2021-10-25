@@ -345,7 +345,7 @@ class AuthService
         //if (!$user->stripe_customer_id) return abort(403, "No customer ID set for this account.");
 
         $stripe_api = new StripeAPI();
-        $country = country('AU');
+        $country = $request->country;
         $dob = Carbon::parse($request->dob);
 
         $account_data = [
