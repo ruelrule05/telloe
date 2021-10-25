@@ -37,6 +37,9 @@ export default {
 		contact: {
 			type: Object
 		},
+		member: {
+			type: Object
+		},
 		service: {
 			type: Object,
 			default: null
@@ -115,7 +118,11 @@ export default {
 		},
 
 		servicesOptions() {
-			return this.services.map(service => {
+			let services = this.services;
+			if (this.member) {
+				services = this.member.assigned_services;
+			}
+			return services.map(service => {
 				return { text: service.name, value: service.id };
 			});
 		},
@@ -172,13 +179,17 @@ export default {
 		},
 		'clonedBooking.service': function(service) {
 			let meetingTypes = [];
+			let services = this.services;
+			if (this.member) {
+				services = this.member.assigned_services;
+			}
 			if (this.newEvent) {
 				if (service) {
-					let serviceOption = this.services.find(x => x.id == service);
+					let serviceOption = services.find(x => x.id == service);
 					let start = dayjs(`${this.clonedBooking.date} ${this.clonedBooking.start}`);
 					this.clonedBooking.end = start.add(serviceOption.duration, 'minute').format('HH:mm');
 					this.$set(this.clonedBooking, 'service', service);
-					let serviceData = this.services.find(x => x.id == service);
+					let serviceData = services.find(x => x.id == service);
 					if (serviceData) {
 						serviceData.types.forEach(sd => {
 							meetingTypes.push({
@@ -337,7 +348,11 @@ export default {
 				this.selectedTimeslot = timeslot;
 				this.clonedBooking.start = timeslot.time;
 				let startDate = dayjs(dayjs(this.clonedBooking.date).format('YYYY-MM-DD') + ' ' + timeslot.time);
-				let serviceOption = this.services.find(x => x.id == this.clonedBooking.service);
+				let services = this.services;
+				if (this.member) {
+					services = this.member.assigned_servicesl;
+				}
+				let serviceOption = services.find(x => x.id == this.clonedBooking.service);
 				let duration = 30;
 				if (serviceOption) {
 					duration = serviceOption.duration;
@@ -417,6 +432,7 @@ export default {
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			let bookings = await this.storeBooking(data);
 			if (bookings) {
+				this.$emit('store', bookings);
 				this.close();
 			}
 			this.loading = false;

@@ -67,8 +67,8 @@
 						</div>
 
 						<div class="my-4">
-							<label>Timezone</label>
-							<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
+							<label required>Timezone</label>
+							<vue-select required :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
 						</div>
 
 						<label required>Guests</label>
