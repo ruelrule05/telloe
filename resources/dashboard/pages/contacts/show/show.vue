@@ -243,7 +243,7 @@
 
 				<div class="py-4 flex items-center justify-between border-bottom" v-for="booking in contact.bookings.data" :key="booking.id">
 					<div class="w-4/12">
-						<span class="font-bold text-primary">{{ booking.service.name }}</span>
+						<span class="font-bold text-primary">{{ booking.name }}</span>
 					</div>
 					<div class="w-3/12 flex items-center justify-end text-sm"><ClockIcon class="fill-current text-gray-200 mr-2"></ClockIcon>{{ formatDate(booking.date) }}</div>
 					<div class="w-3/12 text-sm text-right">{{ booking.start }} &mdash; {{ booking.end }}</div>
