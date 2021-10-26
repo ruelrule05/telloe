@@ -471,7 +471,7 @@ class UserService
             }
         }
 
-        if ($booking->meeting_type == 'Google Meet' && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+        if ($service && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
@@ -504,10 +504,12 @@ class UserService
             ]);
 
             try {
-                $event = $googleService->events->insert($service->coach->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
-                $booking->update([
-                    'meet_link' => $event->hangoutLink
-                ]);
+                if ($booking->meeting_type == 'Google Meet') {
+                    $event = $googleService->events->insert($service->coach->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+                    $booking->update([
+                        'meet_link' => $event->hangoutLink
+                    ]);
+                }
             } catch (\Exception $e) {
             }
         }
