@@ -264,9 +264,16 @@ class BookingService
         foreach ($bookings as &$booking) {
             $booking = $booking->refresh()->load('bookingUsers.user');
             foreach ($booking->bookingUsers as $bookingUser) {
-                $email = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
-                if ($email) {
-                    Mail::queue(new NewBooking($bookings, 'customer', $email));
+                $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+                if ($attendeeEmail) {
+                    $customerBookings = [];
+                    foreach ($bookings as $booking) {
+                        $booking = clone $booking;
+                        $guestName = $bookingUser->user ? $bookingUser->user->full_name : $bookingUser->guest['first_name'] . ' ' . $bookingUser->guest['last_name'];
+                        $booking->customName = 'Meeting with ' . $guestName;
+                        $customerBookings[] = $booking;
+                    }
+                    Mail::queue(new NewBooking($customerBookings, 'customer', $attendeeEmail));
                 }
             }
         }
