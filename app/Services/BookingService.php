@@ -98,6 +98,7 @@ class BookingService
                 $data['zoom_link'] = $type['data'];
             }
         }
+
         $booking = Booking::create($data);
         $bookings[] = $booking;
 
@@ -199,18 +200,18 @@ class BookingService
                 }
             }
 
-            $emails = array_unique($data['emails']);
-            foreach ($emails as $data) {
+            $emails = collect($data['emails'])->unique('email');
+            foreach ($emails as $emailData) {
                 BookingUser::create([
                     'booking_id' => $booking->id,
                     'user_id' => null,
                     'guest' => [
-                        'email' => $data['email'],
-                        'first_name' => $data['first_name'],
-                        'last_name' => $data['last_name'],
+                        'email' => $emailData['email'],
+                        'first_name' => $emailData['first_name'],
+                        'last_name' => $emailData['last_name'],
                     ]
                 ]);
-                $attendees[] = ['email' => $data['email']];
+                $attendees[] = ['email' => $emailData['email']];
             }
 
             // Check if Google Calendar is integrated

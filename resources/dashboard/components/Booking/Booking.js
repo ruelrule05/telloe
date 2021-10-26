@@ -341,6 +341,11 @@ export default {
 			}
 			this.$refs.selectedContacts.deactivate();
 			this.$refs.addEmailModal.hide();
+			this.emailToAdd = {
+				email: '',
+				first_name: '',
+				last_name: ''
+			};
 		},
 
 		selectTimeslot(state, timeslot) {
