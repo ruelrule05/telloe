@@ -504,8 +504,13 @@ class UserService
             ]);
 
             try {
+                $params = [];
                 if ($booking->meeting_type == 'Google Meet') {
-                    $event = $googleService->events->insert($service->coach->google_calendar_id, $event, ['conferenceDataVersion' => 1]);
+                    $params = ['conferenceDataVersion' => 1];
+                }
+                $event = $googleService->events->insert($service->coach->google_calendar_id, $event, $params);
+
+                if ($booking->meeting_type == 'Google Meet') {
                     $booking->update([
                         'meet_link' => $event->hangoutLink
                     ]);
