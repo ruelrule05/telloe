@@ -8,6 +8,23 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 
+Route::get('/test', function () {
+    $bookings = [App\Models\Booking::latest()->first()];
+    $email1 = new App\Mail\NewBooking($bookings, 'serviceUser');
+    foreach ($bookings as &$booking) {
+        $booking = clone $booking;
+        foreach ($booking->bookingUsers as $bookingUser) {
+            $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+            if ($attendeeEmail) {
+                $booking->customName = 'Meeting with ' . $booking->service->coach->full_name;
+                $email2 = new App\Mail\NewBooking($bookings, 'customer', $attendeeEmail);
+            }
+        }
+    }
+
+    return $email2;
+});
+
 Route::group(
     [
         'domain' => config('app.url'),
