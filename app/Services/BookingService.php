@@ -102,22 +102,6 @@ class BookingService
         $booking = Booking::create($data);
         $bookings[] = $booking;
 
-        $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
-        $to = $from->clone()->addMinute($booking->service->duration ?? 30);
-        $link = Link::create($data['name'], $from, $to)
-            ->description($booking->service->description);
-        foreach ($booking->bookingUsers as $bookingUser) {
-            if ($bookingUser->user_id) {
-                $user_id = $bookingUser->user_id;
-                $description = 'A booking has been placed for your account.';
-                Notification::create([
-                    'user_id' => $user_id,
-                    'description' => $description,
-                    'link' => ''
-                ]);
-            }
-        }
-
         if (isset($request->is_recurring) && isset($request->frequency) && isset($request->end_date) && isset($request->days)) {
             $start = Carbon::parse("{$request->date} {$request->start}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration ?? 30);
@@ -183,6 +167,10 @@ class BookingService
         }
 
         foreach ($bookings as $booking) {
+            $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
+            $to = $from->clone()->addMinute($booking->service->duration ?? 30);
+            $link = Link::create($data['name'], $from, $to)
+                ->description($booking->service->description);
             $attendees = [];
             foreach ($data['contact_ids'] as $contactID) {
                 $contact = Contact::findOrFail($contactID);
@@ -258,12 +246,23 @@ class BookingService
             $booking->outlook_link = url('/ics?name=' . $data['name'] . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
             $booking->ical_link = $booking->outlook_link;
+            $booking->load('bookingUsers.user');
         }
 
         Mail::queue(new NewBooking($bookings, 'serviceUser'));
-        foreach ($bookings as &$booking) {
+        foreach ($bookings as $booking) {
             $booking = clone $booking;
             foreach ($booking->bookingUsers as $bookingUser) {
+                if ($bookingUser->user_id) {
+                    $user_id = $bookingUser->user_id;
+                    $description = 'A booking has been placed for your account.';
+                    Notification::create([
+                        'user_id' => $user_id,
+                        'description' => $description,
+                        'link' => ''
+                    ]);
+                }
+
                 $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
                 if ($attendeeEmail) {
                     Mail::queue(new NewBooking($bookings, 'customer', $attendeeEmail));
@@ -281,7 +280,12 @@ class BookingService
 
         try {
             Mail::queue(new UpdateBooking($booking, 'client'));
-            Mail::queue(new UpdateBooking($booking, 'contact'));
+            foreach ($booking->bookingUsers as $bookingUser) {
+                $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+                if ($attendeeEmail) {
+                    Mail::queue(new UpdateBooking($booking, 'contact', $attendeeEmail));
+                }
+            }
         } catch (\Exception $e) {
         }
 

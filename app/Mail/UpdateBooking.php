@@ -2,8 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Booking;
-use Auth;
 use Carbon\Carbon;
 use Spatie\CalendarLinks\Link;
 
@@ -15,21 +13,29 @@ class UpdateBooking extends Mailer
     public $email;
     public $emailMessage;
     public $link;
+    public $url;
+    public $startFormat;
+    public $endFormat;
+    public $formattedDate;
+    public $duration;
 
-    public function __construct(Booking $booking, $target)
+    public function __construct($booking, $target, $attendeeEmail = null)
     {
         $this->booking = $booking;
-        $user = Auth::user();
+
+        $this->url = config('app.url') . '/bookings/' . $booking->uuid;
+        $this->startFormat = Carbon::parse("$booking->date $booking->start")->format('h:iA');
+        $this->endFormat = Carbon::parse("$booking->date $booking->end")->format('h:iA');
+        $this->formattedDate = Carbon::parse($booking->date)->format('M d, Y');
+        $this->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
+
+        $this->emailMessage = 'A booking has been modified with the following details:';
         if ($target == 'client') { // if contact - send to client
             if ($booking->service->user->notify_email) {
                 $this->email = $booking->service->coach->email;
-                $this->emailMessage = 'A booking has been modified with the following details:';
             }
-        } elseif ($target == 'contact') { // if client - send to contact
-            if (($booking->user && $booking->user->notify_email) || ($booking->contact && $booking->contact->user->notify_email)) {
-                $this->email = $booking->user ? $booking->user->email : $booking->contact->email;
-                $this->emailMessage = 'A booking you made has been modified with the following details:';
-            }
+        } elseif ($target == 'contact' && $attendeeEmail) { // if client - send to contact
+            $this->email = $attendeeEmail;
         }
 
         $this->actionUrl = config('app.url') . '?auth=login';
