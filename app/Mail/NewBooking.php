@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use Auth;
 use Carbon\Carbon;
 use Spatie\CalendarLinks\Link;
 
@@ -27,7 +26,7 @@ class NewBooking extends Mailer
         } elseif ($target == 'customer') {
             $this->email = $bookingUserEmail;
             if ($userTriggered) {
-                $this->emailMessage = "You successfully booked an event <strong>\"{$bookings[0]->service->name}\"</strong> with <strong>{$bookings[0]->service->coach->full_name}</strong>.";
+                $this->emailMessage = "You successfully booked an event <strong>\"{$bookings[0]->name}\"</strong> with <strong>{$bookings[0]->service->coach->full_name}</strong>.";
             } else {
                 $this->emailMessage = 'A booking has been made for your email with the following details:';
                 // $this->actionUrl = url("/?invite_token={$bookings[0]->contact->invite_token}&auth=signup");

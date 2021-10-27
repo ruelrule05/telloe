@@ -474,7 +474,8 @@
 								</vue-form-validate>
 							</div>
 							<div class="lg:p-8 p-4">
-								<h6 class="font-semibold font-serif mb-8">Add guests</h6>
+								<h6 class="font-semibold font-serif">Add guests</h6>
+								<p class="mb-8">Include guests in this booking by adding their email address below.</p>
 
 								<multiselect v-model="guests" ref="guestsSelect" :options="[]" :showLabels="false" placeholder="Add an email" multiple clearOnSelect>
 									<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
