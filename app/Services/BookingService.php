@@ -286,6 +286,8 @@ class BookingService
         $booking = Booking::findOrFail($id);
         $service = $booking->service;
 
+        $booking->update($request->validated());
+        $booking = $booking->fresh();
         $attendees = [];
 
         // Remove booking users not in array

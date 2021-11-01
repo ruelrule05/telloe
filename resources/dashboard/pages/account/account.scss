@@ -317,3 +317,6 @@
 		}
 	}
 }
+.select-country button::after {
+	@apply hidden;
+}

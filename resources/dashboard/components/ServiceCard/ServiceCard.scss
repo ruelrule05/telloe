@@ -1,7 +1,11 @@
 .service-card {
-	@apply rounded-2xl bg-secondary-light p-4;
+	@apply rounded-2xl bg-secondary-light p-4 relative;
 }
 .members-container {
 	@apply flex;
 	height: 30px;
+}
+.assigned {
+	@apply absolute left-1/2 transform -translate-x-1/2 text-xs bg-primary py-1 px-3 text-white rounded-tr rounded-tl;
+	top: -24px;
 }

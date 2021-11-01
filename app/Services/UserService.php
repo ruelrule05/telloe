@@ -405,11 +405,11 @@ class UserService
         $bookings->map(function ($booking) use ($request) {
             $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
             $to = $from->clone()->addMinute($booking->service->duration);
-            $link = Link::create($booking->service->name, $from, $to)
+            $link = Link::create($booking->name, $from, $to)
                 ->description($booking->service->description);
 
             $booking->google_link = $link->google();
-            $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+            $booking->outlook_link = url('/ics?name=' . $booking->name . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
             $booking->ical_link = $booking->outlook_link;
             return $booking;
@@ -441,7 +441,7 @@ class UserService
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->coach->zoom_token) {
-            $zoomLink = Zoom::createMeeting($service->coach, $booking->service->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
+            $zoomLink = Zoom::createMeeting($service->coach, $booking->name, Carbon::parse("$booking->date $booking->start")->toIso8601ZuluString());
             if ($zoomLink) {
                 $booking->update([
                     'zoom_link' => $zoomLink['join_url']
@@ -479,7 +479,7 @@ class UserService
             $time = time();
             $event = new Google_Service_Calendar_Event([
                 'id' => 'telloebooking' . $booking->id . $time,
-                'summary' => $booking->service->name,
+                'summary' => $data['name'],
                 'description' => $booking->service->description,
                 'start' => [
                     'dateTime' => Carbon::parse("$booking->date $booking->start")->toIso8601String(),
@@ -515,11 +515,11 @@ class UserService
 
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);
-        $link = Link::create($booking->service->name, $from, $to)
+        $link = Link::create($booking->name, $from, $to)
             ->description($booking->service->description);
 
         $booking->google_link = $link->google();
-        $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+        $booking->outlook_link = url('/ics?name=' . $booking->name . '&data=' . $link->ics());
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
         return $booking->refresh()->load('bookingUsers');

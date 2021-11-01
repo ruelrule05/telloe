@@ -84,23 +84,25 @@
 						</div>
 					</template>
 
-					<div v-else class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-6/12 md:5/12 sm:w-6/12 w-10/12">
-						<div class="text-primary">
-							<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
-						</div>
-						<div class="pl-4 -mt-1">
-							<p>You haven't created any event types yet. Create your first event type by clicking the button below.</p>
-							<button
-								type="button"
-								class="btn btn-outline-primary btn-md mt-4"
-								@click="
-									resetNewService();
-									createService = true;
-									serviceToEdit = newService;
-								"
-							>
-								<span>Add New</span>
-							</button>
+					<div v-else class="relative flex-grow">
+						<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-6/12 md:5/12 sm:w-6/12 w-10/12">
+							<div class="text-primary">
+								<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
+							</div>
+							<div class="pl-4 -mt-1">
+								<p>You haven't created any event types yet. Create your first event type by clicking the button below.</p>
+								<button
+									type="button"
+									class="btn btn-outline-primary btn-md mt-4"
+									@click="
+										resetNewService();
+										createService = true;
+										serviceToEdit = newService;
+									"
+								>
+									<span>Add New</span>
+								</button>
+							</div>
 						</div>
 					</div>
 				</template>

@@ -18,7 +18,7 @@
 
 
         <label style="color: #838EA6">Time</label>
-        <div style="margin-bottom: 15px; margin-top: -2px">{{ $startFormat }} - {{ $endFormat }} ({{ $booking->timezone }})</div>
+        <div style="margin-bottom: 15px; margin-top: -2px">{{ $startFormat }} - {{ $endFormat }} ({{ $timezone }})</div>
 
         <label style="color: #838EA6">Guests</label>
         <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">

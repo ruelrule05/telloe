@@ -14,6 +14,7 @@ class NewBooking extends Mailer
     public $names;
     public $bookings;
     public $duration;
+    public $customTimezone;
 
     public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
@@ -23,6 +24,7 @@ class NewBooking extends Mailer
         if ($target == 'serviceUser') {
             $this->email = $bookings[0]->service->coach->email;
             $this->emailMessage = 'A booking has been made with the following details:';
+            $this->customTimezone = $bookings[0]->service->coach->timezone;
         } elseif ($target == 'customer') {
             $this->email = $bookingUserEmail;
             if ($userTriggered) {
@@ -51,6 +53,12 @@ class NewBooking extends Mailer
 
             $booking->startFormat = Carbon::parse("$booking->date $booking->start")->format('h:iA');
             $booking->endFormat = Carbon::parse("$booking->date $booking->end")->format('h:iA');
+
+            if ($this->customTimezone && $this->customTimezone != $booking->timezone) {
+                $booking->timezone = $this->customTimezone;
+                $booking->startFormat = Carbon::parse("$booking->date $booking->start")->timezone($this->customTimezone)->format('h:iA');
+                $booking->endFormat = Carbon::parse("$booking->date $booking->end")->timezone($this->customTimezone)->format('h:iA');
+            }
 
             return $booking;
         });

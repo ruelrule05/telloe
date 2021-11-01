@@ -452,7 +452,7 @@ export default {
 			if (!this.clonedBooking.start || !this.clonedBooking.end) {
 				return this.$toast.error('Please select a timeslot');
 			}
-			if (this.selectedContacts.length == 0) {
+			if (!this.contact && this.selectedContacts.length == 0) {
 				this.$refs.selectedContacts.$el.querySelector('.multiselect__input').focus();
 				return;
 			}
@@ -460,11 +460,15 @@ export default {
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service;
 			data.contact_ids = this.selectedContacts.filter(x => x.type == 'contact').map(x => x.id);
+			if (this.contact) {
+				data.contact_ids.push(this.contact.id);
+			}
 			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			let bookings = await this.storeBooking(data);
 			if (bookings) {
 				this.$emit('store', bookings);
+				this.close();
 			}
 			this.loading = false;
 		},
@@ -473,7 +477,7 @@ export default {
 			if (!this.clonedBooking.start || !this.clonedBooking.end) {
 				return this.$toast.error('Please select a timeslot');
 			}
-			if (this.selectedContacts.length == 0) {
+			if (!this.contact && this.selectedContacts.length == 0) {
 				this.$refs.selectedContacts.$el.querySelector('.multiselect__input').focus();
 				return;
 			}
@@ -481,15 +485,16 @@ export default {
 			let newData = JSON.parse(JSON.stringify(this.clonedBooking));
 			newData.date = dayjs(newData.date).format('YYYY-MM-DD');
 			newData.contact_ids = this.selectedContacts.filter(x => x.type == 'contact').map(x => x.id);
+			if (this.contact) {
+				newData.contact_ids.push(this.contact.id);
+			}
 			newData.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
 			newData.booking_user_ids = this.selectedContacts.filter(x => x.type == 'booking-user').map(x => x.id);
 			delete newData.booking_users;
 			let response = await this.updateBooking(newData);
 			this.loading = false;
 			if (response) {
-				setTimeout(() => {
-					this.$emit('update', response);
-				}, 150);
+				this.$emit('update', response);
 				this.close();
 			}
 		},

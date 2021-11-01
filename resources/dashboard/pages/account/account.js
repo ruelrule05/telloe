@@ -431,7 +431,7 @@ export default {
 		selectPlan(plan) {
 			if (plan.id != (this.$root.auth.subscription || {}).plan_id) {
 				this.selectedPlan = plan;
-				this.$refs['paymentModal'].show();
+				this.$refs.paymentModal.show();
 			}
 		},
 
@@ -495,7 +495,9 @@ export default {
 				data.website = `https://${data.website}`;
 			}
 
-			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true });
+			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true }).catch(() => {
+				this.stripeAccountForm.loading = false;
+			});
 			if (response) {
 				this.$root.auth.stripe_account = response.data.stripe_account;
 				this.stripeAccountForm.countryDisabled = true;

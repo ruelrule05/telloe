@@ -17,7 +17,6 @@ export default {
 			this.valid = true;
 			let inputs = this.$refs.form.querySelectorAll('input, textarea, select');
 			for (const input of inputs) {
-				let inputParent = input.parentElement;
 				if (((input.type != 'password' && input.value.trim().length == 0) || (input.type == 'password' && input.value.length == 0)) && (input.getAttribute('required') || input.hasAttribute('data-required'))) {
 					input.value = '';
 					this.valid = false;
@@ -29,11 +28,10 @@ export default {
 						input.focus();
 					}
 
-					inputParent.classList.add('relative');
-					inputParent.setAttribute('data-has-error', true);
+					input.setAttribute('data-has-error', true);
 					break;
 				}
-				inputParent.removeAttribute('data-has-error', true);
+				input.removeAttribute('data-has-error', true);
 
 				if (input.type == 'text') input.value = input.value.trim();
 			}
@@ -54,8 +52,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep [data-has-error]::after {
-	content: 'This field is required';
-	@apply text-sm text-red-600 absolute right-0 -bottom-6 right-0;
+::v-deep [data-has-error] {
+	@apply ring-red-600;
 }
 </style>

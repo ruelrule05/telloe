@@ -107,7 +107,7 @@ class MemberService
             $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
             if ($service) {
                 $assignedService = $service->replicate();
-                $assignedService->user_id = null;
+                $assignedService->user_id = $memberUser->id;
                 $assignedService->member_id = $member->id;
                 $assignedService->parent_service_id = $service->id;
                 $assignedService->save();
@@ -140,12 +140,12 @@ class MemberService
         foreach ($request->assigned_services as $assigned_service) {
             $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
             if ($service) {
-                $assignedService = Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->first();
+                $assignedService = Service::withTrashed()->where('user_id', $member->member_user_id)->where('parent_service_id', $service->id)->first();
                 if ($assignedService && $assignedService->deleted_at) {
-                    Service::withTrashed()->whereNull('user_id')->where('member_id', $member->id)->where('parent_service_id', $service->id)->restore();
+                    Service::withTrashed()->where('user_id', $member->member_user_id)->where('parent_service_id', $service->id)->restore();
                 } elseif (! $assignedService) {
                     $assignedService = $service->replicate();
-                    $assignedService->user_id = null;
+                    $assignedService->user_id = $member->member_user_id;
                     $assignedService->member_id = $member->id;
                     $assignedService->parent_service_id = $service->id;
                     $assignedService->save();

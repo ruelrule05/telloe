@@ -4,7 +4,9 @@ import Vue from 'vue';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
 const introJS = require('intro.js');
+import PortalVue from 'portal-vue';
 
+Vue.use(PortalVue);
 Vue.use(VueRouter);
 
 //window.Vue.component('vue-button', require('../components/vue-button.vue').default);

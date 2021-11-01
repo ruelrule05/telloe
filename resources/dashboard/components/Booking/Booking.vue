@@ -205,24 +205,26 @@
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 
-						<label required>Guests</label>
-						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="email" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
-							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
-								<button
-									v-if="isEmail.validate(data.search)"
-									type="button"
-									@click="
-										emailToAdd.email = data.search;
-										$refs.addEmailModal.show();
-									"
-									class="btn btn-sm btn-outline-primary"
-								>
-									<span>Add this email</span>
-								</button>
-								<span v-else>No contacts found.</span>
-							</div>
-						</multiselect>
+						<template v-if="!contact">
+							<label required>Guests</label>
+							<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="email" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
+								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+								<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
+									<button
+										v-if="isEmail.validate(data.search)"
+										type="button"
+										@click="
+											emailToAdd.email = data.search;
+											$refs.addEmailModal.show();
+										"
+										class="btn btn-sm btn-outline-primary"
+									>
+										<span>Add this email</span>
+									</button>
+									<span v-else>No contacts found.</span>
+								</div>
+							</multiselect>
+						</template>
 
 						<div class="mt-4">
 							<label class="-mb-px">Meeting Type</label>
