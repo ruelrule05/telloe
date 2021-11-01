@@ -408,3 +408,9 @@ fieldset.disabled input {
 		z-index: 1;
 	}
 }
+
+@media (max-width: 991px) {
+	.helpcrunch-iframe-wrapper {
+		@apply hidden #{!important};
+	}
+}

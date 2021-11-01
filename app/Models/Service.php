@@ -99,7 +99,7 @@ class Service extends BaseModel
         ->where('date', $dateString)->get());
 
         //if (! array_search($dateString, $holidays) && $user) {
-        $date = Carbon::parse($dateString)->timezone($user->timezone);
+        $date = Carbon::parse($dateString, $this->timezone);
         $days = json_decode($this->attributes['days'], true);
         $dayName = $date->format('l');
 
@@ -140,15 +140,12 @@ class Service extends BaseModel
             }
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = $serviceBookings->filter(function ($booking) use ($user, $timeslot) {
-                $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($user->timezone)->format('H:i');
-                $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($user->timezone)->format('H:i');
+                $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
+                $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 return $start <= $timeslot['time'] && $end >= $timeslot['time'];
             })
             ->all();
 
-            if ($dateString == '2021-10-21') {
-                echo $timeslot['time'] . '=' . count($bookings) . '-----';
-            }
             $timeslot['bookingsCount'] = count($bookings);
 
             // google calendar events
@@ -175,10 +172,10 @@ class Service extends BaseModel
             //             $outlookEvents[] = $event;
             //         } elseif (! $event['isAllDay']) {
             //             $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-            //             $start->tz = new \DateTimeZone($user->timezone);
+            //             $start->tz = new \DateTimeZone($this->timezone);
             //             $start = $start->format('H:i');
             //             $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-            //             $end->tz = new \DateTimeZone($user->timezone);
+            //             $end->tz = new \DateTimeZone($this->timezone);
             //             $end = $end->format('H:i');
             //             if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
             //                 $outlookEvents[] = $event;

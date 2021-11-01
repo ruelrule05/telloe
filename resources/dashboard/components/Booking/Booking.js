@@ -133,7 +133,7 @@ export default {
 				if (contact.contact_user.full_name != contact.contact_user.email) {
 					email = ` (${contact.contact_user.email})`;
 				}
-				return { name: `${contact.contact_user.full_name}${email}`, value: contact.id, id: contact.id, contact_user: contact.contact_user };
+				return { name: `${contact.contact_user.full_name}${email}`, value: contact.id, id: contact.id, contact_user: contact.contact_user, email: contact.contact_user.email, type: 'contact' };
 			});
 		}
 	},
@@ -153,6 +153,11 @@ export default {
 			}
 		},
 		booking: function(booking) {
+			let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
+			if (helpcrunch) {
+				helpcrunch.style.setProperty('visibility', 'hidden');
+			}
+			this.selectedContacts = [];
 			if (booking) {
 				this.open = true;
 				this.clonedBooking = JSON.parse(JSON.stringify(this.booking));
@@ -166,6 +171,19 @@ export default {
 					let notIncluded = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
 					this.includeGoogleCalendar = notIncluded ? false : true;
 				}
+				if (!this.newEvent && this.clonedBooking.booking_users) {
+					let bookingUsers = [];
+					this.clonedBooking.booking_users.forEach(bookingUser => {
+						bookingUsers.push({
+							id: bookingUser.id,
+							value: bookingUser.user.email,
+							email: bookingUser.user.email,
+							name: bookingUser.user.full_name,
+							type: 'booking-user'
+						});
+					});
+					this.selectedContacts = bookingUsers;
+				}
 			}
 		},
 		newEvent: function(value) {
@@ -173,8 +191,6 @@ export default {
 				this.open = true;
 				this.getServices();
 				this.getContacts({ nopaginate: true });
-			} else {
-				this.selectedContacts = [];
 			}
 		},
 		'clonedBooking.service': function(service) {
@@ -235,9 +251,7 @@ export default {
 		this.timezone = timezone.name();
 		this.clonedBooking = JSON.parse(JSON.stringify(this.booking));
 		this.getServices();
-		if (this.newEvent) {
-			this.getContacts({ nopaginate: true });
-		}
+		this.getContacts({ nopaginate: true });
 		if (this.contact) {
 			this.contact.value = this.contact.id;
 			this.contact.name = this.contact.contact_user.full_name;
@@ -248,6 +262,19 @@ export default {
 			this.disableServiceSelect = true;
 		} else {
 			this.disableServiceSelect = false;
+		}
+	},
+
+	mounted() {
+		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
+		if (helpcrunch) {
+			helpcrunch.style.setProperty('visibility', 'hidden');
+		}
+	},
+	beforeDestroy: function() {
+		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
+		if (helpcrunch) {
+			helpcrunch.style.setProperty('visibility', 'visible', 'important');
 		}
 	},
 
@@ -432,27 +459,39 @@ export default {
 			this.loading = true;
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
 			data.service_id = data.service;
-			data.contact_ids = this.selectedContacts.filter(x => x.type != 'email').map(x => x.id);
+			data.contact_ids = this.selectedContacts.filter(x => x.type == 'contact').map(x => x.id);
 			data.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
 			data.date = dayjs(data.date).format('YYYY-MM-DD');
 			let bookings = await this.storeBooking(data);
 			if (bookings) {
 				this.$emit('store', bookings);
-				this.close();
 			}
 			this.loading = false;
 		},
 
 		async update() {
+			if (!this.clonedBooking.start || !this.clonedBooking.end) {
+				return this.$toast.error('Please select a timeslot');
+			}
+			if (this.selectedContacts.length == 0) {
+				this.$refs.selectedContacts.$el.querySelector('.multiselect__input').focus();
+				return;
+			}
 			this.loading = true;
-			this.open = false;
 			let newData = JSON.parse(JSON.stringify(this.clonedBooking));
 			newData.date = dayjs(newData.date).format('YYYY-MM-DD');
-			await this.updateBooking(newData);
+			newData.contact_ids = this.selectedContacts.filter(x => x.type == 'contact').map(x => x.id);
+			newData.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
+			newData.booking_user_ids = this.selectedContacts.filter(x => x.type == 'booking-user').map(x => x.id);
+			delete newData.booking_users;
+			let response = await this.updateBooking(newData);
 			this.loading = false;
-			setTimeout(() => {
-				this.$emit('update', newData);
-			}, 150);
+			if (response) {
+				setTimeout(() => {
+					this.$emit('update', response);
+				}, 150);
+				this.close();
+			}
 		},
 
 		updateTime(time) {

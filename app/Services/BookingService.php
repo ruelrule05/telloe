@@ -234,6 +234,9 @@ class BookingService
                     $params = ['conferenceDataVersion' => 1];
                 }
                 $event = $googleService->events->insert($service->coach->google_calendar_id, $event, $params);
+                $booking->update([
+                    'google_event_id' => $event->id
+                ]);
 
                 if ($booking->meeting_type == 'Google Meet') {
                     $booking->update([
@@ -259,7 +262,7 @@ class BookingService
                     Notification::create([
                         'user_id' => $user_id,
                         'description' => $description,
-                        'link' => ''
+                        'link' => "/dashboard/calendar?booking=$booking->id"
                     ]);
                 }
 
@@ -270,50 +273,131 @@ class BookingService
             }
         }
 
+        foreach ($bookings as &$booking) {
+            $booking->load('bookingUsers.user');
+        }
+
         return response()->json($bookings);
     }
 
     public static function update($id, UpdateBookingRequest $request)
     {
-        $booking = Booking::findOrfail($id);
-        $booking->update($request->validated());
+        $authUser = Auth::user();
+        $booking = Booking::findOrFail($id);
+        $service = $booking->service;
+
+        $attendees = [];
+
+        // Remove booking users not in array
+        $bookingUserIds = BookingUser::whereIn('id', $request->booking_user_ids)->where('booking_id', $booking->id)->get()->pluck('id')->toArray();
+        BookingUser::where('booking_id', $booking->id)->whereNotIn('id', $bookingUserIds)->delete();
+        $updatedBookingUsers = $booking->fresh()->bookingUsers;
+        $newBookingUsers = [];
+
+        foreach ($updatedBookingUsers as $updatedBookingUser) {
+            $attendees[] = ['email' => $updatedBookingUser->user->email];
+        }
+
+        // Add contact as booking user
+        $contacts = Contact::whereIn('id', $request->contact_ids)->where('user_id', $authUser->id)->get();
+        foreach ($contacts as $contact) {
+            if (Auth::user()->can('show', $contact)) {
+                $newBookingUsers[] = BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => $contact->contact_user_id,
+                    'guest' => [
+                        'email' => $contact->email,
+                        'first_name' => $contact->first_name,
+                        'last_name' => $contact->last_name
+                    ]
+                ]);
+                $attendees[] = ['email' => $contact->contactUser->email];
+            }
+        }
+
+        // Add email as booking user
+        $emails = collect($request->emails)->unique('email');
+        foreach ($emails as $emailData) {
+            $newBookingUsers[] = BookingUser::create([
+                'booking_id' => $booking->id,
+                'user_id' => null,
+                'guest' => [
+                    'email' => $emailData['email'],
+                    'first_name' => $emailData['first_name'],
+                    'last_name' => $emailData['last_name'],
+                ]
+            ]);
+            $attendees[] = ['email' => $emailData['email']];
+        }
+
+        if ($booking->google_event_id && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+            $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
+            $client = $GoogleCalendarClient->client;
+            $googleService = new Google_Service_Calendar($client);
+
+            $event = $googleService->events->get(
+                $service->coach->google_calendar_id,
+                $booking->google_event_id);
+
+            if ($event) {
+                try {
+                    $event->start = [
+                        'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
+                        'timeZone' => $booking->service->timezone,
+                    ];
+                    $event->end = [
+                        'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
+                        'timeZone' => $booking->service->timezone,
+                    ];
+                    $event->attendees = $attendees;
+                    $googleService->events->update(
+                        $service->coach->google_calendar_id, 
+                        $booking->google_event_id, 
+                        $event
+                    );
+                } catch (\Exception $e) {
+                }
+            }
+        }
 
         try {
             Mail::queue(new UpdateBooking($booking, 'client'));
-            foreach ($booking->bookingUsers as $bookingUser) {
+            // Notify existing booking users
+            foreach ($updatedBookingUsers as $bookingUser) {
+                if ($bookingUser->user_id) {
+                    Notification::create([
+                        'user_id' => $bookingUser->user_id,
+                        'description' => 'A booking for your account has been modified.',
+                        'link' => "/dashboard/calendar?booking=$booking->id"
+                    ]);
+                }
                 $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
                 if ($attendeeEmail) {
                     Mail::queue(new UpdateBooking($booking, 'contact', $attendeeEmail));
                 }
             }
+
+            // Notify new booking users
+            foreach ($newBookingUsers as $newBookingUser) {
+                if ($newBookingUser->user_id) {
+                    $user_id = $newBookingUser->user_id;
+                    $description = 'A booking has been placed for your account.';
+                    Notification::create([
+                        'user_id' => $user_id,
+                        'description' => $description,
+                        'link' => "/dashboard/calendar?booking=$booking->id"
+                    ]);
+                }
+
+                $attendeeEmail = $newBookingUser->user ? $newBookingUser->user->email : (isset($newBookingUser->guest['email']) ? $newBookingUser->guest['email'] : null);
+                if ($attendeeEmail) {
+                    Mail::queue(new NewBooking([$booking], 'customer', $attendeeEmail));
+                }
+            }
         } catch (\Exception $e) {
         }
 
-        $user_id = null;
-        $description = '';
-        $link = '';
-        $authUser = Auth::user();
-        if ($booking->user) {
-            if ($authUser->id == $booking->user_id) { // if contact - notify client
-                $user_id = $booking->service->user->id;
-                $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
-                $contact = $booking->contact ?? Contact::where('user_id', $booking->service->user_id)->where('contact_user_id', $booking->user_id)->first() ?? null;
-                if ($contact) {
-                    $link = "/dashboard/contacts/$contact->id";
-                }
-            } elseif ($authUser->id == $booking->service->user_id || $authUser->id == $booking->service->parentService->user_id) { // if client - notify contact
-                $user_id = $booking->user->id;
-                $description = 'A booking you made has been modified.';
-            }
-
-            Notification::create([
-                'user_id' => $user_id,
-                'description' => $description,
-                'link' => $link
-            ]);
-        }
-
-        return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices'));
+        return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices', 'bookingUsers.user'));
     }
 
     public static function destroy($id)

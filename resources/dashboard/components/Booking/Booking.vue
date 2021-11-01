@@ -146,22 +146,8 @@
 						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.name }}</h5>
 
 						<div v-if="clonedBooking.service && clonedBooking.service.type == 'custom'" class="my-4">
-							<label class="block -mb-px">Service</label>
+							<label class="block -mb-px">Event Type</label>
 							<div class="font-semibold">{{ clonedBooking.service.name }}</div>
-						</div>
-
-						<div class="mb-4">
-							<label>Guests</label>
-							<div v-for="bookingUser in clonedBooking.booking_users" :key="bookingUser.id" class="flex items-center mb-3">
-								<div>
-									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + (bookingUser.user || {}).profile_image + ')' }">
-										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user.initials }}</span>
-									</div>
-								</div>
-								<div class="pl-1 text-sm font-semibold leading-tight">
-									{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}
-								</div>
-							</div>
 						</div>
 
 						<v-date-picker v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
@@ -219,8 +205,27 @@
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 
-						<div>
-							<label class="-mb-px">Type</label>
+						<label required>Guests</label>
+						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="email" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
+							<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
+								<button
+									v-if="isEmail.validate(data.search)"
+									type="button"
+									@click="
+										emailToAdd.email = data.search;
+										$refs.addEmailModal.show();
+									"
+									class="btn btn-sm btn-outline-primary"
+								>
+									<span>Add this email</span>
+								</button>
+								<span v-else>No contacts found.</span>
+							</div>
+						</multiselect>
+
+						<div class="mt-4">
+							<label class="-mb-px">Meeting Type</label>
 							<div>{{ clonedBooking.meeting_type }}</div>
 						</div>
 

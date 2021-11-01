@@ -275,6 +275,10 @@ export default {
 				this.selectedBooking.start = booking.start;
 				this.selectedBooking.end = booking.end;
 			}
+			let index = this.contactBookings.find(x => x.id == booking.id);
+			if (index >= 0) {
+				this.contactBookings[index] = booking;
+			}
 			this.selectedBooking = null;
 		},
 

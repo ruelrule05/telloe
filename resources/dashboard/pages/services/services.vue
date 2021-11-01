@@ -34,7 +34,17 @@
 						<p class="text-muxted mb-4">
 							Change the Event Types visible to clients on your public page. Adjust your available times for event types to suit you.
 						</p>
-						<button class="btn btn-md btn-outline-primary" type="button" @click="$router.push('/dashboard/integrations')"><span>EDIT DEFAULT EVENT TYPE</span></button>
+						<button
+							class="btn btn-md btn-outline-primary"
+							type="button"
+							@click="
+								resetNewService();
+								createService = true;
+								serviceToEdit = newService;
+							"
+						>
+							<span>ADD EVENT TYPE</span>
+						</button>
 					</div>
 				</div>
 			</div>

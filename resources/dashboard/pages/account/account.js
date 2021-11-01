@@ -187,16 +187,11 @@ export default {
 
 		availableTimezones() {
 			let timezones = [];
-			this.allowed_countries.forEach(code => {
-				let countryTimezones = ct.getTimezonesForCountry(code);
-				if (countryTimezones) {
-					countryTimezones.forEach(timezone => {
-						timezones.push({
-							text: timezone.name,
-							value: timezone.name
-						});
-					});
-				}
+			Object.keys(ct.getAllTimezones()).forEach(timezone => {
+				timezones.push({
+					text: timezone,
+					value: timezone
+				});
 			});
 			return timezones.sort((a, b) => {
 				return a.text > b.text ? 1 : -1;
