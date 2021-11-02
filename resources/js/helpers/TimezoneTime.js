@@ -28,7 +28,7 @@ function getTimeZoneOffset(date, timeZone) {
 }
 
 export default {
-	get(datetime, from, to) {
+	get(datetime, from, to, format = 'HH:mm') {
 		let defaultTimezone = timezoneDetermine.name();
 		from = from || defaultTimezone;
 		to = to || defaultTimezone;
@@ -36,6 +36,6 @@ export default {
 		let toTZ = getTimeZoneOffset(new Date(), to);
 
 		let timezoneTime = dayjs.tz(datetime, to).add(fromTZ - toTZ, 'minute');
-		return timezoneTime.format('HH:mm');
+		return timezoneTime.format(format);
 	}
 };

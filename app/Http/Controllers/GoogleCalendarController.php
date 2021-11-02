@@ -15,7 +15,7 @@ class GoogleCalendarController extends Controller
 
     public function callback(Request $request)
     {
-        return response(GoogleCalendarService::callback($request));
+        return GoogleCalendarService::callback($request);
     }
 
     public function getClient()

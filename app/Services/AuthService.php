@@ -345,7 +345,7 @@ class AuthService
         //if (!$user->stripe_customer_id) return abort(403, "No customer ID set for this account.");
 
         $stripe_api = new StripeAPI();
-        $country = $request->country;
+        $country = country($request->country);
         $dob = Carbon::parse($request->dob);
 
         $account_data = [
@@ -443,8 +443,14 @@ class AuthService
                 $members->where('user_id', $user->id);
             })->has('members', '=', 1)->first();
             if (! $conversation) {
+                $slug = Str::random(32);
+                while (Conversation::where('slug', $slug)->exists()) {
+                    $slug = Str::random(32);
+                }
+
                 $conversation = Conversation::create([
-                    'user_id' => $support->id
+                    'user_id' => $support->id,
+                    'slug' => $slug
                 ]);
                 ConversationMember::create([
                     'conversation_id' => $conversation->id,

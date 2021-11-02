@@ -13,8 +13,8 @@ use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Mail;
-use Str;
 
 class ConversationService
 {

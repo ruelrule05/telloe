@@ -18,12 +18,14 @@ class UpdateBooking extends Mailer
     public $endFormat;
     public $formattedDate;
     public $duration;
+    public $timezone;
 
     public function __construct($booking, $target, $attendeeEmail = null)
     {
         $this->booking = $booking;
 
         $this->url = config('app.url') . '/bookings/' . $booking->uuid;
+        $this->timezone = $booking->timezone;
         $this->startFormat = Carbon::parse("$booking->date $booking->start")->format('h:iA');
         $this->endFormat = Carbon::parse("$booking->date $booking->end")->format('h:iA');
         $this->formattedDate = Carbon::parse($booking->date)->format('M d, Y');
@@ -31,7 +33,13 @@ class UpdateBooking extends Mailer
 
         $this->emailMessage = 'A booking has been modified with the following details:';
         if ($target == 'client') { // if contact - send to client
-            if ($booking->service->user->notify_email) {
+            if ($this->timezone != $booking->service->coach->timezone) {
+                $this->timezone = $booking->service->coach->timezone;
+                $this->startFormat = Carbon::parse("$booking->date $booking->start")->timezone($this->timezone)->format('h:iA');
+                $this->endFormat = Carbon::parse("$booking->date $booking->end")->timezone($this->timezone)->format('h:iA');
+            }
+
+            if ($booking->service->coach->notify_email) {
                 $this->email = $booking->service->coach->email;
             }
         } elseif ($target == 'contact' && $attendeeEmail) { // if client - send to contact

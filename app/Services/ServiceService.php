@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Contact;
-use App\Models\Member;
 use App\Models\Service;
 use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,14 +18,13 @@ class ServiceService
     public static function index(Request $request)
     {
         $auth_user = Auth::user();
-        $member_ids = Member::select('id')->where('member_user_id', $auth_user->id)->get()->toArray();
         $services = Service::with(['user', 'assignedServices' => function ($assignedServices) {
             $assignedServices->whereHas('member', function ($member) {
                 $member->where('is_pending', false);
             });
-        }])->where(function ($query) use ($auth_user, $member_ids) {
-            $query->where('user_id', $auth_user->id)->orWhereIn('member_id', $member_ids);
-        })
+        }])
+        ->with('assignedServices.member.memberUser')
+        ->where('user_id', $auth_user->id)
         ->where('type', 'custom')
         ->latest();
         if ($request->paginate) {

@@ -187,16 +187,11 @@ export default {
 
 		availableTimezones() {
 			let timezones = [];
-			this.allowed_countries.forEach(code => {
-				let countryTimezones = ct.getTimezonesForCountry(code);
-				if (countryTimezones) {
-					countryTimezones.forEach(timezone => {
-						timezones.push({
-							text: timezone.name,
-							value: timezone.name
-						});
-					});
-				}
+			Object.keys(ct.getAllTimezones()).forEach(timezone => {
+				timezones.push({
+					text: timezone,
+					value: timezone
+				});
 			});
 			return timezones.sort((a, b) => {
 				return a.text > b.text ? 1 : -1;
@@ -436,7 +431,7 @@ export default {
 		selectPlan(plan) {
 			if (plan.id != (this.$root.auth.subscription || {}).plan_id) {
 				this.selectedPlan = plan;
-				this.$refs['paymentModal'].show();
+				this.$refs.paymentModal.show();
 			}
 		},
 
@@ -500,7 +495,9 @@ export default {
 				data.website = `https://${data.website}`;
 			}
 
-			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true });
+			let response = await window.axios.put('/auth/update_stripe_account', data, { toast: true }).catch(() => {
+				this.stripeAccountForm.loading = false;
+			});
 			if (response) {
 				this.$root.auth.stripe_account = response.data.stripe_account;
 				this.stripeAccountForm.countryDisabled = true;

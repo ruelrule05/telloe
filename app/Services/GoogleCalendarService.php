@@ -20,13 +20,8 @@ class GoogleCalendarService
     {
         $GoogleCalendarClient = new GoogleCalendarClient(Auth::user());
         $GoogleCalendarClient->setAccessToken($request->code);
-        echo "
-            <script>
-                window.code = '{$request->code}';
-                window.close();
-            </script>";
 
-        return;
+        return redirect('/dashboard/integrations');
     }
 
     public static function getClient()

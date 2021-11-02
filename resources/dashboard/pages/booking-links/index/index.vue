@@ -32,16 +32,17 @@
 				</div>
 			</div>
 
-			<div v-if="booking_links.data.length == 0" class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-4/12 sm:w-6/12 w-10/12" :class="{ 'empty-list': banner }">
-				<div class="text-primary">
-					<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
-				</div>
-				<div class="pl-4 -mt-1">
-					<p class="font-bold text-sm">You haven't created any match up links yet. Use the custom links creation form to set up a new custom link.</p>
-					<button type="button" class="btn btn-outline-primary btn-md mt-4 whitespace-pre" @click="addLink = true"><span>Add New</span></button>
+			<div v-if="booking_links.data.length == 0" class="relative flex-grow">
+				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start lg:w-4/12 sm:w-6/12 w-10/12" :class="{ 'empty-list': banner }">
+					<div class="text-primary">
+						<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
+					</div>
+					<div class="pl-4 -mt-1">
+						<p class="font-bold text-sm">You haven't created any match up links yet. Use the custom links creation form to set up a new custom link.</p>
+						<button type="button" class="btn btn-outline-primary btn-md mt-4 whitespace-pre" @click="addLink = true"><span>Add New</span></button>
+					</div>
 				</div>
 			</div>
-
 			<div v-else class="flex flex-grow flex-col lg:flex-row">
 				<div class="w-full lg:w-4/12 p-8 border-r-0 lg:border-r border-b lg:border-b-0">
 					<p class="text-muted text-sm">Match up meetings are a handy way to create a booking calendar with specific dates. Once you set up the link an invitation will be sent to the invited people. They will be able to confirm a meeting time that fits them according to your specified slots.</p>

@@ -48,10 +48,7 @@ export default {
 			this.outlookLoading = true;
 			let response = await window.axios.get('/outlook/client', { toast: true }).catch(() => {});
 			if (response) {
-				this.openAuthWindow(response.data.authUrl, async () => {
-					await this.getOutlookToken();
-					this.outlookLoading = false;
-				});
+				window.location.href = response.data.authUrl;
 			} else {
 				this.outlookLoading = false;
 			}
@@ -76,10 +73,7 @@ export default {
 			this.googleCalendarLoading = true;
 			let response = await window.axios.get('/google_calendar/client', { toast: true }).catch(() => {});
 			if (response) {
-				this.openAuthWindow(response.data.authUrl, async () => {
-					await this.getGoogleCalendarToken();
-					this.googleCalendarLoading = false;
-				});
+				window.location.href = response.data.authUrl;
 			} else {
 				this.googleCalendarLoading = false;
 			}

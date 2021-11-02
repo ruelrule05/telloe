@@ -156,18 +156,30 @@ class ContactService
             })->has('members', '=', 1)->first();
             if (! $conversation) {
                 $createMessage = true;
+                $slug = Str::random(32);
+                while (Conversation::where('slug', $slug)->exists()) {
+                    $slug = Str::random(32);
+                }
+
                 $conversation = Conversation::create([
                     'user_id' => Auth::user()->id,
                     'custom_fields' => $custom_fields,
                     // 'contact_id' => $contact->id,
+                    'slug' => $slug
                 ]);
             }
         } else {
             $createMessage = true;
+            $slug = Str::random(32);
+            while (Conversation::where('slug', $slug)->exists()) {
+                $slug = Str::random(32);
+            }
+
             $conversation = Conversation::create([
                 'user_id' => Auth::user()->id,
                 // 'contact_id' => $contact->id,
                 'custom_fields' => $custom_fields,
+                'slug' => $slug
             ]);
         }
 

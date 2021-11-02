@@ -51,10 +51,10 @@
 								<small class="d-block">{{ selectedBooking.service.duration }} minutes</small>
 							</div>
 						</div>
-						<div class="d-flex align-items-center">
-							<strong class="mb-2 d-block">Choose a date</strong>
+						<div class="flex items-center">
+							<strong class="mb-2 block">Choose a date</strong>
 							<button
-								class="ml-auto btn d-flex align-items-center"
+								class="ml-auto btn flex items-center"
 								type="button"
 								@click="
 									calendarView = calendarView == 'month' ? 'week' : 'month';
@@ -62,7 +62,7 @@
 								"
 							>
 								<calendar-month-icon width="18" height="18" class="mr-1"></calendar-month-icon>
-								<small class="text-capitalize">{{ calendarView }} view</small>
+								<small class="text-capitalize">{{ calendarView }} viewx</small>
 							</button>
 						</div>
 

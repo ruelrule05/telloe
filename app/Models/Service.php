@@ -91,7 +91,7 @@ class Service extends BaseModel
     {
         $timeslots = [];
         $holidays = $this->holidays;
-        $user = $this->coach;
+        $user = User::findOrFail($this->user_id);
 
         //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
@@ -99,7 +99,7 @@ class Service extends BaseModel
         ->where('date', $dateString)->get());
 
         //if (! array_search($dateString, $holidays) && $user) {
-        $date = Carbon::parse($dateString)->timezone($user->timezone);
+        $date = Carbon::parse($dateString, $this->timezone);
         $days = json_decode($this->attributes['days'], true);
         $dayName = $date->format('l');
 
@@ -119,7 +119,8 @@ class Service extends BaseModel
         $googleCalendarEvents = $user->google_calendar_events ?? [];
         $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
 
-        $outlookEventsList = $user->outlook_calendar_events ?? [];
+        $outlookCalendarEvents = $user->outlook_calendar_events ?? [];
+        $outlookEventsList = Cache::get("{$user->id}_outlook_calendar_events", []);
 
         $now = Carbon::now();
         while ($timeStart->lessThan($timeEnd)) {
@@ -140,15 +141,12 @@ class Service extends BaseModel
             }
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = $serviceBookings->filter(function ($booking) use ($user, $timeslot) {
-                $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($user->timezone)->format('H:i');
-                $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($user->timezone)->format('H:i');
+                $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
+                $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 return $start <= $timeslot['time'] && $end >= $timeslot['time'];
             })
             ->all();
 
-            if ($dateString == '2021-10-21') {
-                echo $timeslot['time'] . '=' . count($bookings) . '-----';
-            }
             $timeslot['bookingsCount'] = count($bookings);
 
             // google calendar events
@@ -157,8 +155,8 @@ class Service extends BaseModel
                 $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
                 if ($eventDate == $dateString) {
                     if (! in_array($event['id'], $googleCalendarEvents)) {
-                        $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('H:i');
-                        $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'])->format('H:i');
+                        $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'], $event['start']['timeZone'])->setTimezone($this->timezone)->format('H:i');
+                        $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'], $event['end']['timeZone'])->setTimezone($this->timezone)->format('H:i');
                         if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
                             $googleEvents[] = $event;
                         }
@@ -168,24 +166,19 @@ class Service extends BaseModel
 
             // outlook calendar events
             $outlookEvents = [];
-            // foreach ($outlookEventsList as $event) {
-            //     $eventDate = Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
-            //     if ($eventDate == $dateString) {
-            //         if ($event['isAllDay'] && ! in_array('outlook-event-' . $event['id'], $ignoredCalendarEvents)) {
-            //             $outlookEvents[] = $event;
-            //         } elseif (! $event['isAllDay']) {
-            //             $start = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['start']['dateTime'], $event['start']['timeZone']);
-            //             $start->tz = new \DateTimeZone($user->timezone);
-            //             $start = $start->format('H:i');
-            //             $end = Carbon::createFromFormat('Y-m-d\TH:i:s.u0', $event['end']['dateTime'], $event['end']['timeZone']);
-            //             $end->tz = new \DateTimeZone($user->timezone);
-            //             $end = $end->format('H:i');
-            //             if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
-            //                 $outlookEvents[] = $event;
-            //             }
-            //         }
-            //     }
-            // }
+            foreach ($outlookEventsList as $event) {
+                $event = json_decode(json_encode($event));
+                $eventDate = Carbon::parse($event->start->dateTime, $event->start->timeZone)->setTimezone($this->timezone)->format('Y-m-d');
+                if ($eventDate == $dateString) {
+                    if (! in_array($event->id, $outlookCalendarEvents)) {
+                        $start = Carbon::parse($event->start->dateTime, $event->start->timeZone)->setTimezone($this->timezone)->format('H:i');
+                        $end = Carbon::parse($event->end->dateTime, $event->end->timeZone)->setTimezone($this->timezone)->format('H:i');
+                        if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
+                            $outlookEvents[] = $event;
+                        }
+                    }
+                }
+            }
 
             $isBreaktime = false;
             if (isset($this->days[$dayName]['breaktimeStart']) && isset($this->days[$dayName]['breaktimeEnd'])) {

@@ -65,12 +65,15 @@
 
 		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
 			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
-			<VueSelect v-if="googleCalendars.length" multiple label="Google Calendar" :loading="googleCalendarEventsLoading" class=" w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
+			<div class="flex align-center">
+				<VueSelect v-if="googleCalendars.length" multiple label="Google Calendar" :loading="googleCalendarEventsLoading" class=" w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
+				<VueSelect v-if="outlookCalendars.length" multiple label="Outlook Calendar" :loading="outlookCalendarEventsLoading" class="ml-2 w-full md:w-auto mt-1 md:mt-0" :options="outlookCalendars" placeholder="Select Calendar" @input="updateOutlookCalendar" v-model="$root.auth.outlook_calendar_id" dropPosition="w-full"></VueSelect>
+			</div>
 		</div>
 
 		<div v-if="overview" class="flex flex-grow">
 			<div class="w-full lg:w-1/2 flex-grow" :class="!showCalendarMobile ? 'block' : 'hidden'">
-				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
+				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" :outlookCalendarEvents="outlookCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
 			</div>
 			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{ open: showCalendarMobile }">
 				<div>
@@ -82,6 +85,7 @@
 									<div v-if="data.attributes" class="flex items-center vc-badge-container">
 										<div class="vc-badge bg-primary" v-if="hasBooking(data.attributes)"></div>
 										<div class="vc-badge bg-red-500" v-if="hasGoogleEvent(data.attributes)"></div>
+										<div class="vc-badge bg-blue-500" v-if="hasOutlookEvent(data.attributes)"></div>
 									</div>
 								</div>
 							</div>
@@ -92,8 +96,8 @@
 		</div>
 
 		<div v-else>
-			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone" class="calendar-daily"></DayView>
-			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :timezone="timezone" class="calendar-week"></WeekView>
+			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-daily"></DayView>
+			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-week"></WeekView>
 		</div>
 
 		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent" class="calendar-booking"></Booking>

@@ -76,6 +76,7 @@ import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import FormField from './formField.vue';
+import numbersOnly from 'numbers-only';
 
 export default {
 	components: {
@@ -130,6 +131,7 @@ export default {
 	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
 
 	data: () => ({
+		numbersOnly: numbersOnly,
 		guests: [],
 		isEmail: isEmail,
 		noServiceForWidget: false,

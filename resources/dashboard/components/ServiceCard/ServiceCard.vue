@@ -1,5 +1,6 @@
 <template>
 	<div class="service-card">
+		<span v-if="service.parent_service_id" class="assigned"> ASSIGNED</span>
 		<div class="flex justify-between">
 			<div>
 				<div v-if="service.types.length > 0" class="flex bg-secondary rounded-xl items-center px-1 py-2">

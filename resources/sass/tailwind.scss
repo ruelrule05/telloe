@@ -148,6 +148,9 @@ body.modal-open {
 	&.badge-red {
 		@apply bg-red-100;
 	}
+	&.badge-blue {
+		@apply bg-blue-100;
+	}
 }
 .absolute-center {
 	position: absolute;
@@ -406,5 +409,11 @@ fieldset.disabled input {
 	}
 	.tooltip-arrow {
 		z-index: 1;
+	}
+}
+
+@media (max-width: 991px) {
+	.helpcrunch-iframe-wrapper {
+		@apply hidden #{!important};
 	}
 }

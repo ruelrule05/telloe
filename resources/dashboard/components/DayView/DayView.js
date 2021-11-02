@@ -11,6 +11,7 @@ import ClickOutside from 'vue-click-outside';
 import Timerangepicker from '../../../components/timerangepicker/timerangepicker.vue';
 import CloseIcon from '../../../icons/close.vue';
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
+import OutlookIcon from '../../../icons/outlook.vue';
 
 export default {
 	vuetify,
@@ -33,6 +34,9 @@ export default {
 		},
 		timezone: {
 			type: String
+		},
+		outlookCalendarEvents: {
+			type: Array
 		}
 	},
 
@@ -41,7 +45,8 @@ export default {
 		GoogleIcon,
 		VueDropdown,
 		Timerangepicker,
-		CloseIcon
+		CloseIcon,
+		OutlookIcon
 	},
 
 	directives: {
@@ -134,6 +139,38 @@ export default {
 				}
 			});
 
+			this.outlookCalendarEvents.forEach(event => {
+				if (!event.transactionId || !event.transactionId.includes('telloebooking')) {
+					let calendarEvent = JSON.parse(JSON.stringify(event));
+					let color = 'bg-blue-200 hover:bg-blue-400 hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == calendarEvent.id) {
+						color = 'bg-blue-600 text-white';
+					}
+					calendarEvent.type = 'outlook-event';
+
+					let start = timezoneTime.get(dayjs(calendarEvent.start.dateTime).format('YYYY-MM-DD HH:mm'), calendarEvent.start.timeZone, this.timezone, 'YYYY-MM-DD HH:mm');
+					let end = timezoneTime.get(dayjs(calendarEvent.end.dateTime).format('YYYY-MM-DD HH:mm'), calendarEvent.end.timeZone, this.timezone, 'YYYY-MM-DD HH:mm');
+
+					calendarEvent.date = dayjs(calendarEvent.start.dateTime || calendarEvent.start.date).format('YYYY-MM-DD');
+					calendarEvent.timezone = calendarEvent.start.timeZone;
+					calendarEvent.start = dayjs(start).format('HH:mm');
+					calendarEvent.end = dayjs(end).format('HH:mm');
+					calendarEvent.startDate = start;
+					calendarEvent.endDate = end;
+
+					let dayEvent = {
+						booking: calendarEvent,
+						name: calendarEvent.subject,
+						type: 'outlook-event',
+						start: start,
+						end: end,
+						category: 'bookings',
+						color: color
+					};
+					parsedBookings.push(dayEvent);
+				}
+			});
+
 			(this.$root.auth.blocked_timeslots || []).forEach(timeslot => {
 				timeslot.type = 'blocked';
 				let start;
@@ -166,10 +203,6 @@ export default {
 	},
 
 	mounted() {
-		let style = document.createElement('style');
-		style.appendChild(document.createTextNode('.helpcrunch-iframe-wrapper iframe{visibility: hidden !important}'));
-		document.head.appendChild(style);
-
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'hidden');

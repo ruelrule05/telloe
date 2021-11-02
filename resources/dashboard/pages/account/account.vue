@@ -96,7 +96,7 @@
 
 					<h2 class="font-serif uppercase font-semibold mb-8">Plan</h2>
 					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6">
-						<div v-for="plan in plans" :key="plan.id" class="card-plan" :class="{ active: $root.auth.subscription && $root.auth.subscription.plan_id == plan.id, selected: plan.id == (selectedPlan || {}).id }">
+						<div v-for="plan in plans" :key="plan.id" class="card-plan mb-6" :class="{ active: $root.auth.subscription && $root.auth.subscription.plan_id == plan.id, selected: plan.id == (selectedPlan || {}).id }">
 							<div class="flex justify-between">
 								<div class="text-muted font-serif uppercase font-semibold text-xs">{{ plan.name }}</div>
 								<div class="active-plan text-xs font-serif uppercase font-semibold text-primary">active</div>
@@ -266,7 +266,7 @@
 								</div>
 								<div class="form">
 									<div class="flex justify-between form-inline">
-										<div class="form-field">
+										<div class="form-field select-country">
 											<label required>Country</label>
 											<vue-select searchable :disabled="stripeAccountForm.countryDisabled" v-model="stripeAccountForm.country" placeholder="Choose a country" dropPosition="w-full" :options="countries" required></vue-select>
 											<p class="warning text-sm mt-1">Cannot be changed once set.</p>

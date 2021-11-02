@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\Http\GoogleCalendarClient;
 use App\Http\Requests\AssignServiceToMemberRequest;
-use App\Http\Requests\DestroyCalendarRequest;
 use App\Http\Requests\IndexBookingRequest;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
-use App\Http\Requests\UpdateOutlookCalendarEventsRequest;
 use App\Mail\DeleteBooking;
 use App\Mail\NewBooking;
 use App\Mail\UpdateBooking;
@@ -234,6 +232,9 @@ class BookingService
                     $params = ['conferenceDataVersion' => 1];
                 }
                 $event = $googleService->events->insert($service->coach->google_calendar_id, $event, $params);
+                $booking->update([
+                    'google_event_id' => $event->id
+                ]);
 
                 if ($booking->meeting_type == 'Google Meet') {
                     $booking->update([
@@ -259,7 +260,7 @@ class BookingService
                     Notification::create([
                         'user_id' => $user_id,
                         'description' => $description,
-                        'link' => ''
+                        'link' => "/dashboard/calendar?booking=$booking->id"
                     ]);
                 }
 
@@ -270,50 +271,133 @@ class BookingService
             }
         }
 
+        foreach ($bookings as &$booking) {
+            $booking->load('bookingUsers.user');
+        }
+
         return response()->json($bookings);
     }
 
     public static function update($id, UpdateBookingRequest $request)
     {
-        $booking = Booking::findOrfail($id);
+        $authUser = Auth::user();
+        $booking = Booking::findOrFail($id);
+        $service = $booking->service;
+
         $booking->update($request->validated());
+        $booking = $booking->fresh();
+        $attendees = [];
+
+        // Remove booking users not in array
+        $bookingUserIds = BookingUser::whereIn('id', $request->booking_user_ids)->where('booking_id', $booking->id)->get()->pluck('id')->toArray();
+        BookingUser::where('booking_id', $booking->id)->whereNotIn('id', $bookingUserIds)->delete();
+        $updatedBookingUsers = $booking->fresh()->bookingUsers;
+        $newBookingUsers = [];
+
+        foreach ($updatedBookingUsers as $updatedBookingUser) {
+            $attendees[] = ['email' => $updatedBookingUser->user->email];
+        }
+
+        // Add contact as booking user
+        $contacts = Contact::whereIn('id', $request->contact_ids)->where('user_id', $authUser->id)->get();
+        foreach ($contacts as $contact) {
+            if (Auth::user()->can('show', $contact)) {
+                $newBookingUsers[] = BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => $contact->contact_user_id,
+                    'guest' => [
+                        'email' => $contact->email,
+                        'first_name' => $contact->first_name,
+                        'last_name' => $contact->last_name
+                    ]
+                ]);
+                $attendees[] = ['email' => $contact->contactUser->email];
+            }
+        }
+
+        // Add email as booking user
+        $emails = collect($request->emails)->unique('email');
+        foreach ($emails as $emailData) {
+            $newBookingUsers[] = BookingUser::create([
+                'booking_id' => $booking->id,
+                'user_id' => null,
+                'guest' => [
+                    'email' => $emailData['email'],
+                    'first_name' => $emailData['first_name'],
+                    'last_name' => $emailData['last_name'],
+                ]
+            ]);
+            $attendees[] = ['email' => $emailData['email']];
+        }
+
+        if ($booking->google_event_id && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+            $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
+            $client = $GoogleCalendarClient->client;
+            $googleService = new Google_Service_Calendar($client);
+
+            $event = $googleService->events->get(
+                $service->coach->google_calendar_id,
+                $booking->google_event_id);
+
+            if ($event) {
+                try {
+                    $event->start = [
+                        'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
+                        'timeZone' => $booking->service->timezone,
+                    ];
+                    $event->end = [
+                        'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
+                        'timeZone' => $booking->service->timezone,
+                    ];
+                    $event->attendees = $attendees;
+                    $googleService->events->update(
+                        $service->coach->google_calendar_id, 
+                        $booking->google_event_id, 
+                        $event
+                    );
+                } catch (\Exception $e) {
+                }
+            }
+        }
 
         try {
             Mail::queue(new UpdateBooking($booking, 'client'));
-            foreach ($booking->bookingUsers as $bookingUser) {
+            // Notify existing booking users
+            foreach ($updatedBookingUsers as $bookingUser) {
+                if ($bookingUser->user_id) {
+                    Notification::create([
+                        'user_id' => $bookingUser->user_id,
+                        'description' => 'A booking for your account has been modified.',
+                        'link' => "/dashboard/calendar?booking=$booking->id"
+                    ]);
+                }
                 $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
                 if ($attendeeEmail) {
                     Mail::queue(new UpdateBooking($booking, 'contact', $attendeeEmail));
                 }
             }
+
+            // Notify new booking users
+            foreach ($newBookingUsers as $newBookingUser) {
+                if ($newBookingUser->user_id) {
+                    $user_id = $newBookingUser->user_id;
+                    $description = 'A booking has been placed for your account.';
+                    Notification::create([
+                        'user_id' => $user_id,
+                        'description' => $description,
+                        'link' => "/dashboard/calendar?booking=$booking->id"
+                    ]);
+                }
+
+                $attendeeEmail = $newBookingUser->user ? $newBookingUser->user->email : (isset($newBookingUser->guest['email']) ? $newBookingUser->guest['email'] : null);
+                if ($attendeeEmail) {
+                    Mail::queue(new NewBooking([$booking], 'customer', $attendeeEmail));
+                }
+            }
         } catch (\Exception $e) {
         }
 
-        $user_id = null;
-        $description = '';
-        $link = '';
-        $authUser = Auth::user();
-        if ($booking->user) {
-            if ($authUser->id == $booking->user_id) { // if contact - notify client
-                $user_id = $booking->service->user->id;
-                $description = "<strong>{$booking->user->full_name}</strong> has modified their booking.";
-                $contact = $booking->contact ?? Contact::where('user_id', $booking->service->user_id)->where('contact_user_id', $booking->user_id)->first() ?? null;
-                if ($contact) {
-                    $link = "/dashboard/contacts/$contact->id";
-                }
-            } elseif ($authUser->id == $booking->service->user_id || $authUser->id == $booking->service->parentService->user_id) { // if client - notify contact
-                $user_id = $booking->user->id;
-                $description = 'A booking you made has been modified.';
-            }
-
-            Notification::create([
-                'user_id' => $user_id,
-                'description' => $description,
-                'link' => $link
-            ]);
-        }
-
-        return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices'));
+        return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices', 'bookingUsers.user'));
     }
 
     public static function destroy($id)
@@ -329,230 +413,12 @@ class BookingService
         return $booking->delete();
     }
 
-    public static function removeCalendar(DestroyCalendarRequest $request)
-    {
-        $user = Auth::user();
-
-        switch ($request->calendar) {
-            case 'google':
-                $GoogleCalendarClient = new GoogleCalendarClient($user);
-        $client = $GoogleCalendarClient->client;
-        $service = new Google_Service_Calendar($client);
-
-        $calendarId = Auth::user()->google_calendar_id;
-        // booking events from previous calendar
-        if ($calendarId) {
-            $calendarEvents = $service->events->listEvents($calendarId, ['privateExtendedProperty' => 'booking=yes']);
-            while (true) {
-                foreach ($calendarEvents->getItems() as $event) {
-                    $evId = $event->getId();
-                    $service->events->delete($calendarId, $evId);
-                }
-                $pageToken = $calendarEvents->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $calendarEvents = $service->events->listEvents('primary', $optParams);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        $user->google_calendar_token = null;
-        $user->google_calendars = null;
-        $user->google_calendar_id = null;
-        $user->google_calendar_events = null;
-        $user->save();
-        break;
-
-        case 'outlook':
-                $extensionName = config('oauth.graph_extension_name');
-        $OutlookClient = new \App\Http\OutlookClient();
-        $graph = new \Microsoft\Graph\Graph();
-        $graph->setAccessToken($OutlookClient->accessToken);
-
-        $calendarId = Auth::user()->outlook_calendar_id;
-        if ($calendarId) {
-            $getOldEventsUrl = "/me/calendars/$calendarId/events?\$filter=extensions/any(f:f/id eq '$extensionName')";
-            $eventsList = $graph->createRequest('GET', $getOldEventsUrl)
-                      ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                      ->execute();
-
-            foreach ($eventsList as $event) {
-                $graph->createRequest('DELETE', "/me/calendars/{$calendarId}/events/{$event->getId()}")->execute();
-            }
-        }
-
-        $user->outlook_token = null;
-        $user->outlook_calendars = null;
-        $user->outlook_calendar_id = null;
-        $user->outlook_calendar_events = null;
-        $user->save();
-        break;
-        }
-
-        return ['success' => true];
-    }
-
-    public static function outlookCalendarEvents(Request $request)
-    {
-        $events = [];
-        $extensionName = config('oauth.graph_extension_name');
-        $calendarId = Auth::user()->outlook_calendar_id;
-        if ($calendarId) {
-            $OutlookClient = new \App\Http\OutlookClient();
-            $graph = new \Microsoft\Graph\Graph();
-            $graph->setAccessToken($OutlookClient->accessToken);
-
-            $getEventsUrl = "/me/calendars/$calendarId/events";
-            try {
-                $eventsList = $graph->createRequest('GET', $getEventsUrl)
-                    ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                    ->execute();
-                foreach ($eventsList as $event) {
-                    $eventExtensionName = '';
-                    $getExtensionUrl = "/me/calendars/$calendarId/events/{$event->getId()}/extensions/$extensionName";
-                    try {
-                        $eventExtension = $graph->createRequest('GET', $getExtensionUrl)
-                            ->setReturnType(\Microsoft\Graph\Model\Extension::class)
-                            ->execute();
-                        $eventExtensionName = $eventExtension->getProperties()['extensionName'];
-                    } catch (\Exception $e) {
-                    }
-
-                    if ($eventExtensionName != $extensionName) {
-                        $events[] = $event;
-                    }
-                }
-            } catch (\Exception $e) {
-                //echo $e->getResponse()->getBody()->getContents();
-            }
-        }
-
-        $user = Auth::user();
-        $user->outlook_calendar_events = $events;
-        $user->save();
-
-        return response()->json($events);
-    }
-
-    public static function outlookCalendarList(Request $request)
-    {
-        $calendars = [];
-        $OutlookClient = new \App\Http\OutlookClient();
-        $graph = new \Microsoft\Graph\Graph();
-        if ($OutlookClient->accessToken) {
-            $graph->setAccessToken($OutlookClient->accessToken);
-
-            $getCalendarsUrl = '/me/calendars';
-            $calendars = $graph->createRequest('GET', $getCalendarsUrl)
-              ->setReturnType(\Microsoft\Graph\Model\Calendar::class)
-              ->execute();
-
-            $user = Auth::user();
-            $user->outlook_calendars = $calendars;
-            $user->save();
-        }
-
-        return $calendars;
-    }
-
     public static function downloadIcs(Request $request)
     {
         $base_64_ics = base64_decode(substr($request->data, strpos($request->data, ',') + 1));
         $path = storage_path('app/private/var/tmp/' . Carbon::now()->timestamp . '.ics');
         File::put($path, $base_64_ics);
         return response()->download($path, $request->name . '.ics')->deleteFileAfterSend();
-    }
-
-    public static function updateOutlookCalendarEvents(UpdateOutlookCalendarEventsRequest $request)
-    {
-        $extensionName = config('oauth.graph_extension_name');
-
-        $OutlookClient = new \App\Http\OutlookClient();
-        $graph = new \Microsoft\Graph\Graph();
-        $graph->setAccessToken($OutlookClient->accessToken);
-
-        $events = [];
-        $oldCalendarId = Auth::user()->outlook_calendar_id;
-        $calendarId = $request->outlook_calendar_id;
-
-        $user = Auth::user();
-        $user->outlook_calendar_id = $calendarId;
-        $user->save();
-
-        // delete booking events from previous calendar
-        if ($oldCalendarId) {
-            //$getOldEventsUrl = "/me/calendars/$oldCalendarId/events?\$filter=extensions/any(f:f/id eq '$extensionName')";
-            $getOldEventsUrl = "/me/calendars/$oldCalendarId/events?\$filter=extensions/any(f:f/id eq '$extensionName')";
-            $eventsList = $graph->createRequest('GET', $getOldEventsUrl)
-              ->setReturnType(\Microsoft\Graph\Model\Event::class)
-              ->execute();
-
-            foreach ($eventsList as $event) {
-                $graph->createRequest('DELETE', "/me/calendars/{$calendarId}/events/{$event->getId()}")->execute();
-            }
-        }
-
-        // delete existing events
-        $getExistingEventsUrl = "/me/calendars/$calendarId/events?\$filter=extensions/any(f:f/id eq '$extensionName')";
-        $eventsList = $graph->createRequest('GET', $getExistingEventsUrl)
-          ->setReturnType(\Microsoft\Graph\Model\Event::class)
-          ->execute();
-        foreach ($eventsList as $event) {
-            $graph->createRequest('DELETE', "/me/calendars/{$calendarId}/events/{$event->getId()}")->execute();
-        }
-
-        $bookings = Booking::whereHas('service', function ($service) {
-            $service->where('user_id', Auth::user()->id);
-        })->get();
-
-        foreach ($bookings as $booking) {
-            $event = [
-                'Subject' => $booking->service->name,
-                'Body' => [
-                    'ContentType' => 'HTML',
-                    'Content' => $booking->service->description
-                ],
-                'Start' => [
-                    'DateTime' => Carbon::parse("$booking->date $booking->start")->format('Y-m-d\TH:m:s'),
-                    'TimeZone' => $booking->service->user->timezone,
-                ],
-                'End' => [
-                    'DateTime' => Carbon::parse("$booking->date $booking->end")->format('Y-m-d\TH:m:s'),
-                    'TimeZone' => $booking->service->user->timezone,
-                ],
-                'isReminderOn' => false,
-                'Attendees' => [
-                    ['EmailAddress' => [
-                        'Address' => $booking->user->email,
-                        'Name' => $booking->user->full_name,
-                    ]
-                    ],
-                    ['EmailAddress' => [
-                        'Address' => $booking->service->user->email,
-                        'Name' => $booking->service->user->full_name,
-                    ]
-                    ],
-                ],
-                'Extensions' => [[
-                    '@odata.type' => 'microsoft.graph.openTypeExtension',
-                    'ExtensionName' => $extensionName
-                ]]
-            ];
-
-            try {
-                $event = $graph->createRequest('POST', "/me/calendars/$calendarId/events")
-                    ->attachBody($event)
-                    ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                    ->execute();
-                $events[] = $event;
-            } catch (\Exception $e) {
-                echo $e->getResponse()->getBody()->getContents();
-            }
-        }
-
-        return $events;
     }
 
     public static function assignToMember($id, AssignServiceToMemberRequest $request)

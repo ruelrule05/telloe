@@ -44,6 +44,7 @@ class User extends Authenticatable implements JWTSubject
         'packages',
         'team',
         'payments',
+        'outlook_calendar_events'
     ];
 
     /**
@@ -86,7 +87,8 @@ class User extends Authenticatable implements JWTSubject
         'zoom_token' => 'array',
         'default_availability' => 'array',
         'blocked_timeslots' => 'array',
-        'google_calendar_id' => 'array'
+        'google_calendar_id' => 'array',
+        'outlook_calendar_id' => 'array',
     ];
 
     public function subscription()

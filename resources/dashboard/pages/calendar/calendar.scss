@@ -84,14 +84,13 @@
 .calendar-buttons__header {
 	@media (max-width: 425px) {
 		.btn-md {
-			height: 26px;
 			font-size: 9px;
 		}
 		.button-date-nav {
 			font-size: 9px;
 		}
 		button {
-			height: 26px;
+			@apply py-0;
 		}
 	}
 	@media (max-width: 320px) {

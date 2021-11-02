@@ -146,22 +146,8 @@
 						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.name }}</h5>
 
 						<div v-if="clonedBooking.service && clonedBooking.service.type == 'custom'" class="my-4">
-							<label class="block -mb-px">Service</label>
+							<label class="block -mb-px">Event Type</label>
 							<div class="font-semibold">{{ clonedBooking.service.name }}</div>
-						</div>
-
-						<div class="mb-4">
-							<label>Guests</label>
-							<div v-for="bookingUser in clonedBooking.booking_users" :key="bookingUser.id" class="flex items-center mb-3">
-								<div>
-									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + (bookingUser.user || {}).profile_image + ')' }">
-										<span v-if="!(bookingUser.user || {}).profile_image" class="uppercase">{{ bookingUser.user.initials }}</span>
-									</div>
-								</div>
-								<div class="pl-1 text-sm font-semibold leading-tight">
-									{{ bookingUser.user ? bookingUser.user.full_name : bookingUser.guest.email }}
-								</div>
-							</div>
 						</div>
 
 						<v-date-picker v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
@@ -219,8 +205,29 @@
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
 						</div>
 
-						<div>
-							<label class="-mb-px">Type</label>
+						<template v-if="!contact">
+							<label required>Guests</label>
+							<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="email" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
+								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+								<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
+									<button
+										v-if="isEmail.validate(data.search)"
+										type="button"
+										@click="
+											emailToAdd.email = data.search;
+											$refs.addEmailModal.show();
+										"
+										class="btn btn-sm btn-outline-primary"
+									>
+										<span>Add this email</span>
+									</button>
+									<span v-else>No contacts found.</span>
+								</div>
+							</multiselect>
+						</template>
+
+						<div class="mt-4">
+							<label class="-mb-px">Meeting Type</label>
 							<div>{{ clonedBooking.meeting_type }}</div>
 						</div>
 
@@ -274,6 +281,35 @@
 
 						<label class="mt-4">Block timeslot</label>
 						<VueCheckbox @input="toggleIncludeGoogleCalendar" :value="includeGoogleCalendar" label="Block this event's time in service timeslots."></VueCheckbox>
+					</div>
+				</template>
+
+				<!-- Outlook Event -->
+				<template v-else-if="clonedBooking.type == 'outlook-event'">
+					<div class="flex-grow text-sm">
+						<div class="text-sm text-muted">Outlook Event</div>
+						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.subject }}</h5>
+
+						<label class="-mb-px">Guests</label>
+						<div v-for="attendee in clonedBooking.attendees" :key="attendee.email">{{ attendee.email }}</div>
+
+						<label class="-mb-px mt-4">Date/time</label>
+						<div>{{ dayjs(clonedBooking.date).format('MMMM DD, YYYY') }}</div>
+						<div>
+							{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }}
+							<div v-if="clonedBooking.originalStartTimeZone">({{ clonedBooking.originalStartTimeZone }} )</div>
+						</div>
+
+						<label class="-mb-px mt-4">Description</label>
+						<div>
+							<p v-html="decode(clonedBooking.body.content)"></p>
+						</div>
+
+						<label class="-mb-px mt-4">Location</label>
+						<div>{{ clonedBooking.location.displayName || 'No location' }}</div>
+
+						<label class="mt-4">Block timeslot</label>
+						<VueCheckbox @input="toggleIncludeOutlookCalendar" :value="includeOutlookCalendar" label="Block this event's time in service timeslots."></VueCheckbox>
 					</div>
 				</template>
 
