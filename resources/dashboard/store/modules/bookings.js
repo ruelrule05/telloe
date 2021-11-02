@@ -90,10 +90,8 @@ const actions = {
 		return await window.axios.get(`/google_calendar_list`);
 	},
 
-	outlookCalendars({ commit }) {
-		window.axios.get(`/outlook_calendar_list`).then(response => {
-			commit('outlookCalendars', response.data);
-		});
+	async getOutlookCalendars() {
+		return await window.axios.get(`/outlook_calendar_list`);
 	},
 
 	assignToMember({ commit }, data) {

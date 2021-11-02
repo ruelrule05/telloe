@@ -85,6 +85,7 @@ export default {
 		],
 		days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 		includeGoogleCalendar: false,
+		includeOutlookCalendar: false,
 		masks: {
 			input: 'MMMM D, YYYY'
 		},
@@ -170,6 +171,10 @@ export default {
 				if (this.clonedBooking.type == 'google-event') {
 					let notIncluded = (this.$root.auth.google_calendar_events || []).find(x => x == this.clonedBooking.id);
 					this.includeGoogleCalendar = notIncluded ? false : true;
+				}
+				if (this.clonedBooking.type == 'outlook-event') {
+					let notIncluded = (this.$root.auth.outlook_calendar_events || []).find(x => x == this.clonedBooking.id);
+					this.includeOutlookCalendar = notIncluded ? false : true;
 				}
 				if (!this.newEvent && this.clonedBooking.booking_users) {
 					let bookingUsers = [];
@@ -308,6 +313,21 @@ export default {
 					this.$root.auth.google_calendar_events.push(this.clonedBooking.id);
 				} else if (state && index >= 0) {
 					this.$root.auth.google_calendar_events.splice(index, 1);
+				}
+				window.axios.post('/auth', this.$root.auth, { toast: true });
+			}
+		},
+
+		toggleIncludeOutlookCalendar(state) {
+			if (this.clonedBooking && this.clonedBooking.type == 'outlook-event') {
+				if (!this.$root.auth.outlook_calendar_events) {
+					this.$root.auth.outlook_calendar_events = [];
+				}
+				let index = (this.$root.auth.outlook_calendar_events || []).findIndex(x => x == this.clonedBooking.id);
+				if (!state && index < 0) {
+					this.$root.auth.outlook_calendar_events.push(this.clonedBooking.id);
+				} else if (state && index >= 0) {
+					this.$root.auth.outlook_calendar_events.splice(index, 1);
 				}
 				window.axios.post('/auth', this.$root.auth, { toast: true });
 			}

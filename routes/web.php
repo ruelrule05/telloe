@@ -109,11 +109,12 @@ Route::group(
 
                 // Outlook calendar
                 Route::get('outlook/client', 'OutlookController@getClient');
-                Route::get('outlook_calendar_list', 'BookingController@outlookCalendarList');
-                Route::get('outlook_calendar_events', 'BookingController@outlookCalendarEvents');
-                Route::post('update_outlook_calendar_events', 'BookingController@updateOutlookCalendarEvents');
+                Route::get('outlook_calendar_list', 'OutlookController@outlookCalendarList');
+                Route::get('outlook_calendar_events', 'OutlookController@outlookCalendarEvents');
+                Route::post('update_outlook_calendar_events', 'OutlookController@updateOutlookCalendarEvents');
                 Route::get('outlook/token', 'OutlookController@getToken');
                 Route::get('outlook/remove', 'OutlookController@remove');
+                Route::put('outlook_calendar', 'OutlookController@update');
 
                 // Xero
                 Route::get('xero/authenticate', 'XeroController@authenticate');
@@ -125,7 +126,6 @@ Route::group(
                 Route::post('xero/invoices', 'XeroController@storeInvoice');
                 Route::put('xero/invoices', 'XeroController@updateInvoice');
 
-                Route::post('remove_calendar', 'BookingController@removeCalendar');
                 Route::get('get_invoice', 'UserController@getInvoice');
 
                 Route::get('get_page_preview', 'MessageController@getPagePreview');

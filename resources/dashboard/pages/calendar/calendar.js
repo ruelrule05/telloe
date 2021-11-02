@@ -40,7 +40,10 @@ export default {
 		},
 		isMobile: false,
 		showCalendarMobile: false,
-		googleCalendarEventsLoading: false
+		googleCalendarEventsLoading: false,
+		outlookCalendars: [],
+		outlookCalendarEvents: [],
+		outlookCalendarEventsLoading: false
 	}),
 
 	computed: {
@@ -85,7 +88,7 @@ export default {
 				});
 			});
 
-			(this.$root.auth.outlook_calendar_events || []).forEach(event => {
+			this.outlookCalendarEvents.forEach(event => {
 				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
 				attributes.push({
 					dot: {
@@ -144,10 +147,48 @@ export default {
 				});
 		});
 		this.getGoogleCalendarEvents();
+
+		this.getOutlookCalendars().then(response => {
+			this.outlookCalendars = response.data.map(calendar => {
+				return {
+					text: calendar.name,
+					value: calendar.id
+				};
+			});
+		});
+		this.getOutlookCalendarEvents();
+
 		this.checkCookie();
 	},
 
 	methods: {
+		...mapActions({
+			getUpcomingBookings: 'bookings/getUpcomingBookings',
+			getGoogleCalendars: 'bookings/getGoogleCalendars',
+			getOutlookCalendars: 'bookings/getOutlookCalendars'
+		}),
+
+		async getOutlookCalendarEvents() {
+			if (this.$root.auth.outlook_calendar_id) {
+				this.outlookCalendarEventsLoading = true;
+				let response = await axios.get('/outlook_calendar_events');
+				this.outlookCalendarEvents = response.data;
+				response = await axios.get('/outlook_calendar_events', { params: { refresh: true } });
+				this.outlookCalendarEvents = response.data;
+				this.outlookCalendarEventsLoading = false;
+			}
+		},
+
+		async updateOutlookCalendar(calendars) {
+			this.outlookCalendarEventsLoading = true;
+			let response = await axios.put('/outlook_calendar', { outlook_calendar_id: calendars });
+			this.outlookCalendarEvents = response.data.map(event => {
+				event.timezone = event.start.timeZone;
+				return event;
+			});
+			this.outlookCalendarEventsLoading = false;
+		},
+
 		checkCookie() {
 			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
 			if (!match) {
@@ -163,11 +204,6 @@ export default {
 					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
-
-		...mapActions({
-			getUpcomingBookings: 'bookings/getUpcomingBookings',
-			getGoogleCalendars: 'bookings/getGoogleCalendars'
-		}),
 
 		bookingsTimezone(bookings) {
 			let timezonedBookings = [];
@@ -213,11 +249,22 @@ export default {
 			return count;
 		},
 
+		hasOutlookEvent(attributes) {
+			let count = 0;
+			attributes.forEach(attr => {
+				if (attr.customData == 'outlook-event') {
+					if (!count) count = 0;
+					count++;
+				}
+			});
+			return count;
+		},
+
 		async getGoogleCalendarEvents() {
 			if (this.$root.auth.google_calendar_id) {
+				this.googleCalendarEventsLoading = true;
 				let response = await axios.get('/google_calendar_events');
 				this.googleCalendarEvents = response.data;
-				this.googleCalendarEventsLoading = true;
 				response = await axios.get('/google_calendar_events', { params: { refresh: true } });
 				this.googleCalendarEvents = response.data;
 				this.googleCalendarEventsLoading = false;

@@ -28,6 +28,7 @@
 						<div>{{ dayjs(event.start).format('hh:mmA') }}&mdash;{{ dayjs(event.end).format('hh:mmA') }}</div>
 					</div>
 					<GoogleIcon class="h-4 w-4" v-if="event.type == 'google-event'"></GoogleIcon>
+					<OutlookIcon class="h-4 w-4" v-else-if="event.type == 'outlook-event'"></OutlookIcon>
 					<div v-if="event.booking && event.booking.type == 'blocked'" class="absolute w-full h-full">
 						<VueDropdown :options="['Unblock timeslot']" @click="newEventAction($event, event.booking)" class="w-full h-full"> </VueDropdown>
 					</div>

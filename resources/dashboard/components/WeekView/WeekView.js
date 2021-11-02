@@ -16,6 +16,8 @@ import Timerangepicker from '../../../components/timerangepicker/timerangepicker
 import convertTime from '../../../js/plugins/convert-time';
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
+import OutlookIcon from '../../../icons/outlook.vue';
+
 export default {
 	vuetify,
 	props: {
@@ -35,6 +37,9 @@ export default {
 		},
 		timezone: {
 			type: String
+		},
+		outlookCalendarEvents: {
+			type: Array
 		}
 	},
 
@@ -48,7 +53,8 @@ export default {
 		GoogleIcon,
 		VueDropdown,
 		Timerangepicker,
-		CloseIcon
+		CloseIcon,
+		OutlookIcon
 	},
 
 	data: () => ({
@@ -135,6 +141,38 @@ export default {
 						type: 'google-event',
 						start: calendarEvent.date + ' ' + timezoneTime.get(`${calendarEvent.date} ${calendarEvent.start}`, calendarEvent.timezone, this.timezone),
 						end: calendarEvent.date + ' ' + timezoneTime.get(`${calendarEvent.date} ${calendarEvent.end}`, calendarEvent.timezone, this.timezone),
+						category: 'bookings',
+						color: color
+					};
+					parsedBookings.push(dayEvent);
+				}
+			});
+
+			this.outlookCalendarEvents.forEach(event => {
+				if (!event.transactionId || !event.transactionId.includes('telloebooking')) {
+					let calendarEvent = JSON.parse(JSON.stringify(event));
+					let color = 'bg-blue-200 hover:bg-blue-400 hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == calendarEvent.id) {
+						color = 'bg-blue-600 text-white';
+					}
+					calendarEvent.type = 'outlook-event';
+
+					let start = timezoneTime.get(dayjs(calendarEvent.start.dateTime).format('YYYY-MM-DD HH:mm'), calendarEvent.start.timeZone, this.timezone, 'YYYY-MM-DD HH:mm');
+					let end = timezoneTime.get(dayjs(calendarEvent.end.dateTime).format('YYYY-MM-DD HH:mm'), calendarEvent.end.timeZone, this.timezone, 'YYYY-MM-DD HH:mm');
+
+					calendarEvent.date = dayjs(calendarEvent.start.dateTime || calendarEvent.start.date).format('YYYY-MM-DD');
+					calendarEvent.timezone = calendarEvent.start.timeZone;
+					calendarEvent.start = dayjs(start).format('HH:mm');
+					calendarEvent.end = dayjs(end).format('HH:mm');
+					calendarEvent.startDate = start;
+					calendarEvent.endDate = end;
+
+					let dayEvent = {
+						booking: calendarEvent,
+						name: calendarEvent.subject,
+						type: 'outlook-event',
+						start: start,
+						end: end,
 						category: 'bookings',
 						color: color
 					};

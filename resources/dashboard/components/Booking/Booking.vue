@@ -284,6 +284,35 @@
 					</div>
 				</template>
 
+				<!-- Outlook Event -->
+				<template v-else-if="clonedBooking.type == 'outlook-event'">
+					<div class="flex-grow text-sm">
+						<div class="text-sm text-muted">Outlook Event</div>
+						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.subject }}</h5>
+
+						<label class="-mb-px">Guests</label>
+						<div v-for="attendee in clonedBooking.attendees" :key="attendee.email">{{ attendee.email }}</div>
+
+						<label class="-mb-px mt-4">Date/time</label>
+						<div>{{ dayjs(clonedBooking.date).format('MMMM DD, YYYY') }}</div>
+						<div>
+							{{ convertTime(clonedBooking.start, 'hh:mmA') }} - {{ convertTime(clonedBooking.end, 'hh:mmA') }}
+							<div v-if="clonedBooking.originalStartTimeZone">({{ clonedBooking.originalStartTimeZone }} )</div>
+						</div>
+
+						<label class="-mb-px mt-4">Description</label>
+						<div>
+							<p v-html="decode(clonedBooking.body.content)"></p>
+						</div>
+
+						<label class="-mb-px mt-4">Location</label>
+						<div>{{ clonedBooking.location.displayName || 'No location' }}</div>
+
+						<label class="mt-4">Block timeslot</label>
+						<VueCheckbox @input="toggleIncludeOutlookCalendar" :value="includeOutlookCalendar" label="Block this event's time in service timeslots."></VueCheckbox>
+					</div>
+				</template>
+
 				<!-- Contact Booking -->
 				<template v-else-if="clonedBooking.type == 'contact-booking'">
 					<div class="flex-grow">
