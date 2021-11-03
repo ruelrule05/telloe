@@ -91,10 +91,10 @@ class Kernel extends ConsoleKernel
                         $booking->notified_2 = true;
                         $booking->save();
                         if ($booking->service && $booking->service->coach->notify_email) {
-                            Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $full_name));
+                            Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $booking->service->coach->timezone));
                         }
                         if ($booking->service && $bookingUser->user && $bookingUser->user->notify_email) {
-                            Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $booking->service->coach->full_name));
+                            Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $bookingUser->user->timezone));
                         }
 
                         // SendSMS
@@ -108,10 +108,10 @@ class Kernel extends ConsoleKernel
                         $booking->notified_24 = true;
                         $booking->save();
                         if ($booking->service && $booking->service->coach->notify_email) {
-                            Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $full_name));
+                            Mail::to($booking->service->coach->email)->queue(new UpcomingBooking($booking, $booking->service->coach->timezone));
                         }
                         if ($booking->service && $bookingUser->user && $bookingUser->user->notify_email) {
-                            Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $booking->service->coach->full_name));
+                            Mail::to($bookingUser->user->email)->queue(new UpcomingBooking($booking, $bookingUser->user->timezone));
                         }
                     }
                 }

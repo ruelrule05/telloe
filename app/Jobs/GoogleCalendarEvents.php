@@ -38,24 +38,26 @@ class GoogleCalendarEvents implements ShouldQueue
     {
         //
 
-        if ($this->user->google_calendar_id && $this->user->google_calendar_token) {
+        if (count($this->user->google_calendar_id) > 0 && $this->user->google_calendar_token) {
             $events = [];
             $GoogleCalendarClient = new GoogleCalendarClient($this->user);
             $client = $GoogleCalendarClient->client;
             $service = new Google_Service_Calendar($client);
-            $eventsList = $service->events->listEvents($this->user->google_calendar_id);
-            while (true) {
-                foreach ($eventsList->getItems() as $event) {
-                    if (! isset($event->getExtendedProperties()->private['booking'])) {
-                        $events[] = $event;
+            foreach ($this->user->google_calendar_id as $calendarID) {
+                $eventsList = $service->events->listEvents($calendarID);
+                while (true) {
+                    foreach ($eventsList->getItems() as $event) {
+                        if (! isset($event->getExtendedProperties()->private['booking'])) {
+                            $events[] = $event;
+                        }
                     }
-                }
-                $pageToken = $eventsList->getNextPageToken();
-                if ($pageToken) {
-                    $optParams = ['pageToken' => $pageToken];
-                    $eventsList = $service->events->listEvents($this->user->google_calendar_id, $optParams);
-                } else {
-                    break;
+                    $pageToken = $eventsList->getNextPageToken();
+                    if ($pageToken) {
+                        $optParams = ['pageToken' => $pageToken];
+                        $eventsList = $service->events->listEvents($calendarID, $optParams);
+                    } else {
+                        break;
+                    }
                 }
             }
             Cache::forever("{$this->user->id}_google_calendar_events", $events);
