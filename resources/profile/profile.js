@@ -55,7 +55,7 @@ import vClickOutside from 'v-click-outside';
 import FacebookAltIcon from '../icons/facebook-alt.vue';
 import GoogleAltIcon from '../icons/google-alt.vue';
 import VueCardFormat from '../components/vue-credit-card-validation/src';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import VisaIcon from '../icons/cc/visa.vue';
 import MastercardIcon from '../icons/cc/mastercard.vue';
 import AmexIcon from '../icons/cc/amex.vue';

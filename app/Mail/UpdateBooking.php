@@ -35,8 +35,8 @@ class UpdateBooking extends Mailer
         if ($target == 'client') { // if contact - send to client
             if ($this->timezone != $booking->service->coach->timezone) {
                 $this->timezone = $booking->service->coach->timezone;
-                $this->startFormat = Carbon::parse("$booking->date $booking->start")->timezone($this->timezone)->format('h:iA');
-                $this->endFormat = Carbon::parse("$booking->date $booking->end")->timezone($this->timezone)->format('h:iA');
+                $this->startFormat = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($this->timezone)->format('h:iA');
+                $this->endFormat = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($this->timezone)->format('h:iA');
             }
 
             if ($booking->service->coach->notify_email) {

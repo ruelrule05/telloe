@@ -94,7 +94,7 @@ import VueSelect from '../../components/vue-select/vue-select.vue';
 import VueCheckbox from '../../components/vue-checkbox/vue-checkbox.vue';
 import Timerangepicker from '../../components/timerangepicker/timerangepicker.vue';
 
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 export default {
 	components: { VueFormValidate, VueButton, FacebookAltIcon, GoogleAltIcon, VueSelect, Timerangepicker, VueCheckbox, EyeIcon, EyeSlashIcon },
 	data: () => ({

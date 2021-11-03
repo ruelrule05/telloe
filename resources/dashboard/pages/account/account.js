@@ -12,7 +12,7 @@ const { getNameList } = require('country-list');
 const toBlob = require('data-uri-to-blob');
 const countryCodes = require('country-codes-list');
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import numbersOnly from 'numbers-only';
 import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';

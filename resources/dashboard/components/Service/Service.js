@@ -11,7 +11,7 @@ import CloseIcon from '../../../icons/close';
 import VDatePicker from 'v-calendar/lib/components/date-picker.umd';
 import dayjs from 'dayjs';
 import VFormBuilder from './formBuilder';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 const { getNameList } = require('country-list');
 export default {
 	props: {
