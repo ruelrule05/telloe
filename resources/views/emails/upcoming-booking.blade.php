@@ -17,13 +17,22 @@
 
 
             <label style="color: #838EA6">Time</label>
-            <div style="margin-bottom: 15px; margin-top: -2px">{{ $start }} - {{ $end }} ({{ $booking->timezone }})</div>
+            <div style="margin-bottom: 15px; margin-top: -2px">{{ $start }} - {{ $end }} ({{ $timezone }})</div>
+            @if($meta_timezone && $meta_start && $meta_end)
+            <div style="margin-bottom: 15px; margin-top: -17px">{{ $meta_start }} - {{ $meta_end }} ({{ $meta_timezone }})</div>
+            @endif
+            
 
             <label style="color: #838EA6">Guests</label>
             <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">
                 @foreach($booking->bookingUsers as $bookingUser)
-                <div style="display: inline-block;border-radius: 5px; padding: 3px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-bottom: 5px;">
-                    {{ $bookingUser->user->full_name }}
+                <div style="display: inline-block;border-radius: 5px; padding: 6px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-bottom: 5px;">
+                    @if($bookingUser->user->first_name)
+                    <div style="line-height: 20px">{{ $bookingUser->user->full_name }}</div>
+                    @endif
+                    @if($bookingUser->user->email)
+                    <div style="font-weight: 400; line-height: 20px">{{ $bookingUser->user->email }}</div>
+                    @endif
                 </div>
                 @endforeach
             </div>
@@ -75,24 +84,4 @@
     </div>
 </div>
 
-@if($actionUrl)
-<a href="{{ $actionUrl }}"
-    style="{{ $style['button'] }}{{ $style['display-block'] }} margin-top: 20px; margin-bottom: 30px"
-    class="button"
-    target="_blank">
-    {{ $actionText }}
-</a>
-
-<small style="color: #888">Please <a href="{{ config('app.url') }}?auth=login" target="_blank" style="color: blue"><u>login</u></a> to your account to manage this booking.</small>
-
-<div style="text-align: left; margin-top: 20px; border-top: solid 1px #ddd; padding-top: 20px;">
-     <p style="{{ $style['paragraph-sub'] }} margin-bottom: 0">
-        If you’re having trouble clicking the "{{ $actionText }}" button,
-        copy and paste the URL below into your web browser: <br />
-        <a style="{{ $style['text-primary'] }} text-decoration: underline;" href="{{ $actionUrl }}" target="_blank">
-            {{ $actionUrl }}
-        </a>
-    </p>
-</div>
-@endif
 @stop

@@ -12,7 +12,7 @@ class OutlookClient
     public $client;
     public $accessToken;
 
-    public function __construct()
+    public function __construct($user = null)
     {
         $this->client = new \League\OAuth2\Client\Provider\GenericProvider([
             'clientId' => config('oauth.app_id'),
@@ -24,16 +24,16 @@ class OutlookClient
             'scopes' => config('oauth.scopes')
         ]);
 
-        $this->accessToken = $this->getAccessToken();
+        $this->accessToken = $this->getAccessToken($user);
         if (! $this->accessToken) {
             $this->client->authUrl = $this->getSignInUrl();
         }
     }
 
-    public function getAccessToken()
+    public function getAccessToken($user)
     {
         // Check if tokens exist
-        $authTokens = Auth::user()->outlook_token;
+        $authTokens = $user ? $user->outlook_token : Auth::user()->outlook_token;
         if (empty($authTokens['accessToken']) ||
           empty($authTokens['refreshToken']) ||
           empty($authTokens['tokenExpires'])) {

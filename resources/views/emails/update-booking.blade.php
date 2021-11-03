@@ -19,6 +19,9 @@
 
         <label style="color: #838EA6">Time</label>
         <div style="margin-bottom: 15px; margin-top: -2px">{{ $startFormat }} - {{ $endFormat }} ({{ $timezone }})</div>
+        @if($meta_timezone && $meta_startFormat && $meta_endFormat)
+        <div style="margin-bottom: 15px; margin-top: -17px">{{ $meta_startFormat }} - {{ $meta_endFormat }} ({{ $meta_timezone }})</div>
+        @endif
 
         <label style="color: #838EA6">Guests</label>
         <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">
