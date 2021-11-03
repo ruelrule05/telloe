@@ -16,7 +16,7 @@ import MoreIcon from '../../../../icons/more';
 import convertTime from '../../../../js/plugins/convert-time.js';
 import PlusIcon from '../../../../icons/plus';
 import CloseIcon from '../../../../icons/close';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import Add from '../add/add.vue';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';

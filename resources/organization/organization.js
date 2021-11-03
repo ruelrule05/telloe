@@ -48,7 +48,7 @@ import MapMarkerIcon from '../icons/map-marker';
 import ArrowRightIcon from '../icons/arrow-right';
 import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
 import MoreIcon from '../icons/more-h';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import VueSelect from '../components/vue-select/vue-select.vue';
 import timezoneTime from '../js/helpers/TimezoneTime.js';
 import SkypeIcon from '../icons/skype.vue';

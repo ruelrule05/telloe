@@ -56,8 +56,8 @@ class NewBooking extends Mailer
 
             if ($this->customTimezone && $this->customTimezone != $booking->timezone) {
                 $booking->timezone = $this->customTimezone;
-                $booking->startFormat = Carbon::parse("$booking->date $booking->start")->timezone($this->customTimezone)->format('h:iA');
-                $booking->endFormat = Carbon::parse("$booking->date $booking->end")->timezone($this->customTimezone)->format('h:iA');
+                $booking->startFormat = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($this->customTimezone)->format('h:iA');
+                $booking->endFormat = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($this->customTimezone)->format('h:iA');
             }
 
             return $booking;

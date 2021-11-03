@@ -22,7 +22,7 @@ import ZoomIcon from '../../../icons/zoom.vue';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import PlusIcon from '../../../icons/plus';
 import vClickOutside from 'v-click-outside';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import VueButton from '../../../components/vue-button.vue';
 import { decode } from 'html-entities';
 import tooltip from '../../../js/directives/tooltip.js';

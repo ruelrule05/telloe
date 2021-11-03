@@ -12,7 +12,7 @@ const color = require('randomcolor');
 import VueFormValidate from '../../../../components/vue-form-validate.vue';
 const isEmail = require('isemail');
 import Modal from '../../../../components/modal/modal.vue';
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const { getNameList } = require('country-list');
 import { VTooltip } from 'v-tooltip';

@@ -11,7 +11,7 @@ import VCalendar from 'v-calendar/lib/components/calendar.umd';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import axios from 'axios';
 const dayjs = require('dayjs');
-const ct = require('countries-and-timezones');
+const ct = require('countries-and-timezones').default;
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
