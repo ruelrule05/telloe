@@ -255,11 +255,9 @@ function countryDialCode($country)
         'Zambia' => '+260',
         'Zimbabwe' => '+263',
     ];
-    try 
-    {
+    try {
         return $countryArray[$country];
-    } catch(Exception $err) 
-    {
+    } catch (Exception $err) {
         return false;
     }
 }
@@ -588,3 +586,19 @@ function isValidTimezone($tzid)
     return true;
 }
 
+function array_copy($arr)
+{
+    $newArray = [];
+    foreach ($arr as $key => $value) {
+        if (is_array($value)) {
+            $newArray[$key] = array_copy($value);
+        } else {
+            if (is_object($value)) {
+                $newArray[$key] = clone $value;
+            } else {
+                $newArray[$key] = $value;
+            }
+        }
+    }
+    return $newArray;
+}
