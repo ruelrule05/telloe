@@ -169,7 +169,9 @@ class BookingService
             $to = $from->clone()->addMinute($booking->service->duration ?? 30);
             $link = Link::create($data['name'], $from, $to)
                 ->description($booking->service->description);
-            $attendees = [];
+            $attendees = [
+                ['email' => $service->coach->email]
+            ];
             foreach ($data['contact_ids'] as $contactID) {
                 $contact = Contact::findOrFail($contactID);
                 if (Auth::user()->can('show', $contact)) {
@@ -200,10 +202,10 @@ class BookingService
                 $attendees[] = ['email' => $emailData['email']];
             }
 
+            $time = time();
             // Check if Google Calendar is integrated
             // Create event to selected google calendar with flag to tell it's a telloe booking
-            if ($service && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
-                $time = time();
+            if ($service && $service->coach->google_calendar_token && count($service->coach->google_calendar_id) > 0) {
                 $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
                 $client = $GoogleCalendarClient->client;
                 $googleService = new Google_Service_Calendar($client);
@@ -213,11 +215,11 @@ class BookingService
                     'description' => $booking->service->description,
                     'start' => [
                         'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
-                        'timeZone' => $booking->service->timezone,
+                        'timeZone' => $booking->timezone,
                     ],
                     'end' => [
                         'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
-                        'timeZone' => $booking->service->timezone,
+                        'timeZone' => $booking->timezone,
                     ],
                     'attendees' => $attendees,
                     'conferenceData' => [
@@ -231,7 +233,7 @@ class BookingService
                 if ($booking->meeting_type == 'Google Meet') {
                     $params = ['conferenceDataVersion' => 1];
                 }
-                $event = $googleService->events->insert($service->coach->google_calendar_id, $event, $params);
+                $event = $googleService->events->insert($service->coach->google_calendar_id[0], $event, $params);
                 $booking->update([
                     'google_event_id' => $event->id
                 ]);
@@ -243,6 +245,52 @@ class BookingService
                 }
             }
 
+            // Check if Outlook Calendar is integrated
+            if ($service && $service->coach->outlook_token && count($service->coach->outlook_calendar_id) > 0) {
+                $OutlookClient = new \App\Http\OutlookClient();
+                $graph = new \Microsoft\Graph\Graph();
+                if ($OutlookClient->accessToken) {
+                    $graph->setAccessToken($OutlookClient->accessToken);
+                    $outlookAttendees = [];
+                    foreach ($attendees as $attendee) {
+                        $outlookAttendees[] = [
+                            'EmailAddress' => [
+                                'Address' => $attendee['email'],
+                            ]
+                        ];
+                    }
+                    $eventData = [
+                        'Subject' => $booking->service->name,
+                        'Body' => [
+                            'ContentType' => 'HTML',
+                            'Content' => $booking->service->description
+                        ],
+                        'Start' => [
+                            'DateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->format('Y-m-d\TH:i:s'),
+                            'TimeZone' => $booking->timezone,
+                        ],
+                        'End' => [
+                            'DateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->format('Y-m-d\TH:i:s'),
+                            'TimeZone' => $booking->timezone,
+                        ],
+                        'isReminderOn' => false,
+                        'Attendees' => $outlookAttendees,
+                        'transactionId' => 'telloebooking' . $booking->id . $time
+                    ];
+
+                    try {
+                        $event = $graph->createRequest('POST', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events") 
+                        ->attachBody($eventData)
+                        ->setReturnType(\Microsoft\Graph\Model\Event::class)
+                        ->execute();
+                        $booking->update([
+                            'outlook_event_id' => $event->getProperties()['id']
+                        ]);
+                    } catch (\Exception $e) {
+                    }
+                }
+            }
+
             $booking->google_link = $link->google();
             $booking->outlook_link = url('/ics?name=' . $data['name'] . '&data=' . $link->ics());
             $booking->yahoo_link = $link->yahoo();
@@ -250,8 +298,9 @@ class BookingService
             $booking->load('bookingUsers.user');
         }
 
-        Mail::queue(new NewBooking($bookings, 'serviceUser'));
-        foreach ($bookings as $booking) {
+        $clonedBookings = array_copy($bookings);
+        Mail::queue(new NewBooking($clonedBookings, 'serviceUser'));
+        foreach ($clonedBookings as $booking) {
             $booking = clone $booking;
             foreach ($booking->bookingUsers as $bookingUser) {
                 if ($bookingUser->user_id) {
@@ -266,7 +315,7 @@ class BookingService
 
                 $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
                 if ($attendeeEmail) {
-                    Mail::queue(new NewBooking($bookings, 'customer', $attendeeEmail));
+                    Mail::queue(new NewBooking($clonedBookings, 'customer', $attendeeEmail));
                 }
             }
         }
@@ -330,13 +379,14 @@ class BookingService
             $attendees[] = ['email' => $emailData['email']];
         }
 
-        if ($booking->google_event_id && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+        // Google Calendar
+        if ($booking->google_event_id && $service->coach->google_calendar_token && count($service->coach->google_calendar_id) > 0) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
 
             $event = $googleService->events->get(
-                $service->coach->google_calendar_id,
+                $service->coach->google_calendar_id[0],
                 $booking->google_event_id);
 
             if ($event) {
@@ -351,7 +401,7 @@ class BookingService
                     ];
                     $event->attendees = $attendees;
                     $googleService->events->update(
-                        $service->coach->google_calendar_id, 
+                        $service->coach->google_calendar_id[0], 
                         $booking->google_event_id, 
                         $event
                     );
@@ -360,20 +410,57 @@ class BookingService
             }
         }
 
+        // Outlook Calendar
+        if ($booking->outlook_event_id && $service->coach->outlook_token && count($service->coach->outlook_calendar_id) > 0) {
+            $OutlookClient = new \App\Http\OutlookClient();
+            $graph = new \Microsoft\Graph\Graph();
+            if ($OutlookClient->accessToken) {
+                $graph->setAccessToken($OutlookClient->accessToken);
+                $outlookAttendees = [];
+                foreach ($attendees as $attendee) {
+                    $outlookAttendees[] = [
+                        'EmailAddress' => [
+                            'Address' => $attendee['email'],
+                        ]
+                    ];
+                }
+                $eventData = [
+                    'Start' => [
+                        'DateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->format('Y-m-d\TH:i:s'),
+                        'TimeZone' => $booking->timezone,
+                    ],
+                    'End' => [
+                        'DateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->format('Y-m-d\TH:i:s'),
+                        'TimeZone' => $booking->timezone,
+                    ],
+                    'Attendees' => $outlookAttendees,
+                ];
+
+                try {
+                    $graph->createRequest('PATCH', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events/$booking->outlook_event_id") 
+                    ->attachBody($eventData)
+                    ->setReturnType(\Microsoft\Graph\Model\Event::class)
+                    ->execute();
+                } catch (\Exception $e) {
+                }
+            }
+        }
+
         try {
-            Mail::queue(new UpdateBooking($booking, 'client'));
+            $clonedBooking = clone $booking;
+            Mail::queue(new UpdateBooking($clonedBooking, 'client'));
             // Notify existing booking users
             foreach ($updatedBookingUsers as $bookingUser) {
                 if ($bookingUser->user_id) {
                     Notification::create([
                         'user_id' => $bookingUser->user_id,
                         'description' => 'A booking for your account has been modified.',
-                        'link' => "/dashboard/calendar?booking=$booking->id"
+                        'link' => "/dashboard/calendar?booking=$clonedBooking->id"
                     ]);
                 }
                 $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
                 if ($attendeeEmail) {
-                    Mail::queue(new UpdateBooking($booking, 'contact', $attendeeEmail));
+                    Mail::queue(new UpdateBooking($clonedBooking, 'contact', $attendeeEmail));
                 }
             }
 
@@ -385,13 +472,13 @@ class BookingService
                     Notification::create([
                         'user_id' => $user_id,
                         'description' => $description,
-                        'link' => "/dashboard/calendar?booking=$booking->id"
+                        'link' => "/dashboard/calendar?booking=$clonedBooking->id"
                     ]);
                 }
 
                 $attendeeEmail = $newBookingUser->user ? $newBookingUser->user->email : (isset($newBookingUser->guest['email']) ? $newBookingUser->guest['email'] : null);
                 if ($attendeeEmail) {
-                    Mail::queue(new NewBooking([$booking], 'customer', $attendeeEmail));
+                    Mail::queue(new NewBooking([$clonedBooking], 'customer', $attendeeEmail));
                 }
             }
         } catch (\Exception $e) {
