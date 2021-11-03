@@ -448,7 +448,7 @@ class BookingService
 
         try {
             $clonedBooking = clone $booking;
-            Mail::queue(new UpdateBooking($clonedBooking, 'client'));
+            Mail::queue(new UpdateBooking($clonedBooking, 'serviceUser'));
             // Notify existing booking users
             foreach ($updatedBookingUsers as $bookingUser) {
                 if ($bookingUser->user_id) {

@@ -18,6 +18,10 @@
 
             <label style="color: #838EA6">Time</label>
             <div style="margin-bottom: 15px; margin-top: -2px">{{ $start }} - {{ $end }} ({{ $timezone }})</div>
+            @if($meta_timezone && $meta_start && $meta_end)
+            <div style="margin-bottom: 15px; margin-top: -17px">{{ $meta_start }} - {{ $meta_end }} ({{ $meta_timezone }})</div>
+            @endif
+            
 
             <label style="color: #838EA6">Guests</label>
             <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">

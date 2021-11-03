@@ -19,6 +19,9 @@ class UpdateBooking extends Mailer
     public $formattedDate;
     public $duration;
     public $timezone;
+    public $meta_timezone;
+    public $meta_startFormat;
+    public $meta_endFormat;
 
     public function __construct($booking, $target, $attendeeEmail = null)
     {
@@ -31,12 +34,19 @@ class UpdateBooking extends Mailer
         $this->formattedDate = Carbon::parse($booking->date)->format('M d, Y');
         $this->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
 
+        $customTimezone = null;
+
         $this->emailMessage = 'A booking has been modified with the following details:';
-        if ($target == 'client') { // if contact - send to client
-            if ($this->timezone != $booking->service->coach->timezone) {
-                $this->timezone = $booking->service->coach->timezone;
-                $this->startFormat = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($this->timezone)->format('h:iA');
-                $this->endFormat = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($this->timezone)->format('h:iA');
+        if ($target == 'serviceUser') {
+            $this->timezone = $booking->timezone;
+            $this->startFormat = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($this->timezone)->format('h:iA');
+            $this->endFormat = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($this->timezone)->format('h:iA');
+
+            $customTimezone = $booking->service->coach->timezone;
+            if ($this->timezone != $customTimezone) {
+                $this->meta_timezone = $customTimezone;
+                $this->meta_startFormat = Carbon::parse("$booking->date $booking->start", $customTimezone)->setTimezone($this->timezone)->format('h:iA');
+                $this->meta_endFormat = Carbon::parse("$booking->date $booking->end", $customTimezone)->setTimezone($this->timezone)->format('h:iA');
             }
 
             if ($booking->service->coach->notify_email) {

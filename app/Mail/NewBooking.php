@@ -14,17 +14,17 @@ class NewBooking extends Mailer
     public $names;
     public $bookings;
     public $duration;
-    public $customTimezone;
 
     public function __construct(array $bookings, $target, $bookingUserEmail = null, $userTriggered = false)
     {
         $this->actionText = 'Manage Bookings';
         $this->actionUrl = config('app.url') . '/bookings/' . $bookings[0]->uuid;
+        $customTimezone = null;
 
         if ($target == 'serviceUser') {
             $this->email = $bookings[0]->service->coach->email;
             $this->emailMessage = 'A booking has been made with the following details:';
-            $this->customTimezone = $bookings[0]->service->coach->timezone;
+            $customTimezone = $bookings[0]->service->coach->timezone;
         } elseif ($target == 'customer') {
             $this->email = $bookingUserEmail;
             if ($userTriggered) {
@@ -37,7 +37,7 @@ class NewBooking extends Mailer
         }
 
         $this->bookings = collect($bookings);
-        $this->bookings->map(function ($booking) {
+        $this->bookings->map(function ($booking) use ($customTimezone) {
             $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
             $from = Carbon::parse("$booking->date $booking->start");
             $to = $from->clone()->addMinute($booking->service->duration);
@@ -54,12 +54,12 @@ class NewBooking extends Mailer
             $booking->startFormat = Carbon::parse("$booking->date $booking->start")->format('h:iA');
             $booking->endFormat = Carbon::parse("$booking->date $booking->end")->format('h:iA');
 
-            if ($this->customTimezone && $this->customTimezone != $booking->timezone) {
-                $start = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($this->customTimezone)->format('h:iA');
-                $end = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($this->customTimezone)->format('h:iA');
-                $booking->timezone = $this->customTimezone;
-                $booking->startFormat = $start;
-                $booking->endFormat = $end;
+            if ($customTimezone && $customTimezone != $booking->timezone) {
+                $start = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($customTimezone)->format('h:iA');
+                $end = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($customTimezone)->format('h:iA');
+                $booking->meta_timezone = $customTimezone;
+                $booking->meta_startFormat = $start;
+                $booking->meta_endFormat = $end;
             }
 
             return $booking;

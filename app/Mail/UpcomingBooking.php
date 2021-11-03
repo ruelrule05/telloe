@@ -17,6 +17,9 @@ class UpcomingBooking extends Mailer
     public $start;
     public $end;
     public $timezone;
+    public $meta_timezone;
+    public $meta_start;
+    public $meta_end;
 
     public function __construct(Booking $booking, $timezone)
     {
@@ -24,7 +27,7 @@ class UpcomingBooking extends Mailer
         $to = $from->clone()->addMinute($booking->service->duration);
         $link = Link::create($booking->service->name, $from, $to)
             ->description($booking->service->description);
-        $this->timezone = $timezone;
+        $this->timezone = $booking->timezone;
 
         $booking->google_link = $link->google();
         $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
@@ -34,9 +37,15 @@ class UpcomingBooking extends Mailer
         $this->booking = $booking;
         $this->booking->url = config('app.url') . '/bookings/' . $booking->uuid;
         $this->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
-        $this->date = Carbon::parse($booking->date, $booking->timezone)->setTimezone($timezone)->format('M d, Y');
-        $this->start = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($timezone)->format('h:iA');
+        $this->date = Carbon::parse($booking->date, $booking->timezone)->format('M d, Y');
+        $this->start = Carbon::parse("$booking->date $booking->start", $booking->timezone)->format('h:iA');
         $this->end = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($timezone)->format('h:iA');
+
+        if ($booking->timezone != $timezone) {
+            $this->meta_timezone = $timezone;
+            $this->meta_start = Carbon::parse("$booking->date $booking->start", $booking->timezone)->setTimezone($timezone)->format('h:iA');
+            $this->meta_end = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($timezone)->format('h:iA');
+        }
 
         // $this->names = $booking->bookingUsers->map(function ($bookingUser) {
         //     echo isset($bookingUser->guest['email']);

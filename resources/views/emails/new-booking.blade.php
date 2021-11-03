@@ -21,6 +21,10 @@
         <label style="color: #838EA6">Time</label>
         <div style="margin-bottom: 15px; margin-top: -2px">{{ $booking->startFormat }} - {{ $booking->endFormat }} ({{ $booking->timezone }})</div>
 
+        @if($booking->meta_timezone && $booking->meta_startFormat && $booking->meta_endFormat)
+        <div style="margin-bottom: 15px; margin-top: -17px">{{ $booking->meta_startFormat }} - {{ $booking->meta_endFormat }} ({{ $booking->meta_timezone }})</div>
+        @endif
+
         <label style="color: #838EA6">Guests</label>
         <div style="font-weight: 600; margin-bottom: 15px; margin-top: 5px">
             @foreach($booking->bookingUsers as $bookingUser)
