@@ -205,7 +205,7 @@ class BookingService
             $time = time();
             // Check if Google Calendar is integrated
             // Create event to selected google calendar with flag to tell it's a telloe booking
-            if ($service && $service->coach->google_calendar_token && count($service->coach->google_calendar_id) > 0) {
+            if ($service && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
                 $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
                 $client = $GoogleCalendarClient->client;
                 $googleService = new Google_Service_Calendar($client);
@@ -246,7 +246,7 @@ class BookingService
             }
 
             // Check if Outlook Calendar is integrated
-            if ($service && $service->coach->outlook_token && count($service->coach->outlook_calendar_id) > 0) {
+            if ($service && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
                 $OutlookClient = new \App\Http\OutlookClient();
                 $graph = new \Microsoft\Graph\Graph();
                 if ($OutlookClient->accessToken) {
@@ -380,7 +380,7 @@ class BookingService
         }
 
         // Google Calendar
-        if ($booking->google_event_id && $service->coach->google_calendar_token && count($service->coach->google_calendar_id) > 0) {
+        if ($booking->google_event_id && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
@@ -411,7 +411,7 @@ class BookingService
         }
 
         // Outlook Calendar
-        if ($booking->outlook_event_id && $service->coach->outlook_token && count($service->coach->outlook_calendar_id) > 0) {
+        if ($booking->outlook_event_id && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
             $OutlookClient = new \App\Http\OutlookClient();
             $graph = new \Microsoft\Graph\Graph();
             if ($OutlookClient->accessToken) {

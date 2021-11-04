@@ -38,7 +38,7 @@ class GoogleCalendarEvents implements ShouldQueue
     {
         //
 
-        if (count($this->user->google_calendar_id) > 0 && $this->user->google_calendar_token) {
+        if ($this->user->google_calendar_id && $this->user->google_calendar_token) {
             $events = [];
             $GoogleCalendarClient = new GoogleCalendarClient($this->user);
             $client = $GoogleCalendarClient->client;
