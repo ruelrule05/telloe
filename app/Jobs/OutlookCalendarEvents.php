@@ -36,7 +36,7 @@ class OutlookCalendarEvents implements ShouldQueue
     {
         //
 
-        if (count($this->user->outlook_calendar_id) > 0 && $this->user->outlook_token) {
+        if ($this->user->outlook_calendar_id && $this->user->outlook_token) {
             $events = [];
             $OutlookClient = new \App\Http\OutlookClient($this->user);
             $graph = new \Microsoft\Graph\Graph();
