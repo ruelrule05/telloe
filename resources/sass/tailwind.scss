@@ -178,7 +178,7 @@ body.modal-open {
 	}
 }
 
-input:not([type='radio']),
+input,
 textarea {
 	@apply input;
 }

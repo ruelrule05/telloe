@@ -42,7 +42,7 @@
 		<!-- Radio group -->
 		<div v-else-if="field.type == 'radio-group'" v-for="(option, optionIndex) in field.values" :key="optionIndex" class="mb-1">
 			<label :for="option.value" class="inline-flex cursor-pointer items-center mb-0">
-				<input type="radio" :id="option.value" :value="option.label" :name="field.name" v-model="fieldValue" />
+				<input type="radio" class="ring-opacity-0 shadow-none cursor-pointer" :id="option.value" :value="option.label" :name="field.name" v-model="fieldValue" />
 				<span class="ml-2">{{ option.label }}</span>
 			</label>
 		</div>
@@ -142,5 +142,9 @@ h3 {
 }
 h4 {
 	@apply text-lg;
+}
+input[type='radio'] {
+	width: 14px;
+	height: 14px;
 }
 </style>
