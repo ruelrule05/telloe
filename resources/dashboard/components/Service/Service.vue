@@ -73,11 +73,11 @@
 											<input type="text" v-model="type.data" placeholder="Zoom meeting link.." data-required />
 										</div>
 
-										<div v-else-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm  px-4 pb-2">{{ type.type }} will be data-required before placing a booking.</div>
+										<div v-else-if="type.type == 'Phone' || type.type == 'Skype'" class="text-muted text-sm px-4 pb-2">{{ type.type }} will be required when placing a booking.</div>
 
-										<div v-else-if="type.type == 'Telloe Video Call'" class="text-muted text-sm  px-4 pb-2">A conversation will be created for the video call.</div>
+										<div v-else-if="type.type == 'Telloe Video Call'" class="text-muted text-sm px-4 pb-2">A conversation will be created for the video call.</div>
 
-										<div v-else class="text-muted text-sm  px-4 pb-2">{{ type.type }} link will be created for each booking.</div>
+										<div v-else class="text-muted text-sm px-4 pb-2">{{ type.type }} link will be created for each booking.</div>
 									</div>
 									<div class="pl-2">
 										<button class="focus:outline-none rounded-full p-2 border text-gray-400 transition-colors hover:bg-gray-400 hover:text-white" type="button" @click="clonedService.types.splice(typeIndex, 1)"><CloseIcon class="fill-current"></CloseIcon></button>

@@ -8,6 +8,13 @@ use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 
+// Route::get('/test', function(){
+//     $bookings = [App\Models\Booking::latest()->first()];
+//     $email = new App\Mail\NewBooking($bookings, 'serviceUser');
+//     return $email;
+// });
+
+
 Route::group(
     [
         'domain' => config('app.url'),
