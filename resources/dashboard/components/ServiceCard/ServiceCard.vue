@@ -33,10 +33,10 @@
 				<div
 					class="profile-image profile-image-sm"
 					:style="{
-						backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
+						backgroundImage: 'url(' + assignedService.user.profile_image + ')'
 					}"
 				>
-					<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+					<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
 				</div>
 			</div>
 		</div>
