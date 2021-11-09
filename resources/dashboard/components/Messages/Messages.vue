@@ -169,7 +169,7 @@
 		<div v-if="!conversation.member.is_pending" class="border-top p-4">
 			<!-- Pending files -->
 			<div class="flex mb-4" v-if="pendingFiles.length > 0">
-				<div v-for="(file, index) in pendingFiles" :key="index" class=" pending-file-preview">
+				<div v-for="(file, index) in pendingFiles" :key="index" class="pending-file-preview">
 					<button class="absolute -top-2 -right-2 focus:outline-none rounded-full bg-gray-200 p-2" @click="pendingFiles.splice(index, 1)">
 						<close-icon height="10" width="10" class="fill-current text-gray-600"></close-icon>
 					</button>
@@ -195,7 +195,9 @@
 					<button :data-intro="$root.intros.conversations.steps[7]" data-step="8" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" type="button" @click="$refs['fileMedia'].click()"><AttachmentIcon class="fill-current"></AttachmentIcon></button>
 
 					<button :data-intro="$root.intros.conversations.steps[6]" data-step="7" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" type="button" @click="openRecorder('audio')"><microphone-alt-icon class="fill-current"></microphone-alt-icon></button>
-					<input type="file" ref="fileMedia" class="hidden" @change="addFile" />
+					<div class="hidden">
+						<input type="file" ref="fileMedia" class="hidden" @change="addFile" />
+					</div>
 
 					<button :data-intro="$root.intros.conversations.steps[8]" data-step="9" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
 						<screenshare-icon class="fill-current"></screenshare-icon>
@@ -203,7 +205,7 @@
 				</div>
 				<div class="flex-1 pl-0 md:pl-4 w-full md:w-auto">
 					<vue-form-validate @submit="sendText" class="flex items-center rounded-full bg-gray-200 p-1" ref="messageForm" @mounted="messageFormMounted">
-						<div class="py-2 px-4 message-input h-auto overflow-auto flex-grow focus:outline-none " contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
+						<div class="py-2 px-4 message-input h-auto overflow-auto flex-grow focus:outline-none" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
 						<button type="submit" class="rounded-full bg-white p-3 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current"></SendIcon></button>
 					</vue-form-validate>
 				</div>
@@ -217,9 +219,7 @@
 		<Modal ref="deleteMessageModal" size="sm">
 			<template v-if="selectedMessage">
 				<h5 class="font-serif font-semibold mb-5 uppercase text-center">Delete Message</h5>
-				<p class="text-center mt-3">
-					Are you sure to delete this message?
-				</p>
+				<p class="text-center mt-3">Are you sure to delete this message?</p>
 				<div class="flex justify-between mt-8">
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.deleteMessageModal.hide()"><span>Cancel</span></button>
 					<button

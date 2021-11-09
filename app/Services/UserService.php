@@ -268,6 +268,22 @@ class UserService
                                     'type' => $formField['type']
                                 ];
                                 break;
+
+                            case 'radio-group';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => $value,
+                                    'type' => $formField['type']
+                                ];
+                                break;
+                                
+                            case 'number';
+                                $formData[$formField['name']] = [
+                                    'label' => $formField['label'],
+                                    'value' => $value,
+                                    'type' => $formField['type']
+                                ];
+                                break;
                         }
                     }
                 }

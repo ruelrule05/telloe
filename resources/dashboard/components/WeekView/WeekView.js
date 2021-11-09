@@ -69,7 +69,7 @@ export default {
 	}),
 
 	watch: {
-		date: function() {
+		date: function () {
 			this.$nextTick(() => {
 				this.getWeekBookings();
 			});
@@ -228,7 +228,7 @@ export default {
 		this.popupItem = this.$el;
 	},
 
-	beforeDestroy: function() {
+	beforeDestroy: function () {
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'visible', 'important');
@@ -324,9 +324,7 @@ export default {
 		},
 
 		setNewEvent(interval) {
-			let end = dayjs(`${interval.date} ${interval.time}`)
-				.add(1, 'hour')
-				.format('HH:mm');
+			let end = dayjs(`${interval.date} ${interval.time}`).add(1, 'hour').format('HH:mm');
 			this.newEvent = { date: interval.date, start: interval.time, end: end, timezone: this.timezone };
 			this.$emit('newEvent', JSON.parse(JSON.stringify(this.newEvent)));
 		}

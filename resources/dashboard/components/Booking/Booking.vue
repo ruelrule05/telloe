@@ -192,7 +192,8 @@
 									</tr>
 								</table>
 							</div>
-							<timerangepicker dropdownWFull hideClearButton clockIcon v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
+							<timerangepicker dropdownWFull hideClearButton clockIcon v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end"></timerangepicker>
+							<small v-if="timezone != clonedBooking.timezone" class="text-muted">Your time: {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.start}`, clonedBooking.timezone, timezone), 'hh:mmA') }} - {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.end}`, clonedBooking.timezone, timezone), 'hh:mmA') }}</small>
 						</div>
 
 						<div class="my-4">
@@ -240,7 +241,7 @@
 
 						<a v-if="booking.zoom_link" :href="booking.zoom_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><ZoomIcon class="w-4 h-4 mr-1 fill-current text-primary"></ZoomIcon> Zoom Meeting</a>
 
-						<div v-if="clonedBooking.form_data" class="mt-4">
+						<div v-if="clonedBooking.form_data && Object.keys(clonedBooking.form_data).length > 0" class="mt-4">
 							<label class="-mb-px">Form Data</label>
 							<div v-for="(formData, key) in JSON.parse(clonedBooking.form_data)" :key="key" class="mt-3">
 								<strong class="-mb-px text-sm">{{ formData.label }} <span v-tooltip.right="key" class="tooltip-info"></span></strong>
