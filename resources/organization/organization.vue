@@ -32,10 +32,10 @@
 											<div
 												class="profile-image profile-image-sm"
 												:style="{
-													backgroundImage: 'url(' + assignedService.member.member_user.profile_image + ')'
+													backgroundImage: 'url(' + assignedService.user.profile_image + ')'
 												}"
 											>
-												<span v-if="!assignedService.member.member_user.profile_image">{{ assignedService.member.member_user.initials }}</span>
+												<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
 											</div>
 										</div>
 									</div>
@@ -150,9 +150,7 @@
 									<button :disabled="selectedTimeslots.length == 0" class="btn btn-primary" type="button" @click="step = 'summary'">
 										<span>Continue</span>
 									</button>
-									<div class="text-muted text-sm mt-4 lg:mt-0">
-										Note: You can add recurring timeslots on the next step.
-									</div>
+									<div class="text-muted text-sm mt-4 lg:mt-0">Note: You can add recurring timeslots on the next step.</div>
 								</div>
 								<div v-if="timeslotsLoading" class="absolute-center w-full h-full bg-white pt-24">
 									<div class="text-center">
@@ -210,13 +208,7 @@
 											class="ml-auto"
 											@input="
 												if (selectedTimeslot.is_recurring) {
-													$set(
-														selectedTimeslot,
-														'end_date',
-														dayjs(new Date())
-															.add(1, 'week')
-															.toDate()
-													);
+													$set(selectedTimeslot, 'end_date', dayjs(new Date()).add(1, 'week').toDate());
 													$set(selectedTimeslot, 'frequency', recurringFrequencies[0].value);
 													setTimeslotDefaultDay('week', selectedTimeslot);
 												}
@@ -275,12 +267,8 @@
 												</div>
 											</div>
 
-											<span v-else-if="type.type == 'Telloe Video Call'">
-												A conversation will be created for the video call.
-											</span>
-											<span v-else-if="type.type == 'Zoom'">
-												A Zoom meeting link will be sent to your booking confirmation email.
-											</span>
+											<span v-else-if="type.type == 'Telloe Video Call'"> A conversation will be created for the video call. </span>
+											<span v-else-if="type.type == 'Zoom'"> A Zoom meeting link will be sent to your booking confirmation email. </span>
 											<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
 										</div>
 										<div>
@@ -412,9 +400,7 @@
 			<div v-else-if="step == 'booked-signup'" class="container lg:my-12 my-6 flex items-center justify-center booked-signup" key="booked-signup">
 				<div class="lg:w-5/12 w-11/12 bg-white rounded-2xl lg:p-12 p-8">
 					<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-4">EVENT BOOKED. SIGN UP FOR FREE!</h6>
-					<p class="text-muted">
-						Hey there, thank you for scheduling a meeting with Telloe as a guest. If you sign up you can start using Telloe now and enjoy:
-					</p>
+					<p class="text-muted">Hey there, thank you for scheduling a meeting with Telloe as a guest. If you sign up you can start using Telloe now and enjoy:</p>
 
 					<div class="flex mt-10">
 						<div>
@@ -471,9 +457,7 @@
 				<div class="lg:w-5/12 w-11/12">
 					<div class="bg-white rounded-2xl p-8">
 						<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
-						<p class="mb-8">
-							A calendar invite is on it’s way to your e-mail address.
-						</p>
+						<p class="mb-8">A calendar invite is on it’s way to your e-mail address.</p>
 						<h4 class="mb-2 font-bold text-xl">{{ selectedService.name }}</h4>
 						<div class="text-sm">
 							<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ selectedService.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ selectedService.coach.full_name }}</strong>
@@ -515,9 +499,7 @@
 			<div class="container h-full flex items-center justify-center">
 				<div class="w-4/12 bg-white rounded-2xl p-14">
 					<div class="spinner" role="status"></div>
-					<div class="mt-4 text-2xl">
-						Booking...
-					</div>
+					<div class="mt-4 text-2xl">Booking...</div>
 				</div>
 			</div>
 		</div>
