@@ -140,8 +140,8 @@ class MessageService
         if (count($links) > 0 && $links[0] > 0) {
             $preview = Http::get('https://api.linkpreview.net/?key=' . config('app.link_preview_key') . '&q=' . $links[0][0]);
             $preview = $preview->json();
-            $host = parse_url($preview['url'])['host'];
             if (! isset($preview['error'])) {
+                $host = parse_url($preview['url'])['host'];
                 $linkPreview = '<a target="_blank" href="' . $preview['url'] . '">';
                 if ($preview['image']) {
                     $linkPreview .= '<div class="preview-image" style="background-image: url(\'' . $preview['image'] . '\')"></div>';
