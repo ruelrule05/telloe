@@ -38,6 +38,14 @@
 
 		<!-- Textarea -->
 		<textarea v-else-if="field.type == 'textarea'" v-model="fieldValue" class="resize-none" :data-required="field.required" :rows="field.rows" :placeholder="field.placeholder"></textarea>
+
+		<!-- Radio group -->
+		<div v-else-if="field.type == 'radio-group'" v-for="(option, optionIndex) in field.values" :key="optionIndex" class="mb-1">
+			<label :for="option.value" class="inline-flex cursor-pointer items-center mb-0">
+				<input type="radio" :id="option.value" :value="option.label" :name="field.name" v-model="fieldValue" />
+				<span class="ml-2">{{ option.label }}</span>
+			</label>
+		</div>
 	</div>
 </template>
 
@@ -65,7 +73,7 @@ export default {
 	}),
 
 	watch: {
-		fieldValue: function() {
+		fieldValue: function () {
 			this.$emit('input', this.fieldValue);
 		}
 	},

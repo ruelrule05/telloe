@@ -39,7 +39,7 @@ class UpcomingBooking extends Mailer
         $this->duration = Carbon::parse("$booking->date $booking->start")->diffInMinutes(Carbon::parse("$booking->date $booking->end"));
         $this->date = Carbon::parse($booking->date, $booking->timezone)->format('M d, Y');
         $this->start = Carbon::parse("$booking->date $booking->start", $booking->timezone)->format('h:iA');
-        $this->end = Carbon::parse("$booking->date $booking->end", $booking->timezone)->setTimezone($timezone)->format('h:iA');
+        $this->end = Carbon::parse("$booking->date $booking->end", $booking->timezone)->format('h:iA');
 
         if ($booking->timezone != $timezone) {
             $this->meta_timezone = $timezone;

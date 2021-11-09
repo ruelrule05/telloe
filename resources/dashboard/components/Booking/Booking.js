@@ -26,6 +26,7 @@ const ct = require('countries-and-timezones').default;
 import VueButton from '../../../components/vue-button.vue';
 import { decode } from 'html-entities';
 import tooltip from '../../../js/directives/tooltip.js';
+import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 
 export default {
 	props: {
@@ -93,7 +94,9 @@ export default {
 			email: '',
 			first_name: '',
 			last_name: ''
-		}
+		},
+
+		timezoneTimeGet: timezoneTime
 	}),
 
 	computed: {
@@ -140,20 +143,14 @@ export default {
 	},
 
 	watch: {
-		'clonedBooking.is_recurring': function(value) {
+		'clonedBooking.is_recurring': function (value) {
 			if (value) {
-				this.$set(
-					this.clonedBooking,
-					'end_date',
-					dayjs(new Date())
-						.add(1, 'week')
-						.toDate()
-				);
+				this.$set(this.clonedBooking, 'end_date', dayjs(new Date()).add(1, 'week').toDate());
 				this.$set(this.clonedBooking, 'frequency', this.recurringFrequencies[0].value);
 				this.setTimeslotDefaultDay('week');
 			}
 		},
-		booking: function(booking) {
+		booking: function (booking) {
 			let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 			if (helpcrunch) {
 				helpcrunch.style.setProperty('visibility', 'hidden');
@@ -191,14 +188,14 @@ export default {
 				}
 			}
 		},
-		newEvent: function(value) {
+		newEvent: function (value) {
 			if (value) {
 				this.open = true;
 				this.getServices();
 				this.getContacts({ nopaginate: true });
 			}
 		},
-		'clonedBooking.service': function(service) {
+		'clonedBooking.service': function (service) {
 			let meetingTypes = [];
 			let services = this.services;
 			if (this.member) {
@@ -232,13 +229,13 @@ export default {
 			}
 			this.meetingTypes = meetingTypes;
 		},
-		'clonedBooking.date': function() {
+		'clonedBooking.date': function () {
 			this.getTimeslots();
 		},
-		'clonedBooking.timezone': function() {
+		'clonedBooking.timezone': function () {
 			this.$emit('newBookingChange', this.clonedBooking);
 		},
-		service: function(value) {
+		service: function (value) {
 			if (value && this.clonedBooking) {
 				this.clonedBooking.service = this.service.id;
 				this.disableServiceSelect = true;
@@ -276,7 +273,7 @@ export default {
 			helpcrunch.style.setProperty('visibility', 'hidden');
 		}
 	},
-	beforeDestroy: function() {
+	beforeDestroy: function () {
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'visible', 'important');
@@ -409,9 +406,7 @@ export default {
 				if (serviceOption) {
 					duration = serviceOption.duration;
 				}
-				let endTime = dayjs(startDate)
-					.add(duration, 'minute')
-					.format('HH:mm');
+				let endTime = dayjs(startDate).add(duration, 'minute').format('HH:mm');
 				this.clonedBooking.end = endTime;
 			} else {
 				this.clonedBooking.start = this.booking.start;
@@ -442,10 +437,7 @@ export default {
 			let hour = map.get('hour');
 			const minute = map.get('minute');
 			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
+			const ms = date.getMilliseconds().toString().padStart(3, '0');
 			if (hour == '24') hour = '00';
 			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 			const lie = new Date(iso + 'Z');

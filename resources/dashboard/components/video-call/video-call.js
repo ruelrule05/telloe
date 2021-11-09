@@ -125,7 +125,7 @@ export default {
 	}),
 
 	watch: {
-		'$root.appChannel': function() {
+		'$root.appChannel': function () {
 			this.initListeners();
 		}
 	},
@@ -738,7 +738,7 @@ export default {
 		},
 
 		async stopShareScreen() {
-			this.localStream.getVideoTracks().forEach(function(track) {
+			this.localStream.getVideoTracks().forEach(function (track) {
 				track.stop();
 			});
 			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
@@ -763,7 +763,7 @@ export default {
 				console.log(e);
 			});
 			if (screenStreams) {
-				this.localStream.getVideoTracks().forEach(function(track) {
+				this.localStream.getVideoTracks().forEach(function (track) {
 					track.stop();
 				});
 				screenStreams.getVideoTracks().forEach(track => {
@@ -822,7 +822,7 @@ export default {
 
 		stopLocalStream() {
 			if (this.localStream) {
-				this.localStream.getTracks().forEach(function(track) {
+				this.localStream.getTracks().forEach(function (track) {
 					track.stop();
 				});
 				this.localStream = null;
