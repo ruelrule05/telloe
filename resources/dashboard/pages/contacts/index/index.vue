@@ -2,9 +2,7 @@
 	<div class="h-100" v-if="$root.auth && ready">
 		<div v-show="!addContact">
 			<div class="content-header contact-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-				<div class="ml-7 lg:ml-0 absolute md:static top-7 right-5">
-					CONTACTS
-				</div>
+				<div class="ml-7 lg:ml-0 absolute md:static top-7 right-5">CONTACTS</div>
 				<div class="flex absolute md:static bottom-4 justify-center w-11/12 md:w-auto">
 					<button
 						type="button"
@@ -27,13 +25,9 @@
 					<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 				</div>
 				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
-					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
-						ADD NEW CONTACTS
-					</div>
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">ADD NEW CONTACTS</div>
 					<div class="w-full md:w-7/12 ml-0 md:ml-20">
-						<p class="text-muxted mb-4">
-							Add contacts and start messaging them. Import them through a CSV file or enter their details.
-						</p>
+						<p class="text-muxted mb-4">Add contacts and start messaging them. Import them through a CSV file or enter their details.</p>
 						<button class="btn btn-md btn-outline-primary" type="button" @click="addContact = true"><span>ADD NEW CONTACTS</span></button>
 					</div>
 				</div>
@@ -114,9 +108,7 @@
 
 		<div v-if="addContact">
 			<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
-				<div class="ml-7 lg:ml-0">
-					ADD CONTACT
-				</div>
+				<div class="ml-7 lg:ml-0">ADD CONTACT</div>
 			</div>
 			<div class="h-20 lg:hidden block" />
 			<vue-form-validate @submit="store" class="p-8">
@@ -185,9 +177,7 @@
 		<Modal ref="importCsv">
 			<div v-if="!csvFile">
 				<h4 class="font-serif uppercase font-semibold mb-4">IMPORT FROM CSV</h4>
-				<div class="py-6 text-sm text-muted text-center border border-gray-300 border-dashed rounded-xl bg-gray-50 cursor-pointer transition-colors hover:bg-gray-100" @click="$refs.csvFile.click()">
-					Click here to import CSV file
-				</div>
+				<div class="py-6 text-sm text-muted text-center border border-gray-300 border-dashed rounded-xl bg-gray-50 cursor-pointer transition-colors hover:bg-gray-100" @click="$refs.csvFile.click()">Click here to import CSV file</div>
 				<input type="file" class="hidden" accept=".csv" ref="csvFile" @change="readCsv" />
 			</div>
 			<vue-form-validate @submit="csvPreview = true" v-else-if="!csvPreview">

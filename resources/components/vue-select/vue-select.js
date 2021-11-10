@@ -122,13 +122,13 @@ export default {
 	},
 
 	watch: {
-		value: function(value) {
+		value: function (value) {
 			this.selected_value = value;
 			this.hiddenValue = this.value;
 			if (!value) this.search = '';
 		},
 
-		show: function(value) {
+		show: function (value) {
 			setTimeout(() => {
 				this.open = value;
 			});

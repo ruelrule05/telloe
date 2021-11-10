@@ -63,17 +63,15 @@ export default {
 		calendarAttributes() {
 			let attributes = [];
 			this.bookings.forEach(booking => {
-				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
 				attributes.push({
 					customData: 'booking',
-					dates: bookingDate
+					dates: booking.date
 				});
 			});
 			this.contactBookings.forEach(booking => {
-				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
 				attributes.push({
 					customData: 'booking',
-					dates: bookingDate
+					dates: booking.date
 				});
 			});
 
@@ -124,7 +122,7 @@ export default {
 	},
 
 	watch: {
-		view: function() {
+		view: function () {
 			this.$refs.toggleViewBtn.blur();
 		}
 	},
@@ -198,10 +196,7 @@ export default {
 
 		hideBanner() {
 			this.banner = false;
-			let expires =
-				dayjs()
-					.add(2, 'year')
-					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			let expires = dayjs().add(2, 'year').format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
@@ -291,29 +286,21 @@ export default {
 		},
 
 		prevMonth() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.subtract(1, 'month')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).subtract(1, 'month').toDate();
 			this.$refs['v-calendar'].move(this.selectedDate);
 		},
 
 		nextMonth() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.add(1, 'month')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).add(1, 'month').toDate();
 			this.$refs['v-calendar'].move(this.selectedDate);
 		},
 
 		prevDate() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.subtract(1, 'day')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).subtract(1, 'day').toDate();
 		},
 
 		nextDate() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.add(1, 'day')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).add(1, 'day').toDate();
 		},
 
 		bookingUpdated(booking) {

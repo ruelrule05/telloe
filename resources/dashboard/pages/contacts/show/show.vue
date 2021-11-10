@@ -48,7 +48,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="px-6 pb-6 contact-files ">
+				<div class="px-6 pb-6 contact-files">
 					<ul class="flex p-0 mb-4 tabs">
 						<li :class="{ active: activeTab == 'notes' }"><span class="cursor-pointer" @click="activeTab = 'notes'">Notes</span></li>
 						<li :class="{ active: activeTab == 'fields' }"><span class="cursor-pointer" @click="activeTab = 'fields'">Fields</span></li>
@@ -192,7 +192,7 @@
 						</vue-form-validate>
 
 						<div>
-							<div class="rounded-xl p-3  bg-gray-50 my-2" v-for="(contactPackage, contactPackageIndex) in contact.contact_packages" :key="contactPackage.id">
+							<div class="rounded-xl p-3 bg-gray-50 my-2" v-for="(contactPackage, contactPackageIndex) in contact.contact_packages" :key="contactPackage.id">
 								<div class="flex justify-between">
 									<div>
 										<div class="text-xs text-muted">{{ contactPackage.package.name }}</div>
@@ -315,9 +315,7 @@
 				</p>
 				<div class="d-flex justify-content-end">
 					<button class="btn btn-light shadow-none text-body" type="button" data-dismiss="modal">Cancel</button>
-					<button class="btn btn-danger ml-auto" type="button" @click="deleteContactMember(contact)">
-						Delete
-					</button>
+					<button class="btn btn-danger ml-auto" type="button" @click="deleteContactMember(contact)">Delete</button>
 				</div>
 			</template>
 		</modal>

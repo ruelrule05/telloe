@@ -119,11 +119,11 @@ export default {
 	}),
 
 	watch: {
-		'$route.query.tab': function(value) {
+		'$route.query.tab': function (value) {
 			this.tab = value;
 		},
 
-		'user.timezone': function() {
+		'user.timezone': function () {
 			this.user.dial_code = countryCodes.customArray(
 				{ text: '{countryCode}', value: '+{countryCallingCode}' },
 				{
@@ -132,6 +132,9 @@ export default {
 					}
 				}
 			)[0].value;
+		},
+		activeMenu: function () {
+			this.user = Object.assign({}, this.$root.auth);
 		}
 	},
 
@@ -602,7 +605,7 @@ export default {
 		getCookieVal(name) {
 			const allCookies = document.cookie.split('; ');
 			var result = null;
-			allCookies.forEach(function(v) {
+			allCookies.forEach(function (v) {
 				if (v.indexOf(name + '=') !== -1) {
 					result = v.split('=')[1];
 					return false;

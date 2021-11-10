@@ -51,13 +51,9 @@
 				<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 			</div>
 			<div class="bg-primary-ultralight justify-between rounded-xl lg:flex p-8">
-				<div class="font-serif lg:w-1/4 font-semibold uppercase">
-					CHECK YOUR MEETINGS AND AVAILABLE TIMES.
-				</div>
+				<div class="font-serif lg:w-1/4 font-semibold uppercase">CHECK YOUR MEETINGS AND AVAILABLE TIMES.</div>
 				<div class="lg:w-7/12">
-					<p class="text-muxted mb-4">
-						Check your meetings in your calendar, meeting details and your future availabilities. Connect your Google Calendar or Outlook to link Telloe Calendar with existing Calendars.
-					</p>
+					<p class="text-muxted mb-4">Check your meetings in your calendar, meeting details and your future availabilities. Connect your Google Calendar or Outlook to link Telloe Calendar with existing Calendars.</p>
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$router.push('/dashboard/integrations')"><span>INTEGRATE GOOGLE CALENDAR OR OUTLOOK</span></button>
 				</div>
 			</div>
@@ -66,7 +62,7 @@
 		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
 			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
 			<div class="flex align-center">
-				<VueSelect v-if="googleCalendars.length" multiple label="Google Calendar" :loading="googleCalendarEventsLoading" class=" w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
+				<VueSelect v-if="googleCalendars.length" multiple label="Google Calendar" :loading="googleCalendarEventsLoading" class="w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
 				<VueSelect v-if="outlookCalendars.length" multiple label="Outlook Calendar" :loading="outlookCalendarEventsLoading" class="ml-2 w-full md:w-auto mt-1 md:mt-0" :options="outlookCalendars" placeholder="Select Calendar" @input="updateOutlookCalendar" v-model="$root.auth.outlook_calendar_id" dropPosition="w-full"></VueSelect>
 			</div>
 		</div>
@@ -80,7 +76,7 @@
 					<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
 						<div slot="day-content" slot-scope="data">
 							<div class="day-content text-center">
-								<div class="day-label" :class="{ active: selectedDate && selectedDate.toString() == data.day.date.toString(), 'is-today': data.day.isToday }" @click="dayClick(data.day.date)">
+								<div class="day-label" :data-date="data.day.date" :class="{ active: selectedDate && selectedDate.toString() == data.day.date.toString(), 'is-today': data.day.isToday }" @click="dayClick(data.day.date)">
 									<span>{{ data.day.label }}</span>
 									<div v-if="data.attributes" class="flex items-center vc-badge-container">
 										<div class="vc-badge bg-primary" v-if="hasBooking(data.attributes)"></div>

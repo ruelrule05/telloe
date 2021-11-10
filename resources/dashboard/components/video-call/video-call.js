@@ -412,8 +412,17 @@ export default {
 		},
 
 		async addLocalStream() {
-			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => {});
-			if (streams && !this.localStream && this.$refs['cameraPreview']) {
+			let videoStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
+			let audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
+			let outputTracks = [];
+			if (videoStreams) {
+				outputTracks = outputTracks.concat(videoStreams.getTracks());
+			}
+			if (audioStreams) {
+				outputTracks = outputTracks.concat(audioStreams.getTracks());
+			}
+			if (outputTracks.length > 0 && !this.localStream && this.$refs['cameraPreview']) {
+				let streams = new MediaStream(outputTracks);
 				this.localStream = streams;
 				this.$refs['cameraPreview'].muted = true;
 				this.$refs['cameraPreview'].volume = 0;
@@ -509,6 +518,9 @@ export default {
 		async checkDevices() {
 			this.gettingDevices = true;
 			let streams = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => {});
+			if (!streams) {
+				streams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
+			}
 			this.gettingDevices = false;
 			return streams ? true : false;
 		},

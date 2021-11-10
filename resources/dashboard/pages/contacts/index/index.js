@@ -186,17 +186,17 @@ export default {
 	},
 
 	watch: {
-		ready: function(value) {
+		ready: function (value) {
 			this.$root.contentloading = !value;
 		},
 
-		query: function(value) {
+		query: function (value) {
 			if (!value) {
 				this.getContacts();
 			}
 		},
 
-		page: function() {
+		page: function () {
 			this.getData();
 		}
 	},
@@ -256,10 +256,7 @@ export default {
 
 		hideBanner() {
 			this.banner = false;
-			let expires =
-				dayjs()
-					.add(2, 'year')
-					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			let expires = dayjs().add(2, 'year').format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
@@ -306,7 +303,7 @@ export default {
 			this.selectedContact = contact;
 			switch (action) {
 				case 'Edit':
-					this.clonedContact = Object.assign({}, contact);
+					this.clonedContact = JSON.parse(JSON.stringify(contact));
 					this.$refs.editModal.show();
 					break;
 				case 'Delete':
