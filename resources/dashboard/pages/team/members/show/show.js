@@ -180,7 +180,7 @@ export default {
 	},
 
 	watch: {
-		page: function() {
+		page: function () {
 			this.getMember();
 		}
 	},
@@ -196,7 +196,7 @@ export default {
 			helpcrunch.style.setProperty('visibility', 'hidden');
 		}
 	},
-	beforeDestroy: function() {
+	beforeDestroy: function () {
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'visible', 'important');

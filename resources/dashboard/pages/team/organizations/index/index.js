@@ -51,7 +51,8 @@ export default {
 		selectedOrganization: null,
 		newOrganization: {
 			name: '',
-			members: []
+			members: [],
+			services: []
 		},
 		clonedOrganization: null,
 		slugify: slugify,
@@ -62,7 +63,8 @@ export default {
 		...mapState({
 			ready: state => state.organizations.ready,
 			organizations: state => state.organizations.index,
-			members: state => state.members.index
+			members: state => state.members.index,
+			services: state => state.services.index
 		}),
 
 		membersList() {
@@ -81,7 +83,7 @@ export default {
 	},
 
 	watch: {
-		ready: function(value) {
+		ready: function (value) {
 			this.$root.contentloading = !value;
 		}
 	},
@@ -90,6 +92,7 @@ export default {
 		this.$root.contentloading = !this.ready;
 		this.getOrganizations();
 		this.getMembers();
+		this.getServices();
 	},
 
 	mounted() {
@@ -109,8 +112,27 @@ export default {
 			storeOrganization: 'organizations/store',
 			getMembers: 'members/index',
 			updateOrganization: 'organizations/update',
-			addOrganizationMembers: 'organizations/add_members'
+			addOrganizationMembers: 'organizations/add_members',
+			getServices: 'services/index'
 		}),
+
+		toggleNewService(service) {
+			let index = this.newOrganization.services.findIndex(x => x == service.id);
+			if (index > -1) {
+				this.newOrganization.services.splice(index, 1);
+			} else {
+				this.newOrganization.services.push(service.id);
+			}
+		},
+
+		toggleService(service) {
+			let index = this.clonedOrganization.services.findIndex(x => x == service.id);
+			if (index > -1) {
+				this.clonedOrganization.services.splice(index, 1);
+			} else {
+				this.clonedOrganization.services.push(service.id);
+			}
+		},
 
 		copyLink(e, organization) {
 			this.$toast.clear();

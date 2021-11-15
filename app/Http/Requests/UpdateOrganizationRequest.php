@@ -26,7 +26,6 @@ class UpdateOrganizationRequest extends FormRequest
         return [
             'name' => 'required|string|max:100',
             'slug' => 'required|max:100|string',
-            'show_user_services' => 'nullable|boolean',
         ];
     }
 }

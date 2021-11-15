@@ -35,6 +35,11 @@
 						</v-date-picker>
 
 						<div class="my-4">
+							<label required>Timezone</label>
+							<vue-select required :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
+						</div>
+
+						<div class="my-4">
 							<div class="flex mb-3 text-muted btn-tabs">
 								<div class="btn-tab" :class="{ active: !selectFromTimeslots }" @click="selectFromTimeslots = false">
 									<span>FROM-TO</span>
@@ -65,11 +70,6 @@
 								</table>
 							</div>
 							<timerangepicker dropdownWFull hideClearButton clockIcon v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end" class="mb-2"></timerangepicker>
-						</div>
-
-						<div class="my-4">
-							<label required>Timezone</label>
-							<vue-select required :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
 						</div>
 
 						<label required>Guests</label>
@@ -164,6 +164,11 @@
 						</v-date-picker>
 
 						<div class="my-4">
+							<label>Timezone</label>
+							<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
+						</div>
+
+						<div class="my-4">
 							<div class="flex mb-3 text-muted btn-tabs">
 								<div class="btn-tab" :class="{ active: !selectFromTimeslots }" @click="selectFromTimeslots = false">
 									<span>FROM-TO</span>
@@ -195,11 +200,6 @@
 							</div>
 							<timerangepicker dropdownWFull hideClearButton clockIcon v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end"></timerangepicker>
 							<small v-if="timezone != clonedBooking.timezone" class="text-muted">Your time: {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.start}`, clonedBooking.timezone, timezone), 'hh:mmA') }} - {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.end}`, clonedBooking.timezone, timezone), 'hh:mmA') }}</small>
-						</div>
-
-						<div class="my-4">
-							<label>Timezone</label>
-							<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
 						</div>
 
 						<div class="my-4">
