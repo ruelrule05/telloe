@@ -22,7 +22,7 @@ class OrgranizationsService
     {
         $organization = Organization::where('slug', $organization)->firstOrfail();
         $data = ['services' => []];
-        $serviceIDs = $organization->services;
+        $serviceIDs = $organization->services ?? [];
         $organizationServices = $organization->user->services()->where('is_available', true)->whereIn('id', $serviceIDs)->get();
 
         foreach ($organizationServices as $userService) {
