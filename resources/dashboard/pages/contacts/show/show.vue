@@ -70,7 +70,7 @@
 							<textarea placeholder="Write note..." v-model="newNote" data-required rows="3" class="form-control resize-none"></textarea>
 							<div class="flex justify-between mt-2">
 								<button
-									class="btn btn-sm"
+									class="btn btn-sm btn-outline-primary"
 									type="button"
 									@click="
 										newNote = '';
@@ -87,7 +87,7 @@
 						<vue-form-validate v-else-if="selectedNote" class="mt-2 mb-3" @submit="confirmUpdateNote(selectedNote)">
 							<textarea placeholder="Write note..." v-model="selectedNote.new_note" data-required rows="3" class="form-control resize-none"></textarea>
 							<div class="flex justify-between mt-2">
-								<button class="btn btn-sm" type="button" @click="selectedNote = null"><span>Cancel</span></button>
+								<button class="btn btn-sm btn-outline-primary" type="button" @click="selectedNote = null"><span>Cancel</span></button>
 								<button class="btn btn-primary btn-sm" type="submit"><span>Update</span></button>
 							</div>
 						</vue-form-validate>

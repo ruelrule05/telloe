@@ -30,7 +30,7 @@
 
 		<!-- Audio -->
 		<div v-else-if="message.type == 'audio'">
-			<waveplayer :source="message.source" :duration="message.metadata.duration"></waveplayer>
+			<waveplayer :theme="outgoing ? 'light' : ''" :source="message.source" :duration="message.metadata.duration"></waveplayer>
 		</div>
 
 		<!-- File -->
@@ -139,7 +139,7 @@ export default {
 
 		urlify(text) {
 			var urlRegex = /(http|https|ftp|ftps):\/\/[a-zA-Z0-9-.]+\.[a-zA-Z]{2,3}(\/\S*)?/g;
-			return text.replaceAll(urlRegex, function(url) {
+			return text.replaceAll(urlRegex, function (url) {
 				return '<a target="_blank" href="' + url + '">' + url + '</a>';
 			});
 		}

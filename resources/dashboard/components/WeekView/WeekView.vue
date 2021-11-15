@@ -20,7 +20,7 @@
 						<button type="button" @click="timeslotToBlock.date = null" class="absolute top-1 right-1 rounded-full p-1 border text-gray-600 ml-1 transition-colors hover:bg-gray-200 focus:outline-none"><CloseIcon class="fill-current h-2 w-2"></CloseIcon></button>
 						<timerangepicker @change="timeslotBlockChange($event, interval.date)" :hideClearButton="true" :vertical="true" :start="interval.time"></timerangepicker>
 						<div class="-mt-px">
-							<v-date-picker @input="timeslotBlockEndDateChange" :value="interval.date" :min-date="interval.date" :popover="{ visibility: 'click', placement: 'right' }" :masks="masks">
+							<v-date-picker class="relative" @input="timeslotBlockEndDateChange" :value="interval.date" :min-date="interval.date" :popover="{ visibility: 'click', placement: 'right' }" :masks="masks">
 								<template v-slot="{ inputValue, inputEvents }">
 									<span v-on="inputEvents" class="text-blue-400 text-xs cursor-pointer hover:underline">{{ inputValue }}</span>
 								</template>

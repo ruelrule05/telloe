@@ -232,7 +232,7 @@
 												</div>
 
 												<div class="mt-4">
-													<v-date-picker :min-date="new Date()" class="input" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
+													<v-date-picker :min-date="new Date()" class="input relative" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
 														<template v-slot="{ inputValue, inputEvents }">
 															<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
 																<span class="text-muted text-sm mr-2">Until</span>

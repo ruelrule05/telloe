@@ -90,7 +90,8 @@ export default {
 			{ text: 'Billing', value: 'Billing' },
 			{ text: 'Payout', value: 'Payout' },
 			{ text: 'Notifications', value: 'Notifications' },
-			{ text: 'My Menu', value: 'My Menu' }
+			{ text: 'My Menu', value: 'My Menu' },
+			{ text: 'Log Out', value: 'Log Out' }
 		],
 		activeMenu: 'Profile',
 		selectedPlan: null,
@@ -133,8 +134,11 @@ export default {
 				}
 			)[0].value;
 		},
-		activeMenu: function () {
+		activeMenu: function (value) {
 			this.user = Object.assign({}, this.$root.auth);
+			if (value == 'Log Out') {
+				this.$refs.logoutForm.submit();
+			}
 		}
 	},
 

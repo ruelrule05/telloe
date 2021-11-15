@@ -43,7 +43,7 @@
 						<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
 							<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
 						</button>
-						<v-date-picker :popover="{ placement: 'bottom', visibility: 'click' }" :masks="masks" v-model="startDate">
+						<v-date-picker class="relative" :popover="{ placement: 'bottom', visibility: 'click' }" :masks="masks" v-model="startDate">
 							<template v-slot="{ inputValue, inputEvents }">
 								<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ inputValue }}</button>
 							</template>
@@ -106,12 +106,8 @@
 											<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
 										</button>
 										<div class="dropdown-menu">
-											<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/team/members/${assignedService.member_id}`">
-												View Member
-											</router-link>
-											<span class="dropdown-item cursor-pointer" @click="removeAssignedService(assignedService, index)">
-												Remove
-											</span>
+											<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/team/members/${assignedService.member_id}`"> View Member </router-link>
+											<span class="dropdown-item cursor-pointer" @click="removeAssignedService(assignedService, index)"> Remove </span>
 										</div>
 									</div>
 								</div>
@@ -144,7 +140,7 @@
 						<table class="table table-sm table-borderless mb-0 table-layout-fixed">
 							<thead>
 								<tr>
-									<th class="align-middle pb-2 pt-0 pl-2 " v-for="(tabDate, index) in tabDates" :key="index">
+									<th class="align-middle pb-2 pt-0 pl-2" v-for="(tabDate, index) in tabDates" :key="index">
 										<strong>{{ tabDate.name }}</strong>
 										<span class="text-gray">{{ tabDate.label }}</span>
 									</th>
@@ -188,13 +184,9 @@
 		<modal ref="deleteBookingModal" :close-button="false">
 			<template v-if="selectedTimeslot">
 				<h5 class="font-heading text-center">Delete Booking</h5>
-				<p class="text-center mt-3">
-					Are you sure to delete this booking?
-				</p>
+				<p class="text-center mt-3">Are you sure to delete this booking?</p>
 				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" @click="$refs['bookingModal'].show()" data-dismiss="modal">
-						Cancel
-					</button>
+					<button class="btn btn-light shadow-none" type="button" @click="$refs['bookingModal'].show()" data-dismiss="modal">Cancel</button>
 					<button
 						class="btn btn-danger ml-auto"
 						type="button"
@@ -219,12 +211,8 @@
 					<br />
 				</p>
 				<div class="d-flex">
-					<button class="btn btn-white border" type="button" data-dismiss="modal">
-						Cancel
-					</button>
-					<button class="btn btn-primary ml-auto" type="button" @click="applyBreaktimeToAll()">
-						Apply
-					</button>
+					<button class="btn btn-white border" type="button" data-dismiss="modal">Cancel</button>
+					<button class="btn btn-primary ml-auto" type="button" @click="applyBreaktimeToAll()">Apply</button>
 				</div>
 			</template>
 		</modal>
@@ -271,12 +259,8 @@
 					<div class="col-md-4 border-left border-gray-200">
 						<h5 class="font-heading mb-3">Availability</h5>
 						<div class="d-flex mb-2 rounded overflow-hidden">
-							<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'" type="button">
-								Availability
-							</button>
-							<button class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'" type="button">
-								Holidays
-							</button>
+							<button class="btn position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'availability' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'availability'" type="button">Availability</button>
+							<button class="btn btn-tab position-relative w-50 rounded-0 py-3" :class="[serviceDetailsTab == 'holidays' ? 'btn-primary' : 'btn-light']" @click="serviceDetailsTab = 'holidays'" type="button">Holidays</button>
 						</div>
 
 						<div v-if="serviceDetailsTab == 'availability'" id="service-days">
@@ -381,9 +365,7 @@
 					</div>
 				</div>
 				<div class="d-flex align-items-center">
-					<button class="btn btn-light shadow-none mr-1" type="button" data-dismiss="modal">
-						Cancel
-					</button>
+					<button class="btn btn-light shadow-none mr-1" type="button" data-dismiss="modal">Cancel</button>
 					<button class="ml-auto btn btn-primary" type="submit">Update</button>
 				</div>
 			</vue-form-validate>
@@ -400,9 +382,7 @@
 					<span class="text-danger">This action cannot be undone</span>
 				</p>
 				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
-					</button>
+					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">Cancel</button>
 					<button
 						class="btn btn-danger ml-auto"
 						type="button"

@@ -34,7 +34,8 @@ export default {
 			timezone: ''
 		},
 		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US'],
-		message: ''
+		message: '',
+		bookedTimeslots: {}
 	}),
 
 	directives: { tooltip: VTooltip },
@@ -82,7 +83,7 @@ export default {
 	},
 
 	watch: {
-		startDate: function(value) {
+		startDate: function (value) {
 			if (value) {
 				let dateFormat = dayjs(value).format('YYYY-MM-DD');
 				let exists = this.dates[dateFormat];
@@ -97,7 +98,7 @@ export default {
 				this.selectedDate = dateFormat;
 			}
 		},
-		contacts: function() {
+		contacts: function () {
 			if (this.contactsOptions.length > 0) {
 				this.selectedContacts.push(this.contactsOptions[0]);
 			}
@@ -105,23 +106,21 @@ export default {
 				this.selectedContacts.push(this.contactsOptions[1]);
 			}
 		},
-		duration: function() {
+		duration: function () {
 			Object.keys(this.dates).forEach(key => {
 				this.dates[key].timeslots = this.timeslots();
 			});
 		}
 	},
 
-	created() {
+	async created() {
 		this.message = `${this.$root.auth.full_name} has sent you a range of times to select that match up with your time zone and when ${this.$root.auth.first_name} is available to meet.`;
 		this.timezone = timezone.name();
 		this.$root.contentloading = !this.ready;
-		this.startDate = dayjs()
-			.add(1, 'day')
-			.toDate();
+		this.startDate = dayjs().add(1, 'day').toDate();
 		let formatDate = dayjs(this.startDate).format('YYYY-MM-DD');
 		this.selectedDate = formatDate;
-		this.$set(this.dates, formatDate, { timeslots: this.timeslots(), selectedTimeslots: [] });
+		this.createNewDate(formatDate);
 		this.getContacts({ nopaginate: true });
 	},
 
@@ -131,7 +130,17 @@ export default {
 			storeBookingLink: 'booking_links/store'
 		}),
 
-		timeslots() {
+		async createNewDate(date) {
+			this.timeslotsLoading = true;
+			if (!this.bookedTimeslots[date]) {
+				let response = await window.axios.get(`/booking-links/get_all_timeslots?date=${date}`);
+				this.bookedTimeslots[date] = response.data.filter(x => x.is_booked == true);
+			}
+			this.timeslotsLoading = false;
+			this.$set(this.dates, date, { timeslots: this.timeslots(date), selectedTimeslots: [] });
+		},
+
+		timeslots(date) {
 			let start = '06:00';
 			let parts = start.split(':');
 			let period = start.slice(-2).toLowerCase();
@@ -145,10 +154,19 @@ export default {
 				let hh = Math.floor(start / 60);
 				let mm = start % 60;
 				let timeslot = ('0' + (hh == 12 ? 12 : hh)).slice(-2) + ':' + ('0' + mm).slice(-2);
-				timeslots.push({
-					time: timeslot,
-					is_available: false
-				});
+				let add = true;
+				if (this.bookedTimeslots[date]) {
+					let booked = this.bookedTimeslots[date].find(x => x.time == timeslot);
+					if (booked) {
+						add = false;
+					}
+				}
+				if (add) {
+					timeslots.push({
+						time: timeslot,
+						is_available: false
+					});
+				}
 				start = start + parseInt(this.duration);
 			}
 			return timeslots;
@@ -203,10 +221,7 @@ export default {
 			let hour = map.get('hour');
 			const minute = map.get('minute');
 			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
+			const ms = date.getMilliseconds().toString().padStart(3, '0');
 			if (hour == '24') hour = '00';
 			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 			const lie = new Date(iso + 'Z');

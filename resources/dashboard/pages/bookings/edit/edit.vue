@@ -25,7 +25,7 @@
 									<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
 										<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
 									</button>
-									<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks" @input="getServiceTimeslots(false)">
+									<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks" @input="getServiceTimeslots(false)">
 										<template v-slot="{ inputValue, inputEvents }">
 											<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ inputValue }}</button>
 										</template>
@@ -38,9 +38,7 @@
 
 							<template v-if="continueButton">
 								<div class="ml-auto" :class="{ 'hide-tooltip': selectedTimeslot }" v-tooltip.left="'Select at least one (1) timeslot'">
-									<button class="btn btn-primary shadow-sm" type="button" @click="confirmUpdateBooking()">
-										Update
-									</button>
+									<button class="btn btn-primary shadow-sm" type="button" @click="confirmUpdateBooking()">Update</button>
 								</div>
 							</template>
 						</div>

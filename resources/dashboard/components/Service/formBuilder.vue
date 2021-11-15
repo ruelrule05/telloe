@@ -16,7 +16,7 @@ export default {
 	data: () => ({
 		buider: null
 	}),
-	mounted: function() {
+	mounted: function () {
 		let fbOptions = {
 			scrollToFieldOnAdd: false,
 			disabledActionButtons: ['data', 'clear', 'save'],
@@ -120,7 +120,7 @@ export default {
 			transform: translate(-50%, -50%);
 		}
 		&.remove {
-			@apply static rounded-full p-2 mt-1 bg-red-600;
+			@apply static rounded-full p-2 bg-red-600;
 			height: 28px;
 			width: 28px;
 			&:before {

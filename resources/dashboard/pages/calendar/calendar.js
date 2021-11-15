@@ -31,7 +31,6 @@ export default {
 		newEvent: false,
 		googleCalendars: [],
 		googleCalendarEvents: [],
-		contactBookings: [],
 		timezone: '',
 		banner: false,
 		cookieItem: 'telloe_calendar_banner',
@@ -56,19 +55,9 @@ export default {
 			return this.bookingsTimezone(this.upcomingBookings);
 		},
 
-		contactBookingsTz() {
-			return this.bookingsTimezone(this.contactBookings);
-		},
-
 		calendarAttributes() {
 			let attributes = [];
 			this.bookings.forEach(booking => {
-				attributes.push({
-					customData: 'booking',
-					dates: booking.date
-				});
-			});
-			this.contactBookings.forEach(booking => {
 				attributes.push({
 					customData: 'booking',
 					dates: booking.date
@@ -131,7 +120,6 @@ export default {
 		this.timezone = timezone.name();
 		this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookingsData();
-		this.getContactBookings();
 		this.getGoogleCalendars().then(response => {
 			this.googleCalendars = response.data
 				.filter(calendar => {
@@ -215,11 +203,6 @@ export default {
 			this.loading = true;
 			await this.getUpcomingBookings();
 			this.loading = false;
-		},
-
-		async getContactBookings() {
-			let response = await axios.get('/bookings/contact');
-			this.contactBookings = response.data;
 		},
 
 		hasBooking(attributes) {
@@ -308,10 +291,6 @@ export default {
 				this.selectedBooking.date = dayjs(booking.date).format('YYYY-MM-DD');
 				this.selectedBooking.start = booking.start;
 				this.selectedBooking.end = booking.end;
-			}
-			let index = this.contactBookings.find(x => x.id == booking.id);
-			if (index >= 0) {
-				this.contactBookings[index] = booking;
 			}
 			this.selectedBooking = null;
 		},

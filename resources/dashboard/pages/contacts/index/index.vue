@@ -42,7 +42,7 @@
 								<multiselect v-model="filterTags" class="ml-0 md:ml-2 w-6/12 md:w-full mt-2 md:mt-0" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
 							</div>
 
-							<form @submit.prevent="getData()" class="mt-2 lg:mt-0">
+							<form @submit.prevent="getData()" class="mt-2 lg:mt-0 lg:w-5/12">
 								<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name, surname or e-mail" />
 							</form>
 						</div>
@@ -61,7 +61,7 @@
 								</div>
 							</div>
 							<div class="flex w-10/12 sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
-								<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ contact.created_at_format }}</p>
+								<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ dayjs(contact.created_at).format('MMM DD, YYYY') }}</p>
 								<div class="flex items-center">
 									<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
 									<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">

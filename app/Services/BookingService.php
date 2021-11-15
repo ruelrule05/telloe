@@ -553,18 +553,4 @@ class BookingService
 
         return $bookings;
     }
-
-    public static function contactBookings()
-    {
-        $authUser = Auth::user();
-        $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
-        ->whereHas('bookingUsers.user', function ($user) use ($authUser) {
-            $user->where('id', $authUser->id);
-        })
-        ->has('service')
-        ->orHas('bookingLink')
-        ->get();
-
-        return $bookings;
-    }
 }

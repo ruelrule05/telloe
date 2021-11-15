@@ -116,7 +116,8 @@ export default {
 		csvPreview: false,
 		page: 1,
 		cookieItem: 'telloe_contacts_banner',
-		isContactFormTab: true
+		isContactFormTab: true,
+		dayjs: dayjs
 	}),
 
 	computed: {
@@ -126,7 +127,8 @@ export default {
 			hasContacts: state => state.contacts.hasContacts,
 			ready: state => state.contacts.ready,
 			services: state => state.services.index,
-			user_blacklisted_services: state => state.user_blacklisted_services.index
+			user_blacklisted_services: state => state.user_blacklisted_services.index,
+			user_custom_fields: state => state.user_custom_fields.fields
 		}),
 
 		filteredContacts() {
@@ -203,6 +205,7 @@ export default {
 
 	created() {
 		this.$root.contentloading = !this.ready;
+		this.userCustomFields = this.user_custom_fields;
 		this.showUserCustomFields().then(data => {
 			this.userCustomFields = data.fields;
 			this.originalUserCustomFields = JSON.parse(JSON.stringify(data.fields));

@@ -1,6 +1,6 @@
 <template>
 	<div class="flex items-center justify-between waveplayer-container">
-		<button class="audio-control shadow-sm relative p-0 mr-2 border btn-white" @click="togglePlayer">
+		<button class="audio-control shadow-sm relative p-0 mr-2 border" :class="[theme == 'light' ? 'bg-transparent' : 'bg-primary']" @click="togglePlayer">
 			<play-icon v-if="playerStatus == 'paused'" width="15" height="15" fill="white"></play-icon>
 			<pause-icon v-else-if="playerStatus == 'playing'" width="15" height="15" fill="white"></pause-icon>
 		</button>
@@ -44,9 +44,9 @@ export default {
 		});
 
 		if (this.theme == 'light') {
-			this.wavesurfer.setCursorColor('rgba(255,255,255,0.4)');
+			this.wavesurfer.setCursorColor('rgba(255,255,255,1)');
 			this.wavesurfer.setProgressColor('#fff');
-			this.wavesurfer.setWaveColor('rgba(255,255,255,0.4)');
+			this.wavesurfer.setWaveColor('rgba(255,255,255,1)');
 		} else {
 			this.wavesurfer.setCursorColor('#b5bce5');
 			this.wavesurfer.setProgressColor('#6e82ea');

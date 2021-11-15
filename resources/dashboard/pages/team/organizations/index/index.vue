@@ -1,9 +1,7 @@
 <template>
 	<div class="min-h-screen flex flex-col relative" v-if="ready">
 		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-			<div class="ml-7 lg:ml-0">
-				ORGANIZATIONS
-			</div>
+			<div class="ml-7 lg:ml-0">ORGANIZATIONS</div>
 			<div>
 				<button type="button" class="btn btn-md btn-primary flex items-center" @click="$refs.addModal.show()">
 					<span>Add</span>
@@ -55,9 +53,7 @@
 							<span v-if="!(member.member || member).member_user.profile_image">{{ (member.member || member).member_user.initials }}</span>
 						</div>
 					</div>
-					<div v-else class="text-muted text-xs py-5">
-						No members added.
-					</div>
+					<div v-else class="text-muted text-xs py-5">No members added.</div>
 
 					<button type="button" class="btn btn-sm btn-outline-primary" @click="copyLink($event, organization)"><span>Copy Link</span></button>
 				</div>
@@ -113,6 +109,10 @@
 					</multiselect>
 				</div>
 
+				<div class="mb-4 mt-4">
+					<vue-checkbox v-model="newOrganization.show_user_services" label="Include my services in this organization"></vue-checkbox>
+				</div>
+
 				<div class="flex justify-between mt-6">
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.addModal.hide()">
 						<span>Cancel</span>
@@ -145,9 +145,9 @@
 					</multiselect>
 				</div>
 
-				<!-- <div class="mb-4 mt-4">
+				<div class="mb-4 mt-4">
 					<vue-checkbox v-model="clonedOrganization.show_user_services" label="Include my services in this organization"></vue-checkbox>
-				</div> -->
+				</div>
 
 				<div class="flex justify-between mt-6">
 					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.editModal.hide()">

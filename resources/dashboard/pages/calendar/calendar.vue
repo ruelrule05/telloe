@@ -1,5 +1,5 @@
 <template>
-	<div class="min-h-full flex flex-col overflow-x-hidden border">
+	<div class="min-h-full flex flex-col overflow-x-hidden">
 		<div class="flex items-center border-bottom lg:static fixed w-full bg-white z-10" :class="{ 'flex-col lg:flex-row': !overview }">
 			<div class="content-header" :class="{ 'calendar-header': !overview }">
 				<div v-if="overview" class="ml-7 lg:ml-0 absolute md:static top-7">CALENDAR</div>
@@ -16,8 +16,8 @@
 					<span>OVERVIEW</span>
 				</button>
 			</div>
-			<div class="ml-auto px-5 md:pr-6 flex items-center">
-				<div class="ml-0 md:ml-2 flex calendar-buttons__header absolute lg:static bottom-2 right-5" v-if="!overview">
+			<div class="ml-auto px-5 md:pr-3 flex items-center">
+				<div class="ml-0 md:ml-2 flex calendar-buttons__header absolute md:static md:pb-4 bottom-3 right-3" v-if="!overview">
 					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
 						<span>{{ weekToggleText }}</span>
 					</button>
@@ -25,7 +25,7 @@
 						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
 
 						<div class="px-2">
-							<v-date-picker :popover="{ placement: 'bottom', visibility: 'click' }" v-model="selectedDate" :masks="masks">
+							<v-date-picker class="relative" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="selectedDate" :masks="masks">
 								<template v-slot="{ inputValue, inputEvents }">
 									<button type="button" class="uppercase font-semibold" v-on="inputEvents">
 										<span>{{ inputValue }}</span>
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="lg:hidden block" :class="overview ? 'h-20' : 'h-28 md:h-20'" />
+		<div class="lg:hidden block" :class="overview ? 'h-20' : 'h-28 md:h-32'" />
 
 		<div v-if="banner" class="p-4 lg:p-8 border-bottom relative">
 			<div class="font-serif absolute lg:top-10 lg:right-10 top-6 right-6 z-5">
@@ -92,8 +92,8 @@
 		</div>
 
 		<div v-else>
-			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-daily"></DayView>
-			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :contactBookings="contactBookingsTz" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-week"></WeekView>
+			<DayView ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-daily"></DayView>
+			<WeekView ref="weekView" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-week"></WeekView>
 		</div>
 
 		<Booking :booking="selectedBooking" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent" class="calendar-booking"></Booking>

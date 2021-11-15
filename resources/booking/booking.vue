@@ -9,7 +9,7 @@
 					</h3>
 
 					<label>Date</label>
-					<v-date-picker is-required :value="booking.date" :min-date="new Date()" :popover="{ visibility: 'click' }" :masks="masks" @input="setBookingDate">
+					<v-date-picker class="relative" is-required :value="booking.date" :min-date="new Date()" :popover="{ visibility: 'click' }" :masks="masks" @input="setBookingDate">
 						<template v-slot="{ inputValue, inputEvents }">
 							<div class="input-prefix inline-block">
 								<div class="input-icon">

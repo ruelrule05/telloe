@@ -1,9 +1,7 @@
 <template>
 	<div class="flex min-h-screen flex-col">
 		<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
-			<div class="ml-7 lg:ml-0">
-				MY ACCOUNT
-			</div>
+			<div class="ml-7 lg:ml-0">MY ACCOUNT</div>
 		</div>
 		<div class="h-20 lg:hidden block" />
 
@@ -13,7 +11,7 @@
 			<div class="sidebar account-sidebar border-r-0 md:border-r px-6 pt-4">
 				<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item hidden md:block" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
 
-				<form action="/logout" method="POST" class="sidebar-menu-item logout">
+				<form action="/logout" ref="logoutForm" method="POST" class="sidebar-menu-item hidden md:block">
 					<input type="hidden" name="_token" :value="csrf_token" />
 					<button type="submit">Log Out</button>
 				</form>
@@ -32,7 +30,7 @@
 
 							<div class="text">
 								<h5 class="mb-3 text-sm">Set up you profile image by uploading your photo.</h5>
-								<p class="text-xs text-muted ">Only JPEG and PNG files are accepted with maximum size of 5MB</p>
+								<p class="text-xs text-muted">Only JPEG and PNG files are accepted with maximum size of 5MB</p>
 							</div>
 						</div>
 						<div class="mb-5">
@@ -158,9 +156,7 @@
 							</div>
 							<div class="members p-8">
 								<div class="flex items-center justify-between mb-4">
-									<h2 class="font-serif uppercase font-semibold">
-										Members
-									</h2>
+									<h2 class="font-serif uppercase font-semibold">Members</h2>
 									<button type="button" class="btn btn-outline-primary btn-sm" @click="$refs.addMember.show()"><span>Add Member</span></button>
 								</div>
 
@@ -233,21 +229,15 @@
 							</table>
 						</div>
 					</template>
-					<div v-else class="pt-36 text-center text-muted">
-						You are not subscribed to a plan yet.
-					</div>
+					<div v-else class="pt-36 text-center text-muted">You are not subscribed to a plan yet.</div>
 				</div>
 
 				<div v-else-if="activeMenu == 'Payout'" class="p-8 payout-content">
 					<div v-if="banner && $root.auth.stripe_account" class="mb-6">
 						<div class="bg-primary-ultralight justify-between rounded-xl flex p-6 flex-col md:flex-row relative">
-							<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
-								SET UP YOUR BANKING DETAILS
-							</div>
+							<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">SET UP YOUR BANKING DETAILS</div>
 							<div class="w-full md:w-7/12 ml-0 md:ml-20">
-								<p class="text-muxted mb-4">
-									Use subscriptions to make groups of events where contacts can subscribe to recurring bookings for a recurring cost.
-								</p>
+								<p class="text-muxted mb-4">Use subscriptions to make groups of events where contacts can subscribe to recurring bookings for a recurring cost.</p>
 							</div>
 							<div class="font-serif absolute top-5 right-6">
 								<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="banner = false"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
@@ -297,7 +287,7 @@
 										</div>
 										<div class="form-field">
 											<label required>Date of birth</label>
-											<v-date-picker is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob" :masks="masks">
+											<v-date-picker class="relative" is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob" :masks="masks">
 												<template v-slot="{ inputValue, inputEvents }">
 													<input type="text" readonly v-on="inputEvents" :value="inputValue" placeholder="Date of birth" data-required />
 												</template>
@@ -476,9 +466,7 @@
 				</div>
 
 				<div class="flex justify-between">
-					<button class="btn" type="button" @click="$refs.addMember.hide()">
-						Cancel
-					</button>
+					<button class="btn" type="button" @click="$refs.addMember.hide()">Cancel</button>
 					<button class="btn btn-primary btn-md" type="submit">
 						<span>Add</span>
 					</button>
@@ -574,7 +562,7 @@
 										</div>
 										<div class="col">
 											<label class="form-label">Date of birth</label>
-											<v-date-picker is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob" :masks="masks">
+											<v-date-picker class="relative" is-required :popover="{ visibility: 'click' }" v-model="stripeAccountForm.dob" :masks="masks">
 												<template v-slot="{ inputValue, inputEvents }">
 													<button type="button" class="form-control text-left" v-on="inputEvents">
 														<span v-if="inputValue">{{ inputValue }}</span>

@@ -99,22 +99,6 @@ export default {
 				});
 			});
 
-			this.contactBookings.forEach(booking => {
-				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
-				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
-					color = 'bg-primary text-white';
-				}
-				booking.type = 'contact-booking';
-				parsedBookings.push({
-					booking: booking,
-					name: booking.name,
-					start: `${booking.date} ${booking.start}`,
-					end: `${booking.date} ${booking.end}`,
-					category: 'bookings',
-					color: color
-				});
-			});
-
 			this.googleCalendarEvents.forEach(event => {
 				if (!event.id.includes('telloebooking')) {
 					let calendarEvent = JSON.parse(JSON.stringify(event));
