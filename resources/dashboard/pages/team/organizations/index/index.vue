@@ -88,29 +88,41 @@
 			</template>
 		</Modal>
 
-		<Modal ref="addModal" size="sm">
+		<Modal ref="addModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">ADD ORGANIZATION</h4>
 			<vue-form-validate @submit="confirmStoreOrganization()">
-				<div class="mb-4">
-					<label>Organization Name</label>
-					<input type="text" v-model="newOrganization.name" data-required />
-				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<div class="mb-4">
+							<label>Organization Name</label>
+							<input type="text" v-model="newOrganization.name" data-required />
+						</div>
 
-				<div class="mb-4">
-					<label>Slug</label>
-					<input type="text" v-model="newOrganization.slug" data-required />
-				</div>
+						<div class="mb-4">
+							<label>Slug</label>
+							<input type="text" v-model="newOrganization.slug" data-required />
+						</div>
 
-				<div class="mb-4">
-					<label>Add Members</label>
-					<multiselect v-model="newOrganization.members" label="name" track-by="name" :options="membersList" :showLabels="false" placeholder="" multiple>
-						<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-						<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
-					</multiselect>
-				</div>
-
-				<div class="mb-4 mt-4">
-					<vue-checkbox v-model="newOrganization.show_user_services" label="Include my services in this organization"></vue-checkbox>
+						<div class="mb-4">
+							<label>Add Members</label>
+							<multiselect v-model="newOrganization.members" label="name" track-by="name" :options="membersList" :showLabels="false" placeholder="" multiple>
+								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+								<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
+							</multiselect>
+						</div>
+					</div>
+					<div class="border-left pl-4">
+						<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Available Services</h2>
+						<template v-for="service in services">
+							<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
+								<h6 class="font-semibold text-primary">{{ service.name }}</h6>
+								<div class="mt-2 flex items-center">
+									<span class="text-xs mr-2">{{ newOrganization.services.find(x => x == service.id) ? 'Active' : 'Inactive' }}</span>
+									<toggle-switch :value="newOrganization.services.find(x => x == service.id) ? true : false" @input="toggleNewService(service)"></toggle-switch>
+								</div>
+							</div>
+						</template>
+					</div>
 				</div>
 
 				<div class="flex justify-between mt-6">
@@ -124,29 +136,41 @@
 			</vue-form-validate>
 		</Modal>
 
-		<Modal ref="editModal" size="sm">
+		<Modal ref="editModal">
 			<h4 class="font-serif uppercase font-semibold mb-4">EDIT ORGANIZATION</h4>
 			<vue-form-validate v-if="clonedOrganization" @submit="submitUpdate()">
-				<div class="mb-4">
-					<label>Organization Name</label>
-					<input type="text" v-model="clonedOrganization.name" data-required />
-				</div>
-				<div class="mb-4">
-					<label>Slug</label>
-					<input type="text" v-model="clonedOrganization.slug" data-required />
-				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<div class="mb-4">
+							<label>Organization Name</label>
+							<input type="text" v-model="clonedOrganization.name" data-required />
+						</div>
+						<div class="mb-4">
+							<label>Slug</label>
+							<input type="text" v-model="clonedOrganization.slug" data-required />
+						</div>
 
-				<div class="mb-4 mb-1">
-					<label>Add Members</label>
+						<div class="mb-4 mb-1">
+							<label>Add Members</label>
 
-					<multiselect v-model="clonedOrganization.members" label="name" track-by="name" :options="membersList" :showLabels="false" placeholder="" multiple>
-						<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-						<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
-					</multiselect>
-				</div>
-
-				<div class="mb-4 mt-4">
-					<vue-checkbox v-model="clonedOrganization.show_user_services" label="Include my services in this organization"></vue-checkbox>
+							<multiselect v-model="clonedOrganization.members" label="name" track-by="name" :options="membersList" :showLabels="false" placeholder="" multiple>
+								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+								<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
+							</multiselect>
+						</div>
+					</div>
+					<div class="border-left pl-4">
+						<h2 class="font-serif uppercase font-semibold mb-4 text-xs">Available Services</h2>
+						<template v-for="service in services">
+							<div v-if="service.is_available" :key="service.id" class="mt-5 rounded-xl p-3 bg-gray-100">
+								<h6 class="font-semibold text-primary">{{ service.name }}</h6>
+								<div class="mt-2 flex items-center">
+									<span class="text-xs mr-2">{{ clonedOrganization.services.find(x => x == service.id) ? 'Active' : 'Inactive' }}</span>
+									<toggle-switch :value="clonedOrganization.services.find(x => x == service.id) ? true : false" @input="toggleService(service)"></toggle-switch>
+								</div>
+							</div>
+						</template>
+					</div>
 				</div>
 
 				<div class="flex justify-between mt-6">

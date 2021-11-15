@@ -276,7 +276,7 @@ class UserService
                                     'type' => $formField['type']
                                 ];
                                 break;
-                                
+
                             case 'number';
                                 $formData[$formField['name']] = [
                                     'label' => $formField['label'],
@@ -498,11 +498,11 @@ class UserService
                 'summary' => $data['name'],
                 'description' => $booking->service->description,
                 'start' => [
-                    'dateTime' => Carbon::parse("$booking->date $booking->start")->toIso8601String(),
+                    'dateTime' => Carbon::parse("$booking->date $booking->start", $booking->timezone)->toIso8601String(),
                     'timeZone' => $booking->service->timezone,
                 ],
                 'end' => [
-                    'dateTime' => Carbon::parse("$booking->date $booking->end")->toIso8601String(),
+                    'dateTime' => Carbon::parse("$booking->date $booking->end", $booking->timezone)->toIso8601String(),
                     'timeZone' => $booking->service->timezone,
                 ],
                 'attendees' => $attendees,

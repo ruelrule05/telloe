@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Organization extends BaseModel
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'name', 'slug', 'show_user_services'];
+    protected $fillable = ['user_id', 'name', 'slug', 'show_user_services', 'services'];
     protected $casts = [
         'show_user_services' => 'boolean',
+        'services' => 'array',
     ];
 
     public function user()

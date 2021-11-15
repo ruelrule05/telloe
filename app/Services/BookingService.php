@@ -214,11 +214,11 @@ class BookingService
                     'summary' => $data['name'],
                     'description' => $booking->service->description,
                     'start' => [
-                        'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
+                        'dateTime' => Carbon::parse("$booking->date $booking->start", $booking->timezone)->toIso8601String(),
                         'timeZone' => $booking->timezone,
                     ],
                     'end' => [
-                        'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
+                        'dateTime' => Carbon::parse("$booking->date $booking->end", $booking->timezone)->toIso8601String(),
                         'timeZone' => $booking->timezone,
                     ],
                     'attendees' => $attendees,

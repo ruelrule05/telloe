@@ -22,23 +22,22 @@ class OrgranizationsService
     {
         $organization = Organization::where('slug', $organization)->firstOrfail();
         $data = ['services' => []];
-        $userServices = $organization->user->services()->where('is_available', true)->get();
+        $serviceIDs = $organization->services;
+        $organizationServices = $organization->user->services()->where('is_available', true)->whereIn('id', $serviceIDs)->get();
 
-        if ($organization->show_user_services) {
-            foreach ($userServices as $userService) {
-                $data['services'][$userService->id]['id'] = $userService->id;
-                $data['services'][$userService->id]['name'] = $userService->name;
-                $data['services'][$userService->id]['description'] = $userService->description;
-                $data['services'][$userService->id]['duration'] = $userService->duration;
-                $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
-                $data['services'][$userService->id]['currency'] = $userService->currency;
-                $data['services'][$userService->id]['assigned_services'][] = $userService;
-            }
+        foreach ($organizationServices as $userService) {
+            $data['services'][$userService->id]['id'] = $userService->id;
+            $data['services'][$userService->id]['name'] = $userService->name;
+            $data['services'][$userService->id]['description'] = $userService->description;
+            $data['services'][$userService->id]['duration'] = $userService->duration;
+            $data['services'][$userService->id]['default_rate'] = $userService->default_rate;
+            $data['services'][$userService->id]['currency'] = $userService->currency;
+            $data['services'][$userService->id]['assigned_services'][] = $userService;
         }
         if ($request->ajax() || $request->wantsJson()) {
             foreach ($organization->members as $member) {
-                $services = $member->member->services()->whereHas('parentService', function ($parentService) use ($organization) {
-                    $parentService->where('user_id', $organization->user_id);
+                $services = $member->member->services()->whereHas('parentService', function ($parentService) use ($organization, $serviceIDs) {
+                    $parentService->where('user_id', $organization->user_id)->whereIn('id', $serviceIDs);
                 })->get();
                 foreach ($services as $service) {
                     $data['services'][$service->parent_service_id]['id'] = $service->parentService->id;
@@ -82,7 +81,7 @@ class OrgranizationsService
             'user_id' => $authUser->id,
             'name' => $request->name,
             'slug' => $request->slug,
-            'show_user_services' => $request->show_user_services
+            'services' => $request->services,
         ]);
         $members_count = 0;
         foreach ($request->members as $member) {
@@ -133,7 +132,7 @@ class OrgranizationsService
         $organization->update([
             'name' => $request->name,
             'slug' => $request->slug,
-            'show_user_services' => $request->show_user_services ?? false,
+            'services' => $request->services,
         ]);
 
         return response($organization->load('members.member.memberUser', 'members.member.assignedServices'));

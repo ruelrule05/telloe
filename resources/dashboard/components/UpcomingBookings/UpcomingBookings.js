@@ -80,7 +80,7 @@ export default {
 
 		googleBookings(date) {
 			let now = dayjs(date).format('YYYY-MM-DD');
-			return this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now);
+			return this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
 		},
 
 		outlookBookings(date) {
