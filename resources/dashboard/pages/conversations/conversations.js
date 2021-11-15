@@ -25,7 +25,7 @@ export default {
 			helpcrunch.style.setProperty('visibility', 'hidden');
 		}
 	},
-	beforeDestroy: function() {
+	beforeDestroy: function () {
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'visible', 'important');
@@ -106,10 +106,7 @@ export default {
 
 		hideBanner() {
 			this.banner = false;
-			let expires =
-				dayjs()
-					.add(2, 'year')
-					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			let expires = dayjs().add(2, 'year').format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
@@ -145,7 +142,7 @@ export default {
 		},
 
 		toggleConversationList() {
-			if (this.isMobile) {
+			if (mobile()) {
 				this.isShowConversationList = !this.isShowConversationList;
 			}
 		}

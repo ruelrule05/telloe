@@ -15,6 +15,7 @@ use App\Models\Package;
 use App\Models\User;
 use App\Services\ContactService;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Mail;
 use Str;
@@ -179,6 +180,7 @@ class ContactController extends Controller
                 'last_name' => $existingUser->last_name,
                 'is_pending' => true,
                 'invite_token' => $invite_token,
+                'created_at' => Carbon::now()
             ];
         }
         // Add existing Users
@@ -206,6 +208,7 @@ class ContactController extends Controller
                 'last_name' => $contact['last_name'] ?? null,
                 'is_pending' => true,
                 'invite_token' => $invite_token,
+                'created_at' => Carbon::now()
             ];
         }
         // Add non existing users

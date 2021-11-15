@@ -81,7 +81,8 @@ class OrgranizationsService
         $organization = Organization::create([
             'user_id' => $authUser->id,
             'name' => $request->name,
-            'slug' => $request->slug
+            'slug' => $request->slug,
+            'show_user_services' => $request->show_user_services
         ]);
         $members_count = 0;
         foreach ($request->members as $member) {

@@ -31,7 +31,6 @@ export default {
 		newEvent: false,
 		googleCalendars: [],
 		googleCalendarEvents: [],
-		contactBookings: [],
 		timezone: '',
 		banner: false,
 		cookieItem: 'telloe_calendar_banner',
@@ -56,24 +55,12 @@ export default {
 			return this.bookingsTimezone(this.upcomingBookings);
 		},
 
-		contactBookingsTz() {
-			return this.bookingsTimezone(this.contactBookings);
-		},
-
 		calendarAttributes() {
 			let attributes = [];
 			this.bookings.forEach(booking => {
-				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
 				attributes.push({
 					customData: 'booking',
-					dates: bookingDate
-				});
-			});
-			this.contactBookings.forEach(booking => {
-				let bookingDate = this.dayjs(booking.date).format('YYYY-MM-DD');
-				attributes.push({
-					customData: 'booking',
-					dates: bookingDate
+					dates: booking.date
 				});
 			});
 
@@ -124,7 +111,7 @@ export default {
 	},
 
 	watch: {
-		view: function() {
+		view: function () {
 			this.$refs.toggleViewBtn.blur();
 		}
 	},
@@ -133,7 +120,6 @@ export default {
 		this.timezone = timezone.name();
 		this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookingsData();
-		this.getContactBookings();
 		this.getGoogleCalendars().then(response => {
 			this.googleCalendars = response.data
 				.filter(calendar => {
@@ -198,10 +184,7 @@ export default {
 
 		hideBanner() {
 			this.banner = false;
-			let expires =
-				dayjs()
-					.add(2, 'year')
-					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			let expires = dayjs().add(2, 'year').format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
@@ -220,11 +203,6 @@ export default {
 			this.loading = true;
 			await this.getUpcomingBookings();
 			this.loading = false;
-		},
-
-		async getContactBookings() {
-			let response = await axios.get('/bookings/contact');
-			this.contactBookings = response.data;
 		},
 
 		hasBooking(attributes) {
@@ -291,29 +269,21 @@ export default {
 		},
 
 		prevMonth() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.subtract(1, 'month')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).subtract(1, 'month').toDate();
 			this.$refs['v-calendar'].move(this.selectedDate);
 		},
 
 		nextMonth() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.add(1, 'month')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).add(1, 'month').toDate();
 			this.$refs['v-calendar'].move(this.selectedDate);
 		},
 
 		prevDate() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.subtract(1, 'day')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).subtract(1, 'day').toDate();
 		},
 
 		nextDate() {
-			this.selectedDate = dayjs(this.selectedDate)
-				.add(1, 'day')
-				.toDate();
+			this.selectedDate = dayjs(this.selectedDate).add(1, 'day').toDate();
 		},
 
 		bookingUpdated(booking) {
@@ -321,10 +291,6 @@ export default {
 				this.selectedBooking.date = dayjs(booking.date).format('YYYY-MM-DD');
 				this.selectedBooking.start = booking.start;
 				this.selectedBooking.end = booking.end;
-			}
-			let index = this.contactBookings.find(x => x.id == booking.id);
-			if (index >= 0) {
-				this.contactBookings[index] = booking;
 			}
 			this.selectedBooking = null;
 		},

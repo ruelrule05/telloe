@@ -12,6 +12,7 @@
 						<label>Event Type</label>
 						<VueSelect :disabled="disableServiceSelect" :options="servicesOptions" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service" dropPosition="w-full" clearable></VueSelect>
 						<v-date-picker
+							class="relative"
 							is-required
 							v-model="clonedBooking.date"
 							:masks="masks"
@@ -112,7 +113,7 @@
 								</div>
 
 								<div class="mt-4">
-									<v-date-picker :min-date="new Date()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.end_date" :masks="masks">
+									<v-date-picker class="relative" :min-date="new Date()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.end_date" :masks="masks">
 										<template v-slot="{ inputValue, inputEvents }">
 											<button type="button" class="input bg-white text-left" v-on="inputEvents">
 												<span class="text-muted text-sm mr-2">Until</span>
@@ -150,7 +151,7 @@
 							<div class="font-semibold">{{ clonedBooking.service.name }}</div>
 						</div>
 
-						<v-date-picker v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
+						<v-date-picker class="relative" v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
 							<template v-slot="{ inputValue, inputEvents }">
 								<label>Date</label>
 								<div class="input-prefix">

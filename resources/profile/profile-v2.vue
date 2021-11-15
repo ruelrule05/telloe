@@ -1,23 +1,22 @@
 <template>
-    <div>
-        <div class="text-center h-100 w-100 overflow-auto" v-if="ready">
+	<div>
+		<div class="text-center h-100 w-100 overflow-auto" v-if="ready">
 			<transition-group name="fade" tag="div">
-
 				<!-- Select service -->
 				<div class="container" v-if="!selectedServiceForTimeline" key="services">
 					<div class="row justify-content-center">
 						<div class="col-md-10 col-container">
 							<div class="bg-white shadow-sm rounded p-md-4 py-5 h-100 w-100">
-								<div class="profile-image d-inline-block bg-white mb-2" :style="{'background-image': `url(${$root.profile.profile_image})`}">
+								<div class="profile-image d-inline-block bg-white mb-2" :style="{ 'background-image': `url(${$root.profile.profile_image})` }">
 									<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
 								</div>
 								<h1 class="font-heading h3">{{ $root.profile.full_name }}</h1>
 
 								<div v-if="packages.length > 0" class="text-left mt-5 mb-n4 px-4">
 									<button class="btn px-4 py-3 rounded-0" :class="[tab == 'services' ? 'btn-primary' : 'btn-white border-bottom']" type="button" @click="tab = 'services'">SERVICES</button>
-									<button class="btn px-4 py-3 rounded-0 ml-2" type="button"  :class="[tab == 'packages' ? 'btn-primary' : 'btn-white border-bottom']" @click="tab = 'packages'">PACKAGES</button>
-								</div>	
-								
+									<button class="btn px-4 py-3 rounded-0 ml-2" type="button" :class="[tab == 'packages' ? 'btn-primary' : 'btn-white border-bottom']" @click="tab = 'packages'">PACKAGES</button>
+								</div>
+
 								<template v-cloak>
 									<!-- Services -->
 									<template v-if="tab == 'services'">
@@ -79,29 +78,27 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- Select coach/date/time -->
 				<div v-else-if="selectedServiceForTimeline && (!selectedDate || !selectedTimeslot)" class="position-absolute-center container selected-service-container" key="service">
 					<div class="row justify-content-center h-100">
 						<div class="col-md-12 col-container h-100">
-
 							<div class="d-flex align-items-center mb-3">
 								<button class="btn line-height-0 p-0 close float-none" type="button" @click="selectedServiceForTimeline = selectService = null"><arrow-left-icon width="30" height="30" transform="scale(1.2)"></arrow-left-icon></button>
 								<h4 class="mb-0 font-heading ml-3">{{ selectedServiceForTimeline.name }}</h4>
 							</div>
 							<div class="bg-white shadow-sm rounded selected-service text-left">
-
 								<!-- Date/time selection -->
 								<div class="pl-3 py-4">
 									<div class="pl-5 mb-4">
 										<div class="pl-2 d-flex align-items-center">
-											<v-date-picker :min-date="new Date()" :popover="{placement: 'bottom', visibility: 'click' }" v-model="selectedDate">
+											<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="selectedDate">
 												<button class="btn btn-white btn-sm p-1 badge-pill border"><calendar-day-alt-icon></calendar-day-alt-icon></button>
 											</v-date-picker>
 											<ul class="nav nav-pills ml-2">
 												<li class="nav-item" v-for="(tabDate, index) in tabDates" :key="index">
 													<span class="nav-link p-1 px-3 cursor-pointer" :class="[dayjs(dayjs(selectedDate).format('YYYY-MM-DD')).isSame(dayjs(tabDate.date).format('YYYY-MM-DD')) ? 'active' : 'text-body']" @click="selectedDate = tabDate.date">
-														<small class="text-gray-500" style="font-size:12px">{{ tabDate.name }}</small>
+														<small class="text-gray-500" style="font-size: 12px">{{ tabDate.name }}</small>
 														<div>{{ tabDate.label }}</div>
 													</span>
 												</li>
@@ -113,7 +110,7 @@
 									<div class="d-flex align-items-center">
 										<div class="coach-container pt-2">
 											<div class="coach text-center">
-												<div class="profile-image profile-image-xs bg-white" :style="{'background-image': `url(${$root.profile.profile_image})`}">
+												<div class="profile-image profile-image-xs bg-white" :style="{ 'background-image': `url(${$root.profile.profile_image})` }">
 													<span v-if="!$root.profile.profile_image">{{ $root.profile.initials }}</span>
 												</div>
 											</div>
@@ -128,14 +125,22 @@
 													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-1">
 														<div class="position-relative px-1 pb-1">
 															<template v-for="(availableTimeslot, index) in availableTimeslots(selectedServiceForTimeline, timeslot)">
-																<div v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, availableTimeslot)" :key="index" class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white" @click="selectedService = selectedServiceForTimeline; selectedTimeslot = availableTimeslot"><span class="text-nowrap">{{ convertTime(availableTimeslot.time, 'hh:mmA') }}</span></div>
+																<div
+																	v-tooltip.top="timezoneTooltip(selectedServiceForTimeline.user.timezone, availableTimeslot)"
+																	:key="index"
+																	class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white"
+																	@click="
+																		selectedService = selectedServiceForTimeline;
+																		selectedTimeslot = availableTimeslot;
+																	"
+																>
+																	<span class="text-nowrap">{{ convertTime(availableTimeslot.time, 'hh:mmA') }}</span>
+																</div>
 															</template>
 														</div>
 													</div>
 												</div>
-												<div v-else class="position-absolute-center text-muted">
-													No available timeslots
-												</div>
+												<div v-else class="position-absolute-center text-muted">No available timeslots</div>
 											</div>
 										</div>
 									</div>
@@ -144,7 +149,7 @@
 									<div v-for="assignedService in selectedServiceForTimeline.assigned_services" class="d-flex align-items-center mt-4" :key="assignedService.id">
 										<div class="coach-container pt-2">
 											<div class="coach text-center">
-												<div class="profile-image profile-image-xs bg-white" :style="{'background-image': `url(${assignedService.user.profile_image})`}">
+												<div class="profile-image profile-image-xs bg-white" :style="{ 'background-image': `url(${assignedService.user.profile_image})` }">
 													<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
 												</div>
 											</div>
@@ -160,14 +165,22 @@
 													<div v-for="(timeslot, index) in timeslots" :key="index" class="timeslot flex-1 border-right pt-1">
 														<div class="position-relative px-1 pb-1">
 															<template v-for="(availableTimeslot, index) in availableTimeslots(assignedService, timeslot)">
-																<div v-tooltip.top="timezoneTooltip(assignedService.user.timezone, availableTimeslot)" :key="index" class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white" @click="selectedService = assignedService;  selectedTimeslot = availableTimeslot"><span class="text-nowrap pointer-events-none">{{ convertTime(availableTimeslot.time, 'hh:mmA') }}</span></div>
+																<div
+																	v-tooltip.top="timezoneTooltip(assignedService.user.timezone, availableTimeslot)"
+																	:key="index"
+																	class="small py-1 bg-primary position-relative text-white cursor-pointer rounded border border-white"
+																	@click="
+																		selectedService = assignedService;
+																		selectedTimeslot = availableTimeslot;
+																	"
+																>
+																	<span class="text-nowrap pointer-events-none">{{ convertTime(availableTimeslot.time, 'hh:mmA') }}</span>
+																</div>
 															</template>
 														</div>
 													</div>
 												</div>
-												<div v-else class="position-absolute-center text-muted">
-													No available timeslots
-												</div>
+												<div v-else class="position-absolute-center text-muted">No available timeslots</div>
 											</div>
 										</div>
 									</div>
@@ -215,26 +228,26 @@
 												<template v-if="authAction == 'login'">
 													<h5 class="h4 font-heading mb-4">Log In</h5>
 													<div class="form-group mb-2">
-														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required>
+														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
 													</div>
 													<div class="form-group">
-														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required>
+														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
 													</div>
 													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-4 btn-block btn btn-primary">Log In & Book</vue-button>
 												</template>
 												<template v-else-if="authAction == 'signup'">
 													<h5 class="h4 font-heading mb-3">Create your account</h5>
 													<div class="form-group mb-2">
-														<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required>
+														<input type="text" v-model="loginForm.first_name" placeholder="First Name" class="form-control" data-required />
 													</div>
 													<div class="form-group mb-2">
-														<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required>
+														<input type="text" v-model="loginForm.last_name" placeholder="Last Name" class="form-control" data-required />
 													</div>
 													<div class="form-group mb-2">
-														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required>
+														<input type="email" v-model="loginForm.email" placeholder="Email" class="form-control" data-required />
 													</div>
 													<div class="form-group">
-														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required>
+														<input type="password" v-model="loginForm.password" placeholder="Password" class="form-control" data-required />
 													</div>
 													<vue-button type="submit" :loading="loginForm.loading" button_class="mt-2 btn-block btn btn-primary">Sign Up & Book</vue-button>
 												</template>
@@ -252,16 +265,13 @@
 
 											<div class="text-center text-danger position-absolute w-100">&nbsp;{{ authError }}&nbsp;</div>
 										</div>
-										<div>
-											
-										</div>
+										<div></div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</transition-group>
 		</div>
 
@@ -270,9 +280,6 @@
 				<div class="spinner-border text-primary" role="status"></div>
 			</div>
 		</div>
-
-
-
 
 		<modal ref="bookingModal" :close-button="false">
 			<div class="text-center booking-modal-progress position-relative">
@@ -289,7 +296,7 @@
 				</div>
 			</div>
 		</modal>
-    </div>
+	</div>
 </template>
 
 <script src="./profile.js"></script>

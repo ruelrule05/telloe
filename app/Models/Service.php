@@ -93,28 +93,17 @@ class Service extends BaseModel
         $holidays = $this->holidays;
         $user = User::findOrFail($this->user_id);
 
-        //$assignedServiceIds = $this->assignedServices()->pluck('id')->toArray();
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
         ->where('service_id', $this->attributes['id'])
         ->where('date', $dateString)->get());
 
-        //if (! array_search($dateString, $holidays) && $user) {
         $date = Carbon::parse($dateString, $this->timezone);
-        $days = json_decode($this->attributes['days'], true);
         $dayName = $date->format('l');
+        $days = json_decode($this->attributes['days'], true);
 
         $day = $days[$dayName];
-        //if ($day['isOpen']) {
-        $timeStart = $date->copy();
-        $timeEnd = $date->copy();
-
-        $partsStart = explode(':', $day['start']);
-        $timeStart->hour = $partsStart[0];
-        $timeStart->minute = $partsStart[1];
-
-        $partsEnd = explode(':', $day['end']);
-        $timeEnd->hour = $partsEnd[0];
-        $timeEnd->minute = $partsEnd[1];
+        $timeStart = Carbon::parse($dateString . ' ' . $day['start'], $this->timezone);
+        $timeEnd = Carbon::parse($dateString . ' ' . $day['end'], $this->timezone);
 
         $googleCalendarEvents = $user->google_calendar_events ?? [];
         $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
@@ -140,10 +129,11 @@ class Service extends BaseModel
                 }
             }
             $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
-            $bookings = $serviceBookings->filter(function ($booking) use ($user, $timeslot) {
+            $bookings = $serviceBookings->filter(function ($booking) use ($timeslot, $timeStart) {
                 $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
-                return $start <= $timeslot['time'] && $end >= $timeslot['time'];
+                $timeslotTime = Carbon::parse($timeStart->format('Y-m-d') . ' ' . $timeslot['time'], $booking->timezone)->setTimezone($this->timezone)->format('H:i');
+                return $start <= $timeslotTime && $end >= $timeslotTime;
             })
             ->all();
 

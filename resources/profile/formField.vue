@@ -11,7 +11,7 @@
 
 		<!-- Date -->
 		<div class="datepicker" v-else-if="field.type == 'date'">
-			<v-date-picker v-model="fieldValue" :popover="{ placement: 'bottom', visibility: 'click' }" :masks="masks">
+			<v-date-picker class="relative" v-model="fieldValue" :popover="{ placement: 'bottom', visibility: 'click' }" :masks="masks">
 				<template v-slot="{ inputValue, inputEvents }">
 					<input type="text" readonly v-on="inputEvents" :data-required="field.required" :placeholder="field.placeholder" :value="inputValue" />
 				</template>

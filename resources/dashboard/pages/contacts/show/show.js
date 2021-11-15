@@ -183,11 +183,11 @@ export default {
 		},
 
 		servicesList() {
-			let servicesList = [{ text: 'All', value: { id: 0 } }];
+			let servicesList = [{ text: 'All', value: 0 }];
 			this.services.forEach(service => {
 				servicesList.push({
 					text: service.name,
-					value: service
+					value: service.id
 				});
 			});
 			return servicesList;
@@ -233,21 +233,21 @@ export default {
 	},
 
 	watch: {
-		selectedBooking: function(value) {
+		selectedBooking: function (value) {
 			this.getServiceMembers(value);
 		},
-		'newBooking.service': function() {
+		'newBooking.service': function () {
 			this.newBooking.service_id = null;
 			this.newBooking.timeslot = null;
 			this.timeslots = [];
 		},
-		'newBooking.service_id': function() {
+		'newBooking.service_id': function () {
 			this.getNewBookingServiceTimeslots();
 		},
-		'newBooking.date': function() {
+		'newBooking.date': function () {
 			this.getNewBookingServiceTimeslots();
 		},
-		page: function() {
+		page: function () {
 			this.getContact();
 		}
 	},

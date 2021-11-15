@@ -61,7 +61,7 @@ export default {
 	}),
 
 	watch: {
-		date: function(value) {
+		date: function (value) {
 			this.getBookings({ date: dayjs(value).format('YYYY-MM-DD'), commit: false });
 		}
 	},
@@ -93,21 +93,6 @@ export default {
 				});
 			});
 
-			this.contactBookings.forEach(booking => {
-				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
-				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
-					color = 'bg-primary text-white';
-				}
-				parsedBookings.push({
-					booking: booking,
-					name: (booking.service || booking.booking_link).name,
-					start: `${booking.date} ${booking.start}`,
-					end: `${booking.date} ${booking.end}`,
-					category: 'bookings',
-					type: 'contact-booking',
-					color: color
-				});
-			});
 			this.googleCalendarEvents.forEach(event => {
 				if (!event.id.includes('telloebooking')) {
 					let calendarEvent = JSON.parse(JSON.stringify(event));
@@ -210,7 +195,7 @@ export default {
 		this.popupItem = this.$el;
 	},
 
-	beforeDestroy: function() {
+	beforeDestroy: function () {
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'visible', 'important');
@@ -290,9 +275,7 @@ export default {
 		},
 
 		setNewEvent(interval) {
-			let end = dayjs(`${interval.date} ${interval.time}`)
-				.add(1, 'hour')
-				.format('HH:mm');
+			let end = dayjs(`${interval.date} ${interval.time}`).add(1, 'hour').format('HH:mm');
 			this.newEvent = { date: interval.date, start: interval.time, end: end, timezone: this.timezone };
 			this.$emit('newEvent', JSON.parse(JSON.stringify(this.newEvent)));
 		}

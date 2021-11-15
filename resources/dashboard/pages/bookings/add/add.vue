@@ -65,7 +65,7 @@
 								<button class="btn btn-sm btn-white p-1" type="button" @click="previousWeek()">
 									<chevron-left-icon height="25" width="25" transform="scale(1.4)"></chevron-left-icon>
 								</button>
-								<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
+								<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
 									<template v-slot="{ inputValue, inputEvents }">
 										<button type="button" class="btn btn-white px-1 shadow-none rounded-0" v-on="inputEvents">{{ inputValue }}</button>
 									</template>
@@ -78,9 +78,7 @@
 						</div>
 
 						<div class="ml-auto" :class="{ 'hide-tooltip': selectedTimeslots.length > 0 }" v-tooltip.left="'Select at least one (1) timeslot'">
-							<button class="btn" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">
-								Continue
-							</button>
+							<button class="btn" :class="[selectedTimeslots.length == 0 ? 'disabled' : 'btn-white shadow-sm']" type="button" @click="summary()">Continue</button>
 						</div>
 					</div>
 
@@ -167,13 +165,7 @@
 																class="ml-auto"
 																@input="
 																	if (timeslot.is_recurring) {
-																		$set(
-																			timeslot,
-																			'end_date',
-																			dayjs(new Date())
-																				.add(1, 'week')
-																				.toDate()
-																		);
+																		$set(timeslot, 'end_date', dayjs(new Date()).add(1, 'week').toDate());
 																		$set(timeslot, 'frequency', recurringFrequencies[0].value);
 																		setTimeslotDefaultDay('week', timeslot);
 																	}
@@ -210,7 +202,7 @@
 													<vue-select dropdown_class="w-100" button_class="form-control" :options="daysInMonth(timeslot)" v-model="timeslot.day_in_month" label="On"></vue-select>
 												</div>
 												<div class="form-group mb-0">
-													<v-date-picker :min-date="new Date()" class="flex-grow-1" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.end_date" :masks="masks">
+													<v-date-picker :min-date="new Date()" class="flex-grow-1 relative" mode="date" :popover="{ placement: 'right', visibility: 'click' }" v-model="timeslot.end_date" :masks="masks">
 														<template v-slot="{ inputValue, inputEvents }">
 															<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
 																<span class="text-secondary mr-2">Until</span>
@@ -245,9 +237,7 @@
 							<div class="text-muted">{{ formatTime(booking.start) }} - {{ formatTime(booking.end) }}</div>
 						</div>
 						<div class="ml-auto dropdown">
-							<button class="btn btn-white shadow-none" type="button" data-toggle="dropdown">
-								Add to Calendar
-							</button>
+							<button class="btn btn-white shadow-none" type="button" data-toggle="dropdown">Add to Calendar</button>
 							<div class="dropdown-menu">
 								<a target="_blank" :href="booking.google_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Google Calendar</a>
 								<a target="_blank" :href="booking.outlook_link" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Outlook</a>

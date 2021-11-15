@@ -90,7 +90,8 @@ export default {
 			{ text: 'Billing', value: 'Billing' },
 			{ text: 'Payout', value: 'Payout' },
 			{ text: 'Notifications', value: 'Notifications' },
-			{ text: 'My Menu', value: 'My Menu' }
+			{ text: 'My Menu', value: 'My Menu' },
+			{ text: 'Log Out', value: 'Log Out' }
 		],
 		activeMenu: 'Profile',
 		selectedPlan: null,
@@ -119,11 +120,11 @@ export default {
 	}),
 
 	watch: {
-		'$route.query.tab': function(value) {
+		'$route.query.tab': function (value) {
 			this.tab = value;
 		},
 
-		'user.timezone': function() {
+		'user.timezone': function () {
 			this.user.dial_code = countryCodes.customArray(
 				{ text: '{countryCode}', value: '+{countryCallingCode}' },
 				{
@@ -132,6 +133,12 @@ export default {
 					}
 				}
 			)[0].value;
+		},
+		activeMenu: function (value) {
+			this.user = Object.assign({}, this.$root.auth);
+			if (value == 'Log Out') {
+				this.$refs.logoutForm.submit();
+			}
 		}
 	},
 
@@ -602,7 +609,7 @@ export default {
 		getCookieVal(name) {
 			const allCookies = document.cookie.split('; ');
 			var result = null;
-			allCookies.forEach(function(v) {
+			allCookies.forEach(function (v) {
 				if (v.indexOf(name + '=') !== -1) {
 					result = v.split('=')[1];
 					return false;

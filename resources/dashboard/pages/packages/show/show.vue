@@ -35,7 +35,7 @@
 			<!-- Services -->
 			<div class="px-6">
 				<div class="border-bottom py-4" :class="{ active: selectedService.id == service.id }" v-for="(service, index) in packageItem.services" :key="service.id">
-					<div class="flex items-center " :data-intro="index == 0 ? $root.intros.packages_show.steps[0] : null">
+					<div class="flex items-center" :data-intro="index == 0 ? $root.intros.packages_show.steps[0] : null">
 						<div>
 							<h6 class="mb-1 font-bold">{{ service.name }}</h6>
 							<span class="text-muted">Duration: {{ service.duration }} min</span>
@@ -67,12 +67,8 @@
 								<more-icon width="20" height="20" transform="scale(0.75)" class="fill-gray"></more-icon>
 							</button>
 							<div class="dropdown-menu">
-								<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/bookings/services/${service.id}`">
-									View Service
-								</router-link>
-								<span class="dropdown-item cursor-pointer" @click="removeAssignedService(service, index)">
-									Remove
-								</span>
+								<router-link class="dropdown-item cursor-pointer" tag="span" :to="`/dashboard/bookings/services/${service.id}`"> View Service </router-link>
+								<span class="dropdown-item cursor-pointer" @click="removeAssignedService(service, index)"> Remove </span>
 							</div>
 						</div>
 					</div>
@@ -102,7 +98,7 @@
 
 					<div class="mb-4">
 						<label>Expires on</label>
-						<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date" :masks="masks">
+						<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedPackage.expiration_date" :masks="masks">
 							<template v-slot="{ inputValue, inputEvents }">
 								<input type="text" readonly v-on="inputEvents" :value="inputValue" placeholder="Set expiration date" />
 							</template>

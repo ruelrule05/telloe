@@ -32,6 +32,8 @@ const mutations = {
 	update(state, data) {
 		let contact = state.index.find(x => x.id == data.id);
 		if (contact) Object.assign(contact, data);
+		contact = state.paginated.data.find(x => x.id == data.id);
+		if (contact) Object.assign(contact, data);
 	},
 
 	delete(state, data) {

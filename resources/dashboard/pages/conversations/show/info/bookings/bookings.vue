@@ -81,7 +81,7 @@
 							<button class="btn p-0 mr-n2" type="button" @click="adjustSlider(1)"><chevron-right-icon transform="scale(1.6)"></chevron-right-icon></button>
 						</div>
 
-						<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{ 'd-none': calendarView == 'week' }" class="v-calendar border" v-model="selectedBooking.date_object" is-expanded is-inline :min-date="new Date()" @input="dateSelected"> </v-date-picker>
+						<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{ 'd-none': calendarView == 'week' }" class="v-calendar border relative" v-model="selectedBooking.date_object" is-expanded is-inline :min-date="new Date()" @input="dateSelected"> </v-date-picker>
 
 						<strong class="my-2 d-block" :class="{ 'opacity-0': !selectedDate }">Select a timeslot</strong>
 						<div v-if="selectedDate" class="position-relative overflow-auto timeslots-container" :class="{ 'py-4': timeslotsLoading }">
@@ -183,7 +183,7 @@
 					<button class="btn p-0 mr-n2" type="button" @click="adjustSlider(1)"><chevron-right-icon transform="scale(1.6)"></chevron-right-icon></button>
 				</div>
 
-				<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{ 'd-none': calendarView == 'week' }" class="v-calendar border" v-model="selectedDate" is-expanded is-inline :min-date="new Date()" @input="dateSelected"> </v-date-picker>
+				<v-date-picker :select-attribute="selectAttribute" :disabled-dates="formattedHolidays" is-required :class="{ 'd-none': calendarView == 'week' }" class="v-calendar border relative" v-model="selectedDate" is-expanded is-inline :min-date="new Date()" @input="dateSelected"> </v-date-picker>
 
 				<strong class="my-2 d-block" :class="{ 'opacity-0': !selectedDate }">Select a timeslot</strong>
 				<div v-if="selectedDate" class="position-relative overflow-auto timeslots-container" :class="{ 'py-4': timeslotsLoading }">

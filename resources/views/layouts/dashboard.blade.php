@@ -21,12 +21,12 @@
 						<div class="lg:hidden text-black absolute top-5 right-5 z-20"  @click="notificationsOpen = false">
 							<close-icon class="fill-current w-4 h-4"></close-icon>
 						</div>
-						<template v-if="notifications.length > 0">
+						<template v-if="notifications.filter(x => !x.is_read).length > 0">
 							<div class="flex items-center text-sm p-3">
 								<h6 class="font-bold">New Notifications</h6>
 								{{-- <u class="text-blue-400 ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u> --}}
 							</div>
-							<div v-for="(notification, index) in notifications" v-if="!notification.is_read" class="cursor-pointer border-bottom hover:bg-gray-100 transition-colors" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
+							<div v-for="(notification, index) in notifications.filter(x => !x.is_read)" class="cursor-pointer border-bottom hover:bg-gray-100 transition-colors" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
 								<div class="text-sm p-3">
 									<div v-html="notification.description" class="leading-tight text-xs"></div>
 									<small class="text-muted">@{{ notification.created_at }}</small>
@@ -211,8 +211,8 @@
 							<a class="font-bold ml-0 md:ml-6" target="_blank" href="https://docs.telloe.com">Knowledge Base</a>
 						</div>
 						<div class="flex flex-col md:flex-row">
-							<a class="ml-0 md:ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>
-							<a class="ml-0 md:ml-6" target="_blank" href="/terms-of-service">Terms of Service</a>
+							<a class="font-bold ml-0 md:ml-6" target="_blank" href="/privacy-policy">Privacy Policy</a>
+							<a class="font-bold ml-0 md:ml-6" target="_blank" href="/terms-of-service">Terms of Service</a>
 						</div>
 					</div>
 				</div>

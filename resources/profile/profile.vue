@@ -150,7 +150,7 @@
 											<button type="button" @click="previousWeek()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
 
 											<div class="px-2">
-												<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
+												<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
 													<template v-slot="{ inputValue, inputEvents }">
 														<button type="button" class="uppercase font-semibold" v-on="inputEvents">
 															<span>{{ inputValue }}</span>
@@ -285,7 +285,7 @@
 													</div>
 
 													<div class="mt-4">
-														<v-date-picker :min-date="new Date()" class="input" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
+														<v-date-picker :min-date="new Date()" class="input relative" mode="date" :popover="{ placement: 'left', visibility: 'click' }" v-model="selectedTimeslot.end_date" :masks="masks">
 															<template v-slot="{ inputValue, inputEvents }">
 																<button type="button" class="d-flex align-items-center form-control" v-on="inputEvents">
 																	<span class="text-muted text-sm mr-2">Until</span>

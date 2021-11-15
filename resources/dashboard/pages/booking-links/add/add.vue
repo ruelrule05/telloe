@@ -42,7 +42,7 @@
 						<CloseIcon class="fill-current"></CloseIcon>
 					</div>
 				</div>
-				<v-date-picker :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
+				<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate">
 					<template v-slot="data">
 						<div class="bg-primary cursor-pointer mt-2 rounded-full p-2 text-white inline-block" v-on="data.inputEvents"><PlusIcon class="stroke-current"></PlusIcon></div>
 					</template>
@@ -50,7 +50,7 @@
 			</div>
 
 			<div class="relative">
-				<div v-if="timeslotsLoading" class="bg-white z-50 w-full h-full absolute-center py-36 ">
+				<div v-if="timeslotsLoading" class="bg-white z-50 w-full h-full absolute-center py-36">
 					<div class="absolute-center">
 						<div class="spinner spinner-sm"></div>
 					</div>
@@ -60,12 +60,14 @@
 						<table class="timeslots-table" cellspacing="0" cellpadding="0">
 							<tr>
 								<td></td>
-								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
-									<div class="text-center px-2 pb-2 bg-white">
-										<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-model="timeslot.is_available"></VueCheckbox>
-										<span v-if="timeslot.is_booked" class="text-xxs text-muted">Booked</span>
-									</div>
-								</td>
+								<template v-if="dates[selectedDate]">
+									<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
+										<div class="text-center px-2 pb-2 bg-white">
+											<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-model="timeslot.is_available"></VueCheckbox>
+											<span v-if="timeslot.is_booked" class="text-xxs text-muted">Booked</span>
+										</div>
+									</td>
+								</template>
 							</tr>
 
 							<!-- You -->
@@ -83,14 +85,15 @@
 										</div>
 									</div>
 								</td>
-
-								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
-									<div class="items-center column mb-2 px-1 bg-primary-ultralight">
-										<div class="timeslot-content selectable " :class="{ selected: timeslot.is_available }">
-											<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
+								<template v-if="dates[selectedDate]">
+									<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
+										<div class="items-center column mb-2 px-1 bg-primary-ultralight">
+											<div class="timeslot-content selectable" :class="{ selected: timeslot.is_available }">
+												<p class="text-center" v-html="timeslotTime(timeslot.time, $root.auth.timezone)"></p>
+											</div>
 										</div>
-									</div>
-								</td>
+									</td>
+								</template>
 							</tr>
 
 							<!-- Selected contacts -->
@@ -108,13 +111,15 @@
 										</div>
 									</div>
 								</td>
-								<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
-									<div class="items-center column  mb-2 px-1" :style="{ backgroundColor: contact.color }">
-										<div class="timeslot-content" :class="{ selected: timeslot.is_available }">
-											<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact_user.timezone)"></p>
+								<template v-if="dates[selectedDate]">
+									<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot" :class="{ disabled: !timeslot.is_available && timeslot.is_booked }">
+										<div class="items-center column mb-2 px-1" :style="{ backgroundColor: contact.color }">
+											<div class="timeslot-content" :class="{ selected: timeslot.is_available }">
+												<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact_user.timezone)"></p>
+											</div>
 										</div>
-									</div>
-								</td>
+									</td>
+								</template>
 							</tr>
 						</table>
 					</div>
