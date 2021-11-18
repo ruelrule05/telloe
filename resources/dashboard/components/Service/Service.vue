@@ -117,8 +117,16 @@
 										<timerangepicker no-label hide-clear-button @change="availableTimeChange($event, day)" :start="clonedService.days[day].start" :end="clonedService.days[day].end" class="mb-2"></timerangepicker>
 									</div>
 									<div class="w-full lg:w-1/2 pl-0 lg:pl-6">
-										<label>Break Time</label>
-										<timerangepicker no-label @change="breaktimeChange($event, day)" :start="clonedService.days[day].breaktimeStart" :end="clonedService.days[day].breaktimeEnd" class="mb-2"></timerangepicker>
+										<label>Break Times</label>
+										<div class="flex items-center w-full mb-2" v-for="(breaktime, index) in clonedService.days[day].breaktimes" :key="`breaktime-${index}`">
+											<div class="flex-grow">
+												<timerangepicker no-label @change="breaktimeChange($event, day, index)" :start="breaktime.start" :end="breaktime.end"></timerangepicker>
+											</div>
+											<div class="pl-1">
+												<div class="px-2 cursor-pointer" @click="clonedService.days[day].breaktimes.splice(index, 1)"><TrashIcon class="fill-current text-gray-600 w-3 h-3"></TrashIcon></div>
+											</div>
+										</div>
+										<small class="text-blue-400 cursor-pointer hover:underline" @click="addBreaktime(day)">+ Add breaktime</small>
 									</div>
 								</div>
 							</div>

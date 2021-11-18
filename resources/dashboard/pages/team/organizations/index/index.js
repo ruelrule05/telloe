@@ -151,7 +151,7 @@ export default {
 					/* eslint-disable */
 					let clonedOrganization = JSON.parse(JSON.stringify(org));
 					clonedOrganization.members.forEach(m => {
-						m.name = m.member.full_name;
+						m.name = m.member.member_user.full_name;
 					});
 					this.clonedOrganization = clonedOrganization;
 					this.$refs.editModal.show();

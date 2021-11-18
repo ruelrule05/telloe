@@ -105,9 +105,9 @@
 
 						<div class="mb-4">
 							<label>Add Members</label>
-							<multiselect v-model="newOrganization.members" label="name" track-by="name" :options="membersList" :showLabels="false" placeholder="" multiple>
+							<multiselect v-model="newOrganization.members" label="name" track-by="email" :options="membersList" :showLabels="false" placeholder="" multiple>
 								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-								<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
+								<span slot="noResult" class="text-muted text-sm">No members found.</span>
 							</multiselect>
 						</div>
 					</div>
@@ -153,9 +153,9 @@
 						<div class="mb-4 mb-1">
 							<label>Add Members</label>
 
-							<multiselect v-model="clonedOrganization.members" label="name" track-by="name" :options="membersList" :showLabels="false" placeholder="" multiple>
+							<multiselect v-model="clonedOrganization.members" label="name" track-by="email" :options="membersList" :showLabels="false" placeholder="" multiple>
 								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-								<span slot="noResult" class="text-muted text-sm">No contacts found.</span>
+								<span slot="noResult" class="text-muted text-sm">No members found.</span>
 							</multiselect>
 						</div>
 					</div>

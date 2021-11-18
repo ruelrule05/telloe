@@ -171,12 +171,14 @@ class Service extends BaseModel
             }
 
             $isBreaktime = false;
-            if (isset($this->days[$dayName]['breaktimeStart']) && isset($this->days[$dayName]['breaktimeEnd'])) {
-                $start = str_replace(':', '', $this->days[$dayName]['breaktimeStart']);
-                $end = str_replace(':', '', $this->days[$dayName]['breaktimeEnd']);
-                $time = str_replace(':', '', $timeslot['time']);
-                if ($time >= $start && $time <= $end) {
-                    $isBreaktime = true;
+            if (isset($this->days[$dayName]['breaktimes']) && is_array($this->days[$dayName]['breaktimes'])) {
+                foreach($this->days[$dayName]['breaktimes'] as $breaktime) {
+                    $start = str_replace(':', '', $breaktime['start']);
+                    $end = str_replace(':', '', $breaktime['end']);
+                    $time = str_replace(':', '', $timeslot['time']);
+                    if ($time >= $start && $time <= $end) {
+                        $isBreaktime = true;
+                    }
                 }
             }
             if ($day['isOpen'] && $timeStart->greaterThanOrEqualTo($now) && count($bookings) == 0 && count($googleEvents) == 0 && count($outlookEvents) == 0 && ! $isBreaktime && ! in_array($dateString, $holidays) && ! $timeslotBlocked) {
