@@ -172,12 +172,14 @@ class Service extends BaseModel
 
             $isBreaktime = false;
             if (isset($this->days[$dayName]['breaktimes']) && is_array($this->days[$dayName]['breaktimes'])) {
-                foreach($this->days[$dayName]['breaktimes'] as $breaktime) {
-                    $start = str_replace(':', '', $breaktime['start']);
-                    $end = str_replace(':', '', $breaktime['end']);
-                    $time = str_replace(':', '', $timeslot['time']);
-                    if ($time >= $start && $time <= $end) {
-                        $isBreaktime = true;
+                foreach ($this->days[$dayName]['breaktimes'] as $breaktime) {
+                    if (isset($breaktime['start']) && $breaktime['start'] && isset($breaktime['end']) && $breaktime['end']) {
+                        $start = str_replace(':', '', $breaktime['start']);
+                        $end = str_replace(':', '', $breaktime['end']);
+                        $time = str_replace(':', '', $timeslot['time']);
+                        if ($time >= $start && $time <= $end) {
+                            $isBreaktime = true;
+                        }
                     }
                 }
             }
