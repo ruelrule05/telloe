@@ -57,10 +57,7 @@ export default {
 
 		hideBanner() {
 			this.banner = false;
-			let expires =
-				dayjs()
-					.add(2, 'year')
-					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			let expires = dayjs().add(2, 'year').format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
@@ -81,7 +78,7 @@ export default {
 			this.newService.duration = 5;
 			this.newService.interval = 30;
 			this.newService.timezone = this.$root.auth.timezone;
-			this.newService.days = { Friday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Monday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Sunday: { end: '17:00', start: '08:00', isOpen: false, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Tuesday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Saturday: { end: '17:00', start: '08:00', isOpen: false, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Thursday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' }, Wednesday: { end: '17:00', start: '08:00', isOpen: true, breaktimeEnd: '13:00', breaktimeStart: '12:00' } };
+			this.newService.days = { Friday: { end: '17:00', start: '08:00', isOpen: true }, Monday: { end: '17:00', start: '08:00', isOpen: true }, Sunday: { end: '17:00', start: '08:00', isOpen: false }, Tuesday: { end: '17:00', start: '08:00', isOpen: true }, Saturday: { end: '17:00', start: '08:00', isOpen: false }, Thursday: { end: '17:00', start: '08:00', isOpen: true }, Wednesday: { end: '17:00', start: '08:00', isOpen: true } };
 		},
 
 		embedModal() {
