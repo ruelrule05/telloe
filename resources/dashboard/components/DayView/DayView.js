@@ -12,6 +12,7 @@ import Timerangepicker from '../../../components/timerangepicker/timerangepicker
 import CloseIcon from '../../../icons/close.vue';
 import timezoneTime from '../../../js/helpers/TimezoneTime.js';
 import OutlookIcon from '../../../icons/outlook.vue';
+import axios from 'axios';
 
 export default {
 	vuetify,
@@ -37,6 +38,10 @@ export default {
 		},
 		outlookCalendarEvents: {
 			type: Array
+		},
+
+		organization: {
+			type: Object
 		}
 	},
 
@@ -57,12 +62,13 @@ export default {
 		dayjs: dayjs,
 		newEvent: null,
 		timeslotToBlock: {},
-		timeToBlock: {}
+		timeToBlock: {},
+		organizationBookings: []
 	}),
 
 	watch: {
 		date: function (value) {
-			this.getBookings({ date: dayjs(value).format('YYYY-MM-DD'), commit: false });
+			this.getDayBookings({ date: dayjs(value).format('YYYY-MM-DD'), commit: false });
 		}
 	},
 
@@ -77,21 +83,39 @@ export default {
 
 		parsedBookings() {
 			let parsedBookings = [];
-			this.bookings.forEach(booking => {
-				let parsedBooking = JSON.parse(JSON.stringify(booking));
-				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
-				if (this.selectedBooking && this.selectedBooking.id == booking.id) {
-					color = 'bg-primary text-white';
-				}
-				parsedBookings.push({
-					booking: booking,
-					name: (booking.service || booking.booking_link).name,
-					start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
-					end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
-					category: 'bookings',
-					color: color
+			if (this.organization) {
+				this.organizationBookings.forEach(booking => {
+					let parsedBooking = JSON.parse(JSON.stringify(booking));
+					let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == parsedBooking.id) {
+						color = 'bg-primary text-white';
+					}
+					parsedBookings.push({
+						booking: parsedBooking,
+						name: parsedBooking.name,
+						start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
+						end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
+						category: 'bookings',
+						color: color
+					});
 				});
-			});
+			} else {
+				this.bookings.forEach(booking => {
+					let parsedBooking = JSON.parse(JSON.stringify(booking));
+					let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == booking.id) {
+						color = 'bg-primary text-white';
+					}
+					parsedBookings.push({
+						booking: booking,
+						name: (booking.service || booking.booking_link).name,
+						start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
+						end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
+						category: 'bookings',
+						color: color
+					});
+				});
+			}
 
 			this.googleCalendarEvents.forEach(event => {
 				if (!event.id.includes('telloebooking')) {
@@ -184,7 +208,7 @@ export default {
 	},
 
 	created() {
-		this.getBookings({ date: dayjs(this.date).format('YYYY-MM-DD'), commit: false });
+		this.getDayBookings({ date: dayjs(this.date).format('YYYY-MM-DD'), commit: false });
 	},
 
 	mounted() {
@@ -206,6 +230,18 @@ export default {
 		...mapActions({
 			getBookings: 'bookings/index'
 		}),
+
+		async getDayBookings(data) {
+			if (this.organization) {
+				data.organization_id = this.organization.id;
+				let response = await axios.get('/bookings', { params: data });
+				if (response) {
+					this.organizationBookings = response.data;
+				}
+			} else {
+				this.getBookings(data);
+			}
+		},
 
 		timeslotBlockChange(time, date) {
 			if (time.start && time.end) {
