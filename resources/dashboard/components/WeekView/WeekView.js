@@ -40,6 +40,9 @@ export default {
 		},
 		outlookCalendarEvents: {
 			type: Array
+		},
+		organization: {
+			type: Object
 		}
 	},
 
@@ -65,7 +68,8 @@ export default {
 		newEvent: null,
 		timeslotToBlock: {},
 		timeToBlock: {},
-		convertTime: convertTime
+		convertTime: convertTime,
+		organizationBookings: []
 	}),
 
 	watch: {
@@ -83,21 +87,39 @@ export default {
 
 		parsedBookings() {
 			let parsedBookings = [];
-			this.bookings.forEach(booking => {
-				let parsedBooking = JSON.parse(JSON.stringify(booking));
-				let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
-				if (this.selectedBooking && this.selectedBooking.id == parsedBooking.id) {
-					color = 'bg-primary text-white';
-				}
-				parsedBookings.push({
-					booking: parsedBooking,
-					name: parsedBooking.name,
-					start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
-					end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
-					category: 'bookings',
-					color: color
+			if (this.organization) {
+				this.organizationBookings.forEach(booking => {
+					let parsedBooking = JSON.parse(JSON.stringify(booking));
+					let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == parsedBooking.id) {
+						color = 'bg-primary text-white';
+					}
+					parsedBookings.push({
+						booking: parsedBooking,
+						name: parsedBooking.name,
+						start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
+						end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
+						category: 'bookings',
+						color: color
+					});
 				});
-			});
+			} else {
+				this.bookings.forEach(booking => {
+					let parsedBooking = JSON.parse(JSON.stringify(booking));
+					let color = 'bg-primary-ultralight hover:bg-primary-light hover:text-white';
+					if (this.selectedBooking && this.selectedBooking.id == parsedBooking.id) {
+						color = 'bg-primary text-white';
+					}
+					parsedBookings.push({
+						booking: parsedBooking,
+						name: parsedBooking.name,
+						start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
+						end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
+						category: 'bookings',
+						color: color
+					});
+				});
+			}
 
 			this.googleCalendarEvents.forEach(event => {
 				if (!event.id.includes('telloebooking')) {
@@ -286,13 +308,22 @@ export default {
 			}
 		},
 
-		getWeekBookings() {
+		async getWeekBookings() {
 			if (this.$refs.calendar) {
-				this.getBookings({
+				let data = {
 					from: this.$refs.calendar.lastStart.date,
 					to: this.$refs.calendar.lastEnd.date,
 					commit: false
-				});
+				};
+				if (this.organization) {
+					data.organization_id = this.organization.id;
+					let response = await axios.get('/bookings', { params: data });
+					if (response) {
+						this.organizationBookings = response.data;
+					}
+				} else {
+					this.getBookings(data);
+				}
 			}
 		},
 

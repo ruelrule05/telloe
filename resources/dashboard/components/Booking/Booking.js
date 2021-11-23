@@ -44,6 +44,10 @@ export default {
 		service: {
 			type: Object,
 			default: null
+		},
+		organization: {
+			type: Object,
+			default: null
 		}
 	},
 
@@ -126,8 +130,34 @@ export default {
 			if (this.member) {
 				services = this.member.assigned_services;
 			}
+			if (this.organization) {
+				let clonedMembers = JSON.parse(JSON.stringify(this.organization.members));
+				let organizationServices = [];
+				clonedMembers.forEach(member => {
+					member.member.assigned_services.forEach(service => {
+						if (!organizationServices.find(x => x.parent_service_id == service.parent_service_id)) {
+							service.id = service.parent_service_id;
+							organizationServices.push(service);
+						}
+					});
+				});
+				services = organizationServices;
+			}
 			return services.map(service => {
 				return { text: service.name, value: service.id };
+			});
+		},
+
+		membersOptions() {
+			let membersOptions = [];
+			if (this.organization) {
+				membersOptions = JSON.parse(JSON.stringify(this.organization.members));
+				membersOptions = membersOptions.filter(member => {
+					return member.member.assigned_services.find(x => x.parent_service_id == this.clonedBooking.service);
+				});
+			}
+			return membersOptions.map(member => {
+				return { text: member.member.full_name, value: member.id };
 			});
 		},
 
@@ -203,13 +233,23 @@ export default {
 			}
 			if (this.newEvent) {
 				if (service) {
-					let serviceOption = services.find(x => x.id == service);
+					let serviceOption = null;
+					if (this.organization) {
+						this.organization.members.forEach(member => {
+							member.member.assigned_services.forEach(assignedService => {
+								if (assignedService.parent_service_id == service) {
+									serviceOption = assignedService;
+								}
+							});
+						});
+					} else {
+						serviceOption = services.find(x => x.id == service);
+					}
 					let start = dayjs(`${this.clonedBooking.date} ${this.clonedBooking.start}`);
 					this.clonedBooking.end = start.add(serviceOption.duration, 'minute').format('HH:mm');
 					this.$set(this.clonedBooking, 'service', service);
-					let serviceData = services.find(x => x.id == service);
-					if (serviceData) {
-						serviceData.types.forEach(sd => {
+					if (serviceOption) {
+						serviceOption.types.forEach(sd => {
 							meetingTypes.push({
 								text: sd.type,
 								value: sd.type
@@ -470,7 +510,16 @@ export default {
 			}
 			this.loading = true;
 			let data = JSON.parse(JSON.stringify(this.clonedBooking));
-			data.service_id = data.service;
+			if (this.organization) {
+				let organizationMember = this.organization.members.find(member => (member.id = data.member));
+				organizationMember.member.assigned_services.forEach(assignedService => {
+					if (assignedService.parent_service_id == data.service) {
+						data.service_id = assignedService.id;
+					}
+				});
+			} else {
+				data.service_id = data.service;
+			}
 			data.contact_ids = this.selectedContacts.filter(x => x.type == 'contact').map(x => x.id);
 			if (this.contact) {
 				data.contact_ids.push(this.contact.id);

@@ -1,180 +1,90 @@
 <template>
-	<div v-if="organization" class="w-100 h-100 overflow-hidden">
-		<div class="overflow-auto h-100">
-			<div class="p-3 d-flex align-items-center">
-				<button class="btn p-1 btn-white badge-pill shadow-sm" type="button" @click="$router.push('/dashboard/team/organizations')">
-					<arrow-left-icon width="30" height="30"></arrow-left-icon>
-				</button>
-
-				<div class="ml-auto">
+	<div v-if="organization" class="min-h-full flex flex-col overflow-x-hidden">
+		<div class="flex items-center border-bottom lg:static fixed w-full bg-white z-10" :class="{ 'flex-col lg:flex-row': !overview }">
+			<div class="content-header" :class="{ 'calendar-header': !overview }">
+				<div class="flex items-center">
+					<router-link to="/dashboard/team/organizations" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
+					<div v-if="overview" class="ml-7 lg:ml-0 absolute md:static top-7">ORGANIZATION: {{ organization.name }}</div>
 					<button
-						class="btn p-1 btn-white badge-pill shadow-sm"
+						v-else
 						type="button"
+						class="btn btn-md btn-outline-primary absolute lg:static top-6 lg:left-12 right-3 left-auto"
 						@click="
-							clonedOrganization = Object.assign({}, organization);
-							$refs['editModal'].show();
+							overview = true;
+							$refs.bookingComponent.close();
+							showCalendarMobile = false;
 						"
 					>
-						<pencil-icon width="30" height="30" transform="scale(0.75)"></pencil-icon>
+						<span>OVERVIEW</span>
 					</button>
 				</div>
 			</div>
-			<div class="h-20 lg:hidden block" />
+			<div class="ml-auto px-5 md:pr-3 flex items-center">
+				<div class="ml-0 md:ml-2 flex calendar-buttons__header absolute md:static md:pb-4 bottom-3 right-3" v-if="!overview">
+					<button type="button" class="btn btn-md btn-outline-primary" ref="toggleViewBtn" @click="toggleView">
+						<span>{{ weekToggleText }}</span>
+					</button>
+					<div class="button-date-nav ml-2">
+						<button type="button" @click="prevDate()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
 
-			<div class="text-center">
-				<h1 class="font-heading h3 mb-1">{{ organization.name }}</h1>
-				<a :href="`/${organization.slug}`" target="_blank" class="d-inline-flex align-items-center text-decoration-dark">
-					<span class="text-muted mr-1">{{ organization.slug }}</span>
-					<shortcut-icon height="14" width="14" class="fill-gray"></shortcut-icon>
-				</a>
-			</div>
+						<div class="px-2">
+							<v-date-picker class="relative" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="selectedDate" :masks="masks">
+								<template v-slot="{ inputValue, inputEvents }">
+									<button type="button" class="uppercase font-semibold" v-on="inputEvents">
+										<span>{{ inputValue }}</span>
+									</button>
+								</template>
+							</v-date-picker>
+						</div>
 
-			<div class="container mt-5">
-				<div class="row pt-3 px-2">
-					<template v-if="organization.members.length > 0">
-						<div v-for="member in organization.members" :key="member.id" class="col-md-4 member px-2">
-							<div class="px-1">
-								<div class="bg-white rounded p-3 shadow-sm text-cenxter position-relative">
-									<div class="dropdown position-top-right mr-2 mt-1 btn-more">
-										<button class="btn btn-sm btn-white bg-white p-1 line-height-0 shadow-none" type="button" data-toggle="dropdown" data-offset="-132, 0">
-											<more-icon width="20" height="20" class="fill-gray-500" transform="scale(1.3)"></more-icon>
-										</button>
-										<div class="dropdown-menu">
-											<router-link :to="`/dashboard/team/members/${member.member.id}`" class="dropdown-item d-flex align-items-center px-2 cursor-pointer">Manage Member</router-link>
-											<span
-												class="dropdown-item d-flex align-items-center px-2 cursor-pointer"
-												@click="
-													selectedMember = member;
-													$refs['deleteModal'].show();
-												"
-												>Remove</span
-											>
-										</div>
-									</div>
-									<div class="mt-n3">
-										<div
-											class="user-profile-image user-profile-image-sm d-inline-block mb-2 mt-n4"
-											:style="{
-												backgroundImage: 'url(' + member.member.member_user.profile_image + ')'
-											}"
-										>
-											<span v-if="!member.member.member_user.profile_image">{{ member.member.member_user.initials }}</span>
-										</div>
-									</div>
-									<h5 class="font-heading mb-0">{{ member.member.member_user.full_name }}</h5>
-									<small class="text-gray">{{ member.member.member_user.email }}</small>
-									<div class="d-flex align-items-center mt-3">
-										<package-icon width="17" height="17" fill="#888"></package-icon>
-										<span class="ml-2">{{ member.member.assigned_services.length }} assigned services</span>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-4 member px-2">
-							<div class="px-1 h-100">
-								<div class="position-relative h-100">
-									<div class="h-100 position-relative">
-										<button :data-intro="$root.intros.add_service.intro" :data-step="$root.intros.add_service.step" class="py-5 btn btn-light btn-add btn-lg shadow-none d-flex line-height-0 align-items-center justify-content-center w-100 h-100 text-muted" type="button" @click="$refs['addMemberModal'].show()">
-											<plus-icon class="fill-gray"></plus-icon>
-											Add Member
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</template>
-
-					<div v-else class="position-absolute-center text-center">
-						<div class="h6 mb-3 font-weight-normal text-secondary">
-							This organization does not have any members yet.
-						</div>
-						<button class="btn btn-white d-inline-flex align-items-center shadow-sm" type="button" @click="$refs['addMemberModal'].show()">Add Member</button>
+						<button type="button" @click="nextDate()"><ArrowRightIcon class="fill-current"></ArrowRightIcon></button>
+					</div>
+				</div>
+				<div v-else>
+					<div class="border p-3 border-primary rounded-full block md:hidden" :class="{ 'bg-primary': showCalendarMobile }" @click="showCalendarMobile = !showCalendarMobile">
+						<CalendarIcon class="fill-current text-primary" :class="{ 'text-white': showCalendarMobile }"></CalendarIcon>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="lg:hidden block" :class="overview ? 'h-20' : 'h-28 md:h-32'" />
 
-		<modal ref="editModal" :close-button="false">
-			<h5 class="font-heading">Edit Organization</h5>
-			<vue-form-validate
-				@submit="
-					$refs['editModal'].hide();
-					updateOrganization(clonedOrganization).then(data => (organization = data));
-				"
-			>
-				<div class="form-group mb-1">
-					<label class="form-label">Organization Name</label>
-					<input type="text" class="form-control" v-model="clonedOrganization.name" data-required />
-					<small class="text-muted">{{ slugify(clonedOrganization.name, { lower: true, strict: true }) }}</small>
-				</div>
-				<div class="d-flex mt-3">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
-					</button>
-					<button class="btn btn-primary ml-auto" type="submit">
-						Save
-					</button>
-				</div>
-			</vue-form-validate>
-		</modal>
+		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
+			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
+		</div>
 
-		<modal ref="addMemberModal" :close-button="false">
-			<vue-form-validate @submit="addMembers">
-				<h5 class="font-heading">Add Members</h5>
-				<div class="form-group mb-1">
-					<vue-select v-model="newMembers" :options="membersList" :required="true" multiple placeholder="Select members"></vue-select>
+		<div v-if="overview" class="flex flex-grow">
+			<div class="w-full lg:w-1/2 flex-grow" :class="!showCalendarMobile ? 'block' : 'hidden'">
+				<UpcomingBookings :timezone="timezone" :loading="loading" :bookings="upcomingBookingsTz" :googleCalendarEvents="googleCalendarEvents" :outlookCalendarEvents="outlookCalendarEvents" @eventClick="upcomingEventClick"></UpcomingBookings>
+			</div>
+			<div class="w-full lg:w-1/2 py-6 px-3 border-left calendar-container hidden md:block" :class="{ open: showCalendarMobile }">
+				<div>
+					<v-calendar class="v-calendar" is-expanded :attributes="calendarAttributes" :now="selectedDate" ref="v-calendar" :masks="{ weekdays: 'WWW' }">
+						<div slot="day-content" slot-scope="data">
+							<div class="day-content text-center">
+								<div class="day-label" :data-date="data.day.date" :class="{ active: selectedDate && selectedDate.toString() == data.day.date.toString(), 'is-today': data.day.isToday }" @click="dayClick(data.day.date)">
+									<span>{{ data.day.label }}</span>
+									<div v-if="data.attributes" class="flex items-center vc-badge-container">
+										<div class="vc-badge bg-primary" v-if="hasBooking(data.attributes)"></div>
+										<div class="vc-badge bg-red-500" v-if="hasGoogleEvent(data.attributes)"></div>
+										<div class="vc-badge bg-blue-500" v-if="hasOutlookEvent(data.attributes)"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</v-calendar>
 				</div>
+			</div>
+		</div>
 
-				<div v-for="(member, index) in newMembers" :key="member.id" class="rounded bg-light p-2 d-flex align-items-center mb-1">
-					<div
-						class="user-profile-image user-profile-image-sm"
-						:style="{
-							backgroundImage: 'url(' + member.member_user.profile_image + ')'
-						}"
-					>
-						<span v-if="!member.member_user.profile_image">{{ member.member_user.initials }}</span>
-					</div>
-					<div class="pl-2 flex-grow-1">
-						<h6 class="mb-0 font-heading">{{ member.member_user.full_name }}</h6>
-						<small class="text-secondary">{{ member.member_user.email }}</small>
-					</div>
-					<div class="align-self-start">
-						<button class="btn btn-sm p-0 line-height-0 mr-n1 mt-n1" type="button" @click="newMembers.splice(index, 1)">
-							<close-icon height="20" width="20"></close-icon>
-						</button>
-					</div>
-				</div>
+		<div v-else>
+			<DayView :organization="organization" ref="dayView" v-if="view == 'day'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-daily"></DayView>
+			<WeekView ref="weekView" :organization="organization" v-else-if="view == 'week'" :date="selectedDate" :selectedBooking="selectedBooking" @eventClick="eventClick" @newEvent="newEventClick" :googleCalendarEvents="googleCalendarEvents" :outlookCalendarEvents="outlookCalendarEvents" :timezone="timezone" class="calendar-week"></WeekView>
+		</div>
 
-				<div class="d-flex mt-3">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
-					</button>
-					<button class="btn btn-primary ml-auto" type="submit">
-						Add Members
-					</button>
-				</div>
-			</vue-form-validate>
-		</modal>
-
-		<modal ref="deleteModal" :close-button="false">
-			<template v-if="selectedMember">
-				<h5 class="font-heading text-center">Remove Member</h5>
-				<p class="text-center mt-3">
-					Are you sure to remove <strong>{{ selectedMember.member.member_user.full_name }}</strong> from this organization?
-				</p>
-				<div class="d-flex">
-					<button class="btn btn-light shadow-none" type="button" data-dismiss="modal">
-						Cancel
-					</button>
-					<button class="btn btn-danger ml-auto" type="button" @click="deleteMember()">
-						Remove
-					</button>
-				</div>
-			</template>
-		</modal>
+		<Booking :booking="selectedBooking" :organization="organization" @store="bookingsStore" :newEvent="newEvent" @update="bookingUpdated" @close="bookingClosed" @newBookingChange="newBookingChange" ref="bookingComponent" class="calendar-booking"></Booking>
 	</div>
 </template>
 
 <script src="./show.js"></script>
-
-<style lang="scss" scoped src="./show.scss"></style>
+<style src="./show.scss" lang="scss"></style>

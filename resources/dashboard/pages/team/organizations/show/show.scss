@@ -1,0 +1,118 @@
+.calendar-container {
+	.v-calendar {
+		@apply h-full border-0;
+		.vc-header {
+			@apply mb-4 pt-0;
+		}
+		.vc-arrows-container {
+			@apply pt-0;
+		}
+		.vc-title {
+			font-family: 'Avenir Next';
+			font-size: 24px;
+		}
+		.day-content {
+			position: relative;
+			.day-label {
+				@apply border font-sans border-gray-200 font-bold rounded-full text-sm my-4 text-muted transition-colors hover:text-white hover:bg-primary;
+				position: relative;
+				display: inline-block;
+				vertical-align: middle;
+				cursor: pointer;
+				position: relative;
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+
+				&.is-today {
+					@apply text-white bg-primary ring-4 ring-gray-200;
+				}
+				span {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					z-index: 1;
+				}
+			}
+
+			.vc-badge-container {
+				position: absolute;
+				left: 50%;
+				bottom: -14px;
+				transform: translateX(-50%);
+				z-index: 1;
+				.vc-badge {
+					width: 6px;
+					height: 6px;
+					color: white;
+					font-size: 10px;
+					border-radius: 50%;
+					font-weight: 400;
+					pointer-events: none;
+					line-height: 1;
+					text-align: center;
+					margin: 0 1px;
+				}
+			}
+		}
+		.vc-pane-container,
+		.vc-grid-container.grid,
+		.vc-w-full.vc-relative,
+		.vc-pane {
+			height: 100%;
+		}
+		.vc-weeks {
+			@apply p-0;
+		}
+		.vc-weekday {
+			@apply uppercase font-serif text-xs;
+		}
+		.vc-dots {
+			@apply hidden;
+		}
+	}
+	&.open {
+		display: block !important;
+	}
+}
+.calendar-header {
+	@media (max-width: 767px) {
+		@apply h-28;
+	}
+}
+.calendar-buttons__header {
+	@media (max-width: 425px) {
+		.btn-md {
+			font-size: 9px;
+		}
+		.button-date-nav {
+			font-size: 9px;
+		}
+		button {
+			@apply py-0;
+		}
+	}
+	@media (max-width: 320px) {
+		.btn-md {
+			padding: 0 12px;
+		}
+		.button-date-nav {
+			button {
+				padding: 0 4px;
+			}
+			div {
+				padding: 0 2px;
+			}
+		}
+		button {
+			@apply whitespace-pre;
+		}
+	}
+}
+.calendar-booking {
+	@apply z-40;
+	@media (max-width: 425px) {
+		width: 100% !important;
+	}
+}

@@ -99,8 +99,8 @@ const actions = {
 		window.axios.post(`/${name}/${data.id}/assign_to_member`, data);
 	},
 
-	async getUpcomingBookings({ commit }) {
-		let response = await window.axios.get('/bookings/upcoming');
+	async getUpcomingBookings({ commit }, data) {
+		let response = await window.axios.get('/bookings/upcoming', { params: data });
 		if (response) {
 			commit('getUpcomingBookings', response.data);
 		}

@@ -14,6 +14,7 @@ use App\Models\Booking;
 use App\Models\BookingUser;
 use App\Models\Contact;
 use App\Models\Notification;
+use App\Models\Organization;
 use App\Models\Service;
 use Auth;
 use Carbon\Carbon;
@@ -32,22 +33,36 @@ class BookingService
 
     public static function index(IndexBookingRequest $request)
     {
+        $authUser = Auth::user();
         $bookings = [];
-
-        $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])->whereHas('service', function ($service) {
-            $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
-                $parentService->where('user_id', Auth::user()->id);
-            });
-        })->orWhereHas('bookingLink', function ($bookingLink) {
-            $bookingLink->where('user_id', Auth::user()->id);
-        })->has('service')->orHas('bookingLink');
+        if ($request->organization_id) {
+            $organization = Organization::with('members.member.assignedServices')
+            ->where('id', $request->organization_id)
+            ->where('user_id', $authUser->id)
+            ->firstOrFail();
+            $memberServiceIds = [];
+            foreach ($organization->members as $member) {
+                foreach ($member->member->assignedServices as $memberService) {
+                    $memberServiceIds[] = $memberService->id;
+                }
+            }
+            $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
+                ->whereIn('service_id', $memberServiceIds)
+                ->has('service');
+        } else {
+            $bookings = Booking::whereHas('service', function ($service) {
+                $service->where('user_id', Auth::user()->id);
+            })->orWhereHas('bookingLink', function ($bookingLink) {
+                $bookingLink->where('user_id', Auth::user()->id);
+            })->has('service')->orHas('bookingLink');
+            $bookings = $bookings->with('bookingNote', 'service.assignedServices', 'service.parentService.assignedServices', 'bookingUsers.user', 'bookingLink')->orderBy('date', 'DESC');
+        }
 
         if ($request->date) {
             $bookings = $bookings->where('date', $request->date);
         } elseif ($request->from && $request->to) {
             $bookings = $bookings->whereBetween('date', [$request->from, $request->to]);
         }
-        $bookings = $bookings->with('bookingNote', 'service.assignedServices', 'service.parentService.assignedServices')->orderBy('date', 'DESC');
         if ($request->paginate) {
             $bookings = $bookings->paginate(20);
         } else {
@@ -529,27 +544,45 @@ class BookingService
         return $booking;
     }
 
-    public static function upcoming()
+    public static function upcoming(Request $request)
     {
         $authUser = Auth::user();
+
         $tomorrow = Carbon::now()->addDay(1)->format('Y-m-d');
         $daysAgo = Carbon::now()->subDays(5)->format('Y-m-d');
-        $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
-        ->whereHas('service', function ($service) {
-            $service->where('user_id', Auth::user()->id)->orWhereHas('parentService', function ($parentService) {
-                $parentService->where('user_id', Auth::user()->id);
-            });
-        })
-        ->orWhereHas('bookingLink', function ($bookingLink) {
-            $bookingLink->where('user_id', Auth::user()->id);
-        })
-        ->orWhereHas('bookingUsers.user', function ($user) use ($authUser) {
-            $user->where('id', $authUser->id);
-        })
-        ->has('service')
-        ->orHas('bookingLink')
-        ->whereBetween('date', [$daysAgo, $tomorrow])
-        ->get();
+        $bookings = [];
+        if ($request->organization_id) {
+            $organization = Organization::with('members.member.assignedServices')
+            ->where('id', $request->organization_id)
+            ->where('user_id', $authUser->id)
+            ->firstOrFail();
+            $memberServiceIds = [];
+            foreach ($organization->members as $member) {
+                foreach ($member->member->assignedServices as $memberService) {
+                    $memberServiceIds[] = $memberService->id;
+                }
+            }
+            $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
+                ->whereIn('service_id', $memberServiceIds)
+                ->has('service')
+                ->whereBetween('date', [$daysAgo, $tomorrow])
+                ->get();
+        } else {
+            $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
+                ->whereHas('service', function ($service) use ($authUser) {
+                    $service->where('user_id',$authUser->id);
+                })
+                ->orWhereHas('bookingLink', function ($bookingLink) use ($authUser) {
+                    $bookingLink->where('user_id', $authUser->id);
+                })
+                ->orWhereHas('bookingUsers.user', function ($user) use ($authUser) {
+                    $user->where('id', $authUser->id);
+                })
+                ->has('service')
+                ->orHas('bookingLink')
+                ->whereBetween('date', [$daysAgo, $tomorrow])
+                ->get();
+        }
 
         return $bookings;
     }

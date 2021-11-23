@@ -41,9 +41,9 @@ class BookingController extends Controller
         return BookingService::downloadIcs($request);
     }
 
-    public function upcoming()
+    public function upcoming(Request $request)
     {
-        return BookingService::upcoming();
+        return BookingService::upcoming($request);
     }
 
     public function contactBookings()
