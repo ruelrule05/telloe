@@ -291,7 +291,6 @@ class UserService
             $formData = json_encode($formData);
         }
 
-        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         foreach ($request->timeslots as $timeslot) {
             $start = Carbon::parse("{$timeslot['date']['format']} {$timeslot['timeslot']['time']}", $request->timezone);
             $end = $start->copy()->add('minute', $service->duration);
@@ -304,7 +303,7 @@ class UserService
                     $zoomLink = $type['data'];
                 }
             }
-            $booking = self::createBooking($service, [
+            $data = [
                 'service_id' => $service->id,
                 'date' => $timeslot['date']['format'],
                 'start' => $start->format('H:i'),
@@ -314,68 +313,13 @@ class UserService
                 'form_data' => $formData,
                 'timezone' => $request->timezone,
                 'zoom_link' => $zoomLink
-            ], $customer, $guest, $request);
-
+            ];
             if (isset($timeslot['is_recurring']) && isset($timeslot['frequency']) && isset($timeslot['end_date']) && isset($timeslot['days'])) {
-                $timeslotDayName = Carbon::parse($timeslot['date']['format'], $request->timezone)->format('l');
-                $currentDate = Carbon::parse($timeslot['date']['format'], $request->timezone)->addDay(1);
-                $endDate = Carbon::parse($timeslot['end_date'], $request->timezone);
-                $weekOfMonth = 0;
-                if (isset($timeslot['day_in_month'])) {
-                    switch ($timeslot['day_in_month']) {
-                    case 'first_week':
-                        $weekOfMonth = 1;
-                        break;
-                    case 'second_week':
-                        $weekOfMonth = 2;
-                        break;
-                    case 'third_week':
-                        $weekOfMonth = 3;
-                        break;
-                    case 'las_week':
-                        $weekOfMonth = 4;
-                        break;
-                }
-                }
-                while ($currentDate->lessThan($endDate)) {
-                    $createBooking = false;
-                    if ($timeslot['frequency'] == 'week') {
-                        $dayIndex = array_search($currentDate->clone()->format('l'), $days);
-                        if (in_array($dayIndex, $timeslot['days'])) {
-                            $createBooking = true;
-                        }
-                    } elseif ($timeslot['frequency'] == 'month' && isset($timeslot['day_in_month'])) {
-                        $dayName = $currentDate->clone()->format('l');
-                        if ($dayName == $timeslotDayName && $weekOfMonth == $currentDate->clone()->weekOfMonth) {
-                            $createBooking = true;
-                        }
-                    }
-                    if ($createBooking) {
-                        $recurringBooking = self::createBooking($service, [
-                            'service_id' => $service->id,
-                            'date' => $currentDate->clone()->format('Y-m-d'),
-                            'start' => $start->format('H:i'),
-                            'end' => $end->format('H:i'),
-                            'meeting_type' => $timeslot['type'],
-                            'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
-                            'form_data' => $formData,
-                            'timezone' => $request->timezone
-                        ], $customer, $guest, $request);
-                        if ($recurringBooking) {
-                            //$bookings[] = $recurringBooking;
-                            $booking->recurring = true;
-                            $booking->until = Carbon::parse($recurringBooking->date, $request->timezone)->format('M d, Y');
-                            if (! $booking->recurring_days) {
-                                $booking->recurring_days = [];
-                            }
-                            $recurringDays = $booking->recurring_days;
-                            $recurringDays[] = Carbon::parse($recurringBooking->date, $request->timezone)->format('l');
-                            $booking->recurring_days = $recurringDays;
-                        }
-                    }
-                    $currentDate->addDay(1);
-                }
+                $data['recurring_end'] = $timeslot['end_date'];
+                $data['recurring_frequency'] = $timeslot['frequency'];
+                $data['recurring_days'] = $timeslot['days'];
             }
+            $booking = self::createBooking($service, $data, $customer, $guest, $request);
 
             if ($booking) {
                 $bookings[] = $booking;

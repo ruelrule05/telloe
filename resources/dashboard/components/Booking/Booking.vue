@@ -102,22 +102,21 @@
 						<VueSelect required :options="meetingTypes" noValuePlaceholder="No meeting types available" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
 
 						<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
-
 						<div v-if="clonedBooking.is_recurring" class="relative mt-2 mb-4" v-click-outside="() => (recurringMenu = false)">
 							<div class="bg-gray-50 rounded-xl p-3" :class="{ show: recurringMenu }">
 								<div class="flex">
-									<button class="flex-grow btn btn-sm mr-1" type="button" :class="[clonedBooking.frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'frequency', 'week')"><span>Weekly</span></button>
-									<button class="flex-grow btn btn-sm ml-1" type="button" :class="[clonedBooking.frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'frequency', 'month')"><span>Monthly</span></button>
+									<button class="flex-grow btn btn-sm mr-1" type="button" :class="[clonedBooking.recurring_frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'week')"><span>Weekly</span></button>
+									<button class="flex-grow btn btn-sm ml-1" type="button" :class="[clonedBooking.recurring_frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'month')"><span>Monthly</span></button>
 								</div>
 								<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
 								<div class="flex space-x-2 mt-3">
-									<div @click="timeslotToggleDay(dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: clonedBooking.days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+									<div @click="timeslotToggleDay(dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: clonedBooking.recurring_days.indexOf(dayIndex) > -1 }" :key="dayIndex">
 										<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
 									</div>
 								</div>
 
 								<div class="mt-4">
-									<v-date-picker class="relative" :min-date="new Date()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.end_date" :masks="masks">
+									<v-date-picker class="relative" :min-date="new Date()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.recurring_end" :masks="masks">
 										<template v-slot="{ inputValue, inputEvents }">
 											<button type="button" class="input bg-white text-left" v-on="inputEvents">
 												<span class="text-muted text-sm mr-2">Until</span>
@@ -214,6 +213,34 @@
 						<div class="my-4">
 							<label>Notes</label>
 							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
+						</div>
+						<div class="my-4">
+							<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
+							<div v-if="clonedBooking.is_recurring" class="relative mt-2 mb-4" v-click-outside="() => (recurringMenu = false)">
+								<div class="bg-gray-50 rounded-xl p-3" :class="{ show: recurringMenu }">
+									<div class="flex">
+										<button class="flex-grow btn btn-sm mr-1" type="button" :class="[clonedBooking.recurring_frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'week')"><span>Weekly</span></button>
+										<button class="flex-grow btn btn-sm ml-1" type="button" :class="[clonedBooking.recurring_frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'month')"><span>Monthly</span></button>
+									</div>
+									<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
+									<div class="flex space-x-2 mt-3">
+										<div @click="timeslotToggleDay(dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: clonedBooking.recurring_days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+											<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+										</div>
+									</div>
+
+									<div class="mt-4">
+										<v-date-picker class="relative" :min-date="dayjs(clonedBooking.date).toDate()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.recurring_end" :masks="masks">
+											<template v-slot="{ inputValue, inputEvents }">
+												<button type="button" class="input bg-white text-left" v-on="inputEvents">
+													<span class="text-muted text-sm mr-2">Until</span>
+													{{ inputValue }}
+												</button>
+											</template>
+										</v-date-picker>
+									</div>
+								</div>
+							</div>
 						</div>
 
 						<template v-if="!contact">

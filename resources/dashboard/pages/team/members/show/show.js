@@ -24,7 +24,6 @@ import PencilIcon from '../../../../../icons/pencil';
 import MoveIcon from '../../../../../icons/move';
 import PlusIcon from '../../../../../icons/plus';
 import draggable from 'vuedraggable';
-import Add from '../../../../../dashboard/pages/bookings/add/add.vue';
 import VueDropdown from '../../../../../components/vue-dropdown/vue-dropdown.vue';
 import CogIcon from '../../../../../icons/cog';
 import ChevronLeftIcon from '../../../../../icons/chevron-left';
@@ -59,8 +58,7 @@ export default {
 		PencilIcon,
 		MoveIcon,
 		PlusIcon,
-		draggable,
-		Add
+		draggable
 	},
 
 	data: () => ({

@@ -10,12 +10,14 @@ class Booking extends BaseModel
     //
     use SoftDeletes;
 
-    protected $fillable = ['service_id', 'booking_link_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes', 'contact_package_id', 'meeting_type', 'meet_link', 'uuid', 'timezone', 'name', 'form_data', 'google_event_id', 'outlook_event_id'];
+    protected $fillable = ['service_id', 'booking_link_id', 'date', 'start', 'end', 'metadata', 'zoom_link', 'notes', 'contact_package_id', 'meeting_type', 'meet_link', 'uuid', 'timezone', 'name', 'form_data', 'google_event_id', 'outlook_event_id', 'recurring_end', 'recurring_frequency', 'recurring_days'];
     protected $appends = ['is_expired'];
     protected $casts = [
         'metadata' => 'array',
         'notified_2' => 'boolean',
         'notified_24' => 'boolean',
+        'recurring_end' => 'date',
+        'recurring_days' => 'array',
     ];
 
     public function bookingUsers()

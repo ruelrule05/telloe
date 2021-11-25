@@ -335,11 +335,7 @@ export default {
 				});
 			}
 			dateForWeekView = {
-				date: dateForWeekView
-					.hour(0)
-					.minute(0)
-					.second(0)
-					.toDate(),
+				date: dateForWeekView.hour(0).minute(0).second(0).toDate(),
 				title: dateForWeekView.format('ddd'),
 				description: dateForWeekView.format('D MMM'),
 				label: dateForWeekView.format('YYYY-MM-DD'),
@@ -371,7 +367,7 @@ export default {
 	},
 
 	watch: {
-		selectedCoachId: function() {
+		selectedCoachId: function () {
 			this.selectedTimeslots = [];
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
@@ -381,17 +377,17 @@ export default {
 			});
 		},
 
-		'selectedService.id': function() {
+		'selectedService.id': function () {
 			this.getTimeslots();
 		},
 
-		startDate: function(value) {
+		startDate: function (value) {
 			if (value) this.error = null;
 			this.authError = '';
 			this.getTimeslots();
 		},
 
-		'selectedServiceForTimeline.id': function(value) {
+		'selectedServiceForTimeline.id': function (value) {
 			if (value) {
 				this.selectedCoachId = this.profile.id;
 				this.error = null;
@@ -403,7 +399,7 @@ export default {
 			}
 		},
 
-		step: function() {
+		step: function () {
 			document.querySelector('#app').scrollTo(0, 0);
 		}
 	},
@@ -726,9 +722,7 @@ export default {
 			let endTime = '';
 			if (this.selectedService && this.startDate) {
 				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + selectedTimeslot.timeslot.time);
-				endTime = dayjs(startDate)
-					.add(this.selectedService.duration, 'minute')
-					.format('HH:mm');
+				endTime = dayjs(startDate).add(this.selectedService.duration, 'minute').format('HH:mm');
 			}
 			return this.timezoneTime.get(`${selectedTimeslot.date.format} ${endTime}`, this.selectedService.timezone, this.timezone);
 		},
@@ -743,9 +737,7 @@ export default {
 		},
 
 		nextWeek() {
-			this.startDate = dayjs(this.startDate)
-				.add(7, 'day')
-				.toDate();
+			this.startDate = dayjs(this.startDate).add(7, 'day').toDate();
 		},
 
 		setSelectedDateAndTimeslot(date, timeslot) {
@@ -879,10 +871,7 @@ export default {
 
 		formatTime(time) {
 			let parts = time.split(':');
-			let formatTime = dayjs()
-				.hour(parts[0])
-				.minute(parts[1])
-				.format('hh:mmA');
+			let formatTime = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
 			return formatTime;
 		},
 

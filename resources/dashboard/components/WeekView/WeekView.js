@@ -219,7 +219,7 @@ export default {
 				});
 			}
 
-			return parsedBookings.filter((v, i, a) => a.findIndex(t => (t.booking || {}).id === (v.booking || {}).id) === i);
+			return parsedBookings.filter((v, i, a) => a.findIndex(t => (t.booking || {}).id === (v.booking || {}).id) === i || (v.booking || {}).recurring_end);
 		}
 	},
 

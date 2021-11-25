@@ -59,9 +59,17 @@ class BookingService
         }
 
         if ($request->date) {
-            $bookings = $bookings->where('date', $request->date);
+            $bookings = $bookings->where(function ($query) use ($request) {
+                $query->where('date', $request->date)->orWhere(function ($q) use ($request) {
+                    $q->where('date', '>=', $request->date)->whereNotNull('recurring_end')->where('recurring_end', '<=', $request->date);
+                });
+            });
         } elseif ($request->from && $request->to) {
-            $bookings = $bookings->whereBetween('date', [$request->from, $request->to]);
+            $bookings = $bookings->where(function ($query) use ($request) {
+                $query->whereBetween('date', [$request->from, $request->to])->orWhere(function ($q) use ($request) {
+                    $q->whereNotNull('recurring_end')->whereBetween('recurring_end', [$request->from, $request->to]);
+                });
+            });
         }
         if ($request->paginate) {
             $bookings = $bookings->paginate(20);
@@ -69,7 +77,7 @@ class BookingService
             $bookings = $bookings->get();
         }
 
-        return $bookings;
+        return self::getRecurringBookings($bookings);
     }
 
     public static function show($uuid)
@@ -100,7 +108,6 @@ class BookingService
             $service = Service::where('type', 'default')->where('user_id', Auth::user()->id)->firstOrFail();
         }
         $data = $request->validated();
-        $bookings = [];
         $data['uuid'] = (string) Uuid::generate();
         $data['name'] = $data['name'] ?? $service->name;
         $data['service_id'] = $service->id;
@@ -111,235 +118,184 @@ class BookingService
                 $data['zoom_link'] = $type['data'];
             }
         }
+        if (isset($request->recurring_end) && isset($request->recurring_frequency) && isset($request->recurring_days)) {
+            $data['recurring_end'] = $request->recurring_end;
+            $data['recurring_frequency'] = $request->recurring_frequency;
+            $data['recurring_days'] = $request->recurring_days;
+        }
 
         $booking = Booking::create($data);
-        $bookings[] = $booking;
-
-        if (isset($request->is_recurring) && isset($request->frequency) && isset($request->end_date) && isset($request->days)) {
-            $start = Carbon::parse("{$request->date} {$request->start}", $request->timezone);
-            $end = $start->copy()->add('minute', $service->duration ?? 30);
-            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            $timeslotDayName = Carbon::parse($request->date, $request->timezone)->format('l');
-            $currentDate = Carbon::parse($request->date, $request->timezone)->addDay(1);
-            $endDate = Carbon::parse($request->end_date, $request->timezone);
-            $weekOfMonth = 0;
-            if (isset($request->day_in_month)) {
-                switch ($request->day_in_month) {
-                    case 'first_week':
-                        $weekOfMonth = 1;
-                        break;
-                    case 'second_week':
-                        $weekOfMonth = 2;
-                        break;
-                    case 'third_week':
-                        $weekOfMonth = 3;
-                        break;
-                    case 'las_week':
-                        $weekOfMonth = 4;
-                        break;
-                }
-            }
-            while ($currentDate->lessThan($endDate)) {
-                $createBooking = false;
-                if ($request->frequency == 'week') {
-                    $dayIndex = array_search($currentDate->clone()->format('l'), $days);
-                    if (in_array($dayIndex, $request->days)) {
-                        $createBooking = true;
-                    }
-                } elseif ($request->frequency == 'month' && isset($request->frequencyday_in_month)) {
-                    $dayName = $currentDate->clone()->format('l');
-                    if ($dayName == $timeslotDayName && $weekOfMonth == $currentDate->clone()->weekOfMonth) {
-                        $createBooking = true;
-                    }
-                }
-                if ($createBooking) {
-                    $zoomLink = null;
-                    if ($request->meeting_type == 'Zoom') {
-                        $types = collect($service->types);
-                        $type = $types->firstWhere('type', 'Zoom');
-                        if ($type && $type['data']) {
-                            $zoomLink = $type['data'];
-                        }
-                    }
-                    $booking = Booking::create([
-                        'name' => $data['name'] ?? $service->name,
-                        'service_id' => $service->id ?? null,
-                        'date' => $currentDate->clone()->format('Y-m-d'),
-                        'start' => $start->format('H:i'),
-                        'end' => $end->format('H:i'),
-                        'meeting_type' => $request->meeting_type,
-                        'metadata' => ['phone' => $request->phone, 'skype' => $request->skype],
-                        'uuid' => (string) Uuid::generate(),
-                        'timezone' => $request->timezone,
-                        'zoom_link' => $zoomLink
-                    ]);
-                    $bookings[] = $booking;
-                }
-                $currentDate->addDay(1);
+        $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
+        $to = $from->clone()->addMinute($booking->service->duration ?? 30);
+        $link = Link::create($data['name'], $from, $to)
+                ->description($booking->service->description);
+        $attendees = [
+            ['email' => $service->coach->email]
+        ];
+        foreach ($data['contact_ids'] as $contactID) {
+            $contact = Contact::findOrFail($contactID);
+            if (Auth::user()->can('show', $contact)) {
+                BookingUser::create([
+                    'booking_id' => $booking->id,
+                    'user_id' => $contact->contact_user_id,
+                    'guest' => [
+                        'email' => $contact->email,
+                        'first_name' => $contact->first_name,
+                        'last_name' => $contact->last_name
+                    ]
+                ]);
+                $attendees[] = ['email' => $contact->contactUser->email];
             }
         }
 
-        foreach ($bookings as $booking) {
-            $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
-            $to = $from->clone()->addMinute($booking->service->duration ?? 30);
-            $link = Link::create($data['name'], $from, $to)
-                ->description($booking->service->description);
-            $attendees = [
-                ['email' => $service->coach->email]
+        $emails = collect($data['emails'])->unique('email');
+        foreach ($emails as $emailData) {
+            BookingUser::create([
+                'booking_id' => $booking->id,
+                'user_id' => null,
+                'guest' => [
+                    'email' => $emailData['email'],
+                    'first_name' => $emailData['first_name'],
+                    'last_name' => $emailData['last_name'],
+                ]
+            ]);
+            $attendees[] = ['email' => $emailData['email']];
+        }
+
+        $time = time();
+        // Check if Google Calendar is integrated
+        // Create event to selected google calendar with flag to tell it's a telloe booking
+        if ($service && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
+            $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
+            $client = $GoogleCalendarClient->client;
+            $googleService = new Google_Service_Calendar($client);
+            $eventData = [
+                'id' => 'telloebooking' . $booking->id . $time,
+                'summary' => $data['name'],
+                'description' => $booking->service->description,
+                'start' => [
+                    'dateTime' => Carbon::parse("$booking->date $booking->start", $booking->timezone)->toIso8601String(),
+                    'timeZone' => $booking->timezone,
+                ],
+                'end' => [
+                    'dateTime' => Carbon::parse("$booking->date $booking->end", $booking->timezone)->toIso8601String(),
+                    'timeZone' => $booking->timezone,
+                ],
+                'attendees' => $attendees,
+                'conferenceData' => [
+                    'createRequest' => [
+                        'requestId' => $time
+                    ]
+                ]
             ];
-            foreach ($data['contact_ids'] as $contactID) {
-                $contact = Contact::findOrFail($contactID);
-                if (Auth::user()->can('show', $contact)) {
-                    BookingUser::create([
-                        'booking_id' => $booking->id,
-                        'user_id' => $contact->contact_user_id,
-                        'guest' => [
-                            'email' => $contact->email,
-                            'first_name' => $contact->first_name,
-                            'last_name' => $contact->last_name
-                        ]
-                    ]);
-                    $attendees[] = ['email' => $contact->contactUser->email];
+
+            if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
+                $frequency = strtoupper($booking->recurring_frequency) . 'LY';
+                $date = Carbon::parse($booking->recurring_end)->toIso8601String();
+                $date = str_replace(['-', ':', '.'], '', $date);
+                $date = explode('+',$date);
+                $date = $date[0] . 'Z';
+                $days = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+                $byDays = [];
+                foreach ($booking->recurring_days as $recurringDay) {
+                    $byDays[] = $days[$recurringDay];
                 }
+                $byDays = implode(',', $byDays);
+                $eventData['recurrence'] = ["RRULE:FREQ=$frequency;BYDAY=$byDays;UNTIL=$date"];
             }
+            $event = new Google_Service_Calendar_Event($eventData);
 
-            $emails = collect($data['emails'])->unique('email');
-            foreach ($emails as $emailData) {
-                BookingUser::create([
-                    'booking_id' => $booking->id,
-                    'user_id' => null,
-                    'guest' => [
-                        'email' => $emailData['email'],
-                        'first_name' => $emailData['first_name'],
-                        'last_name' => $emailData['last_name'],
-                    ]
-                ]);
-                $attendees[] = ['email' => $emailData['email']];
+            $params = [];
+            if ($booking->meeting_type == 'Google Meet') {
+                $params = ['conferenceDataVersion' => 1];
             }
+            $event = $googleService->events->insert($service->coach->google_calendar_id[0], $event, $params);
+            $booking->update([
+                'google_event_id' => $event->id
+            ]);
 
-            $time = time();
-            // Check if Google Calendar is integrated
-            // Create event to selected google calendar with flag to tell it's a telloe booking
-            if ($service && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
-                $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
-                $client = $GoogleCalendarClient->client;
-                $googleService = new Google_Service_Calendar($client);
-                $event = new Google_Service_Calendar_Event([
-                    'id' => 'telloebooking' . $booking->id . $time,
-                    'summary' => $data['name'],
-                    'description' => $booking->service->description,
-                    'start' => [
-                        'dateTime' => Carbon::parse("$booking->date $booking->start", $booking->timezone)->toIso8601String(),
-                        'timeZone' => $booking->timezone,
-                    ],
-                    'end' => [
-                        'dateTime' => Carbon::parse("$booking->date $booking->end", $booking->timezone)->toIso8601String(),
-                        'timeZone' => $booking->timezone,
-                    ],
-                    'attendees' => $attendees,
-                    'conferenceData' => [
-                        'createRequest' => [
-                            'requestId' => $time
-                        ]
-                    ]
-                ]);
-
-                $params = [];
-                if ($booking->meeting_type == 'Google Meet') {
-                    $params = ['conferenceDataVersion' => 1];
-                }
-                $event = $googleService->events->insert($service->coach->google_calendar_id[0], $event, $params);
+            if ($booking->meeting_type == 'Google Meet') {
                 $booking->update([
-                    'google_event_id' => $event->id
+                    'meet_link' => $event->hangoutLink
                 ]);
-
-                if ($booking->meeting_type == 'Google Meet') {
-                    $booking->update([
-                        'meet_link' => $event->hangoutLink
-                    ]);
-                }
             }
+        }
 
-            // Check if Outlook Calendar is integrated
-            if ($service && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
-                $OutlookClient = new \App\Http\OutlookClient();
-                $graph = new \Microsoft\Graph\Graph();
-                if ($OutlookClient->accessToken) {
-                    $graph->setAccessToken($OutlookClient->accessToken);
-                    $outlookAttendees = [];
-                    foreach ($attendees as $attendee) {
-                        $outlookAttendees[] = [
-                            'EmailAddress' => [
-                                'Address' => $attendee['email'],
-                            ]
-                        ];
-                    }
-                    $eventData = [
-                        'Subject' => $booking->service->name,
-                        'Body' => [
-                            'ContentType' => 'HTML',
-                            'Content' => $booking->service->description
-                        ],
-                        'Start' => [
-                            'DateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->format('Y-m-d\TH:i:s'),
-                            'TimeZone' => $booking->timezone,
-                        ],
-                        'End' => [
-                            'DateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->format('Y-m-d\TH:i:s'),
-                            'TimeZone' => $booking->timezone,
-                        ],
-                        'isReminderOn' => false,
-                        'Attendees' => $outlookAttendees,
-                        'transactionId' => 'telloebooking' . $booking->id . $time
+        // Check if Outlook Calendar is integrated
+        if ($service && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
+            $OutlookClient = new \App\Http\OutlookClient();
+            $graph = new \Microsoft\Graph\Graph();
+            if ($OutlookClient->accessToken) {
+                $graph->setAccessToken($OutlookClient->accessToken);
+                $outlookAttendees = [];
+                foreach ($attendees as $attendee) {
+                    $outlookAttendees[] = [
+                        'EmailAddress' => [
+                            'Address' => $attendee['email'],
+                        ]
                     ];
+                }
+                $eventData = [
+                    'Subject' => $booking->service->name,
+                    'Body' => [
+                        'ContentType' => 'HTML',
+                        'Content' => $booking->service->description
+                    ],
+                    'Start' => [
+                        'DateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->format('Y-m-d\TH:i:s'),
+                        'TimeZone' => $booking->timezone,
+                    ],
+                    'End' => [
+                        'DateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->format('Y-m-d\TH:i:s'),
+                        'TimeZone' => $booking->timezone,
+                    ],
+                    'isReminderOn' => false,
+                    'Attendees' => $outlookAttendees,
+                    'transactionId' => 'telloebooking' . $booking->id . $time
+                ];
 
-                    try {
-                        $event = $graph->createRequest('POST', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events") 
+                try {
+                    $event = $graph->createRequest('POST', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events") 
                         ->attachBody($eventData)
                         ->setReturnType(\Microsoft\Graph\Model\Event::class)
                         ->execute();
-                        $booking->update([
-                            'outlook_event_id' => $event->getProperties()['id']
-                        ]);
-                    } catch (\Exception $e) {
-                    }
-                }
-            }
-
-            $booking->google_link = $link->google();
-            $booking->outlook_link = url('/ics?name=' . $data['name'] . '&data=' . $link->ics());
-            $booking->yahoo_link = $link->yahoo();
-            $booking->ical_link = $booking->outlook_link;
-            $booking->load('bookingUsers.user');
-        }
-
-        $clonedBookings = array_copy($bookings);
-        Mail::queue(new NewBooking($clonedBookings, 'serviceUser'));
-        foreach ($clonedBookings as $booking) {
-            $booking = clone $booking;
-            foreach ($booking->bookingUsers as $bookingUser) {
-                if ($bookingUser->user_id) {
-                    $user_id = $bookingUser->user_id;
-                    $description = 'A booking has been placed for your account.';
-                    Notification::create([
-                        'user_id' => $user_id,
-                        'description' => $description,
-                        'link' => "/dashboard/calendar?booking=$booking->id"
+                    $booking->update([
+                        'outlook_event_id' => $event->getProperties()['id']
                     ]);
-                }
-
-                $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
-                if ($attendeeEmail) {
-                    Mail::queue(new NewBooking($clonedBookings, 'customer', $attendeeEmail));
+                } catch (\Exception $e) {
                 }
             }
         }
 
-        foreach ($bookings as &$booking) {
-            $booking->load('bookingUsers.user');
+        $booking->google_link = $link->google();
+        $booking->outlook_link = url('/ics?name=' . $data['name'] . '&data=' . $link->ics());
+        $booking->yahoo_link = $link->yahoo();
+        $booking->ical_link = $booking->outlook_link;
+        $booking->load('bookingUsers.user');
+
+        $clonedBooking = clone $booking;
+        Mail::queue(new NewBooking([$clonedBooking], 'serviceUser'));
+
+        foreach ($booking->bookingUsers as $bookingUser) {
+            if ($bookingUser->user_id) {
+                $user_id = $bookingUser->user_id;
+                $description = 'A booking has been placed for your account.';
+                Notification::create([
+                    'user_id' => $user_id,
+                    'description' => $description,
+                    'link' => "/dashboard/calendar?booking=$booking->id"
+                ]);
+            }
+
+            $attendeeEmail = $bookingUser->user ? $bookingUser->user->email : (isset($bookingUser->guest['email']) ? $bookingUser->guest['email'] : null);
+            if ($attendeeEmail) {
+                Mail::queue(new NewBooking([$clonedBooking], 'customer', $attendeeEmail));
+            }
         }
 
-        return response()->json($bookings);
+        $booking->load('bookingUsers.user');
+
+        return response()->json(self::getRecurringBookings(collect([$booking])));
     }
 
     public static function update($id, UpdateBookingRequest $request)
@@ -348,7 +304,14 @@ class BookingService
         $booking = Booking::findOrFail($id);
         $service = $booking->service;
 
-        $booking->update($request->validated());
+        $data = $request->validated();
+        if (isset($request->recurring_frequency) && isset($request->recurring_end) && isset($request->recurring_days)) {
+            $data['recurring_end'] = $request->recurring_end;
+            $data['recurring_frequency'] = $request->recurring_frequency;
+            $data['recurring_days'] = $request->recurring_days;
+        }
+
+        $booking->update($data);
         $booking = $booking->fresh();
         $attendees = [];
 
@@ -414,6 +377,20 @@ class BookingService
                         'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
                         'timeZone' => $booking->service->timezone,
                     ];
+                    if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
+                        $frequency = strtoupper($booking->recurring_frequency) . 'LY';
+                        $date = Carbon::parse($booking->recurring_end)->toIso8601String();
+                        $date = str_replace(['-', ':', '.'], '', $date);
+                        $date = explode('+',$date);
+                        $date = $date[0] . 'Z';
+                        $days = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+                        $byDays = [];
+                        foreach ($booking->recurring_days as $recurringDay) {
+                            $byDays[] = $days[$recurringDay];
+                        }
+                        $byDays = implode(',', $byDays);
+                        $event->recurrence = ["RRULE:FREQ=$frequency;BYDAY=$byDays;UNTIL=$date"];
+                    }
                     $event->attendees = $attendees;
                     $googleService->events->update(
                         $service->coach->google_calendar_id[0], 
@@ -498,8 +475,8 @@ class BookingService
             }
         } catch (\Exception $e) {
         }
-
-        return response()->json($booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices', 'bookingUsers.user'));
+        $booking->load('service.user', 'bookingNote', 'service.parentService.assignedServices', 'service.assignedServices', 'bookingUsers.user');
+        return response()->json(self::getRecurringBookings(collect([$booking])));
     }
 
     public static function destroy($id)
@@ -565,7 +542,11 @@ class BookingService
             $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
                 ->whereIn('service_id', $memberServiceIds)
                 ->has('service')
-                ->whereBetween('date', [$daysAgo, $tomorrow])
+                ->where(function ($query) use ($daysAgo, $tomorrow) {
+                    $query->whereBetween('date', [$daysAgo, $tomorrow])->orWhere(function ($q) use ($daysAgo, $tomorrow) {
+                        $q->whereNotNull('recurring_end')->whereBetween('recurring_end', [$daysAgo, $tomorrow]);
+                    });
+                })
                 ->get();
         } else {
             $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
@@ -580,9 +561,48 @@ class BookingService
                 })
                 ->has('service')
                 ->orHas('bookingLink')
-                ->whereBetween('date', [$daysAgo, $tomorrow])
+                ->where(function ($query) use ($daysAgo, $tomorrow) {
+                    $query->whereBetween('date', [$daysAgo, $tomorrow])->orWhere(function ($q) use ($daysAgo, $tomorrow) {
+                        $q->whereNotNull('recurring_end')->whereBetween('recurring_end', [$daysAgo, $tomorrow]);
+                    });
+                })
                 ->get();
         }
+
+        return self::getRecurringBookings($bookings);
+    }
+
+    protected static function getRecurringBookings($bookings)
+    {
+        $bookings->each(function ($booking) use ($bookings) {
+            if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
+                $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                $timeslotDayName = Carbon::parse($booking->date, $booking->timezone)->format('l');
+                $startDate = Carbon::parse($booking->date, $booking->timezone)->addDay(1);
+                $endDate = Carbon::parse($booking->recurring_end, $booking->timezone);
+
+                while ($startDate->lessThan($endDate)) {
+                    $createBooking = false;
+                    if ($booking->recurring_frequency == 'week') {
+                        $dayIndex = array_search($startDate->clone()->format('l'), $days);
+                        if (in_array($dayIndex, $booking->recurring_days)) {
+                            $createBooking = true;
+                        }
+                    } elseif ($booking->recurring_frequency == 'month') {
+                        $dayName = $startDate->clone()->format('l');
+                        if ($dayName == $timeslotDayName && $startDate->clone()->weekOfMonth == 1) {
+                            $createBooking = true;
+                        }
+                    }
+                    if ($createBooking) {
+                        $clonedBooking = clone $booking;
+                        $clonedBooking->date = $startDate->clone()->format('Y-m-d');
+                        $bookings->push($clonedBooking);
+                    }
+                    $startDate->addDay(1);
+                }
+            }
+        });
 
         return $bookings;
     }

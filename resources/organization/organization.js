@@ -5,16 +5,9 @@ require('../js/bootstrap');
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VCalendar from 'v-calendar';
-import Toasted from 'vue-toasted';
 import dayjs from 'dayjs';
 Vue.use(VCalendar);
 Vue.use(VueRouter);
-Vue.use(Toasted, {
-	position: 'bottom-center',
-	duration: 3000,
-	className: 'bg-primary rounded shadow-none'
-});
-
 import VueFormValidate from '../components/vue-form-validate';
 import VueButton from '../components/vue-button';
 import Modal from '../components/modal/modal.vue';
@@ -24,9 +17,11 @@ import CalendarDayAltIcon from '../icons/calendar-day-alt';
 import InfoCircleIcon from '../icons/info-circle';
 import CheckmarkIcon from '../icons/checkmark';
 import ArrowLeftIcon from '../icons/arrow-left';
+import ArrowRightIcon from '../icons/arrow-right';
 import CalendarMonthIcon from '../icons/calendar-month';
 import ChevronLeftIcon from '../icons/chevron-left';
 import ChevronRightIcon from '../icons/chevron-right';
+import ChevronDownIcon from '../icons/chevron-down';
 import EarthIcon from '../icons/earth';
 import CheckmarkCircleIcon from '../icons/checkmark-circle';
 import FacebookIcon from '../icons/facebook';
@@ -36,6 +31,10 @@ import CalendarIcon from '../icons/calendar';
 import CoinIcon from '../icons/coin';
 import PackageIcon from '../icons/package';
 import DollarSignIcon from '../icons/dollar-sign';
+import WindowPlusIcon from '../icons/window-plus';
+import CloseIcon from '../icons/close';
+import MoreIcon from '../icons/more-h';
+import MapMarkerIcon from '../icons/map-marker';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import convertTime from '../js/plugins/convert-time.js';
@@ -44,41 +43,44 @@ const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrBefore);
 dayjs.extend(IsSameOrAfter);
 import tooltip from '../js/directives/tooltip.js';
-import MapMarkerIcon from '../icons/map-marker';
-import ArrowRightIcon from '../icons/arrow-right';
 import ToggleSwitch from '../components/toggle-switch/toggle-switch.vue';
-import MoreIcon from '../icons/more-h';
-const ct = require('countries-and-timezones').default;
 import VueSelect from '../components/vue-select/vue-select.vue';
-import timezoneTime from '../js/helpers/TimezoneTime.js';
-import SkypeIcon from '../icons/skype.vue';
-import GoogleMeetIcon from '../icons/google-meet';
 import ZoomIcon from '../icons/zoom';
-import PhoneIcon from '../icons/call-menu.vue';
+import GoogleMeetIcon from '../icons/google-meet';
 import CogIcon from '../icons/cog';
 import vClickOutside from 'v-click-outside';
-import SocialLogin from '../js/helpers/SocialLogin';
+import FacebookAltIcon from '../icons/facebook-alt.vue';
+import GoogleAltIcon from '../icons/google-alt.vue';
 import VueCardFormat from '../components/vue-credit-card-validation/src';
-import axios from 'axios';
-import Stripe from 'stripe-client';
+const ct = require('countries-and-timezones').default;
+import VisaIcon from '../icons/cc/visa.vue';
+import MastercardIcon from '../icons/cc/mastercard.vue';
+import AmexIcon from '../icons/cc/amex.vue';
+import DiscoverIcon from '../icons/cc/discover.vue';
+import DinersclubIcon from '../icons/cc/dinersclub.vue';
+import JcbIcon from '../icons/cc/jcb.vue';
+import UnionpayIcon from '../icons/cc/unionpay.vue';
 const format = require('format-number');
+import Stripe from 'stripe-client';
+import axios from 'axios';
+import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
+import RefreshIcon from '../icons/refresh';
+import SocialLogin from '../js/helpers/SocialLogin';
+import PhoneIcon from '../icons/call-menu.vue';
+import SkypeIcon from '../icons/skype.vue';
+import timezoneTime from '../js/helpers/TimezoneTime.js';
 import Multiselect from 'vue-multiselect';
 const isEmail = require('isemail');
 import 'vue-multiselect/dist/vue-multiselect.min.css';
-import VueDropdown from '../components/vue-dropdown/vue-dropdown.vue';
-import ChevronDownIcon from '../icons/chevron-down';
+import FormField from '../profile/formField.vue';
+import numbersOnly from 'numbers-only';
 
 export default {
 	components: {
-		ChevronDownIcon,
-		VueDropdown,
+		FormField,
 		Multiselect,
-		CogIcon,
-		PhoneIcon,
-		ZoomIcon,
-		GoogleMeetIcon,
 		SkypeIcon,
-		VueSelect,
+		PhoneIcon,
 		VueFormValidate,
 		Modal,
 		ClockIcon,
@@ -88,6 +90,7 @@ export default {
 		CheckmarkIcon,
 		VueButton,
 		ArrowLeftIcon,
+		ArrowRightIcon,
 		CalendarMonthIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -100,15 +103,32 @@ export default {
 		CoinIcon,
 		PackageIcon,
 		DollarSignIcon,
-		MapMarkerIcon,
-		ArrowRightIcon,
+		WindowPlusIcon,
+		CloseIcon,
+		MoreIcon,
 		ToggleSwitch,
-		MoreIcon
+		VueSelect,
+		MapMarkerIcon,
+		ZoomIcon,
+		GoogleMeetIcon,
+		CogIcon,
+		FacebookAltIcon,
+		GoogleAltIcon,
+		MastercardIcon,
+		AmexIcon,
+		DiscoverIcon,
+		DinersclubIcon,
+		JcbIcon,
+		UnionpayIcon,
+		VueDropdown,
+		ChevronDownIcon,
+		RefreshIcon
 	},
 
 	directives: { tooltip, clickOutside: vClickOutside.directive, cardformat: VueCardFormat },
 
 	data: () => ({
+		numbersOnly: numbersOnly,
 		isEmail: isEmail,
 		phone: '',
 		skype: '',
@@ -202,10 +222,126 @@ export default {
 		},
 		cardBrand: null,
 		format: format,
-		creatingAccount: false
+		creatingAccount: false,
+		formData: {}
 	}),
 
 	computed: {
+		cardBrandComponent() {
+			switch (this.cardBrand) {
+				case 'visa':
+					return VisaIcon;
+				case 'mastercard':
+					return MastercardIcon;
+				case 'amex':
+					return AmexIcon;
+				case 'discover':
+					return DiscoverIcon;
+				case 'dinersclub':
+					return DinersclubIcon;
+				case 'jcb':
+					return JcbIcon;
+				case 'unionpay':
+					return UnionpayIcon;
+				default:
+					return false;
+			}
+		},
+
+		formattedHolidays() {
+			let formattedHolidays = [];
+			let service = this.assignedService || this.selectedService;
+			if (service) {
+				service.holidays.forEach(holiday => {
+					let parts = holiday.split('-');
+					const holidayDate = new Date(parts[0], parts[1] - 1, parts[2]);
+					formattedHolidays.push(holidayDate);
+				});
+
+				let disabledDays = [];
+				this.days.forEach((day, index) => {
+					index = index + 2;
+					if (index >= 8) index = 1;
+					if (!service.days[day].isOpen) disabledDays.push(index);
+				});
+				if (disabledDays.length > 0) {
+					formattedHolidays.push({
+						weekdays: disabledDays
+					});
+				}
+			}
+			return formattedHolidays;
+		},
+
+		nextDisabled() {
+			let disabled = true;
+			switch (this.step) {
+				case 1:
+					if (this.startDate) disabled = false;
+					break;
+
+				case 2:
+					if (this.selectedTimeslot) disabled = false;
+					break;
+
+				case 3:
+					disabled = this.auth ? false : true;
+					break;
+			}
+
+			return disabled;
+		},
+
+		buttonText() {
+			let buttonText = 'Next';
+			switch (this.step) {
+				case 1:
+					buttonText = 'Select time';
+					break;
+
+				case 2:
+					buttonText = 'Review details';
+					break;
+
+				case 3:
+					buttonText = 'Book';
+					break;
+
+				case 4:
+					buttonText = 'Booking';
+					break;
+			}
+
+			return buttonText;
+		},
+
+		weekDayOptions() {
+			let options = [];
+
+			let dateForWeekView = dayjs();
+			let daysAfter = [];
+			for (var i = 1; i <= 90; i++) {
+				let after = dateForWeekView.add(i, 'day');
+				daysAfter.push({
+					date: after.toDate(),
+					title: after.format('ddd'),
+					description: after.format('D MMM'),
+					label: after.format('YYYY-MM-DD'),
+					id: after.format('MMMDYYYY')
+				});
+			}
+			dateForWeekView = {
+				date: dateForWeekView.hour(0).minute(0).second(0).toDate(),
+				title: dateForWeekView.format('ddd'),
+				description: dateForWeekView.format('D MMM'),
+				label: dateForWeekView.format('YYYY-MM-DD'),
+				id: dateForWeekView.format('MMMDYYYY')
+			};
+			options = [...[dateForWeekView], ...daysAfter];
+
+			return options;
+		},
+
 		tabDates() {
 			let tabDates = [];
 			let i = 7;
@@ -227,7 +363,7 @@ export default {
 	},
 
 	watch: {
-		'selectedService.id': function(value) {
+		'selectedService.id': function (value) {
 			if (value) {
 				this.getTimeslots();
 			} else {
@@ -235,13 +371,13 @@ export default {
 			}
 		},
 
-		startDate: function(value) {
+		startDate: function (value) {
 			if (value) this.error = null;
 			this.authError = '';
 			this.getTimeslots();
 		},
 
-		'selectedServiceForTimeline.id': function(value) {
+		'selectedServiceForTimeline.id': function (value) {
 			if (value) {
 				this.selectedCoachId = this.selectedServiceForTimeline.assigned_services[0].member_id;
 				this.error = null;
@@ -253,7 +389,7 @@ export default {
 			}
 		},
 
-		selectedCoachId: function() {
+		selectedCoachId: function () {
 			this.selectedTimeslots = [];
 			this.$nextTick(() => {
 				let activeUser = document.querySelector('.user-container.active');
@@ -395,6 +531,7 @@ export default {
 			data.skype = this.skype;
 			data.timezone = this.timezone;
 			data.guests = this.guests;
+			data.formData = this.formData;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -428,6 +565,7 @@ export default {
 			data.skype = this.skype;
 			data.timezone = this.timezone;
 			data.guests = this.guests;
+			data.formData = this.formData;
 			if (this.selectedService.require_payment) {
 				data.card_token = await this.getCardToken();
 			}
@@ -462,6 +600,7 @@ export default {
 				data.skype = this.skype;
 				data.timezone = this.timezone;
 				data.guests = this.guests;
+				data.formData = this.formData;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
@@ -497,6 +636,7 @@ export default {
 				data.skype = this.skype;
 				data.timezone = this.timezone;
 				data.guests = this.guests;
+				data.formData = this.formData;
 				if (this.selectedService.require_payment) {
 					data.card_token = await this.getCardToken();
 				}
@@ -545,19 +685,14 @@ export default {
 
 		formatTime(time) {
 			let parts = time.split(':');
-			let formatTime = dayjs()
-				.hour(parts[0])
-				.minute(parts[1])
-				.format('hh:mmA');
+			let formatTime = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
 			return formatTime;
 		},
 		endTime(time) {
 			let endTime = '';
 			if (this.selectedService && this.startDate) {
 				let startDate = dayjs(dayjs(this.startDate).format('YYYY-MM-DD') + ' ' + time);
-				endTime = dayjs(startDate)
-					.add(this.selectedService.duration, 'minute')
-					.format('hh:mmA');
+				endTime = dayjs(startDate).add(this.selectedService.duration, 'minute').format('hh:mmA');
 			}
 			return endTime;
 		},
@@ -575,9 +710,7 @@ export default {
 		},
 
 		nextWeek() {
-			this.startDate = dayjs(this.startDate)
-				.add(7, 'day')
-				.toDate();
+			this.startDate = dayjs(this.startDate).add(7, 'day').toDate();
 		},
 
 		setSelectedDateAndTimeslot(date, timeslot) {
@@ -653,10 +786,7 @@ export default {
 			let hour = map.get('hour');
 			const minute = map.get('minute');
 			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
+			const ms = date.getMilliseconds().toString().padStart(3, '0');
 			if (hour == '24') hour = '00';
 			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 

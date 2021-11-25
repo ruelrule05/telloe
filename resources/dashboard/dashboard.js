@@ -138,7 +138,7 @@ window.app = new Vue({
 	},
 
 	watch: {
-		'$route.name': function(value) {
+		'$route.name': function (value) {
 			this.contentloading = true;
 			if (value) {
 				document.title = value.charAt(0).toUpperCase() + value.slice(1) + ' | ' + process.env.MIX_APP_NAME;
@@ -149,7 +149,7 @@ window.app = new Vue({
 				this.$refs.dashboardContent.scroll(0, 0);
 			}
 		},
-		muted: function(value) {
+		muted: function (value) {
 			this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
 				className: value ? 'bg-secondary rounded' : 'bg-primary rounded'
 			});
@@ -197,7 +197,6 @@ window.app = new Vue({
 		this.message_sound = new Audio('/notifications/new_message.mp3');
 
 		this.getNotifications();
-		this.getBookings();
 		this.isMobile = mobile();
 	},
 
@@ -222,8 +221,7 @@ window.app = new Vue({
 			getConversations: 'conversations/index',
 			getNotifications: 'notifications/index',
 			updateNotification: 'notifications/update',
-			clearNotifications: 'notifications/clear',
-			getBookings: 'bookings/index'
+			clearNotifications: 'notifications/clear'
 		}),
 
 		checkCookie() {
@@ -239,10 +237,7 @@ window.app = new Vue({
 
 		clickPrompt() {
 			this.promptCookie = false;
-			let expires =
-				dayjs()
-					.add(2, 'year')
-					.format('ddd, D MMM YYYY H:m:s') + ' UTC';
+			let expires = dayjs().add(2, 'year').format('ddd, D MMM YYYY H:m:s') + ' UTC';
 			document.cookie = `${this.cookieItem}=true; expires=${expires}; path=/`;
 		},
 
@@ -422,7 +417,7 @@ window.app = new Vue({
 				sep = typeof thousands_sep === 'undefined' ? ',' : thousands_sep,
 				dec = typeof dec_point === 'undefined' ? '.' : dec_point,
 				s = '',
-				toFixedFix = function(n, prec) {
+				toFixedFix = function (n, prec) {
 					var k = Math.pow(10, prec);
 					return '' + Math.round(n * k) / k;
 				};
