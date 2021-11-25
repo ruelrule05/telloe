@@ -175,8 +175,14 @@ export default {
 	watch: {
 		'clonedBooking.is_recurring': function (value) {
 			if (value) {
-				this.$set(this.clonedBooking, 'end_date', dayjs(new Date()).add(1, 'week').toDate());
-				this.$set(this.clonedBooking, 'frequency', this.recurringFrequencies[0].value);
+				if (this.clonedBooking.recurring_end) {
+					this.clonedBooking.recurring_end = dayjs(this.clonedBooking.recurring_end).toDate();
+				} else {
+					this.$set(this.clonedBooking, 'recurring_end', dayjs(new Date()).add(1, 'week').toDate());
+				}
+				if (!this.clonedBooking.recurring_frequency) {
+					this.$set(this.clonedBooking, 'recurring_frequency', this.recurringFrequencies[0].value);
+				}
 				this.setTimeslotDefaultDay('week');
 			}
 		},
@@ -189,6 +195,10 @@ export default {
 			if (booking) {
 				this.open = true;
 				this.clonedBooking = JSON.parse(JSON.stringify(this.booking));
+				if (this.clonedBooking.recurring_end && this.clonedBooking.recurring_frequency && this.clonedBooking.recurring_days) {
+					this.$set(this.clonedBooking, 'is_recurring', true);
+					this.clonedBooking.recurring_end = dayjs(this.clonedBooking.recurring_end).toDate();
+				}
 				if (this.service) {
 					this.clonedBooking.service = this.service.id;
 					this.disableServiceSelect = true;
@@ -292,6 +302,12 @@ export default {
 	created() {
 		this.timezone = timezone.name();
 		this.clonedBooking = JSON.parse(JSON.stringify(this.booking));
+		if (this.clonedBooking) {
+			if (this.clonedBooking.recurring_end && this.clonedBooking.recurring_frequency && this.clonedBooking.recurring_days) {
+				this.$set(this.clonedBooking, 'is_recurring', true);
+				this.clonedBooking.recurring_end = dayjs(this.clonedBooking.recurring_end).toDate();
+			}
+		}
 		this.getServices();
 		this.getContacts({ nopaginate: true });
 		if (this.contact) {
@@ -371,28 +387,31 @@ export default {
 		},
 
 		timeslotToggleDay(dayIndex) {
-			let index = this.clonedBooking.days.indexOf(dayIndex);
+			let index = this.clonedBooking.recurring_days.indexOf(dayIndex);
 			if (index == -1) {
-				this.clonedBooking.days.push(dayIndex);
+				this.clonedBooking.recurring_days.push(dayIndex);
 			} else {
-				this.clonedBooking.days.splice(index, 1);
+				this.clonedBooking.recurring_days.splice(index, 1);
 			}
 
-			if (this.clonedBooking.days.length == 0) {
+			if (this.clonedBooking.recurring_days.length == 0) {
 				let dayName = dayjs(this.clonedBooking.date).format('dddd');
 				let dayIndex = this.days.indexOf(dayName);
-				this.clonedBooking.days.push(dayIndex);
+				this.clonedBooking.recurring_days.push(dayIndex);
 			}
 		},
 
 		setTimeslotDefaultDay(frequency) {
-			this.$set(this.clonedBooking, 'days', []);
+			if (!this.clonedBooking.recurring_days) {
+				this.$set(this.clonedBooking, 'recurring_days', []);
+			}
+			frequency = this.clonedBooking.recurring_frequency || frequency;
 			if (frequency == 'week') {
 				let dayName = dayjs(this.clonedBooking.date).format('dddd');
 				let dayIndex = this.days.indexOf(dayName);
-				let index = this.clonedBooking.days.indexOf(dayIndex);
-				if (index == -1 || this.clonedBooking.days.length == 1) {
-					this.clonedBooking.days.push(dayIndex);
+				let index = this.clonedBooking.recurring_days.indexOf(dayIndex);
+				if (index == -1 || this.clonedBooking.recurring_days.length == 1) {
+					this.clonedBooking.recurring_days.push(dayIndex);
 				}
 			} else if (frequency == 'month') {
 				this.clonedBooking.day_in_month = 'first_week';

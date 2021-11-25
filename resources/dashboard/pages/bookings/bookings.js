@@ -113,11 +113,11 @@ export default {
 	},
 
 	watch: {
-		ready: function(value) {
+		ready: function (value) {
 			this.$root.contentloading = !value;
 		},
 
-		selectedDate: function(value) {
+		selectedDate: function (value) {
 			if (value) this.error = null;
 			this.getTimeslots();
 		}
@@ -125,7 +125,7 @@ export default {
 
 	created() {
 		this.$root.contentloading = !this.ready;
-		this.getBookings({ paginate: true });
+		//this.getBookings({ paginate: true });
 		this.getServices();
 	},
 
@@ -145,8 +145,8 @@ export default {
 			await this.deleteBooking(booking);
 		},
 
-		async getData(page) {
-			this.getBookings({ page: page, paginate: true });
+		async getData() {
+			//this.getBookings({ page: page, paginate: true });
 		},
 
 		async updateSelectedBooking(selectedBooking) {
@@ -208,10 +208,7 @@ export default {
 					let timeslots = response.data;
 					if (this.selectedBooking.date == dateFormat) {
 						let parts = this.selectedBooking.start.split(':');
-						let label = dayjs()
-							.hour(parts[0])
-							.minute(parts[1])
-							.format('hh:mmA');
+						let label = dayjs().hour(parts[0]).minute(parts[1]).format('hh:mmA');
 						let timeslot = {
 							label: label,
 							time: this.selectedBooking.start
@@ -234,9 +231,7 @@ export default {
 
 		formatTime(time) {
 			let parts = time.split(':');
-			let date = dayjs()
-				.set('hour', parts[0])
-				.set('minute', parts[1]);
+			let date = dayjs().set('hour', parts[0]).set('minute', parts[1]);
 			return date.format('hh:mmA');
 		},
 

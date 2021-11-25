@@ -13,8 +13,6 @@ use  App\Http\SocialiteHelper;
 //     $email = new App\Mail\NewBooking($bookings, 'serviceUser');
 //     return $email;
 // });
-
-
 Route::group(
     [
         'domain' => config('app.url'),

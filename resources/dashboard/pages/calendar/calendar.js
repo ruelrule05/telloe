@@ -120,6 +120,7 @@ export default {
 		this.timezone = timezone.name();
 		this.selectedDate = dayjs().toDate();
 		this.getUpcomingBookingsData();
+		this.getBookings();
 		this.getGoogleCalendars().then(response => {
 			this.googleCalendars = response.data
 				.filter(calendar => {
@@ -151,7 +152,8 @@ export default {
 		...mapActions({
 			getUpcomingBookings: 'bookings/getUpcomingBookings',
 			getGoogleCalendars: 'bookings/getGoogleCalendars',
-			getOutlookCalendars: 'bookings/getOutlookCalendars'
+			getOutlookCalendars: 'bookings/getOutlookCalendars',
+			getBookings: 'bookings/index'
 		}),
 
 		async getOutlookCalendarEvents() {

@@ -95,7 +95,8 @@ class Service extends BaseModel
 
         $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
         ->where('service_id', $this->attributes['id'])
-        ->where('date', $dateString)->get());
+        ->where('date', $dateString)
+        ->get());
 
         $date = Carbon::parse($dateString, $this->timezone);
         $dayName = $date->format('l');
