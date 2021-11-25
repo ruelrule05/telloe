@@ -41,13 +41,17 @@ class BookingService
             ->where('user_id', $authUser->id)
             ->firstOrFail();
             $memberServiceIds = [];
+            $memberServiceParentIds = [];
             foreach ($organization->members as $member) {
                 foreach ($member->member->assignedServices as $memberService) {
                     $memberServiceIds[] = $memberService->id;
+                    $memberServiceParentIds[] = $memberService->parent_service_id;
                 }
             }
+            $userServicesIds = Auth::user()->services()->where('is_available', true)->whereIn('id', $memberServiceParentIds)->get()->pluck('id');
             $bookings = Booking::with(['service', 'bookingLink', 'bookingUsers.user'])
                 ->whereIn('service_id', $memberServiceIds)
+                ->orWhereIn('service_id', $userServicesIds)
                 ->has('service');
         } else {
             $bookings = Booking::whereHas('service', function ($service) {
