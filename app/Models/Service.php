@@ -93,10 +93,15 @@ class Service extends BaseModel
         $holidays = $this->holidays;
         $user = User::findOrFail($this->user_id);
 
-        $serviceBookings = collect(Booking::with('bookingNote', 'bookingUsers', 'service.user')
+        $serviceBookings = Booking::with('bookingNote', 'bookingUsers', 'service.user')
         ->where('service_id', $this->attributes['id'])
-        ->where('date', $dateString)
-        ->get());
+        ->where(function ($query) use ($dateString) {
+            $query->where('date', $dateString)->orWhere(function ($q) use ($dateString) {
+                $q->where('date', '>=', $dateString)->whereNotNull('recurring_end')->where('recurring_end', '<=', $dateString);
+            });
+        })
+        ->get();
+        $serviceBookings = collect(self::getRecurringBookings($serviceBookings));
 
         $date = Carbon::parse($dateString, $this->timezone);
         $dayName = $date->format('l');
@@ -129,7 +134,6 @@ class Service extends BaseModel
                     break;
                 }
             }
-            $endTime = $timeStart->copy()->add($this->attributes['interval'], 'minute')->format('H:i');
             $bookings = $serviceBookings->filter(function ($booking) use ($timeslot, $timeStart) {
                 $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
@@ -195,8 +199,6 @@ class Service extends BaseModel
             $timeslots[] = $timeslot;
             $timeStart->add($this->attributes['interval'] + $this->attributes['duration'], 'minute');
         }
-        //}
-        //}
 
         return $timeslots;
     }
@@ -245,5 +247,40 @@ class Service extends BaseModel
     public function getTimezoneAttribute($value)
     {
         return $value ?? $this->coach->timezone;
+    }
+
+    protected static function getRecurringBookings($bookings)
+    {
+        $bookings->each(function ($booking) use ($bookings) {
+            if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
+                $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                $timeslotDayName = Carbon::parse($booking->date, $booking->timezone)->format('l');
+                $startDate = Carbon::parse($booking->date, $booking->timezone)->addDay(1);
+                $endDate = Carbon::parse($booking->recurring_end, $booking->timezone);
+
+                while ($startDate->lessThan($endDate)) {
+                    $createBooking = false;
+                    if ($booking->recurring_frequency == 'week') {
+                        $dayIndex = array_search($startDate->clone()->format('l'), $days);
+                        if (in_array($dayIndex, $booking->recurring_days)) {
+                            $createBooking = true;
+                        }
+                    } elseif ($booking->recurring_frequency == 'month') {
+                        $dayName = $startDate->clone()->format('l');
+                        if ($dayName == $timeslotDayName && $startDate->clone()->weekOfMonth == 1) {
+                            $createBooking = true;
+                        }
+                    }
+                    if ($createBooking) {
+                        $clonedBooking = clone $booking;
+                        $clonedBooking->date = $startDate->clone()->format('Y-m-d');
+                        $bookings->push($clonedBooking);
+                    }
+                    $startDate->addDay(1);
+                }
+            }
+        });
+
+        return $bookings;
     }
 }
