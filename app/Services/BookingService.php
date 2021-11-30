@@ -38,7 +38,11 @@ class BookingService
         if ($request->organization_id) {
             $organization = Organization::with('members.member.assignedServices')
             ->where('id', $request->organization_id)
-            ->where('user_id', $authUser->id)
+            ->where(function ($query) use ($authUser) {
+                $query->where('user_id', $authUser->id)->orWhereHas('members.member', function ($member) use ($authUser) {
+                    $member->where('member_user_id', $authUser->id);
+                });
+            })
             ->firstOrFail();
             $memberServiceIds = [];
             $memberServiceParentIds = [];
@@ -583,7 +587,11 @@ class BookingService
         if ($request->organization_id) {
             $organization = Organization::with('members.member.assignedServices')
             ->where('id', $request->organization_id)
-            ->where('user_id', $authUser->id)
+            ->where(function ($query) use ($authUser) {
+                $query->where('user_id', $authUser->id)->orWhereHas('members.member', function ($member) use ($authUser) {
+                    $member->where('member_user_id', $authUser->id);
+                });
+            })
             ->firstOrFail();
             $memberServiceIds = [];
             foreach ($organization->members as $member) {

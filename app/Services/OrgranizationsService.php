@@ -58,14 +58,24 @@ class OrgranizationsService
 
     public static function index()
     {
-        return Auth::user()->organizations()->with('members.member.memberUser')->get();
+        $authUser = Auth::user();
+        $organizations = Organization::with('members.member.memberUser')->where(function ($query) use ($authUser) {
+            $query->where('user_id', $authUser->id)->orWhereHas('members.member', function ($member) use ($authUser) {
+                $member->where('member_user_id', $authUser->id);
+            });
+        })->get();
+        return $organizations;
     }
 
     public static function show(Organization $organization, Request $request)
     {
-        if ($organization->user_id != Auth::user()->id) {
-            return abort(403);
-        }
+        $authUser = Auth::user();
+        $organization = Organization::where('id', $organization->id)->with('members.member.memberUser')->where(function ($query) use ($authUser) {
+            $query->where('user_id', $authUser->id)->orWhereHas('members.member', function ($member) use ($authUser) {
+                $member->where('member_user_id', $authUser->id);
+            });
+        })->firstOrfail();
+
         return $organization->load('members.member.memberUser', 'members.member.assignedServices');
     }
 
