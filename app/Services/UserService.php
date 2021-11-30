@@ -398,6 +398,12 @@ class UserService
             $name = $guest['first_name'] . ' ' . $guest['last_name'];
         }
         $data['name'] = $name;
+
+        if ($request->end_date && $request->frequency && $request->days) {
+            $data['recurring_end'] = $request->end_date;
+            $data['recurring_frequency'] = $request->frequency;
+            $data['recurring_days'] = $request->days;
+        }
         $booking = Booking::create($data);
 
         if ($service->create_zoom_link && $service->coach->zoom_token) {
@@ -425,6 +431,7 @@ class UserService
             }
         }
 
+        // Check if Google Calendar is integrated
         if ($service && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
             $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
@@ -437,7 +444,7 @@ class UserService
                 ];
             }
             $time = time();
-            $event = new Google_Service_Calendar_Event([
+            $eventData = [
                 'id' => 'telloebooking' . $booking->id . $time,
                 'summary' => $data['name'],
                 'description' => $booking->service->description,
@@ -455,7 +462,25 @@ class UserService
                         'requestId' => time()
                     ]
                 ]
-            ]);
+            ]; 
+            if ($booking->zoom_link) {
+                $eventData['description'] .= "\n\nZoom link: " . $booking->zoom_link;
+            }
+            if ($request->end_date && $request->frequency && $request->days) {
+                $days = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+                $frequency = strtoupper($booking->recurring_frequency) . 'LY';
+                $date = Carbon::parse($booking->recurring_end)->toIso8601String();
+                $date = str_replace(['-', ':', '.'], '', $date);
+                $date = explode('+',$date);
+                $date = $date[0] . 'Z';
+                $byDays = [];
+                foreach ($booking->recurring_days as $recurringDay) {
+                    $byDays[] = $days[$recurringDay];
+                }
+                $byDays = implode(',', $byDays);
+                $eventData['recurrence'] = ["RRULE:FREQ=$frequency;BYDAY=$byDays;UNTIL=$date"];
+            }
+            $event = new Google_Service_Calendar_Event($eventData);
 
             try {
                 $params = [];
@@ -463,6 +488,9 @@ class UserService
                     $params = ['conferenceDataVersion' => 1];
                 }
                 $event = $googleService->events->insert($service->coach->google_calendar_id, $event, $params);
+                $booking->update([
+                    'google_event_id' => $event->id
+                ]);
 
                 if ($booking->meeting_type == 'Google Meet') {
                     $booking->update([
@@ -470,6 +498,76 @@ class UserService
                     ]);
                 }
             } catch (\Exception $e) {
+            }
+        }
+
+        // Check if Outlook Calendar is integrated
+        if ($service && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
+            $OutlookClient = new \App\Http\OutlookClient();
+            $graph = new \Microsoft\Graph\Graph();
+            if ($OutlookClient->accessToken) {
+                $graph->setAccessToken($OutlookClient->accessToken);
+                $outlookAttendees = [];
+                foreach ($attendees as $attendee) {
+                    $outlookAttendees[] = [
+                        'EmailAddress' => [
+                            'Address' => $attendee['email'],
+                        ]
+                    ];
+                }
+                $eventData = [
+                    'Subject' => $booking->service->name,
+                    'Body' => [
+                        'ContentType' => 'HTML',
+                        'Content' => $booking->service->description
+                    ],
+                    'Start' => [
+                        'DateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->format('Y-m-d\TH:i:s'),
+                        'TimeZone' => $booking->timezone,
+                    ],
+                    'End' => [
+                        'DateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->format('Y-m-d\TH:i:s'),
+                        'TimeZone' => $booking->timezone,
+                    ],
+                    'isReminderOn' => false,
+                    'Attendees' => $outlookAttendees,
+                    'transactionId' => 'telloebooking' . $booking->id . $time
+                ];
+
+                if ($booking->zoom_link) {
+                    $eventData['Body']['Content'] .= "\n\nZoom link: " . $booking->zoom_link;
+                }
+
+                if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
+                    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    $byDays = [];
+                    foreach ($booking->recurring_days as $recurringDay) {
+                        $byDays[] = $days[$recurringDay];
+                    }
+                    $eventData['Recurrence'] = [
+                        'pattern' => [
+                            'type' => $booking->recurring_frequency . 'ly',
+                            'interval' => 1,
+                            'daysOfWeek' => $byDays
+                        ],
+                        'range' => [
+                            'type' => 'endDate',
+                            'startDate' => $booking->date,
+                            'endDate' => $booking->recurring_end,
+                        ]
+                    ];
+                }
+
+                try {
+                    $event = $graph->createRequest('POST', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events") 
+                        ->attachBody($eventData)
+                        ->setReturnType(\Microsoft\Graph\Model\Event::class)
+                        ->execute();
+                    $booking->update([
+                        'outlook_event_id' => $event->getProperties()['id']
+                    ]);
+                } catch (\Exception $e) {
+                }
             }
         }
 

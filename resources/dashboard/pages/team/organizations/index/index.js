@@ -74,6 +74,7 @@ export default {
 					let memberCopy = Object.assign({}, member);
 					members.push({
 						name: memberCopy.member_user.full_name,
+						email: memberCopy.member_user.email,
 						value: memberCopy
 					});
 				}

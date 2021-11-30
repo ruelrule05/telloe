@@ -25,13 +25,14 @@
 
 		<div v-else class="flex-grow">
 			<div class="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-6 md:gap-8 p-6 md:p-8">
-				<div v-for="organization in organizations" class="rounded-2xl bg-secondary-light p-4 w-full" :key="organization.id">
+				<div v-for="organization in organizations" class="rounded-2xl bg-secondary-light p-4 w-full relative" :key="organization.id">
+					<span v-if="organization.user_id != $root.auth.id" class="assigned"> ASSIGNED</span>
 					<div class="flex justify-between">
 						<div class="overflow-hidden">
 							<router-link :to="`/dashboard/team/organizations/${organization.id}`" class="text-primary font-bold truncate">{{ organization.name }}</router-link>
 							<p class="text-muted text-sm font-bold truncate">{{ organization.slug }}</p>
 						</div>
-						<div>
+						<div v-if="organization.user_id == $root.auth.id">
 							<VueDropdown :options="['Booking Page', 'Edit', 'Delete']" @click="orgAction($event, organization)" class="-mr-2 -mt-2">
 								<template #button>
 									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
