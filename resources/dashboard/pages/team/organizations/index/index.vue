@@ -153,7 +153,6 @@
 
 						<div class="mb-4 mb-1">
 							<label>Add Members</label>
-
 							<multiselect v-model="clonedOrganization.members" label="name" track-by="email" :options="membersList" :showLabels="false" placeholder="" multiple>
 								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 								<span slot="noResult" class="text-muted text-sm">No members found.</span>

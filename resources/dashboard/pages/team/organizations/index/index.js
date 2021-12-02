@@ -153,6 +153,7 @@ export default {
 					let clonedOrganization = JSON.parse(JSON.stringify(org));
 					clonedOrganization.members.forEach(m => {
 						m.name = m.member.member_user.full_name;
+						m.email = m.member.member_user.email;
 					});
 					this.clonedOrganization = clonedOrganization;
 					this.$refs.editModal.show();
