@@ -564,12 +564,13 @@ export default {
 		async LoginAndBook() {
 			this.bookingLoading = true;
 			let timeslots = this.selectedTimeslots.map(timeslot => {
-				let clonedTimeslot = JSON.parse(JSON.stringify(timeslot));
-				if (clonedTimeslot.end_date) {
-					clonedTimeslot.end_date = dayjs(clonedTimeslot.end_date).format('YYYY-MM-DD');
+				if (timeslot.end_date) {
+					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 				}
-				clonedTimeslot.type = clonedTimeslot.type.type;
-				return clonedTimeslot;
+				timeslot.type = timeslot.type.type;
+				timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+
+				return timeslot;
 			});
 
 			let data = JSON.parse(JSON.stringify(this.user));
@@ -604,6 +605,8 @@ export default {
 						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 					}
 					timeslot.type = timeslot.type.type;
+					timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+
 					return timeslot;
 				});
 
@@ -640,6 +643,8 @@ export default {
 						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
 					}
 					timeslot.type = timeslot.type.type;
+					timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+
 					return timeslot;
 				});
 

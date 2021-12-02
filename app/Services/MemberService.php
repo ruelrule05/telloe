@@ -167,6 +167,7 @@ class MemberService
     public function destroy(Member $member)
     {
         $this->authorize('delete', $member);
+        Service::where('member_id', $member->id)->delete();
         return ['deleted' => $member->delete()];
     }
 

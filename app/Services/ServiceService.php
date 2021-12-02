@@ -24,7 +24,17 @@ class ServiceService
             });
         }])
         ->with('assignedServices.member.memberUser')
-        ->where('user_id', $auth_user->id)
+        ->where(function ($query) use ($auth_user) {
+            $query->where(function ($q) use ($auth_user) {
+                $q->whereNull('parent_service_id')->where('user_id', $auth_user->id);
+            })->orWhere(function ($q) use ($auth_user) {
+                $q->whereNotNull('parent_service_id')->whereHas('parentService.assignedServices', function ($assignedServices) use ($auth_user) {
+                    $assignedServices->whereHas('member', function ($member) use ($auth_user) {
+                        $member->where('is_pending', false)->where('member_user_id', $auth_user->id);
+                    });
+                });
+            });
+        })
         ->where('type', 'custom')
         ->latest();
         if ($request->paginate) {
@@ -91,6 +101,10 @@ class ServiceService
         }
 
         $service->update($request->all());
+
+        Service::where('parent_service_id', $service->id)->update([
+            'form_builder' => $request->form_builder
+        ]);
 
         return $service;
     }
