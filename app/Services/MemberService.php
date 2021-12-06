@@ -28,7 +28,6 @@ class MemberService
             ->withCount('assignedServices')
             ->where('user_id', Auth::user()->id)
             ->orderBy('created_at', 'DESC');
-        //->where('member_user_id', '!=', null);
 
         if ($query) {
             $members = $members->whereHas('memberUser', function ($memberUser) use ($query) {
@@ -140,9 +139,9 @@ class MemberService
         foreach ($request->assigned_services as $assigned_service) {
             $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
             if ($service) {
-                $assignedService = Service::withTrashed()->where('user_id', $member->member_user_id)->where('parent_service_id', $service->id)->first();
+                $assignedService = Service::withTrashed()->where('member_id', $member->id)->where('parent_service_id', $service->id)->first();
                 if ($assignedService && $assignedService->deleted_at) {
-                    Service::withTrashed()->where('user_id', $member->member_user_id)->where('parent_service_id', $service->id)->restore();
+                    $assignedService->restore();
                 } elseif (! $assignedService) {
                     $assignedService = $service->replicate();
                     $assignedService->user_id = $member->member_user_id;

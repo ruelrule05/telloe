@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,10 +26,7 @@ class Member extends BaseModel
 
     public function assignedServices()
     {
-        $authUser = Auth::user();
-        return $this->hasMany(Service::class)->whereHas('parentService', function ($parentService) use ($authUser) {
-            $parentService->where('user_id', $authUser->id);
-        })->orderBy('created_at', 'DESC');
+        return $this->hasMany(Service::class, 'member_id', 'id');
     }
 
     public function memberUser()
