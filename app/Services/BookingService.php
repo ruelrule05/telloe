@@ -93,8 +93,12 @@ class BookingService
         $booking = Booking::with('service.user', 'bookingUsers.user')->where('uuid', $uuid)->firstOrFail();
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);
+        $description = $booking->service->description;
+        if ($booking->zoom_link) {
+            $description .= "\n\nZoom link: " . $booking->zoom_link;
+        }
         $link = Link::create($booking->name, $from, $to)
-            ->description($booking->service->description);
+            ->description($description);
 
         $booking->google_link = $link->google();
         $booking->outlook_link = url('/ics?name=' . $booking->name . '&data=' . $link->ics());
@@ -135,8 +139,12 @@ class BookingService
         $booking = Booking::create($data);
         $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
         $to = $from->clone()->addMinute($booking->service->duration ?? 30);
+        $description = $booking->service->description;
+        if ($booking->zoom_link) {
+            $description .= "\n\nZoom link: " . $booking->zoom_link;
+        }
         $link = Link::create($data['name'], $from, $to)
-                ->description($booking->service->description);
+                ->description($description);
         $attendees = [
             ['email' => $service->coach->email]
         ];

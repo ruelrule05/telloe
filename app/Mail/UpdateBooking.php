@@ -61,8 +61,12 @@ class UpdateBooking extends Mailer
         $from = Carbon::parse("$booking->date $booking->start");
         $to = $from->clone()->addMinute($booking->service->duration);
 
+        $description = $booking->service->description;
+        if ($booking->zoom_link) {
+            $description .= "\n\nZoom link: " . $booking->zoom_link;
+        }
         $this->link = Link::create($booking->service->name, $from, $to)
-            ->description($booking->service->description);
+            ->description($description);
     }
 
     /**
