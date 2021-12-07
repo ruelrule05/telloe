@@ -41,8 +41,13 @@ class NewBooking extends Mailer
             $booking->url = config('app.url') . '/bookings/' . $booking->uuid;
             $from = Carbon::parse("$booking->date $booking->start");
             $to = $from->clone()->addMinute($booking->service->duration);
+            $description = $booking->service->description;
+            if ($booking->zoom_link) {
+                $description .= "\n\nZoom link: " . $booking->zoom_link;
+            }
+
             $link = Link::create($booking->service->name, $from, $to)
-                ->description($booking->service->description);
+                ->description($description);
 
             $booking->google_link = $link->google();
             $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
