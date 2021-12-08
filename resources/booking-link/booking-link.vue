@@ -2,7 +2,7 @@
 	<div>
 		<div class="border-bottom py-6">
 			<div class="container mx-auto">
-				<a href="/"><img src="/telloe.svg" alt="Telloe" class="h-5"/></a>
+				<a href="/"><img src="/telloe.svg" alt="Telloe" class="h-5" /></a>
 			</div>
 		</div>
 		<div class="container">
@@ -33,7 +33,7 @@
 					<div class="relative mt-10">
 						<div class="overflow-x-scroll overflow-y-visible pb-1" style="margin-left: 200px">
 							<table class="timeslots-table" cellspacing="0" cellpadding="0">
-								<tr>
+								<tr v-if="auth.email && auth.email != bookingLink.user.email">
 									<td></td>
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 										<div v-if="!bookingLink.is_booked && editable" class="text-center px-2 bg-white relative z-10">
@@ -43,7 +43,7 @@
 								</tr>
 
 								<!-- You -->
-								<tr v-if="auth.email">
+								<tr v-if="auth.email && auth.email != bookingLink.user.email">
 									<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
 										<div class="flex items-center py-3 -ml-3">
 											<div>
@@ -59,35 +59,9 @@
 									</td>
 
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-										<div class="items-center column  mt-4 bg-primary-ultralight">
+										<div class="items-center column mt-4 bg-primary-ultralight">
 											<div class="timeslot-content" :class="{ selected: hasSelected(auth, timeslot) }">
 												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
-											</div>
-										</div>
-									</td>
-								</tr>
-
-								<!-- Coach -->
-
-								<tr v-if="!auth.email || auth.email != bookingLink.user.email">
-									<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
-										<div class="flex items-center py-3 -ml-3">
-											<div>
-												<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + bookingLink.user.profile_image + ')' }">
-													<span v-if="!bookingLink.user.profile_image">{{ bookingLink.user.initials }}</span>
-												</div>
-											</div>
-											<div class="pl-2 overflow-hidden">
-												<p class="text-sm whitespace-nowrap truncate">{{ bookingLink.user.full_name }}</p>
-												<p class="flex items-center tracking-wide text-xxs text-muted">{{ bookingLink.user.timezone }}</p>
-											</div>
-										</div>
-									</td>
-
-									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
-										<div class="items-center column  mt-4 bg-primary-ultralight">
-											<div class="timeslot-content" :class="{ selected: hasSelected(bookingLink.user, timeslot) }">
-												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, bookingLink.user.timezone)"></p>
 											</div>
 										</div>
 									</td>
@@ -148,9 +122,9 @@
 								<tr>
 									<td></td>
 									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex">
-										<div class="timeslots-matched" :class="{ show: isBookable(timeslot) }">
+										<div v-if="bookingLink.booking_link_contacts.length + bookingLink.emails.length > 1" class="timeslots-matched" :class="{ show: isBookable(timeslot) }">
 											<div>
-												<span><CheckmarkIcon class="absolute-center w-3 h-3"/></span>
+												<span><CheckmarkIcon class="absolute-center w-3 h-3" /></span>
 											</div>
 											<span class="text-sm">Matched</span>
 										</div>
@@ -204,9 +178,7 @@
 				<Modal ref="bookingSuccessModal" noBackdropHide size="sm">
 					<div v-if="booking">
 						<h6 class="text-primary font-serif text-3xl font-semibold leading-none mb-8">WELL DONE! BOOKING CONFIRMED.</h6>
-						<p class="mb-8">
-							A calendar invite is on it’s way to your e-mail address.
-						</p>
+						<p class="mb-8">A calendar invite is on it’s way to your e-mail address.</p>
 						<h4 class="mb-2 font-bold text-xl">{{ bookingLink.name }}</h4>
 						<div class="text-sm">
 							<span class="text-muted font-bold inline-flex"><ClockIcon class="fill-current mr-2"></ClockIcon>{{ bookingLink.duration }} min</span> &nbsp;&nbsp;&nbsp; Booking with <strong>{{ bookingLink.user.full_name }}</strong>

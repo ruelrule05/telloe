@@ -118,7 +118,7 @@ export default {
 	},
 
 	watch: {
-		selectedDate: function() {
+		selectedDate: function () {
 			if (this.currentTarget) {
 				this.channel.whisper('move', {
 					user: this.auth,
@@ -280,7 +280,7 @@ export default {
 			} else {
 				this.$delete(this.bookingLink.selected_timeslots, propName);
 			}
-			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink, { toast: true });
+			window.axios.put(`/booking-links/${this.bookingLink.id}`, this.bookingLink);
 			this.channel.whisper('selectTimeslot', {
 				key: propName,
 				value: timeslot.time,
@@ -382,10 +382,7 @@ export default {
 			let hour = map.get('hour');
 			const minute = map.get('minute');
 			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
+			const ms = date.getMilliseconds().toString().padStart(3, '0');
 			if (hour == '24') hour = '00';
 			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 			const lie = new Date(iso + 'Z');

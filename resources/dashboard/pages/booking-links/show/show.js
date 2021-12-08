@@ -78,7 +78,7 @@ export default {
 	},
 
 	watch: {
-		selectedDate: function() {
+		selectedDate: function () {
 			if (this.currentTarget) {
 				this.channel.whisper('move', {
 					user: this.auth,
@@ -134,14 +134,14 @@ export default {
 		}
 	},
 
-	beforeDestroy: function() {
+	beforeDestroy: function () {
 		let helpcrunch = document.querySelector('.helpcrunch-iframe-wrapper iframe');
 		if (helpcrunch) {
 			helpcrunch.style.setProperty('visibility', 'visible', 'important');
 		}
 	},
 
-	destroyed: function() {
+	destroyed: function () {
 		this.$root.showHelpWidget = true;
 	},
 
@@ -165,7 +165,7 @@ export default {
 				date: dayjs(this.selectedDate).format('YYYY-MM-DD'),
 				start: timeslot.time
 			};
-			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data, { toast: true });
+			let response = await window.axios.post(`/booking-links/${this.bookingLink.uuid}/book`, data);
 			if (response.data) {
 				this.booking = response.data;
 				this.$refs.bookingSuccessModal.show();
@@ -250,7 +250,7 @@ export default {
 		async toggleTimeslot(timeslot) {
 			let index = this.bookingLink.dates[this.selectedDate].timeslots.findIndex(x => x.time == timeslot.time);
 			if (index != -1) {
-				this.bookingLink.dates[this.selectedDate].timeslots[index].is_available = true;
+				this.bookingLink.dates[this.selectedDate].timeslots[index].is_available = !this.bookingLink.dates[this.selectedDate].timeslots[index].is_available;
 			}
 
 			// update bookingLink
@@ -329,10 +329,7 @@ export default {
 			let hour = map.get('hour');
 			const minute = map.get('minute');
 			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
+			const ms = date.getMilliseconds().toString().padStart(3, '0');
 			if (hour == '24') hour = '00';
 			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 			const lie = new Date(iso + 'Z');

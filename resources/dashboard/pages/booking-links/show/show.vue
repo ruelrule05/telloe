@@ -14,7 +14,7 @@
 							<span class="-bottom-px relative"> {{ dayjs(dateKey).format('MMMM D YYYY') }} </span>
 						</div>
 					</div>
-					<div class="flex items-center order-1 lg:order-none service__show-menus">
+					<div v-if="!bookingLink.is_booked" class="flex items-center order-1 lg:order-none service__show-menus">
 						<button type="button" class="btn btn-sm btn-outline-primary" @click="$refs.sendModal.show()"><span>Send email invitation</span></button>
 						<button type="button" class="btn btn-sm btn-outline-primary mx-2 mt-1 md:mt-0" @click="copyToClipboard()"><span>Copy link</span></button>
 						<VueDropdown :options="['Send email invitation', 'Copy link', 'Delete']" @click="action">
@@ -32,11 +32,10 @@
 							<tr>
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right timeslot-heading">
-									<div class="text-center px-2 bg-white relative z-10">
-										<div v-if="!timeslot.is_available" class="absolute top-px z-10 left-0 w-full px-1">
-											<button class="bg-primary btn-open-timeslot rounded-full text-xs text-white py-1 w-full" type="button" @click="toggleTimeslot(timeslot)"><span>Open</span></button>
-										</div>
-										<VueCheckbox v-if="!bookingLink.is_booked && editable" :disabled="timeslot.is_available ? false : true" :value="hasSelected($root.auth, timeslot)" @input="toggleSelectTimeslot($event, timeslot)"></VueCheckbox>
+									<div class="text-center px-2 bg-white relative z-10 -mb-4">
+										<button class="bg-primary btn-open-timeslot rounded-full text-xs text-white p-1 w-full mb-1" type="button" @click="toggleTimeslot(timeslot)">
+											<span>{{ timeslot.is_available ? 'Close' : 'Open' }}</span>
+										</button>
 									</div>
 								</td>
 							</tr>
@@ -88,7 +87,7 @@
 												<span v-if="!contact.contact.profile_image">{{ contact.contact.initials }}</span>
 											</div>
 										</span>
-										<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: contact.color }">
+										<div class="items-center column mt-4 px-1" :style="{ backgroundColor: contact.color }">
 											<div class="timeslot-content" :class="{ selected: hasSelected(contact.contact.contact_user, timeslot) }">
 												<p class="text-center" v-html="timeslotTime(timeslot.time, contact.contact.contact_user.timezone)"></p>
 											</div>
@@ -118,7 +117,7 @@
 											<span>{{ email.email[0] }}</span>
 										</div>
 									</span>
-									<div class="items-center column  mt-4 px-1" :style="{ backgroundColor: email.color }">
+									<div class="items-center column mt-4 px-1" :style="{ backgroundColor: email.color }">
 										<div class="timeslot-content" :class="{ selected: hasSelected(email, timeslot) }">
 											<p class="text-center" v-html="timeslotTime(timeslot.time, email.timezone)"></p>
 										</div>
@@ -140,9 +139,7 @@
 
 		<Modal ref="deleteModal">
 			<h6 class="font-serif font-semibold mb-5 uppercase text-center">Delete Match Up Link</h6>
-			<p class="text-center mt-3">
-				Are you sure to delete this match up link?
-			</p>
+			<p class="text-center mt-3">Are you sure to delete this match up link?</p>
 			<div class="flex items-center justify-between mt-6">
 				<button class="btn btn-outline-primary btn-md" type="button" @click="$refs.deleteModal.hide()">
 					<span>Cancel</span>
