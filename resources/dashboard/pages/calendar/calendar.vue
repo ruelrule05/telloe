@@ -60,7 +60,10 @@
 		</div>
 
 		<div class="p-3 flex flex-col md:flex-row items-center justify-between border-bottom">
-			<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
+			<div class="flex items-center">
+				<VueSelect class="w-full md:w-auto mr-1" :options="calendars" drop-position="bottom-right" v-model="selectedCalendar"></VueSelect>
+				<VueSelect class="w-full md:w-auto" label="Timezone" :options="availableTimezones" drop-position="w-full" searchable v-model="timezone"></VueSelect>
+			</div>
 			<div class="flex align-center">
 				<VueSelect v-if="googleCalendars.length" multiple label="Google Calendar" :loading="googleCalendarEventsLoading" class="w-full md:w-auto mt-1 md:mt-0" :options="googleCalendars" placeholder="Select Calendar" @input="updateGoogleCalendar" v-model="$root.auth.google_calendar_id" dropPosition="w-full"></VueSelect>
 				<VueSelect v-if="outlookCalendars.length" multiple label="Outlook Calendar" :loading="outlookCalendarEventsLoading" class="ml-2 w-full md:w-auto mt-1 md:mt-0" :options="outlookCalendars" placeholder="Select Calendar" @input="updateOutlookCalendar" v-model="$root.auth.outlook_calendar_id" dropPosition="w-full"></VueSelect>

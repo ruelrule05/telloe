@@ -19,6 +19,9 @@
 	&.top {
 		@apply bottom-11 top-auto origin-bottom;
 	}
+	&.bottom-right {
+		@apply right-auto left-0;
+	}
 }
 .search-input {
 	@apply px-3 py-1 font-normal ring-opacity-0;

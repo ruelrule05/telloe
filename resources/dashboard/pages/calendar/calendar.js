@@ -42,14 +42,27 @@ export default {
 		googleCalendarEventsLoading: false,
 		outlookCalendars: [],
 		outlookCalendarEvents: [],
-		outlookCalendarEventsLoading: false
+		outlookCalendarEventsLoading: false,
+		selectedCalendar: 'my_calendar'
 	}),
 
 	computed: {
 		...mapState({
 			upcomingBookings: state => state.bookings.upcoming,
-			bookings: state => state.bookings.index
+			bookings: state => state.bookings.index,
+			organizations: state => state.organizations.index
 		}),
+
+		calendars() {
+			let calendars = [{ text: 'My Calendar', value: 'my_calendar' }];
+			this.organizations.forEach(organization => {
+				calendars.push({
+					text: organization.name,
+					value: organization.id
+				});
+			});
+			return calendars;
+		},
 
 		upcomingBookingsTz() {
 			return this.bookingsTimezone(this.upcomingBookings);
@@ -113,6 +126,17 @@ export default {
 	watch: {
 		view: function () {
 			this.$refs.toggleViewBtn.blur();
+		},
+		selectedCalendar: async function (value) {
+			let organizationData = null;
+			if (value != 'my_calendar') {
+				organizationData = { organization_id: value };
+			}
+
+			this.loading = true;
+			await this.getUpcomingBookings(organizationData);
+			await this.getBookings(organizationData);
+			this.loading = false;
 		}
 	},
 
@@ -144,8 +168,8 @@ export default {
 			});
 		});
 		this.getOutlookCalendarEvents();
-
 		this.checkCookie();
+		this.getOrganizations();
 	},
 
 	methods: {
@@ -153,7 +177,8 @@ export default {
 			getUpcomingBookings: 'bookings/getUpcomingBookings',
 			getGoogleCalendars: 'bookings/getGoogleCalendars',
 			getOutlookCalendars: 'bookings/getOutlookCalendars',
-			getBookings: 'bookings/index'
+			getBookings: 'bookings/index',
+			getOrganizations: 'organizations/index'
 		}),
 
 		async getOutlookCalendarEvents() {

@@ -1,5 +1,5 @@
 
-@if(config('app.env') != 'production')
+@if(config('app.env') == 'production')
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-176150819-1"></script>
   <script>
