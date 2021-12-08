@@ -1,6 +1,6 @@
 <template>
 	<div class="relative">
-		<label v-if="field.type != 'header' && field.type != 'paragraph'" :for="field.name" :required="field.required">{{ field.label }}</label>
+		<label v-if="field.type != 'header' && field.type != 'paragraph'" :for="field.name" :required="field.required">{{ strip(field.label) }}</label>
 
 		<!-- Checkbox group -->
 		<div v-if="field.type == 'checkbox-group'">
@@ -83,6 +83,12 @@ export default {
 	},
 
 	methods: {
+		strip(html) {
+			var tmp = document.implementation.createHTMLDocument('New').body;
+			tmp.innerHTML = html;
+			return tmp.textContent || tmp.innerText || '';
+		},
+
 		updateSelect(value) {
 			this.fieldValue = value;
 		},
