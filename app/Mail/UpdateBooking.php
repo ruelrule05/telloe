@@ -58,15 +58,19 @@ class UpdateBooking extends Mailer
 
         $this->actionUrl = config('app.url') . '?auth=login';
 
-        $from = Carbon::parse("$booking->date $booking->start");
-        $to = $from->clone()->addMinute($booking->service->duration);
+        $from = Carbon::parse("$booking->date $booking->start", $booking->timezone);
+        $to = Carbon::parse("$booking->date $booking->end", $booking->timezone);
 
         $description = $booking->service->description;
         if ($booking->zoom_link) {
             $description .= "\n\nZoom link: " . $booking->zoom_link;
         }
-        $this->link = Link::create($booking->service->name, $from, $to)
+        $link = Link::create($booking->customName ?? $booking->name, $from, $to)
             ->description($description);
+       $booking->google_link = $link->google();
+       $booking->outlook_link = url('/ics?name=' . $booking->name . '&data=' . $link->ics());
+       $booking->yahoo_link = $link->yahoo();
+       $booking->ical_link = $booking->outlook_link;
     }
 
     /**

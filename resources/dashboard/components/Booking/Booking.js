@@ -161,6 +161,28 @@ export default {
 			});
 		},
 
+		manageBookingMembersOptions() {
+			let membersOptions = [];
+			if (this.organization) {
+				membersOptions = JSON.parse(JSON.stringify(this.organization.members));
+				membersOptions = membersOptions.filter(member => {
+					return member.member.assigned_services.find(x => x.id == this.clonedBooking.service.id || x.parent_service_id == this.clonedBooking.service.id);
+				});
+			}
+			membersOptions = membersOptions.map(member => {
+				let assignedService = member.member.assigned_services.find(x => x.id == this.clonedBooking.service.id || x.parent_service_id == this.clonedBooking.service.id);
+				return { text: member.member.full_name, value: assignedService.id };
+			});
+			let parentService = this.services.find(x => (x.id == this.clonedBooking.service.parent_service_id ? this.clonedBooking.service.parent_service_id : this.clonedBooking.service_id));
+			if (parentService) {
+				membersOptions.unshift({
+					text: this.$root.auth.full_name + ' (You)',
+					value: parentService.id
+				});
+			}
+			return membersOptions;
+		},
+
 		contactsOptions() {
 			return this.contacts.map(contact => {
 				let email = '';
