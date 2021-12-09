@@ -9,7 +9,7 @@ use  App\Http\Controllers\BookingController;
 use  App\Http\SocialiteHelper;
 
 // Route::get('/test', function(){
-//     $bookings = [App\Models\Booking::latest()->first()];
+//     $bookings = [App\Models\Booking::whereNotNull('service_id')->latest()->first()];
 //     $email = new App\Mail\NewBooking($bookings, 'serviceUser');
 //     return $email;
 // });

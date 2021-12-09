@@ -290,13 +290,14 @@ export default {
 			this.selectedDate = dayjs(this.selectedDate).add(1, 'day').toDate();
 		},
 
-		bookingUpdated(booking) {
-			if (booking.id == this.selectedBooking.id) {
-				this.selectedBooking.date = dayjs(booking.date).format('YYYY-MM-DD');
-				this.selectedBooking.start = booking.start;
-				this.selectedBooking.end = booking.end;
-			}
+		bookingUpdated() {
 			this.selectedBooking = null;
+			if (this.$refs.weekView) {
+				this.$refs.weekView.getWeekBookings();
+			}
+			if (this.$refs.dayView) {
+				this.$refs.dayView.getDayBookings({ date: dayjs(this.selectedDate).format('YYYY-MM-DD'), commit: false });
+			}
 		},
 
 		eventClick(event) {

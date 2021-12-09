@@ -31,10 +31,15 @@ const mutations = {
 	},
 
 	update(state, data) {
-		let booking = state.index.find(x => x.id == data.id);
-		if (booking) {
-			Object.assign(booking, data);
-		}
+		data.forEach(d => {
+			let booking = state.index.find(x => x.id == d.id);
+			if (!booking) {
+				booking = state.paginated.data.find(x => x.id == d.id);
+			}
+			if (booking) {
+				Object.assign(booking, d);
+			}
+		});
 	},
 
 	delete(state, id) {

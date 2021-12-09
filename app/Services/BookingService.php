@@ -348,6 +348,13 @@ class BookingService
         $booking = Booking::findOrFail($id);
         $service = $booking->service;
 
+
+        $newService = Service::where('id', $request->service_id)->where(function($query) use ($request, $authUser) {
+            $query->where('user_id', $authUser->id)->orWhereHas('parentService', function($parentService) use ($authUser) {
+                $parentService->where('user_id', $authUser->id);
+            });
+        })->firstOrFail();
+
         $data = $request->validated();
         if (isset($request->recurring_frequency) && isset($request->recurring_end) && isset($request->recurring_days)) {
             $data['recurring_end'] = $request->recurring_end;

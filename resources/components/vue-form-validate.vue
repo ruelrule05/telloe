@@ -1,5 +1,7 @@
 <template>
-	<form ref="form" @submit.prevent="submit($event)"><slot></slot></form>
+	<div>
+		<form ref="form" @submit.prevent="submit($event)"><slot></slot></form>
+	</div>
 </template>
 
 <script>

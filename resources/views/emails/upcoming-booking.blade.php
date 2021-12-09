@@ -42,10 +42,10 @@
             @if( $booking->metadata)
                 <div style="margin-top: -15px; margin-bottom: 15px">
                     @if( isset($booking->metadata['phone']))
-                        <a target="_blank" href="tel:$booking->metadata['phone']" style="display: inline-block;border-radius: 5px; padding: 6px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-top:5px; color: #555">{{ $booking->metadata['phone'] }}</a>
+                        <a target="_blank" href="tel:{{ $booking->metadata['phone'] }}" style="display: inline-block;border-radius: 5px; padding: 6px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-top:5px; color: #555">{{ $booking->metadata['phone'] }}</a>
                     @endif
                     @if( isset($booking->metadata['skype']))
-                        <a target="_blank" href="skype:$booking->metadata['phone']?chat" style="display: inline-block;border-radius: 5px; padding: 6px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-top: 5px; color: #555">{{ $booking->metadata['skype'] }}</a>
+                        <a target="_blank" href="skype:{{ $booking->metadata['skype'] }}?chat" style="display: inline-block;border-radius: 5px; padding: 6px 10px; background-color: #f8f8f9; display: inline-block;  font-weight: 600; margin-top: 5px; color: #555">{{ $booking->metadata['skype'] }}</a>
                     @endif
                 </div>
             @endif

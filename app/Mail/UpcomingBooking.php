@@ -27,14 +27,14 @@ class UpcomingBooking extends Mailer
         if ($booking->zoom_link) {
             $description .= "\n\nZoom link: " . $booking->zoom_link;
         }
-        $from = Carbon::parse("$booking->date $booking->start");
-        $to = $from->clone()->addMinute($booking->service->duration);
-        $link = Link::create($booking->service->name, $from, $to)
+        $from = Carbon::parse("$booking->date $booking->start", $booking->timezone);
+        $to = Carbon::parse("$booking->date $booking->end", $booking->timezone);
+        $link = Link::create($booking->name, $from, $to)
             ->description($description);
         $this->timezone = $booking->timezone;
 
         $booking->google_link = $link->google();
-        $booking->outlook_link = url('/ics?name=' . $booking->service->name . '&data=' . $link->ics());
+        $booking->outlook_link = url('/ics?name=' . $booking->name . '&data=' . $link->ics());
         $booking->yahoo_link = $link->yahoo();
         $booking->ical_link = $booking->outlook_link;
 

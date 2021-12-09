@@ -13,7 +13,7 @@
 						<VueSelect :disabled="disableServiceSelect" :options="servicesOptions" :required="organization ? true : false" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service" dropPosition="w-full" clearable></VueSelect>
 						<template v-if="organization">
 							<label required>Member</label>
-							<VueSelect :options="membersOptions" :disabled="clonedBooking.service ? false : true" required :placeholder="clonedBooking.service ? 'Select member' : 'Choose an event type above'" class="mb-4" v-model="clonedBooking.member" dropPosition="w-full" clearable></VueSelect>
+							<VueSelect :options="membersOptions" :disabled="clonedBooking.service ? false : true" required :placeholder="clonedBooking.service ? 'Select member' : 'Choose an event type above'" class="mb-4" v-model="clonedBooking.member" dropPosition="w-full"></VueSelect>
 						</template>
 						<v-date-picker
 							class="relative"
@@ -146,151 +146,153 @@
 			<template v-else>
 				<!-- Booking -->
 				<template v-if="!clonedBooking.type">
-					<div class="flex-grow">
-						<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.name }}</h5>
+					<vue-form-validate @submit="update" class="flex flex-col h-full">
+						<div class="flex-grow">
+							<h5 class="font-semibold text-xl mb-4">{{ clonedBooking.name }}</h5>
 
-						<div v-if="clonedBooking.service && clonedBooking.service.type == 'custom'" class="my-4">
-							<label class="block -mb-px">Event Type</label>
-							<div class="font-semibold">{{ clonedBooking.service.name }}</div>
-						</div>
-
-						<div v-if="organization" class="mb-4">
-							<label class="block -mb-px">Member</label>
-							<div class="font-semibold">{{ clonedBooking.service.user.full_name }}</div>
-						</div>
-
-						<v-date-picker class="relative" v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
-							<template v-slot="{ inputValue, inputEvents }">
-								<label>Date</label>
-								<div class="input-prefix">
-									<div class="input-icon">
-										<CalendarIcon></CalendarIcon>
-									</div>
-									<input type="text" :value="inputValue" v-on="inputEvents" />
-								</div>
-							</template>
-						</v-date-picker>
-
-						<div class="my-4">
-							<label>Timezone</label>
-							<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
-						</div>
-
-						<div class="my-4">
-							<div class="flex mb-3 text-muted btn-tabs">
-								<div class="btn-tab" :class="{ active: !selectFromTimeslots }" @click="selectFromTimeslots = false">
-									<span>FROM-TO</span>
-								</div>
-								<div class="btn-tab" :class="{ active: selectFromTimeslots }" @click="selectFromTimeslots = true">
-									<span>TIMESLOTS</span>
-								</div>
+							<div v-if="clonedBooking.service && clonedBooking.service.type == 'custom'" class="my-4">
+								<label class="block -mb-px">Event Type</label>
+								<div class="font-semibold">{{ clonedBooking.service.name }}</div>
 							</div>
 
-							<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-hidden rounded-lg pb-1 timeslots-table">
-								<table class="w-full relative z-10" cellspacing="0" cellpadding="0">
-									<tr class="relative">
-										<template v-for="(timeslot, timeslotIndex) in timeslots">
-											<td v-if="timeslot.is_available" :key="timeslotIndex" class="border-right text-center" :class="{ selected: selectedTimeslot.time == timeslot.time }">
-												<div class="bg-white pb-2">
-													<VueCheckbox :value="clonedBooking.start == timeslot.time" @input="selectTimeslot($event, timeslot)"></VueCheckbox>
-												</div>
-												<div class="px-1 pt-1 bg-gray-50">
-													<div class="items-center column bg-primary-400">
-														<div class="timeslot-content">
-															<p class="text-center" v-html="timeslotTime(timeslot)"></p>
+							<div v-if="organization" class="mb-4">
+								<label required>Member</label>
+								<VueSelect :options="manageBookingMembersOptions" :disabled="clonedBooking.service ? false : true" required :placeholder="clonedBooking.service ? 'Select member' : 'Choose an event type above'" class="mb-4" v-model="clonedBooking.service_id" dropPosition="w-full"></VueSelect>
+							</div>
+
+							<v-date-picker class="relative" is-required v-model="clonedBooking.date" :masks="masks" :popover="{ visibility: 'focus' }">
+								<template v-slot="{ inputValue, inputEvents }">
+									<label required>Date</label>
+									<div class="input-prefix">
+										<div class="input-icon">
+											<CalendarIcon></CalendarIcon>
+										</div>
+										<input type="text" :value="inputValue" v-on="inputEvents" />
+									</div>
+								</template>
+							</v-date-picker>
+
+							<div class="my-4">
+								<label>Timezone</label>
+								<vue-select :options="availableTimezones" drop-position="top w-full" searchable v-model="clonedBooking.timezone"></vue-select>
+							</div>
+
+							<div class="my-4">
+								<div class="flex mb-3 text-muted btn-tabs">
+									<div class="btn-tab" :class="{ active: !selectFromTimeslots }" @click="selectFromTimeslots = false">
+										<span>FROM-TO</span>
+									</div>
+									<div class="btn-tab" :class="{ active: selectFromTimeslots }" @click="selectFromTimeslots = true">
+										<span>TIMESLOTS</span>
+									</div>
+								</div>
+
+								<div v-if="selectFromTimeslots" class="mt-2 overflow-x-scroll overflow-y-hidden rounded-lg pb-1 timeslots-table">
+									<table class="w-full relative z-10" cellspacing="0" cellpadding="0">
+										<tr class="relative">
+											<template v-for="(timeslot, timeslotIndex) in timeslots">
+												<td v-if="timeslot.is_available" :key="timeslotIndex" class="border-right text-center" :class="{ selected: selectedTimeslot.time == timeslot.time }">
+													<div class="bg-white pb-2">
+														<VueCheckbox :value="clonedBooking.start == timeslot.time" @input="selectTimeslot($event, timeslot)"></VueCheckbox>
+													</div>
+													<div class="px-1 pt-1 bg-gray-50">
+														<div class="items-center column bg-primary-400">
+															<div class="timeslot-content">
+																<p class="text-center" v-html="timeslotTime(timeslot)"></p>
+															</div>
 														</div>
 													</div>
-												</div>
-											</td>
-										</template>
-									</tr>
-								</table>
+												</td>
+											</template>
+										</tr>
+									</table>
+								</div>
+								<timerangepicker dropdownWFull hideClearButton clockIcon v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end"></timerangepicker>
+								<small v-if="timezone != clonedBooking.timezone" class="text-muted">Your time: {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.start}`, clonedBooking.timezone, timezone), 'hh:mmA') }} - {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.end}`, clonedBooking.timezone, timezone), 'hh:mmA') }}</small>
 							</div>
-							<timerangepicker dropdownWFull hideClearButton clockIcon v-else @change="emitNewBookingDateChange" :start="clonedBooking.start" :end="clonedBooking.end"></timerangepicker>
-							<small v-if="timezone != clonedBooking.timezone" class="text-muted">Your time: {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.start}`, clonedBooking.timezone, timezone), 'hh:mmA') }} - {{ convertTime(timezoneTimeGet.get(`${clonedBooking.date} ${clonedBooking.end}`, clonedBooking.timezone, timezone), 'hh:mmA') }}</small>
-						</div>
 
-						<div class="my-4">
-							<label>Notes</label>
-							<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
-						</div>
-						<div class="my-4">
-							<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
-							<div v-if="clonedBooking.is_recurring" class="relative mt-2 mb-4" v-click-outside="() => (recurringMenu = false)">
-								<div class="bg-gray-50 rounded-xl p-3" :class="{ show: recurringMenu }">
-									<div class="flex">
-										<button class="flex-grow btn btn-sm mr-1" type="button" :class="[clonedBooking.recurring_frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'week')"><span>Weekly</span></button>
-										<button class="flex-grow btn btn-sm ml-1" type="button" :class="[clonedBooking.recurring_frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'month')"><span>Monthly</span></button>
-									</div>
-									<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
-									<div class="flex space-x-2 mt-3">
-										<div @click="timeslotToggleDay(dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: clonedBooking.recurring_days.indexOf(dayIndex) > -1 }" :key="dayIndex">
-											<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+							<div class="my-4">
+								<label>Notes</label>
+								<textarea class="resize-none" rows="3" v-model="clonedBooking.notes"></textarea>
+							</div>
+							<div class="my-4">
+								<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
+								<div v-if="clonedBooking.is_recurring" class="relative mt-2 mb-4" v-click-outside="() => (recurringMenu = false)">
+									<div class="bg-gray-50 rounded-xl p-3" :class="{ show: recurringMenu }">
+										<div class="flex">
+											<button class="flex-grow btn btn-sm mr-1" type="button" :class="[clonedBooking.recurring_frequency == 'week' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'week')"><span>Weekly</span></button>
+											<button class="flex-grow btn btn-sm ml-1" type="button" :class="[clonedBooking.recurring_frequency == 'month' ? 'btn-primary' : 'btn-outline-primary']" @click="$set(clonedBooking, 'recurring_frequency', 'month')"><span>Monthly</span></button>
+										</div>
+										<div class="text-muted text-xs mt-4">Repeat on these days (one or multiple):</div>
+										<div class="flex space-x-2 mt-3">
+											<div @click="timeslotToggleDay(dayIndex)" v-for="(day, dayIndex) in days" class="badge-day" :class="{ active: clonedBooking.recurring_days.indexOf(dayIndex) > -1 }" :key="dayIndex">
+												<span class="absolute-center bottom-px">{{ day.substring(0, 1) }}</span>
+											</div>
+										</div>
+
+										<div class="mt-4">
+											<v-date-picker class="relative" :min-date="dayjs(clonedBooking.date).toDate()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.recurring_end" :masks="masks">
+												<template v-slot="{ inputValue, inputEvents }">
+													<button type="button" class="input bg-white text-left" v-on="inputEvents">
+														<span class="text-muted text-sm mr-2">Until</span>
+														{{ inputValue }}
+													</button>
+												</template>
+											</v-date-picker>
 										</div>
 									</div>
+								</div>
+							</div>
 
-									<div class="mt-4">
-										<v-date-picker class="relative" :min-date="dayjs(clonedBooking.date).toDate()" mode="date" :popover="{ placement: 'top', visibility: 'click' }" v-model="clonedBooking.recurring_end" :masks="masks">
-											<template v-slot="{ inputValue, inputEvents }">
-												<button type="button" class="input bg-white text-left" v-on="inputEvents">
-													<span class="text-muted text-sm mr-2">Until</span>
-													{{ inputValue }}
-												</button>
-											</template>
-										</v-date-picker>
+							<template v-if="!contact">
+								<label required>Guests</label>
+								<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="email" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
+									<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
+									<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
+										<button
+											v-if="isEmail.validate(data.search)"
+											type="button"
+											@click="
+												emailToAdd.email = data.search;
+												$refs.addEmailModal.show();
+											"
+											class="btn btn-sm btn-outline-primary"
+										>
+											<span>Add this email</span>
+										</button>
+										<span v-else>No contacts found.</span>
 									</div>
+								</multiselect>
+							</template>
+
+							<div class="mt-4">
+								<label class="-mb-px">Meeting Type</label>
+								<div>{{ clonedBooking.meeting_type }}</div>
+							</div>
+
+							<template v-if="booking.metadata">
+								<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
+								<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
+							</template>
+
+							<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
+
+							<a v-if="booking.zoom_link" :href="booking.zoom_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><ZoomIcon class="w-4 h-4 mr-1 fill-current text-primary"></ZoomIcon> Zoom Meeting</a>
+
+							<div v-if="clonedBooking.form_data && Object.keys(clonedBooking.form_data).length > 0" class="mt-4">
+								<label class="-mb-px">Form Data</label>
+								<div v-for="(formData, key) in JSON.parse(clonedBooking.form_data)" :key="key" class="mt-3">
+									<strong class="-mb-px text-sm">{{ formData.label }} <span v-tooltip.right="key" class="tooltip-info"></span></strong>
+									<div class="text-sm" v-html="parsedFormData(formData)"></div>
 								</div>
 							</div>
 						</div>
 
-						<template v-if="!contact">
-							<label required>Guests</label>
-							<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="email" :options="contactsOptions" :showLabels="false" placeholder="Select contact or add an email" multiple clearOnSelect>
-								<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
-								<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
-									<button
-										v-if="isEmail.validate(data.search)"
-										type="button"
-										@click="
-											emailToAdd.email = data.search;
-											$refs.addEmailModal.show();
-										"
-										class="btn btn-sm btn-outline-primary"
-									>
-										<span>Add this email</span>
-									</button>
-									<span v-else>No contacts found.</span>
-								</div>
-							</multiselect>
-						</template>
-
-						<div class="mt-4">
-							<label class="-mb-px">Meeting Type</label>
-							<div>{{ clonedBooking.meeting_type }}</div>
+						<div class="flex justify-between mt-4 items-center">
+							<vue-button type="submit" theme="primary" :loading="loading" button_class="btn btn-outline-primary btn-md"><span>Save changes</span></vue-button>
+							<button type="button" class="btn" @click="confirmDelete">DELETE</button>
 						</div>
-
-						<template v-if="booking.metadata">
-							<a v-if="booking.metadata.phone" :href="`tel:${booking.metadata.phone}`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><CallMenuIcon class="w-4 h-4 mr-1 fill-current text-primary"></CallMenuIcon> {{ booking.metadata.phone }}</a>
-							<a v-if="booking.metadata.skype" :href="`skype:${booking.metadata.skype}?chat`" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><SkypeIcon class="w-4 h-4 mr-1"></SkypeIcon> {{ booking.metadata.skype }}</a>
-						</template>
-
-						<a v-if="booking.meet_link" :href="booking.meet_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><GoogleMeetIcon class="w-4 h-4 mr-1 fill-current text-primary"></GoogleMeetIcon> Google Meet</a>
-
-						<a v-if="booking.zoom_link" :href="booking.zoom_link" target="_blank" class="text-sm mt-2 inline-flex items-center bg-gray-100 rounded-xl px-3 py-2 transition-colors hover:bg-gray-200"><ZoomIcon class="w-4 h-4 mr-1 fill-current text-primary"></ZoomIcon> Zoom Meeting</a>
-
-						<div v-if="clonedBooking.form_data && Object.keys(clonedBooking.form_data).length > 0" class="mt-4">
-							<label class="-mb-px">Form Data</label>
-							<div v-for="(formData, key) in JSON.parse(clonedBooking.form_data)" :key="key" class="mt-3">
-								<strong class="-mb-px text-sm">{{ formData.label }} <span v-tooltip.right="key" class="tooltip-info"></span></strong>
-								<div class="text-sm" v-html="parsedFormData(formData)"></div>
-							</div>
-						</div>
-					</div>
-
-					<div class="flex justify-between mt-4 items-center">
-						<vue-button type="button" theme="primary" :loading="loading" button_class="btn btn-outline-primary btn-md" @click="update"><span>Save changes</span></vue-button>
-						<button type="button" class="btn" @click="confirmDelete">DELETE</button>
-					</div>
+					</vue-form-validate>
 				</template>
 
 				<!-- Google Event -->
