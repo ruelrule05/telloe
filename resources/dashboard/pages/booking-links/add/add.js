@@ -16,9 +16,11 @@ const ct = require('countries-and-timezones').default;
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 const { getNameList } = require('country-list');
 import { VTooltip } from 'v-tooltip';
+import Timerangepicker from '../../../../components/timerangepicker/timerangepicker.vue';
+import convertTime from '../../../../js/plugins/convert-time';
 
 export default {
-	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect },
+	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect, Timerangepicker },
 	data: () => ({
 		selectedContacts: [],
 		dates: {},
@@ -35,7 +37,9 @@ export default {
 		},
 		allowed_countries: ['AU', 'CA', 'NZ', 'GB', 'US'],
 		message: '',
-		bookedTimeslots: {}
+		bookedTimeslots: {},
+		start: '6:00',
+		end: '18:00'
 	}),
 
 	directives: { tooltip: VTooltip },
@@ -130,6 +134,12 @@ export default {
 			storeBookingLink: 'booking_links/store'
 		}),
 
+		updateTimeslots(time) {
+			this.start = convertTime(time.start, 'hh:mm');
+			this.end = convertTime(time.end, 'hh:mm');
+			this.$set(this.dates, this.selectedDate, { timeslots: this.timeslots(this.selectedDate), selectedTimeslots: [] });
+		},
+
 		async createNewDate(date) {
 			this.timeslotsLoading = true;
 			if (!this.bookedTimeslots[date]) {
@@ -141,16 +151,23 @@ export default {
 		},
 
 		timeslots(date) {
-			let start = '06:00';
+			let start = this.start;
 			let parts = start.split(':');
 			let period = start.slice(-2).toLowerCase();
 			if (period == 'pm' && parts[0] < 12) {
 				parts[0] = parseInt(parts[0]) + 12;
 			}
-			let end = 18; // 6PM
 			start = parseInt(parts[0] * 60) + parseInt(parts[1]);
+
+			let end = this.end;
+			parts = end.split(':');
+			period = end.slice(-2).toLowerCase();
+			if (period == 'pm' && parts[0] < 12) {
+				parts[0] = parseInt(parts[0]) + 12;
+			}
+			end = parseInt(parts[0] * 60) + parseInt(parts[1]);
 			let timeslots = [];
-			for (var i = 0; start <= end * 60; i++) {
+			for (var i = 0; start <= end; i++) {
 				let hh = Math.floor(start / 60);
 				let mm = start % 60;
 				let timeslot = ('0' + (hh == 12 ? 12 : hh)).slice(-2) + ':' + ('0' + mm).slice(-2);

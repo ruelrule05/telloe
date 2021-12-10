@@ -4,11 +4,11 @@
 		<vue-form-validate @submit="storeLink">
 			<div class="form">
 				<div class="flex flex-col lg:grid grid-cols-12 gap-x-8 justify-between form-inline">
-					<div class="col-span-4 form-field mb-3 lg:mb-0">
+					<div class="col-span-3 form-field mb-3 lg:mb-0">
 						<label>Name</label>
 						<input type="text" v-model="name" placeholder="Enter a name for your custom link" data-required />
 					</div>
-					<div class="col-span-6 form-field mb-3 lg:mb-0">
+					<div class="col-span-4 form-field mb-3 lg:mb-0">
 						<label>Add Contacts or email</label>
 						<multiselect v-model="selectedContacts" ref="selectedContacts" label="name" track-by="id" :options="contactsOptions" :showLabels="false" placeholder="" multiple clearOnSelect>
 							<div slot="noResult" slot-scope="data" class="text-muted text-sm text-center">
@@ -31,6 +31,9 @@
 					<div class="col-span-2 form-field">
 						<label>Duration (min)</label>
 						<input type="number" min="1" max="360" v-model="duration" placeholder="Duration" data-required />
+					</div>
+					<div class="col-span-3">
+						<timerangepicker hideClearButton @change="updateTimeslots" :start="start" :end="end"></timerangepicker>
 					</div>
 				</div>
 			</div>

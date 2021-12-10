@@ -83,18 +83,19 @@ class ServiceService
         $service = Service::findOrFail($id);
 
         // unset($service->user);
+        $authUser = Auth::user();
 
         if ($request->in_widget) {
-            Service::where('id', '<>', $service->id)->where('in_widget', true)->update([
+            Service::where('user_id', $authUser->id)->where('id', '<>', $service->id)->where('in_widget', true)->update([
                 'in_widget' => false
             ]);
         }
 
         $service->update($request->all());
 
-        Service::where('parent_service_id', $service->id)->update([
-            'form_builder' => $request->form_builder
-        ]);
+        // Service::where('parent_service_id', $service->id)->update([
+        //     'form_builder' => $request->form_builder
+        // ]);
 
         return $service;
     }
