@@ -1,9 +1,7 @@
 <template>
 	<div class="min-h-screen relative" v-if="ready">
 		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-			<div class="ml-7 lg:ml-0">
-				MEMBERS
-			</div>
+			<div class="ml-7 lg:ml-0">MEMBERS</div>
 			<div>
 				<button type="button" class="btn btn-md btn-primary flex items-center" @click="$refs.addModal.show()">
 					<span>Add</span>

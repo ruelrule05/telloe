@@ -14,6 +14,7 @@ use App\Mail\GuestAccount;
 use App\Mail\Welcome;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
+use App\Models\Member;
 use App\Models\Message;
 use App\Models\PasswordReset;
 use App\Models\Service;
@@ -313,6 +314,8 @@ class AuthService
         $data['packages'] = $request->input('packages');
         $data['team'] = $request->input('team');
         $data['payments'] = $request->input('payments');
+
+        Member::where('member_user_id', $user->id)->update([]); // update cache
 
         $user->update($data);
         return self::get($request, false);

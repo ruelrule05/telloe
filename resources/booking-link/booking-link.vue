@@ -43,7 +43,7 @@
 								</tr>
 
 								<!-- You -->
-								<tr v-if="auth.email && auth.email != bookingLink.user.email">
+								<tr v-if="auth.email">
 									<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
 										<div class="flex items-center py-3 -ml-3">
 											<div>
@@ -62,6 +62,31 @@
 										<div class="items-center column mt-4 bg-primary-ultralight">
 											<div class="timeslot-content" :class="{ selected: hasSelected(auth, timeslot) }">
 												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, auth.timezone)"></p>
+											</div>
+										</div>
+									</td>
+								</tr>
+
+								<!-- Coach -->
+								<tr v-if="!auth.email || auth.email != bookingLink.user.email">
+									<td class="headcol contact-td mt-4 rounded-bl-lg rounded-tl-lg bg-primary-ultralight">
+										<div class="flex items-center py-3 -ml-3">
+											<div>
+												<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + bookingLink.user.profile_image + ')' }">
+													<span v-if="!bookingLink.user.profile_image">{{ bookingLink.user.initials }}</span>
+												</div>
+											</div>
+											<div class="pl-2 overflow-hidden">
+												<p class="text-sm whitespace-nowrap truncate">{{ bookingLink.user.full_name }}</p>
+												<p class="flex items-center tracking-wide text-xxs text-muted">{{ bookingLink.user.timezone }}</p>
+											</div>
+										</div>
+									</td>
+
+									<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right contact-td timeslot relative" :data-index="timeslotIndex" :class="{ disabled: !timeslot.is_available || !editable }">
+										<div class="items-center column mt-4 bg-primary-ultralight">
+											<div class="timeslot-content" :class="{ selected: hasSelected(bookingLink.user, timeslot) }">
+												<p class="text-center px-1" v-html="timeslotTime(timeslot.time, bookingLink.user.timezone)"></p>
 											</div>
 										</div>
 									</td>
