@@ -507,7 +507,7 @@ class UserService
 
         // Check if Outlook Calendar is integrated
         if ($service && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
-            $OutlookClient = new \App\Http\OutlookClient();
+            $OutlookClient = new \App\Http\OutlookClient($service->coach);
             $graph = new \Microsoft\Graph\Graph();
             if ($OutlookClient->accessToken) {
                 $graph->setAccessToken($OutlookClient->accessToken);
