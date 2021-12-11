@@ -424,7 +424,9 @@ class UserService
             'user_id' => $customer->id ?? null,
             'guest' => $guest
         ]);
-
+        $attendees = [
+            ['email' => $service->coach->email]
+        ];
         if (count($request->guests) > 0) {
             foreach ($request->guests as $email) {
                 $bookingUser = BookingUser::create([
@@ -432,6 +434,7 @@ class UserService
                     'user_id' => null,
                     'guest' => ['email' => $email]
                 ]);
+                $attendees[] = ['email' => $email];
             }
         }
 
@@ -505,6 +508,7 @@ class UserService
             }
         }
 
+        $time = time();
         // Check if Outlook Calendar is integrated
         if ($service && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
             $OutlookClient = new \App\Http\OutlookClient($service->coach);
