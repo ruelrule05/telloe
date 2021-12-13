@@ -67,7 +67,7 @@ class Kernel extends ConsoleKernel
         $users->each(function ($user) use ($freemiumAccounts) {
             $stripe_api = new StripeAPI();
             $subscription = $stripe_api->subscription('retrieve', $user->subscription->stripe_subscription_id);
-            $user->is_premium = $subscription->status == 'active' || $subscription->status == 'trialing' || in_array($user->id, $freemiumAccounts);
+            $user->is_premium = $subscription->status == 'active' || $subscription->status == 'trialing' || in_array($user->email, $freemiumAccounts);
             $user->save();
         });
     }

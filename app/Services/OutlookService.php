@@ -42,6 +42,9 @@ class OutlookService
         $authUser->outlook_calendar_id = $request->outlook_calendar_id;
         Cache::forget("{$authUser->id}_outlook_calendar_events");
         $authUser->save();
+        $request->merge([
+            'refresh' => true,
+        ]);
         return self::outlookCalendarEvents($request);
     }
 
@@ -72,43 +75,28 @@ class OutlookService
         $user = Auth::user();
 
         if ($user->outlook_calendar_id && $user->outlook_token) {
-            if ($request->fresh) {
-                $events = Cache::get("{$user->id}_outlook_calendar_events", []);
-            } else {
-                $events = Cache::rememberForever("{$user->id}_outlook_calendar_events", function () use ($user) {
-                    $outlookEvents = [];
-                    $OutlookClient = new OutlookClient();
-                    $graph = new \Microsoft\Graph\Graph();
-                    $graph->setAccessToken($OutlookClient->accessToken);
-                    foreach ($user->outlook_calendar_id as $calendarID) {
-                        $getEventsUrl = "/me/calendars/$calendarID/events";
-                        try {
-                            $eventsList = $graph->createRequest('GET', $getEventsUrl)
-                            ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                            ->execute();
-                            foreach ($eventsList as $event) {
-                                // $extensionName = config('oauth.graph_extension_name');
-                                // $eventExtensionName = '';
-                                // $getExtensionUrl = "/me/calendars/$calendarID/events/{$event->getId()}/extensions/$extensionName";
-                                // try {
-                                //     $eventExtension = $graph->createRequest('GET', $getExtensionUrl)
-                                //     ->setReturnType(\Microsoft\Graph\Model\Extension::class)
-                                //     ->execute();
-                                //     $eventExtensionName = $eventExtension->getProperties()['extensionName'];
-                                // } catch (\Exception $e) {
-                                // }
-                                // if ($eventExtensionName != $extensionName) {
-                                //     $outlookEvents[] = $event;
-                                // }
-                                $outlookEvents[] = $event;
-                            }
-                        } catch (\Exception $e) {
-                            //echo $e->getResponse()->getBody()->getContents();
+            if ($request->refresh) {
+                $outlookEvents = [];
+                $OutlookClient = new OutlookClient();
+                $graph = new \Microsoft\Graph\Graph();
+                $graph->setAccessToken($OutlookClient->accessToken);
+                foreach ($user->outlook_calendar_id as $calendarID) {
+                    $getEventsUrl = "/me/calendars/$calendarID/events";
+                    try {
+                        $eventsList = $graph->createRequest('GET', $getEventsUrl)
+                        ->setReturnType(\Microsoft\Graph\Model\Event::class)
+                        ->execute();
+                        foreach ($eventsList as $event) {
+                            $outlookEvents[] = $event;
                         }
+                    } catch (\Exception $e) {
+                        //echo $e->getResponse()->getBody()->getContents();
                     }
-
-                    return $outlookEvents;
-                });
+                }
+                Cache::forever("{$user->id}_outlook_calendar_events", $outlookEvents);
+                $events = $outlookEvents;
+            } else {
+                $events = Cache::get('1_outlook_calendar_events', []);
             }
         }
 
