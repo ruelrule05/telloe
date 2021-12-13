@@ -77,6 +77,11 @@
 
 										<div v-else-if="type.type == 'Telloe Video Call'" class="text-muted text-sm px-4 pb-2">A conversation will be created for the video call.</div>
 
+										<div v-else-if="type.type == 'MS Team'" class="p-4 bg-gray-100 border-top">
+											<label required class="text-muted text-sm mb-1">MS Team meeting link</label>
+											<input type="text" v-model="type.data" placeholder="MS Team meeting link.." data-required />
+										</div>
+
 										<div v-else class="text-muted text-sm px-4 pb-2">{{ type.type }} link will be created for each booking.</div>
 									</div>
 									<div class="pl-2">

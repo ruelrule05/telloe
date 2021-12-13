@@ -273,6 +273,7 @@
 
 											<span v-else-if="type.type == 'Telloe Video Call'"> A conversation will be created for the video call. </span>
 											<span v-else-if="type.type == 'Zoom'"> A Zoom meeting link will be sent to your booking confirmation email. </span>
+											<span v-else-if="type.type == 'MS Team'">An MS Team meeting link will be sent to your booking confirmation email. </span>
 											<span v-else>{{ type.type }} meeting will be created after the booking is placed.</span>
 										</div>
 										<div>
