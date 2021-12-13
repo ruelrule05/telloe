@@ -44,10 +44,11 @@ class OutlookClient
         //Get current time + 5 minutes (to allow for time differences)
         $now = time() + 300;
         if ($authTokens['tokenExpires'] <= $now) {
+            echo 'refresh';
             // so let's refresh
             try {
                 $newToken = $this->client->getAccessToken('refresh_token', [
-                    'refresh_token' => $authTokens['refreshToken']
+                    'refresh_token' => $authTokens['refreshToken'],
                 ]);
 
                 $authTokens = $this->saveTokens($newToken, $user);

@@ -145,9 +145,7 @@ class BookingService
         }
         $link = Link::create($data['name'], $from, $to)
                 ->description($description);
-        $attendees = [
-            ['email' => $service->coach->email]
-        ];
+
         foreach ($data['contact_ids'] as $contactID) {
             $contact = Contact::findOrFail($contactID);
             if (Auth::user()->can('show', $contact)) {
@@ -229,14 +227,25 @@ class BookingService
             if ($booking->meeting_type == 'Google Meet') {
                 $params = ['conferenceDataVersion' => 1];
             }
-            $event = $googleService->events->insert($service->coach->google_calendar_id[0], $event, $params);
+            $googleEvents = [];
+            $hangoutLink = null;
+            foreach ($service->coach->google_calendar_id as $googleCalendarId) {
+                $event = $googleService->events->insert($googleCalendarId, $event, $params);
+                $googleEvents[] = [
+                    'calendar_id' => $googleCalendarId,
+                    'event_id' => $event->id
+                ];
+                if ($booking->meeting_type == 'Google Meet') {
+                    $hangoutLink = $event->hangoutLink;
+                }
+            }
             $booking->update([
-                'google_event_id' => $event->id
+                'google_event_id' => $googleEvents
             ]);
 
-            if ($booking->meeting_type == 'Google Meet') {
+            if ($hangoutLink) {
                 $booking->update([
-                    'meet_link' => $event->hangoutLink
+                    'meet_link' => $hangoutLink
                 ]);
             }
         }
@@ -256,7 +265,7 @@ class BookingService
                     ];
                 }
                 $eventData = [
-                    'Subject' => $booking->service->name,
+                    'Subject' => $booking->name,
                     'Body' => [
                         'ContentType' => 'HTML',
                         'Content' => $booking->service->description
@@ -293,18 +302,25 @@ class BookingService
                         'range' => [
                             'type' => 'endDate',
                             'startDate' => $booking->date,
-                            'endDate' => $booking->recurring_end,
+                            'endDate' => Carbon::parse($booking->recurring_end)->format('Y-m-d'),
                         ]
                     ];
                 }
 
                 try {
-                    $event = $graph->createRequest('POST', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events") 
+                    $outlookEvents = [];
+                    foreach ($service->coach->outlook_calendar_id as $outlookCalendarId) {
+                        $event = $graph->createRequest('POST', "/me/calendars/$outlookCalendarId/events") 
                         ->attachBody($eventData)
                         ->setReturnType(\Microsoft\Graph\Model\Event::class)
                         ->execute();
+                        $outlookEvents[] = [
+                            'calendar_id' => $outlookCalendarId,
+                            'event_id' => $event->getProperties()['id']
+                        ];
+                    }
                     $booking->update([
-                        'outlook_event_id' => $event->getProperties()['id']
+                        'outlook_event_id' => $outlookEvents
                     ]);
                 } catch (\Exception $e) {
                 }
@@ -348,9 +364,8 @@ class BookingService
         $booking = Booking::findOrFail($id);
         $service = $booking->service;
 
-
-        $newService = Service::where('id', $request->service_id)->where(function($query) use ($request, $authUser) {
-            $query->where('user_id', $authUser->id)->orWhereHas('parentService', function($parentService) use ($authUser) {
+        $newService = Service::where('id', $request->service_id)->where(function ($query) use ($request, $authUser) {
+            $query->where('user_id', $authUser->id)->orWhereHas('parentService', function ($parentService) use ($authUser) {
                 $parentService->where('user_id', $authUser->id);
             });
         })->firstOrFail();
@@ -414,41 +429,43 @@ class BookingService
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
 
-            $event = $googleService->events->get(
-                $service->coach->google_calendar_id[0],
-                $booking->google_event_id);
+            foreach ($booking->google_event_id as $googleEvent) {
+                $event = $googleService->events->get(
+                    $googleEvent['calendar_id'],
+                    $googleEvent['event_id']);
 
-            if ($event) {
-                try {
-                    $event->start = [
-                        'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
-                        'timeZone' => $booking->service->timezone,
-                    ];
-                    $event->end = [
-                        'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
-                        'timeZone' => $booking->service->timezone,
-                    ];
-                    if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
-                        $frequency = strtoupper($booking->recurring_frequency) . 'LY';
-                        $date = Carbon::parse($booking->recurring_end)->toIso8601String();
-                        $date = str_replace(['-', ':', '.'], '', $date);
-                        $date = explode('+',$date);
-                        $date = $date[0] . 'Z';
-                        $days = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
-                        $byDays = [];
-                        foreach ($booking->recurring_days as $recurringDay) {
-                            $byDays[] = $days[$recurringDay];
+                if ($event) {
+                    try {
+                        $event->start = [
+                            'dateTime' => Carbon::parse("$booking->date $booking->start", $request->timezone)->toIso8601String(),
+                            'timeZone' => $booking->service->timezone,
+                        ];
+                        $event->end = [
+                            'dateTime' => Carbon::parse("$booking->date $booking->end", $request->timezone)->toIso8601String(),
+                            'timeZone' => $booking->service->timezone,
+                        ];
+                        if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
+                            $frequency = strtoupper($booking->recurring_frequency) . 'LY';
+                            $date = Carbon::parse($booking->recurring_end)->toIso8601String();
+                            $date = str_replace(['-', ':', '.'], '', $date);
+                            $date = explode('+',$date);
+                            $date = $date[0] . 'Z';
+                            $days = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+                            $byDays = [];
+                            foreach ($booking->recurring_days as $recurringDay) {
+                                $byDays[] = $days[$recurringDay];
+                            }
+                            $byDays = implode(',', $byDays);
+                            $event->recurrence = ["RRULE:FREQ=$frequency;BYDAY=$byDays;UNTIL=$date"];
                         }
-                        $byDays = implode(',', $byDays);
-                        $event->recurrence = ["RRULE:FREQ=$frequency;BYDAY=$byDays;UNTIL=$date"];
+                        $event->attendees = $attendees;
+                        $googleService->events->update(
+                            $googleEvent['calendar_id'], 
+                            $googleEvent['event_id'], 
+                            $event
+                        );
+                    } catch (\Exception $e) {
                     }
-                    $event->attendees = $attendees;
-                    $googleService->events->update(
-                        $service->coach->google_calendar_id[0], 
-                        $booking->google_event_id, 
-                        $event
-                    );
-                } catch (\Exception $e) {
                 }
             }
         }
@@ -480,10 +497,12 @@ class BookingService
                 ];
 
                 try {
-                    $graph->createRequest('PATCH', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events/$booking->outlook_event_id") 
-                    ->attachBody($eventData)
-                    ->setReturnType(\Microsoft\Graph\Model\Event::class)
-                    ->execute();
+                    foreach ($booking->outlook_event_id as $outlookEvent) {
+                        $graph->createRequest('PATCH', "/me/calendars/{$outlookEvent['calendar_id']}/events/{$outlookEvent['event_id']}") 
+                        ->attachBody($eventData)
+                        ->setReturnType(\Microsoft\Graph\Model\Event::class)
+                        ->execute();
+                    }
                 } catch (\Exception $e) {
                 }
             }
@@ -539,7 +558,12 @@ class BookingService
             $GoogleCalendarClient = new GoogleCalendarClient($service->coach);
             $client = $GoogleCalendarClient->client;
             $googleService = new Google_Service_Calendar($client);
-            $googleService->events->delete($service->coach->google_calendar_id[0], $booking->google_event_id);
+            try {
+                foreach ($booking->google_event_id as $googleEvent) {
+                    $googleService->events->delete($googleEvent['calendar_id'], $googleEvent['event_id']);
+                }
+            } catch (\Exception $e) {
+            }
         }
 
         if ($booking->outlook_event_id && $service->coach->outlook_token && $service->coach->outlook_calendar_id) {
@@ -548,8 +572,10 @@ class BookingService
             if ($OutlookClient->accessToken) {
                 $graph->setAccessToken($OutlookClient->accessToken);
                 try {
-                    $graph->createRequest('PATCH', "/me/calendars/{$service->coach->outlook_calendar_id[0]}/events/$booking->outlook_event_id") 
-                    ->execute();
+                    foreach ($booking->outlook_event_id as $outlookEvent) {
+                        $graph->createRequest('DELETE', "/me/calendars/{$outlookEvent['calendar_id']}/events/{$outlookEvent['event_id']}") 
+                        ->execute();
+                    }
                 } catch (\Exception $e) {
                 }
             }
@@ -559,7 +585,6 @@ class BookingService
             Mail::queue(new DeleteBooking($booking, 'contact'));
         } catch (\Exception $e) {
         }
-        $booking->delete();
         return $booking->delete();
     }
 

@@ -18,8 +18,8 @@ class Booking extends BaseModel
         'notified_24' => 'boolean',
         'recurring_end' => 'date',
         'recurring_days' => 'array',
-        // 'google_event_id' => 'array',
-        // 'outlook_event_id' => 'array',
+        'google_event_id' => 'array',
+        'outlook_event_id' => 'array',
     ];
 
     public function bookingUsers()
