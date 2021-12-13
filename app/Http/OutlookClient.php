@@ -30,7 +30,7 @@ class OutlookClient
         }
     }
 
-    public function getAccessToken($user)
+    public function getAccessToken($user = null)
     {
         // Check if tokens exist
         $authTokens = $user ? $user->outlook_token : Auth::user()->outlook_token;
@@ -50,7 +50,7 @@ class OutlookClient
                     'refresh_token' => $authTokens['refreshToken']
                 ]);
 
-                $authTokens = $this->saveTokens($newToken);
+                $authTokens = $this->saveTokens($newToken, $user);
             } catch (League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
                 return '';
             }
@@ -69,9 +69,11 @@ class OutlookClient
         return $authUrl;
     }
 
-    public function saveTokens($accessToken)
+    public function saveTokens($accessToken, $user = null)
     {
-        $user = Auth::user();
+        if (! $user) {
+            $user = Auth::user();
+        }
         $authTokens = [
             'accessToken' => $accessToken->getToken(),
             'refreshToken' => $accessToken->getRefreshToken(),

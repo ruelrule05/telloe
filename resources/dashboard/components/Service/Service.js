@@ -86,7 +86,7 @@ export default {
 				value: 'NZD'
 			}
 		],
-		types: ['Google Meet', 'Zoom', 'Face-to-face', 'Phone', 'Skype', 'Telloe Video Call']
+		types: ['Google Meet', 'Zoom', 'Face-to-face', 'Phone', 'Skype', 'Telloe Video Call', 'MS Team']
 	}),
 
 	computed: {
