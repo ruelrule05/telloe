@@ -551,7 +551,7 @@ class BookingService
 
     public static function destroy($id)
     {
-        $booking = Booking::with('service.user', 'service.member.memberUser')->where('id', $id)->first();
+        $booking = Booking::with('service.user', 'service.member.memberUser', 'bookingUsers.user')->where('id', $id)->first();
         (new self)->authorize('delete', $booking);
         $service = $booking->service;
         if ($booking->google_event_id && $service->coach->google_calendar_token && $service->coach->google_calendar_id) {
@@ -581,9 +581,12 @@ class BookingService
             }
         }
         try {
-            Mail::queue(new DeleteBooking($booking, 'client'));
-            Mail::queue(new DeleteBooking($booking, 'contact'));
+            Mail::to($booking->service->coach->email)->queue(new DeleteBooking($booking));
+            foreach ($booking->bookingUsers as $bookingUser) {
+                Mail::to($bookingUser->user->email)->queue(new DeleteBooking($booking));
+            }
         } catch (\Exception $e) {
+            echo $e->getMessage();
         }
         return $booking->delete();
     }
