@@ -230,13 +230,13 @@ class BookingService
             $googleEvents = [];
             $hangoutLink = null;
             foreach ($service->coach->google_calendar_id as $googleCalendarId) {
-                $event = $googleService->events->insert($googleCalendarId, $event, $params);
+                $googleEvent = $googleService->events->insert($googleCalendarId, $event, $params);
                 $googleEvents[] = [
                     'calendar_id' => $googleCalendarId,
-                    'event_id' => $event->id
+                    'event_id' => $googleEvent->id
                 ];
                 if ($booking->meeting_type == 'Google Meet') {
-                    $hangoutLink = $event->hangoutLink;
+                    $hangoutLink = $googleEvent->hangoutLink;
                 }
             }
             $booking->update([
@@ -310,13 +310,13 @@ class BookingService
                 try {
                     $outlookEvents = [];
                     foreach ($service->coach->outlook_calendar_id as $outlookCalendarId) {
-                        $event = $graph->createRequest('POST', "/me/calendars/$outlookCalendarId/events") 
+                        $outlookEvent = $graph->createRequest('POST', "/me/calendars/$outlookCalendarId/events") 
                         ->attachBody($eventData)
                         ->setReturnType(\Microsoft\Graph\Model\Event::class)
                         ->execute();
                         $outlookEvents[] = [
                             'calendar_id' => $outlookCalendarId,
-                            'event_id' => $event->getProperties()['id']
+                            'event_id' => $outlookEvent->getProperties()['id']
                         ];
                     }
                     $booking->update([
