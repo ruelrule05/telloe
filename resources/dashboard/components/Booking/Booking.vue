@@ -10,7 +10,7 @@
 							<input type="text" class="border-bottom bg-transparent rounded-none border-0 shadow-none mb-4 pl-0 pr-5 py-2 focus:ring-0 text-xl font-base" placeholder="Name your booking" data-required v-model="clonedBooking.name" />
 						</div>
 						<label :required="organization ? true : false">Event Type</label>
-						<VueSelect :disabled="disableServiceSelect" :options="servicesOptions" :required="organization ? true : false" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service" dropPosition="w-full" clearable></VueSelect>
+						<VueSelect :disabled="disableServiceSelect" :options="servicesOptions" :required="organization ? true : false" placeholder="Select event type" class="mb-4" v-model="clonedBooking.service" dropPosition="w-full"></VueSelect>
 						<template v-if="organization">
 							<label required>Member</label>
 							<VueSelect :options="membersOptions" :disabled="clonedBooking.service ? false : true" required :placeholder="clonedBooking.service ? 'Select member' : 'Choose an event type above'" class="mb-4" v-model="clonedBooking.member" dropPosition="w-full"></VueSelect>
@@ -99,7 +99,7 @@
 						</multiselect>
 
 						<label class="mt-4" required>Meeting Type</label>
-						<VueSelect required :options="meetingTypes" noValuePlaceholder="No meeting types available" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
+						<VueSelect required :disabled="!clonedBooking.service" :options="meetingTypes" noValuePlaceholder="No meeting types available" placeholder="Select meeting type" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.meeting_type"></VueSelect>
 
 						<VueCheckbox v-model="clonedBooking.is_recurring" label="Recurring"></VueCheckbox>
 						<div v-if="clonedBooking.is_recurring" class="relative mt-2 mb-4" v-click-outside="() => (recurringMenu = false)">
