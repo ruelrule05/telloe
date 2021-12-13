@@ -14,7 +14,7 @@ class EditFieldsInBookingsTable extends Migration
      */
     public function up()
     {
-        foreach (Booking::whereNotNull('google_event_id')->orWhereNotNull('outlook_event_id')->get() as $booking) {
+        foreach (Booking::withTrashed()->whereNotNull('google_event_id')->orWhereNotNull('outlook_event_id')->get() as $booking) {
             $data = [];
             if ($booking->google_event_id) {
                 $data['google_event_id'] = json_encode([$booking->google_event_id]);
