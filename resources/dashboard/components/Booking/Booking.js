@@ -135,7 +135,7 @@ export default {
 				let organizationServices = [];
 				clonedMembers.forEach(member => {
 					member.member.assigned_services.forEach(service => {
-						if (!organizationServices.find(x => x.parent_service_id == service.parent_service_id)) {
+						if (!organizationServices.find(x => x.parent_service_id == service.parent_service_id) && service.is_available) {
 							service.id = service.parent_service_id;
 							organizationServices.push(service);
 						}
@@ -143,9 +143,11 @@ export default {
 				});
 				services = organizationServices;
 			}
-			return services.map(service => {
-				return { text: service.name, value: service.id };
-			});
+			return services
+				.filter(x => x.is_available)
+				.map(service => {
+					return { text: service.name, value: service.id };
+				});
 		},
 
 		membersOptions() {
