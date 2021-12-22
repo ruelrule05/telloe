@@ -66,7 +66,7 @@
 								<template v-if="dates[selectedDate]">
 									<td v-for="(timeslot, timeslotIndex) in dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right">
 										<div class="text-center px-2 pb-2 bg-white">
-											<VueCheckbox v-tooltip.bottom="'Open this timeslot'" v-model="timeslot.is_available"></VueCheckbox>
+											<toggle-switch v-model="timeslot.is_available"></toggle-switch>
 											<span v-if="timeslot.is_booked" class="text-xxs text-muted">Booked</span>
 										</div>
 									</td>

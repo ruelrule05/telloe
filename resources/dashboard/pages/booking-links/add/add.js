@@ -18,9 +18,10 @@ const { getNameList } = require('country-list');
 import { VTooltip } from 'v-tooltip';
 import Timerangepicker from '../../../../components/timerangepicker/timerangepicker.vue';
 import convertTime from '../../../../js/plugins/convert-time';
+import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 
 export default {
-	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect, Timerangepicker },
+	components: { Multiselect, VDatePicker, PlusIcon, CloseIcon, VueCheckbox, VueFormValidate, Modal, VueSelect, Timerangepicker, ToggleSwitch },
 	data: () => ({
 		selectedContacts: [],
 		dates: {},

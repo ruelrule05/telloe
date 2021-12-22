@@ -530,13 +530,14 @@ export default {
 		async bookGuest() {
 			this.bookingLoading = true;
 			let timeslots = this.selectedTimeslots.map(timeslot => {
-				if (timeslot.end_date) {
-					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+				let clonedTimeslot = JSON.parse(JSON.stringify(timeslot));
+				if (clonedTimeslot.end_date) {
+					clonedTimeslot.end_date = dayjs(clonedTimeslot.end_date).format('YYYY-MM-DD');
 				}
-				timeslot.type = timeslot.type.type;
-				timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+				clonedTimeslot.type = clonedTimeslot.type.type;
+				clonedTimeslot.timeslot.time = timezoneTime.get(`${clonedTimeslot.date.format} ${clonedTimeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
 
-				return timeslot;
+				return clonedTimeslot;
 			});
 			let data = JSON.parse(JSON.stringify(this.guest));
 			data.timeslots = timeslots;
@@ -564,13 +565,14 @@ export default {
 		async LoginAndBook() {
 			this.bookingLoading = true;
 			let timeslots = this.selectedTimeslots.map(timeslot => {
-				if (timeslot.end_date) {
-					timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+				let clonedTimeslot = JSON.parse(JSON.stringify(timeslot));
+				if (clonedTimeslot.end_date) {
+					clonedTimeslot.end_date = dayjs(clonedTimeslot.end_date).format('YYYY-MM-DD');
 				}
-				timeslot.type = timeslot.type.type;
-				timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+				clonedTimeslot.type = clonedTimeslot.type.type;
+				clonedTimeslot.timeslot.time = timezoneTime.get(`${clonedTimeslot.date.format} ${clonedTimeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
 
-				return timeslot;
+				return clonedTimeslot;
 			});
 
 			let data = JSON.parse(JSON.stringify(this.user));
@@ -601,13 +603,14 @@ export default {
 			if (response) {
 				this.bookingLoading = true;
 				let timeslots = this.selectedTimeslots.map(timeslot => {
-					if (timeslot.end_date) {
-						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+					let clonedTimeslot = JSON.parse(JSON.stringify(timeslot));
+					if (clonedTimeslot.end_date) {
+						clonedTimeslot.end_date = dayjs(clonedTimeslot.end_date).format('YYYY-MM-DD');
 					}
-					timeslot.type = timeslot.type.type;
-					timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+					clonedTimeslot.type = clonedTimeslot.type.type;
+					clonedTimeslot.timeslot.time = timezoneTime.get(`${clonedTimeslot.date.format} ${clonedTimeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
 
-					return timeslot;
+					return clonedTimeslot;
 				});
 
 				let data = JSON.parse(JSON.stringify(this.user));
@@ -639,13 +642,14 @@ export default {
 			if (response) {
 				this.bookingLoading = true;
 				let timeslots = this.selectedTimeslots.map(timeslot => {
-					if (timeslot.end_date) {
-						timeslot.end_date = dayjs(timeslot.end_date).format('YYYY-MM-DD');
+					let clonedTimeslot = JSON.parse(JSON.stringify(timeslot));
+					if (clonedTimeslot.end_date) {
+						clonedTimeslot.end_date = dayjs(clonedTimeslot.end_date).format('YYYY-MM-DD');
 					}
-					timeslot.type = timeslot.type.type;
-					timeslot.timeslot.time = timezoneTime.get(`${timeslot.date.format} ${timeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
+					clonedTimeslot.type = clonedTimeslot.type.type;
+					clonedTimeslot.timeslot.time = timezoneTime.get(`${clonedTimeslot.date.format} ${clonedTimeslot.timeslot.time}`, this.selectedService.timezone, this.timezone);
 
-					return timeslot;
+					return clonedTimeslot;
 				});
 
 				let data = JSON.parse(JSON.stringify(this.user));
