@@ -32,10 +32,8 @@
 							<tr>
 								<td></td>
 								<td v-for="(timeslot, timeslotIndex) in bookingLink.dates[selectedDate].timeslots" :key="timeslotIndex" class="border-right timeslot-heading">
-									<div class="text-center px-2 bg-white relative z-10 -mb-4">
-										<button class="bg-primary btn-open-timeslot rounded-full text-xs text-white p-1 w-full mb-1" type="button" @click="toggleTimeslot(timeslot)">
-											<span>{{ timeslot.is_available ? 'Close' : 'Open' }}</span>
-										</button>
+									<div class="text-center px-2 bg-white relative z-10 -mb-2">
+										<toggle-switch :value="timeslot.is_available" @input="toggleTimeslot(timeslot)"></toggle-switch>
 									</div>
 								</td>
 							</tr>

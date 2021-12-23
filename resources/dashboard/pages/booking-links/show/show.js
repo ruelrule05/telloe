@@ -23,11 +23,12 @@ const IsSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 dayjs.extend(IsSameOrAfter);
 import ClockIcon from '../../../../icons/clock';
 import CloseIcon from '../../../../icons/close';
+import ToggleSwitch from '../../../../components/toggle-switch/toggle-switch.vue';
 
 import { VTooltip } from 'v-tooltip';
 
 export default {
-	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox, ClockIcon, CloseIcon },
+	components: { VueFormValidate, Modal, VCalendar, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon, Paginate, ShortcutIcon, MoreIcon, ArrowLeftIcon, Chatroom, VueButton, VueSelect, VueDropdown, VueCheckbox, ClockIcon, CloseIcon, ToggleSwitch },
 	directives: { tooltip: VTooltip },
 
 	data: () => ({

@@ -326,6 +326,9 @@ function checkMemberInviteToken(App\Models\User $user, $member_invite_token)
             'member_user_id' => $user->id,
             'is_pending' => false
         ]);
+        App\Models\Service::where('member_id', $member->id)->update([
+            'user_id' => $user->id
+        ]);
         App\Models\Notification::create([
             'user_id' => $member->user_id,
             'description' => "<strong>{$member->memberUser->full_name}</strong> has accepted your member invitation.",
