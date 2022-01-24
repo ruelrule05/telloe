@@ -121,17 +121,20 @@
 						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/services">
 							<div @click="toggleSidebar('/dashboard/services')" class="sidebar-menu-item" :class="{active: isActive}">Event Types</div>
 						</router-link>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/booking-links">
+						<router-link v-if="$root.auth.match_up" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/booking-links">
 							<div @click="toggleSidebar('/dashboard/booking-links')" class="sidebar-menu-item" :class="{active: isActive}">Match Up</div>
 						</router-link>
 
 
 						<div class="sidebar-heading mt-7">COMMUNICATION</div>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
+						<router-link v-if="$root.auth.messages" custom v-slot="{ isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
 							<div @click="toggleSidebar(`/dashboard/conversations/${currentConversationID}`)" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
 						</router-link>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
+						<router-link v-if="$root.auth.contacts" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
 							<div @click="toggleSidebar('/dashboard/contacts')" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
+						</router-link>
+						<router-link  custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/video-messages">
+							<div @click="toggleSidebar('/dashboard/video-messages')" class="sidebar-menu-item" :class="{active: isActive}">Video Messages</div>
 						</router-link>
 						
 						
@@ -277,6 +280,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 		<script  src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
+		<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1058.0.min.js"></script>
 		<script src="{{ mix('/js/formbuilder.js') }}"></script>
 	</body>
 	@include('partials.social_scripts')

@@ -150,6 +150,11 @@ const routes = [
 				path: 'integrations/xero',
 				name: 'Xero Invoicing',
 				component: () => import(/* webpackChunkName: "dashboard-integrations-xero" */ '../pages/integrations/xero/xero.vue')
+			},
+			{
+				name: 'Video Messages',
+				path: 'video-messages',
+				component: () => import(/* webpackChunkName: "dashboard-video-messages" */ '../pages/video-messages/video-messages.vue')
 			}
 		]
 	},

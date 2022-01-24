@@ -88,8 +88,9 @@ Route::group(
                 Route::delete('organizations/{id}/delete_member', 'OrganizationController@deleteMember');
                 Route::post('organizations/{id}/add_members', 'OrganizationController@addMembers');
                 Route::apiResource('contact_notes', 'ContactNoteController');
-
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
+                Route::apiResource('video_messages', 'VideoMessageController');
+                Route::apiResource('user_videos', 'UserVideoController');
                 Route::post('notifications/clear', 'NotificationController@clear');
 
                 Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
