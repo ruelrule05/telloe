@@ -9,6 +9,7 @@ use App\Models\VideoMessageVideo;
 use Auth;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Str;
 
 class VideoMessageService
 {
@@ -33,13 +34,20 @@ class VideoMessageService
         $authUser = Auth::user();
         Service::where('id', $request->service_id)->where('user_id', $authUser->id)->firstOrFail();
         UserVideo::where('id', $request->user_video_id)->where('user_id', $authUser->id)->firstOrFail();
-        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'user_video_id');
+        $data = $request->only('title', 'description', 'initial_message', 'service_id');
         $data['user_id'] = $authUser->id;
+        $data['uuid'] = Str::uuid();
         $videoMessage = VideoMessage::create($data);
         VideoMessageVideo::create([
             'video_message_id' => $videoMessage->id,
             'user_video_id' => $request->user_video_id,
         ]);
         return response()->json($videoMessage->load('videos.userVideo'));
+    }
+
+    public static function show(VideoMessage $videoMessage)
+    {
+        $videoMessage->load('videos.userVideo');
+        return view('video-message', compact('videoMessage'));
     }
 }

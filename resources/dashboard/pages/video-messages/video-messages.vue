@@ -46,13 +46,52 @@
 					</div>
 				</div>
 
-				<div class="flex items-start justify-between contact-row border-bottom" v-for="videoMessage in videoMessages" :key="videoMessage.id">
-					<div class="flex items-start">
-						<img :src="videoMessage.videos[0].user_video.preview" alt="" class="h-28 w-auto" />
+				<div class="flex items-center justify-between contact-row border-bottom py-3" v-for="videoMessage in videoMessages" :key="videoMessage.id">
+					<div class="flex items-center gap-3">
+						<div class="flex gap-2">
+							<div v-for="video in videoMessage.videos" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
+								<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(video.user_video.duration, { leading: true }) }}</span>
+							</div>
+						</div>
+						<div>
+							<div class="font-bold text-primary">{{ videoMessage.title }}</div>
+							<div class="text-xs text-gray-400 mb-1">{{ dayjs(videoMessage.created_at).format('MMM DD, YYYY h:m A') }}</div>
+							<div class="text-white py-1 px-2 leading-none inline-block text-xs rounded-sm bg-green-400">Sent</div>
+							<div class="flex items-center text-xs text-gray-500 mt-1 gap-4">
+								<div>
+									<VueDropdown :options="['Copy video link', 'Copy video for email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
+										<template #button>
+											<div class="flex items-center transition-colors cursor-pointer"><ShareIcon class="w-3.5 fill-current text-gray-400 mr-1"></ShareIcon> Share</div>
+										</template>
+									</VueDropdown>
+								</div>
+								<div class="flex items-center"><EyeIcon class="mr-1 w-4 fill-current"></EyeIcon> {{ videoMessage.views }}</div>
+								<div class="flex items-center"><ThumbupIcon class="mr-1 w-3 fill-current"></ThumbupIcon> {{ videoMessage.views }}</div>
+								<div class="flex items-center"><CommentIcon class="mr-1 w-4 fill-current"></CommentIcon> {{ videoMessage.views }}</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex items-center">
+						<div class="mr-1">
+							<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+								<PlusIcon class="w-3.5 stroke-current text-gray-400"></PlusIcon>
+							</div>
+						</div>
+						<div>
+							<VueDropdown :options="['Edit details', 'Delete']" class="-mr-2 mt-1.5">
+								<template #button>
+									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+										<CogIcon class="fill-current text-gray-400"></CogIcon>
+									</div>
+								</template>
+							</VueDropdown>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
 		<Modal ref="addModal" :noBackdropHide="true">
 			<div v-if="uploading || creatingGif" class="absolute-center w-full h-full z-50 bg-white">
 				<div class="absolute-center text-center">
@@ -142,16 +181,29 @@ const S3 = new AWS.S3({
 import InfoCircleIcon from '../../../icons/info-circle.vue';
 import CloseIcon from '../../../icons/close.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
+import dayjs from 'dayjs';
+import CogIcon from '../../../icons/cog';
+import ShareIcon from '../../../icons/share';
+import EyeIcon from '../../../icons/eye-solid';
+import ThumbupIcon from '../../../icons/thumb-up';
+import CommentIcon from '../../../icons/comment-solid';
+import PlusIcon from '../../../icons/plus';
+import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
+const format = require('format-duration');
 export default {
-	components: { Modal, InfoCircleIcon, CloseIcon, VueSelect },
+	components: { Modal, InfoCircleIcon, CloseIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, PlusIcon },
 	data: () => ({
+		format: format,
+		dayjs: dayjs,
 		source: null,
-		preview: null,
+		gif: null,
+		thumbnail: null,
 		uploadComplete: 0,
 		creatingGif: false,
 		uploading: false,
 		S3Source: null,
-		S3Preview: null,
+		S3Gif: null,
+		S3Thumbnail: null,
 		query: '',
 		previewSource: null,
 		duration: 0,
@@ -224,9 +276,16 @@ export default {
 					},
 					obj => {
 						if (!obj.error) {
-							this.preview = obj.image;
-							this.creatingGif = false;
-							this.uploadToS3();
+							this.gif = obj.image;
+							let image = new Image();
+							image.onload = () => {
+								let canvas = document.createElement('canvas');
+								let ctx = canvas.getContext('2d');
+								ctx.drawImage(image, 0, 0);
+								this.thumbnail = canvas.toDataURL('image/png');
+								this.uploadToS3();
+							};
+							image.src = obj.image;
 						} else {
 							console.log(obj.error);
 							this.creatingGif = false;
@@ -237,7 +296,7 @@ export default {
 		},
 
 		async uploadToS3() {
-			if (!this.source || !this.preview || !this.duration || !this.title.trim().length || this.uploading) {
+			if (!this.source || !this.gif || !this.thumbnail || !this.duration || !this.title.trim().length || this.uploading) {
 				return;
 			}
 			this.uploading = true;
@@ -252,7 +311,7 @@ export default {
 					if (!err && data) {
 						this.S3Source = data.Location;
 						this.uploadComplete++;
-						if (this.uploadComplete == 2) {
+						if (this.uploadComplete == 3) {
 							this.store();
 						}
 					}
@@ -261,15 +320,32 @@ export default {
 
 			S3.upload(
 				{
-					Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'preview.gif',
-					Body: this.dataURLtoFile(this.preview, 'preview.gif'),
+					Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif.gif',
+					Body: this.dataURLtoFile(this.gif, 'gif.gif'),
 					ACL: 'public-read'
 				},
 				(err, data) => {
 					if (!err && data) {
-						this.S3Preview = data.Location;
+						this.S3Gif = data.Location;
 						this.uploadComplete++;
-						if (this.uploadComplete == 2) {
+						if (this.uploadComplete == 3) {
+							this.store();
+						}
+					}
+				}
+			);
+
+			S3.upload(
+				{
+					Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'thumbnail.png',
+					Body: this.dataURLtoFile(this.thumbnail, 'thumbnail.png'),
+					ACL: 'public-read'
+				},
+				(err, data) => {
+					if (!err && data) {
+						this.S3Thumbnail = data.Location;
+						this.uploadComplete++;
+						if (this.uploadComplete == 3) {
 							this.store();
 						}
 					}
@@ -278,13 +354,14 @@ export default {
 		},
 
 		async store() {
-			if (!this.S3Source || !this.S3Preview || !this.duration || !this.title.trim().length || this.uploadComplete != 2) {
+			if (!this.S3Source || !this.S3Gif || !this.duration || !this.title.trim().length || this.uploadComplete != 3) {
 				return;
 			}
 			let userVideoData = {
 				source: this.S3Source,
-				preview: this.S3Preview,
-				duration: this.duration
+				gif: this.S3Gif,
+				thumbnail: this.S3Thumbnail,
+				duration: parseInt(this.duration)
 			};
 			let response = await this.storeUserVideo(userVideoData);
 			if (response.data) {
@@ -311,9 +388,9 @@ export default {
 			this.creatingGif = false;
 			this.source = false;
 			this.S3Source = null;
-			this.S3Preview = null;
-			this.preview = null;
-			this.previewSource = null;
+			this.S3Gif = null;
+			this.gif = null;
+			this.gifSource = null;
 			this.title = '';
 			this.description = '';
 			this.duration = 0;

@@ -18,7 +18,7 @@ Route::group(
         'domain' => config('app.url'),
     ],
     function () {
-        Route::get('/', 'PageController@homepage');
+        Route::get('/', 'PageController@homepage')->name('home');
         Route::get('/contact', 'PageController@contact');
         Route::get('/affiliates', 'PageController@affiliates');
         Route::get('/affiliate-terms', 'PageController@affiliateTerms');
@@ -224,6 +224,7 @@ Route::group(
             });
         });
 
+        Route::get('/video-messages/{video_message:uuid}', 'VideoMessageController@show');
         Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');

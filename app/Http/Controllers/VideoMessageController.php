@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\VideoMessage;
 use App\Services\VideoMessageService;
 use Illuminate\Http\Request;
 
@@ -17,8 +18,8 @@ class VideoMessageController extends Controller
         return VideoMessageService::store($request);
     }
 
-    public function storeVideo(Request $request)
+    public function show(VideoMessage $videoMessage)
     {
-        return VideoMessageService::storeVideo($request);
+        return VideoMessageService::show($videoMessage);
     }
 }

@@ -15,6 +15,7 @@ class CreateVideoMessagesTable extends Migration
     {
         Schema::create('video_messages', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->bigInteger('user_id')->unsigned()->nullable()->default(null);
             $table->bigInteger('service_id')->unsigned()->nullable()->default(null);
             $table->foreign('user_id')->references('id')->on('users');
@@ -23,6 +24,7 @@ class CreateVideoMessagesTable extends Migration
             $table->string('description');
             $table->string('initial_message')->nullable();
             $table->boolean('embed_service')->default(false);
+            $table->integer('views')->default(0);
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 class UserVideo extends BaseModel
 {
-    protected $fillable = ['user_id', 'source', 'preview', 'duration'];
+    protected $fillable = ['user_id', 'source', 'thumbnail', 'gif', 'duration'];
 
     public function user()
     {

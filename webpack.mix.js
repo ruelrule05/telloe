@@ -40,15 +40,7 @@ mix.sass('resources/sass/tailwind.scss', 'css/vendor.css')
 	.sass('resources/sass/booking-link.scss', 'css');
 //);
 
-mix.js('resources/js/page.js', 'js')
-	.js('resources/dashboard/dashboard.js', 'js')
-	.js('resources/js/profile.js', 'js')
-	.js('resources/widget/index.js', 'js/widget/widget.js')
-	.js('resources/js/organization.js', 'js')
-	.js('resources/js/booking-link.js', 'js')
-	.js('resources/js/booking.js', 'js')
-	.js('resources/js/conversation.js', 'js')
-	.js('resources/js/account-setup.js', 'js');
+mix.js('resources/js/page.js', 'js').js('resources/dashboard/dashboard.js', 'js').js('resources/js/profile.js', 'js').js('resources/widget/index.js', 'js/widget/widget.js').js('resources/js/organization.js', 'js').js('resources/js/booking-link.js', 'js').js('resources/js/booking.js', 'js').js('resources/js/conversation.js', 'js').js('resources/js/account-setup.js', 'js').js('resources/js/video-message.js', 'js');
 
 mix.options({
 	postCss: [require('tailwindcss')]

@@ -20,11 +20,12 @@ class UserVideoService
     {
         (new self)->validate($request, [
             'source' => 'nullable|string|max:255',
-            'preview' => 'nullable|string|max:255',
+            'gif' => 'nullable|string|max:255',
+            'thumbnail' => 'nullable|string|max:255',
             'duration' => 'required|integer',
         ]);
         $authUser = Auth::user();
-        $data = $request->only('source','preview', 'duration');
+        $data = $request->only('source','gif', 'thumbnail', 'duration');
         $data['user_id'] = $authUser->id;
         $userVideo = UserVideo::create($data);
         return response()->json($userVideo);

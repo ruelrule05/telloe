@@ -18,7 +18,8 @@ class CreateUserVideosTable extends Migration
             $table->bigInteger('user_id')->unsigned()->nullable()->default(null);
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('source');
-            $table->string('preview');
+            $table->string('thumbnail');
+            $table->string('gif');
             $table->integer('duration');
             $table->timestamps();
         });
