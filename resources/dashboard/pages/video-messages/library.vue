@@ -240,7 +240,7 @@
 /// <reference types="aws-sdk" />
 const gifshot = require('../../../js/plugins/gifshot.min.js');
 const AWS = window.AWS;
-AWS.config.region = 'ap-southeast-1'; // Region
+AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 	IdentityPoolId: 'ap-southeast-1:4de40dfa-eaf9-4b32-9918-cb84392aa276'
 });
