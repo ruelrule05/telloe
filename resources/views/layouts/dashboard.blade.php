@@ -21,7 +21,7 @@
 						<div class="lg:hidden text-black absolute top-5 right-5 z-20"  @click="notificationsOpen = false">
 							<close-icon class="fill-current w-4 h-4"></close-icon>
 						</div>
-						<template v-if="notifications.filter(x => !x.is_read).length > 0">
+						<template v-if="notifications?.filter(x => !x.is_read).length > 0">
 							<div class="flex items-center text-sm p-3">
 								<h6 class="font-bold">New Notifications</h6>
 								{{-- <u class="text-blue-400 ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u> --}}

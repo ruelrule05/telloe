@@ -1,0 +1,13 @@
+.hover-trigger {
+  .hover-target {
+    display: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    .hover-target {
+      display: block;
+    }
+  } 
+}

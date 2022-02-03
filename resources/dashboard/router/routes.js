@@ -155,6 +155,11 @@ const routes = [
 				name: 'Video Messages',
 				path: 'video-messages',
 				component: () => import(/* webpackChunkName: "dashboard-video-messages" */ '../pages/video-messages/video-messages.vue')
+			},
+			{
+				name: 'Linkedin',
+				path: 'linkedin',
+				component: () => import(/* webpackChunkName: "dashboard-linkedin" */ '../pages/linkedin/linkedin.vue')
 			}
 		]
 	},
