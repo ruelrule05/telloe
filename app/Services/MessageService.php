@@ -94,9 +94,9 @@ class MessageService
             'timestamp' => $timestamp
         ]);
 
-        if ($request->broadcast == 'true') {
-            broadcast(new NewMessageEvent($message))->toOthers();
-        }
+        //if ($request->broadcast == 'true') {
+        broadcast(new NewMessageEvent($message))->toOthers();
+        //}
 
         if (! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;

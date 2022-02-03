@@ -37,7 +37,7 @@ export default {
 		navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
 			if (stream) {
 				if (this.streams.getTracks) {
-					this.streams.getTracks().forEach(function(track) {
+					this.streams.getTracks().forEach(function (track) {
 						track.stop();
 					});
 				} else {
@@ -172,7 +172,7 @@ export default {
 				this.close();
 				return;
 			}
-			audioStreams.getTracks().forEach(function(track) {
+			audioStreams.getTracks().forEach(function (track) {
 				finalStream.addTrack(track);
 			});
 
@@ -183,7 +183,7 @@ export default {
 				this.close();
 				return;
 			}
-			displayStreams.getTracks().forEach(function(track) {
+			displayStreams.getTracks().forEach(function (track) {
 				finalStream.addTrack(track);
 			});
 			displayStreams.getTracks()[0].addEventListener('ended', () => {

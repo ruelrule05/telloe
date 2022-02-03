@@ -583,6 +583,9 @@ export default {
 			user.packages = this.$root.auth.packages = this.user.packages ?? false;
 			user.team = this.$root.auth.team = this.user.team ?? false;
 			user.payments = this.$root.auth.payments = this.user.payments ?? false;
+			user.match_up = this.$root.auth.match_up = this.user.match_up ?? false;
+			user.messages = this.$root.auth.messages = this.user.messages ?? false;
+			user.contacts = this.$root.auth.contacts = this.user.contacts ?? false;
 
 			let response = await window.axios.put('/auth', user, { toast: true });
 			this.loading = false;

@@ -44,7 +44,10 @@ class User extends Authenticatable implements JWTSubject
         'packages',
         'team',
         'payments',
-        'outlook_calendar_events'
+        'outlook_calendar_events',
+        'match_up',
+        'messages',
+        'contacts'
     ];
 
     /**
@@ -69,6 +72,9 @@ class User extends Authenticatable implements JWTSubject
         'packages',
         'team',
         'payments',
+        'match_up',
+        'messages',
+        'contacts'
     ];
 
     protected $appends = ['full_name', 'initials', 'last_online_format', 'created_at_format'];
@@ -217,5 +223,15 @@ class User extends Authenticatable implements JWTSubject
     public function stripeSubscriptions()
     {
         return $this->hasMany(StripeSubscription::class)->latest();
+    }
+
+    public function videoMessages()
+    {
+        return $this->hasMany(VideoMessage::class)->latest();
+    }
+
+    public function videos()
+    {
+        return $this->hasMany(UserVideo::class)->latest();
     }
 }

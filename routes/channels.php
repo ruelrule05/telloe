@@ -21,7 +21,8 @@ Broadcast::channel('users.{user}', function ($auth, $userId) {
     $user = User::where('id', $userId)->first();
     return $auth->id == $user->id ? ['id' => $user->id] : false;
 });
-Broadcast::channel('conversations.{conversation}', function ($user, Conversation $conversation) {
+Broadcast::channel('conversations.{id}', function ($user, $id) {
+    $conversation = Conversation::findOrFail($id);
     return $user->can('show', $conversation) ? ['id' => $user->id] : false;
 });
 Broadcast::channel('onlineUsers', function () {

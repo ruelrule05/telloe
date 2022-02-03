@@ -89,7 +89,7 @@ export default {
 	},
 
 	watch: {
-		ready: function(value) {
+		ready: function (value) {
 			this.$root.contentloading = !value;
 		}
 	},

@@ -314,6 +314,9 @@ class AuthService
         $data['packages'] = $request->input('packages');
         $data['team'] = $request->input('team');
         $data['payments'] = $request->input('payments');
+        $data['match_up'] = $request->input('match_up');
+        $data['messages'] = $request->input('messages');
+        $data['contacts'] = $request->input('contacts');
 
         Member::where('member_user_id', $user->id)->update([]); // update cache
 

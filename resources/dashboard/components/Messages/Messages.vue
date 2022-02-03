@@ -74,65 +74,6 @@
 										>
 											<TrashIcon class="fill-current" height="15" width="15"></TrashIcon>
 										</div>
-										<!-- <div v-if="!message.sending" class="message-actions position-absolute px-2 d-flex align-items-center dropup">
-														<div class="action-content position-relative line-height-1">
-															<div v-tooltip.top="'Tags'" data-toggle="dropdown" class="action-button d-flex align-items-center">
-																<span v-if="message.tags.length > 0" class="action-label">{{ message.tags.length }}</span>
-																<bookmark-icon height="20" width="20" class="cursor-pointer"></bookmark-icon>
-															</div>
-															<div class="dropdown-menu dropdown-menu-x-center p-1 bg-light" @click.stop>
-																<vue-form-validate class="input-group border rounded overflow-hidden" @submit="updateMessageTags(message)">
-																	<input type="text" class="form-control form-control-sm border-0 shadow-none" placeholder="Add tag" data-required v-model="message.newTag" />
-																	<div class="input-group-append border-left">
-																		<button type="submit" class="btn btn-light border-0 p-1 btn-sm line-height-1">
-																			<plus-icon width="20" height="20" class="no-action"></plus-icon>
-																		</button>
-																	</div>
-																</vue-form-validate>
-
-																<div class="text-left" v-if="message.tags.length > 0">
-																	<div v-for="(tag, index) in message.tags" :key="tag.id" class="d-inline-block badge badge-warning py-1 px-2 mr-1 mt-1">
-																		{{ tag }}&nbsp;
-																		<close-icon
-																			height="8"
-																			width="8"
-																			transform="scale(2.5)"
-																			class="cursor-pointer no-action"
-																			@click.native="
-																				message.tags.splice(index, 1);
-																				updateMessageTags(message);
-																			"
-																		></close-icon>
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div v-if="grouped_message.outgoing" v-tooltip.top="'Delete'" class="action-content cursor-pointer line-height-1">
-															<div class="action-button">
-																<trash-icon
-																	height="20"
-																	width="20"
-																	@click.native="
-																		selectedMessage = message;
-																		$refs['deleteMessageModal'].show();
-																	"
-																></trash-icon>
-															</div>
-														</div>
-
-														<div class="message-metalabel text-nowrap text-secondary small position-absolute">
-															<div v-if="message.is_history">
-																<history-icon height="16" width="16" class="no-action"></history-icon>
-															</div>
-															<div>{{ message.tags.join(', ') }}</div>
-														</div>
-
-														<div v-if="['image', 'video', 'audio', 'file'].find(x => x == message.type)" v-tooltip.top="'Download'" class="action-content cursor-pointer line-height-1">
-															<div class="action-button">
-																<download-icon height="20" width="20" @click.native="$root.downloadMedia(message)"></download-icon>
-															</div>
-														</div>
-													</div> -->
 										<message-type :message="message" :outgoing="grouped_message.outgoing"></message-type>
 									</div>
 								</div>
@@ -166,7 +107,7 @@
 		</div>
 
 		<!-- Message input -->
-		<div v-if="!conversation.member.is_pending" class="border-top p-4">
+		<div v-if="isVideoMessage || (conversation.member && !conversation.member.is_pending)" class="border-top p-4 message-input-wrapper">
 			<!-- Pending files -->
 			<div class="flex mb-4" v-if="pendingFiles.length > 0">
 				<div v-for="(file, index) in pendingFiles" :key="index" class="pending-file-preview">
@@ -189,17 +130,17 @@
 			</div>
 			<div class="flex items-start md:items-center flex-col md:flex-row">
 				<div class="overflow-hidden flex items-center text-primary">
-					<button :data-intro="$root.intros.conversations.steps[5]" data-step="6" data-position="top" type="button" class="line-height-sm p-0 focus:outline-none" @blur="emojipicker = false" :class="{ 'emojipicker-open': emojipicker }">
+					<button data-step="6" data-position="top" type="button" class="line-height-sm p-0 focus:outline-none" @blur="emojipicker = false" :class="{ 'emojipicker-open': emojipicker }">
 						<emojipicker @select="selectEmoji"></emojipicker>
 					</button>
-					<button :data-intro="$root.intros.conversations.steps[7]" data-step="8" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" type="button" @click="$refs['fileMedia'].click()"><AttachmentIcon class="fill-current"></AttachmentIcon></button>
+					<button data-step="8" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" type="button" @click="$refs['fileMedia'].click()"><AttachmentIcon class="fill-current"></AttachmentIcon></button>
 
-					<button :data-intro="$root.intros.conversations.steps[6]" data-step="7" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" type="button" @click="openRecorder('audio')"><microphone-alt-icon class="fill-current"></microphone-alt-icon></button>
+					<button data-step="7" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" type="button" @click="openRecorder('audio')"><microphone-alt-icon class="fill-current"></microphone-alt-icon></button>
 					<div class="hidden">
 						<input type="file" ref="fileMedia" class="hidden" @change="addFile" />
 					</div>
 
-					<button :data-intro="$root.intros.conversations.steps[8]" data-step="9" data-position="top" class="ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" @click="initScreenRecorder()" :disabled="$root.screenRecorder.conversation_id">
+					<button data-step="9" data-position="top" class="btn-screen-recorder ml-2 transition-colors hover:bg-gray-200 p-2 rounded-full" @click="initScreenRecorder()" :disabled="!isVideoMessage && $root.screenRecorder.conversation_id">
 						<screenshare-icon class="fill-current"></screenshare-icon>
 					</button>
 				</div>
@@ -207,7 +148,7 @@
 					<vue-form-validate @submit="sendText" ref="messageForm" @mounted="messageFormMounted">
 						<div class="flex items-center rounded-full bg-gray-200 p-1">
 							<div class="py-2 px-4 message-input h-auto overflow-auto flex-grow focus:outline-none" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
-							<button type="submit" class="rounded-full bg-white p-3 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current"></SendIcon></button>
+							<button type="submit" class="btn-send-message rounded-full bg-white p-3 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current"></SendIcon></button>
 						</div>
 					</vue-form-validate>
 				</div>

@@ -360,8 +360,17 @@
 							<div class="form-group mb-2">
 								<vue-checkbox v-model="user.team" label="Team"></vue-checkbox>
 							</div>
-							<div class="form-group">
+							<div class="form-group mb-2">
 								<vue-checkbox v-model="user.payments" label="Payments"></vue-checkbox>
+							</div>
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.match_up" label="Match Up"></vue-checkbox>
+							</div>
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.messages" label="Messages"></vue-checkbox>
+							</div>
+							<div class="form-group">
+								<vue-checkbox v-model="user.contacts" label="Contacts"></vue-checkbox>
 							</div>
 							<div class="mt-5">
 								<vue-button :loading="loading" type="submit" button_class="btn btn-primary"><span>Save</span></vue-button>

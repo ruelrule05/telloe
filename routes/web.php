@@ -6,6 +6,7 @@
  */
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
+use App\Http\Controllers\VideoMessageController;
 use  App\Http\SocialiteHelper;
 
 // Route::get('/test', function(){
@@ -18,7 +19,7 @@ Route::group(
         'domain' => config('app.url'),
     ],
     function () {
-        Route::get('/', 'PageController@homepage');
+        Route::get('/', 'PageController@homepage')->name('home');
         Route::get('/contact', 'PageController@contact');
         Route::get('/affiliates', 'PageController@affiliates');
         Route::get('/affiliate-terms', 'PageController@affiliateTerms');
@@ -88,8 +89,10 @@ Route::group(
                 Route::delete('organizations/{id}/delete_member', 'OrganizationController@deleteMember');
                 Route::post('organizations/{id}/add_members', 'OrganizationController@addMembers');
                 Route::apiResource('contact_notes', 'ContactNoteController');
-
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
+                Route::apiResource('video_messages', 'VideoMessageController');
+                Route::put('video_messages/{video_message}/set_status', [VideoMessageController::class, 'setStatus']);
+                Route::apiResource('user_videos', 'UserVideoController');
                 Route::post('notifications/clear', 'NotificationController@clear');
 
                 Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
@@ -223,6 +226,7 @@ Route::group(
             });
         });
 
+        Route::get('/video-messages/{video_message:uuid}', 'VideoMessageController@show');
         Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
