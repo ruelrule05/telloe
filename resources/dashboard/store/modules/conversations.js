@@ -73,6 +73,7 @@ const actions = {
 		let response = await window.axios.get(`/${name}/${data.id}?page=${page}`);
 		response.data.page = page;
 		await commit('show', response.data);
+		return response;
 	},
 
 	async store({ commit }, data) {

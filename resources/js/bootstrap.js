@@ -12,7 +12,7 @@ if (process.env.MIX_APP_ENV == 'production') {
 window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.interceptors.request.use(
-	function(config) {
+	function (config) {
 		let ajax = true;
 		if (config.ajax == false) {
 			ajax = false;
@@ -23,19 +23,19 @@ window.axios.interceptors.request.use(
 		}
 		return config;
 	},
-	function(error) {
+	function (error) {
 		return Promise.reject(error);
 	}
 );
 window.axios.interceptors.response.use(
-	function(response) {
+	function (response) {
 		Vue.$toast.clear();
 		if (response.config.toast && response.data.message) {
 			Vue.$toast.open(response.data.message);
 		}
 		return response;
 	},
-	function(error) {
+	function (error) {
 		Vue.$toast.clear();
 		let responseStatus = error.response.status;
 		if ([401, 419].find(x => x == responseStatus)) {

@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Auth;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Conversation extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags', 'slug'];
+    protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags', 'slug', 'video_message_id'];
     public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',

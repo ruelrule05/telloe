@@ -12,6 +12,7 @@
 
 	@include('partials.social_scripts')
 	<script>
+		const AUTH = {!! json_encode(Auth::user()) !!};
 		const VIDEO_MESSAGE= {!! json_encode($videoMessage) !!};
 	</script>
 	<script src="{{ mix('js/video-message.js') }}" async defer></script>

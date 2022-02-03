@@ -25,6 +25,7 @@ class CreateVideoMessagesTable extends Migration
             $table->string('initial_message')->nullable();
             $table->boolean('embed_service')->default(false);
             $table->integer('views')->default(0);
+            $table->string('status')->default('draft');
             $table->timestamps();
         });
     }

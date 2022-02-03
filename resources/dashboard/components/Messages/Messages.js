@@ -28,6 +28,10 @@ export default {
 		ready: {
 			type: Boolean,
 			default: false
+		},
+		isVideoMessage: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -111,7 +115,7 @@ export default {
 	},
 
 	watch: {
-		'conversation.channel': function(value) {
+		'conversation.channel': function (value) {
 			if (value) {
 				this.conversation.channel.listenForWhisper('typing', e => {
 					if (this.$root.auth.id != e.userId) {
@@ -120,18 +124,20 @@ export default {
 				});
 			}
 		},
-		'$root.screenRecorder.status': function(value) {
+		'$root.screenRecorder.status': function (value) {
 			if (value == 'paused') this.checkScreenRecorder();
 			else this.hasScreenRecording = false;
 		},
-		'$root.screenRecorder.conversation_id': function(value) {
+		'$root.screenRecorder.conversation_id': function (value) {
 			if (value == this.conversation.id) this.checkScreenRecorder();
 			//else this.hasScreenRecording = false;
 		}
 	},
 
 	created() {
-		this.$root.getFiles(this.conversation);
+		if (!this.isVideoMessage) {
+			this.$root.getFiles(this.conversation);
+		}
 	},
 
 	mounted() {
@@ -161,7 +167,7 @@ export default {
 		},
 
 		async downloadScreenRecording() {
-			if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isDownloaded) {
+			if (!this.isVideoMessage && this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isDownloaded) {
 				let video = await this.$root.$refs['screenRecorder'].submit();
 				let link = document.createElement('a');
 				link.download = video.source.name;
@@ -172,7 +178,7 @@ export default {
 		},
 
 		async sendScreenRecording() {
-			if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isSent) {
+			if (!this.isVideoMessage && this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data && !this.$root.screenRecorder.isSent) {
 				let video = await this.$root.$refs['screenRecorder'].submit();
 				this.hasScreenRecording = false;
 				this.sendVideo(video);
@@ -180,7 +186,7 @@ export default {
 		},
 
 		checkScreenRecorder() {
-			if (this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
+			if (!this.isVideoMessage && this.conversation && this.$root.screenRecorder.conversation_id == this.conversation.id && this.$root.screenRecorder.data) {
 				this.hasScreenRecording = true;
 				this.$nextTick(() => {
 					if (this.$refs['screenRecorderData']) {
@@ -291,11 +297,13 @@ export default {
 				});
 				message.is_online = this.isOnline;
 				let response = await this.storeMessage(message);
-				this.$root.appChannel.whisper('newMessage', {
-					id: response.id,
-					conversation_id: response.conversation_id,
-					timestamp: response.timestamp
-				});
+				if (!this.isVideoMessage) {
+					this.$root.appChannel.whisper('newMessage', {
+						id: response.id,
+						conversation_id: response.conversation_id,
+						timestamp: response.timestamp
+					});
+				}
 
 				// if (!['text', 'emoji'].find(x => x == response.type)) {
 				// 	this.conversation.files.data.unshift(response);

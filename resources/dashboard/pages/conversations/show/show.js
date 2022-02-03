@@ -89,7 +89,7 @@ export default {
 	}),
 
 	watch: {
-		ready: function(value) {
+		ready: function (value) {
 			if (value) {
 				this.$root.contentloading = false;
 			}
@@ -99,11 +99,11 @@ export default {
 				});
 			}, 50);
 		},
-		'conversation.id': function() {
+		'conversation.id': function () {
 			this.ready = false;
 			if (this.$refs['messageInput']) this.$refs['messageInput'].focus();
 		},
-		'conversation.ready': function(value) {
+		'conversation.ready': function (value) {
 			if (value) {
 				this.ready = true;
 				if (this.channel) {
@@ -111,7 +111,7 @@ export default {
 				}
 			}
 		},
-		'conversation.last_message': function(value) {
+		'conversation.last_message': function (value) {
 			if (this.conversation && this.conversation.paginated_messages && value.id) {
 				let message = this.conversation.paginated_messages.data.find(x => x.id == value.id);
 				if (!message) {
@@ -119,7 +119,7 @@ export default {
 				}
 			}
 		},
-		'$route.params.id': function(value) {
+		'$route.params.id': function (value) {
 			if (value) {
 				this.showConversation({ id: value }).then(() => {
 					this.initChannel();
@@ -323,10 +323,7 @@ export default {
 			let hour = map.get('hour');
 			const minute = map.get('minute');
 			const second = map.get('second');
-			const ms = date
-				.getMilliseconds()
-				.toString()
-				.padStart(3, '0');
+			const ms = date.getMilliseconds().toString().padStart(3, '0');
 			if (hour == '24') hour = '00';
 			const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 

@@ -1,27 +1,16 @@
 <template>
-	<div class="min-h-screen relative" v-if="ready">
-		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-			<div class="ml-7 lg:ml-0">VIDEO MESSAGES</div>
+	<div class="min-h-screen relative" :class="{ 'h-screen max-h-screen overflow-hidden': showLibrary }" v-if="ready">
+		<!-- video messages list -->
+		<div v-show="!adding" class="min-h-screen relative flex flex-col">
 			<div>
-				<button
-					type="button"
-					class="btn btn-md btn-primary flex items-center"
-					@click="
-						reset();
-						adding = !adding;
-					"
-				>
-					<template v-if="!adding">
-						<span>Create</span>
-						<span class="ml-1 hidden md:block lg:block"> Video</span>
-					</template>
-					<span v-else>Cancel</span>
-				</button>
+				<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+					<div class="ml-7 lg:ml-0">VIDEO MESSAGES</div>
+					<button v-if="!adding" type="button" class="btn btn-md btn-primary flex items-center" @click="adding = true">
+						<span>Create Video</span>
+					</button>
+				</div>
+				<div class="h-20 lg:hidden block" />
 			</div>
-		</div>
-		<div class="h-20 lg:hidden block" />
-
-		<div v-show="!adding">
 			<div v-if="videoMessages.length == 0" class="flex-grow">
 				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
 					<div class="text-primary">
@@ -34,7 +23,7 @@
 							class="btn btn-outline-primary btn-md mt-4"
 							@click="
 								reset();
-								$refs.addModal.show();
+								adding = true;
 							"
 						>
 							<span>Add New</span>
@@ -42,12 +31,13 @@
 					</div>
 				</div>
 			</div>
-			<div v-else class="h-full contact-content p-8">
+			<div v-else class="p-8">
 				<div>
-					<div class="mb-3 w-3/12">
-						<div>
+					<div class="mb-3 flex items-center justify-between">
+						<div class="w-3/12">
 							<input type="text" v-model="query" placeholder="Search video..." />
 						</div>
+						<div class="text-primary cursor-pointer hover:underline hidden">Video library</div>
 					</div>
 
 					<div class="flex items-center justify-between contact-row border-bottom py-3" v-for="videoMessage in videoMessages" :key="videoMessage.id">
@@ -60,10 +50,10 @@
 							<div>
 								<div class="font-bold text-primary">{{ videoMessage.title }}</div>
 								<div class="text-xs text-gray-400 mb-1">{{ dayjs(videoMessage.created_at).format('MMM DD, YYYY h:m A') }}</div>
-								<div class="text-white py-1 px-2 leading-none inline-block text-xs rounded-sm bg-green-400">Sent</div>
+								<div class="py-1 px-2 leading-none inline-block text-xs rounded-sm capitalize" :class="[videoMessage.status == 'published' ? 'bg-green-400 text-white ' : 'bg-gray-300 text-gray-400']">{{ videoMessage.status }}</div>
 								<div class="flex items-center text-xs text-gray-500 mt-1 gap-4">
 									<div>
-										<VueDropdown :options="['Copy video link', 'Copy video for email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
+										<VueDropdown @click="shareVideoMessage($event, videoMessage)" :options="['Copy video link', 'Copy video for email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
 											<template #button>
 												<div class="flex items-center transition-colors cursor-pointer"><ShareIcon class="w-3.5 fill-current text-gray-400 mr-1"></ShareIcon> Share</div>
 											</template>
@@ -76,263 +66,222 @@
 							</div>
 						</div>
 
-						<div class="flex items-center">
-							<div class="mr-1">
-								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-									<PlusIcon class="w-3.5 stroke-current text-gray-400"></PlusIcon>
-								</div>
-							</div>
-							<div>
-								<VueDropdown :options="['Edit details', 'Delete']" class="-mr-2 mt-1.5">
-									<template #button>
-										<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-											<CogIcon class="fill-current text-gray-400"></CogIcon>
-										</div>
-									</template>
-								</VueDropdown>
-							</div>
+						<div>
+							<VueDropdown @click="videoMessageAction($event, videoMessage)" :options="[videoMessage.status == 'published' ? 'Set as draft' : 'Publish', 'Delete']" class="-mr-2 mt-1.5" dropPosition="w-28">
+								<template #button>
+									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+										<CogIcon class="fill-current text-gray-400"></CogIcon>
+									</div>
+								</template>
+							</VueDropdown>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<Modal ref="addModal" :noBackdropHide="true"> </Modal>
+		<!-- Add form -->
+		<vue-form-validate v-show="adding" @submit="store" class="min-h-screen relative flex flex-col">
+			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+				<div class="ml-7 lg:ml-0">VIDEO MESSAGES</div>
+				<div class="flex items-center gap-2">
+					<button v-if="success" type="button" class="btn btn-md btn-primary" @click="reset()">
+						<span>Done</span>
+					</button>
+					<button v-if="!success" type="button" class="btn btn-md btn-outline-primary" @click="reset()">
+						<span>Cancel</span>
+					</button>
 
-		<div v-show="adding" id="add">
-			<div class="w-full h-full py-8">
-				<div class="w-5/12 inline-block text-left relative">
-					<div v-if="uploading || creatingGif" class="absolute-center w-full h-full z-50 bg-white bg-opacity-50">
-						<div class="absolute-center text-center">
-							<div class="spinner spinner-sm"></div>
-							<div>{{ uploading ? 'Uploading..' : creatingGif ? 'Creating preview..' : 'Loading..' }}</div>
+					<button v-if="!success" type="submit" class="btn btn-md btn-primary">
+						<span>{{ step == 1 ? 'Preview Video' : 'Create' }}</span>
+					</button>
+				</div>
+			</div>
+			<div class="h-20 lg:hidden block" />
+			<div class="flex-grow overflow-auto min-h-full flex items-stretch relative">
+				<div v-if="uploading" class="absolute-center w-full h-full z-50 bg-white">
+					<div class="absolute-center text-center">
+						<div class="spinner spinner-sm"></div>
+					</div>
+				</div>
+
+				<div v-if="success && videoMessage" class="w-full">
+					<div class="relative text-center h-full overflow-hidden">
+						<div class="w-5/12 inline-block text-left py-4">
+							Share your video with contacts.
+							<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100">
+								<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<circle cx="30" cy="30" r="30" fill="#3167E3" />
+									<g clip-path="url(#clip0_2055_11070)">
+										<path d="M33.0341 26.966C35.6014 29.536 35.5661 33.6562 33.0496 36.1867C33.0449 36.1919 33.0393 36.1974 33.0341 36.2026L30.1466 39.0901C27.5999 41.6369 23.4564 41.6365 20.9101 39.0901C18.3633 36.5438 18.3633 32.3999 20.9101 29.8535L22.5045 28.2591C22.9273 27.8363 23.6554 28.1173 23.6773 28.7149C23.7051 29.4764 23.8417 30.2414 24.0936 30.9802C24.179 31.2304 24.118 31.5071 23.9311 31.694L23.3687 32.2564C22.1645 33.4606 22.1267 35.4214 23.3191 36.6374C24.5233 37.8655 26.5025 37.8728 27.7159 36.6594L30.6034 33.7723C31.8147 32.561 31.8096 30.603 30.6034 29.3968C30.4444 29.2381 30.2842 29.1147 30.159 29.0286C30.0705 28.9678 29.9974 28.8872 29.9456 28.7931C29.8938 28.6991 29.8647 28.5942 29.8605 28.4869C29.8435 28.0329 30.0044 27.565 30.3632 27.2062L31.2679 26.3015C31.5051 26.0643 31.8772 26.0351 32.1523 26.2271C32.4674 26.4471 32.7624 26.6944 33.0341 26.966ZM39.0899 20.9099C36.5436 18.3635 32.4001 18.3632 29.8534 20.9099L26.9659 23.7974C26.9607 23.8026 26.9551 23.8082 26.9504 23.8133C24.4339 26.3439 24.3986 30.4641 26.9659 33.034C27.2376 33.3057 27.5326 33.5529 27.8476 33.7729C28.1227 33.9649 28.4949 33.9357 28.7321 33.6985L29.6368 32.7938C29.9956 32.435 30.1564 31.9671 30.1394 31.5131C30.1353 31.4058 30.1062 31.3009 30.0543 31.2069C30.0025 31.1128 29.9294 31.0322 29.8409 30.9714C29.7158 30.8853 29.5556 30.7619 29.3966 30.6032C28.1903 29.397 28.1852 27.439 29.3966 26.2277L32.2841 23.3406C33.4975 22.1272 35.4766 22.1345 36.6808 23.3626C37.8732 24.5786 37.8355 26.5394 36.6312 27.7436L36.0689 28.306C35.882 28.4929 35.821 28.7696 35.9063 29.0198C36.1583 29.7586 36.2949 30.5236 36.3227 31.2851C36.3446 31.8827 37.0727 32.1637 37.4955 31.7409L39.0899 30.1465C41.6367 27.6002 41.6367 23.4563 39.0899 20.9099Z" fill="white" />
+									</g>
+									<defs>
+										<clipPath id="clip0_2055_11070">
+											<rect width="22" height="22" fill="white" transform="translate(19 19)" />
+										</clipPath>
+									</defs>
+								</svg>
+
+								<div class="flex-grow">
+									<h5 class="font-bold font-lg mb-2">Copy Link</h5>
+									<div class="text-gray-400 mb-3">Copy a link to your recording to copy to send to contacts on other platforms</div>
+									<button class="btn btn-outline-primary btn-sm" type="button" @click="shareVideoMessage('Copy video link', videoMessage)">
+										<span>Copy Link</span>
+									</button>
+								</div>
+							</div>
+							<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100">
+								<svg width="50" height="50" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<circle cx="30" cy="30" r="30" fill="#3167E3" />
+									<path d="M30 19.3438C24.1107 19.3438 19.3438 24.1098 19.3438 30C19.3438 35.8893 24.1098 40.6562 30 40.6562C32.0691 40.6562 34.0967 40.0487 35.8183 38.9279C36.3342 38.5921 36.4467 37.8843 36.0569 37.408L35.6196 36.8738C35.29 36.4711 34.7095 36.3725 34.2715 36.6534C33.0044 37.4661 31.5174 37.9062 30 37.9062C25.6405 37.9062 22.0938 34.3595 22.0938 30C22.0938 25.6405 25.6405 22.0938 30 22.0938C34.3028 22.0938 37.9062 24.5696 37.9062 28.9688C37.9062 30.6353 36.9999 32.3952 35.4068 32.5649C34.6613 32.5454 34.6802 32.0125 34.8277 31.2748L35.8346 26.0709C35.9577 25.4346 35.4703 24.8438 34.8222 24.8438H32.8894C32.7467 24.8437 32.609 24.8963 32.5025 24.9913C32.3961 25.0864 32.3283 25.2173 32.3122 25.3591L32.3118 25.363C31.6803 24.5938 30.5738 24.4274 29.7349 24.4274C26.5303 24.4274 23.8125 27.1015 23.8125 30.9354C23.8125 33.7414 25.3931 35.4845 27.9375 35.4845C29.097 35.4845 30.4026 34.8126 31.1598 33.8374C31.5689 35.3028 32.9049 35.3028 34.1981 35.3028C38.8777 35.3028 40.6562 32.2257 40.6562 28.9688C40.6562 23.1101 35.9307 19.3438 30 19.3438ZM29.0684 32.4247C28.1124 32.4247 27.5186 31.7534 27.5186 30.6728C27.5186 28.7396 28.8411 27.5478 30.0378 27.5478C30.9957 27.5478 31.5675 28.2027 31.5675 29.2996C31.5675 31.2358 30.112 32.4247 29.0684 32.4247Z" fill="white" />
+								</svg>
+
+								<div class="flex-grow">
+									<h5 class="font-bold font-lg mb-2">Copy For Email</h5>
+									<div class="text-gray-400 mb-3">Copy a link to your recording which looks good for email</div>
+									<button class="btn btn-outline-primary btn-sm" type="button" @click="shareVideoMessage('Copy video for email', videoMessage)">
+										<span>Copy for Email</span>
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
+				</div>
 
-					<input
-						type="file"
-						ref="fileInput"
-						class="hidden"
-						@change="
-							source = $event.target.files[0];
-							createVideoPreview();
-						"
-						accept="video/mp4,video/x-m4v,video/*"
-					/>
-					<form @submit.prevent="submitVideoMessage" class="relative">
-						<!-- Step 1 -->
-						<div v-show="step == 1">
-							Create a personal video message for your contacts.
-							<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100 mb-4">
-								<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<div v-show="!success && !uploading" class="text-left relative overflow-hidden w-full">
+					<div class="relative text-center h-full overflow-hidden">
+						<div v-show="step == 1" class="text-center py-8">
+							<div class="text-left inline-flex gap-6 rounded-lg bg-gray-100 w-5/12 p-8">
+								<svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<circle cx="30" cy="30" r="30" fill="#3167E3" />
-									<path d="M32.6778 19.5H16.6556C15.1889 19.5 14 20.6703 14 22.1141V37.8859C14 39.3297 15.1889 40.5 16.6556 40.5H32.6778C34.1444 40.5 35.3333 39.3297 35.3333 37.8859V22.1141C35.3333 20.6703 34.1444 19.5 32.6778 19.5ZM43.2 21.5617L37.1111 25.6961V34.3039L43.2 38.4328C44.3778 39.2313 46 38.4164 46 37.0219V22.9727C46 21.5836 44.3833 20.7633 43.2 21.5617Z" fill="white" />
+									<path d="M27.56 22.32H31.912V18.48H27.56V22.32ZM27.56 42H31.912V24.72H27.56V42Z" fill="white" />
 								</svg>
-
 								<div class="flex-grow">
-									<h5 class="font-bold font-lg mb-2">Camera</h5>
-									<div class="text-gray-400 mb-3">Create a personal video for your contacts</div>
-									<button
-										class="btn btn-outline-primary btn-sm"
-										type="button"
-										@click="
-											sourceType = 'camera';
-											step++;
-										"
-									>
-										<span>Record video</span>
-									</button>
-								</div>
-							</div>
-							<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100 mb-4">
-								<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<circle cx="30" cy="30" r="30" fill="#3167E3" />
-									<path d="M39.9167 19H19.0833C17.9332 19 17 19.9238 17 21.0625V34.8125C17 35.9512 17.9332 36.875 19.0833 36.875H27.4167L26.7222 38.9375H23.5972C23.02 38.9375 22.5556 39.3973 22.5556 39.9688C22.5556 40.5402 23.02 41 23.5972 41H35.4028C35.98 41 36.4444 40.5402 36.4444 39.9688C36.4444 39.3973 35.98 38.9375 35.4028 38.9375H32.2778L31.5833 36.875H39.9167C41.0668 36.875 42 35.9512 42 34.8125V21.0625C42 19.9238 41.0668 19 39.9167 19ZM39.2222 34.125H19.7778V21.75H39.2222V34.125Z" fill="white" />
-								</svg>
+									<h5 class="font-bold font-lg mb-2">Videos</h5>
+									<label required>Choose videos from library</label>
+									<div class="mb-4">
+										<div v-if="!userVideos.length" class="flex items-center h-24">
+											<div class="border border-dashed h-full w-full cursor-pointer rounded bg-white relative" @click="showLibrary = true">
+												<span class="absolute-center text-sm text-gray-400">+ Add videos</span>
+											</div>
+										</div>
+										<div v-else class="grid grid-cols-4 gap-1.5">
+											<div v-for="(userVideo, userVideoIndex) in userVideos" :key="userVideo.id" class="user-video" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
+												<div class="absolute top-1 right-1 cursor-pointer rounded-full p-1.5 bg-black bg-opacity-50 text-white" @click="userVideos.splice(userVideoIndex, 1)">
+													<CloseIcon class="h-2 w-2 transform scale-120 fill-current"></CloseIcon>
+												</div>
+												<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
+											</div>
+											<div class="h-24 rounded-lg relative bg-white border border-dashed cursor-pointer" @click="showLibrary = true">
+												<span class="absolute-center text-2xl text-gray-400">+</span>
+											</div>
+										</div>
+									</div>
 
-								<div class="flex-grow">
-									<h5 class="font-bold font-lg mb-2">Screen Recording</h5>
-									<div class="text-gray-400 mb-3">Show a contact your screen</div>
-									<button
-										class="btn btn-outline-primary btn-sm"
-										type="button"
-										@click="
-											sourceType = 'screen';
-											step++;
-										"
-									>
-										<span>Record video</span>
-									</button>
-								</div>
-							</div>
-							<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100 mb-4">
-								<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<circle cx="30" cy="30" r="30" fill="#3167E3" />
-									<path d="M38.9375 19H25.1875C24.0488 19 23.125 19.9238 23.125 21.0625V23.125H21.0625C19.9238 23.125 19 24.0488 19 25.1875V38.9375C19 40.0762 19.9238 41 21.0625 41H34.8125C35.9512 41 36.875 40.0762 36.875 38.9375V36.875H38.9375C40.0762 36.875 41 35.9512 41 34.8125V21.0625C41 19.9238 40.0762 19 38.9375 19ZM34.8125 38.9375H21.0625V30H34.8125V38.9375ZM38.9375 34.8125H36.875V25.1875C36.875 24.0488 35.9512 23.125 34.8125 23.125H25.1875V21.0625H38.9375V34.8125Z" fill="white" />
-								</svg>
+									<h5 class="font-bold font-lg mb-2">Video Details</h5>
+									<div class="mb-4">
+										<label required>Title</label>
+										<input type="text" class="input" v-model="title" required />
+									</div>
+									<div class="mb-4">
+										<label required>Description</label>
+										<textarea class="input resize-none" rows="3" required v-model="description"></textarea>
+									</div>
+									<h5 class="font-bold font-lg mb-2 mt-6">Initial Message</h5>
+									<div class="mb-4">
+										<label required>Message content</label>
+										<textarea class="input resize-none" rows="3" v-model="initial_message" required></textarea>
+									</div>
 
-								<div class="flex-grow">
-									<h5 class="font-bold font-lg mb-2">Screen and Camera Recording</h5>
-									<div class="text-gray-400 mb-3">Show a contact your screen with your face</div>
-									<button
-										class="btn btn-outline-primary btn-sm"
-										type="button"
-										@click="
-											sourceType = 'screen_camera';
-											step++;
-										"
-									>
-										<span>Record video</span>
-									</button>
-								</div>
-							</div>
-
-							<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100">
-								<svg version="1.1" width="60" class="fill-current" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" xml:space="preserve">
-									<g><path class="fill-current text-primary" d="M500,10C229.4,10,10,229.4,10,500c0,270.6,219.4,490,490,490s490-219.4,490-490C990,229.4,770.6,10,500,10z M391.1,750.4V238.7l359.3,255.9L391.1,750.4z" /></g>
-								</svg>
-
-								<div class="flex-grow">
-									<h5 class="font-bold font-lg mb-2">Upload Video</h5>
-									<div class="text-gray-400 mb-3">Upload your existing videos</div>
-									<button
-										class="btn btn-outline-primary btn-sm"
-										type="button"
-										@click="
-											sourceType = 'upload';
-											step++;
-										"
-									>
-										<span>Upload video</span>
-									</button>
-								</div>
-							</div>
-							<div class="h-64 hidden">
-								<div v-if="!source" class="border border-dashed h-full rounded-lg relative bg-gray-50 cursor-pointer">
-									<span class="absolute-center text-center text-gray-400">
-										<div>Add a video file</div>
-										<span class="text-xl">+</span>
-									</span>
-								</div>
-								<div v-else class="h-full w-full relative">
-									<video class="pointer-eventxs-none border w-full h-full bg-black" controls :src="previewSource"></video>
-									<div
-										class="absolute bg-gray-100 top-2 right-2 z-10 rounded-full p-1 cursor-pointer"
-										@click="
-											$refs.fileInput.value = '';
-											source = null;
-										"
-									>
-										<CloseIcon class="w-3 h-3 fill-current text-blacj"></CloseIcon>
+									<h5 class="font-bold font-lg mb-2 mt-6">Booking Button</h5>
+									<div class="mb-4">
+										<label required>Event Type</label>
+										<VueSelect :options="servicesOptions" required placeholder="Select event type" class="mb-4 bg-white" v-model="service_id" dropPosition="w-full"></VueSelect>
+									</div>
+									<div class="flex items-center gap-4">
+										<span class="text-gray-400 text-sm">Enabled</span>
+										<toggle-switch v-model="embed_service"></toggle-switch>
 									</div>
 								</div>
 							</div>
 						</div>
-						<!-- Step 2 -->
-						<div v-show="step == 2" class="border border-red-600">
-							{{ sourceType }}
-						</div>
-						<!-- Step 3 -->
-						<div v-show="step == 3" class="flex gap-6 rounded-lg p-8 bg-gray-100">
-							<svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<circle cx="30" cy="30" r="30" fill="#3167E3" />
-								<path d="M27.56 22.32H31.912V18.48H27.56V22.32ZM27.56 42H31.912V24.72H27.56V42Z" fill="white" />
-							</svg>
-							<div class="flex-grow">
-								<h5 class="font-bold font-lg mb-2">Video details</h5>
-								<div class="mb-4">
-									<label required>Title</label>
-									<input type="text" class="input" v-model="title" required />
-								</div>
-								<div class="mb-4">
-									<label required>Description</label>
-									<textarea class="input resize-none" rows="3" v-model="description"></textarea>
-								</div>
-								<h5 class="font-bold font-lg mb-2 mt-6">Initial Message</h5>
-								<div class="mb-4">
-									<label> Message content</label>
-									<textarea class="input resize-none" rows="3" v-model="initial_message"></textarea>
-								</div>
 
-								<h5 class="font-bold font-lg mb-2 mt-6">Booking Button</h5>
-								<div class="mb-4">
-									<label>Event Type</label>
-									<VueSelect :options="servicesOptions" required placeholder="Select event type" class="mb-4 bg-white" v-model="service_id" dropPosition="w-full"></VueSelect>
-								</div>
-							</div>
-
-							<div class="mt-4 items-center flex justify-between">
-								<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.addModal.hide(true)">
-									<span>Cancel</span>
-								</button>
-								<button :class="{ disabled: source ? false : true }" class="btn btn-md btn-primary" type="submit"><span>Add</span></button>
-							</div>
-						</div>
-					</form>
+						<VideoPlayer v-if="step == 2" :videos="userVideos"></VideoPlayer>
+					</div>
 				</div>
 			</div>
-		</div>
+		</vue-form-validate>
+
+		<Library
+			v-show="showLibrary"
+			@close="showLibrary = false"
+			@input="
+				userVideos = $event;
+				showLibrary = false;
+			"
+			:selectedUserVideos="userVideos"
+		></Library>
+
+		<Modal ref="deleteModal">
+			<div class="text-center">
+				<WarningIcon class="fill-current text-red-600 h-8 w-8 inline-block mb-4"></WarningIcon>
+				<p>Are you sure you want to delete this video message?</p>
+			</div>
+			<div class="flex justify-between mt-6">
+				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.deleteModal.hide()"><span>Cancel</span></button>
+				<button class="btn btn-sm btn-red" type="button" @click="confirmDeleteVideoMessage"><span>Delete</span></button>
+			</div>
+		</Modal>
 	</div>
 </template>
 
 <script>
-/// <reference types="aws-sdk" />
 import { mapState, mapActions } from 'vuex';
-const gifshot = require('../../../js/plugins/gifshot.min.js');
-const AWS = window.AWS;
-AWS.config.region = 'ap-southeast-1'; // Region
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	IdentityPoolId: 'ap-southeast-1:4de40dfa-eaf9-4b32-9918-cb84392aa276'
-});
-import Modal from '../../../components/modal/modal.vue';
-const S3 = new AWS.S3({
-	apiVersion: '2006-03-01',
-	params: { Bucket: process.env.MIX_AWS_BUCKET }
-});
 
 import InfoCircleIcon from '../../../icons/info-circle.vue';
-import CloseIcon from '../../../icons/close.vue';
 import VueSelect from '../../../components/vue-select/vue-select.vue';
 import dayjs from 'dayjs';
 import CogIcon from '../../../icons/cog';
 import ShareIcon from '../../../icons/share';
 import EyeIcon from '../../../icons/eye-solid';
+import CloseIcon from '../../../icons/close.vue';
 import ThumbupIcon from '../../../icons/thumb-up';
 import CommentIcon from '../../../icons/comment-solid';
-import PlusIcon from '../../../icons/plus';
+import WarningIcon from '../../../icons/warning';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 const format = require('format-duration');
+import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
+import VueFormValidate from '../../../components/vue-form-validate.vue';
+import Library from './library.vue';
+import copy from 'copy-text-to-clipboard';
+import Modal from '../../../components/modal/modal.vue';
+
+import VideoPlayer from '../../../video-message/videoplayer.vue';
+
 export default {
-	components: { Modal, InfoCircleIcon, CloseIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, PlusIcon },
+	components: { VideoPlayer, WarningIcon, Modal, CloseIcon, VueFormValidate, InfoCircleIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, ToggleSwitch, Library },
 	data: () => ({
+		app_url: process.env.MIX_APP_URL,
+		showLibrary: false,
 		format: format,
 		dayjs: dayjs,
-		source: null,
-		gif: null,
-		thumbnail: null,
-		uploadComplete: 0,
-		creatingGif: false,
 		uploading: false,
-		S3Source: null,
-		S3Gif: null,
-		S3Thumbnail: null,
 		query: '',
-		previewSource: null,
-		duration: 0,
 		title: '',
 		description: '',
 		initial_message: '',
 		service_id: null,
 		embed_service: false,
-		adding: true,
-		step: 1,
-		sourceType: null
+		adding: false,
+		success: false,
+		videoMessage: null,
+		userVideos: [],
+		step: 1
 	}),
 
 	computed: {
 		...mapState({
 			videoMessages: state => state.video_messages.index,
-			videos: state => state.user_videos.index,
 			ready: state => state.video_messages.ready,
 			services: state => state.services.index
 		}),
@@ -347,7 +296,6 @@ export default {
 	},
 	created() {
 		this.getVideoMessages();
-		this.getUserVideos();
 		this.getServices();
 	},
 
@@ -355,184 +303,128 @@ export default {
 		...mapActions({
 			getVideoMessages: 'video_messages/index',
 			storeVideoMessage: 'video_messages/store',
-			storeUserVideo: 'user_videos/store',
-			getUserVideos: 'user_videos/index',
+			setVideoMessageStatus: 'video_messages/setStatus',
+			deleteVideoMessage: 'video_messages/delete',
 			getServices: 'services/index'
 		}),
 
-		createVideoPreview() {
-			if (!this.source) return null;
-			this.previewSource = URL.createObjectURL(this.source);
+		copyElementToClipboard(videoMessage) {
+			let element = this.stringToElement(videoMessage);
+			document.body.appendChild(element);
+			window.getSelection().removeAllRanges();
+			let range = document.createRange();
+			range.selectNode(element);
+			window.getSelection().addRange(range);
+			document.execCommand('copy');
+			window.getSelection().removeAllRanges();
+			element.remove();
 		},
 
-		submitVideoMessage() {
-			if (!this.source || !this.title.trim().length || !this.initial_message.trim().length || this.creatingGif || !this.service_id) {
-				return;
-			}
-			this.creatingGif = true;
-			const url = URL.createObjectURL(this.source);
-			const $video = document.createElement('video');
-			$video.src = url;
-			$video.addEventListener('loadedmetadata', () => {
-				this.duration = $video.duration * 1000;
-				let gifWidth = $video.videoWidth;
-				let gifHeight = $video.videoHeight;
-				if (gifWidth > 320) {
-					let ratio = 320 / gifWidth;
-					gifWidth = 320;
-					gifHeight = gifHeight * ratio;
-				}
-				gifshot.createGIF(
-					{
-						video: [this.source],
-						numFrames: 30,
-						gifWidth: gifWidth,
-						gifHeight: gifHeight
-					},
-					obj => {
-						if (!obj.error) {
-							this.gif = obj.image;
-							let image = new Image();
-							image.onload = () => {
-								let canvas = document.createElement('canvas');
-								let ctx = canvas.getContext('2d');
-								ctx.drawImage(image, 0, 0);
-								this.thumbnail = canvas.toDataURL('image/png');
-								this.uploadToS3();
-							};
-							image.src = obj.image;
-						} else {
-							console.log(obj.error);
-							this.creatingGif = false;
-						}
-					}
-				);
-			});
+		stringToElement(videoMessage) {
+			let canvas = document.createElement('canvas');
+			canvas.width = 42;
+			canvas.height = 13;
+			let ctx = canvas.getContext('2d');
+			ctx.font = '14px Arial';
+			ctx.fillStyle = 'white';
+			ctx.fillText(this.format(videoMessage.videos[0].user_video.duration, { leading: true }), 1, 11);
+
+			let element = `<table><tr><td><div style="width: 580px; max-width: 580px"><div style="font-size: 20px; line-height: 22px; font-weight: 600; color: #3167e3">${videoMessage.title}</div><div style="font-size: 14px; color: #555555; margin-bottom:10px">From ${videoMessage.user.full_name}</div><div style="font-size: 14px; color: #151515; margin-bottom: 10px">${videoMessage.description}</div><div style="display: grid; grid-template-columns: 1fr"><a style="display: block; grid-row-start: 1; grid-column-start: 1" href="${this.app_url}/video-messages/${videoMessage.uuid}"><img style="width: 100%; height: auto;" src="${videoMessage.videos[0].user_video.gif}" /></a><div style="grid-row-start: 1; grid-column-start: 1; display: grid; grid-template-columns: 1fr"><div style="grid-row-start: 1; grid-column-start: 1; display: flex; align-items: center; justify-content: center"><img src="${this.app_url}/images/play.png" width="80" /></div><div style="grid-row-start: 1; grid-column-start: 1; display: flex; align-items: end"><div style="padding: 10px; pointer-events: none;"><img src="${canvas.toDataURL()}" /></div></div></div></div></div></td></tr><tr><td></td></tr></table>`;
+			let template = document.createElement('template');
+			template.innerHTML = element;
+			return template.content.firstChild;
 		},
 
-		async uploadToS3() {
-			if (!this.source || !this.gif || !this.thumbnail || !this.duration || !this.title.trim().length || this.uploading) {
-				return;
+		confirmDeleteVideoMessage() {
+			if (this.selectedVideoMessage) {
+				this.deleteVideoMessage(this.selectedVideoMessage);
 			}
-			this.uploading = true;
-			let timestamp = new Date().getTime();
-			S3.upload(
-				{
-					Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'source',
-					Body: this.source,
-					ACL: 'public-read'
-				},
-				(err, data) => {
-					if (!err && data) {
-						this.S3Source = data.Location;
-						this.uploadComplete++;
-						if (this.uploadComplete == 3) {
-							this.store();
-						}
-					}
-				}
-			);
+			this.$refs.deleteModal.hide();
+		},
 
-			S3.upload(
-				{
-					Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif.gif',
-					Body: this.dataURLtoFile(this.gif, 'gif.gif'),
-					ACL: 'public-read'
-				},
-				(err, data) => {
-					if (!err && data) {
-						this.S3Gif = data.Location;
-						this.uploadComplete++;
-						if (this.uploadComplete == 3) {
-							this.store();
-						}
+		shareVideoMessage(action, videoMessage) {
+			switch (action) {
+				case 'Copy video link':
+					if (copy(`${process.env.MIX_APP_URL}/video-messages/${videoMessage.uuid}`)) {
+						this.$toast.open('Video message link copied to clipboard.');
 					}
-				}
-			);
+					break;
 
-			S3.upload(
-				{
-					Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'thumbnail.png',
-					Body: this.dataURLtoFile(this.thumbnail, 'thumbnail.png'),
-					ACL: 'public-read'
-				},
-				(err, data) => {
-					if (!err && data) {
-						this.S3Thumbnail = data.Location;
-						this.uploadComplete++;
-						if (this.uploadComplete == 3) {
-							this.store();
-						}
+				case 'Copy video for email':
+					this.copyElementToClipboard(videoMessage);
+					this.$toast.open('Video message email copied to clipboard.');
+					break;
+			}
+		},
+
+		videoMessageAction(action, videoMessage) {
+			if (action == 'Publish' || action == 'Set as draft') {
+				let status = action == 'Publish' ? 'published' : 'draft';
+				videoMessage.status = status;
+				this.setVideoMessageStatus(videoMessage).then(() => {
+					if (status == 'published') {
+						this.$toast.open('Video message published successfully.');
+					} else {
+						this.$toast.open('Video message set to draft.');
 					}
-				}
-			);
+				});
+			} else if (action == 'Delete') {
+				this.selectedVideoMessage = videoMessage;
+				this.$refs.deleteModal.show();
+			}
 		},
 
 		async store() {
-			if (!this.S3Source || !this.S3Gif || !this.duration || !this.title.trim().length || this.uploadComplete != 3) {
+			if (!this.userVideos.length) {
 				return;
 			}
-			let userVideoData = {
-				source: this.S3Source,
-				gif: this.S3Gif,
-				thumbnail: this.S3Thumbnail,
-				duration: parseInt(this.duration)
+			if (this.step == 1) {
+				this.step++;
+				return;
+			}
+			this.uploading = true;
+			let userVideoIds = this.userVideos.map(x => x.id);
+			let videoMessagedata = {
+				title: this.title,
+				description: this.description,
+				initial_message: this.initial_message,
+				service_id: this.service_id,
+				embed_service: this.embed_service ? 1 : 0,
+				user_video_ids: userVideoIds
 			};
-			let response = await this.storeUserVideo(userVideoData);
-			if (response.data) {
-				let videoMessagedata = {
-					title: this.title,
-					description: this.description,
-					initial_message: this.initial_message,
-					service_id: this.service_id,
-					embed_service: this.embed_service ? 1 : 0,
-					user_video_id: response.data.id
-				};
-				await this.storeVideoMessage(videoMessagedata);
-				this.$refs.addModal.hide(true);
-				this.reset();
-			} else {
+			let videoMessage = await this.storeVideoMessage(videoMessagedata);
+			this.videoMessage = videoMessage.data;
+			if (videoMessage.data) {
+				this.success = true;
 				this.uploading = false;
-				this.creatingGif = false;
 			}
 		},
 
 		reset() {
-			this.uploadComplete = 0;
-			this.uploading = false;
-			this.creatingGif = false;
-			this.source = false;
-			this.S3Source = null;
-			this.S3Gif = null;
-			this.gif = null;
-			this.gifSource = null;
+			this.adding = false;
+			this.userVideos = [];
+			this.success = false;
 			this.title = '';
 			this.description = '';
-			this.duration = 0;
 			this.service_id = null;
 			this.initial_message = '';
 			this.embed_service = false;
-		},
-
-		dataURLtoFile(dataurl, filename) {
-			var arr = dataurl.split(','),
-				mime = arr[0].match(/:(.*?);/)[1],
-				bstr = atob(arr[1]),
-				n = bstr.length,
-				u8arr = new Uint8Array(n);
-
-			while (n--) {
-				u8arr[n] = bstr.charCodeAt(n);
-			}
-
-			return new File([u8arr], filename, { type: mime });
+			this.step = 1;
 		}
 	}
 };
 </script>
 
 <style lang="scss" scoped>
-#add {
-	@apply bg-white w-full h-full top-0 left-0  text-center;
+.user-video {
+	@apply h-24 rounded-lg relative bg-cover bg-center bg-no-repeat bg-gray-200;
+	> div {
+		@apply opacity-0;
+	}
+	&:hover {
+		> div {
+			@apply opacity-100;
+		}
+	}
 }
 </style>

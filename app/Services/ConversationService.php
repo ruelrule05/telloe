@@ -49,7 +49,7 @@ class ConversationService
                 ->update(['is_read' => 1]);
         //endif;
 
-        $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20)->withPath('/dashboard/bookings/services/' . $conversation->id);
+        $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20);
 
         return $conversation;
     }

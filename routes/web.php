@@ -6,6 +6,7 @@
  */
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
+use App\Http\Controllers\VideoMessageController;
 use  App\Http\SocialiteHelper;
 
 // Route::get('/test', function(){
@@ -90,6 +91,7 @@ Route::group(
                 Route::apiResource('contact_notes', 'ContactNoteController');
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::apiResource('video_messages', 'VideoMessageController');
+                Route::put('video_messages/{video_message}/set_status', [VideoMessageController::class, 'setStatus']);
                 Route::apiResource('user_videos', 'UserVideoController');
                 Route::post('notifications/clear', 'NotificationController@clear');
 

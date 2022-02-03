@@ -208,7 +208,7 @@
 						<router-view></router-view>
 					</div>
 					
-					<div v-if="$route.name != 'conversations'" class="border-top bg-white p-8 flex justify-between text-muted text-xs footer">
+					<div v-if="$route.name != 'conversations' && $route.name != 'Video Messages'" class="border-top bg-white p-8 flex justify-between text-muted text-xs footer">
 						<div class="flex flex-col md:flex-row">
 							<a class="font-bold" target="_blank" href="/contact">Contact Us</a>
 							<a class="font-bold ml-0 md:ml-6" target="_blank" href="https://docs.telloe.com">Knowledge Base</a>
