@@ -242,7 +242,7 @@ const gifshot = require('../../../js/plugins/gifshot.min.js');
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	IdentityPoolId: 'ap-southeast-1:4de40dfa-eaf9-4b32-9918-cb84392aa276'
+	IdentityPoolId: process.env.MIX_AWS_IDENTITY_POOL
 });
 const S3 = new AWS.S3({
 	apiVersion: '2006-03-01',
