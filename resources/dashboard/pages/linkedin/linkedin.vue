@@ -17,7 +17,7 @@
 		<div class="page-integrations">
 			<div class="mx-auto">
 				<div class="h-full pt-16 pb-8 px-7">
-          <div class="overflow-x-scroll w-full h-full">
+          <div class="overflow-x-scroll w-full h-full pb-8">
             <table class="table-auto hover:table-fixed">
               <thead class="mb-8 block">
                 <tr class="flex">
@@ -53,8 +53,8 @@
                     </td>
                     <td class="w-200 text-sm">
                       <p 
-                        class="rounded-md py-1 px-4 text-sm inline tracking-wide" 
-                        :class="item.label === 'CUSTOMER' ? 'bg-green-400 text-white' : 'bg-orange-400 text-black'"
+                        class="rounded-md py-1 px-4 text-sm inline tracking-wide font-semibold" 
+                        :style="{color: getLabelStyles(item.label, 'text'), backgroundColor: getLabelStyles(item.label, 'bg')}"
                       >
                         {{ item.label }}
                       </p>
@@ -82,7 +82,9 @@
                       </div>
                     </td>
                     <td class="w-200 text-sm relative hover-trigger">
-                      <GearIcon/>
+                      <div class="inline" @click="handleLabelSectionByLabel(item.label, item.id)">
+                        <GearIcon/>
+                      </div>
                       <div class="text-sm absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black hover-target z-10">
                         Choose Label
                       </div>
@@ -108,6 +110,35 @@
         </div>
 			</div>
 		</div>
+
+    <Modal ref="labelSettingModal" size="sm">
+			<h2 class="font-bold font-serif">CHOOSE LABEL</h2>
+      <div 
+        v-for="(label, i) in labelList" 
+        :key="i" 
+        class="mt-4 flex justify-between items-center cursor-pointer"
+        @click="handleSelectedLabelFromModal(label, selectedLabel.id)"
+      >
+        <p 
+          class="rounded-md py-1 px-4 font-semibold text-sm inline tracking-wide" 
+          :style="{color: label.textColor, backgroundColor: label.bgColor}"
+        >
+          {{ label.label }}
+        </p>
+        <span v-if="label.label === selectedLabel.label">
+          <CheckSolidIcon/>
+        </span>
+      </div>
+      <div class="mt-4 flex justify-between items-center">
+        <div>
+          <input type="text" placeholder="CUSTOM LABEL">
+        </div>
+        <span class="cursor-pointer" @click="handleAddLabel()"><PlusSolidIcon/></span>
+      </div>
+			<div class="mt-20">
+				<button class="btn btn-sm btn-outline-primary w-full" type="button" @click="$refs.labelSettingModal.hide()"><span>Save</span></button>
+			</div>
+		</Modal>
 	</div>
 </template>
 
