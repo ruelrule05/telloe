@@ -3,15 +3,20 @@ import LinkedinIcon from '../../../icons/linkedin';
 import GearIcon from '../../../icons/gear';
 import CheckSolidIcon from '../../../icons/check-solid';
 import PlusSolidIcon from '../../../icons/plus-solid';
+import ChevronDownIcon from '../../../icons/chevron-down';
+import SearchIcon from '../../../icons/search';
 
 import Modal from '../../../components/modal/modal.vue';
 
+import ClickOutside from 'vue-click-outside';
 import VuePaginate from 'vue-paginate';
 import Vue from 'vue';
 Vue.use(VuePaginate);
 
 import Swatches from 'vue-swatches';
 import 'vue-swatches/dist/vue-swatches.css'
+import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
+import VueSelect from '../../../components/vue-select/vue-select.vue';
 
 export default {
   components: {
@@ -20,76 +25,45 @@ export default {
     GearIcon,
     CheckSolidIcon,
     PlusSolidIcon,
+    ChevronDownIcon,
+    SearchIcon,
 
     Modal,
     Swatches,
+    VueDropdown,
+    VueSelect,
+  },
+  directives: {
+    ClickOutside
   },
   data: () => ({
+    // custom dropdown
+		show: false,
+		open: false,
+    menuOpen: false,
+
+    searchInList: '',
     hover: false,
     page: 1,
 		paginate: ['linkedin'],
     selectedLabel: '',
-    linkedinList: [
-      {
-        id: 0,
-        first: 'Annabel',
-        last: 'Arnaud',
-        title: 'Affiliate Coordinator at ComeOn! Group',
-        label: 'CUSTOMER',
-        lastActivity: 'Liked their Post',
-        date: '26-Jan-22',
-        isConnected: 'Yes',
-        firstActivity: '26-Jan-22',
-        dateConnected: '26-Jan-22',
-        likedPost: 1,
-        commentOnPost: 0,
-        likedComment: 0,
-        commentPostLiked: 0,
-        mutualConnections: 85,
-        linkedinProfile: 'https://www.linkedin.com/in/annabel-arnaud-46939246/',
-        recentActivity: 'https://www.linkedin.com/in/rebekah-duca-a233bb61/detail/recent-activity/',
-        settings: ''
-      },
-      {
-        id: 1,
-        first: 'Henk',
-        last: 'Worlff',
-        title: 'Coordinator Affiliate at ComeOn! Group',
-        label: 'CUSTOMER',
-        lastActivity: 'Liked their Post',
-        date: '26-Jan-22',
-        isConnected: 'Yes',
-        firstActivity: '26-Jan-22',
-        dateConnected: '26-Jan-22',
-        likedPost: 1,
-        commentOnPost: 0,
-        likedComment: 0,
-        commentPostLiked: 0,
-        mutualConnections: 85,
-        linkedinProfile: 'https://www.linkedin.com/in/annabel-arnaud-46939246/',
-        recentActivity: 'https://www.linkedin.com/in/rebekah-duca-a233bb61/detail/recent-activity/',
-        settings: ''
-      },
-      {
-        id: 2,
-        first: 'Keith',
-        last: 'Hathaway',
-        title: 'Founder and CEO of ComeOn! Group',
-        label: 'WARM LEAD',
-        lastActivity: 'We Connected',
-        date: '26-Jan-22',
-        isConnected: 'Yes',
-        firstActivity: '26-Jan-22',
-        dateConnected: '26-Jan-22',
-        likedPost: 1,
-        commentOnPost: 0,
-        likedComment: 0,
-        commentPostLiked: 0,
-        mutualConnections: 85,
-        linkedinProfile: 'https://www.linkedin.com/in/annabel-arnaud-46939246/',
-        recentActivity: 'https://www.linkedin.com/in/rebekah-duca-a233bb61/detail/recent-activity/',
-        settings: ''
-      }
+    columnList: [
+      { name: 'first', isEnabled: false },
+      { name: 'last', isEnabled: true },
+      { name: 'title', isEnabled: true },
+      { name: 'label', isEnabled: true },
+      { name: 'my last activity', isEnabled: true },
+      { name: 'date', isEnabled: true },
+      { name: 'connected', isEnabled: true },
+      { name: '1st Activity', isEnabled: true },
+      { name: 'connected date', isEnabled: true },
+      { name: 'liked post', isEnabled: true },
+      { name: 'comment on post', isEnabled: true },
+      { name: 'liked comment', isEnabled: true },
+      { name: 'comment post liked', isEnabled: true },
+      { name: 'mutual connections', isEnabled: true },
+      { name: 'linked profile', isEnabled: true },
+      { name: 'recent activity', isEnabled: true }
     ],
     labelList: [
       {
@@ -123,18 +97,87 @@ export default {
         label: 'BLACK'
       },
     ],
+    
     customBackgroundColor: '#F77F00',
-    customLabel: ''
+    customLabel: '',
+
+
+    dummyLinkedinList: [
+      {
+        id: 0,
+        first: 'Annabel',
+        last: 'Arnaud',
+        title: 'Affiliate Coordinator at ComeOn! Group',
+        label: 'CUSTOMER',
+        lastActivity: 'Liked their Post',
+        date: '26-Jan-22',
+        isConnected: 'Yes',
+        firstActivity: '26-Jan-22',
+        connectedDate: '26-Jan-22',
+        likedPost: 1,
+        commentOnPost: 0,
+        likedComment: 0,
+        commentPostLiked: 0,
+        mutualConnections: 85,
+        linkedinProfile: 'https://www.linkedin.com/in/annabel-arnaud-46939246/',
+        recentActivity: 'https://www.linkedin.com/in/rebekah-duca-a233bb61/detail/recent-activity/',
+        settings: ''
+      },
+      {
+        id: 1,
+        first: 'Henk',
+        last: 'Worlff',
+        title: 'Coordinator Affiliate at ComeOn! Group',
+        label: 'CUSTOMER',
+        lastActivity: 'Liked their Post',
+        date: '26-Jan-22',
+        isConnected: 'Yes',
+        firstActivity: '26-Jan-22',
+        connectedDate: '26-Jan-22',
+        likedPost: 1,
+        commentOnPost: 0,
+        likedComment: 0,
+        commentPostLiked: 0,
+        mutualConnections: 85,
+        linkedinProfile: 'https://www.linkedin.com/in/annabel-arnaud-46939246/',
+        recentActivity: 'https://www.linkedin.com/in/rebekah-duca-a233bb61/detail/recent-activity/',
+        settings: ''
+      },
+      {
+        id: 2,
+        first: 'Keith',
+        last: 'Hathaway',
+        title: 'Founder and CEO of ComeOn! Group',
+        label: 'WARM LEAD',
+        lastActivity: 'We Connected',
+        date: '26-Jan-22',
+        isConnected: 'Yes',
+        firstActivity: '26-Jan-22',
+        connectedDate: '26-Jan-22',
+        likedPost: 1,
+        commentOnPost: 0,
+        likedComment: 0,
+        commentPostLiked: 0,
+        mutualConnections: 85,
+        linkedinProfile: 'https://www.linkedin.com/in/annabel-arnaud-46939246/',
+        recentActivity: 'https://www.linkedin.com/in/rebekah-duca-a233bb61/detail/recent-activity/',
+        settings: ''
+      }
+    ]
   }),
 
-	created() {},
+  watch: {
+		show: function (value) {
+			this.open = value;
+      this.menuOpen = value;
+		},
+
+    searchInList: function (value) {
+      console.log('searchInList: ', value)
+    }
+	},
 
   methods: {
-    truncatedWords(words, maxLen) {
-      if (words.length <= maxLen) return words
-      return words.substr(0, maxLen) + '...'
-    },
-
     getLabelStyles(label, style) {
       return this.labelList.map((list) => {
         if (list.label.toLowerCase() === label.toLowerCase()) {
@@ -177,6 +220,25 @@ export default {
       const contrastRatio = (hexTotal) / (255 * 3);
 
       return contrastRatio >= 0.5 ? '#333333' : '#ffffff';
+    },
+
+
+		onBlur() {
+      if (!this.menuOpen) {
+        this.show = false;
+      }
+		},
+
+    handleIsEnabledColumn(name, state) {
+      let column = this.columnList.find(column => column.name === name)
+      column.isEnabled = !state;
+    },
+
+    handleDisplayEnabledColumns() {
+      return this.columnList.map(column => {
+        if (column.isEnabled) return column.name;
+        if (!column.isEnabled) return '';
+      })
     }
   }
 }
