@@ -10,6 +10,9 @@ import VuePaginate from 'vue-paginate';
 import Vue from 'vue';
 Vue.use(VuePaginate);
 
+import Swatches from 'vue-swatches';
+import 'vue-swatches/dist/vue-swatches.css'
+
 export default {
   components: {
     HistoryIcon,
@@ -19,6 +22,7 @@ export default {
     PlusSolidIcon,
 
     Modal,
+    Swatches,
   },
   data: () => ({
     hover: false,
@@ -119,6 +123,8 @@ export default {
         label: 'BLACK'
       },
     ],
+    customBackgroundColor: '#F77F00',
+    customLabel: ''
   }),
 
 	created() {},
@@ -156,7 +162,21 @@ export default {
     },
 
     handleAddLabel() {
-      console.log('clicked')
+      this.labelList.push({
+        bgColor: this.customBackgroundColor, 
+        textColor: this.handleGetTextColor(this.customBackgroundColor), 
+        label: this.customLabel
+      });
+      this.customBackgroundColor = '#F77F00';
+      this.customLabel = '';
+    },
+
+    handleGetTextColor(hex) {
+      const hexCode = hex.charAt(0) === '#' ? hex.substr(1, 6) : hex;
+      const hexTotal = parseInt(hexCode.substr(0, 2), 16) + parseInt(hexCode.substr(2, 2), 16) + parseInt(hexCode.substr(4, 2), 16);
+      const contrastRatio = (hexTotal) / (255 * 3);
+
+      return contrastRatio >= 0.5 ? '#333333' : '#ffffff';
     }
   }
 }

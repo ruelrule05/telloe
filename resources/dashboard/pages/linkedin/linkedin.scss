@@ -11,3 +11,9 @@
     }
   } 
 }
+
+.labelSettingModal.modal {
+  ::v-deep .modal-body {
+    overflow: inherit !important;
+  }
+}

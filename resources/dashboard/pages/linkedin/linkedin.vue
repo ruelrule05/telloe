@@ -53,7 +53,7 @@
                     </td>
                     <td class="w-200 text-sm">
                       <p 
-                        class="rounded-md py-1 px-4 text-sm inline tracking-wide font-semibold" 
+                        class="rounded-md py-1 px-4 text-sm inline tracking-wide font-semibold uppercase" 
                         :style="{color: getLabelStyles(item.label, 'text'), backgroundColor: getLabelStyles(item.label, 'bg')}"
                       >
                         {{ item.label }}
@@ -111,7 +111,7 @@
 			</div>
 		</div>
 
-    <Modal ref="labelSettingModal" size="sm">
+    <Modal ref="labelSettingModal" class="labelSettingModal" size="sm">
 			<h2 class="font-bold font-serif">CHOOSE LABEL</h2>
       <div 
         v-for="(label, i) in labelList" 
@@ -120,7 +120,7 @@
         @click="handleSelectedLabelFromModal(label, selectedLabel.id)"
       >
         <p 
-          class="rounded-md py-1 px-4 font-semibold text-sm inline tracking-wide" 
+          class="rounded-md py-1 px-4 font-semibold text-sm inline tracking-wide uppercase" 
           :style="{color: label.textColor, backgroundColor: label.bgColor}"
         >
           {{ label.label }}
@@ -130,8 +130,15 @@
         </span>
       </div>
       <div class="mt-4 flex justify-between items-center">
-        <div>
-          <input type="text" placeholder="CUSTOM LABEL">
+        <div class="flex items-center">
+          <input type="text" v-model="customLabel" placeholder="CUSTOM LABEL">
+          <Swatches 
+            class="ml-4"
+            v-model="customBackgroundColor" 
+            popover-x="right"
+            swatches="text-advanced"
+            shapes="circles"
+          />
         </div>
         <span class="cursor-pointer" @click="handleAddLabel()"><PlusSolidIcon/></span>
       </div>
