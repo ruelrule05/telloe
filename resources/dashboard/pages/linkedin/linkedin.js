@@ -5,6 +5,8 @@ import CheckSolidIcon from '../../../icons/check-solid';
 import PlusSolidIcon from '../../../icons/plus-solid';
 import ChevronDownIcon from '../../../icons/chevron-down';
 import SearchIcon from '../../../icons/search';
+import ExpandIcon from '../../../icons/expand-solid';
+import CompressIcon from '../../../icons/compress-solid';
 
 import Modal from '../../../components/modal/modal.vue';
 
@@ -27,6 +29,8 @@ export default {
     PlusSolidIcon,
     ChevronDownIcon,
     SearchIcon,
+    ExpandIcon,
+    CompressIcon,
 
     Modal,
     Swatches,
@@ -41,6 +45,11 @@ export default {
 		show: false,
 		open: false,
     menuOpen: false,
+    columnWidth: 0,
+    isShrink: false,
+    miniColumns: ['dte.', 'cnc.', '1ac.', 'cnd.'],
+    medColumns: ['fst.', 'lst.', 'lbl.'],
+    longColumns: ['mla.', 'ttl.'],
 
     searchInList: '',
     hover: false,
@@ -48,22 +57,22 @@ export default {
 		paginate: ['linkedin'],
     selectedLabel: '',
     columnList: [
-      { name: 'first', isEnabled: false },
-      { name: 'last', isEnabled: true },
-      { name: 'title', isEnabled: true },
-      { name: 'label', isEnabled: true },
-      { name: 'my last activity', isEnabled: true },
-      { name: 'date', isEnabled: true },
-      { name: 'connected', isEnabled: true },
-      { name: '1st Activity', isEnabled: true },
-      { name: 'connected date', isEnabled: true },
-      { name: 'liked post', isEnabled: true },
-      { name: 'comment on post', isEnabled: true },
-      { name: 'liked comment', isEnabled: true },
-      { name: 'comment post liked', isEnabled: true },
-      { name: 'mutual connections', isEnabled: true },
-      { name: 'linked profile', isEnabled: true },
-      { name: 'recent activity', isEnabled: true }
+      { name: 'first', abv: 'fst.', isEnabled: false },
+      { name: 'last', abv: 'lst.', isEnabled: true },
+      { name: 'title', abv: 'ttl.', isEnabled: true },
+      { name: 'label', abv: 'lbl.', isEnabled: true },
+      { name: 'my last activity', abv: 'mla.', isEnabled: true },
+      { name: 'date', abv: 'dte.', isEnabled: true },
+      { name: 'connected', abv: 'cnc.', isEnabled: true },
+      { name: '1st Activity', abv: '1ac.', isEnabled: true },
+      { name: 'connected date', abv: 'cnd.', isEnabled: true },
+      { name: 'liked post', abv: 'lps.', isEnabled: true },
+      { name: 'comment on post', abv: 'cop.', isEnabled: true },
+      { name: 'liked comment', abv: 'lcm.', isEnabled: true },
+      { name: 'comment post liked', abv: 'cpl.', isEnabled: true },
+      { name: 'mutual connections', abv: 'mcn.', isEnabled: true },
+      { name: 'linked profile', abv: 'lip.', isEnabled: true },
+      { name: 'recent activity', abv: 'rac.', isEnabled: true }
     ],
     labelList: [
       {
@@ -165,6 +174,11 @@ export default {
       }
     ]
   }),
+
+  mounted() {
+    this.columnWidth = 2000 / this.columnList.length;
+    console.log(this.columnWidth)
+  },
 
   watch: {
 		show: function (value) {

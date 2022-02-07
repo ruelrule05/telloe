@@ -87,26 +87,35 @@
                     <th 
                       :key='i' 
                       v-if="column.isEnabled" 
-                      class="w-200 px-2 block font-normal text-left text-gray-400 text-sm tracking-wider uppercase"
+                      class="px-2 block font-normal text-left text-gray-400 text-sm tracking-wider uppercase"
+                      :class="{
+                        'w-100': isShrink && miniColumns.includes(column.abv), 
+                        'w-150': isShrink && medColumns.includes(column.abv), 
+                        'w-250': isShrink && longColumns.includes(column.abv), 
+                        'w-200': !isShrink,
+                      }"
                     >
-                      {{ column.name }}
+                      {{ isShrink ? column.abv : column.name }}
                     </th>
                   </template>
-                  <th class="w-100 block"></th>
+                  <th class="w-50 block cursor-pointer flex items-center justify-center" @click="isShrink = !isShrink">
+                    <template v-if="isShrink"><ExpandIcon/></template>
+                    <template v-else><CompressIcon/></template>
+                  </th>
                 </tr>
               </thead>
               <paginate tag="tbody" name="linkedin" :list="dummyLinkedinList" :per="10" ref="paginate">
                 <template v-for="item in paginated('linkedin')">
                   <tr class="flex border-b py-4 hover:bg-gray-100" :key="item.id">
-                    <td v-if="columnList[0].isEnabled" class="w-200 text-sm px-2">{{ item.first }}</td>
-                    <td v-if="columnList[1].isEnabled" class="w-200 text-sm px-2">{{ item.last }}</td>
-                    <td v-if="columnList[2].isEnabled" class="w-200 text-sm px-2 text-gray-400 relative hover-trigger">
+                    <td v-if="columnList[0].isEnabled" class="text-sm px-2" :class="{'w-150': isShrink, 'w-200': !isShrink}">{{ item.first }}</td>
+                    <td v-if="columnList[1].isEnabled" class="text-sm px-2" :class="{'w-150': isShrink, 'w-200': !isShrink}">{{ item.last }}</td>
+                    <td v-if="columnList[2].isEnabled" class="text-sm px-2 text-gray-400 relative hover-trigger" :class="{'w-250': isShrink, 'w-200': !isShrink}">
                       <p class="truncate">{{ item.title }}</p>
                       <div class="absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
                         {{ item.title }}
                       </div>
                     </td>
-                    <td v-if="columnList[3].isEnabled" class="w-200 text-sm px-2">
+                    <td v-if="columnList[3].isEnabled" class="text-sm px-2" :class="{'w-150': isShrink, 'w-200': !isShrink}">
                       <p 
                         class="rounded-md py-1 px-4 text-sm inline tracking-wide font-semibold uppercase" 
                         :style="{color: getLabelStyles(item.label, 'text'), backgroundColor: getLabelStyles(item.label, 'bg')}"
@@ -114,30 +123,30 @@
                         {{ item.label }}
                       </p>
                     </td>
-                    <td v-if="columnList[4].isEnabled" class="w-200 text-sm px-2">{{ item.lastActivity }}</td>
-                    <td v-if="columnList[5].isEnabled" class="w-200 text-sm px-2">{{ item.date }}</td>
-                    <td v-if="columnList[6].isEnabled" class="w-200 text-sm px-2">{{ item.isConnected }}</td>
-                    <td v-if="columnList[7].isEnabled" class="w-200 text-sm px-2">{{ item.firstActivity }}</td>
-                    <td v-if="columnList[8].isEnabled" class="w-200 text-sm px-2">{{ item.connectedDate }}</td>
-                    <td v-if="columnList[9].isEnabled" class="w-200 text-sm px-2">{{ item.likedPost }}</td>
-                    <td v-if="columnList[10].isEnabled" class="w-200 text-sm px-2">{{ item.commentOnPost }}</td>
-                    <td v-if="columnList[11].isEnabled" class="w-200 text-sm px-2">{{ item.likedComment }}</td>
-                    <td v-if="columnList[12].isEnabled" class="w-200 text-sm px-2">{{ item.commentPostLiked }}</td>
-                    <td v-if="columnList[13].isEnabled" class="w-200 text-sm px-2">{{ item.mutualConnections }}</td>
-                    <td v-if="columnList[14].isEnabled" class="w-200 px-2 relative hover-trigger inline">
+                    <td v-if="columnList[4].isEnabled" class="text-sm px-2" :class="{'w-250': isShrink, 'w-200': !isShrink}">{{ item.lastActivity }}</td>
+                    <td v-if="columnList[5].isEnabled" class="text-sm px-2" :class="{'w-100': isShrink, 'w-200': !isShrink}">{{ item.date }}</td>
+                    <td v-if="columnList[6].isEnabled" class="text-sm px-2" :class="{'w-100': isShrink, 'w-200': !isShrink}">{{ item.isConnected }}</td>
+                    <td v-if="columnList[7].isEnabled" class="text-sm px-2" :class="{'w-100': isShrink, 'w-200': !isShrink}">{{ item.firstActivity }}</td>
+                    <td v-if="columnList[8].isEnabled" class="text-sm px-2" :class="{'w-100': isShrink, 'w-200': !isShrink}">{{ item.connectedDate }}</td>
+                    <td v-if="columnList[9].isEnabled" class="text-sm px-2" :class="{'w-50': isShrink, 'w-200': !isShrink}">{{ item.likedPost }}</td>
+                    <td v-if="columnList[10].isEnabled" class="text-sm px-2" :class="{'w-50': isShrink, 'w-200': !isShrink}">{{ item.commentOnPost }}</td>
+                    <td v-if="columnList[11].isEnabled" class="text-sm px-2" :class="{'w-50': isShrink, 'w-200': !isShrink}">{{ item.likedComment }}</td>
+                    <td v-if="columnList[12].isEnabled" class="text-sm px-2" :class="{'w-50': isShrink, 'w-200': !isShrink}">{{ item.commentPostLiked }}</td>
+                    <td v-if="columnList[13].isEnabled" class="text-sm px-2" :class="{'w-50': isShrink, 'w-200': !isShrink}">{{ item.mutualConnections }}</td>
+                    <td v-if="columnList[14].isEnabled" class="px-2 relative hover-trigger inline" :class="{'w-50': isShrink, 'w-200': !isShrink}">
                       <LinkedinIcon/>
                       <div class="text-sm absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
                         {{ item.linkedinProfile }}
                       </div>
                     </td>
-                    <td v-if="columnList[15].isEnabled" class="w-200 px-2 text-sm relative hover-trigger">
+                    <td v-if="columnList[15].isEnabled" class="px-2 text-sm relative hover-trigger" :class="{'w-50': isShrink, 'w-200': !isShrink}">
                       <HistoryIcon/>
                       <div class="text-sm absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
                         {{ item.recentActivity }}
                       </div>
                     </td>
-                    <td class="w-200 px-2 text-sm relative hover-trigger">
-                      <div class="inline" @click="handleLabelSectionByLabel(item.label, item.id)">
+                    <td class="px-2 text-sm relative hover-trigger">
+                      <div class="inline" @click="handleLabelSectionByLabel(item.label, item.id)" :class="{'w-50': isShrink, 'w-200': !isShrink}">
                         <GearIcon/>
                       </div>
                       <div class="text-sm absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black hover-target z-10">

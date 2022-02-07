@@ -75,8 +75,11 @@ module.exports = {
 		textColor: theme => theme('colors'),
 		extend: {
 			width: {
+        '50': '50px',
         '100': '100px',
+        '150': '150px',
         '200': '200px',
+        '250': '250px',
         '300': '300px',
       }
 		}
