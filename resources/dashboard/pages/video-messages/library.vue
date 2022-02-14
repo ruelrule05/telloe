@@ -6,9 +6,6 @@
 			class="hidden"
 			@change="
 				source = $event.target.files[0];
-				if (source) {
-					step = 3;
-				}
 				createVideoPreview();
 				$event.target.value = '';
 			"
@@ -625,6 +622,8 @@ export default {
 
 		createVideoPreview() {
 			if (!this.source) return null;
+			this.step = 3;
+			this.library = false;
 			this.previewSource = URL.createObjectURL(this.source);
 		},
 
