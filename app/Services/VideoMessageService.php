@@ -67,7 +67,10 @@ class VideoMessageService
             'video_message_id' => $videoMessage->id,
             'slug' => $slug
         ]);
-        return response()->json($videoMessage->load('user', 'videos.userVideo', 'videoMessageLikes'));
+
+        return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
+            $conversation->withCount('messages');
+        })->first());
     }
 
     public static function show(VideoMessage $videoMessage)
@@ -127,7 +130,9 @@ class VideoMessageService
         $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview');
         $data['initial_message'] = $request->input('initial_message');
         $videoMessage->update($data);
-        return response()->json($videoMessage->load('user', 'videos.userVideo', 'videoMessageLikes'));
+        return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
+            $conversation->withCount('messages');
+        })->first());
     }
 
     public static function destroy(VideoMessage $videoMessage)
