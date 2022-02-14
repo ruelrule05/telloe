@@ -50,6 +50,7 @@ class VideoMessageService
         $data['uuid'] = Str::uuid();
         $data['status'] = 'draft';
         $data['is_active'] = true;
+        $data['initial_message'] = $request->input('initial_message');
         $videoMessage = VideoMessage::create($data);
         foreach ($userVideos as $key => $userVideo) {
             VideoMessageVideo::create([
@@ -124,6 +125,7 @@ class VideoMessageService
             );
         }
         $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview');
+        $data['initial_message'] = $request->input('initial_message');
         $videoMessage->update($data);
         return response()->json($videoMessage->load('user', 'videos.userVideo', 'videoMessageLikes'));
     }
