@@ -1,187 +1,169 @@
 <template>
 	<div class="library">
+		<input
+			type="file"
+			ref="fileInput"
+			class="hidden"
+			@change="
+				source = $event.target.files[0];
+				if (source) {
+					step = 3;
+				}
+				createVideoPreview();
+				$event.target.value = '';
+			"
+			accept="video/mp4,video/x-m4v,video/*"
+		/>
+
 		<div v-if="status" class="absolute-center w-full h-full z-50 bg-white">
-			<div class="absolute-center text-center">
-				<div class="spinner spinner-sm"></div>
-				<div>{{ status }}</div>
+			<div class="absolute-center text-center w-full">
+				<div class="absolute-center w-3/12">
+					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
+						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
+					</div>
+					<div class="mt-2 text-sm">{{ status }}</div>
+				</div>
 			</div>
 		</div>
 
-		<div v-show="!form" class="md:grid md:grid-cols-12 auto-cols-max flex items-center justify-center">
-			<div class="col-start-4 col-span-6 relative z-50 p-6">
-				<div class="bg-white rounded-xl p-6 transform transition-all ease-in-out shadow-lg overflow-hidden relative">
-					<div class="uppercase font-serif font-bold text-sm">Choose videos to be added to the sequence</div>
-					<div class="grid grid-cols-4 my-4 gap-1">
-						<div v-for="userVideo in userVideos" :key="userVideo.id" class="user-video" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
-							<div class="backdrop"></div>
-							<div class="checkmark absolute-center rounded-full">
-								<div class="absolute-center w-full h-full p-0.5">
-									<div class="bg-white rounded-full w-full h-full"></div>
+		<div v-show="!library" class="w-full min-h-full">
+			<!-- Step 1 source -->
+			<div v-show="step == 1" class="w-full min-h-screen flex justify-center">
+				<div class="w-full min-h-full flex flex-col justify-center py-4">
+					<div class="p-6 h-auto min-h-full">
+						<div class="md:grid md:grid-cols-12 auto-cols-max flex items-center justify-center h-full">
+							<div class="col-start-3 col-span-8 relative z-50 p-6 bg-white rounded-lg">
+								<div
+									class="absolute top-3 right-3 text-gray-400 hover:text-gray-500 cursor-pointer"
+									@click="
+										reset();
+										$emit('close');
+									"
+								>
+									<CloseIcon class="w-4 h-4 fill-current"></CloseIcon>
 								</div>
-								<svg class="relative" width="21" height="21" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-									<path d="M20.6719 10.5C20.6719 16.1178 16.1178 20.6719 10.5 20.6719C4.88221 20.6719 0.328125 16.1178 0.328125 10.5C0.328125 4.88221 4.88221 0.328125 10.5 0.328125C16.1178 0.328125 20.6719 4.88221 20.6719 10.5ZM9.32343 15.8859L16.8703 8.33905C17.1266 8.08279 17.1266 7.66726 16.8703 7.41099L15.9422 6.48293C15.686 6.22662 15.2704 6.22662 15.0141 6.48293L8.85938 12.6377L5.98586 9.76414C5.7296 9.50787 5.31407 9.50787 5.05776 9.76414L4.1297 10.6922C3.87343 10.9485 3.87343 11.364 4.1297 11.6203L8.39532 15.8859C8.65163 16.1422 9.06712 16.1422 9.32343 15.8859Z" fill="#3167E3" />
-								</svg>
+								<div class="font-serif text-sm font-semibold mb-2 uppercase">Video Source</div>
+								<div class="grid grid-cols-2 gap-4">
+									<!-- Camera -->
+									<div class="flex gap-4 rounded-lg p-8 bg-gray-100">
+										<div>
+											<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<circle cx="30" cy="30" r="30" fill="#3167E3" />
+												<path d="M32.6778 19.5H16.6556C15.1889 19.5 14 20.6703 14 22.1141V37.8859C14 39.3297 15.1889 40.5 16.6556 40.5H32.6778C34.1444 40.5 35.3333 39.3297 35.3333 37.8859V22.1141C35.3333 20.6703 34.1444 19.5 32.6778 19.5ZM43.2 21.5617L37.1111 25.6961V34.3039L43.2 38.4328C44.3778 39.2313 46 38.4164 46 37.0219V22.9727C46 21.5836 44.3833 20.7633 43.2 21.5617Z" fill="white" />
+											</svg>
+										</div>
+
+										<div class="flex-grow">
+											<h5 class="font-bold font-lg mb-2">Camera</h5>
+											<div class="text-gray-400 mb-3 text-sm">Create a personal video for your contacts</div>
+											<button
+												class="btn btn-outline-primary btn-sm"
+												type="button"
+												@click="
+													sourceType = 'camera';
+													step++;
+													initMediastreams();
+												"
+											>
+												<span>Record video</span>
+											</button>
+										</div>
+									</div>
+
+									<!-- Screen -->
+									<div class="flex gap-4 rounded-lg p-8 bg-gray-100">
+										<div>
+											<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<circle cx="30" cy="30" r="30" fill="#3167E3" />
+												<path d="M39.9167 19H19.0833C17.9332 19 17 19.9238 17 21.0625V34.8125C17 35.9512 17.9332 36.875 19.0833 36.875H27.4167L26.7222 38.9375H23.5972C23.02 38.9375 22.5556 39.3973 22.5556 39.9688C22.5556 40.5402 23.02 41 23.5972 41H35.4028C35.98 41 36.4444 40.5402 36.4444 39.9688C36.4444 39.3973 35.98 38.9375 35.4028 38.9375H32.2778L31.5833 36.875H39.9167C41.0668 36.875 42 35.9512 42 34.8125V21.0625C42 19.9238 41.0668 19 39.9167 19ZM39.2222 34.125H19.7778V21.75H39.2222V34.125Z" fill="white" />
+											</svg>
+										</div>
+
+										<div class="flex-grow">
+											<h5 class="font-bold font-lg mb-2">Screen Recording</h5>
+											<div class="text-gray-400 mb-3 text-sm">Show a contact your screen</div>
+											<button
+												class="btn btn-outline-primary btn-sm"
+												type="button"
+												@click="
+													sourceType = 'screen';
+													step++;
+													initMediastreams();
+												"
+											>
+												<span>Record video</span>
+											</button>
+										</div>
+									</div>
+
+									<!-- Screen and camera -->
+									<div class="flex gap-4 rounded-lg p-8 bg-gray-100">
+										<div>
+											<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<circle cx="30" cy="30" r="30" fill="#3167E3" />
+												<path d="M38.9375 19H25.1875C24.0488 19 23.125 19.9238 23.125 21.0625V23.125H21.0625C19.9238 23.125 19 24.0488 19 25.1875V38.9375C19 40.0762 19.9238 41 21.0625 41H34.8125C35.9512 41 36.875 40.0762 36.875 38.9375V36.875H38.9375C40.0762 36.875 41 35.9512 41 34.8125V21.0625C41 19.9238 40.0762 19 38.9375 19ZM34.8125 38.9375H21.0625V30H34.8125V38.9375ZM38.9375 34.8125H36.875V25.1875C36.875 24.0488 35.9512 23.125 34.8125 23.125H25.1875V21.0625H38.9375V34.8125Z" fill="white" />
+											</svg>
+										</div>
+
+										<div class="flex-grow">
+											<h5 class="font-bold font-lg mb-2">Screen & Camera Recording</h5>
+											<div class="text-gray-400 mb-3 text-sm">Show a contact your screen with your face</div>
+											<button
+												class="btn btn-outline-primary btn-sm"
+												type="button"
+												@click="
+													sourceType = 'screen_camera';
+													step++;
+													initMediastreams();
+												"
+											>
+												<span>Record video</span>
+											</button>
+										</div>
+									</div>
+
+									<!-- Upload -->
+									<div class="flex gap-4 rounded-lg p-8 bg-gray-100">
+										<div>
+											<svg version="1.1" width="60" class="fill-current" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" xml:space="preserve">
+												<g><path class="fill-current text-primary" d="M500,10C229.4,10,10,229.4,10,500c0,270.6,219.4,490,490,490s490-219.4,490-490C990,229.4,770.6,10,500,10z M391.1,750.4V238.7l359.3,255.9L391.1,750.4z" /></g>
+											</svg>
+										</div>
+
+										<div class="flex-grow">
+											<h5 class="font-bold font-lg mb-2">Media Library</h5>
+											<div class="text-gray-400 mb-3 text-sm">Pick from your library or upload existing videos</div>
+											<button class="btn btn-outline-primary btn-sm" type="button" @click="library = true">
+												<span>Media Library</span>
+											</button>
+										</div>
+									</div>
+								</div>
 							</div>
-							<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
 						</div>
-					</div>
-
-					<div class="text-sm mb-2">Record or upload another video to add to the sequence. The recorded video will be automatically added to this sequence.</div>
-					<div class="border border-dashed border-primary rounded relative h-24 bg-gray-50 cursor-pointer hover:bg-gray-100" @click="form = true">
-						<span class="absolute-center text-4xl text-gray-400">+</span>
-					</div>
-					<div class="flex items-center justify-between mt-4">
-						<button
-							class="btn btn-md btn-outline-primary"
-							type="button"
-							@click="
-								$emit('close');
-								reset();
-							"
-						>
-							<span>Cancel</span>
-						</button>
-						<button
-							class="btn btn-md btn-primary"
-							:class="{ disabled: !selectedVideos.length }"
-							type="button"
-							@click="
-								$emit('input', selectedVideos);
-								reset();
-							"
-						>
-							<span>Add selected to sequence</span>
-						</button>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div v-show="form" class="bg-white w-full h-full overflow-auto text-center relative flex flex-col">
-			<input
-				type="file"
-				ref="fileInput"
-				class="hidden"
-				@change="
-					source = $event.target.files[0];
-					if (source) {
-						step = 3;
-					}
-					createVideoPreview();
-				"
-				accept="video/mp4,video/x-m4v,video/*"
-			/>
-			<div>
-				<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
-					<div class="ml-7 lg:ml-0">ADD VIDEO</div>
-					<div class="flex items-center gap-3">
-						<button type="button" class="btn btn-md btn-outline-primary" @click="reset()">
-							<span>Cancel</span>
-						</button>
-						<button v-if="!isRecording && blobs.length && step == 2" type="button" class="btn btn-md btn-primary" @click="getRecordedVideo">
-							<span>Next</span>
-						</button>
-						<button v-if="source" type="button" class="btn btn-md btn-primary" @click="store">
-							<span>Create</span>
-						</button>
+			<!-- Step 2 recorder -->
+			<div v-show="step == 2" class="w-full h-screen flex flex-col">
+				<div>
+					<div class="overflow-hidden">
+						<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+							<div v-if="sourceType" class="ml-7 lg:ml-0 uppercase">Record {{ sourceType.replace('_', ' and ') }}</div>
+							<div class="flex items-center gap-3">
+								<button type="button" class="btn btn-md btn-outline-primary" @click="resetRecorder()">
+									<span>Cancel</span>
+								</button>
+								<button v-if="!isRecording && blobs.length" type="button" class="btn btn-md btn-primary" @click="getRecordedVideo">
+									<span>Preview</span>
+								</button>
+							</div>
+						</div>
+						<div class="h-20 lg:hidden block" />
 					</div>
 				</div>
-				<div class="h-20 lg:hidden block" />
-			</div>
-			<div class="flex-grow">
-				<!-- Step 1 -->
-				<div v-show="step == 1" class="w-5/12 inline-block text-left py-4">
-					Create a personal video message for your contacts.
-					<!-- Camera -->
-					<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100 mb-4">
-						<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="30" cy="30" r="30" fill="#3167E3" />
-							<path d="M32.6778 19.5H16.6556C15.1889 19.5 14 20.6703 14 22.1141V37.8859C14 39.3297 15.1889 40.5 16.6556 40.5H32.6778C34.1444 40.5 35.3333 39.3297 35.3333 37.8859V22.1141C35.3333 20.6703 34.1444 19.5 32.6778 19.5ZM43.2 21.5617L37.1111 25.6961V34.3039L43.2 38.4328C44.3778 39.2313 46 38.4164 46 37.0219V22.9727C46 21.5836 44.3833 20.7633 43.2 21.5617Z" fill="white" />
-						</svg>
-
-						<div class="flex-grow">
-							<h5 class="font-bold font-lg mb-2">Camera</h5>
-							<div class="text-gray-400 mb-3">Create a personal video for your contacts</div>
-							<button
-								class="btn btn-outline-primary btn-sm"
-								type="button"
-								@click="
-									sourceType = 'camera';
-									step++;
-									initMediastreams();
-								"
-							>
-								<span>Record video</span>
-							</button>
-						</div>
-					</div>
-
-					<!-- Screen -->
-					<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100 mb-4">
-						<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="30" cy="30" r="30" fill="#3167E3" />
-							<path d="M39.9167 19H19.0833C17.9332 19 17 19.9238 17 21.0625V34.8125C17 35.9512 17.9332 36.875 19.0833 36.875H27.4167L26.7222 38.9375H23.5972C23.02 38.9375 22.5556 39.3973 22.5556 39.9688C22.5556 40.5402 23.02 41 23.5972 41H35.4028C35.98 41 36.4444 40.5402 36.4444 39.9688C36.4444 39.3973 35.98 38.9375 35.4028 38.9375H32.2778L31.5833 36.875H39.9167C41.0668 36.875 42 35.9512 42 34.8125V21.0625C42 19.9238 41.0668 19 39.9167 19ZM39.2222 34.125H19.7778V21.75H39.2222V34.125Z" fill="white" />
-						</svg>
-
-						<div class="flex-grow">
-							<h5 class="font-bold font-lg mb-2">Screen Recording</h5>
-							<div class="text-gray-400 mb-3">Show a contact your screen</div>
-							<button
-								class="btn btn-outline-primary btn-sm"
-								type="button"
-								@click="
-									sourceType = 'screen';
-									step++;
-									initMediastreams();
-								"
-							>
-								<span>Record video</span>
-							</button>
-						</div>
-					</div>
-
-					<!-- Screen and camera -->
-					<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100 mb-4">
-						<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="30" cy="30" r="30" fill="#3167E3" />
-							<path d="M38.9375 19H25.1875C24.0488 19 23.125 19.9238 23.125 21.0625V23.125H21.0625C19.9238 23.125 19 24.0488 19 25.1875V38.9375C19 40.0762 19.9238 41 21.0625 41H34.8125C35.9512 41 36.875 40.0762 36.875 38.9375V36.875H38.9375C40.0762 36.875 41 35.9512 41 34.8125V21.0625C41 19.9238 40.0762 19 38.9375 19ZM34.8125 38.9375H21.0625V30H34.8125V38.9375ZM38.9375 34.8125H36.875V25.1875C36.875 24.0488 35.9512 23.125 34.8125 23.125H25.1875V21.0625H38.9375V34.8125Z" fill="white" />
-						</svg>
-
-						<div class="flex-grow">
-							<h5 class="font-bold font-lg mb-2">Screen and Camera Recording</h5>
-							<div class="text-gray-400 mb-3">Show a contact your screen with your face</div>
-							<button
-								class="btn btn-outline-primary btn-sm"
-								type="button"
-								@click="
-									sourceType = 'screen_camera';
-									step++;
-									initMediastreams();
-								"
-							>
-								<span>Record video</span>
-							</button>
-						</div>
-					</div>
-
-					<!-- Upload -->
-					<div class="flex gap-4 mt-4 rounded-lg p-8 bg-gray-100">
-						<svg version="1.1" width="60" class="fill-current" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" xml:space="preserve">
-							<g><path class="fill-current text-primary" d="M500,10C229.4,10,10,229.4,10,500c0,270.6,219.4,490,490,490s490-219.4,490-490C990,229.4,770.6,10,500,10z M391.1,750.4V238.7l359.3,255.9L391.1,750.4z" /></g>
-						</svg>
-
-						<div class="flex-grow">
-							<h5 class="font-bold font-lg mb-2">Upload Video</h5>
-							<div class="text-gray-400 mb-3">Upload your existing videos</div>
-							<button class="btn btn-outline-primary btn-sm" type="button" @click="$refs.fileInput.click()">
-								<span>Upload video</span>
-							</button>
-						</div>
-					</div>
-				</div>
-
-				<!-- Step 2 -->
-				<div v-show="step == 2" class="h-full">
+				<div class="flex-grow bg-white">
 					<div class="flex flex-col h-full overflow-hidden">
 						<div class="flex-grow relative">
 							<div class="absolute-center w-full h-full">
@@ -200,35 +182,94 @@
 									<rect x="16.5" y="16.5" width="15" height="15" fill="#E33171" stroke="#E33171" />
 								</svg>
 								<div class="w-16 pl-2 text-left">
-									{{ secondsToDuration((blobs.length * 30 * 2) / 1000) }}
+									{{ secondsToDuration(recordDuration) }}
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+			</div>
 
-				<!-- Step 3 -->
-				<div v-show="step == 3 && source" class="h-full">
-					<div class="flex flex-col h-full overflow-hidden">
-						<div class="flex-1 relative overflow-hidden">
-							<div class="absolute-center w-full h-full">
-								<video :src="previewSource" ref="videoPlayback" controls class="w-full h-full bg-black"></video>
+			<!-- Step 3 preview -->
+			<div v-show="step == 3 && source" class="w-full h-screen flex flex-col">
+				<div>
+					<div class="overflow-hidden">
+						<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
+							<div class="ml-7 lg:ml-0 uppercase">PREVIEW</div>
+							<div class="flex items-center gap-3">
+								<button type="button" class="btn btn-md btn-outline-primary" @click="resetRecorder()">
+									<span>Cancel</span>
+								</button>
+								<button type="button" class="btn btn-md btn-primary" @click="store">
+									<span>Create</span>
+								</button>
 							</div>
 						</div>
-						<div class="p-4 bg-gray-50">
-							<div class="flex items-center">
-								<div>
-									<button type="button" class="btn btn-outline-primary bg-white btn-sm"><span>Play</span></button>
+						<div class="h-20 lg:hidden block" />
+					</div>
+				</div>
+
+				<div class="flex-grow bg-black relative">
+					<div class="absolute-center w-full h-full bg-black">
+						<video :src="previewSource" ref="videoPlayback" controls class="w-full h-full bg-black"></video>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div v-show="library" class="w-full h-full overflow-auto">
+			<div class="relative z-50 p-6 flex justify-center min-h-full">
+				<div class="bg-white rounded-xl p-6 transform transition-all w-full ease-in-out shadow-lg overflow-hidden relative">
+					<div v-if="userVideos.length > 0" class="flex flex-col h-full">
+						<div class="uppercase font-serif font-bold text-sm mb-4">Choose videos to be added to the sequence</div>
+						<div class="flex-grow">
+							<div class="grid grid-cols-9 gap-1">
+								<div class="h-24 p-0.5">
+									<div class="h-full w-full border border-dashed rounded relative bg-gray-50 cursor-pointer hover:bg-gray-100 hover:border-gray-300" @click="$refs.fileInput.click()">
+										<div class="absolute-center text-center text-gray-400">
+											<span class="text-2xl leading-none block">+</span>
+											<div class="text-xs">Upload</div>
+										</div>
+									</div>
 								</div>
-								<div class="flex-grow px-4 relative">
-									<span class="absolute-center rounded-full bg-white border-2 border-primary h-3 w-3 cursor-pointer"></span>
-									<div class="h-1 bg-primary rounded"></div>
-								</div>
-								<div>
-									<button type="button" class="btn btn-outline-primary bg-white btn-sm"><span>Full</span></button>
+								<div v-for="userVideo in userVideos" :key="userVideo.id" class="user-video" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
+									<div class="backdrop"></div>
+									<div class="checkmark absolute-center rounded-full">
+										<div class="absolute-center w-full h-full p-0.5">
+											<div class="bg-white rounded-full w-full h-full"></div>
+										</div>
+										<svg class="relative" width="21" height="21" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+											<path d="M20.6719 10.5C20.6719 16.1178 16.1178 20.6719 10.5 20.6719C4.88221 20.6719 0.328125 16.1178 0.328125 10.5C0.328125 4.88221 4.88221 0.328125 10.5 0.328125C16.1178 0.328125 20.6719 4.88221 20.6719 10.5ZM9.32343 15.8859L16.8703 8.33905C17.1266 8.08279 17.1266 7.66726 16.8703 7.41099L15.9422 6.48293C15.686 6.22662 15.2704 6.22662 15.0141 6.48293L8.85938 12.6377L5.98586 9.76414C5.7296 9.50787 5.31407 9.50787 5.05776 9.76414L4.1297 10.6922C3.87343 10.9485 3.87343 11.364 4.1297 11.6203L8.39532 15.8859C8.65163 16.1422 9.06712 16.1422 9.32343 15.8859Z" fill="#3167E3" />
+										</svg>
+									</div>
+									<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
 								</div>
 							</div>
 						</div>
+						<div class="mt-8 flex items-center justify-between">
+							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
+								<span>Cancel</span>
+							</button>
+							<button
+								class="btn btn-md btn-primary"
+								:class="{ disabled: !selectedVideos.length }"
+								type="button"
+								@click="
+									$emit('input', selectedVideos);
+									reset();
+								"
+							>
+								<span>Add to sequence</span>
+							</button>
+						</div>
+					</div>
+					<div v-else class="absolute-center">
+						<div class="h-24 p-0.5 mb-2">
+							<div class="h-full w-full border border-dashed rounded relative bg-gray-50 cursor-pointer hover:bg-gray-100 hover:border-gray-300" @click="$refs.fileInput.click()">
+								<span class="absolute-center text-2xl text-gray-400">+</span>
+							</div>
+						</div>
+						<div class="text-gray-500">Upload new video</div>
 					</div>
 				</div>
 			</div>
@@ -252,6 +293,7 @@ const format = require('format-duration');
 import { mapState, mapActions } from 'vuex';
 import dayjs from 'dayjs';
 import MultiStreamsMixer from 'multistreamsmixer';
+import CloseIcon from '../../../icons/close.vue';
 
 export default {
 	props: {
@@ -261,9 +303,11 @@ export default {
 		}
 	},
 
+	components: { CloseIcon },
+
 	data: () => ({
+		library: false,
 		format: format,
-		form: false,
 		source: null,
 		duration: 0,
 		gif: null,
@@ -283,7 +327,11 @@ export default {
 		screenStreams: null,
 		videoRecorder: null,
 		blobs: [],
-		isRecording: false
+		isRecording: false,
+		recordInterval: null,
+		recordDuration: 0,
+		uploadProgress: 0,
+		gifProgress: 0
 	}),
 
 	computed: {
@@ -325,7 +373,6 @@ export default {
 
 		getRecordedVideo() {
 			if (this.videoRecorder && this.blobs.length) {
-				this.videoRecorder.stop();
 				const timestamp = dayjs().valueOf();
 				let source = new File(this.blobs, timestamp, {
 					type: this.blobs[0].type
@@ -335,6 +382,41 @@ export default {
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;
 			}
+
+			if (this.videoRecorder && this.isRecording) {
+				this.videoRecorder.stop();
+			}
+			this.videoRecorder = null;
+			this.isRecording = false;
+
+			if (this.finalStream) {
+				this.finalStream.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.finalStream = null;
+
+			if (this.audioStreams) {
+				this.audioStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.audioStreams = null;
+
+			if (this.cameraStreams) {
+				this.cameraStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.cameraStreams = null;
+
+			if (this.screenStreams) {
+				this.screenStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.screenStreams = null;
+			clearInterval(this.recordInterval);
 		},
 
 		pauseRecording() {
@@ -351,6 +433,11 @@ export default {
 					this.videoRecorder.resume();
 				} else {
 					this.videoRecorder.start(30);
+					this.recordInterval = setInterval(() => {
+						if (this.isRecording) {
+							this.recordDuration++;
+						}
+					}, 1000);
 				}
 			}
 		},
@@ -421,7 +508,11 @@ export default {
 			this.$refs.videoPreview.play();
 			this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm' });
 			this.videoRecorder.camera = this.finalStream;
-			this.videoRecorder.ondataavailable = e => this.blobs.push(e.data);
+			this.videoRecorder.ondataavailable = e => {
+				if (this.isRecording) {
+					this.blobs.push(e.data);
+				}
+			};
 		},
 
 		toggleSelectedVideo(userVideo) {
@@ -433,7 +524,54 @@ export default {
 			}
 		},
 
+		resetRecorder() {
+			clearInterval(this.recordInterval);
+			this.gifProgress = 0;
+			this.recordDuration = 0;
+			this.uploadProgress = 0;
+			this.step = 1;
+			if (this.videoRecorder && this.isRecording) {
+				this.videoRecorder.stop();
+			}
+			this.videoRecorder = null;
+			this.isRecording = false;
+
+			if (this.finalStream) {
+				this.finalStream.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.finalStream = null;
+
+			if (this.audioStreams) {
+				this.audioStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.audioStreams = null;
+
+			if (this.cameraStreams) {
+				this.cameraStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.cameraStreams = null;
+
+			if (this.screenStreams) {
+				this.screenStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.screenStreams = null;
+			this.blobs = [];
+		},
+
 		reset(clearSelectedVideos = true) {
+			clearInterval(this.recordInterval);
+			this.recordDuration = 0;
+			this.uploadProgress = 0;
+			this.gifProgress = 0;
+			this.library = false;
 			this.form = false;
 			this.previewSource = null;
 			this.gif = null;
@@ -491,7 +629,7 @@ export default {
 		},
 
 		async createGif() {
-			this.status = 'Creating GIF...';
+			this.status = 'Processing...';
 			return new Promise((resolve, reject) => {
 				let gifWidth = this.$refs.videoPlayback.videoWidth;
 				let gifHeight = this.$refs.videoPlayback.videoHeight;
@@ -505,7 +643,10 @@ export default {
 						video: [this.source],
 						numFrames: 30,
 						gifWidth: gifWidth,
-						gifHeight: gifHeight
+						gifHeight: gifHeight,
+						progressCallback: captureProgress => {
+							this.gifProgress = 50 * captureProgress;
+						}
 					},
 					obj => {
 						if (!obj.error) {
@@ -549,6 +690,7 @@ export default {
 						if (!err && data) {
 							this.S3Source = data.Location;
 							this.uploadComplete++;
+							this.uploadProgress += 10;
 							if (this.uploadComplete == 3) {
 								resolve();
 							}
@@ -566,6 +708,7 @@ export default {
 						if (!err && data) {
 							this.S3Gif = data.Location;
 							this.uploadComplete++;
+							this.uploadProgress += 10;
 							if (this.uploadComplete == 3) {
 								resolve();
 							}
@@ -583,6 +726,7 @@ export default {
 						if (!err && data) {
 							this.S3Thumbnail = data.Location;
 							this.uploadComplete++;
+							this.uploadProgress += 10;
 							if (this.uploadComplete == 3) {
 								resolve();
 							}
@@ -594,6 +738,7 @@ export default {
 
 		async store() {
 			this.$refs.videoPlayback.pause();
+			this.uploadProgress = 10;
 			await this.createGif();
 			await this.uploadToS3();
 			this.status = 'Finalizing...';
@@ -607,10 +752,12 @@ export default {
 				duration: parseInt(this.duration)
 			};
 			let response = await this.storeUserVideo(userVideoData);
+			this.uploadProgress += 10;
 			if (response) {
 				this.selectedVideos.push(response.data);
 			}
-			this.reset(false);
+			this.$emit('input', this.selectedVideos);
+			this.reset();
 		},
 
 		dataURLtoFile(dataurl, filename) {
