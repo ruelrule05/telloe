@@ -14,7 +14,7 @@ const mutations = {
 	store(state, data) {
 		state.index.unshift(data);
 	},
-	setStatus(state, data) {
+	update(state, data) {
 		let videoMessage = state.index.find(x => x.id == data.id);
 		if (videoMessage) Object.assign(videoMessage, data);
 	},
@@ -41,10 +41,10 @@ const actions = {
 		return response;
 	},
 
-	async setStatus({ commit }, data) {
-		let response = await window.axios.put(`/${name}/${data.id}/set_status`, data, { toast: true });
+	async update({ commit }, data) {
+		let response = await window.axios.put(`/${name}/${data.id}`, data, { toast: true });
 		if (response) {
-			commit('setStatus', response.data);
+			commit('update', response.data);
 		}
 	},
 

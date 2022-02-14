@@ -6,6 +6,7 @@ use App\Models\Conversation;
 use App\Models\Service;
 use App\Models\UserVideo;
 use App\Models\VideoMessage;
+use App\Models\VideoMessageLike;
 use App\Models\VideoMessageVideo;
 use Auth;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -18,35 +19,43 @@ class VideoMessageService
 
     public static function index(Request $request)
     {
-        return response()->json(Auth::user()->videoMessages()->with('videos.userVideo', 'user')->get());
+        return response()->json(app('model-cache')->runDisabled(function () {
+            return VideoMessage::where('user_id', Auth::user()->id)->with('videos.userVideo', 'user', 'videoMessageLikes')->with('conversation', function ($conversation) {
+                $conversation->withCount('messages');
+            })->disableCache()->latest()->get();
+        }));
     }
 
     public static function store(Request $request)
     {
         (new self)->validate($request, [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'initial_message' => 'required|string|max:255',
-            'service_id' => 'required|exists:services,id',
+            'description' => 'nullable|string|max:255',
+            'initial_message' => 'nullable|string|max:255',
+            'service_id' => 'nullable|exists:services,id',
             'user_video_ids' => 'required|array',
-            'embed_service' => 'nullable|boolean',
+            'link_preview' => 'nullable|string|max:255',
         ]);
         $authUser = Auth::user();
-        Service::where('id', $request->service_id)->where('user_id', $authUser->id)->firstOrFail();
+        if ($request->input('service_id')) {
+            Service::where('id', $request->input('service_id'))->where('user_id', $authUser->id)->firstOrFail();
+        }
         $userVideos = [];
         foreach ($request->input('user_video_ids') as $userVideoId) {
             $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->firstOrFail();
             $userVideos[] = $userVideo;
         }
-        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service');
+        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'link_preview');
         $data['user_id'] = $authUser->id;
         $data['uuid'] = Str::uuid();
         $data['status'] = 'draft';
+        $data['is_active'] = true;
         $videoMessage = VideoMessage::create($data);
-        foreach ($userVideos as $userVideo) {
+        foreach ($userVideos as $key => $userVideo) {
             VideoMessageVideo::create([
                 'video_message_id' => $videoMessage->id,
                 'user_video_id' => $userVideo->id,
+                'order' => $key
             ]);
         }
         $slug = Str::random(32);
@@ -57,35 +66,66 @@ class VideoMessageService
             'video_message_id' => $videoMessage->id,
             'slug' => $slug
         ]);
-        return response()->json($videoMessage->load('user', 'videos.userVideo'));
+        return response()->json($videoMessage->load('user', 'videos.userVideo', 'videoMessageLikes'));
     }
 
     public static function show(VideoMessage $videoMessage)
     {
-        if ($videoMessage->status != 'published') {
+        if (! $videoMessage->is_active) {
             return abort(403);
         }
+        $authUser = Auth::user();
         $videoMessage->load('user','videos.userVideo', 'conversation', 'service');
         $user = $videoMessage->user;
         unset($videoMessage->user);
         $videoMessage->user = $user->full_name;
         $videoMessage->username = $user->username;
+        $videoMessage->increment('views');
+        if ($authUser) {
+            $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
+        }
         return view('video-message', compact('videoMessage'));
     }
 
-    public static function setStatus(VideoMessage $videoMessage, Request $request)
+    public static function update(VideoMessage $videoMessage, Request $request)
     {
         (new self)->validate($request, [
-            'status' => 'required|in:draft,published',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'initial_message' => 'nullable|string|max:255',
+            'service_id' => 'nullable|exists:services,id',
+            'user_video_ids' => 'required|array',
+            'is_active' => 'required|boolean',
+            'link_preview' => 'nullable|string|max:255',
         ]);
+
         $authUser = Auth::user();
         if ($videoMessage->user_id != $authUser->id) {
             return abort(403);
         }
-        $videoMessage->update([
-            'status' => $request->input('status')
-        ]);
-        return response()->json($videoMessage->load('videos.userVideo'));
+
+        VideoMessageVideo::where('video_message_id', $videoMessage->id)->whereNotIn('user_video_id', $request->input('user_video_ids'))->delete();
+
+        $userVideos = [];
+        foreach ($request->input('user_video_ids') as $userVideoId) {
+            $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->firstOrFail();
+            $userVideos[] = $userVideo;
+        }
+
+        foreach ($userVideos as $key => $userVideo) {
+            VideoMessageVideo::updateOrCreate(
+                [
+                    'video_message_id' => $videoMessage->id,
+                    'user_video_id' => $userVideo->id,
+                ], 
+                [
+                    'order' => $key
+                ]
+            );
+        }
+        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview');
+        $videoMessage->update($data);
+        return response()->json($videoMessage->load('user', 'videos.userVideo', 'videoMessageLikes'));
     }
 
     public static function destroy(VideoMessage $videoMessage)
@@ -95,7 +135,42 @@ class VideoMessageService
             return abort(403);
         }
         $videoMessage->videos()->delete();
-        $videoMessage->conversation()->delete();
+        $videoMessage->conversation()->forceDelete();
+
         return response()->json(['deleted' => $videoMessage->delete()]);
+    }
+
+    public static function toggleLike(VideoMessage $videoMessage, Request $request)
+    {
+        (new self)->validate($request, [
+            'is_liked' => 'required|boolean',
+        ]);
+        $authUser = Auth::user();
+        $videoMessageLike = VideoMessageLike::withTrashed()->where('user_id', $authUser->id)->where('video_message_id', $videoMessage->id)->first();
+        if (! $videoMessageLike) {
+            $videoMessageLike = VideoMessageLike::create([
+                'user_id' => $authUser->id,
+                'video_message_id' => $videoMessage->id,
+                'is_liked' => $request->input('is_liked')
+            ]);
+        } else {
+            if ($videoMessageLike->deleted_at) {
+                $videoMessageLike->restore();
+                $videoMessageLike->update([
+                    'is_liked' => $request->input('is_liked')
+                ]);
+            } else {
+                if ($videoMessageLike->is_liked == $request->input('is_liked')) {
+                    $videoMessageLike->delete();
+                    $videoMessageLike = null;
+                } else {
+                    $videoMessageLike->update([
+                        'is_liked' => $request->input('is_liked')
+                    ]);
+                }
+            }
+        }
+
+        return response()->json($videoMessageLike);
     }
 }

@@ -91,7 +91,7 @@ Route::group(
                 Route::apiResource('contact_notes', 'ContactNoteController');
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::apiResource('video_messages', 'VideoMessageController');
-                Route::put('video_messages/{video_message}/set_status', [VideoMessageController::class, 'setStatus']);
+                Route::put('video_messages/{video_message}/toggle_like', [VideoMessageController::class, 'toggleLike']);
                 Route::apiResource('user_videos', 'UserVideoController');
                 Route::post('notifications/clear', 'NotificationController@clear');
 

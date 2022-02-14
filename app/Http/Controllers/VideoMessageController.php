@@ -23,13 +23,18 @@ class VideoMessageController extends Controller
         return VideoMessageService::show($videoMessage);
     }
 
-    public function setStatus(VideoMessage $videoMessage, Request $request)
+    public function update(VideoMessage $videoMessage, Request $request)
     {
-        return VideoMessageService::setStatus($videoMessage, $request);
+        return VideoMessageService::update($videoMessage, $request);
     }
 
     public function destroy(VideoMessage $videoMessage)
     {
         return VideoMessageService::destroy($videoMessage);
+    }
+
+    public function toggleLike(VideoMessage $videoMessage, Request $request)
+    {
+        return VideoMessageService::toggleLike($videoMessage, $request);
     }
 }

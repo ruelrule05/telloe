@@ -85,64 +85,80 @@ export default {
 				this.currentVideoIndex = 0;
 				this.playProgress = 0;
 			}
+		},
+		videos: function () {
+			this.$forceUpdate();
+
+			this.init();
 		}
 	},
 
 	mounted() {
-		let totalDuration = 0;
-		this.videos.forEach((video, index) => {
-			totalDuration += video.duration;
-			let videoEl = this.$refs[`video-${video.id}`][0];
-			let self = this;
-			if (videoEl) {
-				if (index == 0) {
-					videoEl.onloadedmetadata = () => {
-						this.videoReady = true;
-					};
-				} else {
-					videoEl.play();
-					setTimeout(() => {
-						videoEl.pause();
-						videoEl.currentTime = 0;
-					}, 1000);
-				}
-				let initialTime = 0;
-				videoEl.ontimeupdate = function () {
-					if (self.currentVideoIndex == index) {
-						let currentTime = this.currentTime * 1000;
-						self.playProgress += currentTime - initialTime;
-						initialTime = currentTime;
-					}
-				};
-				videoEl.onended = () => {
-					if (this.currentVideoIndex == index && this.currentVideoIndex < this.videos.length - 1) {
-						this.currentVideoIndex++;
-						if (this.currentVideoIndex < this.videos.length) {
-							let nextVideo = this.videos[this.currentVideoIndex];
-							if (nextVideo) {
-								let nextVideoEl = this.$refs[`video-${nextVideo.id}`][0] || null;
-								if (nextVideoEl) {
-									nextVideoEl.muted = false;
-									nextVideoEl.play();
-								}
-							}
-						}
-					} else {
-						this.playProgress = 0;
-						this.playing = false;
-						this.currentVideoIndex = 0;
-					}
-					setTimeout(() => {
-						videoEl.currentTime = 0;
-					}, 500);
-					initialTime = 0;
-				};
-			}
-		});
-		this.totalDuration = totalDuration;
+		this.init();
 	},
 
 	methods: {
+		init() {
+			let totalDuration = 0;
+			this.playProgress = 0;
+			this.playing = false;
+			this.currentVideoIndex = 0;
+			this.videos.forEach((video, index) => {
+				totalDuration += video.duration;
+				let videoEl = this.$refs[`video-${video.id}`];
+				if (videoEl) {
+					videoEl = videoEl[0];
+				}
+				let self = this;
+				if (videoEl) {
+					if (index == 0) {
+						videoEl.onloadedmetadata = () => {
+							this.videoReady = true;
+						};
+					} else {
+						videoEl.muted = true;
+						videoEl.play();
+						setTimeout(() => {
+							videoEl.pause();
+							videoEl.currentTime = 0;
+						}, 1000);
+					}
+					let initialTime = 0;
+					videoEl.ontimeupdate = function () {
+						if (self.currentVideoIndex == index) {
+							let currentTime = this.currentTime * 1000;
+							self.playProgress += currentTime - initialTime;
+							initialTime = currentTime;
+						}
+					};
+					videoEl.onended = () => {
+						if (this.currentVideoIndex == index && this.currentVideoIndex < this.videos.length - 1) {
+							this.currentVideoIndex++;
+							if (this.currentVideoIndex < this.videos.length) {
+								let nextVideo = this.videos[this.currentVideoIndex];
+								if (nextVideo) {
+									let nextVideoEl = this.$refs[`video-${nextVideo.id}`][0] || null;
+									if (nextVideoEl) {
+										nextVideoEl.muted = false;
+										nextVideoEl.play();
+									}
+								}
+							}
+						} else {
+							this.playProgress = 0;
+							this.playing = false;
+							this.currentVideoIndex = 0;
+						}
+						setTimeout(() => {
+							videoEl.currentTime = 0;
+						}, 500);
+						initialTime = 0;
+					};
+				}
+			});
+			this.totalDuration = totalDuration;
+		},
+
 		fullScreen(state) {
 			this.isFullScreen = state;
 			toggleFullscreen(this.$refs.videoPlayer).then(() => {
@@ -157,7 +173,10 @@ export default {
 		},
 
 		playPause() {
-			let currentVideo = this.$refs[`video-${this.videos[this.currentVideoIndex].id}`][0];
+			let currentVideo = this.$refs[`video-${this.videos[this.currentVideoIndex].id}`];
+			if (currentVideo) {
+				currentVideo = currentVideo[0];
+			}
 			if (currentVideo) {
 				currentVideo.muted = false;
 				if (currentVideo.paused) {

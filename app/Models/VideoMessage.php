@@ -4,7 +4,10 @@ namespace App\Models;
 
 class VideoMessage extends BaseModel
 {
-    protected $fillable = ['uuid', 'user_id', 'title', 'description', 'initial_message', 'service_id', 'views', 'embed_service', 'status'];
+    protected $fillable = ['uuid', 'user_id', 'title', 'description', 'initial_message', 'service_id', 'views', 'is_active', 'link_preview'];
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
 
     public function user()
     {
@@ -24,5 +27,10 @@ class VideoMessage extends BaseModel
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function videoMessageLikes()
+    {
+        return $this->hasMany(VideoMessageLike::class);
     }
 }
