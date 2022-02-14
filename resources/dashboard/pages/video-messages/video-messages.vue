@@ -483,7 +483,8 @@ export default {
 										{
 											Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'link_preview.gif',
 											Body: this.dataURLtoFile(obj.image, 'link_preview.gif'),
-											ACL: 'public-read'
+											ACL: 'public-read',
+											ContentType: 'image/gif'
 										},
 										async (err, d) => {
 											if (!err && d) {
