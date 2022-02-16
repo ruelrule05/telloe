@@ -85,11 +85,11 @@ class VideoMessageService
         unset($videoMessage->user);
         $videoMessage->user = $user->full_name;
         $videoMessage->username = $user->username;
-        $videoMessage->increment('views');
         if ($authUser) {
+            $videoMessage->increment('views');
             $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
+            broadcast(new VideoMessageStat($videoMessage));
         }
-        broadcast(new VideoMessageStat($videoMessage));
         return view('video-message', compact('videoMessage'));
     }
 
