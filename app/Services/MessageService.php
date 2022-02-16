@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Events\NewMessageEvent;
+use App\Events\VideoMessageStat;
 use App\Http\Requests\StoreMessageRequest;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\VideoMessage;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -96,6 +98,14 @@ class MessageService
 
         //if ($request->broadcast == 'true') {
         broadcast(new NewMessageEvent($message))->toOthers();
+
+        if ($conversation->video_message_id) {
+            $videoMessage = VideoMessage::find($conversation->video_message_id);
+            if ($videoMessage) {
+                broadcast(new VideoMessageStat($videoMessage));
+            }
+        }
+
         //}
 
         if (! $request->is_online) {

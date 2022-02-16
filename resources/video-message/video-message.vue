@@ -33,9 +33,36 @@
 					</div>
 				</div>
 				<div v-if="$root.auth" class="flex-grow overflow-hidden relative flex flex-col">
-					<div v-if="$root.videoMessage.initial_message" class="p-2">
-						<div class="border border-dashed bg-gray-50 px-4 py-2 text-sm rounded">
-							{{ $root.videoMessage.initial_message }}
+					<div v-if="$root.videoMessage.initial_message && ($root.videoMessage.initial_message.message || $root.videoMessage.initial_message.source)" class="p-3 bg-gray-50 border-b">
+						<div class="flex items-end">
+							<div class="flex-grow overflow-hidden text-right">
+								<div class="relative initial-message-container inline-block text-left">
+									<div v-if="$root.videoMessage.initial_message.message" class="initial-message flex-grow break-all">
+										{{ $root.videoMessage.initial_message.message }}
+									</div>
+
+									<div v-if="$root.videoMessage.initial_message.source" class="px-3 py-2 text-white text-sm" :class="[$root.videoMessage.initial_message.message ? 'border-t border-dashed border-opacity-40' : '']">
+										<a :href="$root.videoMessage.initial_message.source" target="_blank" class="block text-right">
+											<img v-if="$root.videoMessage.initial_message.preview" class="w-36 h-auto rounded inline-block" :src="$root.videoMessage.initial_message.preview" />
+											<div v-else class="flex items-center opacity-75 hover:opacity-100 text-left">
+												<div>
+													<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-white transform -rotate-45 -mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+													</svg>
+												</div>
+												<div class="flex-grow overflow-hidden truncate underline">
+													{{ $root.videoMessage.initial_message.filename }}
+												</div>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="align-self-end pl-1">
+								<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
+									<span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="flex-grow overflow-hidden">
@@ -107,6 +134,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.initial-message {
+	@apply text-white p-3 outline-none text-sm;
+}
+.initial-message-container {
+	@apply bg-primary;
+	border-radius: 15px;
+	border-bottom-right-radius: 2px;
+	max-width: 80%;
+}
+
 .btn-like {
 	@apply w-8 h-8 border rounded-full relative cursor-pointer transition-colors hover:bg-gray-50 hover:text-primary text-muted;
 	&.active {
@@ -120,6 +157,9 @@ export default {
 </style>
 
 <style lang="scss">
+.message-group .message-item.has-link {
+	width: 400px !important;
+}
 .message-input-wrapper {
 	@apply p-2;
 }

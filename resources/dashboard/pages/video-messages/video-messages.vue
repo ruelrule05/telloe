@@ -1,7 +1,17 @@
 <template>
 	<div class="min-h-screen relative" :class="{ 'h-screen max-h-screen overflow-hidden': showLibrary }" v-if="ready">
+		<div v-if="status" class="absolute-center w-full h-full z-50 bg-white">
+			<div class="absolute-center text-center w-full">
+				<div class="absolute-center w-3/12">
+					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
+						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
+					</div>
+					<div class="mt-2 text-sm">{{ status }}</div>
+				</div>
+			</div>
+		</div>
 		<!-- video messages list -->
-		<div v-show="!adding" class="min-h-screen relative flex flex-col">
+		<div v-show="!adding && !status" class="min-h-screen relative flex flex-col">
 			<div>
 				<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
 					<div class="ml-7 lg:ml-0">VIDEO MESSAGES</div>
@@ -122,13 +132,7 @@
 			</div>
 			<div class="h-20 lg:hidden block" />
 			<div class="flex-grow overflow-auto flex items-stretch relative">
-				<div v-if="uploading" class="absolute-center w-full h-full z-50 bg-white" id="uploading">
-					<div class="absolute-center text-center">
-						<div class="spinner spinner-sm"></div>
-					</div>
-				</div>
-
-				<div v-show="!uploading" class="text-left relative overflow-hidden w-full flex">
+				<div v-show="!status" class="text-left relative overflow-hidden w-full flex">
 					<div class="flex-grow w-full h-full overflow-hidden">
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
@@ -172,7 +176,45 @@
 							</div>
 							<div class="mb-4">
 								<label>Initial Message</label>
-								<textarea class="input resize-none" rows="3" v-model="videoMessage.initial_message"></textarea>
+								<input type="file" class="hidden" ref="initialMessageFile" @change="addFile" />
+								<div class="flex items-end">
+									<div class="flex-grow overflow-hidden">
+										<div class="relative initial-message-container">
+											<div class="flex items-end">
+												<div class="initial-message flex-grow break-all cursor-text" ref="newInitialMessage" contenteditable spellcheck="false" v-html="videoMessage.initial_message.original_message" @keypress="messageInput"></div>
+												<div v-if="!videoMessage.initial_message.source" class="mb-1 mr-1 ml-1">
+													<div class="cursor-pointer rounded-full hover:bg-white hover:bg-opacity-20 p-0.5 transition-colors" @click="$refs.initialMessageFile.click()">
+														<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-white transform -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+														</svg>
+													</div>
+												</div>
+											</div>
+											<div v-if="videoMessage.initial_message.source" class="px-3 py-2 text-white text-sm border-t border-dashed border-opacity-40">
+												<div v-if="videoMessage.initial_message.preview" class="w-full h-36 bg-cover bg-center bg-no-repeat rounded relative" :style="{ backgroundImage: `url(${videoMessage.initial_message.preview})` }">
+													<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full bg-opacity-50 bg-white hover:bg-opacity-100 p-1 transition-colors" @click="videoMessage.initial_message.source = videoMessage.initial_message.preview = null">
+														<CloseIcon class="h-2.5 w-2.5 text-gray-500 fill-current -mr-px -mb-px"></CloseIcon>
+													</div>
+												</div>
+												<div v-else class="flex justify-between items-center">
+													<div class="overflow-hidden truncate opacity-75">
+														{{ videoMessage.initial_message.filename }}
+													</div>
+													<div class="pl-1">
+														<div class="cursor-pointer rounded-full bg-opacity-50 bg-white hover:bg-opacity-100 p-1 transition-colors" @click="videoMessage.initial_message.source = videoMessage.initial_message.preview = null">
+															<CloseIcon class="h-2.5 w-2.5 text-gray-500 fill-current -mr-px -mb-px"></CloseIcon>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="align-self-end pl-1">
+										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
+											<span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
+										</div>
+									</div>
+								</div>
 							</div>
 
 							<div class="mb-4">
@@ -252,6 +294,8 @@ const S3 = new AWS.S3({
 	params: { Bucket: process.env.MIX_AWS_BUCKET }
 });
 
+const loadImage = require('blueimp-load-image');
+
 export default {
 	components: { VideoPlayer, WarningIcon, Modal, CloseIcon, VueFormValidate, InfoCircleIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, draggable, ToggleSwitch, PlusIcon, ThumbdownIcon },
 	data: () => ({
@@ -259,7 +303,6 @@ export default {
 		showLibrary: false,
 		format: format,
 		dayjs: dayjs,
-		uploading: false,
 		query: '',
 		adding: false,
 		videoMessage: {
@@ -269,7 +312,11 @@ export default {
 			service_id: null,
 			userVideos: []
 		},
-		quickAdd: false
+		quickAdd: false,
+		channel: null,
+		uploadProgress: 0,
+		gifProgress: 0,
+		status: null
 	}),
 
 	computed: {
@@ -290,6 +337,14 @@ export default {
 	created() {
 		this.getVideoMessages();
 		this.getServices();
+
+		this.channel = this.$echo.private(`${this.$root.auth.id}.videoMessages`);
+		this.channel.listen('VideoMessageStat', v => {
+			let videoMessage = this.videoMessages.find(x => x.id == v.videoMessage.id);
+			if (videoMessage) {
+				this.getVideoMessageStats(videoMessage);
+			}
+		});
 	},
 
 	methods: {
@@ -298,9 +353,49 @@ export default {
 			storeVideoMessage: 'video_messages/store',
 			updateVideoMessage: 'video_messages/update',
 			setVideoMessageStatus: 'video_messages/setStatus',
+			getVideoMessageStats: 'video_messages/getStats',
 			deleteVideoMessage: 'video_messages/delete',
 			getServices: 'services/index'
 		}),
+
+		isImage(extension) {
+			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
+			return imageExtensions.indexOf(extension) > -1;
+		},
+
+		addFile(e) {
+			let fileInput = e.target;
+			let fileExtension = fileInput.value.split('.').pop();
+			this.$set(this.videoMessage.initial_message, 'type', 'file');
+			this.$set(this.videoMessage.initial_message, 'extension', fileExtension);
+			this.$set(this.videoMessage.initial_message, 'filename', fileInput.value.split(/(\\|\/)/g).pop());
+
+			if (this.isImage(fileExtension)) {
+				this.$set(this.videoMessage.initial_message, 'type', 'image');
+				loadImage(
+					fileInput.files[0],
+					canvas => {
+						let dataurl = canvas.toDataURL(fileInput.files[0].type);
+						this.$set(this.videoMessage.initial_message, 'preview', dataurl);
+						this.$set(this.videoMessage.initial_message, 'new_preview', dataurl);
+						this.$set(this.videoMessage.initial_message, 'source', fileInput.files[0]);
+						this.$set(this.videoMessage.initial_message, 'new_source', fileInput.files[0]);
+						fileInput.value = '';
+					},
+					{ maxWidth: 450, canvas: true }
+				);
+			} else {
+				this.$set(this.videoMessage.initial_message, 'source', fileInput.files[0]);
+				this.$set(this.videoMessage.initial_message, 'new_source', fileInput.files[0]);
+			}
+		},
+
+		messageInput(e) {
+			if ((e.keyCode ? e.keyCode : e.which) == 13) {
+				e.preventDefault();
+			}
+			this.videoMessage.initial_message.message = e.target.innerText;
+		},
 
 		dislikes(videoMessage) {
 			return videoMessage.video_message_likes.filter(x => !x.is_liked).length;
@@ -327,8 +422,8 @@ export default {
 			return trimmed.length == 0 || videoMessage.title.toLowerCase().includes(trimmed) || videoMessage.description.toLowerCase().includes(trimmed);
 		},
 
-		copyElementToClipboard(videoMessage) {
-			let element = this.stringToElement(videoMessage);
+		async copyElementToClipboard(videoMessage) {
+			let element = await this.stringToElement(videoMessage);
 			document.body.appendChild(element);
 			window.getSelection().removeAllRanges();
 			let range = document.createRange();
@@ -340,22 +435,20 @@ export default {
 		},
 
 		stringToElement(videoMessage) {
-			let canvas = document.createElement('canvas');
-			canvas.width = 500;
-			canvas.height = 20;
-			let totalDuration = 0;
-			videoMessage.videos.forEach(userVideo => {
-				totalDuration += userVideo.user_video.duration;
-			});
-			let ctx = canvas.getContext('2d');
-			ctx.font = '16px Arial';
-			ctx.fillStyle = 'white';
-			ctx.fillText(`Play ${humanizeDuration(totalDuration, { round: true, units: ['m'] }).replace('minutes', 'minute')} video`, 200, 15);
+			return new Promise(resolve => {
+				const img = new Image();
+				img.onload = () => {
+					let ratio = 450 / img.width;
+					let height = img.height * ratio;
+					let timestamp = new Date().valueOf();
 
-			let element = `<table> <tr> <td> <div style="width: 550px; max-width: 550px"> <div style="display: grid; grid-template-columns: 1fr"> <a style=" display: block; grid-row-start: 1; grid-column-start: 1; " href="${this.app_url}/video-messages/${videoMessage.uuid}" ><img style="width: 100%; height: auto" src="${videoMessage.videos[0].user_video.gif}"/></a> <div style=" grid-row-start: 1; grid-column-start: 1; display: grid; grid-template-columns: 1fr; " > <div style=" grid-row-start: 1; grid-column-start: 1; display: flex; align-items: end; " > <div style="padding: 10px; pointer-events: none; display: grid; grid-template-columns: 1fr; width: 100%;"> <div style=" grid-row-start: 1; grid-column-start: 1; padding: 10px 0 10px 15px; overflow: hidden; height: 60px; vertical-align: middle; box-sizing: border-box; " > <div style="background-color: #3167e3; height: 100%; "> <div style="display: flex; height: 100%; justify-content: center; align-items: center;"> <div style="margin-top: 5px"><img src="${canvas.toDataURL()}" /></div></div></div></div><div style=" display: block; grid-row-start: 1; grid-column-start: 1; "> <img src="${this.app_url}/images/email-play.png" style=" display: inline-block; vertical-align: middle; " width="60"/> </div></div></div></div></div></div></td></tr><tr> <td></td></tr></table>`;
-			let template = document.createElement('template');
-			template.innerHTML = element;
-			return template.content.firstChild;
+					let element = `<table> <tr> <td> <div style="width: 450px; max-width: 450px; background: #3167e3; height:${height}px"><a style=" display: block; grid-row-start: 1; grid-column-start: 1; " href="${this.app_url}/video-messages/${videoMessage.uuid}" ><img style="width: 100%; height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr></table>`;
+					let template = document.createElement('template');
+					template.innerHTML = element;
+					resolve(template.content.firstChild);
+				};
+				img.src = videoMessage.link_preview;
+			});
 		},
 
 		confirmDeleteVideoMessage() {
@@ -384,6 +477,9 @@ export default {
 			if (action == 'Edit') {
 				let data = JSON.parse(JSON.stringify(videoMessage));
 				data.userVideos = data.videos.map(x => x.user_video);
+				if (data.initial_message) {
+					data.initial_message.original_message = data.initial_message.message;
+				}
 				this.videoMessage = data;
 				this.adding = true;
 			} else if (action == 'Delete') {
@@ -400,7 +496,7 @@ export default {
 			if (this.videoMessage.id) {
 				return this.update();
 			} else {
-				this.uploading = true;
+				this.status = 'Processing...';
 				let userVideoIds = this.videoMessage.userVideos.map(x => x.id);
 				let videoMessagedata = {
 					title: this.videoMessage.title,
@@ -426,8 +522,10 @@ export default {
 			return new Promise((resolve, reject) => {
 				(async () => {
 					const response = await fetch(gif);
+					this.uploadProgress += 10;
 					const blob = await response.blob();
 					const arrayBuffer = await blob.arrayBuffer();
+					this.uploadProgress += 10;
 					const intArray = new Uint8Array(arrayBuffer);
 					const reader = new GifReader(intArray);
 					const info = reader.frameInfo(0);
@@ -469,6 +567,8 @@ export default {
 							images.push(canvas.toDataURL());
 							ctx.clearRect(0, 0, canvas.width, canvas.height);
 						});
+
+						this.uploadProgress += 5;
 						gifshot.createGIF(
 							{
 								images: images,
@@ -478,16 +578,18 @@ export default {
 							},
 							async obj => {
 								if (!obj.error) {
-									let timestamp = new Date().getTime();
+									this.status = 'Uploading...';
+									this.uploadProgress += 15;
 									S3.upload(
 										{
-											Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'link_preview.gif',
+											Key: 'user-videos/' + this.$root.auth.id + '/' + this.videoMessage.uuid + '/' + 'link_preview.gif',
 											Body: this.dataURLtoFile(obj.image, 'link_preview.gif'),
 											ACL: 'public-read',
 											ContentType: 'image/gif'
 										},
 										async (err, d) => {
 											if (!err && d) {
+												this.uploadProgress += 20;
 												resolve(d.Location);
 											}
 										}
@@ -504,18 +606,65 @@ export default {
 		},
 
 		async update() {
-			this.uploading = true;
+			this.status = 'Processing...';
 			let data = JSON.parse(JSON.stringify(this.videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
 
 			let totalDuration = 0;
-			data.videos.forEach(userVideo => {
-				totalDuration += userVideo.user_video.duration;
+			data.userVideos.forEach(userVideo => {
+				totalDuration += userVideo.duration;
 			});
+
+			this.uploadProgress += 20;
 			data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
+			data.initial_message = await this.generateInitialMessage(this.videoMessage);
+
+			delete data.original_message;
+			delete data.new_source;
+			this.status = 'Finalizing...';
+			this.uploadProgress += 10;
 			await this.updateVideoMessage(data).catch(() => {});
-			this.uploading = false;
 			this.reset();
+		},
+
+		async generateInitialMessage(data) {
+			return new Promise(resolve => {
+				(async () => {
+					if (data.initial_message.new_source) {
+						if (data.initial_message.new_preview) {
+							let preview = await S3.upload({
+								Key: 'video-messages/' + this.$root.auth.id + '/' + data.uuid + '/' + 'initial_message_preview.png',
+								Body: this.dataURLtoFile(data.initial_message.new_preview, 'initial_message_preview.png'),
+								ACL: 'public-read',
+								ContentType: 'image/png'
+							})
+								.promise()
+								.catch(() => {});
+							if (preview) {
+								data.initial_message.preview = preview.Location;
+								this.uploadProgress += 5;
+							}
+						}
+						let source = await S3.upload({
+							Key: 'video-messages/' + this.$root.auth.id + '/' + data.uuid + '/' + data.initial_message.filename,
+							Body: data.initial_message.new_source,
+							ACL: 'public-read'
+						})
+							.promise()
+							.catch(() => {});
+						if (source) {
+							data.initial_message.source = source.Location;
+							this.uploadProgress += 5;
+						}
+					} else {
+						this.uploadProgress += 10;
+					}
+					if (this.$refs.newInitialMessage) {
+						data.initial_message.message = this.$refs.newInitialMessage.innerText.trim();
+					}
+					resolve(data.initial_message);
+				})();
+			});
 		},
 
 		dataURLtoFile(dataurl, filename) {
@@ -541,7 +690,9 @@ export default {
 
 		reset() {
 			this.adding = false;
-			this.uploading = false;
+			this.status = null;
+			this.gifProgress = 0;
+			this.uploadProgress = 0;
 			this.videoMessage = {
 				title: '',
 				description: '',
@@ -555,6 +706,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.initial-message-container {
+	@apply bg-primary;
+	border-radius: 15px;
+	border-bottom-right-radius: 2px;
+}
+.initial-message {
+	@apply text-white p-3 outline-none text-sm;
+	&:empty:before {
+		content: 'Initial message..';
+		color: white;
+		opacity: 0.5;
+	}
+}
 .form-intent {
 	width: 300px;
 }
