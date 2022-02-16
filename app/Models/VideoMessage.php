@@ -6,7 +6,8 @@ class VideoMessage extends BaseModel
 {
     protected $fillable = ['uuid', 'user_id', 'title', 'description', 'initial_message', 'service_id', 'views', 'is_active', 'link_preview'];
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'initial_message' => 'object'
     ];
 
     public function user()

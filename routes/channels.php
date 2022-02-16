@@ -18,8 +18,7 @@ Broadcast::channel('AppChannel', function () {
     return ['connected' => true];
 });
 Broadcast::channel('users.{user}', function ($auth, $userId) {
-    $user = User::where('id', $userId)->first();
-    return $auth->id == $user->id ? ['id' => $user->id] : false;
+    return $auth->id == $userId ? ['id' => $auth->id] : false;
 });
 Broadcast::channel('conversations.{id}', function ($user, $id) {
     $conversation = Conversation::findOrFail($id);
@@ -33,4 +32,7 @@ Broadcast::channel('bookingLinks.{bookingLink}', function ($user, BookingLink $b
 });
 Broadcast::channel('contacts.{user}', function ($user, $userId) {
     return $user->id == $userId;
+});
+Broadcast::channel('{user}.videoMessages', function ($auth, $userId) {
+    return $auth->id == $userId ? ['id' => $auth->id] : false;
 });

@@ -23,6 +23,15 @@ const mutations = {
 			state.index.findIndex(x => x.id == data.id),
 			1
 		);
+	},
+
+	getStats(state, data) {
+		let videoMessage = state.index.find(x => x.id == data.id);
+		if (videoMessage) {
+			videoMessage.video_message_likes = data.video_message_likes;
+			videoMessage.views = data.views;
+			videoMessage.conversation.messages_count = data.conversation.messages_count;
+		}
 	}
 };
 
@@ -52,6 +61,13 @@ const actions = {
 		let response = await window.axios.delete(`/${name}/${data.id}`, { toast: true });
 		if (response) {
 			commit('delete', data);
+		}
+	},
+
+	async getStats({ commit }, data) {
+		let response = await window.axios.get(`/${name}/${data.id}/get_stats`, { toast: true });
+		if (response) {
+			commit('getStats', response.data);
 		}
 	}
 };

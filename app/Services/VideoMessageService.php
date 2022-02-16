@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\VideoMessageStat;
 use App\Models\Conversation;
 use App\Models\Service;
 use App\Models\UserVideo;
@@ -31,7 +32,7 @@ class VideoMessageService
         (new self)->validate($request, [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'initial_message' => 'nullable|string|max:255',
+            'initial_message' => 'nullable|json|max:255',
             'service_id' => 'nullable|exists:services,id',
             'user_video_ids' => 'required|array',
             'link_preview' => 'nullable|string|max:255',
@@ -88,6 +89,7 @@ class VideoMessageService
         if ($authUser) {
             $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
         }
+        broadcast(new VideoMessageStat($videoMessage));
         return view('video-message', compact('videoMessage'));
     }
 
@@ -96,7 +98,7 @@ class VideoMessageService
         (new self)->validate($request, [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'initial_message' => 'nullable|string|max:255',
+            'initial_message' => 'nullable|array|max:255',
             'service_id' => 'nullable|exists:services,id',
             'user_video_ids' => 'required|array',
             'is_active' => 'required|boolean',
@@ -178,6 +180,22 @@ class VideoMessageService
             }
         }
 
+        broadcast(new VideoMessageStat($videoMessage));
+
         return response()->json($videoMessageLike);
+    }
+
+    public static function getStats(VideoMessage $videoMessage)
+    {
+        $authUser = Auth::user();
+        if ($videoMessage->user_id != $authUser->id) {
+            return abort(403);
+        }
+
+        return response()->json(app('model-cache')->runDisabled(function () use ($videoMessage) {
+            return VideoMessage::where('id', $videoMessage->id)->with('videoMessageLikes')->with('conversation', function ($conversation) {
+                $conversation->withCount('messages');
+            })->disableCache()->first();
+        }));
     }
 }

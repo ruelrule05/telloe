@@ -13,6 +13,15 @@
 					<div class="absolute w-full h-full top-0 left-0 bg-cover bg-center bg-no-repeat opacity-50" :style="{ backgroundImage: `url(${video.thumbnail})` }" style="filter: blur(30px)"></div>
 					<video :ref="`video-${video.id}`" class="w-full h-full pointer-events-none relative z-10" :src="video.source" muted></video>
 				</div>
+				<div v-if="!playing" class="absolute-center z-10">
+					<div class="border border-primary rounded-full w-14 h-14 bg-white cursor-pointer shadow-lg" @click="playPause">
+						<svg version="1.1" class="absolute-center fill-current text-primary ml-0.5 w-8 h-8" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="14" height="14" viewBox="0 0 163.861 163.861" style="enable-background: new 0 0 163.861 163.861" xml:space="preserve">
+							<g>
+								<path d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275 c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z" />
+							</g>
+						</svg>
+					</div>
+				</div>
 			</div>
 			<div v-show="videoReady" class="flex items-center p-2 bg-white">
 				<button type="button" class="rounded-full border border-primary w-8 h-8 relative" @click="playPause">

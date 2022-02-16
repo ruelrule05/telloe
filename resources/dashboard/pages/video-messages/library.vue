@@ -503,7 +503,7 @@ export default {
 			this.$refs.videoPreview.muted = true;
 			this.$refs.videoPreview.volume = 0;
 			this.$refs.videoPreview.play();
-			this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm' });
+			this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm', videoBitsPerSecond: 2500000 });
 			this.videoRecorder.camera = this.finalStream;
 			this.videoRecorder.ondataavailable = e => {
 				if (this.isRecording) {

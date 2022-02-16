@@ -37,4 +37,9 @@ class VideoMessageController extends Controller
     {
         return VideoMessageService::toggleLike($videoMessage, $request);
     }
+
+    public function getStats(VideoMessage $videoMessage)
+    {
+        return VideoMessageService::getStats($videoMessage);
+    }
 }
