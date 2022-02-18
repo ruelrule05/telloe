@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\NewMessageEvent;
 use App\Events\VideoMessageStat;
 use App\Http\Requests\StoreMessageRequest;
+use App\Mail\VideoMessageComment;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\VideoMessage;
@@ -103,6 +104,7 @@ class MessageService
             $videoMessage = VideoMessage::find($conversation->video_message_id);
             if ($videoMessage) {
                 broadcast(new VideoMessageStat($videoMessage));
+                Mail::to($videoMessage->user->email)->later(now()->addMinutes(5), new VideoMessageComment($videoMessage));
             }
         }
 
