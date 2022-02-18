@@ -38,7 +38,7 @@ class AuthService
     {
         $socialiteUser = SocialiteHelper::getSocialiteUser($driver);
         $user = null;
-        $redirect = '/dashboard/calendar';
+        $redirect = '/dashboard/video-messages';
         if ($socialiteUser) {
             $data = Arr::except($socialiteUser->user, ['id']);
             $data['first_name'] = $data['first_name'] ?? $data['given_name'];

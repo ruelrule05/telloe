@@ -208,7 +208,7 @@
 
 				<div class="flex-grow bg-black relative">
 					<div class="absolute-center w-full h-full bg-black">
-						<video :src="previewSource" ref="videoPlayback" controls class="w-full h-full bg-black"></video>
+						<video :src="previewSource" ref="videoPlayback" controls controlsList="nodownload noplaybackrate" disablePictureInPicture class="w-full h-full bg-black"></video>
 					</div>
 				</div>
 			</div>

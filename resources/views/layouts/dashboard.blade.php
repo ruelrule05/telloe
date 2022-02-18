@@ -113,7 +113,19 @@
 						</div>
 					</div>
 
-					<div class="mt-12">
+					<div class="sidebar-heading mt-7">COMMUNICATION</div>
+					<router-link  custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/video-messages">
+						<div @click="toggleSidebar('/dashboard/video-messages')" class="sidebar-menu-item" :class="{active: isActive}">Video Messages</div>
+					</router-link>
+					<router-link v-if="$root.auth.messages" custom v-slot="{ isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
+						<div @click="toggleSidebar(`/dashboard/conversations/${currentConversationID}`)" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
+					</router-link>
+					<router-link v-if="$root.auth.contacts" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
+						<div @click="toggleSidebar('/dashboard/contacts')" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
+					</router-link>
+					
+
+					<div class="mt-7">
 						<div class="sidebar-heading">BOOKINGS</div>
 						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/calendar">
 							<div @click="toggleSidebar('/dashboard/calendar')" :class="{active: isActive}">Calendar</div>
@@ -125,17 +137,6 @@
 							<div @click="toggleSidebar('/dashboard/booking-links')" class="sidebar-menu-item" :class="{active: isActive}">Match Up</div>
 						</router-link>
 
-
-						<div class="sidebar-heading mt-7">COMMUNICATION</div>
-						<router-link v-if="$root.auth.messages" custom v-slot="{ isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
-							<div @click="toggleSidebar(`/dashboard/conversations/${currentConversationID}`)" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
-						</router-link>
-						<router-link v-if="$root.auth.contacts" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
-							<div @click="toggleSidebar('/dashboard/contacts')" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
-						</router-link>
-						<router-link  custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/video-messages">
-							<div @click="toggleSidebar('/dashboard/video-messages')" class="sidebar-menu-item" :class="{active: isActive}">Video Messages</div>
-						</router-link>
 						
 						
 						<div class="sidebar-heading mt-7">INTEGRATIONS</div>

@@ -15,7 +15,7 @@ class PageService
     {
         checkRequestInviteToken($request);
         if (Auth::check() && $request->mobile_app == 'true') {
-            return redirect('/dashboard/calendar');
+            return redirect('/dashboard/video-messages');
         }
 
         if ($request->auth == 'reset' && $request->token) {

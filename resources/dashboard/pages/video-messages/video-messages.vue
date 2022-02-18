@@ -177,20 +177,13 @@
 							<div class="mb-4">
 								<label>Initial Message</label>
 								<input type="file" class="hidden" ref="initialMessageFile" @change="addFile" />
-								<div class="flex items-end">
+								<div v-if="videoMessage.initial_message.message || videoMessage.initial_message.source" class="flex items-end">
 									<div class="flex-grow overflow-hidden">
 										<div class="relative initial-message-container">
-											<div class="flex items-end">
-												<div class="initial-message flex-grow break-all cursor-text" ref="newInitialMessage" contenteditable spellcheck="false" v-html="videoMessage.initial_message.original_message" @keypress="messageInput"></div>
-												<div v-if="!videoMessage.initial_message.source" class="mb-1 mr-1 ml-1">
-													<div class="cursor-pointer rounded-full hover:bg-white hover:bg-opacity-20 p-0.5 transition-colors" @click="$refs.initialMessageFile.click()">
-														<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-white transform -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-														</svg>
-													</div>
-												</div>
+											<div v-show="videoMessage.initial_message.message" class="flex items-end">
+												<div class="initial-message flex-grow break-all cursor-text" ref="newInitialMessage" spellcheck="false" v-html="videoMessage.initial_message.message"></div>
 											</div>
-											<div v-if="videoMessage.initial_message.source" class="px-3 py-2 text-white text-sm border-t border-dashed border-opacity-40">
+											<div v-if="videoMessage.initial_message.source" class="px-3 py-2 text-white text-sm" :class="{ 'border-t border-dashed border-opacity-40': videoMessage.initial_message.message }">
 												<div v-if="videoMessage.initial_message.preview" class="w-full h-36 bg-cover bg-center bg-no-repeat rounded relative" :style="{ backgroundImage: `url(${videoMessage.initial_message.preview})` }">
 													<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full bg-opacity-50 bg-white hover:bg-opacity-100 p-1 transition-colors" @click="videoMessage.initial_message.source = videoMessage.initial_message.preview = null">
 														<CloseIcon class="h-2.5 w-2.5 text-gray-500 fill-current -mr-px -mb-px"></CloseIcon>
@@ -212,6 +205,19 @@
 									<div class="align-self-end pl-1">
 										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
 											<span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
+										</div>
+									</div>
+								</div>
+								<div class="flex items-center mt-2">
+									<div class="flex-grow">
+										<div class="flex items-center rounded-full bg-gray-200 p-1">
+											<div class="py-1 px-2 message-input h-auto overflow-auto flex-grow focus:outline-none" @keypress="messageInput" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput"></div>
+											<button type="button" class="btn-send-message rounded-full bg-white p-1.5 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary" @click="$refs.initialMessageFile.click()">
+												<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+												</svg>
+											</button>
+											<button type="button" @click="setInitialMessage" class="btn-send-message rounded-full bg-white p-1.5 text-primary ml-0.5 focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current w-3.5 h-3.5"></SendIcon></button>
 										</div>
 									</div>
 								</div>
@@ -278,6 +284,7 @@ import Library from './library.vue';
 import copy from 'copy-text-to-clipboard';
 import Modal from '../../../components/modal/modal.vue';
 import VideoPlayer from '../../../video-message/videoplayer.vue';
+import SendIcon from '../../../icons/send';
 import draggable from 'vuedraggable';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 const humanizeDuration = require('humanize-duration');
@@ -297,7 +304,7 @@ const S3 = new AWS.S3({
 const loadImage = require('blueimp-load-image');
 
 export default {
-	components: { VideoPlayer, WarningIcon, Modal, CloseIcon, VueFormValidate, InfoCircleIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, draggable, ToggleSwitch, PlusIcon, ThumbdownIcon },
+	components: { VideoPlayer, WarningIcon, Modal, CloseIcon, VueFormValidate, InfoCircleIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, draggable, ToggleSwitch, PlusIcon, ThumbdownIcon, SendIcon },
 	data: () => ({
 		app_url: process.env.MIX_APP_URL,
 		showLibrary: false,
@@ -308,7 +315,7 @@ export default {
 		videoMessage: {
 			title: '',
 			description: '',
-			initial_message: '',
+			initial_message: {},
 			service_id: null,
 			userVideos: []
 		},
@@ -358,6 +365,13 @@ export default {
 			getServices: 'services/index'
 		}),
 
+		messageInput(e) {
+			if ((e.keyCode ? e.keyCode : e.which) == 13) {
+				e.preventDefault();
+				this.setInitialMessage();
+			}
+		},
+
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
 			return imageExtensions.indexOf(extension) > -1;
@@ -390,11 +404,9 @@ export default {
 			}
 		},
 
-		messageInput(e) {
-			if ((e.keyCode ? e.keyCode : e.which) == 13) {
-				e.preventDefault();
-			}
-			this.videoMessage.initial_message.message = e.target.innerText;
+		setInitialMessage() {
+			this.$set(this.videoMessage.initial_message, 'message', this.$refs.messageInput.innerText);
+			this.$refs.messageInput.innerHTML = '';
 		},
 
 		dislikes(videoMessage) {
@@ -696,7 +708,7 @@ export default {
 			this.videoMessage = {
 				title: '',
 				description: '',
-				initial_message: '',
+				initial_message: {},
 				service_id: null,
 				userVideos: []
 			};
@@ -706,6 +718,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.message-input {
+	border-radius: 10px;
+	font-size: 14px;
+	max-height: 120px;
+	word-break: break-all;
+	&[data-placeholder]:empty:before {
+		content: attr(data-placeholder);
+		color: #888;
+	}
+}
+
 .initial-message-container {
 	@apply bg-primary;
 	border-radius: 15px;
@@ -713,11 +736,6 @@ export default {
 }
 .initial-message {
 	@apply text-white p-3 outline-none text-sm;
-	&:empty:before {
-		content: 'Initial message..';
-		color: white;
-		opacity: 0.5;
-	}
 }
 .form-intent {
 	width: 300px;

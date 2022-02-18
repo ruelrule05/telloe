@@ -3,7 +3,7 @@
 		<!-- Signup form -->
 		<template v-if="$root.signupStep == 0">
 			<vue-form-validate @submit="signup">
-				<div class="flex  mb-5">
+				<div class="flex mb-5">
 					<div class="pr-3 w-1/2">
 						<label class="text-muted" required>First Name</label>
 						<input type="text" v-model="signupForm.first_name" data-required />
@@ -179,7 +179,7 @@ export default {
 	},
 
 	watch: {
-		heading: function(value) {
+		heading: function (value) {
 			this.$parent.heading = value;
 		}
 	},
@@ -221,7 +221,7 @@ export default {
 			this.loading = false;
 			if (step == 4) {
 				this.loading = true;
-				window.location.href = '/dashboard/calendar';
+				window.location.href = '/dashboard/video-messages';
 			}
 		},
 
@@ -266,7 +266,7 @@ export default {
 		getCookieVal(name) {
 			const allCookies = document.cookie.split('; ');
 			var result = null;
-			allCookies.forEach(function(v) {
+			allCookies.forEach(function (v) {
 				if (v.indexOf(name + '=') !== -1) {
 					result = v.split('=')[1];
 					return false;

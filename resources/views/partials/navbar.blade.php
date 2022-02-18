@@ -12,7 +12,7 @@
                     <a href="/#pricing" class="navbar-item"><span>PRICING</span></a>
                     <a href="/contact" class="navbar-item"><span>CONTACT US</span></a>
                     @auth
-                    <a href="/dashboard/calendar" class="btn btn-primary btn-md"><span class="block">DASHBOARD</span></a>
+                    <a href="/dashboard/video-messages" class="btn btn-primary btn-md"><span class="block">DASHBOARD</span></a>
                     @endauth
                     @guest
                     <button type="button" class="navbar-item" @click="auth = true; action = 'login'"><span>LOGIN</span></button>
@@ -42,7 +42,7 @@
                 <a href="/#pricing" @click="dropdownOpen = false">PRICING</a>
                 <a href="/contact" @click="dropdownOpen = false">CONTACT US</a>
                 @auth
-                <a href="/dashboard/calendar" @click="dropdownOpen = false">DASHBOARD</a>
+                <a href="/dashboard/video-messages" @click="dropdownOpen = false">DASHBOARD</a>
                 @endauth
                 @guest
                 <div class="px-2 mt-4">

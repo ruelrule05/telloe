@@ -84,7 +84,7 @@ export default {
 							if (this.$root.action == 'conversation') {
 								window.location.reload();
 							} else {
-								window.location.replace('/dashboard/calendar');
+								window.location.replace('/dashboard/video-messages');
 							}
 						}, 150);
 					})
