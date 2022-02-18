@@ -13,6 +13,7 @@ use Auth;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Str;
+use Illuminate\Support\Facades\Http;
 
 class VideoMessageService
 {
@@ -131,6 +132,12 @@ class VideoMessageService
         }
         $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview');
         $data['initial_message'] = $request->input('initial_message');
+        if(isset($data['initial_message']['message'])) {
+            $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
+            if($linkPreview) {
+                $data['initial_message']['link_preview'] = $linkPreview;
+            }
+        }
         $videoMessage->update($data);
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
@@ -197,5 +204,31 @@ class VideoMessageService
                 $conversation->withCount('messages');
             })->disableCache()->first();
         }));
+    }
+
+
+    protected static function generateLinkPreview($message)
+    {
+
+        $linkPreview = null;
+        preg_match_all('!https?://\S+!', $message, $links);
+        if (count($links) > 0 && $links[0] > 0) {
+            $preview = Http::get('https://api.linkpreview.net/?key=' . config('app.link_preview_key') . '&q=' . $links[0][0]);
+            $preview = $preview->json();
+            if (! isset($preview['error'])) {
+                $host = parse_url($preview['url'])['host'];
+                $linkPreview = '<a target="_blank" href="' . $preview['url'] . '">';
+                if ($preview['image']) {
+                    $linkPreview .= '<div class="preview-image" style="background-image: url(\'' . $preview['image'] . '\')"></div>';
+                }
+                $linkPreview .= '<h6 class="preview-title">' . htmlspecialchars($preview['title']) . '</h6>';
+                $linkPreview .= '<p class="preview-description">' . htmlspecialchars($preview['description']) . '</p>';
+                $linkPreview .= '<span class="preview-host">' . $host . '</span>';
+                $linkPreview .= '</a>';
+
+            }
+        }
+
+        return $linkPreview;
     }
 }
