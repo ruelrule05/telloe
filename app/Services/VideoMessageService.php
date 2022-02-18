@@ -32,7 +32,7 @@ class VideoMessageService
         (new self)->validate($request, [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'initial_message' => 'nullable|json|max:255',
+            'initial_message' => 'nullable|array|max:255',
             'service_id' => 'nullable|exists:services,id',
             'user_video_ids' => 'required|array',
             'link_preview' => 'nullable|string|max:255',
