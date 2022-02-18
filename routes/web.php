@@ -227,7 +227,7 @@ Route::group(
             });
         });
 
-        Route::get('/video-messages/{video_message:uuid}', 'VideoMessageController@show');
+        Route::get('/video-messages/{video_message:uuid}', 'VideoMessageController@show')->name('videoMessages.show');
         Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');
