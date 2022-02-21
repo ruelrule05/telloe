@@ -12,7 +12,8 @@
 				<div v-for="(video, videoIndex) in videos" :key="video.id" class="video" :class="{ show: videoIndex == currentVideoIndex }">
 					<div class="absolute w-full h-full top-0 left-0 bg-cover bg-center bg-no-repeat opacity-50" :style="{ backgroundImage: `url(${video.thumbnail})` }" style="filter: blur(30px)"></div>
 					<video :ref="`video-${video.id}`" class="w-full h-full pointer-events-none relative z-10" muted playsinline>
-						<source :src="video.source" type="video/mp4" />
+						<source :src="video.source" type="video/webm" />
+						<source :src="video.source.replace('.webm', '.mp4')" type="video/mp4" />
 					</video>
 				</div>
 				<div v-if="!playing" class="absolute-center z-10">

@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3",
+        "aws/aws-sdk-php": "^3.209",
         "botman/driver-web": "^1.5",
         "calcinai/xero-php": "^2.2",
         "enlightn/enlightn": "^1.22",
