@@ -24,12 +24,20 @@
 	<link rel="alternate" href="{{ url()->current() }}" hreflang="en" />
 	@include('partials.styles')
 </head>
-<body class="h-100vh w-100vw bg-secondary">
-	<div id="app" v-cloak>
+<body class="bg-secondary overflow-hidden">
+	<div id="app" class="w-screen h-screen overflow-hidden " v-cloak>
         <video-message></video-message>
     </div>
 
 	@include('partials.social_scripts')
+	<style>
+		@media only screen and (max-width: 991px) {
+			#app {
+				height: 100vh;
+				height: calc(var(--vh, 1vh) * 100);
+			}
+		}
+	</style>
 	<script>
 		const AUTH = {!! json_encode(Auth::user()) !!};
 		const VIDEO_MESSAGE= {!! json_encode($videoMessage) !!};

@@ -11,7 +11,9 @@
 			<div class="flex-grow relative overflow-hidden w-full h-full">
 				<div v-for="(video, videoIndex) in videos" :key="video.id" class="video" :class="{ show: videoIndex == currentVideoIndex }">
 					<div class="absolute w-full h-full top-0 left-0 bg-cover bg-center bg-no-repeat opacity-50" :style="{ backgroundImage: `url(${video.thumbnail})` }" style="filter: blur(30px)"></div>
-					<video :ref="`video-${video.id}`" class="w-full h-full pointer-events-none relative z-10" :src="video.source" muted></video>
+					<video :ref="`video-${video.id}`" class="w-full h-full pointer-events-none relative z-10" muted playsinline>
+						<source :src="video.source" type="video/mp4" />
+					</video>
 				</div>
 				<div v-if="!playing" class="absolute-center z-10">
 					<div class="border border-primary rounded-full w-14 h-14 bg-white cursor-pointer shadow-lg" @click="playPause">
@@ -30,7 +32,7 @@
 							<path d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275 c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z" />
 						</g>
 					</svg>
-					<svg v-else class="absolute-center fill-current text-primary" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 365 365" style="enable-background: new 0 0 365 365" xml:space="preserve">
+					<svg v-else class="absolute-center fill-current text-primary" width="15" height="15" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 365 365" style="enable-background: new 0 0 365 365" xml:space="preserve">
 						<g>
 							<rect x="74.5" width="73" height="365" />
 							<rect x="217.5" width="73" height="365" />
@@ -69,6 +71,7 @@
 
 <script>
 const format = require('format-duration');
+const mobile = require('is-mobile');
 import toggleFullscreen, { fullscreenChange, isFullscreen } from 'toggle-fullscreen';
 export default {
 	props: {
@@ -124,6 +127,9 @@ export default {
 						videoEl.onloadedmetadata = () => {
 							this.videoReady = true;
 						};
+						if (mobile()) {
+							this.videoReady = true;
+						}
 					} else {
 						videoEl.muted = true;
 						videoEl.play();

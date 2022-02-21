@@ -681,7 +681,7 @@ export default {
 				let timestamp = new Date().getTime();
 				S3.upload(
 					{
-						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'source',
+						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'source.webm',
 						Body: this.source,
 						ACL: 'public-read'
 					},
