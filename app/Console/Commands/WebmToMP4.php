@@ -69,9 +69,6 @@ class ConversationSetSlug extends Command
                         'userVideoId' => $userVideo->id
                     ],
                 ]);
-                $userVideo->update([
-                    'source' => $userVideo->source . '.webm'
-                ]);
             } catch (AwsException $e) {
                 echo $e->getMessage();
             }
