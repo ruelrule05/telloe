@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\UserVideo;
 use Aws\MediaConvert\MediaConvertClient;
 use Illuminate\Console\Command;
-use Storage;
 
 class ConversationSetSlug extends Command
 {
@@ -51,17 +50,11 @@ class ConversationSetSlug extends Command
         $role = config('aws.s3.iam_arn');
         $queue = config('aws.s3.queue_arn');
 
-        $userVideos = UserVideo::where('source', 'NOT LIKE', '%.webm%')->get();
-        foreach ($userVideos as $userVideo) {
+        foreach (UserVideo::cursor() as $userVideo) {
             $path = parse_url($userVideo->source)['path'];
             $destination = pathinfo($path)['dirname'];
             $destination = str_replace("/$bucket/", '', $destination);
             $source = $destination . '/' . basename($userVideo->source);
-
-            try {
-                Storage::disk('s3')->move($source , $source . '.webm');
-            } catch (\Exception $e) {
-            }
 
             $settings = config('mediaconvert');
             $settings['Inputs'][0]['FileInput'] = "s3://$bucket/$source";
