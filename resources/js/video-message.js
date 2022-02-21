@@ -18,10 +18,21 @@ window.app = new Vue({
 		VideoMessage
 	},
 
+	mounted() {
+		this.getViewportHeight();
+		window.addEventListener('resize', () => {
+			this.getViewportHeight();
+		});
+	},
+
 	methods: {
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
 			return imageExtensions.indexOf(extension) > -1;
+		},
+		getViewportHeight() {
+			let vh = window.innerHeight * 0.01;
+			document.documentElement.style.setProperty('--vh', `${vh}px`);
 		}
 	}
 });

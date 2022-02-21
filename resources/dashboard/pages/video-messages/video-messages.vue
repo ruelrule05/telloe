@@ -92,7 +92,7 @@
 										<div class="flex items-center"><EyeIcon class="mr-1 w-4 fill-current"></EyeIcon> {{ vMessage.views }}</div>
 										<div class="flex items-center"><ThumbupIcon class="mr-1 w-3 fill-current"></ThumbupIcon> {{ likes(vMessage) }}</div>
 										<div class="flex items-center"><ThumbdownIcon class="mr-1 w-3 fill-current"></ThumbdownIcon> {{ dislikes(vMessage) }}</div>
-										<div class="flex items-center cursor-pointer hover:text-primary" @click="openVideoMessage(vMessage)"><CommentIcon class="mr-1 w-4 fill-current"></CommentIcon> {{ vMessage.conversation.messages_count }}</div>
+										<div class="flex items-center cursor-pointer hover:text-primary" @click="openVideoMessage(vMessage)"><CommentIcon class="mr-1 w-4 fill-current"></CommentIcon> {{ vMessage.conversation ? vMessage.conversation.messages_count : 0 }}</div>
 									</div>
 								</div>
 							</div>
@@ -490,6 +490,9 @@ export default {
 				let data = JSON.parse(JSON.stringify(videoMessage));
 				data.userVideos = data.videos.map(x => x.user_video);
 				if (data.initial_message) {
+					if (Array.isArray(data.initial_message)) {
+						data.initial_message = {};
+					}
 					data.initial_message.original_message = data.initial_message.message;
 				}
 				this.videoMessage = data;

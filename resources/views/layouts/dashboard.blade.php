@@ -277,11 +277,11 @@
 			window.APP_URL = '{{ config("app.url") }}';
 			window.WS_URL = '{{ config("app.websocket_url") }}';
 		</script>
+		<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1058.0.min.js"></script>
 		<script src="{{ mix('js/dashboard.js') }}"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 		<script  src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
-		<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1058.0.min.js"></script>
 		<script src="{{ mix('/js/formbuilder.js') }}"></script>
 	</body>
 	@include('partials.social_scripts')

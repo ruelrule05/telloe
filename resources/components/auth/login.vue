@@ -84,7 +84,13 @@ export default {
 							if (this.$root.action == 'conversation') {
 								window.location.reload();
 							} else {
-								window.location.replace('/dashboard/video-messages');
+								const params = new URLSearchParams(window.location.search);
+								const redirect = params.get('r');
+								if (redirect) {
+									window.location.href = redirect;
+								} else {
+									window.location.replace('/dashboard/video-messages');
+								}
 							}
 						}, 150);
 					})
