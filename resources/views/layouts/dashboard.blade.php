@@ -146,8 +146,10 @@
 						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
 							Xero Invoicing
 						</router-link> --}}
-
-
+						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
+							<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
+						</router-link>
+						
 						<template v-if="$root.auth.packages">
 							<div class="sidebar-heading mt-7">APPS</div>
 							<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
