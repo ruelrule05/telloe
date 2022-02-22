@@ -10,7 +10,8 @@ export default {
 		zoomLoading: false,
 		googleCalendarLoading: false,
 		outlookLoading: false,
-		xeroLoading: false
+		xeroLoading: false,
+		linkedInLoading: false
 	}),
 
 	created() {
@@ -111,6 +112,20 @@ export default {
 				this.zoomLoading = false;
 				this.getZoomToken();
 			});
+		},
+
+		async connectLinkedIn() {
+			if (!this.$root.auth.is_premium) {
+				return this.$router.push('/dashboard/account?tab=plan');
+			}
+			this.linkedInLoading = true;
+			let response = await window.axios.get('/linkedin/connect', { toast: true }).catch(() => {});
+			if (response) {
+				console.log(response);
+				window.location.href = response.data.authUrl;
+			} else {
+				this.linkedInLoading = false;
+			}
 		},
 
 		openAuthWindow(url, callback) {
