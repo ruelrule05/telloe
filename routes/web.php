@@ -33,6 +33,7 @@ Route::group(
         Route::get('/callback/googlecalendar', 'GoogleCalendarController@callback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'OutlookController@callback')->middleware('auth');
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
+        Route::get('/linkedin/callback', 'LinkedInController@callback')->middleware('auth');
 
         // AJAX
         Route::group([
@@ -136,6 +137,10 @@ Route::group(
                 Route::get('xero/remove', 'XeroController@remove');
                 Route::post('xero/invoices', 'XeroController@storeInvoice');
                 Route::put('xero/invoices', 'XeroController@updateInvoice');
+
+                // routes for LinkedIn
+                Route::get('linkedin/connect', 'LinkedInController@redirect');
+                
 
                 Route::get('get_invoice', 'UserController@getInvoice');
 
