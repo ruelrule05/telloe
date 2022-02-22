@@ -6,6 +6,8 @@
  */
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\VideoMessageController;
 use  App\Http\SocialiteHelper;
 
@@ -47,13 +49,18 @@ Route::group(
             Route::post('auth/guest_account', 'AuthController@createGuestAccount');
             Route::put('booking-links/{uuid}/associate_user', 'BookingLinkController@associateUser')->middleware('auth');
 
+            Route::post('messages',[MessageController::class, 'store']);
+            Route::get('conversations/get_client_location', [ConversationController::class, 'getClientLocation']);
+            Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
+            Route::get('messages/{message}', [MessageController::class, 'show']);
+
             // Authenticated routes
             Route::group([
                 'middleware' => 'auth'
             ], function () {
                 // Resource
-                Route::apiResource('conversations', 'ConversationController')->except(['destroy']);
-                Route::apiResource('messages', 'MessageController')->only(['show', 'store', 'update', 'destroy']);
+                Route::apiResource('conversations', 'ConversationController')->except(['destroy', 'show']);
+                Route::apiResource('messages', 'MessageController')->only(['update', 'destroy']);
                 Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
                 Route::get('services/contact_services', 'ServiceController@contactServices');
                 Route::apiResource('services', 'ServiceController');

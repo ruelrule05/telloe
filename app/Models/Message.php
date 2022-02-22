@@ -3,15 +3,15 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'link_preview', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags'];
+    protected $fillable = ['conversation_id', 'user_id', 'message', 'type', 'source', 'link_preview', 'preview', 'metadata', 'is_read', 'timestamp', 'is_history', 'tags', 'location'];
     protected $appends = ['created_diff'];
 
     protected $casts = [
@@ -19,6 +19,7 @@ class Message extends BaseModel
         'is_read' => 'boolean',
         'is_history' => 'boolean',
         'tags' => 'array',
+        'location' => 'object',
     ];
 
     public function conversation()

@@ -15,6 +15,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Mail;
+use Stevebauman\Location\Facades\Location;
 
 class ConversationService
 {
@@ -36,17 +37,21 @@ class ConversationService
     public function show($id)
     {
         $conversation = Conversation::with('contact', 'notes', 'members.user')->findOrfail($id);
-        $this->authorize('show', $conversation);
+        if (! $conversation->video_message_id) {
+            $this->authorize('show', $conversation);
+        }
 
         //if ($request->is_read) :
         // set is_read of opposite sender
-        $conversation->messages()
+        if (Auth::check()) {
+            $conversation->messages()
                 ->where(function ($query) {
                     $query->where('user_id', '<>', Auth::user()->id)
                         ->orWhereNull('user_id');
                 })
                 ->where('is_read', 0)
                 ->update(['is_read' => 1]);
+        }
         //endif;
 
         $conversation->paginated_messages = $conversation->messages()->with('user')->paginate(20);
@@ -211,5 +216,13 @@ class ConversationService
         }
 
         return abort(403);
+    }
+
+    public static function getClientLocation(Request $request)
+    {
+        $ip = $request->ip();
+        $ip = '103.152.4.10';
+        $location = Location::get($ip);
+        return response()->json($location);
     }
 }
