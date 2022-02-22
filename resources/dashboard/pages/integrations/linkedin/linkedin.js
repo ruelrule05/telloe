@@ -1,14 +1,14 @@
-import HistoryIcon from '../../../icons/history-bold';
-import LinkedinIcon from '../../../icons/linkedin';
-import GearIcon from '../../../icons/gear';
-import CheckSolidIcon from '../../../icons/check-solid';
-import PlusSolidIcon from '../../../icons/plus-solid';
-import ChevronDownIcon from '../../../icons/chevron-down';
-import SearchIcon from '../../../icons/search';
-import ExpandIcon from '../../../icons/expand-solid';
-import CompressIcon from '../../../icons/compress-solid';
+import HistoryIcon from '../../../../icons/history-bold';
+import LinkedinIcon from '../../../../icons/linkedin';
+import GearIcon from '../../../../icons/gear';
+import CheckSolidIcon from '../../../../icons/check-solid';
+import PlusSolidIcon from '../../../../icons/plus-solid';
+import ChevronDownIcon from '../../../../icons/chevron-down';
+import SearchIcon from '../../../../icons/search';
+import ExpandIcon from '../../../../icons/expand-solid';
+import CompressIcon from '../../../../icons/compress-solid';
 
-import Modal from '../../../components/modal/modal.vue';
+import Modal from '../../../../components/modal/modal.vue';
 
 import ClickOutside from 'vue-click-outside';
 import VuePaginate from 'vue-paginate';
@@ -17,8 +17,8 @@ Vue.use(VuePaginate);
 
 import Swatches from 'vue-swatches';
 import 'vue-swatches/dist/vue-swatches.css'
-import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
-import VueSelect from '../../../components/vue-select/vue-select.vue';
+import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
+import VueSelect from '../../../../components/vue-select/vue-select.vue';
 
 export default {
   components: {
