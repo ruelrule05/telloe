@@ -210,7 +210,7 @@
 								</div>
 								<div class="flex items-center mt-2">
 									<div class="flex-grow">
-										<div class="flex items-center rounded-full bg-gray-200 p-1">
+										<div class="flex items-center rounded-full bg-gray-200 p-1" style="border-radius: 20px">
 											<div class="py-1 px-2 message-input h-auto overflow-auto flex-grow focus:outline-none" @keypress="messageInput" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput"></div>
 											<button type="button" class="btn-send-message rounded-full bg-white p-1.5 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary" @click="$refs.initialMessageFile.click()">
 												<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -722,10 +722,11 @@ export default {
 
 <style lang="scss" scoped>
 .message-input {
-	border-radius: 10px;
 	font-size: 14px;
 	max-height: 120px;
-	word-break: break-all;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
 	&[data-placeholder]:empty:before {
 		content: attr(data-placeholder);
 		color: #888;
@@ -738,6 +739,9 @@ export default {
 	border-bottom-right-radius: 2px;
 }
 .initial-message {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
 	@apply text-white p-3 outline-none text-sm;
 }
 .form-intent {

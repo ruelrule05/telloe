@@ -20,6 +20,8 @@ import Modal from '../../../components/modal/modal.vue';
 
 const loadImage = require('blueimp-load-image');
 const emojiRegex = require('emoji-regex');
+import 'country-flag-icons/3x2/flags.css';
+import axios from 'axios';
 export default {
 	props: {
 		conversation: {
@@ -67,7 +69,8 @@ export default {
 		hasScreenRecording: false,
 		pastedFile: null,
 		isScreenRecordDownloading: false,
-		selectedMessage: null
+		selectedMessage: null,
+		location: null
 	}),
 
 	computed: {
@@ -79,7 +82,8 @@ export default {
 				return parseInt(a.timestamp) > parseInt(b.timestamp) ? 1 : -1;
 			});
 			for (var i = 0; i <= messages.length - 1; i++) {
-				let message_group = { sender: Object.assign({}, messages[i].user) || (messages[i].metadata.is_chatbot ? { id: 'chatbot' } : ''), messages: [messages[i]] };
+				let user = messages[i].user || messages[i].location;
+				let message_group = { sender: Object.assign({}, user) || (messages[i].metadata.is_chatbot ? { id: 'chatbot' } : ''), messages: [messages[i]] };
 
 				let message = message_group.messages[message_group.messages.length - 1];
 				if (messages[i].type == 'call_ended' || messages[i].type == 'call_failed') {
@@ -89,7 +93,14 @@ export default {
 
 					function groupMessage() {
 						const next_message = messages[i + 1];
-						if (next_message && next_message.user && next_message.user.id == message_group.sender.id && next_message.type != 'call_ended' && next_message.type != 'call_failed') {
+						let next_message_user = null;
+						if (next_message) {
+							next_message_user = next_message.user || next_message.location;
+							if (next_message_user && next_message_user.ip) {
+								next_message_user.id = next_message_user.ip;
+							}
+						}
+						if (next_message && next_message_user && next_message_user.id == message_group.sender.id && next_message.type != 'call_ended' && next_message.type != 'call_failed') {
 							let message = messages[i + 1];
 							if (!message_group.messages.find(x => x.id == message.id)) {
 								message_group.messages.push(message);
@@ -100,7 +111,7 @@ export default {
 					}
 				}
 
-				if (message_group.sender.id == this.$root.auth.id || message_group.sender.id == 'chatbot') {
+				if ((this.$root.auth && message_group.sender.id == this.$root.auth.id) || message_group.sender.id == 'chatbot' || (message_group.sender.ip && this.location && message_group.sender.ip == this.location.ip)) {
 					message_group.sender.full_name = 'You';
 					message_group.outgoing = true;
 					message_group.is_read = message.is_read;
@@ -138,6 +149,11 @@ export default {
 		if (!this.isVideoMessage) {
 			this.$root.getFiles(this.conversation);
 		}
+		if (!this.$root.auth) {
+			this.getClientLocation();
+		} else {
+			this.$emit('ready');
+		}
 	},
 
 	mounted() {
@@ -149,6 +165,14 @@ export default {
 			deleteMessage: 'messages/delete',
 			storeMessage: 'messages/store'
 		}),
+
+		async getClientLocation() {
+			let response = await axios.get('/conversations/get_client_location').catch(() => {});
+			if (response) {
+				this.location = response.data;
+			}
+			this.$emit('ready');
+		},
 
 		sendVideo(video) {
 			if (this.conversation) {
@@ -275,7 +299,10 @@ export default {
 
 		async sendMessage(message) {
 			if (this.conversation) {
-				message.user_id = this.$root.auth.id;
+				message.user_id = this.$root.auth ? this.$root.auth.id : null;
+				if (!message.user) {
+					message.user = this.location;
+				}
 				message.sending = true;
 				message.prefix = 'You: ';
 				message.tags = [];
@@ -290,11 +317,13 @@ export default {
 				}
 
 				this.isTyping = false;
-				this.conversation.channel.whisper('typing', {
-					userId: this.$root.auth.id,
-					name: this.$root.auth.full_name,
-					typing: false
-				});
+				if (this.$root.auth) {
+					this.conversation.channel.whisper('typing', {
+						userId: this.$root.auth.id,
+						name: this.$root.auth.full_name,
+						typing: false
+					});
+				}
 				message.is_online = this.isOnline;
 				let response = await this.storeMessage(message);
 				if (!this.isVideoMessage) {

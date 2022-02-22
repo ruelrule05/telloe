@@ -85,6 +85,8 @@ class VideoMessageService
         $user = $videoMessage->user;
         unset($videoMessage->user);
         $videoMessage->user = $user->full_name;
+        $videoMessage->user_initials = $user->initials;
+        $videoMessage->user_profile_image = $user->profile_image;
         $videoMessage->username = $user->username;
         if ($authUser) {
             $videoMessage->increment('views');

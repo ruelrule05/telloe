@@ -41,4 +41,9 @@ class ConversationController extends Controller
         return ConversationService::slug($slug);
         // return $contactService->show($id);
     }
+
+    public function getClientLocation(Request $request)
+    {
+        return ConversationService::getClientLocation($request);
+    }
 }

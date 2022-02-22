@@ -57,9 +57,11 @@
 					<template v-else>
 						<div class="flex items-end message-body" :class="{ 'outgoing-message text-right flex-row-reverse': grouped_message.outgoing }">
 							<div>
-								<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + grouped_message.sender.profile_image + ')' }">
+								<div v-if="!grouped_message.sender.ip" class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + grouped_message.sender.profile_image + ')' }">
 									<span v-if="!grouped_message.sender.profile_image">{{ grouped_message.sender.initials }}</span>
 								</div>
+
+								<div v-else class="profile-image profile-image-sm" :class="`flag:${grouped_message.sender.countryCode}`" style="display: block"></div>
 							</div>
 							<div class="px-1 flex-1 -mb-1">
 								<div v-for="message in grouped_message.messages" :key="message.id" v-cloak :id="'message-' + message.id" class="message-item" :class="{ 'has-link': message.link_preview }">
@@ -85,7 +87,10 @@
 								<eye-icon width="14" height="14" class="fill-primary"></eye-icon>
 								&nbsp;•
 							</template>
-							{{ messageTimezoneTime(grouped_message) }}
+							<div :class="{ 'text-right': grouped_message.outgoing }">
+								{{ messageTimezoneTime(grouped_message) }}
+								<div v-if="grouped_message.sender.ip" class="text-xs text-black">{{ grouped_message.sender.cityName }}, {{ grouped_message.sender.regionName }}, {{ grouped_message.sender.countryCode }}</div>
+							</div>
 						</small>
 					</template>
 				</div>

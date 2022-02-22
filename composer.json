@@ -33,6 +33,7 @@
         "rinvex/countries": "^7.0",
         "spatie/calendar-links": "^1.4",
         "spatie/laravel-image-optimizer": "^1.5",
+        "stevebauman/location": "^6.3",
         "stripe/stripe-php": "^7.21",
         "tymon/jwt-auth": "^1.0.0",
         "webpatser/laravel-uuid": "2.*"

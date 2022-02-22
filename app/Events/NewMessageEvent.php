@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Message;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -32,7 +33,10 @@ class NewMessageEvent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel("conversations.{$this->message->conversation_id}");
+        return [
+            new PrivateChannel("conversations.{$this->message->conversation_id}"),
+            new Channel("conversations.{$this->message->conversation_id}")
+        ];
     }
 
     public function broadcastWith()

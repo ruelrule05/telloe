@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Image;
 use Mail;
+use Stevebauman\Location\Facades\Location;
 use Storage;
 
 class MessageService
@@ -31,7 +32,9 @@ class MessageService
     public function show($id)
     {
         $message = Message::with('conversation')->findOrFail($id);
-        $this->authorize('show', $message);
+        if (! $message->conversation->video_message_id) {
+            $this->authorize('show', $message);
+        }
         return response()->json($message->load('user'));
     }
 
@@ -40,6 +43,10 @@ class MessageService
         $timestamp = Carbon::now()->getPreciseTimestamp(3);
 
         $conversation = Conversation::findOrFail($request->conversation_id);
+        $authUser = Auth::user();
+        if (! $authUser && ! $conversation->video_message_id) {
+            return abort(403);
+        }
 
         $metadata = json_decode($request->metadata, true);
 
@@ -49,7 +56,6 @@ class MessageService
         $sourceS3Path = '';
         $previewS3Path = '';
         if ($request->hasFile('source')) {
-            $extension = $request->source->getClientOriginalExtension();
             $folderName = $time . '-source';
             $sourceFile = $request->file('source');
             $originalName = $request->source->getClientOriginalName();
@@ -86,15 +92,22 @@ class MessageService
             }
         }
 
+        $location = null;
+        if (! $authUser) {
+            $ip = $request->ip();
+            $ip = '103.152.4.10';
+            $location = Location::get($ip);
+        }
         $message = Message::create([
             'conversation_id' => $conversation->id,
-            'user_id' => Auth::user()->id,
+            'user_id' => $authUser->id ?? null,
             'type' => $request->type,
             'message' => htmlspecialchars($request->message),
             'source' => $sourceS3Path,
             'preview' => $previewS3Path,
             'metadata' => $metadata,
-            'timestamp' => $timestamp
+            'timestamp' => $timestamp,
+            'location' => $location,
         ]);
 
         //if ($request->broadcast == 'true') {
@@ -102,7 +115,7 @@ class MessageService
 
         if ($conversation->video_message_id) {
             $videoMessage = VideoMessage::find($conversation->video_message_id);
-            if ($videoMessage) {
+            if ($videoMessage && $authUser) {
                 broadcast(new VideoMessageStat($videoMessage));
                 Mail::to($videoMessage->user->email)->later(now()->addMinutes(5), new VideoMessageComment($videoMessage));
             }
