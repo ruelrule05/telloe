@@ -152,14 +152,14 @@ const routes = [
 				component: () => import(/* webpackChunkName: "dashboard-integrations-xero" */ '../pages/integrations/xero/xero.vue')
 			},
 			{
+				path: 'integrations/linkedin',
+				name: 'LinkedIn',
+				component: () => import(/* webpackChunkName: "dashboard-integrations-linkedin" */ '../pages/integrations/linkedin/linkedin.vue')
+			},
+			{
 				name: 'Video Messages',
 				path: 'video-messages',
 				component: () => import(/* webpackChunkName: "dashboard-video-messages" */ '../pages/video-messages/video-messages.vue')
-			},
-			{
-				name: 'Linkedin',
-				path: 'linkedin',
-				component: () => import(/* webpackChunkName: "dashboard-linkedin" */ '../pages/linkedin/linkedin.vue')
 			}
 		]
 	},
