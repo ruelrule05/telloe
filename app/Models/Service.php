@@ -108,8 +108,8 @@ class Service extends BaseModel
         $days = json_decode($this->attributes['days'], true);
 
         $day = $days[$dayName];
-        $timeStart = Carbon::parse($dateString . ' ' . $day['start'], $this->timezone);
-        $timeEnd = Carbon::parse($dateString . ' ' . $day['end'], $this->timezone);
+        $timeStart = Carbon::parse($dateString . ' ' . $day['start'])->setTimezone($this->timezone);
+        $timeEnd = Carbon::parse($dateString . ' ' . $day['end'])->setTimezone($this->timezone);
 
         $googleCalendarEvents = $user->google_calendar_events ?? [];
         $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
@@ -126,6 +126,7 @@ class Service extends BaseModel
                 'is_available' => false,
                 'is_booked' => false,
             ];
+
             foreach ($user->blocked_timeslots ?? [] as $blockedTimeslot) {
                 $blockedStart = Carbon::parse($blockedTimeslot['start']);
                 $blockedEnd = Carbon::parse($blockedTimeslot['end']);
@@ -134,11 +135,16 @@ class Service extends BaseModel
                     break;
                 }
             }
-            $bookings = $serviceBookings->filter(function ($booking) use ($timeslot, $timeStart) {
+            $bookings = $serviceBookings->filter(function ($booking) use ($timeslot, $timeStart, $dateString) {
                 $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 $timeslotTime = Carbon::parse($timeStart->format('Y-m-d') . ' ' . $timeslot['time'], $booking->timezone)->setTimezone($this->timezone)->format('H:i');
-                return $start <= $timeslotTime && $end >= $timeslotTime;
+
+                // if ($dateString == '2022-02-23') {
+                //     echo $timeslotTime . '----------------';
+                // }
+
+                return $start <= $timeslot['time'] && $end >= $timeslot['time'];
             })
             ->all();
 
