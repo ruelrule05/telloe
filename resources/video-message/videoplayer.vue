@@ -12,8 +12,8 @@
 				<div v-for="(video, videoIndex) in videos" :key="video.id" class="video" :class="{ show: videoIndex == currentVideoIndex }">
 					<div class="absolute w-full h-full top-0 left-0 bg-cover bg-center bg-no-repeat opacity-50" :style="{ backgroundImage: `url(${video.thumbnail})` }" style="filter: blur(30px)"></div>
 					<video :ref="`video-${video.id}`" class="w-full h-full pointer-events-none relative z-10" muted playsinline>
-						<source :src="video.source" type="video/webm" />
 						<source :src="video.source.replace('.webm', '.mp4')" type="video/mp4" />
+						<source :src="video.source" type="video/webm" />
 					</video>
 				</div>
 				<div v-if="!playing" class="absolute-center z-10">
@@ -107,7 +107,9 @@ export default {
 	},
 
 	mounted() {
-		this.init();
+		this.$nextTick(() => {
+			this.init();
+		});
 	},
 
 	methods: {
@@ -122,24 +124,12 @@ export default {
 				}
 				let self = this;
 				if (videoEl) {
-					videoEl.onloadedmetadata = () => {
-						if (videoEl.duration == Infinity) {
-							videoEl.currentTime = 1e101;
-							let interval = setInterval(() => {
-								if (videoEl.duration != Infinity) {
-									videoEl.currentTime = 0;
-									this.totalDuration += videoEl.duration * 1000;
-									if (index == 0) {
-										this.videoReady = true;
-									}
-									clearInterval(interval);
-								}
-							}, 200);
-						} else {
+					videoEl.onloadedmetadata = async () => {
+						if (videoEl.duration != Infinity) {
 							this.totalDuration += videoEl.duration * 1000;
-							if (index == 0) {
-								this.videoReady = true;
-							}
+						}
+						if (index == 0) {
+							this.videoReady = true;
 						}
 					};
 
@@ -156,7 +146,7 @@ export default {
 					}
 					let initialTime = 0;
 					videoEl.ontimeupdate = function () {
-						if (self.currentVideoIndex == index) {
+						if (self.currentVideoIndex == index && videoEl.duration != Infinity) {
 							let currentTime = this.currentTime * 1000;
 							self.playProgress += currentTime - initialTime;
 							initialTime = currentTime;
