@@ -193,6 +193,9 @@ export default {
 
 .initial-message {
 	@apply text-white p-3 outline-none text-sm;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
 }
 .initial-message-container {
 	@apply bg-primary;

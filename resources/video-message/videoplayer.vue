@@ -112,26 +112,41 @@ export default {
 
 	methods: {
 		init() {
-			let totalDuration = 0;
 			this.playProgress = 0;
 			this.playing = false;
 			this.currentVideoIndex = 0;
 			this.videos.forEach((video, index) => {
-				totalDuration += video.duration;
 				let videoEl = this.$refs[`video-${video.id}`];
 				if (videoEl) {
 					videoEl = videoEl[0];
 				}
 				let self = this;
 				if (videoEl) {
-					if (index == 0) {
-						videoEl.onloadedmetadata = () => {
-							this.videoReady = true;
-						};
-						if (mobile()) {
-							this.videoReady = true;
+					videoEl.onloadedmetadata = () => {
+						if (videoEl.duration == Infinity) {
+							videoEl.currentTime = 1e101;
+							let interval = setInterval(() => {
+								if (videoEl.duration != Infinity) {
+									videoEl.currentTime = 0;
+									this.totalDuration += videoEl.duration * 1000;
+									if (index == 0) {
+										this.videoReady = true;
+									}
+									clearInterval(interval);
+								}
+							}, 200);
+						} else {
+							this.totalDuration += videoEl.duration * 1000;
+							if (index == 0) {
+								this.videoReady = true;
+							}
 						}
-					} else {
+					};
+
+					if (mobile()) {
+						this.videoReady = true;
+					}
+					if (index > 0) {
 						videoEl.muted = true;
 						videoEl.play();
 						setTimeout(() => {
@@ -172,7 +187,6 @@ export default {
 					};
 				}
 			});
-			this.totalDuration = totalDuration;
 		},
 
 		fullScreen(state) {
