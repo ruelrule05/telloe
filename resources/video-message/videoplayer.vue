@@ -124,24 +124,15 @@ export default {
 				}
 				let self = this;
 				if (videoEl) {
-					videoEl.onloadedmetadata = () => {
-						if (videoEl.duration == Infinity) {
+					videoEl.onloadedmetadata = async () => {
+						while (videoEl.duration === Infinity) {
+							await new Promise(r => setTimeout(r, 200));
 							videoEl.currentTime = 1e101;
-							let interval = setInterval(() => {
-								if (videoEl.duration != Infinity) {
-									videoEl.currentTime = 0;
-									this.totalDuration += videoEl.duration * 1000;
-									if (index == 0) {
-										this.videoReady = true;
-									}
-									clearInterval(interval);
-								}
-							}, 200);
-						} else {
-							this.totalDuration += videoEl.duration * 1000;
-							if (index == 0) {
-								this.videoReady = true;
-							}
+						}
+						videoEl.currentTime = 0;
+						this.totalDuration += videoEl.duration * 1000;
+						if (index == 0) {
+							this.videoReady = true;
 						}
 					};
 
@@ -158,7 +149,7 @@ export default {
 					}
 					let initialTime = 0;
 					videoEl.ontimeupdate = function () {
-						if (self.currentVideoIndex == index) {
+						if (self.currentVideoIndex == index && videoEl.duration != Infinity) {
 							let currentTime = this.currentTime * 1000;
 							self.playProgress += currentTime - initialTime;
 							initialTime = currentTime;
