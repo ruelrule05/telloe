@@ -27,7 +27,7 @@ class LinkedInController extends Controller
      */
     public function redirect()
     {
-        return Socialite::driver('linkedin')->scopes(['r_liteprofile', 'r_emailaddress', 'r_organization_social'])->redirect();
+        return Socialite::driver('linkedin')->scopes(['r_liteprofile', 'r_emailaddress'])->redirect();
 
         // $variable = Config::get('services.linkedin');
         // $variable['response_type'] = 'code';
@@ -36,7 +36,7 @@ class LinkedInController extends Controller
         // $response = $client->get('https://www.linkedin.com/oauth/v2/authorization', $variable);
         // $result = $response->getBody()->getContents();
         // return $result;
-        
+
     }
 
     public function callback()
