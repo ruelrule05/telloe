@@ -34,6 +34,7 @@ Route::group(
         Route::get('/callback/msoutlook', 'OutlookController@callback')->middleware('auth');
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
         Route::get('/linkedin/callback', 'LinkedInController@callback')->middleware('auth');
+        Route::get('/linkedin/getAccessToken', 'LinkedInController@getAccessToken')->middleware('auth');
 
         // AJAX
         Route::group([
