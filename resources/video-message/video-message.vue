@@ -46,9 +46,7 @@
 						<div class="flex items-end">
 							<div class="flex-grow overflow-hidden text-right">
 								<div class="relative initial-message-container inline-block text-left">
-									<div v-if="$root.videoMessage.initial_message.message" class="initial-message flex-grow break-all">
-										{{ $root.videoMessage.initial_message.message }}
-									</div>
+									<div v-if="$root.videoMessage.initial_message.message" class="initial-message flex-grow break-all" v-html="urlify($root.videoMessage.initial_message.message)"></div>
 
 									<div v-if="$root.videoMessage.initial_message.source" class="px-3 py-2 text-white text-sm" :class="[$root.videoMessage.initial_message.message ? 'border-t border-dashed border-opacity-40' : '']">
 										<a :href="$root.videoMessage.initial_message.source" target="_blank" class="block text-right">
@@ -117,6 +115,20 @@ export default {
 		...mapActions({
 			showConversation: 'conversations/show'
 		}),
+
+		urlify(text) {
+			const urls = text.match(/((https?:\/\/)?([-\w]+\.[-\w.]+)+\w(:\d+)?(\/([-\w/_.]*(\?\S+)?)?)*)/g);
+			if (urls) {
+				urls.forEach(url => {
+					let clonedUrl = url;
+					if (!clonedUrl.includes('http')) {
+						clonedUrl = `https://${clonedUrl}`;
+					}
+					text = text.replace(url, '<a target="_blank" href="' + clonedUrl + '"><u>' + url + '</u></a>');
+				});
+			}
+			return text;
+		},
 
 		async toggleLike(isLiked) {
 			let response = await window.axios.put(`/video_messages/${this.$root.videoMessage.id}/toggle_like`, { is_liked: isLiked });

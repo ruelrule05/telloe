@@ -37,12 +37,12 @@
 		<div class="mb-0" v-else-if="message.type == 'file'">
 			<img draggable="false" v-if="$root.isImage(message.metadata.extension)" class="w-full rounded-md cursor-pointer" :src="message.preview" />
 			<span class="cursor-pointer" @click="if (click) $root.downloadMedia(message);">
-				<span class="block text-center">
+				<span class="block text-center file-icon">
 					<component :is="fileIcon(message.metadata.extension)" height="46" transform="scale(1.7)" :fill="outgoing ? 'white' : ''"></component>
 				</span>
 				<div class="flex items-center">
-					<arrow-circle-down-icon height="15" width="15" :fill="outgoing ? 'white' : ''"></arrow-circle-down-icon>&nbsp;
-					<small class="text-ellipsis" :class="[outgoing ? 'text-white' : 'text-muted']">{{ message.metadata.filename }}</small>
+					<div class="pr-1 inline-block"><arrow-circle-down-icon class="block" height="15" width="15" :fill="outgoing ? 'white' : ''"></arrow-circle-down-icon></div>
+					<small class="truncate" :class="[outgoing ? 'text-white' : 'text-muted']">{{ message.metadata.filename }}</small>
 				</div>
 			</span>
 		</div>
@@ -138,7 +138,7 @@ export default {
 		},
 
 		urlify(text) {
-			var urlRegex = /(http|https|ftp|ftps):\/\/[a-zA-Z0-9-.]+\.[a-zA-Z]{2,3}(\/\S*)?/g;
+			const urlRegex = text.match(/((https?:\/\/)?([-\w]+\.[-\w.]+)+\w(:\d+)?(\/([-\w/_.]*(\?\S+)?)?)*)/g);
 			return text.replaceAll(urlRegex, function (url) {
 				return '<a target="_blank" href="' + url + '">' + url + '</a>';
 			});

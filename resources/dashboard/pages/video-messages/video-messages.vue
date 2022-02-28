@@ -595,9 +595,10 @@ export default {
 								if (!obj.error) {
 									this.status = 'Uploading...';
 									this.uploadProgress += 15;
+									let timestamp = new Date().getTime();
 									S3.upload(
 										{
-											Key: 'user-videos/' + this.$root.auth.id + '/' + this.videoMessage.uuid + '/' + 'link_preview.gif',
+											Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'link_preview.gif',
 											Body: this.dataURLtoFile(obj.image, 'link_preview.gif'),
 											ACL: 'public-read',
 											ContentType: 'image/gif'
@@ -622,6 +623,7 @@ export default {
 
 		async update() {
 			this.status = 'Processing...';
+			this.setInitialMessage();
 			let data = JSON.parse(JSON.stringify(this.videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
 
