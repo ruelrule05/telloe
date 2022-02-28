@@ -213,7 +213,7 @@ class VideoMessageService
     protected static function generateLinkPreview($message)
     {
         $linkPreview = null;
-        preg_match_all('!https?://\S+!', $message, $links);
+        preg_match_all('@((https?://)?([-\\w]+\\.[-\\w\\.]+)+\\w(:\\d+)?(/([-\\w/_\\.]*(\\?\\S+)?)?)*)@', $message, $links);
         if (isset($links[0][0])) {
             $preview = Http::get('https://api.linkpreview.net/?key=' . config('app.link_preview_key') . '&q=' . $links[0][0]);
             $preview = $preview->json();
