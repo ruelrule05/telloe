@@ -33,6 +33,18 @@ window.app = new Vue({
 		getViewportHeight() {
 			let vh = window.innerHeight * 0.01;
 			document.documentElement.style.setProperty('--vh', `${vh}px`);
+		},
+
+		downloadMedia(message) {
+			if (message.source) {
+				let link = document.createElement('a');
+				link.href = message.source;
+				link.download = message.metadata.filename;
+				link.target = '_blank';
+				document.body.appendChild(link);
+				link.click();
+				link.remove();
+			}
 		}
 	}
 });

@@ -87,6 +87,13 @@
 	/* Outgoing message */
 	.outgoing-message {
 		padding-left: 45px;
+
+		::v-deep .file-icon {
+			@apply text-right;
+			svg {
+				@apply inline-block;
+			}
+		}
 		.message-content {
 			@apply bg-primary;
 			color: white;
