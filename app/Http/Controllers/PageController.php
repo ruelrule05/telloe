@@ -37,5 +37,10 @@ class PageController extends Controller
     {
         return response(PageService::affiliateTerms());
     }
+
+    public function intent()
+    {
+        return response(PageService::intent());
+    }
 }
 
