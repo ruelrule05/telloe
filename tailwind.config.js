@@ -39,7 +39,8 @@ module.exports = {
 			blue: colors.blue,
 			indigo: colors.indigo,
 			purple: colors.violet,
-			pink: colors.pink
+			pink: colors.pink,
+			orange: colors.orange
 		},
 		fill: theme => ({
 			current: 'currentColor'
@@ -72,7 +73,16 @@ module.exports = {
 		},
 
 		textColor: theme => theme('colors'),
-		extend: {}
+		extend: {
+			width: {
+        '50': '50px',
+        '100': '100px',
+        '150': '150px',
+        '200': '200px',
+        '250': '250px',
+        '300': '300px',
+      }
+		}
 	},
 	variants: {
 		extend: {}

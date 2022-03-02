@@ -1,0 +1,49 @@
+.hover-trigger {
+  .hover-target {
+    @apply hidden;
+  }
+
+  &:hover {
+    .hover-target {
+      @apply block;
+    }
+  } 
+}
+
+.labelSettingModal.modal {
+  ::v-deep .modal-body {
+    overflow: inherit !important;
+  }
+}
+
+.select {
+	@apply border border-gray-300 cursor-pointer rounded-md inline-flex justify-center items-center w-full px-3 py-2 transition ring-primary ring-offset-1 focus:outline-none overflow-hidden shadow-inner whitespace-nowrap;
+	&.show {
+		@apply border-gray-500 ring-2;
+	}
+	&:disabled {
+		@apply pointer-events-none opacity-50;
+	}
+}
+.select-menu {
+	> div {
+		max-height: 400px;
+	}
+	@apply transform scale-95  origin-top overflow-hidden absolute right-0 top-9 whitespace-nowrap mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-all opacity-0 ease-in-out;
+	z-index: -1;
+	&.open {
+		@apply z-50 scale-100 opacity-100;
+	}
+}
+.select-item {
+	@apply cursor-pointer transition-colors px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+}
+
+.toggle-input:checked ~ .toggle-dot {
+  transform: translateX(100%);
+  @apply left-5;
+}
+
+.toggle-input:checked ~ .toggle-bg {
+  @apply bg-blue-600;
+}

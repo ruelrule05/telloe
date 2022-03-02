@@ -47,7 +47,8 @@ class User extends Authenticatable implements JWTSubject
         'outlook_calendar_events',
         'match_up',
         'messages',
-        'contacts'
+        'contacts',
+        'linkedin_username'
     ];
 
     /**
@@ -233,5 +234,10 @@ class User extends Authenticatable implements JWTSubject
     public function videos()
     {
         return $this->hasMany(UserVideo::class)->latest();
+    }
+
+    public function linkedinActivities()
+    {
+        return $this->hasMany(LinkedinActivity::class)->latest();
     }
 }

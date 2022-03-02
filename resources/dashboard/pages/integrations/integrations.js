@@ -1,16 +1,22 @@
 import VueButton from '../../../components/vue-button.vue';
 import CheckmarkIcon from '../../../icons/checkmark';
+import Modal from '../../../components/modal/modal.vue';
+import VueFormValidate from '../../../components/vue-form-validate.vue';
 
 export default {
 	components: {
 		VueButton,
-		CheckmarkIcon
+		CheckmarkIcon,
+		Modal,
+		VueFormValidate
 	},
 	data: () => ({
 		zoomLoading: false,
 		googleCalendarLoading: false,
 		outlookLoading: false,
-		xeroLoading: false
+		xeroLoading: false,
+		linkedInLoading: false,
+		linkedinUsername: null
 	}),
 
 	created() {
@@ -111,6 +117,46 @@ export default {
 				this.zoomLoading = false;
 				this.getZoomToken();
 			});
+		},
+
+		async connectLinkedIn() {
+			this.$refs.linkedinModal.show();
+			// if (!this.$root.auth.is_premium) {
+			// 	return this.$router.push('/dashboard/account?tab=plan');
+			// }
+			// this.linkedInLoading = true;
+			// let response = await window.axios.get('/linkedin/connect', { toast: true }).catch(() => {});
+			// if (response) {
+			// 	window.location.href = response.data.authUrl;
+			// } else {
+			// 	this.linkedInLoading = false;
+			// }
+		},
+
+		async addLinkedIn() {
+			if (this.linkedinUsername) {
+				let user = Object.assign({}, this.$root.auth);
+				user.linkedin_username = this.linkedinUsername;
+				let response = await window.axios.post('/auth', user, { toast: true }).catch(() => {
+					this.$refs.linkedinModal.hide();
+				});
+				if (response) {
+					this.$root.auth = response.data;
+					this.$refs.linkedinModal.hide();
+				}
+			}
+		},
+
+		async removeLinkedIn() {
+			let user = Object.assign({}, this.$root.auth);
+			user.linkedin_username = null;
+			let response = await window.axios.post('/auth', user, { toast: true }).catch(() => {
+				this.$refs.linkedinModal.hide();
+			});
+			if (response) {
+				this.$root.auth = response.data;
+				this.$refs.linkedinModal.hide();
+			}
 		},
 
 		openAuthWindow(url, callback) {

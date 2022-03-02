@@ -33,6 +33,9 @@ Route::group(
         Route::get('/callback/googlecalendar', 'GoogleCalendarController@callback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'OutlookController@callback')->middleware('auth');
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
+        Route::get('/linkedin/callback', 'LinkedInController@callback')->middleware('auth');
+        Route::get('/linkedin/getAccessToken', 'LinkedInController@getAccessToken')->middleware('auth');
+        Route::post('/linkedin/feed', 'LinkedInController@feed');
 
         // AJAX
         Route::group([
@@ -95,6 +98,7 @@ Route::group(
                 Route::apiResource('video_messages', 'VideoMessageController');
                 Route::put('video_messages/{video_message}/toggle_like', [VideoMessageController::class, 'toggleLike']);
                 Route::get('video_messages/{video_message}/get_stats', [VideoMessageController::class, 'getStats']);
+                Route::apiResource('linkedin_activities', 'LinkedInController');
                 Route::apiResource('user_videos', 'UserVideoController');
                 Route::post('notifications/clear', 'NotificationController@clear');
 
@@ -136,6 +140,9 @@ Route::group(
                 Route::get('xero/remove', 'XeroController@remove');
                 Route::post('xero/invoices', 'XeroController@storeInvoice');
                 Route::put('xero/invoices', 'XeroController@updateInvoice');
+
+                // routes for LinkedIn
+                Route::get('linkedin/connect', 'LinkedInController@redirect');
 
                 Route::get('get_invoice', 'UserController@getInvoice');
 
