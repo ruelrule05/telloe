@@ -42,5 +42,15 @@ class PageController extends Controller
     {
         return response(PageService::intent());
     }
+
+    public function touchPoint()
+    {
+        return response(PageService::touchPoint());
+    }
+
+    public function videoMessaging()
+    {
+        return response(PageService::videoMessaging());
+    }
 }
 
