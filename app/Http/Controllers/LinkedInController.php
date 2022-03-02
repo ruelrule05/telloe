@@ -41,7 +41,7 @@ class LinkedInController extends Controller
         ]);
         $userId = $request->input('user_id');
         foreach ($request->input('data') as $data) {
-            LinkedinActivity::firstOrCreate(
+            LinkedinActivity::disableCache()->firstOrCreate(
                 [
                     'user_id' => $userId,
                     'activity_id' => $data['entityUrn']
