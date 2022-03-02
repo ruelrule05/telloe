@@ -19,6 +19,7 @@ import organizations from './modules/organizations';
 import booking_links from './modules/booking-links';
 import video_messages from './modules/video_messages';
 import user_videos from './modules/user_videos';
+import linkedin_activities from './modules/linkedin_activities';
 
 Vue.use(Vuex);
 
@@ -42,6 +43,7 @@ export default new Vuex.Store({
 		organizations,
 		booking_links,
 		video_messages,
-		user_videos
+		user_videos,
+		linkedin_activities
 	}
 });

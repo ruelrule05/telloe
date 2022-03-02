@@ -95,6 +95,7 @@
 		"vue-paginate": "^3.6.0",
 		"vue-range-slider": "^0.6.0",
 		"vue-scrollto": "^2.20.0",
+		"vue-swatches": "^2.1.1",
 		"vue-toast-notification": "^0.6.1",
 		"vue-toasted": "^1.1.28",
 		"vue2-timepicker": "^1.1.6",

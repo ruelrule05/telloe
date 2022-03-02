@@ -21,7 +21,7 @@
 						<div class="lg:hidden text-black absolute top-5 right-5 z-20"  @click="notificationsOpen = false">
 							<close-icon class="fill-current w-4 h-4"></close-icon>
 						</div>
-						<template v-if="notifications.filter(x => !x.is_read).length > 0">
+						<template v-if="notifications?.filter(x => !x.is_read).length > 0">
 							<div class="flex items-center text-sm p-3">
 								<h6 class="font-bold">New Notifications</h6>
 								{{-- <u class="text-blue-400 ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u> --}}
@@ -140,14 +140,16 @@
 						
 						
 						<div class="sidebar-heading mt-7">INTEGRATIONS</div>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations">
+						<router-link custom v-slot="{ isActive }" exact class="sidebar-menu-item" to="/dashboard/integrations">
 							<div @click="toggleSidebar('/dashboard/integrations')" class="sidebar-menu-item" :class="{active: isActive}">Add an Integration</div>
 						</router-link>
 						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
 							Xero Invoicing
 						</router-link> --}}
-
-
+						<router-link v-if="$root.auth.linkedin_username" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
+							<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
+						</router-link>
+						
 						<template v-if="$root.auth.packages">
 							<div class="sidebar-heading mt-7">APPS</div>
 							<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
