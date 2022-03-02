@@ -1,6 +1,6 @@
 <?php
 /**
- * Controller for LinkedIn Integration
+ * Controller for LinkedIn Integration.
  *
  * PHP version 7.4.27
  *
@@ -9,17 +9,18 @@
  * @author     Welyelf Hisula<welyelf@telloe.com>
  * @copyright  2022 Telloe
  */
+
 namespace App\Http\Controllers;
 
+use App\Jobs\ScrapeLinkedin;
+use App\Models\LinkedinActivity;
+use Auth;
+use Config;
 use Illuminate\Http\Request;
 use Socialite;
-use GuzzleHttp\Client;
-use Config;
-use Auth;
 
 class LinkedInController extends Controller
 {
-
     /**
      * This method will redirect the user to the Linkedin authentication page.
      *
@@ -27,44 +28,47 @@ class LinkedInController extends Controller
      */
     public function redirect()
     {
-        return Socialite::driver('linkedin')->scopes(['r_liteprofile', 'r_emailaddress'])->redirect();
-
-        // $variable = Config::get('services.linkedin');
-        // $variable['response_type'] = 'code';
-
-        // $client = new Client();
-        // $response = $client->get('https://www.linkedin.com/oauth/v2/authorization', $variable);
-        // $result = $response->getBody()->getContents();
-        // return $result;
-
+        return response()->json([
+            'authUrl' => Socialite::driver('linkedin')->redirect()->getTargetUrl()
+        ]);
     }
 
-    public function callback()
+    public function feed(Request $request)
+    {
+        $this->validate($request, [
+            'user_id' => 'required|exists:users,id',
+            'data' => 'required'
+        ]);
+        $userId = $request->input('user_id');
+        foreach ($request->input('data') as $data) {
+            LinkedinActivity::firstOrCreate(
+                [
+                    'user_id' => $userId,
+                    'activity_id' => $data['entityUrn']
+                ],
+                [
+                    'data' => $data
+                ]
+            );
+        }
+    }
+
+    public function callback(Request $request)
     {
         try {
-            //$linkdinUser = Socialite::driver('linkedin')->stateless()->user();
-            //$existUser = User::where('email',$linkdinUser->email)->first();
-            
-            //echo json_encode($linkdinUser,true);
+            $config = Config::get('services.linkedin');
+            $code = $request->input('code');
+            $response = Http::post('https://api.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=' . $code . '&client_id=' . $config['client_id'] . '&client_secret=' . $config['client_secret'] . '&redirect_uri=' . $config['redirect']);
 
-            $variable = Config::get('services.linkedin');
+            $data = $response->json();
 
-            $client = new Client(['base_uri' => 'https://api.linkedin.com']);
-            $access_token = $_GET['code'];
+            $me = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $data['access_token']
+            ])->get('https://api.linkedin.com/v2/me');
+            echo '<pre>';
+            print_r($me->json());
 
-            $req = $client->request('POST', '/oauth/v2/accessToken?grant_type=authorization_code&code='.$access_token.'&client_id='.$variable['client_id'].'&client_secret='.$variable['client_secret'].'&redirect_uri=https://telloe.test/linkedin/callback');
-            $result = json_decode($req->getBody());
-            print_r($result);
-            echo $result->access_token;
-            //echo $result
-
-
-            $access_token = $result->access_token;
-            $requestJobs = $client->request('GET', '/v2/shares', [
-                'headers' => ["Authorization" => "Bearer " . $access_token ],
-                'connection' => 'Keep-Alive'
-            ]);
-            dd($requestJobs);
+            // dd($requestJobs);
 
             // if($existUser) {
             //     Auth::loginUsingId($existUser->id);
@@ -79,14 +83,15 @@ class LinkedInController extends Controller
             //     Auth::loginUsingId($user->id);
             // }
             //return redirect()->to('/home');
-        } 
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return 'error';
         }
     }
 
-    public function getAccessToken()
+    public function index()
     {
-        echo $_GET['access_token'];
+        $authUser = Auth::user();
+        debounce(new ScrapeLinkedin($authUser), 30);
+        return response()->json($authUser->linkedinActivities);
     }
 }

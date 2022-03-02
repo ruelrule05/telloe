@@ -140,13 +140,13 @@
 						
 						
 						<div class="sidebar-heading mt-7">INTEGRATIONS</div>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations">
+						<router-link custom v-slot="{ isActive }" exact class="sidebar-menu-item" to="/dashboard/integrations">
 							<div @click="toggleSidebar('/dashboard/integrations')" class="sidebar-menu-item" :class="{active: isActive}">Add an Integration</div>
 						</router-link>
 						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
 							Xero Invoicing
 						</router-link> --}}
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
+						<router-link v-if="$root.auth.linkedin_username" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
 							<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
 						</router-link>
 						
