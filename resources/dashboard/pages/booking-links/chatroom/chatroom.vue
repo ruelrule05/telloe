@@ -10,7 +10,7 @@
 					<div v-if="!bookingLink.booking_link_messages" class="absolute-center text-muted text-sm">No messages yet</div>
 					<div v-else class="mt-3">
 						<!-- Group messages -->
-						<div v-for="(grouped_message, index) in grouped_messages" :key="index" class="w-100 message-group">
+						<div v-for="(grouped_message, index) in grouped_messages" :key="index" class="message-group">
 							<div v-if="grouped_message.type == 'call_ended'" class="text-center">
 								<div v-for="message in grouped_message.messages" :key="message.id" class="hrule">
 									<small class="bg-white relative px-2 font-light text-muted"> {{ message.message }} </small>
