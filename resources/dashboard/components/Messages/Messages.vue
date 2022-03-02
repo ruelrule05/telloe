@@ -41,7 +41,7 @@
 				</div>
 
 				<!-- Group messages -->
-				<div v-for="(grouped_message, index) in grouped_messages" :key="index" class="w-100 message-group">
+				<div v-for="(grouped_message, index) in grouped_messages" :key="index" class="message-group">
 					<div v-if="grouped_message.type == 'call_ended'" class="text-center">
 						<div v-for="message in grouped_message.messages" :key="message.id" class="hrule">
 							<small class="bg-white relative px-2 font-light text-muted"> {{ message.message }} </small>
@@ -151,7 +151,7 @@
 				</div>
 				<div class="flex-1 pl-0 md:pl-4 w-full md:w-auto">
 					<vue-form-validate @submit="sendText" ref="messageForm" @mounted="messageFormMounted">
-						<div class="flex items-center rounded-full bg-gray-200 p-1">
+						<div class="flex items-center rounded-full bg-gray-200 p-1" style="border-radius: 20px">
 							<div class="py-2 px-4 message-input h-auto overflow-auto flex-grow focus:outline-none" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput" @keypress="messageInput" @paste.prevent="inputPaste"></div>
 							<button type="submit" class="btn-send-message rounded-full bg-white p-3 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current"></SendIcon></button>
 						</div>
