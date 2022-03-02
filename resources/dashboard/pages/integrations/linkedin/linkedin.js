@@ -103,20 +103,16 @@ export default {
 		],
 
 		customBackgroundColor: '#F77F00',
-		customLabel: '',
-
-		activities: []
+		customLabel: ''
 	}),
 
 	computed: {
 		...mapState({
 			ready: state => state.linkedin_activities.ready,
 			linkedActivities: state => state.linkedin_activities.index
-		})
-	},
+		}),
 
-	created() {
-		this.getLinkedinActivities().then(() => {
+		activities: function () {
 			let activities = [];
 			this.linkedActivities.forEach(activity => {
 				if (activity.data.actor && (activity.data.resharedUpdate || activity.data.header)) {
@@ -166,8 +162,12 @@ export default {
 					});
 				}
 			});
-			this.activities = activities;
-		});
+			return activities;
+		}
+	},
+
+	created() {
+		this.getLinkedinActivities();
 	},
 
 	watch: {
