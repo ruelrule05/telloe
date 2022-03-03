@@ -155,7 +155,6 @@ export default {
 			this.$emit('ready');
 		}
 	},
-
 	mounted() {
 		this.checkScreenRecorder();
 	},
