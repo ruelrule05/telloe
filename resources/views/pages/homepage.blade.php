@@ -48,7 +48,6 @@
 	</div>
 </div>
 
- 
 <div id="features" class="container lg:py-24 py-8">
 	<div class="grid lg:grid-cols-2">
 		<div class="lg:pr-24">
