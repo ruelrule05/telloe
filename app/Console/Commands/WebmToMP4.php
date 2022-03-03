@@ -6,7 +6,7 @@ use App\Models\UserVideo;
 use Aws\MediaConvert\MediaConvertClient;
 use Illuminate\Console\Command;
 
-class ConversationSetSlug extends Command
+class WebmToMP4 extends Command
 {
     /**
      * The name and signature of the console command.
