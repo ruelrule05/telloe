@@ -137,6 +137,14 @@
 							<div @click="toggleSidebar('/dashboard/booking-links')" class="sidebar-menu-item" :class="{active: isActive}">Match Up</div>
 						</router-link>
 
+
+						<template v-if="$root.auth.linkedin_username">
+							<div class="sidebar-heading mt-7">TOUCH POINT</div>
+							<router-link v-if="$root.auth.linkedin_username" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
+								<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
+							</router-link>
+						</template>
+
 						
 						
 						<div class="sidebar-heading mt-7">INTEGRATIONS</div>
@@ -146,9 +154,6 @@
 						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
 							Xero Invoicing
 						</router-link> --}}
-						<router-link v-if="$root.auth.linkedin_username" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
-							<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
-						</router-link>
 						
 						<template v-if="$root.auth.packages">
 							<div class="sidebar-heading mt-7">APPS</div>

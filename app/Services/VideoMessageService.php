@@ -53,6 +53,11 @@ class VideoMessageService
         $data['status'] = 'draft';
         $data['is_active'] = true;
         $data['initial_message'] = $request->input('initial_message');
+        if (isset($data['initial_message']['message'])) {
+            $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
+            $data['initial_message']['link_preview'] = $linkPreview;
+        }
+
         $videoMessage = VideoMessage::create($data);
         foreach ($userVideos as $key => $userVideo) {
             VideoMessageVideo::create([
@@ -136,9 +141,7 @@ class VideoMessageService
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
-            if ($linkPreview) {
-                $data['initial_message']['link_preview'] = $linkPreview;
-            }
+            $data['initial_message']['link_preview'] = $linkPreview;
         }
         $videoMessage->update($data);
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
