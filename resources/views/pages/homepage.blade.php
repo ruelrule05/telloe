@@ -6,7 +6,7 @@
 
 <div class="bg-secondary py-24">
 	<div class="container">
-		<div class="grid grid-cols-12 items-start">
+		<div class="grid grid-cols-12 items-center">
 			<div class="lg:col-span-8 col-span-12 lg:pr-24 order-2 lg:order-1">
 				<h1 class="font-serif text-primary font-semibold sm:text-home-heading text-4xl">IT'S PERSONAL.</h1>
 				<br/><br/><br/>
@@ -16,11 +16,33 @@
 					Let's get to know each other and make business magic happen.
 					<br/><br/><br/><br/>
 				</b>
-				<button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'"><span  class="relative -bottom-px">START FREE TRIAL</span></button>
-				<button type="button" class="w-full lg:w-auto px-9 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary lg:ml-4 text-base" @click="openVideoDemo()"><span class="relative -bottom-px">WATCH VIDEO</span></button>
+				<button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
+					<span class="relative -bottom-px">START FREE TRIAL</span>
+				</button>
+				<button type="button" class="w-full lg:w-auto px-9 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary lg:ml-4 text-base" @click="openVideoDemo(); changeCursorStatus('onWatchVideo')" @mouseover="changeCursorStatus('onWatchVideo')" @mouseleave="changeCursorStatus('browsing')">
+					<span class="relative -bottom-px">WATCH VIDEO</span>
+				</button>
 			</div>
 			<div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6">
-				<img src="{{ asset('images/home/streamline-icon-startup-2@400x400.svg') }}">
+				<img class="block md:hidden" src="{{ asset('images/home/hero.svg') }}">
+				<div class="w-full hidden md:block h-60 md:h-72 lg:h-80 bg-transparent relative">
+					<div class="w-full h-60 md:h-70 lg:h-72 absolute overflow-hidden">
+						<img class="w-full h-full" :src="'images/gifs/' + cursorStatus + '.gif'">
+				</div>
+					<div class="absolute bottom-0 h-10 w-full bg-white flex justify-between items-center px-2">
+					<p class="text-xs text-blue-400">New Video Message</p>
+					<div class="flex">
+						<div class="w-6 h-6 mr-1"><video-stop-icon class="w-full"/></div>
+						<div class="w-6 h-6 mr-1"><video-mic-icon class="w-full"/></div>
+						<div class="w-6 h-6 mr-1"><video-loop-icon class="w-full"/></div>
+					</div>
+					<div class="flex">
+						<div class="w-6 h-6 mr-1"><video-share-screen-icon class="w-full"/></div>
+						<div class="w-6 h-6 mr-1"><video-desktop-icon class="w-full"/></div>
+						<div class="w-6 h-6 mr-1"><video-camera-icon class="w-full"/></div>
+					</div>
+				</div>
+			</div>
 			</div>
 		</div>
 	</div>
