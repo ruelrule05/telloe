@@ -20,6 +20,9 @@ Route::group(
         Route::get('/contact', 'PageController@contact');
         Route::get('/affiliates', 'PageController@affiliates');
         Route::get('/affiliate-terms', 'PageController@affiliateTerms');
+        Route::get('/intent', 'PageController@intent');
+        Route::get('/touch-point', 'PageController@touchPoint');
+        Route::get('/video-messaging', 'PageController@videoMessaging');
 
         Route::get('/booking-links/{uuid}', 'BookingLinkController@public');
         Route::get('/bookings/{uuid}', 'BookingController@show');

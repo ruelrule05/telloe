@@ -78,4 +78,19 @@ class PageService
     {
         return view('pages.affiliate-terms');
     }
+
+    public static function intent()
+    {
+        return view('pages.intent');
+    }
+
+    public static function touchPoint()
+    {
+        return view('pages.touch-point');
+    }
+
+    public static function videoMessaging()
+    {
+        return view('pages.video-messaging');
+    }
 }

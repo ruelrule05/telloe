@@ -16,7 +16,7 @@
                     @endauth
                     @guest
                     <button type="button" class="navbar-item" @click="auth = true; action = 'login'"><span>LOGIN</span></button>
-                    <button type="button" class="btn btn-primary btn-md" @click="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
+                    <button type="button" class="btn btn-primary btn-md" @mouseover="changeCursorStatus('onSignup')" @mouseleave="changeCursorStatus('browsing')" @click="auth = true; action = 'signup'"><span class="font-serif">SIGN UP</span> </button>
                     @endguest
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     <button type="button" class="btn btn-outline-primary btn-md mb-2 w-full" @click="auth = true; action = 'login'; dropdownOpen = false"><span>LOGIN</span></button>
                 </div>
                 <div class="px-2 pb-2">
-                    <button type="button" class="btn btn-primary btn-md w-full" @click="auth = true; action = 'signup'; dropdownOpen = false"><span>SIGN UP</span></button>
+                    <button type="button" class="btn btn-primary btn-md w-full" @mouseover="changeCursorStatus('onSignup')" @click="auth = true; action = 'signup'; dropdownOpen = false"><span>SIGN UP</span></button>
                 </div>
                 @endguest
              </div>
