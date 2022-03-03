@@ -124,7 +124,7 @@ class MessageService
 
         if ($conversation->video_message_id) {
             $videoMessage = VideoMessage::find($conversation->video_message_id);
-            if ($videoMessage && $authUser) {
+            if ($videoMessage) {
                 broadcast(new VideoMessageStat($videoMessage));
                 Mail::to($videoMessage->user->email)->later(now()->addMinutes(5), new VideoMessageComment($videoMessage));
             }

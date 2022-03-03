@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use App\Models\VideoMessage;
-use Auth;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -33,8 +32,8 @@ class VideoMessageStat implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        $authUser = Auth::user();
-        return new PrivateChannel("$authUser->id.videoMessages");
+        $userID = $this->videoMessage->user_id;
+        return new PrivateChannel("$userID.videoMessages");
     }
 
     public function broadcastWith()
