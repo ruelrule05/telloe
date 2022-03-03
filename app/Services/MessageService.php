@@ -95,6 +95,16 @@ class MessageService
         $location = null;
         if (! $authUser) {
             $ip = $request->ip();
+            $response = Http::get('https://api.ipify.org', [
+                'format' => 'json',
+                'callback' => '?'
+            ]);
+            if ($response->successful()) {
+                $response = $response->json();
+                if (isset($response['ip'])) {
+                    $ip = $response['ip'];
+                }
+            }
             $location = Location::get($ip);
         }
         $message = Message::create([
