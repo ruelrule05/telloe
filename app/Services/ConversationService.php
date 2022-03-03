@@ -221,7 +221,6 @@ class ConversationService
     public static function getClientLocation(Request $request)
     {
         $ip = $request->ip();
-        $ip = '103.152.4.10';
         $location = Location::get($ip);
         return response()->json($location);
     }

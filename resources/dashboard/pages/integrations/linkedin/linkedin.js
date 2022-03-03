@@ -58,7 +58,6 @@ export default {
 		selectedLabel: '',
 		columnList: [
 			{ name: 'name', abv: 'nm.', isEnabled: true },
-			{ name: 'title', abv: 'ttl.', isEnabled: true },
 			{ name: 'my last activity', abv: 'mla.', isEnabled: true },
 			// { name: 'date', abv: 'dte.', isEnabled: true },
 			{ name: 'connected', abv: 'cnc.', isEnabled: true },
@@ -120,7 +119,7 @@ export default {
 					let likedPost = 0;
 					let commentPost = 0;
 					let sharedPost = 0;
-					let action = 'Shared post';
+					let action = 'Shared a post';
 					let recentActivityURL = activity.data.actor.navigationContext.actionTarget;
 					let name = activity.data.actor.name.text;
 					if (activity.data.resharedUpdate) {
@@ -130,6 +129,7 @@ export default {
 						actor = activity.data.resharedUpdate.actor;
 					}
 					if (activity.data.header) {
+						sharedPost = 0;
 						action = activity.data.header.text.text;
 						if (action.includes('commented')) {
 							commentPost = 1;
@@ -147,6 +147,19 @@ export default {
 					recentActivityURL = new URL(recentActivityURL);
 					let linkedinProfile = recentActivityURL.origin + recentActivityURL.pathname;
 					recentActivityURL = recentActivityURL.origin + recentActivityURL.pathname + '/recent-activity/';
+
+					if (action.includes('commented')) {
+						action = 'Commented on a post';
+					} else if (action.includes('loves')) {
+						action = 'Loves a post';
+					} else if (action.includes('likes')) {
+						action = 'Liked a post';
+					}
+					likedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && (x.data.header.text.text.includes('likes') || x.data.header.text.text.includes('loves'))).length;
+
+					commentPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && x.data.header.text.text.includes('commented')).length;
+
+					sharedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && !x.data.header).length;
 					activities.push({
 						id: activity.id,
 						name: name,
