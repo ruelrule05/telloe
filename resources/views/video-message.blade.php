@@ -17,8 +17,6 @@
 	<meta property="og:image" content="{{ $videoMessage->link_preview ? $videoMessage->link_preview.'?latest' : config('app.url').'/images/og-image.png' }}" />
 	<meta property="og:image:type" content="image/gif" />
 	<meta property="og:image:alt" content="" />
-	<meta property="og:video" content="{{ str_replace('webm', 'mp4', $videoMessage->videos[0]->userVideo->source) }}" />
-	<meta property="og:video:type" content="video/mp4" />
 
 
 	<link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
