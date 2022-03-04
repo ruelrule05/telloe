@@ -87,7 +87,7 @@
 			<br /> By building likability and trust, you turn connections into a captive audience. <br />
 			<br /> And for those who haven't connected with you yet, send them a personalized video introduction that's sure to wow them.
 		</p>
-		<a href="#" style="float: right; margin-top: 50px; color:#3167e3">
+		<a href="/touch-point" style="float: right; margin-top: 50px; color:#3167e3">
 			<b>Learn More</b>
 		</a>
 		</div>
@@ -108,7 +108,7 @@
 			<br /> Our platform gives you the tools to quickly and easily create customized video messages, even if you're not tech-savvy. With personalized videos in your marketing strategy, you'll get better results from your campaigns and watch your customer service ratings soar. <br />
 			<br /> Send directly via LinkedIn Messages or copy and paste a video into your email program and make brand magic happen.
 		</p>
-		<a href="#" style="float: right; margin-top: 50px; color:#3167e3">
+		<a href="/video-messaging" style="float: right; margin-top: 50px; color:#3167e3">
 			<b>Learn More</b>
 		</a>
 		</div>
@@ -130,7 +130,7 @@
 			<br /> We also help you boost sales by directing video recipients to a page on your website or social media for further information or offers. <br />
 			<br /> And after you make the sale, enhance your online reputation by asking clients for a video testimonial or directing them to a Google review.
 		</p>
-		<a href="#" style="float: right; margin-top: 50px; color:#3167e3">
+		<a href="/intent" style="float: right; margin-top: 50px; color:#3167e3">
 			<b>Learn More</b>
 		</a>
 		</div>
@@ -444,7 +444,7 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Monthly</div>
 			<div class="text-muted mb-4 text-sm"></div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 			</div>
@@ -460,7 +460,7 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Quarterly - Save 20%</div>
 			<div class="text-muted mb-4 text-sm"> Billed as one payment of $83.85 </div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 			</div>
@@ -476,7 +476,7 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Annually - Save 33%</div>
 			<div class="text-muted mb-4 text-sm"> Billed as one payment of $275.40 </div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 			</div>
@@ -504,7 +504,7 @@
 			<p class="text-muted mb-8"> You'll get all the help you need to get the most out of the Telloe booking and communications platform. <br />
 			<br /> Ready to switch to one of the most powerful and efficient client communication platforms available?
 			</p>
-			<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+			<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 			<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 		</div>
@@ -519,7 +519,7 @@
 				<h3 class="font-serif text-white font-semibold heading lg:mb-10 mb-5"> IT'S PERSONAL </h3>
 				<h4 class="text-white lg:text-3xl text-2xl font-semibold mb-4"> Telloe Makes Turning Connections Into Relationships Simple </h4>
 				<p class="text-white lg:text-xl mb-10"> Sign up today and discover how the art of personal connections can transform your business from a small-time player to an industry leader. </p>
-				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs">
+				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 				</button>
 			</div>
