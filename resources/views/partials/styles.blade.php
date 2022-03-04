@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="{{ mix('css/vendor.css') }}">
-<link rel="stylesheet" href="{{ asset('css/new.css?v=1.1') }}" />
 
 <style>
       #telloe-widget button[data-v-cb0d81fe] {
