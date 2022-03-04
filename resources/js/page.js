@@ -61,11 +61,8 @@ window.app = new Vue({
 	},
 
 	watch: {
-		action: function() {
+		action: function () {
 			if (this.$refs['authForm']) this.$refs['authForm'].error = '';
-		},
-		cursorStatus: function(newValue) {
-			console.log('newValue: ', newValue)
 		}
 	},
 
@@ -102,11 +99,11 @@ window.app = new Vue({
 		}
 		// Detect when mouse is out-of-dom
 		const that = this;
-		this.addEvent(document, "mouseout", function(event) {
+		this.addEvent(document, 'mouseout', function (event) {
 			event = event ? event : window.event;
 			const from = event.relatedTarget || event.toElement;
-			that.changeCursorStatus(((!from || from.nodeName == "HTML") && event.clientY <= 100) ? 'onOutOfDom' : 'browsing');
-		})
+			that.changeCursorStatus((!from || from.nodeName == 'HTML') && event.clientY <= 100 ? 'onOutOfDom' : 'browsing');
+		});
 	},
 
 	mounted() {
@@ -147,7 +144,7 @@ window.app = new Vue({
 		},
 		addEvent(obj, evt, fn) {
 			if (obj.addEventListener) obj.addEventListener(evt, fn, false);
-			if (obj.attachEvent) obj.attachEvent("on" + evt, fn);
+			if (obj.attachEvent) obj.attachEvent('on' + evt, fn);
 		}
 	}
 });
