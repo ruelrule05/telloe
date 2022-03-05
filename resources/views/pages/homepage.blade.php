@@ -29,20 +29,32 @@
 					<div class="w-full h-60 md:h-70 lg:h-72 absolute overflow-hidden">
 						<img class="w-full h-full" :src="'images/gifs/' + cursorStatus + '.gif'">
 				</div>
-					<div class="absolute bottom-0 h-10 w-full bg-white flex justify-between items-center px-2">
-					<p class="text-xs text-blue-400">New Video Message</p>
-					<div class="flex">
-						<div class="w-6 h-6 mr-1"><video-stop-icon class="w-full"/></div>
-						<div class="w-6 h-6 mr-1"><video-mic-icon class="w-full"/></div>
-						<div class="w-6 h-6 mr-1"><video-loop-icon class="w-full"/></div>
-					</div>
-					<div class="flex">
-						<div class="w-6 h-6 mr-1"><video-share-screen-icon class="w-full"/></div>
-						<div class="w-6 h-6 mr-1"><video-desktop-icon class="w-full"/></div>
-						<div class="w-6 h-6 mr-1"><video-camera-icon class="w-full"/></div>
-					</div>
+				<div class="absolute bottom-0 h-10 w-full bg-white flex justify-between items-center px-2">
+				
+					<button data-v-7465ce1d="" type="button" class="rounded-full border border-primary w-8 h-8 relative">
+						<svg data-v-7465ce1d="" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="14" height="14" viewBox="0 0 163.861 163.861" xml:space="preserve" class="absolute-center fill-current text-primary ml-px">
+							<g data-v-7465ce1d="">
+								<path data-v-7465ce1d="" d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275 c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z"></path></g></svg></button> <div data-v-7465ce1d="" class="flex-grow px-3 relative">
+									<div data-v-7465ce1d="" class="relative">
+										<div data-v-7465ce1d="" class="rounded overflow-hidden absolute top-0 left-0 w-full pointer-events-none">
+											<div data-v-7465ce1d="" class="h-2 bg-primary" style="width: 0%;"></div>
+										</div> 
+										<span data-v-7465ce1d="" class="absolute top-1/2 transform -translate-y-1/2 rounded-full bg-primary h-3.5 w-3.5 cursor-pointer" style="left: 0%;"></span> 
+										<div data-v-7465ce1d="" class="h-2 border border-gray-200 rounded cursor-pointer"></div>
+									</div>
+								</div> 
+								<span data-v-7465ce1d="" class="text-sm">0:0</span> 
+								<div data-v-7465ce1d="" class="ml-2 mr-1">
+									<div data-v-7465ce1d="" class="hover:text-primary cursor-pointer">
+										<svg data-v-7465ce1d="" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" class="fill-current">
+											<title data-v-7465ce1d="">fullscreen</title>
+										<path data-v-7465ce1d="" fill-rule="evenodd" d="M1 1v6h2V3h4V1H1zm2 12H1v6h6v-2H3v-4zm14 4h-4v2h6v-6h-2v4zm0-16h-4v2h4v4h2V1h-2z"></path>
+									</svg>
+								</div>
+							</div>
+						</div>
+					
 				</div>
-			</div>
 			</div>
 		</div>
 	</div>
