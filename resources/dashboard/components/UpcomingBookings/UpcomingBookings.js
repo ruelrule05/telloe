@@ -45,11 +45,13 @@ export default {
 		days() {
 			let upcomingDays = [];
 			let now = dayjs();
-			upcomingDays.push({
-				text: now.add(1, 'day').format('D MMM ddd'),
-				value: now.add(1, 'day').format('YYYY-MM-DD'),
-				day: now.add(1, 'day').format('dddd')
-			});
+
+			/** remove tomorrow's date on calendar upcoming days */ 
+			// upcomingDays.push({
+			// 	text: now.add(1, 'day').format('D MMM ddd'),
+			// 	value: now.add(1, 'day').format('YYYY-MM-DD'),
+			// 	day: now.add(1, 'day').format('dddd')
+			// });
 			upcomingDays.push({
 				text: now.format('D MMM ddd'),
 				value: now.format('YYYY-MM-DD'),
@@ -59,9 +61,9 @@ export default {
 			let i = 1;
 			while (i <= 5) {
 				upcomingDays.push({
-					text: now.subtract(i, 'day').format('D MMM ddd'),
-					value: now.subtract(i, 'day').format('YYYY-MM-DD'),
-					day: now.subtract(i, 'day').format('dddd')
+					text: now.add(i, 'day').format('D MMM ddd'),
+					value: now.add(i, 'day').format('YYYY-MM-DD'),
+					day: now.add(i, 'day').format('dddd')
 				});
 				i++;
 			}
