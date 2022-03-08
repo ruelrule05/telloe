@@ -18,7 +18,7 @@
             <b class="text-xl lg:my-16 mt-4 mb-8 text-gray-600 lg:pr-36"> It's a digital world, and attention spans are short. Capture your audience's attention with personalized videos designed to convert. <br />
             <br />
             </b>
-            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base">
+            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
             <span class="relative -bottom-px">CAPTURE THEIR ATTENTION</span>
             </button>
         </div>
@@ -93,7 +93,7 @@
         <p class="text-muted lg:mt-4"> Ready to ramp up your results with easy-to-use, personalized video? It's the quickest, simplest way to build trust and earn legions of devoted new customers. </p>
         <br />
         <br />
-        <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base">
+        <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
             <span class="relative -bottom-px">CAPTIVATE MY AUDIENCE</span>
         </button>
         </div>

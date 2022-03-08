@@ -15,8 +15,8 @@
             <b class="text-xl lg:my-16 mt-4 mb-8 text-gray-600 lg:pr-36"> Today's business success relies on authentic personal connections. We make them possible. <br />
             <br />
             </b>
-            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base">
-            <span class="relative -bottom-px">BUILD MY CONNECTIONS</span>
+            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
+                <span class="relative -bottom-px">BUILD MY CONNECTIONS</span>
             </button>
         </div>
         <div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6">
@@ -170,7 +170,7 @@
             <p class="text-muted lg:mt-4"> Stories have a magical way of creating emotion, intrigue, and connection. We help you build your brand’s story and leave a lasting impression with current and prospective clients with engagement strategies and videos that help your audience connect to you in ways they’re not connecting with your competitors. </p>
             <br />
             <br />
-            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base">
+            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
             <span class="relative -bottom-px">CREATE MY STORY</span>
             </button>
         </div>

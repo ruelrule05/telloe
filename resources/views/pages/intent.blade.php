@@ -18,8 +18,8 @@
             <b class="text-xl lg:my-16 mt-4 mb-8 text-gray-600 lg:pr-36"> Drive your customers and prospects to action by making it easy to schedule meetings, learn about events, and give your brand a boost with testimonials. <br />
             <br />
             </b>
-            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base">
-            <span class="relative -bottom-px">CREATE MORE ACTION</span>
+            <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
+                <span class="relative -bottom-px">CREATE MORE ACTION</span>
             </button>
         </div>
         <div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6">
@@ -216,7 +216,7 @@
         <p class="text-muted lg:mt-4"> Give your customers and prospects the quick and easy tools they need to engage with your brand, boosting your conversions and their satisfaction. </p>
         <br />
         <br />
-        <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base">
+        <button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
             <span class="relative -bottom-px">BOOST MY ENGAGEMENT</span>
         </button>
         </div>
