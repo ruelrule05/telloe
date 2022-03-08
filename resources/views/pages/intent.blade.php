@@ -86,9 +86,9 @@
     <h2 class="text-primary lg:text-5xl text-2xl font-bold lg:mt-5 lg:mb-20 mb-10"> Flexibility right where you need it. </h2>
     <div class="grid grid-cols-12">
         <div class="lg:col-span-7 col-span-12 lg:pr-36 order-2 lg:order-1">
-        <div class="feature show">
+        <div class="feature" @click="showHideFeature();" v-bind:class="{ show: isShown }" >
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
-            <div>
+            <div >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <line x1="12" y1="4.37114e-08" x2="12" y2="24" stroke="#BDC2DB" stroke-width="2" class="line-1"></line>
                 <line y1="11" x2="24" y2="11" stroke="#BDC2DB" stroke-width="2"></line>
@@ -104,7 +104,7 @@
             </p>
             </div>
         </div>
-        <div class="feature show">
+        <div class="feature" @click="showHideFeature();" v-bind:class="{ show: isShown }">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +120,7 @@
             <p class="text-muted mt-2"> Easily schedule multiple appointments in different time slots concurrently without having to wait to complete one booking before initiating another. </p>
             </div>
         </div>
-        <div class="feature show">
+        <div class="feature" @click="showHideFeature();" v-bind:class="{ show: isShown }">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +136,7 @@
             <p class="text-muted mt-2"> Create groups of bookings in a few simple clicks. Great for those times when you offer multiple call services as a package. </p>
             </div>
         </div>
-        <div class="feature show">
+        <div class="feature" @click="showHideFeature();" v-bind:class="{ show: isShown }">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -152,7 +152,7 @@
             <p class="text-muted mt-2"> Create notes for your contacts and their bookings to help you remember important information for future or past referencing. </p>
             </div>
         </div>
-        <div class="feature show">
+        <div class="feature" @click="showHideFeature();" v-bind:class="{ show: isShown }">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -168,7 +168,7 @@
             <p class="text-muted mt-2"> Automated reminders help you notify your clients of their upcoming appointments while also letting them know that you're thinking about them. These smart reminders help you build trust between you and your clients, and ultimately produce better results and greater client satisfaction. </p>
             </div>
         </div>
-        <div class="feature show">
+        <div class="feature" @click="showHideFeature();" v-bind:class="{ show: isShown }">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -240,6 +240,7 @@
         </div>
     </div>
 </div>
+@stop
 
 @section('scripts')
 

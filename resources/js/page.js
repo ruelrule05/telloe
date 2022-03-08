@@ -57,7 +57,8 @@ window.app = new Vue({
 		videoOpen: false,
 		WistiaPlayer: null,
 		mobileApp: true,
-		cursorStatus: 'browsing'
+		cursorStatus: 'browsing',
+		isShown: true,
 	},
 
 	watch: {
@@ -145,6 +146,9 @@ window.app = new Vue({
 		addEvent(obj, evt, fn) {
 			if (obj.addEventListener) obj.addEventListener(evt, fn, false);
 			if (obj.attachEvent) obj.attachEvent('on' + evt, fn);
+		},
+		showHideFeature(feature){
+			this.isShown = !this.feature;
 		}
 	}
 });
