@@ -104,7 +104,7 @@
             </p>
             </div>
         </div>
-        <div class="feature">
+        <div class="feature show">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +120,7 @@
             <p class="text-muted mt-2"> Easily schedule multiple appointments in different time slots concurrently without having to wait to complete one booking before initiating another. </p>
             </div>
         </div>
-        <div class="feature">
+        <div class="feature show">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +136,7 @@
             <p class="text-muted mt-2"> Create groups of bookings in a few simple clicks. Great for those times when you offer multiple call services as a package. </p>
             </div>
         </div>
-        <div class="feature">
+        <div class="feature show">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -152,7 +152,7 @@
             <p class="text-muted mt-2"> Create notes for your contacts and their bookings to help you remember important information for future or past referencing. </p>
             </div>
         </div>
-        <div class="feature">
+        <div class="feature show">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -168,7 +168,7 @@
             <p class="text-muted mt-2"> Automated reminders help you notify your clients of their upcoming appointments while also letting them know that you're thinking about them. These smart reminders help you build trust between you and your clients, and ultimately produce better results and greater client satisfaction. </p>
             </div>
         </div>
-        <div class="feature">
+        <div class="feature show">
             <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
             <div>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -241,5 +241,6 @@
     </div>
 </div>
 
+@section('scripts')
 
 @stop
