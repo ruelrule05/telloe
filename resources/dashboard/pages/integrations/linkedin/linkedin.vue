@@ -66,49 +66,44 @@
 
 				<div class="h-full pt-16 pb-8 px-4 md:px-7">
 					<div class="overflow-x-scroll w-full h-full pb-8">
-						<table class="table-auto hover:table-fixed">
-							<thead class="mb-8 block">
-								<tr class="flex">
-									<template v-for="(column, i) in columnList">
-										<th
-											:key="i"
-											v-if="column.isEnabled"
-											class="px-2 block font-normal text-left text-gray-400 text-sm tracking-wider uppercase"
-											:class="{
-												'w-100': isShrink && miniColumns.includes(column.abv),
-												'w-150': isShrink && medColumns.includes(column.abv),
-												'w-250': isShrink && longColumns.includes(column.abv),
-												'w-200': !isShrink
-											}"
-										>
-											{{ isShrink ? column.abv : column.name }}
-										</th>
-									</template>
-									<th class="w-50 block cursor-pointer flex items-center justify-center" @click="isShrink = !isShrink">
+						<table class="table-auto w-full">
+							<thead class="mb-8">
+								<tr class="whitespace-nowrap">
+									<th v-for="(column, i) in columnList" :key="i" class="pr-2 font-normal text-gray-400 text-sm uppercase" :class="[i >= 2 ? 'text-center' : 'text-left']">
+										<div class="w-auto inline-block">
+											{{ column.name }}
+										</div>
+									</th>
+									<!-- <th class="w-50 block cursor-pointer flex items-center justify-center" @click="isShrink = !isShrink">
 										<template v-if="isShrink"><ExpandIcon /></template>
 										<template v-else><CompressIcon /></template>
-									</th>
+									</th> -->
 								</tr>
 							</thead>
 							<paginate tag="tbody" name="linkedin" :list="activities" :per="10" ref="paginate">
 								<template v-for="item in paginated('linkedin')">
-									<tr class="flex border-b py-4 hover:bg-gray-100" :key="item.id">
-										<td v-if="columnList[0].isEnabled" class="text-sm px-2" :class="{ 'w-150': isShrink, 'w-200': !isShrink }">{{ item.name }}</td>
-										<td v-if="columnList[1].isEnabled" class="text-sm px-2 text-gray-400 relative hover-trigger" :class="{ 'w-250': isShrink, 'w-200': !isShrink }">
-											<p class="truncate">{{ item.title }}</p>
-											<div class="absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
-												{{ item.title }}
+									<tr class="border-b hover:bg-gray-100" :key="item.id">
+										<td v-if="columnList[0].isEnabled" class="text-sm py-3">
+											<div class="w-250">
+												<p class="truncate">
+													{{ item.name }}
+												</p>
+												<p class="text-gray-400 truncate text-xs">{{ item.title }}</p>
 											</div>
 										</td>
-										<td v-if="columnList[2].isEnabled" class="text-sm px-2" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">{{ item.lastActivity }}</td>
+										<td v-if="columnList[1].isEnabled" class="text-sm pr-2 py-3">
+											<p class="truncate">
+												{{ item.lastActivity }}
+											</p>
+										</td>
 
-										<td v-if="columnList[3].isEnabled" class="text-sm px-2" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">{{ item.connected ? 'Yes' : 'No' }}</td>
-										<td v-if="columnList[4].isEnabled" class="text-sm px-2" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">{{ item.likedPost }}</td>
-										<td v-if="columnList[5].isEnabled" class="text-sm px-2" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">{{ item.commentPost }}</td>
-										<td v-if="columnList[6].isEnabled" class="text-sm px-2" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">{{ item.sharedPost }}</td>
-										<td v-if="columnList[7].isEnabled" class="text-sm px-2" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">{{ item.mutualConnections }}</td>
-										<td v-if="columnList[8].isEnabled" class="px-2 relative hover-trigger inline" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">
-											<a target="_blank" :href="item.linkedinProfile">
+										<td v-if="columnList[2].isEnabled" class="text-sm py-3 text-center">{{ item.connected ? 'Yes' : 'No' }}</td>
+										<td v-if="columnList[3].isEnabled" class="text-sm py-3 text-center">{{ item.likedPost }}</td>
+										<td v-if="columnList[4].isEnabled" class="text-sm py-3 text-center">{{ item.commentPost }}</td>
+										<td v-if="columnList[5].isEnabled" class="text-sm py-3 text-center">{{ item.sharedPost }}</td>
+										<td v-if="columnList[6].isEnabled" class="text-sm py-3 text-center">{{ item.mutualConnections }}</td>
+										<td v-if="columnList[7].isEnabled" class="relative hover-trigger text-center">
+											<a target="_blank" :href="item.linkedinProfile" class="inline-block">
 												<LinkedinIcon />
 												<div class="text-sm absolute bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
 													{{ item.vanityName }}
@@ -116,8 +111,8 @@
 											</a>
 										</td>
 
-										<td v-if="columnList[9].isEnabled" class="px-2 text-sm relative hover-trigger" :class="{ 'w-50': isShrink, 'w-200': !isShrink }">
-											<a target="_blank" :href="item.recentActivityURL">
+										<td v-if="columnList[8].isEnabled" class="text-center text-sm relative hover-trigger">
+											<a target="_blank" class="inline-block" :href="item.recentActivityURL">
 												<HistoryIcon />
 											</a>
 										</td>
