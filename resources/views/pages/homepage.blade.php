@@ -23,15 +23,14 @@
 					<span class="relative -bottom-px">WATCH VIDEO</span>
 				</button>
 			</div>
-			<div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6 ">
+			<div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6 border-primary border-2 lg:ml-4 text-base" >
 				<img class="block md:hidden" src="{{ asset('images/home/hero.svg') }}">
 				<div class="w-full hidden md:block h-60 md:h-72 lg:h-80 bg-transparent relative">
 					<div class="w-full h-60 md:h-70 lg:h-72 absolute overflow-hidden">
-						<img class="w-full h-full" :src="'images/gifs/' + cursorStatus + '.gif'">
-				</div>
-				<div class="absolute bottom-0 h-10 w-full bg-white flex justify-between items-center px-2">
-				
-					<button data-v-7465ce1d="" type="button" class="rounded-full border border-primary w-8 h-8 relative">
+						<img class="w-full h-full object-cover" :src="'images/gifs/' + cursorStatus + '.gif'">
+					</div>
+				<div class="absolute bottom-0 h-10 w-full bg-white flex justify-between items-center px-2" @click="openVideoDemo();">
+					<button data-v-7465ce1d="" type="button" class="rounded-full border  w-8 h-8 relative " >
 						<svg data-v-7465ce1d="" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="14" height="14" viewBox="0 0 163.861 163.861" xml:space="preserve" class="absolute-center fill-current text-primary ml-px">
 							<g data-v-7465ce1d="">
 								<path data-v-7465ce1d="" d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275 c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z"></path></g></svg></button> <div data-v-7465ce1d="" class="flex-grow px-3 relative">
