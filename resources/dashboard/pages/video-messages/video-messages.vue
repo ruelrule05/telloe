@@ -405,7 +405,8 @@ export default {
 		},
 
 		setInitialMessage() {
-			this.$set(this.videoMessage.initial_message, 'message', this.$refs.messageInput.innerText);
+			let initialMessage = this.$refs.messageInput.innerText || this.videoMessage.initial_message.message;
+			this.$set(this.videoMessage.initial_message, 'message', initialMessage);
 			this.$refs.messageInput.innerHTML = '';
 		},
 

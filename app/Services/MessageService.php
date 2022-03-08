@@ -95,7 +95,6 @@ class MessageService
         $location = null;
         if (! $authUser) {
             $ip = $request->ip();
-            $ip = '103.152.4.10';
             $location = Location::get($ip);
         }
         $message = Message::create([
