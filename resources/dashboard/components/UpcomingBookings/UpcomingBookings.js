@@ -76,6 +76,7 @@ export default {
 	methods: {
 		dayBookings(date) {
 			let dayBookings = this.bookings.filter(booking => booking.date == date);
+			console.log(dayBookings);
 
 			return dayBookings;
 		},
@@ -94,6 +95,10 @@ export default {
 				outlookEventBooking.endTime = timezoneTime.get(dayjs(outlookEventBooking.end.dateTime).format('YYYY-MM-DD HH:mm'), outlookEventBooking.end.timeZone, this.timezone, 'hh:mmA');
 				return dayjs(start).format('YYYY-MM-DD') == now;
 			});
+		},
+
+		allBookings(date){
+
 		}
 	}
 };
