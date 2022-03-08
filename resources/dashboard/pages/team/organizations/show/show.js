@@ -68,14 +68,16 @@ export default {
 			});
 
 			this.googleCalendarEvents.forEach(event => {
-				let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
-				attributes.push({
-					dot: {
-						color: 'red'
-					},
-					customData: 'google-event',
-					dates: eventDate
-				});
+				if (event.start) {
+					let eventDate = this.dayjs(event.start.date || event.start.dateTime).format('YYYY-MM-DD');
+					attributes.push({
+						dot: {
+							color: 'red'
+						},
+						customData: 'google-event',
+						dates: eventDate
+					});
+				}
 			});
 
 			this.outlookCalendarEvents.forEach(event => {
