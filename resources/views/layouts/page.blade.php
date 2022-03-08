@@ -7,6 +7,7 @@
 	@yield('metas')
 	@yield('styles')
 	<link rel="stylesheet" href="{{ mix('css/page.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/new.css') }}">
 </head>
 <body class="bg-transparent">
 	<div id="app" class="overflow-hidden">
