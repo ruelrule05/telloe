@@ -153,13 +153,15 @@ class Service extends BaseModel
             // google calendar events
             $googleEvents = [];
             foreach ($googleEventsList as $event) {
-                $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
-                if ($eventDate == $dateString) {
-                    if (! in_array($event['id'], $googleCalendarEvents)) {
-                        $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'], $event['start']['timeZone'])->setTimezone($this->timezone)->format('H:i');
-                        $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'], $event['end']['timeZone'])->setTimezone($this->timezone)->format('H:i');
-                        if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
-                            $googleEvents[] = $event;
+                if (isset($event['start'])) {
+                    $eventDate = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'])->format('Y-m-d');
+                    if ($eventDate == $dateString) {
+                        if (! in_array($event['id'], $googleCalendarEvents)) {
+                            $start = $event['start']['date'] ?? Carbon::parse($event['start']['dateTime'], $event['start']['timeZone'])->setTimezone($this->timezone)->format('H:i');
+                            $end = $event['end']['date'] ?? Carbon::parse($event['end']['dateTime'], $event['end']['timeZone'])->setTimezone($this->timezone)->format('H:i');
+                            if ($start <= $timeslot['time'] && $end >= $timeslot['time']) {
+                                $googleEvents[] = $event;
+                            }
                         }
                     }
                 }
