@@ -90,7 +90,7 @@ export default {
 			console.log(googleBookingsList);
 			//this.allBookings.push(googleBookingsList);
 			googleBookingsList.map(function(value, key) {
-				this.allBookings.push({"dateTime" : dayjs(value.start.dateTime).format('YYYY-MM-DD hh:mm'), "integration" : "google"});
+				//this.allBookings.push({"dateTime" : dayjs(value.start.dateTime).format('YYYY-MM-DD hh:mm'), "integration" : "google"});
 				
 				//console.log(dayjs(value.start.dateTime).format('YYYY-MM-DD hh:mm'));
 			});
