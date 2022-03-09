@@ -249,3 +249,30 @@
 // 		}
 // 	}
 // }
+.CUSTOM-rounded-corner {
+    border-radius: 15px;
+    box-shadow: 10px 10px 8px grey;
+}
+
+.CUSTOM-price-second {
+    font-size: 3.75rem !important;
+    line-height: 1 !important;
+}
+
+.CUSTOM-right-table-head {
+    float: right;
+    margin-left: 15px;
+}
+
+@media (max-width: 1024px) {
+    .CUSTOM-price-second {
+      font-size: 1.875rem !important;
+      line-height: 2.25rem !important;
+    }
+
+    .CUSTOM-table {
+        width: 100%;
+    }
+  }
+
+
