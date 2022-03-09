@@ -455,7 +455,7 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Monthly</div>
 			<div class="text-muted mb-4 text-sm"></div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" >
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 			</div>
@@ -471,7 +471,7 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Quarterly - Save 20%</div>
 			<div class="text-muted mb-4 text-sm"> Billed as one payment of $83.85 </div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" >
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 			</div>
@@ -487,7 +487,7 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Annually - Save 33%</div>
 			<div class="text-muted mb-4 text-sm"> Billed as one payment of $275.40 </div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" >
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 			</div>
