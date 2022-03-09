@@ -38,7 +38,8 @@ export default {
 	components: { GoogleIcon, OutlookIcon },
 
 	data: () => ({
-		convertTime: convertTime
+		convertTime: convertTime,
+		allBookings : []
 	}),
 
 	computed: {
@@ -69,6 +70,9 @@ export default {
 			}
 			return upcomingDays;
 		},
+		daysTime(){
+			console.log(this.allBookings);
+		}
 		
 	},
 
@@ -77,14 +81,20 @@ export default {
 	methods: {
 		dayBookings(date) {
 			let dayBookings = this.bookings.filter(booking => booking.date == date);
-			console.log(dayBookings);
-
 			return dayBookings;
 		},
 
 		googleBookings(date) {
 			let now = dayjs(date).format('YYYY-MM-DD');
-			return this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
+			let googleBookingsList =  this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
+			console.log(googleBookingsList);
+			//this.allBookings.push(googleBookingsList);
+			googleBookingsList.map(function(value, key) {
+				this.allBookings.push({"dateTime" : dayjs(value.start.dateTime).format('YYYY-MM-DD hh:mm'), "integration" : "google"});
+				
+				//console.log(dayjs(value.start.dateTime).format('YYYY-MM-DD hh:mm'));
+			});
+			return googleBookingsList;
 		},
 
 		outlookBookings(date) {
@@ -96,10 +106,6 @@ export default {
 				outlookEventBooking.endTime = timezoneTime.get(dayjs(outlookEventBooking.end.dateTime).format('YYYY-MM-DD HH:mm'), outlookEventBooking.end.timeZone, this.timezone, 'hh:mmA');
 				return dayjs(start).format('YYYY-MM-DD') == now;
 			});
-		},
-
-		allBookings(date){
-
 		}
 	}
 };

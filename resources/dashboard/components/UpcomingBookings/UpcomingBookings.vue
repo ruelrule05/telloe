@@ -13,7 +13,6 @@
 			<div class="lg:p-5 px-4 py-2 flex-grow">
 				<div v-for="booking in dayBookings(upcomingDay.value)" :key="booking.id" class="flex items-center mb-1 transition-colors hover:bg-gray-100 p-2 cursor-pointer rounded-lg" @click="$emit('eventClick', booking, 'booking')">
 					<div class="font-normal text-muted flex-grow">{{ convertTime(booking.start, 'hh:mmA') }} - {{ convertTime(booking.end, 'hh:mmA') }}</div>
-
 					<div class="badge truncate max-w-full">{{ booking.name }}</div>
 				</div>
 
