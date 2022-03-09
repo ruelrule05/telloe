@@ -57,7 +57,7 @@ window.app = new Vue({
 		videoOpen: false,
 		WistiaPlayer: null,
 		mobileApp: true,
-		cursorStatus: 'browsing'
+		cursorStatus: 'browsing',
 	},
 
 	watch: {
