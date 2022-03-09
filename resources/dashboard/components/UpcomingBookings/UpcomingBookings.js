@@ -68,7 +68,8 @@ export default {
 				i++;
 			}
 			return upcomingDays;
-		}
+		},
+		
 	},
 
 	created() {},
