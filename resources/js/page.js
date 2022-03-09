@@ -6,6 +6,12 @@ import Auth from '../components/auth/auth.vue';
 import CheckmarkIcon from '../icons/checkmark';
 import GreencheckIcon from '../icons/greencheck';
 import MessengerIcon from '../icons/messenger';
+import VideoStopIcon from '../icons/video-stop';
+import VideoMicIcon from '../icons/video-mic';
+import VideoLoopIcon from '../icons/video-loop';
+import VideoShareScreenIcon from '../icons/video-share-screen';
+import VideoDesktopIcon from '../icons/video-desktop';
+import VideoCameraIcon from '../icons/video-camera-solid';
 import Vue from 'vue';
 import vClickOutside from 'v-click-outside';
 import SmoothScroll from 'smooth-scroll';
@@ -18,7 +24,13 @@ window.app = new Vue({
 		Auth,
 		CheckmarkIcon,
 		GreencheckIcon,
-		MessengerIcon
+		MessengerIcon,
+		VideoStopIcon,
+		VideoMicIcon,
+		VideoLoopIcon,
+		VideoShareScreenIcon,
+		VideoDesktopIcon,
+		VideoCameraIcon
 	},
 
 	directives: { clickOutside: vClickOutside.directive },
@@ -44,11 +56,12 @@ window.app = new Vue({
 		dropdownOpen: false,
 		videoOpen: false,
 		WistiaPlayer: null,
-		mobileApp: true
+		mobileApp: true,
+		cursorStatus: 'browsing',
 	},
 
 	watch: {
-		action: function() {
+		action: function () {
 			if (this.$refs['authForm']) this.$refs['authForm'].error = '';
 		}
 	},
@@ -84,6 +97,13 @@ window.app = new Vue({
 		if (this.mobileApp) {
 			this.auth = true;
 		}
+		// Detect when mouse is out-of-dom
+		const that = this;
+		this.addEvent(document, 'mouseout', function (event) {
+			event = event ? event : window.event;
+			const from = event.relatedTarget || event.toElement;
+			that.changeCursorStatus((!from || from.nodeName == 'HTML') && event.clientY <= 100 ? 'onOutOfDom' : 'browsing');
+		});
 	},
 
 	mounted() {
@@ -118,6 +138,13 @@ window.app = new Vue({
 					}
 				})
 				.catch(() => {});
+		},
+		changeCursorStatus(text) {
+			this.cursorStatus = text;
+		},
+		addEvent(obj, evt, fn) {
+			if (obj.addEventListener) obj.addEventListener(evt, fn, false);
+			if (obj.attachEvent) obj.attachEvent('on' + evt, fn);
 		}
 	}
 });

@@ -95,6 +95,16 @@ class MessageService
         $location = null;
         if (! $authUser) {
             $ip = $request->ip();
+            $response = Http::get('https://api.ipify.org', [
+                'format' => 'json',
+                'callback' => '?'
+            ]);
+            if ($response->successful()) {
+                $response = $response->json();
+                if (isset($response['ip'])) {
+                    $ip = $response['ip'];
+                }
+            }
             $location = Location::get($ip);
         }
         $message = Message::create([
@@ -114,7 +124,7 @@ class MessageService
 
         if ($conversation->video_message_id) {
             $videoMessage = VideoMessage::find($conversation->video_message_id);
-            if ($videoMessage && $authUser) {
+            if ($videoMessage) {
                 broadcast(new VideoMessageStat($videoMessage));
                 Mail::to($videoMessage->user->email)->later(now()->addMinutes(5), new VideoMessageComment($videoMessage));
             }

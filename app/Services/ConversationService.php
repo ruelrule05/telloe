@@ -13,6 +13,7 @@ use Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Mail;
 use Stevebauman\Location\Facades\Location;
@@ -221,6 +222,16 @@ class ConversationService
     public static function getClientLocation(Request $request)
     {
         $ip = $request->ip();
+        $response = Http::get('https://api.ipify.org', [
+            'format' => 'json',
+            'callback' => '?'
+        ]);
+        if ($response->successful()) {
+            $response = $response->json();
+            if (isset($response['ip'])) {
+                $ip = $response['ip'];
+            }
+        }
         $location = Location::get($ip);
         return response()->json($location);
     }
