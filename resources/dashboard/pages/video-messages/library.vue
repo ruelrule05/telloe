@@ -465,12 +465,13 @@ export default {
 			}
 
 			if (this.sourceType == 'screen_camera') {
-				let dimensions = await this.streamSize(this.screenStreams);
-				this.screenStreams.width = dimensions.width;
-				this.screenStreams.height = dimensions.height;
+				let screenDimensions = await this.streamSize(this.screenStreams);
+				let cameraDimensions = await this.streamSize(this.cameraStreams);
+				this.screenStreams.width = screenDimensions.width;
+				this.screenStreams.height = screenDimensions.height;
 				this.screenStreams.fullcanvas = true;
 				this.cameraStreams.width = 320;
-				this.cameraStreams.height = 240;
+				this.cameraStreams.height = cameraDimensions.height * (320 / cameraDimensions.width);
 				this.cameraStreams.top = this.screenStreams.height - this.cameraStreams.height;
 				this.cameraStreams.left = this.screenStreams.width - this.cameraStreams.width;
 
