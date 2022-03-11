@@ -465,11 +465,13 @@ export default {
 			}
 
 			if (this.sourceType == 'screen_camera') {
-				this.screenStreams.width = window.screen.width;
-				this.screenStreams.height = window.screen.height;
+				let screenDimensions = await this.streamSize(this.screenStreams);
+				let cameraDimensions = await this.streamSize(this.cameraStreams);
+				this.screenStreams.width = screenDimensions.width;
+				this.screenStreams.height = screenDimensions.height;
 				this.screenStreams.fullcanvas = true;
 				this.cameraStreams.width = 320;
-				this.cameraStreams.height = 240;
+				this.cameraStreams.height = cameraDimensions.height * (320 / cameraDimensions.width);
 				this.cameraStreams.top = this.screenStreams.height - this.cameraStreams.height;
 				this.cameraStreams.left = this.screenStreams.width - this.cameraStreams.width;
 
@@ -510,6 +512,24 @@ export default {
 					this.blobs.push(e.data);
 				}
 			};
+		},
+
+		async streamSize(stream) {
+			return new Promise(resolve => {
+				let video = document.createElement('video');
+				video.muted = true;
+				video.srcObject = stream;
+				video.onloadedmetadata = () => {
+					let dimensions = {
+						width: video.videoWidth,
+						height: video.videoHeight
+					};
+
+					video = null;
+
+					resolve(dimensions);
+				};
+			});
 		},
 
 		toggleSelectedVideo(userVideo) {
