@@ -114,7 +114,6 @@ export default {
 			let now = dayjs(date).format('YYYY-MM-DD');
 			let googleBookingsList =  this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
 			return googleBookingsList;
-			return this.googleCalendarEvents.filter(googleEventBooking => googleEventBooking.start && dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
 		},
 
 		outlookBookings(date) {
