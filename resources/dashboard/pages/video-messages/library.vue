@@ -348,8 +348,18 @@ export default {
 	},
 
 	mounted() {
-		this.$refs.videoPlayback.onloadedmetadata = () => {
-			if (!this.blobs.length) {
+		this.$refs.videoPlayback.onloadeddata = () => {
+			if (this.$refs.videoPlayback.duration == Infinity) {
+				this.$refs.videoPlayback.currentTime = 1e101;
+				this.$refs.videoPlayback.ontimeupdate = () => {
+					this.$refs.videoPlayback.ontimeupdate = () => {
+						return;
+					};
+					this.$refs.videoPlayback.currentTime = 0;
+					this.duration = this.$refs.videoPlayback.duration * 1000;
+					return;
+				};
+			} else {
 				this.duration = this.$refs.videoPlayback.duration * 1000;
 			}
 		};
