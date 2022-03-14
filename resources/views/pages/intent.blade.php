@@ -1,6 +1,6 @@
 @extends('layouts.page')
 
-@section('title', ucwords("The intelligent way to manage your clients' conversations, in one place"))
+@section('title', ucwords("Schedule a meeting |  Create and share personalized videos  |  Keep connected | Meet Telloe"))
 
 @section('content')
 
