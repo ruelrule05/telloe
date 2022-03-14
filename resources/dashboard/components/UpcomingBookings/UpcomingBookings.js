@@ -46,12 +46,6 @@ export default {
 			let upcomingDays = [];
 			let now = dayjs();
 
-			/** remove tomorrow's date on calendar upcoming days */ 
-			// upcomingDays.push({
-			// 	text: now.add(1, 'day').format('D MMM ddd'),
-			// 	value: now.add(1, 'day').format('YYYY-MM-DD'),
-			// 	day: now.add(1, 'day').format('dddd')
-			// });
 			upcomingDays.push({
 				text: now.format('D MMM ddd'),
 				value: now.format('YYYY-MM-DD'),
