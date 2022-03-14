@@ -137,7 +137,7 @@
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
 								<div v-if="(videoMessage.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="showLibrary = true">+ Add video</div>
-								<VideoPlayer v-else :videos="videoMessage.userVideos"></VideoPlayer>
+								<VideoPlayer v-else :videos="videoMessage.userVideos" @totalDuration="totalDuration = $event"></VideoPlayer>
 							</div>
 
 							<div class="h-28 flex p-2 gap-2 overflow-hidden border-t bg-gray-100 w-full">
@@ -323,7 +323,8 @@ export default {
 		channel: null,
 		uploadProgress: 0,
 		gifProgress: 0,
-		status: null
+		status: null,
+		totalDuration: 0
 	}),
 
 	computed: {
@@ -513,11 +514,13 @@ export default {
 				return this.update();
 			} else {
 				this.status = 'Processing...';
+				this.setInitialMessage();
 				let userVideoIds = this.videoMessage.userVideos.map(x => x.id);
+				let initialMessage = await this.generateInitialMessage(this.videoMessage);
 				let videoMessagedata = {
 					title: this.videoMessage.title,
 					description: this.videoMessage.description,
-					initial_message: this.videoMessage.initial_message,
+					initial_message: initialMessage,
 					service_id: this.videoMessage.service_id,
 					user_video_ids: userVideoIds
 				};
@@ -628,13 +631,8 @@ export default {
 			let data = JSON.parse(JSON.stringify(this.videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
 
-			let totalDuration = 0;
-			data.userVideos.forEach(userVideo => {
-				totalDuration += userVideo.duration;
-			});
-
 			this.uploadProgress += 20;
-			data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
+			data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
 			data.initial_message = await this.generateInitialMessage(this.videoMessage);
 
 			delete data.original_message;

@@ -145,7 +145,7 @@ Route::group(
                 Route::put('xero/invoices', 'XeroController@updateInvoice');
 
                 // routes for LinkedIn
-                Route::get('linkedin/connect', 'LinkedInController@redirect');
+                Route::get('linkedin/authenticate', 'LinkedInController@authenticate');
 
                 Route::get('get_invoice', 'UserController@getInvoice');
 

@@ -103,6 +103,9 @@ export default {
 			this.$forceUpdate();
 
 			this.init();
+		},
+		totalDuration: function () {
+			this.$emit('totalDuration', this.totalDuration);
 		}
 	},
 

@@ -23,6 +23,16 @@ export default {
 		this.$root.contentloading = false;
 	},
 	methods: {
+		async integrateLinkedin() {
+			this.linkedInLoading = true;
+			let response = await window.axios.get('/linkedin/authenticate');
+			if (response) {
+				window.location.href = response.data.authUrl;
+			} else {
+				this.linkedInLoading = false;
+			}
+		},
+
 		async integrateXero() {
 			this.xeroLoading = true;
 			let response = await window.axios.get('/xero/authenticate');
@@ -117,20 +127,6 @@ export default {
 				this.zoomLoading = false;
 				this.getZoomToken();
 			});
-		},
-
-		async connectLinkedIn() {
-			this.$refs.linkedinModal.show();
-			// if (!this.$root.auth.is_premium) {
-			// 	return this.$router.push('/dashboard/account?tab=plan');
-			// }
-			// this.linkedInLoading = true;
-			// let response = await window.axios.get('/linkedin/connect', { toast: true }).catch(() => {});
-			// if (response) {
-			// 	window.location.href = response.data.authUrl;
-			// } else {
-			// 	this.linkedInLoading = false;
-			// }
 		},
 
 		async addLinkedIn() {

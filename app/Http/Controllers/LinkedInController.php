@@ -17,6 +17,7 @@ use App\Models\LinkedinActivity;
 use Auth;
 use Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Socialite;
 
 class LinkedInController extends Controller
@@ -26,10 +27,10 @@ class LinkedInController extends Controller
      *
      * @return Response
      */
-    public function redirect()
+    public function authenticate()
     {
         return response()->json([
-            'authUrl' => Socialite::driver('linkedin')->redirect()->getTargetUrl()
+            'authUrl' => Socialite::driver('linkedin')->scopes(['r_basicprofile'])->redirect()->getTargetUrl()
         ]);
     }
 
@@ -63,10 +64,12 @@ class LinkedInController extends Controller
             $data = $response->json();
 
             $me = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $data['access_token']
+                'Authorization' => 'Bearer ' . $data['access_token'],
             ])->get('https://api.linkedin.com/v2/me');
-            echo '<pre>';
-            print_r($me->json());
+
+            Auth::user()->update([
+                'linkedin_username' => $me->json()['vanityName']
+            ]);
 
             // dd($requestJobs);
 
@@ -82,7 +85,7 @@ class LinkedInController extends Controller
             //     $user->save();
             //     Auth::loginUsingId($user->id);
             // }
-            //return redirect()->to('/home');
+            return redirect()->to('/dashboard/integrations');
         } catch (Exception $e) {
             return 'error';
         }

@@ -57,7 +57,7 @@
 							<p class="mb-3 text-sm font-bold">LinkedIn</p>
 							<p class="mb-4 text-sm text-muted">Sync LinkedIn Profile</p>
 							<button v-if="$root.auth.linkedin_username" :disabled="linkedInLoading" type="button" class="btn btn-md btn-outline-primary" @click="removeLinkedIn"><span>Remove integration</span></button>
-							<button v-else :disabled="linkedInLoading" type="button" class="btn btn-md btn-outline-primary" @click="connectLinkedIn">
+							<button v-else :disabled="linkedInLoading" type="button" class="btn btn-md btn-outline-primary" @click="integrateLinkedin">
 								<span>{{ $root.auth.is_premium ? 'Add Integration' : 'Upgrade Account' }}</span>
 							</button>
 						</div>
@@ -77,17 +77,6 @@
 				</div>
 			</div>
 		</div>
-
-		<Modal ref="linkedinModal" size="sm">
-			<h4 class="font-serif uppercase font-semibold mb-4">INTEGRATE LINKEDIN</h4>
-			<vue-form-validate @submit="addLinkedIn">
-				<input type="text" v-model="linkedinUsername" data-required placeholder="LinkedIn Username" />
-				<div class="flex justify-between mt-6">
-					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.linkedinModal.hide()"><span>Cancel</span></button>
-					<button class="btn btn-md btn-primary" type="subbmit"><span>Integration</span></button>
-				</div>
-			</vue-form-validate>
-		</Modal>
 	</div>
 </template>
 
