@@ -105,7 +105,7 @@ export default {
 
 		googleBookings(date) {
 			let now = dayjs(date).format('YYYY-MM-DD');
-			let googleBookingsList = this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
+			let googleBookingsList = this.googleCalendarEvents.filter(googleEventBooking => googleEventBooking.status == 'confirmed' && dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
 			return googleBookingsList;
 		},
 
