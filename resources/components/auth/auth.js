@@ -27,7 +27,7 @@ export default {
 	}),
 
 	watch: {
-		open: function(value) {
+		open: function (value) {
 			if (value) {
 				document.body.classList.add('overflow-hidden');
 				document.body.classList.add('modal-open');
@@ -54,6 +54,12 @@ export default {
 			setTimeout(() => {
 				this.$root.auth = false;
 			}, 1000);
+		},
+
+		async LinkedinLogin() {
+			this.pageloading = true;
+			let response = await axios.get('/auth/linkedin/redirect');
+			window.location.href = response.data;
 		},
 
 		async FacebookLogin() {

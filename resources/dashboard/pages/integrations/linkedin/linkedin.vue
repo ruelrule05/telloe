@@ -85,7 +85,7 @@
 									<tr class="border-b hover:bg-gray-100" :key="item.id">
 										<td v-if="columnList[0].isEnabled" class="text-sm py-3">
 											<div class="w-250">
-												<p class="truncate">
+												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="getLinkedinUser(item.actor)">
 													{{ item.name }}
 												</p>
 												<p class="text-gray-400 truncate text-xs">{{ item.title }}</p>

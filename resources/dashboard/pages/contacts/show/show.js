@@ -32,9 +32,25 @@ import axios from 'axios';
 import VueCheckbox from '../../../../components/vue-checkbox/vue-checkbox.vue';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import InfoCircleIcon from '../../../../icons/info-circle.vue';
+
+import ThumbupIcon from '../../../../icons/thumb-up';
+import ThumbdownIcon from '../../../../icons/thumb-down';
+import CommentIcon from '../../../../icons/comment-solid';
+import ShareIcon from '../../../../icons/share';
+import EyeIcon from '../../../../icons/eye-solid';
+const format = require('format-duration');
+
+import copy from 'copy-text-to-clipboard';
 
 export default {
 	components: {
+		ShareIcon,
+		CommentIcon,
+		EyeIcon,
+		ThumbdownIcon,
+		ThumbupIcon,
+		InfoCircleIcon,
 		Multiselect,
 		VueCheckbox,
 		Booking,
@@ -63,6 +79,7 @@ export default {
 	},
 
 	data: () => ({
+		format: format,
 		addingPackage: false,
 		selectedPackage: null,
 		selectedPackageService: null,
@@ -111,7 +128,8 @@ export default {
 		page: 1,
 		packageService: null,
 		contactPackageIndex: 0,
-		tagOptions: []
+		tagOptions: [],
+		rightTab: 'bookings'
 	}),
 
 	computed: {
@@ -267,8 +285,72 @@ export default {
 			updateContact: 'contacts/update',
 			storeBooking: 'bookings/store',
 			storeConversation: 'conversations/store',
-			getPackages: 'packages/index'
+			getPackages: 'packages/index',
+			updateVideoMessage: 'video_messages/update'
 		}),
+
+		updateVideoMessageStatus(status, videoMessage) {
+			let data = JSON.parse(JSON.stringify(videoMessage));
+			data.is_active = status;
+			data.user_video_ids = data.videos.map(x => x.user_video_id);
+			this.updateVideoMessage(data);
+		},
+
+		async copyElementToClipboard(videoMessage) {
+			let element = await this.stringToElement(videoMessage);
+			document.body.appendChild(element);
+			window.getSelection().removeAllRanges();
+			let range = document.createRange();
+			range.selectNode(element);
+			window.getSelection().addRange(range);
+			document.execCommand('copy');
+			window.getSelection().removeAllRanges();
+			element.remove();
+		},
+
+		stringToElement(videoMessage) {
+			return new Promise(resolve => {
+				const img = new Image();
+				img.onload = () => {
+					let ratio = 450 / img.width;
+					let height = img.height * ratio;
+					let timestamp = new Date().valueOf();
+
+					let element = `<table> <tr> <td> <div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/video-messages/${videoMessage.uuid}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr></table>`;
+					let template = document.createElement('template');
+					template.innerHTML = element;
+					resolve(template.content.firstChild);
+				};
+				img.src = videoMessage.link_preview;
+			});
+		},
+
+		shareVideoMessage(action, videoMessage) {
+			switch (action) {
+				case 'Copy video link':
+					if (copy(`${process.env.MIX_APP_URL}/video-messages/${videoMessage.uuid}`)) {
+						this.$toast.open('Video message link copied to clipboard.');
+					}
+					break;
+
+				case 'Copy video for email':
+					this.copyElementToClipboard(videoMessage);
+					this.$toast.open('Video message email copied to clipboard.');
+					break;
+			}
+		},
+
+		openVideoMessage(videoMessage) {
+			window.open(`${process.env.MIX_APP_URL}/video-messages/${videoMessage.uuid}`, '_blank');
+		},
+
+		dislikes(videoMessage) {
+			return videoMessage.video_message_likes.filter(x => !x.is_liked).length;
+		},
+
+		likes(videoMessage) {
+			return videoMessage.video_message_likes.filter(x => x.is_liked).length;
+		},
 
 		removeTag() {
 			this.$nextTick(() => {
@@ -548,6 +630,14 @@ export default {
 			this.$root.contentloading = false;
 			this.getRecentNotes();
 			this.getContactNotes();
+			this.getVideoMessages();
+		},
+
+		async getVideoMessages() {
+			if (this.contact) {
+				let response = await window.axios.get(`/contacts/${this.contact.id}/video_messages`);
+				this.$set(this.contact, 'videoMessages', response.data);
+			}
 		},
 
 		async getContactNotes(order = 'desc') {
