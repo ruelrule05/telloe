@@ -229,8 +229,14 @@
 										</div>
 									</div>
 								</div>
-								<div v-for="userVideo in userVideos" :key="userVideo.id" class="user-video" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
+								<div v-for="userVideo in userVideos" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 									<div class="backdrop"></div>
+									<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
+										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" 
+										type="button" @click="videoMessageAction(userVideo)">
+										<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+									</div>
+									
 									<div class="checkmark absolute-center rounded-full">
 										<div class="absolute-center w-full h-full p-0.5">
 											<div class="bg-white rounded-full w-full h-full"></div>
@@ -271,6 +277,16 @@
 				</div>
 			</div>
 		</div>
+		<Modal ref="deleteModal">
+			<div class="text-center">
+				<WarningIcon class="fill-current text-red-600 h-8 w-8 inline-block mb-4"></WarningIcon>
+				<p>Are you sure you want to delete this video message?</p>
+			</div>
+			<div class="flex justify-between mt-6">
+				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.deleteModal.hide()"><span>Cancel</span></button>
+				<button class="btn btn-sm btn-red" type="button" @click="confirmDeleteVideoMessage"><span>Delete</span></button>
+			</div>
+		</Modal>
 	</div>
 </template>
 
@@ -291,6 +307,8 @@ import { mapState, mapActions } from 'vuex';
 import dayjs from 'dayjs';
 import MultiStreamsMixer from 'multistreamsmixer';
 import CloseIcon from '../../../icons/close.vue';
+import Modal from '../../../components/modal/modal.vue';
+import WarningIcon from '../../../icons/warning';
 
 export default {
 	props: {
@@ -300,7 +318,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon },
+	components: { CloseIcon, Modal, WarningIcon },
 
 	data: () => ({
 		library: false,
@@ -801,7 +819,19 @@ export default {
 			}
 
 			return new File([u8arr], filename, { type: mime });
-		}
+		},
+
+		confirmDeleteVideoMessage() {
+			if (this.selectedVideoMessage) {
+				this.deleteVideoMessage(this.selectedVideoMessage);
+			}
+			this.$refs.deleteModal.hide();
+		},
+
+		videoMessageAction(videoMessage) {
+			this.selectedVideoMessage = videoMessage;
+			this.$refs.deleteModal.show();
+		},
 	}
 };
 </script>
