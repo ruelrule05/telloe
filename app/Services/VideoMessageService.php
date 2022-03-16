@@ -98,7 +98,7 @@ class VideoMessageService
         $videoMessage->user_initials = $user->initials;
         $videoMessage->user_profile_image = $user->profile_image;
         $videoMessage->username = $user->username;
-        if ($authUser) {
+        if ($authUser && $authUser->id != $videoMessage->user_id) {
             $videoMessage->increment('views');
             $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
             broadcast(new VideoMessageStat($videoMessage));
