@@ -41,10 +41,10 @@ class AuthService
         $redirect = '/dashboard/video-messages';
         if ($socialiteUser) {
             $data = Arr::except($socialiteUser->user, ['id']);
-            $data['first_name'] = $data['first_name'] ?? $data['given_name'];
-            $data['last_name'] = $data['last_name'] ?? $data['family_name'];
+            $data['first_name'] = $data['first_name'] ?? $data['given_name'] ?? $data['firstName']['localized']['en_US'];
+            $data['last_name'] = $data['last_name'] ?? $data['family_name'] ?? $data['lastName']['localized']['en_US'];
             $data['blocked_timeslots'] = [];
-            $user = User::where('email', $data['email'])->first();
+            $user = User::where('email', $data['email'] ?? $data['emailAddress'])->first();
             $driver_id = "{$driver}_id";
             if ($user) {
                 if (! $user[$driver_id]) {

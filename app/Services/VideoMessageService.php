@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\VideoMessageStat;
+use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\Service;
 use App\Models\UserVideo;
@@ -35,6 +36,7 @@ class VideoMessageService
             'description' => 'nullable|string|max:255',
             'initial_message' => 'nullable|array|max:255',
             'service_id' => 'nullable|exists:services,id',
+            'contact_id' => 'nullable|exists:contacts,id',
             'user_video_ids' => 'required|array',
             'link_preview' => 'nullable|string|max:255',
         ]);
@@ -42,12 +44,15 @@ class VideoMessageService
         if ($request->input('service_id')) {
             Service::where('id', $request->input('service_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
+        if ($request->input('contact_id')) {
+            Contact::where('id', $request->input('contact_id'))->where('user_id', $authUser->id)->firstOrFail();
+        }
         $userVideos = [];
         foreach ($request->input('user_video_ids') as $userVideoId) {
             $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->firstOrFail();
             $userVideos[] = $userVideo;
         }
-        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'link_preview');
+        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'link_preview', 'contact_id');
         $data['user_id'] = $authUser->id;
         $data['uuid'] = Str::uuid();
         $data['status'] = 'draft';
@@ -93,7 +98,7 @@ class VideoMessageService
         $videoMessage->user_initials = $user->initials;
         $videoMessage->user_profile_image = $user->profile_image;
         $videoMessage->username = $user->username;
-        if ($authUser) {
+        if ($authUser && $authUser->id != $videoMessage->user_id) {
             $videoMessage->increment('views');
             $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
             broadcast(new VideoMessageStat($videoMessage));
@@ -108,14 +113,22 @@ class VideoMessageService
             'description' => 'nullable|string|max:255',
             'initial_message' => 'nullable|array|max:255',
             'service_id' => 'nullable|exists:services,id',
+            'contact_id' => 'nullable|exists:contacts,id',
             'user_video_ids' => 'required|array',
             'is_active' => 'required|boolean',
             'link_preview' => 'nullable|string|max:255',
         ]);
 
         $authUser = Auth::user();
+
         if ($videoMessage->user_id != $authUser->id) {
             return abort(403);
+        }
+        if ($request->input('service_id')) {
+            Service::where('id', $request->input('service_id'))->where('user_id', $authUser->id)->firstOrFail();
+        }
+        if ($request->input('contact_id')) {
+            Contact::where('id', $request->input('contact_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
 
         VideoMessageVideo::where('video_message_id', $videoMessage->id)->whereNotIn('user_video_id', $request->input('user_video_ids'))->delete();
@@ -137,7 +150,7 @@ class VideoMessageService
                 ]
             );
         }
-        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview');
+        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview', 'contact_id');
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);

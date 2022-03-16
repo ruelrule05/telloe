@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Contact extends BaseModel
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields', 'tags'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields', 'tags', 'is_linkedin'];
     protected $appends = ['full_name', 'initials', 'created_at_format', 'profile_image'];
     protected $casts = [
         'blacklisted_services' => 'array',
@@ -74,7 +74,7 @@ class Contact extends BaseModel
 
     public function contactNotes()
     {
-        return $this->hasMany(ContactNote::class)->orderBy('created_at', 'DESC');
+        return $this->hasMany(ContactNote::class)->latest();
     }
 
     public function getProfileImageAttribute()
@@ -84,6 +84,11 @@ class Contact extends BaseModel
 
     public function contactPackages()
     {
-        return $this->hasMany(ContactPackage::class)->orderBy('created_at', 'DESC');
+        return $this->hasMany(ContactPackage::class)->latest();
+    }
+
+    public function videoMessages()
+    {
+        return $this->hasMany(VideoMessage::class)->latest();
     }
 }

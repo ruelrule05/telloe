@@ -77,11 +77,5 @@
 		}
 	</style>
 
-	<div id="telloe-widget">
-		<div data-v-cb0d81fe="" id="widget">
-		<button data-v-cb0d81fe="" type="button" class="telloe-widget-btn">
-			<img data-v-cb0d81fe="" src="{{ asset('images/logo.svg') }}" height="20" />Book </button>
-		</div>
-	</div>
 </body>
 </html>

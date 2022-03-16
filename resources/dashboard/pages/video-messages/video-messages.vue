@@ -225,7 +225,12 @@
 
 							<div class="mb-4">
 								<label>Event Type</label>
-								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessage.service_id" dropPosition="w-full"></VueSelect>
+								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessage.service_id" dropPosition="top w-full"></VueSelect>
+							</div>
+
+							<div class="mb-4">
+								<label>Contact</label>
+								<VueSelect :options="contactsOptions" clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessage.contact_id" dropPosition="top w-full"></VueSelect>
 							</div>
 						</div>
 					</div>
@@ -317,6 +322,7 @@ export default {
 			description: '',
 			initial_message: {},
 			service_id: null,
+			contact_id: null,
 			userVideos: []
 		},
 		quickAdd: false,
@@ -331,8 +337,10 @@ export default {
 		...mapState({
 			videoMessages: state => state.video_messages.index,
 			ready: state => state.video_messages.ready,
-			services: state => state.services.index
+			services: state => state.services.index,
+			contacts: state => state.contacts.index
 		}),
+
 		servicesOptions() {
 			let services = this.services;
 			return services
@@ -340,11 +348,18 @@ export default {
 				.map(service => {
 					return { text: service.name, value: service.id };
 				});
+		},
+		contactsOptions() {
+			let contacts = this.contacts;
+			return contacts.map(contact => {
+				return { text: contact.full_name, value: contact.id };
+			});
 		}
 	},
 	created() {
 		this.getVideoMessages();
 		this.getServices();
+		this.getContacts({ nopaginate: true });
 
 		this.channel = this.$echo.private(`${this.$root.auth.id}.videoMessages`);
 		this.channel.listen('VideoMessageStat', v => {
@@ -363,7 +378,8 @@ export default {
 			setVideoMessageStatus: 'video_messages/setStatus',
 			getVideoMessageStats: 'video_messages/getStats',
 			deleteVideoMessage: 'video_messages/delete',
-			getServices: 'services/index'
+			getServices: 'services/index',
+			getContacts: 'contacts/index'
 		}),
 
 		messageInput(e) {
@@ -714,6 +730,7 @@ export default {
 				description: '',
 				initial_message: {},
 				service_id: null,
+				contact_id: null,
 				userVideos: []
 			};
 		}

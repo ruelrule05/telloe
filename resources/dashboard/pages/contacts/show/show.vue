@@ -5,13 +5,6 @@
 				<router-link to="/dashboard/contacts" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 				CONTACT DETAILS
 			</div>
-			<div>
-				<button type="button" class="btn btn-md btn-primary flex items-center" @click="createNewEvent">
-					<span class="hidden md:block">Add</span>
-					<span class="block md:hidden">+</span>
-					<span class="ml-2">Booking</span>
-				</button>
-			</div>
 		</div>
 		<div class="h-20 lg:hidden block" />
 
@@ -34,12 +27,12 @@
 					<div class="flex justify-end">
 						<div class="w-full lg:w-4/5 flex items-end justify-between mt-9">
 							<div>
-								<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
-								<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Status</p>
-							</div>
-							<div>
 								<span class="flex mb-1 font-bold">{{ contact.bookings.total }}</span>
 								<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Bookings</p>
+							</div>
+							<div>
+								<span class="flex mb-1 font-bold">{{ contact.videoMessages ? contact.videoMessages.length : '' }}</span>
+								<p class="font-normal tracking-wider uppercase text-xxs text-muted mt-2">Video Messages</p>
 							</div>
 							<div>
 								<span class="flex mb-1">{{ formatDate(contact.created_at) }}</span>
@@ -231,34 +224,124 @@
 				</div>
 			</div>
 			<div class="w-full lg:w-7/12 p-8">
-				<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 filters">
-					<h5 class="font-serif text-sm font-bold tracking-tighter uppercase">Bookings</h5>
-					<div class="flex-grow flex items-center justify-end">
-						<vue-select :options="servicesList" button_class="mr-2 border-0 bg-light shadow-none" v-model="selectedService" label="Service" placeholder="All" @input="filterBookings"></vue-select>
-						<div class="ml-2">
-							<vue-select :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="order" label="Date" @input="filterBookings"></vue-select>
-						</div>
-					</div>
+				<div class="flex items-center w-full mb-6 space-x-3">
+					<div class="font-serif uppercase font-semibold text-xs cursor-pointer transition-colors" :class="[rightTab == 'bookings' ? 'text-primary' : ' text-gray-500 hover:text-black']" @click="rightTab = 'bookings'">Bookings</div>
+					<div class="font-serif uppercase font-semibold text-xs cursor-pointer transition-colors" :class="[rightTab == 'video_messages' ? 'text-primary' : ' text-gray-500 hover:text-black']" @click="rightTab = 'video_messages'">Video Messages</div>
 				</div>
-
-				<div class="py-4 flex items-center justify-between border-bottom" v-for="booking in contact.bookings.data" :key="booking.id">
-					<div class="w-4/12">
-						<span class="font-bold text-primary">{{ booking.name }}</span>
+				<template v-if="rightTab == 'bookings'">
+					<div v-if="!contact.bookings.data || contact.bookings.data.length == 0" class="flex-grow relative h-full">
+						<div class="absolute-center text-sm text-gray-400">No bookings created for this contact.</div>
 					</div>
-					<div class="w-3/12 flex items-center justify-end text-sm"><ClockIcon class="fill-current text-gray-200 mr-2"></ClockIcon>{{ formatDate(booking.date) }}</div>
-					<div class="w-3/12 text-sm text-right">{{ booking.start }} &mdash; {{ booking.end }}</div>
-					<div class="w-2/12 text-right">
-						<VueDropdown :options="['Edit']" @click="bookingAction($event, booking)" class="-mb-2">
-							<template #button>
-								<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-									<CogIcon class="fill-current text-gray-400"></CogIcon>
+					<template v-else>
+						<div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 filters">
+							<div class="flex-grow flex items-center">
+								<vue-select :options="servicesList" button_class="mr-2 border-0 bg-light shadow-none" v-model="selectedService" label="Service" placeholder="All" @input="filterBookings"></vue-select>
+								<div class="ml-2">
+									<vue-select :options="orders" button_class="mr-2 border-0 bg-light shadow-none" v-model="order" label="Date" @input="filterBookings"></vue-select>
 								</div>
-							</template>
-						</VueDropdown>
-					</div>
-				</div>
+							</div>
+							<button type="button" class="btn btn-md btn-primary flex items-center" @click="createNewEvent">
+								<span class="hidden md:block">Add</span>
+								<span class="block md:hidden">+</span>
+								<span class="ml-2">Booking</span>
+							</button>
+						</div>
 
-				<Paginate v-if="contact.bookings.data.length > 0" :data="contact.bookings" @change="p => (page = p)" class="mt-6"></Paginate>
+						<div class="flex items-center justify-between font-serif uppercase text-xs text-gray-500">
+							<div class="w-4/12">
+								<span class="font-bold">Booking Name</span>
+							</div>
+							<div class="w-3/12 text-right pr-6">
+								<span class="font-bold">Date</span>
+							</div>
+							<div class="w-3/12 text-right">
+								<span class="font-bold">Start/End</span>
+							</div>
+							<div class="w-2/12"></div>
+						</div>
+
+						<div class="py-4 flex items-center justify-between border-bottom" v-for="booking in contact.bookings.data" :key="booking.id">
+							<div class="w-4/12">
+								<span class="font-bold text-primary">{{ booking.name }}</span>
+							</div>
+							<div class="w-3/12 flex items-center justify-end text-sm"><ClockIcon class="fill-current text-gray-200 mr-2"></ClockIcon>{{ formatDate(booking.date) }}</div>
+							<div class="w-3/12 text-sm text-right">{{ booking.start }} &mdash; {{ booking.end }}</div>
+							<div class="w-2/12 text-right">
+								<VueDropdown :options="['Edit']" @click="bookingAction($event, booking)" class="-mb-2">
+									<template #button>
+										<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+											<CogIcon class="fill-current text-gray-400"></CogIcon>
+										</div>
+									</template>
+								</VueDropdown>
+							</div>
+						</div>
+
+						<Paginate v-if="contact.bookings.data.length > 0" :data="contact.bookings" @change="p => (page = p)" class="mt-6"></Paginate>
+					</template>
+				</template>
+
+				<template v-else-if="rightTab == 'video_messages'">
+					<div v-if="!contact.videoMessages || contact.videoMessages.length == 0" class="flex-grow relative h-full">
+						<div class="absolute-center text-sm text-gray-400">No video messages added for this contact.</div>
+					</div>
+					<div v-else class="flex-grow">
+						<template v-for="vMessage in contact.videoMessages">
+							<div class="flex items-start justify-between contact-row border-t py-3" :key="vMessage.id">
+								<div class="flex-grow flex items-center gap-3">
+									<div class="flex gap-2">
+										<template v-for="(video, videoIndex) in vMessage.videos">
+											<div v-if="videoIndex < 3" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
+												<div v-if="videoIndex == 2 && vMessage.videos.length > 3" class="absolute-center w-full h-full bg-black bg-opacity-40">
+													<span class="absolute-center text-white">+{{ vMessage.videos.length - 2 }}</span>
+												</div>
+												<span v-else class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(video.user_video.duration, { leading: true }) }}</span>
+											</div>
+										</template>
+									</div>
+									<div class="flex-grow">
+										<div class="overflow-hidden pr-6 w-full">
+											<div class="line-clamp-1 -mb-1">
+												<span class="font-bold text-primary cursor-pointer hover:underline" @click="openVideoMessage(vMessage)">
+													{{ vMessage.title }}
+												</span>
+											</div>
+											<div class="text-sm text-gray-500 mb-2 line-clamp-1">{{ vMessage.description }}</div>
+										</div>
+										<div class="text-xs text-gray-400 mb-1">{{ dayjs(vMessage.created_at).format('MMM DD, YYYY hh:mm A') }}</div>
+										<div class="flex items-center text-xs text-gray-500 mt-1 gap-4">
+											<div>
+												<VueDropdown @click="shareVideoMessage($event, vMessage)" :options="['Copy video link', 'Copy video for email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
+													<template #button>
+														<div class="flex items-center transition-colors cursor-pointer"><ShareIcon class="w-3.5 fill-current text-gray-400 mr-1"></ShareIcon> Share</div>
+													</template>
+												</VueDropdown>
+											</div>
+											<div class="flex items-center"><EyeIcon class="mr-1 w-4 fill-current"></EyeIcon> {{ vMessage.views }}</div>
+											<div class="flex items-center"><ThumbupIcon class="mr-1 w-3 fill-current"></ThumbupIcon> {{ likes(vMessage) }}</div>
+											<div class="flex items-center"><ThumbdownIcon class="mr-1 w-3 fill-current"></ThumbdownIcon> {{ dislikes(vMessage) }}</div>
+											<div class="flex items-center cursor-pointer hover:text-primary" @click="openVideoMessage(vMessage)"><CommentIcon class="mr-1 w-4 fill-current"></CommentIcon> {{ vMessage.conversation ? vMessage.conversation.messages_count : 0 }}</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="flex items-center">
+									<!-- <div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100" @click="setQuickAdd(vMessage)">
+										<PlusIcon class="stroke-current text-gray-400 w-3 h-3 transform scale-110"></PlusIcon>
+									</div>
+									<VueDropdown @click="videoMessageAction($event, vMessage)" :options="['Edit', 'Delete']" class="mr-1" dropPosition="w-28">
+										<template #button>
+											<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+												<CogIcon class="fill-current text-gray-400"></CogIcon>
+											</div>
+										</template>
+									</VueDropdown> -->
+									<toggle-switch @input="updateVideoMessageStatus($event, vMessage)" v-model="vMessage.is_active"></toggle-switch>
+								</div>
+							</div>
+						</template>
+					</div>
+				</template>
 			</div>
 		</div>
 
