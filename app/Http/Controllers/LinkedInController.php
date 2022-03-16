@@ -18,7 +18,6 @@ use Auth;
 use Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Socialite;
 
 class LinkedInController extends Controller
 {
@@ -29,8 +28,14 @@ class LinkedInController extends Controller
      */
     public function authenticate()
     {
+        $redirectUrl = 'https://www.linkedin.com/oauth/v2/authorization';
+        $redirectUrl .= '?client_id=' . config('services.linkedin.client_id');
+        $redirectUrl .= '&redirect_uri=' . urlencode(config('services.linkedin.integration_redirect'));
+        $redirectUrl .= '&scope=r_basicprofile+r_emailaddress';
+        $redirectUrl .= '&response_type=code';
+
         return response()->json([
-            'authUrl' => Socialite::driver('linkedin')->scopes(['r_basicprofile', 'r_emailaddress'])->redirect()->getTargetUrl()
+            'authUrl' => $redirectUrl
         ]);
     }
 
@@ -59,7 +64,7 @@ class LinkedInController extends Controller
         try {
             $config = Config::get('services.linkedin');
             $code = $request->input('code');
-            $response = Http::post('https://api.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=' . $code . '&client_id=' . $config['client_id'] . '&client_secret=' . $config['client_secret'] . '&redirect_uri=' . $config['redirect']);
+            $response = Http::post('https://api.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=' . $code . '&client_id=' . $config['client_id'] . '&client_secret=' . $config['client_secret'] . '&redirect_uri=' . $config['integration_redirect']);
 
             $data = $response->json();
 
