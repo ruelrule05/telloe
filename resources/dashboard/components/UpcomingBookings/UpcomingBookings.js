@@ -38,7 +38,7 @@ export default {
 	components: { GoogleIcon, OutlookIcon },
 
 	data: () => ({
-		convertTime: convertTime,
+		convertTime: convertTime
 	}),
 
 	computed: {
@@ -63,7 +63,6 @@ export default {
 			}
 			return upcomingDays;
 		}
-		
 	},
 
 	created() {},
@@ -75,14 +74,14 @@ export default {
 
 			// fetch day bookings
 			let dayBookings = this.bookings.filter(booking => booking.date == date);
-			dayBookings.map(function(value) {
-				allBookings.push({"startTime" : dayjs(value.start).format('HH:mm'),"endTime" : dayjs(value.end).format('HH:mm'),"title" : value.name, "integration" : "telloe"});
+			dayBookings.map(function (value) {
+				allBookings.push({ startTime: dayjs(value.start).format('HH:mm'), endTime: dayjs(value.end).format('HH:mm'), title: value.name, integration: 'telloe' });
 			});
 
 			// fetch google bookings
-			let googleBookingsList =  this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
-			googleBookingsList.map(function(value) {
-				allBookings.push({"startTime" : dayjs(value.start.dateTime).format('HH:mm'),"endTime" : dayjs(value.end.dateTime).format('HH:mm'), "title" : value.summary, "integration" : "google"});
+			let googleBookingsList = this.googleCalendarEvents.filter(googleEventBooking => googleEventBooking.status == 'confirmed' && dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
+			googleBookingsList.map(function (value) {
+				allBookings.push({ startTime: dayjs(value.start.dateTime).format('HH:mm'), endTime: dayjs(value.end.dateTime).format('HH:mm'), title: value.summary, integration: 'google' });
 			});
 
 			// fetch outlook bookings
@@ -92,21 +91,21 @@ export default {
 				outlookEventBooking.endTime = timezoneTime.get(dayjs(outlookEventBooking.end.dateTime).format('YYYY-MM-DD HH:mm'), outlookEventBooking.end.timeZone, this.timezone, 'HH:mm');
 				return dayjs(start).format('YYYY-MM-DD') == now;
 			});
-			outlookBookings.map(function(value) {
+			outlookBookings.map(function (value) {
 				console.log(value.endTime);
-				allBookings.push({"startTime" : value.startTime,"endTime" : value.endTime, "title" : value.subject, "integration" : "outlook"});
+				allBookings.push({ startTime: value.startTime, endTime: value.endTime, title: value.subject, integration: 'outlook' });
 			});
-			
+
 			allBookings.sort((a, b) => {
 				return a.startTime.localeCompare(b.startTime);
-			})
-			
+			});
+
 			return allBookings;
 		},
 
 		googleBookings(date) {
 			let now = dayjs(date).format('YYYY-MM-DD');
-			let googleBookingsList =  this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
+			let googleBookingsList = this.googleCalendarEvents.filter(googleEventBooking => dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
 			return googleBookingsList;
 		},
 
