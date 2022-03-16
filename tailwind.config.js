@@ -85,9 +85,7 @@ module.exports = {
 		}
 	},
 	variants: {
-		extend: {
-			display: ["group-hover"],
-		}
+		extend: {}
 	},
 	plugins: [require('@tailwindcss/line-clamp')]
 };
