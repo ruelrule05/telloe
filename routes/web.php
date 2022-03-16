@@ -36,7 +36,7 @@ Route::group(
         Route::get('/callback/googlecalendar', 'GoogleCalendarController@callback')->middleware('auth')->name('googlecalendarcallback');
         Route::get('/callback/msoutlook', 'OutlookController@callback')->middleware('auth');
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
-        Route::get('/linkedin/callback', 'LinkedInController@callback')->middleware('auth');
+        Route::get('/callback/linkedin', 'LinkedInController@callback')->middleware('auth');
         Route::get('/linkedin/getAccessToken', 'LinkedInController@getAccessToken')->middleware('auth');
         Route::post('/linkedin/feed', 'LinkedInController@feed');
 
@@ -80,6 +80,7 @@ Route::group(
                 Route::post('contacts/bulk', 'ContactController@bulkStore');
                 Route::get('contacts/{id}/recent_notes', 'ContactController@recentNotes');
                 Route::get('contacts/{id}/contact_notes', 'ContactController@contactNotes');
+                Route::get('contacts/{id}/video_messages', 'ContactController@videoMessages');
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
                 Route::post('contacts/{id}/package', 'ContactController@package');
                 Route::delete('contacts/{id}/package', 'ContactController@deletePackage');
@@ -146,6 +147,7 @@ Route::group(
 
                 // routes for LinkedIn
                 Route::get('linkedin/authenticate', 'LinkedInController@authenticate');
+                Route::get('linkedin/get_user/{urn}', 'LinkedInController@getUser');
 
                 Route::get('get_invoice', 'UserController@getInvoice');
 

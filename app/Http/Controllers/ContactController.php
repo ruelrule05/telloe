@@ -219,4 +219,9 @@ class ContactController extends Controller
 
         return response(true);
     }
+
+    public function videoMessages($id, Request $request)
+    {
+        return ContactService::videoMessages($id);
+    }
 }

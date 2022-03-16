@@ -20,6 +20,7 @@ import 'vue-swatches/dist/vue-swatches.css';
 import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import { mapState, mapActions } from 'vuex';
+import axios from 'axios';
 
 export default {
 	components: {
@@ -171,7 +172,8 @@ export default {
 						commentPost: commentPost,
 						sharedPost: sharedPost,
 						mutualConnections: 0,
-						linkedinProfile: linkedinProfile
+						linkedinProfile: linkedinProfile,
+						actor: actor
 					});
 				}
 			});
@@ -198,6 +200,12 @@ export default {
 		...mapActions({
 			getLinkedinActivities: 'linkedin_activities/index'
 		}),
+
+		async getLinkedinUser(actor) {
+			let response = await axios.get(`/linkedin/get_user/${actor.urn}`, { toast: true });
+
+			console.log(response.data);
+		},
 
 		getLabelStyles(label, style) {
 			return this.labelList.map(list => {

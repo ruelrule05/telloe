@@ -48,7 +48,9 @@ class User extends Authenticatable implements JWTSubject
         'match_up',
         'messages',
         'contacts',
-        'linkedin_username'
+        'linkedin_username',
+        'linkedin_token',
+        'linkedin_id'
     ];
 
     /**
@@ -96,6 +98,7 @@ class User extends Authenticatable implements JWTSubject
         'blocked_timeslots' => 'array',
         'google_calendar_id' => 'array',
         'outlook_calendar_id' => 'array',
+        'linkedin_token' => 'array',
     ];
 
     public function subscription()

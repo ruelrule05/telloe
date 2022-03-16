@@ -8,7 +8,8 @@ class SocialiteHelper
 {
     protected static $socialiteDrivers = [
         'facebook' => ['fields' => ['first_name', 'last_name', 'email']], 
-        'google' => []
+        'google' => [],
+        'linkedin' => [],
     ];
 
     public static function getRedirectUrl($driver)

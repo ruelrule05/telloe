@@ -63,10 +63,10 @@
 							<div class="flex w-10/12 sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
 								<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ dayjs(contact.created_at).format('MMM DD, YYYY') }}</p>
 								<div class="flex items-center">
-									<span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
+									<!-- <span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
 									<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
 										<MessageIcon class="fill-current text-gray-400"></MessageIcon>
-									</button>
+									</button> -->
 
 									<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
 										<template #button>

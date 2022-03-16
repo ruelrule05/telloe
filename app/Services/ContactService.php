@@ -19,6 +19,7 @@ use App\Models\ConversationMember;
 use App\Models\Message;
 use App\Models\Service;
 use App\Models\User;
+use App\Models\VideoMessage;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -449,5 +450,12 @@ class ContactService
 
         $order = $request->order ?? 'desc';
         return ContactNote::where('contact_id', $contact->id)->orderBy('created_at', $order)->get();
+    }
+
+    public static function videoMessages($id)
+    {
+        $contact = Contact::findOrFail($id);
+        (new self)->authorize('show', $contact);
+        return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('contact_id', $contact->id)->latest()->get());
     }
 }

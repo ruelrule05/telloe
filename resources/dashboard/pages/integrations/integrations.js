@@ -146,12 +146,9 @@ export default {
 		async removeLinkedIn() {
 			let user = Object.assign({}, this.$root.auth);
 			user.linkedin_username = null;
-			let response = await window.axios.post('/auth', user, { toast: true }).catch(() => {
-				this.$refs.linkedinModal.hide();
-			});
+			let response = await window.axios.post('/auth', user, { toast: true }).catch(() => {});
 			if (response) {
 				this.$root.auth = response.data;
-				this.$refs.linkedinModal.hide();
 			}
 		},
 

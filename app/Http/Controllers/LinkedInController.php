@@ -30,7 +30,7 @@ class LinkedInController extends Controller
     public function authenticate()
     {
         return response()->json([
-            'authUrl' => Socialite::driver('linkedin')->scopes(['r_basicprofile'])->redirect()->getTargetUrl()
+            'authUrl' => Socialite::driver('linkedin')->scopes(['r_basicprofile', 'r_emailaddress'])->redirect()->getTargetUrl()
         ]);
     }
 
@@ -67,24 +67,16 @@ class LinkedInController extends Controller
                 'Authorization' => 'Bearer ' . $data['access_token'],
             ])->get('https://api.linkedin.com/v2/me');
 
+            $email = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $data['access_token'],
+            ])->get('https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))');
+            print_r($email->json());
+
             Auth::user()->update([
-                'linkedin_username' => $me->json()['vanityName']
+                'linkedin_username' => $me->json()['vanityName'],
+                'linkedin_token' => $data,
             ]);
 
-            // dd($requestJobs);
-
-            // if($existUser) {
-            //     Auth::loginUsingId($existUser->id);
-            // }
-            // else {
-            //     $user = new User;
-            //     $user->name = $linkdinUser->name;
-            //     $user->email = $linkdinUser->email;
-            //     $user->linkedin_id = $linkdinUser->id;
-            //     $user->password = md5(rand(1,10000));
-            //     $user->save();
-            //     Auth::loginUsingId($user->id);
-            // }
             return redirect()->to('/dashboard/integrations');
         } catch (Exception $e) {
             return 'error';
@@ -96,5 +88,19 @@ class LinkedInController extends Controller
         $authUser = Auth::user();
         debounce(new ScrapeLinkedin($authUser), 30);
         return response()->json($authUser->linkedinActivities);
+    }
+
+    public function getUser(String $urn)
+    {
+        $authUser = Auth::user();
+        if (! $authUser->linkedin_token) {
+            return abort(403, 'LinkedIn not integrated.');
+        }
+        $memberId = str_replace('urn:li:member:', '', $urn);
+        $user = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $authUser->linkedin_token['access_token'],
+            'X-RestLi-Protocol-Version' => '2.0.0'
+        ])->get('https://api.linkedin.com/v2/people/(id:' . $memberId . ')');
+        return response()->json($user->json());
     }
 }
