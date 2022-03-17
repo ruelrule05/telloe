@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserVideo;
 use App\Services\UserVideoService;
 use Illuminate\Http\Request;
 
@@ -15,5 +16,10 @@ class UserVideoController extends Controller
     public function store(Request $request)
     {
         return UserVideoService::store($request);
+    }
+
+    public function destroy(UserVideo $userVideo)
+    {
+        return UserVideoService::destroy($userVideo);
     }
 }

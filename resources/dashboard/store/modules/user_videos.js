@@ -11,7 +11,12 @@ const mutations = {
 	store(state, data) {
 		state.index.unshift(data);
 	},
-	delete() {}
+	delete(state, data) {
+		state.index.splice(
+			state.index.findIndex(x => x.id == data.id),
+			1
+		);
+	},
 };
 
 const actions = {
@@ -28,7 +33,13 @@ const actions = {
 		}
 
 		return response;
-	}
+	},
+	async delete({ commit }, data) {
+		let response = await window.axios.delete(`/${name}/${data.id}`, { toast: true });
+		if (response) {
+			commit('delete', data);
+		}
+	},
 };
 
 const getters = {};

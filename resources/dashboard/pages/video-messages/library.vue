@@ -351,7 +351,7 @@ export default {
 
 	computed: {
 		...mapState({
-			userVideos: state => state.user_videos.index
+			userVideos: state => state.user_videos.index,
 		})
 	},
 
@@ -386,7 +386,8 @@ export default {
 	methods: {
 		...mapActions({
 			getUserVideos: 'user_videos/index',
-			storeUserVideo: 'user_videos/store'
+			storeUserVideo: 'user_videos/store',
+			deleteUserVideo: 'user_videos/delete',
 		}),
 
 		secondsToDuration(seconds, limit = 14, end = 5) {
@@ -823,7 +824,7 @@ export default {
 
 		confirmDeleteVideoMessage() {
 			if (this.selectedVideoMessage) {
-				this.deleteVideoMessage(this.selectedVideoMessage);
+				this.deleteUserVideo(this.selectedVideoMessage);
 			}
 			this.$refs.deleteModal.hide();
 		},
