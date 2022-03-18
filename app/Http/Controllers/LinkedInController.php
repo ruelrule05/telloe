@@ -73,11 +73,6 @@ class LinkedInController extends Controller
                 'Authorization' => 'Bearer ' . $data['access_token'],
             ])->get('https://api.linkedin.com/v2/me');
 
-            $email = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $data['access_token'],
-            ])->get('https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))');
-            print_r($email->json());
-
             Auth::user()->update([
                 'linkedin_username' => $me->json()['vanityName'],
                 'linkedin_token' => $data,
