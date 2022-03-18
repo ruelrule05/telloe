@@ -364,7 +364,7 @@ class BookingService
         $booking = Booking::findOrFail($id);
         $service = $booking->service;
 
-        $newService = Service::where('id', $request->service_id)->where(function ($query) use ($request, $authUser) {
+        Service::where('id', $request->service_id)->where(function ($query) use ($request, $authUser) {
             $query->where('user_id', $authUser->id)->orWhereHas('parentService', function ($parentService) use ($authUser) {
                 $parentService->where('user_id', $authUser->id);
             });

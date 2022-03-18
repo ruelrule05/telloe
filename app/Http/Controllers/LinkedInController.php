@@ -46,14 +46,15 @@ class LinkedInController extends Controller
             'data' => 'required'
         ]);
         $userId = $request->input('user_id');
-        foreach ($request->input('data') as $data) {
-            LinkedinActivity::disableCache()->firstOrCreate(
+        foreach ($request->input('data') as $key => $data) {
+            LinkedinActivity::disableCache()->updateOrCreate(
                 [
                     'user_id' => $userId,
                     'activity_id' => $data['entityUrn']
                 ],
                 [
-                    'data' => $data
+                    'data' => $data,
+                    'order' => $key
                 ]
             );
         }

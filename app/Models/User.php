@@ -241,6 +241,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function linkedinActivities()
     {
-        return $this->hasMany(LinkedinActivity::class);
+        return $this->hasMany(LinkedinActivity::class)->orderBy('order', 'asc');
     }
 }

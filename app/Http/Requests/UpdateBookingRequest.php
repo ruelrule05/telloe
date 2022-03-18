@@ -35,6 +35,7 @@ class UpdateBookingRequest extends FormRequest
             'notes' => 'nullable|string',
             'timezone' => 'required|string',
             'service_id' => 'required|exists:services,id',
+            'linkedin_user' => 'nullable|array',
 
             // 'end' => 'required|string|max:20',
             // 'metadata' => 'nullable|json',
