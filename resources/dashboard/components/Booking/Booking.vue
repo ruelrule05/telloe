@@ -265,6 +265,11 @@
 								</multiselect>
 							</template>
 
+							<div v-if="linkedinUsersOptions.length" class="mt-4">
+								<label>LinkedIn User</label>
+								<VueSelect required :options="linkedinUsersOptions" placeholder="Select LinkedIn user" class="mb-4" dropPosition="top w-full" v-model="clonedBooking.linkedin_user"></VueSelect>
+							</div>
+
 							<div class="mt-4">
 								<label class="-mb-px">Meeting Type</label>
 								<div>{{ clonedBooking.meeting_type }}</div>

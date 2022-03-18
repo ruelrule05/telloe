@@ -198,6 +198,7 @@ window.app = new Vue({
 		this.message_sound = new Audio('/notifications/new_message.mp3');
 
 		this.getNotifications();
+		this.getLinkedinActivities();
 		this.isMobile = mobile();
 	},
 
@@ -222,7 +223,8 @@ window.app = new Vue({
 			getConversations: 'conversations/index',
 			getNotifications: 'notifications/index',
 			updateNotification: 'notifications/update',
-			clearNotifications: 'notifications/clear'
+			clearNotifications: 'notifications/clear',
+			getLinkedinActivities: 'linkedin_activities/index'
 		}),
 
 		checkCookie() {

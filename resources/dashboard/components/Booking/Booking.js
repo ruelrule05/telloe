@@ -106,7 +106,8 @@ export default {
 	computed: {
 		...mapState({
 			services: state => state.services.index,
-			contacts: state => state.contacts.index
+			contacts: state => state.contacts.index,
+			linkedActivities: state => state.linkedin_activities.index
 		}),
 
 		availableTimezones() {
@@ -193,6 +194,31 @@ export default {
 				}
 				return { name: `${contact.contact_user.full_name}${email}`, value: contact.id, id: contact.id, contact_user: contact.contact_user, email: contact.contact_user.email, type: 'contact' };
 			});
+		},
+
+		linkedinUsers() {
+			let linkedinUsers = [];
+			this.linkedActivities.forEach(activity => {
+				let actor = activity.data.actor;
+				if (activity.data.resharedUpdate) {
+					actor = activity.data.resharedUpdate.actor;
+				}
+				if (actor && !linkedinUsers.find(x => x.urn == actor.urn)) {
+					linkedinUsers.push(actor);
+				}
+			});
+			return linkedinUsers;
+		},
+
+		linkedinUsersOptions() {
+			let linkedinUsersOptions = [];
+			this.linkedinUsers.forEach(actor => {
+				linkedinUsersOptions.push({
+					text: actor.name.text,
+					value: actor.urn
+				});
+			});
+			return linkedinUsersOptions;
 		}
 	},
 
@@ -249,6 +275,10 @@ export default {
 						});
 					});
 					this.selectedContacts = bookingUsers;
+				}
+
+				if (this.clonedBooking.linkedin_user) {
+					this.clonedBooking.linkedin_user = this.clonedBooking.linkedin_user.urn;
 				}
 			}
 		},
@@ -591,6 +621,9 @@ export default {
 			newData.contact_ids = this.selectedContacts.filter(x => x.type == 'contact').map(x => x.id);
 			if (this.contact) {
 				newData.contact_ids.push(this.contact.id);
+			}
+			if (newData.linkedin_user) {
+				newData.linkedin_user = this.linkedinUsers.find(x => x.urn == newData.linkedin_user);
 			}
 			newData.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
 			newData.booking_user_ids = this.selectedContacts.filter(x => x.type == 'booking-user').map(x => x.id);
