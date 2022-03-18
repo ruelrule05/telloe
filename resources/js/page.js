@@ -57,7 +57,7 @@ window.app = new Vue({
 		videoOpen: false,
 		WistiaPlayer: null,
 		mobileApp: true,
-		cursorStatus: 'browsing',
+		cursorStatus: 'browsing'
 	},
 
 	watch: {
@@ -112,7 +112,7 @@ window.app = new Vue({
 		setTimeout(() => {
 			let wq = window._wq || [];
 			wq.push({
-				id: 'sbp1xbl4gp',
+				id: '2wfiilh43m',
 				onReady: video => {
 					this.WistiaPlayer = video;
 					if (this.videoOpen) {
