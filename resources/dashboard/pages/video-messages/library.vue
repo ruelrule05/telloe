@@ -309,6 +309,7 @@ import MultiStreamsMixer from 'multistreamsmixer';
 import CloseIcon from '../../../icons/close.vue';
 import Modal from '../../../components/modal/modal.vue';
 import WarningIcon from '../../../icons/warning';
+import MoreVIcon from '../../../icons/more-v';
 
 export default {
 	props: {
@@ -318,7 +319,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon, Modal, WarningIcon },
+	components: { CloseIcon, Modal, WarningIcon, MoreVIcon },
 
 	data: () => ({
 		library: false,
