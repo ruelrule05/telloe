@@ -122,7 +122,7 @@ export default {
 			}
 
 			this.googleCalendarEvents.forEach(event => {
-				if (event.start && !event.id.includes('telloebooking')) {
+				if (event.status == 'confirmed' && event.start && !event.id.includes('telloebooking')) {
 					let calendarEvent = JSON.parse(JSON.stringify(event));
 					let color = 'bg-red-200 hover:bg-red-400 hover:text-white';
 					if (this.selectedBooking && this.selectedBooking.id == calendarEvent.id) {
