@@ -243,5 +243,6 @@
 @stop
 
 @section('scripts')
-
+@include('partials.google_tags')
+	
 @stop
