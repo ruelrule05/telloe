@@ -6,7 +6,7 @@ class LinkedinActivity extends BaseModel
 {
     //
 
-    protected $fillable = ['user_id', 'activity_id', 'data'];
+    protected $fillable = ['user_id', 'activity_id', 'data', 'order'];
     protected $casts = [
         'data' => 'object',
     ];
