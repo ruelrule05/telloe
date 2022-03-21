@@ -71,4 +71,11 @@ class UserVideoService
         UserVideo::where('id', $userVideo->id)->delete();
         return response()->json(['deleted' => $userVideo->delete()]);
     }
+
+    public function update(Request $request, UserVideo $userVideo)
+    {
+        $this->authorize('update', $userVideo);
+        $userVideo->update($request->only('tags'));
+        return response()->json(['updated' => '']);
+    }
 }

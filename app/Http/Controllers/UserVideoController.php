@@ -22,4 +22,9 @@ class UserVideoController extends Controller
     {
         return UserVideoService::destroy($userVideo);
     }
+
+    public function update(Request $request, UserVideo $userVideo)
+    {
+        return UserVideoService::update($request, $userVideo);
+    }
 }
