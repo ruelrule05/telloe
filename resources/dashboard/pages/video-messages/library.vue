@@ -235,6 +235,9 @@
 										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" 
 										type="button" @click="videoMessageAction(userVideo)">
 										<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoLibraryTags()">
+											<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
+										</button>
 									</div>
 									
 									<div class="checkmark absolute-center rounded-full">
@@ -277,6 +280,7 @@
 				</div>
 			</div>
 		</div>
+
 		<Modal ref="deleteModal">
 			<div class="text-center">
 				<WarningIcon class="fill-current text-red-600 h-8 w-8 inline-block mb-4"></WarningIcon>
@@ -285,6 +289,18 @@
 			<div class="flex justify-between mt-6">
 				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.deleteModal.hide()"><span>Cancel</span></button>
 				<button class="btn btn-sm btn-red" type="button" @click="confirmDeleteVideoMessage"><span>Delete</span></button>
+			</div>
+		</Modal>
+
+		<Modal ref="tagsModal">
+			<div class="text-center">
+				<WarningIcon class="fill-current text-red-600 h-8 w-8 inline-block mb-4"></WarningIcon>
+				<p>Add Tags</p>
+				<p>Tags</p>
+				<multiselect :options="tagOptions" :showLabels="false" :taggable="true" placeholder="" multiple @tag="addTag"></multiselect>
+			</div>
+			<div class="flex justify-between mt-6">
+				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.tagsModal.hide()"><span>Cancel</span></button>
 			</div>
 		</Modal>
 	</div>
@@ -310,6 +326,8 @@ import CloseIcon from '../../../icons/close.vue';
 import Modal from '../../../components/modal/modal.vue';
 import WarningIcon from '../../../icons/warning';
 import MoreVIcon from '../../../icons/more-v';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
 	props: {
@@ -319,7 +337,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon, Modal, WarningIcon, MoreVIcon },
+	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect },
 
 	data: () => ({
 		library: false,
@@ -347,7 +365,8 @@ export default {
 		recordInterval: null,
 		recordDuration: 0,
 		uploadProgress: 0,
-		gifProgress: 0
+		gifProgress: 0,
+		tagOptions: []
 	}),
 
 	computed: {
@@ -389,6 +408,7 @@ export default {
 			getUserVideos: 'user_videos/index',
 			storeUserVideo: 'user_videos/store',
 			deleteUserVideo: 'user_videos/delete',
+			updateTag: 'user_videos/update',
 		}),
 
 		secondsToDuration(seconds, limit = 14, end = 5) {
@@ -833,6 +853,20 @@ export default {
 		videoMessageAction(videoMessage) {
 			this.selectedVideoMessage = videoMessage;
 			this.$refs.deleteModal.show();
+		},
+
+		videoLibraryTags() {
+			//this.selectedVideoMessage = videoMessage;
+			this.$refs.tagsModal.show();
+		},
+
+		addTag(newTag) {
+			let exists = this.tagOptions.find(x => x == newTag);
+			if (!exists) {
+				this.tagOptions.push(newTag);
+				this.contact.tags.push(newTag);
+				this.updateTag(newTag);
+			}
 		},
 	}
 };
