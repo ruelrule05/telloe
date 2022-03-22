@@ -46,6 +46,11 @@ const actions = {
 			commit('delete', data);
 		}
 	},
+	async update({ commit }, data) {
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
+		commit('update', response.data);
+		return response.data;
+	},
 };
 
 const getters = {};
