@@ -295,9 +295,8 @@
 		<Modal ref="tagsModal">
 			<div class="text-center">
 				<WarningIcon class="fill-current text-red-600 h-8 w-8 inline-block mb-4"></WarningIcon>
-				<p>Add Tags</p>
-				<p>Tags</p>
-				<multiselect :options="tagOptions" :showLabels="false" :taggable="true" placeholder="" multiple @tag="addTag"></multiselect>
+				<p>Video Tags</p>
+				<multiselect v-model="tagOptions" :options="tagOptions" :showLabels="false" :taggable="true" placeholder="" multiple @tag="addTag"></multiselect>
 			</div>
 			<div class="flex justify-between mt-6">
 				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.tagsModal.hide()"><span>Cancel</span></button>
@@ -366,7 +365,8 @@ export default {
 		recordDuration: 0,
 		uploadProgress: 0,
 		gifProgress: 0,
-		tagOptions: []
+		tagOptions: [],
+		user_videos: null
 	}),
 
 	computed: {
@@ -864,7 +864,7 @@ export default {
 			let exists = this.tagOptions.find(x => x == newTag);
 			if (!exists) {
 				this.tagOptions.push(newTag);
-				this.contact.tags.push(newTag);
+				//this.userVideos.tags.push(newTag);
 				this.updateTag(newTag);
 			}
 		},
