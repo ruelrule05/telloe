@@ -20,8 +20,8 @@ const mutations = {
 	update(state, data) {
 		let userVideo = state.index.find(x => x.id == data.id);
 		if (userVideo) Object.assign(userVideo, data);
-		userVideo = state.paginated.data.find(x => x.id == data.id);
-		if (userVideo) Object.assign(userVideo, data);
+		//userVideo = state.paginated.data.find(x => x.id == data.id);
+		//if (userVideo) Object.assign(userVideo, data);
 	},
 };
 
