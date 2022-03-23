@@ -40,11 +40,25 @@ import CommentIcon from '../../../../icons/comment-solid';
 import ShareIcon from '../../../../icons/share';
 import EyeIcon from '../../../../icons/eye-solid';
 const format = require('format-duration');
-
 import copy from 'copy-text-to-clipboard';
+import AddVideoMessage from '../../video-messages/add.vue';
+const gifshot = require('../../../../js/plugins/gifshot.min');
+import { GifReader } from 'omggif';
+const humanizeDuration = require('humanize-duration');
+import { cover } from 'intrinsic-scale';
+const AWS = window.AWS;
+AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	IdentityPoolId: process.env.MIX_AWS_IDENTITY_POOL
+});
+const S3 = new AWS.S3({
+	apiVersion: '2006-03-01',
+	params: { Bucket: process.env.MIX_AWS_BUCKET }
+});
 
 export default {
 	components: {
+		AddVideoMessage,
 		ShareIcon,
 		CommentIcon,
 		EyeIcon,
@@ -129,7 +143,13 @@ export default {
 		packageService: null,
 		contactPackageIndex: 0,
 		tagOptions: [],
-		rightTab: 'bookings'
+		rightTab: 'video_messages',
+		videoMessage: null,
+		addingVideoMessage: false,
+		videoMessageStatus: '',
+		uploadProgress: 0,
+		gifProgress: 0,
+		app_url: process.env.MIX_APP_URL
 	}),
 
 	computed: {
@@ -289,11 +309,197 @@ export default {
 			updateVideoMessage: 'video_messages/update'
 		}),
 
-		updateVideoMessageStatus(status, videoMessage) {
+		async generateLinkPreview(gif, duration) {
+			return new Promise((resolve, reject) => {
+				(async () => {
+					const response = await fetch(gif);
+					this.uploadProgress += 10;
+					const blob = await response.blob();
+					const arrayBuffer = await blob.arrayBuffer();
+					this.uploadProgress += 10;
+					const intArray = new Uint8Array(arrayBuffer);
+					const reader = new GifReader(intArray);
+					const info = reader.frameInfo(0);
+					const results = new Array(reader.numFrames()).fill(0).map((_, k) => {
+						const image = new ImageData(info.width, info.height);
+						reader.decodeAndBlitFrameRGBA(k, image.data);
+						return image;
+					});
+					let canvas = document.createElement('canvas');
+					canvas.width = 600;
+					canvas.height = 313;
+					let ctx = canvas.getContext('2d');
+					let parsedDuration = humanizeDuration(duration, { round: true, units: duration < 60000 ? ['s'] : ['m'] })
+						.replace('minutes', 'minute')
+						.replace('seconds', 'second');
+					let durationText = `Play ${parsedDuration} video`;
+
+					let playImage = new Image();
+					playImage.src = `${this.app_url}/images/email-play.png`;
+
+					let images = [];
+					playImage.onload = () => {
+						results.forEach(imageData => {
+							let { width, height, x, y } = cover(canvas.width, canvas.height, imageData.width, imageData.height);
+							let renderer = document.createElement('canvas');
+							renderer.width = imageData.width;
+							renderer.height = imageData.height;
+							renderer.getContext('2d').putImageData(imageData, 0, 0);
+							ctx.drawImage(renderer, x, y, width, height);
+							ctx.beginPath();
+							ctx.rect(30, 240, 540, 50);
+							ctx.fillStyle = '#3167e3';
+							ctx.fill();
+
+							ctx.drawImage(playImage, 20, 230, 70, 70);
+							ctx.font = '18px Arial';
+							ctx.fillStyle = 'white';
+							ctx.fillText(durationText, 230, 270);
+							images.push(canvas.toDataURL());
+							ctx.clearRect(0, 0, canvas.width, canvas.height);
+						});
+
+						this.uploadProgress += 5;
+						gifshot.createGIF(
+							{
+								images: images,
+								numFrames: 30,
+								gifWidth: canvas.width,
+								gifHeight: canvas.height
+							},
+							async obj => {
+								if (!obj.error) {
+									this.videoMessageStatus = 'Uploading...';
+									this.uploadProgress += 15;
+									let timestamp = new Date().getTime();
+									S3.upload(
+										{
+											Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'link_preview.gif',
+											Body: this.dataURLtoFile(obj.image, 'link_preview.gif'),
+											ACL: 'public-read',
+											ContentType: 'image/gif'
+										},
+										async (err, d) => {
+											if (!err && d) {
+												this.uploadProgress += 20;
+												resolve(d.Location);
+											}
+										}
+									);
+								} else {
+									console.log(obj.error);
+									reject(obj.error);
+								}
+							}
+						);
+					};
+				})();
+			});
+		},
+
+		dataURLtoFile(dataurl, filename) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+
+			while (n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+
+			return new File([u8arr], filename, { type: mime });
+		},
+
+		async updateVideoMessageSubmit(videoMessage) {
+			this.videoMessageStatus = 'Processing...';
+			let data = JSON.parse(JSON.stringify(videoMessage));
+			data.user_video_ids = data.userVideos.map(x => x.id);
+
+			this.uploadProgress += 20;
+			data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+			data.initial_message = await this.generateInitialMessage(videoMessage);
+
+			delete data.original_message;
+			delete data.new_source;
+			this.videoMessageStatus = 'Finalizing...';
+			this.uploadProgress += 10;
+			let response = await this.updateVideoMessage(data).catch(() => {});
+			if (response) {
+				let index = this.contact.videoMessages.findIndex(x => x.id == response.data.id);
+				if (index > -1) {
+					this.contact.videoMessages[index] = response.data;
+				}
+			}
+			this.videoMessageStatus = null;
+			this.addingVideoMessage = false;
+			this.uploadProgress = 0;
+			this.gifProgress = 0;
+		},
+
+		async generateInitialMessage(data) {
+			return new Promise(resolve => {
+				(async () => {
+					if (data.initial_message.new_source) {
+						if (data.initial_message.new_preview) {
+							let preview = await S3.upload({
+								Key: 'video-messages/' + this.$root.auth.id + '/' + data.uuid + '/' + 'initial_message_preview.png',
+								Body: this.dataURLtoFile(data.initial_message.new_preview, 'initial_message_preview.png'),
+								ACL: 'public-read',
+								ContentType: 'image/png'
+							})
+								.promise()
+								.catch(() => {});
+							if (preview) {
+								data.initial_message.preview = preview.Location;
+								this.uploadProgress += 5;
+							}
+						}
+						let source = await S3.upload({
+							Key: 'video-messages/' + this.$root.auth.id + '/' + data.uuid + '/' + data.initial_message.filename,
+							Body: data.initial_message.new_source,
+							ACL: 'public-read'
+						})
+							.promise()
+							.catch(() => {});
+						if (source) {
+							data.initial_message.source = source.Location;
+							this.uploadProgress += 5;
+						}
+					} else {
+						this.uploadProgress += 10;
+					}
+					if (this.$refs.newInitialMessage) {
+						data.initial_message.message = this.$refs.newInitialMessage.innerText.trim();
+					}
+					resolve(data.initial_message);
+				})();
+			});
+		},
+
+		videoMessageAction(action, videoMessage) {
+			if (action == 'Edit') {
+				let data = JSON.parse(JSON.stringify(videoMessage));
+				data.userVideos = data.videos.map(x => x.user_video);
+				if (data.initial_message) {
+					if (Array.isArray(data.initial_message)) {
+						data.initial_message = {};
+					}
+					data.initial_message.original_message = data.initial_message.message;
+				}
+				this.videoMessage = data;
+				this.addingVideoMessage = true;
+			} else if (action == 'Delete') {
+				this.videoMessage = videoMessage;
+				this.$refs.deleteVideoMessageModal.show();
+			}
+		},
+
+		async updateVideoMessageStatus(status, videoMessage) {
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.is_active = status;
 			data.user_video_ids = data.videos.map(x => x.user_video_id);
-			this.updateVideoMessage(data);
+			await this.updateVideoMessage(data);
 		},
 
 		async copyElementToClipboard(videoMessage) {

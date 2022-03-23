@@ -224,4 +224,9 @@ class ContactController extends Controller
     {
         return ContactService::videoMessages($id);
     }
+
+    public function getByUrn($urn)
+    {
+        return ContactService::getByUrn($urn);
+    }
 }

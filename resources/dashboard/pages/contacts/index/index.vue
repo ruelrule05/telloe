@@ -57,7 +57,15 @@
 								</div>
 								<div>
 									<router-link :to="`/dashboard/contacts/${contact.id}`" class="font-bold text-primary">{{ contact.contact_user.full_name }}</router-link>
-									<p class="text-xs text-muted">{{ contact.contact_user.email }}</p>
+									<div class="text-xs text-muted">
+										<div v-if="contact.linkedin_urn" class="flex items-center">
+											<LinkedinIcon class="mr-1 w-3 h-3" />
+											<div>
+												LinkedIn Contact <span v-if="contact.contact_user.email">({{ contact.contact_user.email }})</span>
+											</div>
+										</div>
+										<span v-else>{{ contact.contact_user.email }}</span>
+									</div>
 								</div>
 							</div>
 							<div class="flex w-10/12 sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">

@@ -23,11 +23,13 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import MessageIcon from '../../../../icons/comment';
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
+import LinkedinIcon from '../../../../icons/linkedin';
 const dayjs = require('dayjs');
 const mobile = require('is-mobile');
 
 export default {
 	components: {
+		LinkedinIcon,
 		InfoCircleIcon,
 		MessageIcon,
 		CheckmarkIcon,
