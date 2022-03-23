@@ -65,7 +65,7 @@ class LinkedInController extends Controller
                         ]
                     );
 
-                    if (isset($actor['urn'])) {
+                    if (isset($actor['urn']) && isset($actor['name']['attributes']) && count($actor['name']['attributes']) > 0) {
                         $profile = $actor['name']['attributes'][0]['miniProfile'] ?? $actor['name']['attributes'][0]['miniCompany'];
                         Contact::firstOrCreate(
                             [
