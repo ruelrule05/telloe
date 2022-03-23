@@ -117,7 +117,7 @@ export default {
 							likedPost = 1;
 						}
 					}
-					if (actor.name.attributes.length > 0) {
+					if (actor.name.attributes && actor.name.attributes.length > 0) {
 						let vanityName = null;
 						if (actor.name.attributes[0].miniProfile) {
 							vanityName = actor.name.attributes[0].miniProfile.publicIdentifier;
