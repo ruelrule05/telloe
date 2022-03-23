@@ -871,11 +871,9 @@ export default {
 			}
 		},
 
-		async getUserVideoTags(videoMessage) {
+		async getUserVideoTags() {
 			this.tagOptions = [];
-			this.selectedVideoMessage = videoMessage;
 			let userVideoTags = JSON.parse( this.selectedVideoMessage.tags);
-			console.log(userVideoTags);
 			if (userVideoTags) {
 				userVideoTags.forEach(tag => this.tagOptions.push(tag));
 			}
