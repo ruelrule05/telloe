@@ -145,6 +145,7 @@ export default {
 						if (contact && contact.label) {
 							label = contact.label;
 						}
+
 						activities.push({
 							id: activity.id,
 							name: name,
