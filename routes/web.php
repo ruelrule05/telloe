@@ -66,6 +66,7 @@ Route::group(
             ], function () {
                 // Resource
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy', 'show']);
+                Route::apiResource('contact_labels', 'ContactLabelController');
                 Route::apiResource('messages', 'MessageController')->only(['update', 'destroy']);
                 Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
                 Route::get('services/contact_services', 'ServiceController@contactServices');
@@ -80,6 +81,7 @@ Route::group(
                 Route::post('contacts/bulk', 'ContactController@bulkStore');
                 Route::get('contacts/{id}/recent_notes', 'ContactController@recentNotes');
                 Route::get('contacts/{id}/contact_notes', 'ContactController@contactNotes');
+                Route::get('contacts/get_by_urn/{urn}', 'ContactController@getByUrn');
                 Route::get('contacts/{id}/video_messages', 'ContactController@videoMessages');
                 Route::post('contacts/{id}/resend', 'ContactController@resend');
                 Route::post('contacts/{id}/package', 'ContactController@package');

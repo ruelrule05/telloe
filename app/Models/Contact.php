@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Contact extends BaseModel
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields', 'tags', 'linkedin_urn'];
+    protected $fillable = ['user_id', 'contact_user_id', 'email', 'first_name', 'last_name', 'is_pending', 'invite_token', 'blacklisted_services', 'invoices', 'subscriptions', 'stripe_customer_id', 'xero_guid', 'custom_fields', 'tags', 'linkedin_urn', 'label'];
     protected $appends = ['full_name', 'initials', 'created_at_format', 'profile_image'];
     protected $casts = [
         'blacklisted_services' => 'array',
         'invoices' => 'array',
         'subscriptions' => 'array',
         'custom_fields' => 'array',
-        'tags' => 'array'
+        'tags' => 'array',
+        'label' => 'array'
     ];
 
     public function user()
