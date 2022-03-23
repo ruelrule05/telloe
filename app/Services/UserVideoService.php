@@ -74,8 +74,11 @@ class UserVideoService
 
     public function update(Request $request, UserVideo $userVideo)
     {
-        $this->authorize('update', $userVideo);
-        $userVideo->update($request->only('tags'));
-        return response()->json(['updated' => '']);
+        $userVideo
+        ->where('id',$request->id)
+        ->update([
+            'tags' => $request->tags,
+        ]);
+        return response()->json(['updated' => true]);
     }
 }
