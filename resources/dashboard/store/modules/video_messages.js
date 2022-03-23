@@ -55,6 +55,7 @@ const actions = {
 		if (response) {
 			commit('update', response.data);
 		}
+		return response;
 	},
 
 	async delete({ commit }, data) {

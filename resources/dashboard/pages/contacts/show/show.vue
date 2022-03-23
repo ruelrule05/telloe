@@ -1,5 +1,16 @@
 <template>
-	<div v-if="contact" class="min-h-screen flex flex-col">
+	<div v-if="contact" class="min-h-screen flex flex-col relative">
+		<div v-if="videoMessageStatus" class="absolute-center w-full h-full z-50 bg-white">
+			<div class="absolute-center text-center w-full">
+				<div class="absolute-center w-3/12">
+					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
+						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
+					</div>
+					<div class="mt-2 text-sm">{{ videoMessageStatus }}</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white md:z-0 z-10">
 			<div class="flex items-center">
 				<router-link to="/dashboard/contacts" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
@@ -326,7 +337,7 @@
 								</div>
 
 								<div class="flex items-center">
-									<!-- <div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100" @click="setQuickAdd(vMessage)">
+									<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100" @click="setQuickAdd(vMessage)">
 										<PlusIcon class="stroke-current text-gray-400 w-3 h-3 transform scale-110"></PlusIcon>
 									</div>
 									<VueDropdown @click="videoMessageAction($event, vMessage)" :options="['Edit', 'Delete']" class="mr-1" dropPosition="w-28">
@@ -335,7 +346,7 @@
 												<CogIcon class="fill-current text-gray-400"></CogIcon>
 											</div>
 										</template>
-									</VueDropdown> -->
+									</VueDropdown>
 									<toggle-switch @input="updateVideoMessageStatus($event, vMessage)" v-model="vMessage.is_active"></toggle-switch>
 								</div>
 							</div>
@@ -402,6 +413,8 @@
 				</div>
 			</template>
 		</modal>
+
+		<AddVideoMessage v-show="addingVideoMessage" class="absolute top-0 left-0 h-screen w-full" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit"></AddVideoMessage>
 	</div>
 </template>
 

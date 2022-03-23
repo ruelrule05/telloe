@@ -117,126 +117,7 @@
 		</div>
 
 		<!-- Add form -->
-		<vue-form-validate v-show="adding" @submit="store" class="min-h-screen relative flex flex-col">
-			<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10 p-5">
-				<div class="ml-7 lg:w-4/12 w-100 lg:ml-0">{{ videoMessage.id ? 'EDIT' : 'CREATE' }} VIDEO MESSAGE</div>
-				<div class="flex items-center gap-2">
-					<button type="button" class="btn btn-md btn-outline-primary" @click="reset()">
-						<span>Cancel</span>
-					</button>
-
-					<button type="submit" class="btn btn-md btn-primary">
-						<span>{{ videoMessage.id ? 'Save' : 'Publish' }} </span>
-					</button>
-				</div>
-			</div>
-			<div class="h-20 lg:hidden block" />
-			<div class="flex-grow overflow-auto flex items-stretch relative">
-				<div v-show="!status" class="text-left relative overflow-hidden w-full flex">
-					<div class="flex-grow w-full h-full overflow-hidden">
-						<div class="flex flex-col w-full h-full">
-							<div class="bg-black flex-grow relative">
-								<div v-if="(videoMessage.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="showLibrary = true">+ Add video</div>
-								<VideoPlayer v-else :videos="videoMessage.userVideos" @totalDuration="totalDuration = $event"></VideoPlayer>
-							</div>
-
-							<div class="h-28 flex p-2 gap-2 overflow-hidden border-t bg-gray-100 w-full">
-								<div>
-									<div class="border border-gray-300 h-full w-28 bg-white border-dashed cursor-pointer relative hover:border-gray-600 hover:text-gray-600 text-gray-400" @click="showLibrary = true">
-										<span class="absolute-center text-3xl">+</span>
-									</div>
-								</div>
-
-								<div class="flex-grow overflow-x-auto">
-									<draggable handle=".user-video" direction="h" :list="videoMessage.userVideos" class="h-full w-full flex gap-2">
-										<div v-for="(userVideo, userVideoIndex) in videoMessage.userVideos" :key="`userVideo-${userVideo.id}`">
-											<div class="user-video cursor-move" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
-												<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full p-1.5 bg-black bg-opacity-50 text-white" @click="videoMessage.userVideos.splice(userVideoIndex, 1)">
-													<CloseIcon class="h-2 w-2 transform scale-120 fill-current"></CloseIcon>
-												</div>
-											</div>
-										</div>
-									</draggable>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Intent Form -->
-					<div class="border-l">
-						<div class="form-intent p-4">
-							<h5 class="font-bold font-lg mb-2">Video Details</h5>
-							<div class="mb-4">
-								<label required>Title</label>
-								<input type="text" class="input" v-model="videoMessage.title" required />
-							</div>
-							<div class="mb-4">
-								<label>Description</label>
-								<textarea class="input resize-none" rows="3" v-model="videoMessage.description"></textarea>
-							</div>
-							<div class="mb-4">
-								<label>Initial Message</label>
-								<input type="file" class="hidden" ref="initialMessageFile" @change="addFile" />
-								<div v-if="videoMessage.initial_message.message || videoMessage.initial_message.source" class="flex items-end">
-									<div class="flex-grow overflow-hidden">
-										<div class="relative initial-message-container">
-											<div v-show="videoMessage.initial_message.message" class="flex items-end">
-												<div class="initial-message flex-grow break-all cursor-text" ref="newInitialMessage" spellcheck="false" v-html="videoMessage.initial_message.message"></div>
-											</div>
-											<div v-if="videoMessage.initial_message.source" class="px-3 py-2 text-white text-sm" :class="{ 'border-t border-dashed border-opacity-40': videoMessage.initial_message.message }">
-												<div v-if="videoMessage.initial_message.preview" class="w-full h-36 bg-cover bg-center bg-no-repeat rounded relative" :style="{ backgroundImage: `url(${videoMessage.initial_message.preview})` }">
-													<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full bg-opacity-50 bg-white hover:bg-opacity-100 p-1 transition-colors" @click="videoMessage.initial_message.source = videoMessage.initial_message.preview = null">
-														<CloseIcon class="h-2.5 w-2.5 text-gray-500 fill-current -mr-px -mb-px"></CloseIcon>
-													</div>
-												</div>
-												<div v-else class="flex justify-between items-center">
-													<div class="overflow-hidden truncate opacity-75">
-														{{ videoMessage.initial_message.filename }}
-													</div>
-													<div class="pl-1">
-														<div class="cursor-pointer rounded-full bg-opacity-50 bg-white hover:bg-opacity-100 p-1 transition-colors" @click="videoMessage.initial_message.source = videoMessage.initial_message.preview = null">
-															<CloseIcon class="h-2.5 w-2.5 text-gray-500 fill-current -mr-px -mb-px"></CloseIcon>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="align-self-end pl-1">
-										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + $root.auth.profile_image + ')' }">
-											<span v-if="!$root.auth.profile_image">{{ $root.auth.initials }}</span>
-										</div>
-									</div>
-								</div>
-								<div class="flex items-center mt-2">
-									<div class="flex-grow">
-										<div class="flex items-center rounded-full bg-gray-200 p-1" style="border-radius: 20px">
-											<div class="py-1 px-2 message-input h-auto overflow-auto flex-grow focus:outline-none" @keypress="messageInput" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput"></div>
-											<button type="button" class="btn-send-message rounded-full bg-white p-1.5 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary" @click="$refs.initialMessageFile.click()">
-												<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-												</svg>
-											</button>
-											<button type="button" @click="setInitialMessage" class="btn-send-message rounded-full bg-white p-1.5 text-primary ml-0.5 focus:outline-none transition-colors hover:text-white hover:bg-primary"><SendIcon class="fill-current w-3.5 h-3.5"></SendIcon></button>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="mb-4">
-								<label>Event Type</label>
-								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessage.service_id" dropPosition="top w-full"></VueSelect>
-							</div>
-
-							<div class="mb-4">
-								<label>Contact</label>
-								<VueSelect :options="contactsOptions" clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessage.contact_id" dropPosition="top w-full"></VueSelect>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</vue-form-validate>
+		<AddVideoMessage v-show="adding" :videoMessage="videoMessage" @close="adding = false" @submit="store"></AddVideoMessage>
 
 		<Library
 			v-show="showLibrary"
@@ -271,12 +152,10 @@
 /// <reference types="aws-sdk" />
 import { mapState, mapActions } from 'vuex';
 import InfoCircleIcon from '../../../icons/info-circle.vue';
-import VueSelect from '../../../components/vue-select/vue-select.vue';
 import dayjs from 'dayjs';
 import CogIcon from '../../../icons/cog';
 import ShareIcon from '../../../icons/share';
 import EyeIcon from '../../../icons/eye-solid';
-import CloseIcon from '../../../icons/close.vue';
 import PlusIcon from '../../../icons/plus.vue';
 import ThumbupIcon from '../../../icons/thumb-up';
 import ThumbdownIcon from '../../../icons/thumb-down';
@@ -284,13 +163,9 @@ import CommentIcon from '../../../icons/comment-solid';
 import WarningIcon from '../../../icons/warning';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 const format = require('format-duration');
-import VueFormValidate from '../../../components/vue-form-validate.vue';
 import Library from './library.vue';
 import copy from 'copy-text-to-clipboard';
 import Modal from '../../../components/modal/modal.vue';
-import VideoPlayer from '../../../video-message/videoplayer.vue';
-import SendIcon from '../../../icons/send';
-import draggable from 'vuedraggable';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 const humanizeDuration = require('humanize-duration');
 import { GifReader } from 'omggif';
@@ -306,10 +181,10 @@ const S3 = new AWS.S3({
 	params: { Bucket: process.env.MIX_AWS_BUCKET }
 });
 
-const loadImage = require('blueimp-load-image');
+import AddVideoMessage from './add.vue';
 
 export default {
-	components: { VideoPlayer, WarningIcon, Modal, CloseIcon, VueFormValidate, InfoCircleIcon, VueSelect, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, draggable, ToggleSwitch, PlusIcon, ThumbdownIcon, SendIcon },
+	components: { WarningIcon, Modal, InfoCircleIcon, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, ToggleSwitch, PlusIcon, ThumbdownIcon, AddVideoMessage },
 	data: () => ({
 		app_url: process.env.MIX_APP_URL,
 		showLibrary: false,
@@ -336,25 +211,8 @@ export default {
 	computed: {
 		...mapState({
 			videoMessages: state => state.video_messages.index,
-			ready: state => state.video_messages.ready,
-			services: state => state.services.index,
-			contacts: state => state.contacts.index
-		}),
-
-		servicesOptions() {
-			let services = this.services;
-			return services
-				.filter(x => x.is_available)
-				.map(service => {
-					return { text: service.name, value: service.id };
-				});
-		},
-		contactsOptions() {
-			let contacts = this.contacts;
-			return contacts.map(contact => {
-				return { text: contact.full_name, value: contact.id };
-			});
-		}
+			ready: state => state.video_messages.ready
+		})
 	},
 	created() {
 		this.getVideoMessages();
@@ -382,49 +240,9 @@ export default {
 			getContacts: 'contacts/index'
 		}),
 
-		messageInput(e) {
-			if ((e.keyCode ? e.keyCode : e.which) == 13) {
-				e.preventDefault();
-				this.setInitialMessage();
-			}
-		},
-
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
 			return imageExtensions.indexOf(extension) > -1;
-		},
-
-		addFile(e) {
-			let fileInput = e.target;
-			let fileExtension = fileInput.value.split('.').pop();
-			this.$set(this.videoMessage.initial_message, 'type', 'file');
-			this.$set(this.videoMessage.initial_message, 'extension', fileExtension);
-			this.$set(this.videoMessage.initial_message, 'filename', fileInput.value.split(/(\\|\/)/g).pop());
-
-			if (this.isImage(fileExtension)) {
-				this.$set(this.videoMessage.initial_message, 'type', 'image');
-				loadImage(
-					fileInput.files[0],
-					canvas => {
-						let dataurl = canvas.toDataURL(fileInput.files[0].type);
-						this.$set(this.videoMessage.initial_message, 'preview', dataurl);
-						this.$set(this.videoMessage.initial_message, 'new_preview', dataurl);
-						this.$set(this.videoMessage.initial_message, 'source', fileInput.files[0]);
-						this.$set(this.videoMessage.initial_message, 'new_source', fileInput.files[0]);
-						fileInput.value = '';
-					},
-					{ maxWidth: 450, canvas: true }
-				);
-			} else {
-				this.$set(this.videoMessage.initial_message, 'source', fileInput.files[0]);
-				this.$set(this.videoMessage.initial_message, 'new_source', fileInput.files[0]);
-			}
-		},
-
-		setInitialMessage() {
-			let initialMessage = this.$refs.messageInput.innerText || this.videoMessage.initial_message.message;
-			this.$set(this.videoMessage.initial_message, 'message', initialMessage);
-			this.$refs.messageInput.innerHTML = '';
 		},
 
 		dislikes(videoMessage) {
@@ -521,23 +339,22 @@ export default {
 			}
 		},
 
-		async store() {
-			if (!this.videoMessage.userVideos.length) {
+		async store(videoMessage) {
+			if (!videoMessage.userVideos.length) {
 				return;
 			}
 
-			if (this.videoMessage.id) {
-				return this.update();
+			if (videoMessage.id) {
+				return this.update(videoMessage);
 			} else {
 				this.status = 'Processing...';
-				this.setInitialMessage();
-				let userVideoIds = this.videoMessage.userVideos.map(x => x.id);
-				let initialMessage = await this.generateInitialMessage(this.videoMessage);
+				let userVideoIds = videoMessage.userVideos.map(x => x.id);
+				let initialMessage = await this.generateInitialMessage(videoMessage);
 				let videoMessagedata = {
-					title: this.videoMessage.title,
-					description: this.videoMessage.description,
+					title: videoMessage.title,
+					description: videoMessage.description,
 					initial_message: initialMessage,
-					service_id: this.videoMessage.service_id,
+					service_id: videoMessage.service_id,
 					user_video_ids: userVideoIds
 				};
 
@@ -545,7 +362,7 @@ export default {
 				this.videoMessage.userVideos.forEach(userVideo => {
 					totalDuration += userVideo.duration;
 				});
-				videoMessagedata.link_preview = await this.generateLinkPreview(this.videoMessage.userVideos[0].gif, totalDuration);
+				videoMessagedata.link_preview = await this.generateLinkPreview(videoMessage.userVideos[0].gif, totalDuration);
 				let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
 				if (videoMessage.data) {
 					this.reset();
@@ -641,15 +458,14 @@ export default {
 			});
 		},
 
-		async update() {
+		async update(videoMessage) {
 			this.status = 'Processing...';
-			this.setInitialMessage();
-			let data = JSON.parse(JSON.stringify(this.videoMessage));
+			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
 
 			this.uploadProgress += 20;
 			data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
-			data.initial_message = await this.generateInitialMessage(this.videoMessage);
+			data.initial_message = await this.generateInitialMessage(videoMessage);
 
 			delete data.original_message;
 			delete data.new_source;
@@ -737,43 +553,3 @@ export default {
 	}
 };
 </script>
-
-<style lang="scss" scoped>
-.message-input {
-	font-size: 14px;
-	max-height: 120px;
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	word-break: break-word;
-	&[data-placeholder]:empty:before {
-		content: attr(data-placeholder);
-		color: #888;
-	}
-}
-
-.initial-message-container {
-	@apply bg-primary;
-	border-radius: 15px;
-	border-bottom-right-radius: 2px;
-}
-.initial-message {
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	word-break: break-word;
-	@apply text-white p-3 outline-none text-sm;
-}
-.form-intent {
-	width: 300px;
-}
-.user-video {
-	@apply h-full w-28  relative bg-cover bg-center bg-no-repeat bg-gray-200;
-	> div {
-		@apply opacity-0;
-	}
-	&:hover {
-		> div {
-			@apply opacity-100;
-		}
-	}
-}
-</style>
