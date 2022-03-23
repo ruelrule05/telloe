@@ -235,7 +235,7 @@
 										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" 
 										type="button" @click="videoMessageAction(userVideo)">
 										<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
-										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoLibraryTags()">
+										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoLibraryTags(userVideo)">
 											<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
 										</button>
 									</div>
@@ -855,17 +855,29 @@ export default {
 			this.$refs.deleteModal.show();
 		},
 
-		videoLibraryTags() {
-			//this.selectedVideoMessage = videoMessage;
+		videoLibraryTags(videoMessage) {
+			this.selectedVideoMessage = videoMessage;
 			this.$refs.tagsModal.show();
+			this.getUserVideoTags(videoMessage);
 		},
 
 		addTag(newTag) {
 			let exists = this.tagOptions.find(x => x == newTag);
 			if (!exists) {
 				this.tagOptions.push(newTag);
-				//this.userVideos.tags.push(newTag);
-				this.updateTag(newTag);
+				console.log(this.selectedVideoMessage);
+				this.selectedVideoMessage.tags = this.tagOptions;
+				this.updateTag(this.selectedVideoMessage);
+			}
+		},
+
+		async getUserVideoTags(videoMessage) {
+			this.tagOptions = [];
+			this.selectedVideoMessage = videoMessage;
+			let userVideoTags = JSON.parse( this.selectedVideoMessage.tags);
+			console.log(userVideoTags);
+			if (userVideoTags) {
+				userVideoTags.forEach(tag => this.tagOptions.push(tag));
 			}
 		},
 	}
