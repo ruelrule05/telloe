@@ -117,50 +117,51 @@ export default {
 							likedPost = 1;
 						}
 					}
+					if (actor.name.attributes.length > 0) {
+						let vanityName = null;
+						if (actor.name.attributes[0].miniProfile) {
+							vanityName = actor.name.attributes[0].miniProfile.publicIdentifier;
+						} else if (actor.name.attributes[0].miniCompany) {
+							vanityName = actor.name.attributes[0].miniCompany.universalName;
+						}
+						recentActivityURL = new URL(recentActivityURL);
+						let linkedinProfile = recentActivityURL.origin + recentActivityURL.pathname;
+						recentActivityURL = recentActivityURL.origin + recentActivityURL.pathname + '/recent-activity/';
 
-					let vanityName = null;
-					if (actor.name.attributes[0].miniProfile) {
-						vanityName = actor.name.attributes[0].miniProfile.publicIdentifier;
-					} else if (actor.name.attributes[0].miniCompany) {
-						vanityName = actor.name.attributes[0].miniCompany.universalName;
+						if (action.includes('commented')) {
+							action = 'Commented on a post';
+						} else if (action.includes('loves')) {
+							action = 'Loves a post';
+						} else if (action.includes('likes')) {
+							action = 'Liked a post';
+						}
+						likedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && (x.data.header.text.text.includes('likes') || x.data.header.text.text.includes('loves'))).length;
+
+						commentPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && x.data.header.text.text.includes('commented')).length;
+
+						sharedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && !x.data.header).length;
+						let label = null;
+						let contact = this.getContact(actor.urn);
+						if (contact && contact.label) {
+							label = contact.label;
+						}
+						activities.push({
+							id: activity.id,
+							name: name,
+							vanityName: vanityName,
+							title: activity.data.actor.description.text,
+							lastActivity: action,
+							recentActivityURL: recentActivityURL,
+							likedPost: likedPost,
+							commentPost: commentPost,
+							sharedPost: sharedPost,
+							mutualConnections: 0,
+							linkedinProfile: linkedinProfile,
+							actor: actor,
+							label: label,
+							temp_label: label
+						});
 					}
-					recentActivityURL = new URL(recentActivityURL);
-					let linkedinProfile = recentActivityURL.origin + recentActivityURL.pathname;
-					recentActivityURL = recentActivityURL.origin + recentActivityURL.pathname + '/recent-activity/';
-
-					if (action.includes('commented')) {
-						action = 'Commented on a post';
-					} else if (action.includes('loves')) {
-						action = 'Loves a post';
-					} else if (action.includes('likes')) {
-						action = 'Liked a post';
-					}
-					likedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && (x.data.header.text.text.includes('likes') || x.data.header.text.text.includes('loves'))).length;
-
-					commentPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && x.data.header.text.text.includes('commented')).length;
-
-					sharedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && !x.data.header).length;
-					let label = null;
-					let contact = this.getContact(actor.urn);
-					if (contact && contact.label) {
-						label = contact.label;
-					}
-					activities.push({
-						id: activity.id,
-						name: name,
-						vanityName: vanityName,
-						title: activity.data.actor.description.text,
-						lastActivity: action,
-						recentActivityURL: recentActivityURL,
-						likedPost: likedPost,
-						commentPost: commentPost,
-						sharedPost: sharedPost,
-						mutualConnections: 0,
-						linkedinProfile: linkedinProfile,
-						actor: actor,
-						label: label,
-						temp_label: label
-					});
 				}
 			});
 			return activities;
