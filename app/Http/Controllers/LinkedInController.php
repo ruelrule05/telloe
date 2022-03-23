@@ -13,6 +13,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ScrapeLinkedin;
+use App\Models\Contact;
 use App\Models\LinkedinActivity;
 use Auth;
 use Config;
@@ -47,16 +48,38 @@ class LinkedInController extends Controller
         ]);
         $userId = $request->input('user_id');
         foreach ($request->input('data') as $key => $data) {
-            LinkedinActivity::disableCache()->updateOrCreate(
-                [
-                    'user_id' => $userId,
-                    'activity_id' => $data['entityUrn']
-                ],
-                [
-                    'data' => $data,
-                    'order' => $key
-                ]
-            );
+            if (isset($data['actor'])) {
+                $actor = $data['actor'];
+                if (isset($data['resharedUpdate'])) {
+                    $actor = $data['resharedUpdate']['actor'];
+                }
+                if ($actor) {
+                    LinkedinActivity::disableCache()->updateOrCreate(
+                        [
+                            'user_id' => $userId,
+                            'activity_id' => $data['entityUrn']
+                        ],
+                        [
+                            'data' => $data,
+                            'order' => $key
+                        ]
+                    );
+
+                    if (isset($actor['urn'])) {
+                        $profile = $actor['name']['attributes'][0]['miniProfile'] ?? $actor['name']['attributes'][0]['miniCompany'];
+                        Contact::firstOrCreate(
+                            [
+                                'user_id' => $userId,
+                                'linkedin_urn' => $actor['urn'],
+                            ],
+                            [
+                                'first_name' => $profile['firstName'] ?? $profile['name'],
+                                'last_name' => $profile['lastName'] ?? '',
+                            ]
+                        );
+                    }
+                }
+            }
         }
     }
 
@@ -72,11 +95,6 @@ class LinkedInController extends Controller
             $me = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $data['access_token'],
             ])->get('https://api.linkedin.com/v2/me');
-
-            $email = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $data['access_token'],
-            ])->get('https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))');
-            print_r($email->json());
 
             Auth::user()->update([
                 'linkedin_username' => $me->json()['vanityName'],

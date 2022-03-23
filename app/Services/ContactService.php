@@ -213,7 +213,7 @@ class ContactService
     public function update(Request $request, Contact $contact)
     {
         $this->authorize('update', $contact);
-        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields', 'tags'));
+        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields', 'tags', 'label'));
         return response($contact->load('contactUser'));
     }
 
@@ -457,5 +457,11 @@ class ContactService
         $contact = Contact::findOrFail($id);
         (new self)->authorize('show', $contact);
         return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('contact_id', $contact->id)->latest()->get());
+    }
+
+    public static function getByUrn($urn)
+    {
+        $contact = Contact::where('user_id', Auth::user()->id)->where('linkedin_urn', $urn)->firstOrFail();
+        return response()->json($contact);
     }
 }

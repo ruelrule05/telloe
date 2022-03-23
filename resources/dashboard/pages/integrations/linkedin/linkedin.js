@@ -21,6 +21,7 @@ import VueDropdown from '../../../../components/vue-dropdown/vue-dropdown.vue';
 import VueSelect from '../../../../components/vue-select/vue-select.vue';
 import { mapState, mapActions } from 'vuex';
 import axios from 'axios';
+import numbersOnly from 'numbers-only';
 
 export default {
 	components: {
@@ -44,6 +45,8 @@ export default {
 	},
 	data: () => ({
 		// custom dropdown
+		numbersOnly: numbersOnly,
+		filterShow: false,
 		show: false,
 		open: false,
 		menuOpen: false,
@@ -56,10 +59,11 @@ export default {
 		hover: false,
 		page: 1,
 		paginate: ['linkedin'],
-		selectedLabel: '',
+		selectedActivity: '',
 		columnList: [
 			{ name: 'name', abv: 'nm.', isEnabled: true },
 			{ name: 'my last activity', abv: 'mla.', isEnabled: true },
+			{ name: 'label', abv: 'mla.', isEnabled: true },
 			// { name: 'date', abv: 'dte.', isEnabled: true },
 			{ name: 'connected', abv: 'cnc.', isEnabled: true },
 			{ name: 'liked post', abv: 'lps.', isEnabled: true },
@@ -69,47 +73,22 @@ export default {
 			{ name: 'linked profile', abv: 'lip.', isEnabled: true },
 			{ name: 'recent activity', abv: 'rac.', isEnabled: true }
 		],
-		labelList: [
-			{
-				bgColor: '#ECECF0',
-				textColor: '#333333',
-				label: 'NO LABEL'
-			},
-			{
-				bgColor: '#27D898',
-				textColor: '#ffffff',
-				label: 'CUSTOMER'
-			},
-			{
-				bgColor: '#E33171',
-				textColor: '#ffffff',
-				label: 'HOT LEAD'
-			},
-			{
-				bgColor: '#FEA446',
-				textColor: '#333333',
-				label: 'WARM LEAD'
-			},
-			{
-				bgColor: '#3167E3',
-				textColor: '#ffffff',
-				label: 'COLD LEAD'
-			},
-			{
-				bgColor: '#E33171',
-				textColor: '#ffffff',
-				label: 'BLACK'
-			}
-		],
 
 		customBackgroundColor: '#F77F00',
-		customLabel: ''
+		customLabel: '',
+		labels: [],
+		filters: {
+			liked: null,
+			commented: null,
+			shared: null
+		}
 	}),
 
 	computed: {
 		...mapState({
 			ready: state => state.linkedin_activities.ready,
-			linkedActivities: state => state.linkedin_activities.index
+			linkedActivities: state => state.linkedin_activities.index,
+			contacts: state => state.contacts.index
 		}),
 
 		activities: function () {
@@ -161,6 +140,11 @@ export default {
 					commentPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && x.data.header.text.text.includes('commented')).length;
 
 					sharedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && !x.data.header).length;
+					let label = null;
+					let contact = this.getContact(actor.urn);
+					if (contact && contact.label) {
+						label = contact.label;
+					}
 					activities.push({
 						id: activity.id,
 						name: name,
@@ -173,7 +157,9 @@ export default {
 						sharedPost: sharedPost,
 						mutualConnections: 0,
 						linkedinProfile: linkedinProfile,
-						actor: actor
+						actor: actor,
+						label: label,
+						temp_label: label
 					});
 				}
 			});
@@ -183,28 +169,58 @@ export default {
 
 	created() {
 		this.getLinkedinActivities();
+		this.getContacts({ nopaginate: true });
+		this.getContactLabels();
 	},
 
 	watch: {
 		show: function (value) {
 			this.open = value;
 			this.menuOpen = value;
-		},
-
-		searchInList: function (value) {
-			console.log('searchInList: ', value);
 		}
 	},
 
 	methods: {
 		...mapActions({
-			getLinkedinActivities: 'linkedin_activities/index'
+			getLinkedinActivities: 'linkedin_activities/index',
+			getContacts: 'contacts/index',
+			updateContact: 'contacts/update'
 		}),
 
-		async getLinkedinUser(actor) {
-			let response = await axios.get(`/linkedin/get_user/${actor.urn}`, { toast: true });
+		inQuery(activity) {
+			let inSearch = true;
+			let inFilter = true;
+			if (this.searchInList.trim().length) {
+				inSearch = activity.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || activity.title.toLowerCase().includes(this.searchInList.toLowerCase().trim());
+			}
+			if (this.filters.liked && this.filters.liked != activity.likedPost) {
+				inFilter = false;
+			}
+			if (this.filters.commented && this.filters.commented != activity.commentPost) {
+				inFilter = false;
+			}
+			if (this.filters.shared && this.filters.shared != activity.sharedPost) {
+				inFilter = false;
+			}
+			return inSearch && inFilter;
+		},
 
-			console.log(response.data);
+		getContact(urn) {
+			return this.contacts.find(x => x.linkedin_urn == urn);
+		},
+
+		async getContactLabels() {
+			let response = await axios.get('/contact_labels');
+			if (response) {
+				this.labels = response.data;
+			}
+		},
+
+		async goToContact(actor) {
+			let response = await axios.get(`/contacts/get_by_urn/${actor.urn}`, { toast: true });
+			if (response) {
+				this.$router.push(`/dashboard/contacts/${response.data.id}`);
+			}
 		},
 
 		getLabelStyles(label, style) {
@@ -216,31 +232,41 @@ export default {
 			});
 		},
 
-		handleLabelSectionByLabel(label, id) {
-			this.selectedLabel = {
-				label,
-				id
-			};
+		handleLabelSectionByLabel(activity) {
+			activity.temp_label = activity.label;
+			this.selectedActivity = activity;
 			this.$refs.labelSettingModal.show();
 		},
 
-		handleSelectedLabelFromModal(label, id) {
-			let item = this.linkedinList.find(linkedin => linkedin.id === id);
-			item.label = label.label;
-			this.selectedLabel = {
-				label: label.label,
-				id
-			};
+		setContactLabel(label) {
+			let contact = this.getContact(this.selectedActivity.actor.urn);
+			if (contact) {
+				this.selectedActivity.temp_label = label;
+			}
 		},
 
-		handleAddLabel() {
-			this.labelList.push({
-				bgColor: this.customBackgroundColor,
-				textColor: this.handleGetTextColor(this.customBackgroundColor),
-				label: this.customLabel
-			});
-			this.customBackgroundColor = '#F77F00';
-			this.customLabel = '';
+		updateContactLabel() {
+			let contact = this.getContact(this.selectedActivity.actor.urn);
+			if (contact) {
+				contact.label = this.selectedActivity.temp_label;
+				this.updateContact(contact);
+			}
+			this.$refs.labelSettingModal.hide();
+		},
+
+		async handleAddLabel() {
+			if (this.customLabel.trim().length) {
+				let response = await axios.post('/contact_labels', {
+					color: this.customBackgroundColor,
+					label: this.customLabel,
+					text_color: this.handleGetTextColor(this.customBackgroundColor)
+				});
+				if (response) {
+					this.labels.push(response.data);
+				}
+				this.customBackgroundColor = '#F77F00';
+				this.customLabel = '';
+			}
 		},
 
 		handleGetTextColor(hex) {
@@ -249,12 +275,6 @@ export default {
 			const contrastRatio = hexTotal / (255 * 3);
 
 			return contrastRatio >= 0.5 ? '#333333' : '#ffffff';
-		},
-
-		onBlur() {
-			if (!this.menuOpen) {
-				this.show = false;
-			}
 		},
 
 		handleIsEnabledColumn(name, state) {
