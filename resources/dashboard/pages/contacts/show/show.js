@@ -42,6 +42,7 @@ import EyeIcon from '../../../../icons/eye-solid';
 const format = require('format-duration');
 import copy from 'copy-text-to-clipboard';
 import AddVideoMessage from '../../video-messages/add.vue';
+import Library from '../../video-messages/library.vue';
 const gifshot = require('../../../../js/plugins/gifshot.min');
 import { GifReader } from 'omggif';
 const humanizeDuration = require('humanize-duration');
@@ -58,6 +59,7 @@ const S3 = new AWS.S3({
 
 export default {
 	components: {
+		Library,
 		AddVideoMessage,
 		ShareIcon,
 		CommentIcon,
@@ -93,6 +95,8 @@ export default {
 	},
 
 	data: () => ({
+		showLibrary: false,
+		quickAdd: false,
 		format: format,
 		addingPackage: false,
 		selectedPackage: null,

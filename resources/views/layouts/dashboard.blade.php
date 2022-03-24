@@ -138,10 +138,13 @@
 						</router-link>
 
 
-						<template v-if="$root.auth.linkedin_username">
+						<template>
 							<div class="sidebar-heading mt-7">TOUCH POINT</div>
 							<router-link v-if="$root.auth.linkedin_username" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
 								<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
+							</router-link>
+							<router-link v-if="$root.auth.contacts" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
+								<div @click="toggleSidebar('/dashboard/contacts')" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
 							</router-link>
 						</template>
 

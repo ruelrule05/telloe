@@ -26,13 +26,13 @@
 					<div class="flex-grow w-full h-full overflow-hidden">
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
-								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="showLibrary = true">+ Add video</div>
+								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="$emit('showLibrary', true)">+ Add video</div>
 								<VideoPlayer v-else :videos="videoMessageData.userVideos" @totalDuration="totalDuration = $event"></VideoPlayer>
 							</div>
 
 							<div class="h-28 flex p-2 gap-2 overflow-hidden border-t bg-gray-100 w-full">
 								<div>
-									<div class="border border-gray-300 h-full w-28 bg-white border-dashed cursor-pointer relative hover:border-gray-600 hover:text-gray-600 text-gray-400" @click="showLibrary = true">
+									<div class="border border-gray-300 h-full w-28 bg-white border-dashed cursor-pointer relative hover:border-gray-600 hover:text-gray-600 text-gray-400" @click="$emit('showLibrary', true)">
 										<span class="absolute-center text-3xl">+</span>
 									</div>
 								</div>
@@ -41,7 +41,7 @@
 									<draggable handle=".user-video" direction="h" :list="videoMessageData.userVideos" class="h-full w-full flex gap-2">
 										<div v-for="(userVideo, userVideoIndex) in videoMessageData.userVideos" :key="`userVideo-${userVideo.id}`">
 											<div class="user-video cursor-move" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
-												<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full p-1.5 bg-black bg-opacity-50 text-white" @click="videoMessageData.userVideos.splice(userVideoIndex, 1)">
+												<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full p-1.5 bg-black bg-opacity-50 text-white" @click="$emit('removeVideo', userVideoIndex)">
 													<CloseIcon class="h-2 w-2 transform scale-120 fill-current"></CloseIcon>
 												</div>
 											</div>
@@ -182,6 +182,11 @@ export default {
 	},
 	watch: {
 		videoMessage: function () {
+			if (this.videoMessage) {
+				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+			}
+		},
+		'videoMessage.userVideos': function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
 			}
