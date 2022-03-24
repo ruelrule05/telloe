@@ -229,33 +229,38 @@
 										</div>
 									</div>
 								</div>
-								<div v-for="userVideo in userVideos" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
-									<div class="backdrop"></div>
-									<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
-										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" 
-										type="button" @click="videoMessageAction(userVideo)">
-										<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
-										<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoLibraryTags(userVideo)">
-											<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
-										</button>
-									</div>
-									
-									<div class="checkmark absolute-center rounded-full">
-										<div class="absolute-center w-full h-full p-0.5">
-											<div class="bg-white rounded-full w-full h-full"></div>
+								<template v-for="userVideo in userVideos">
+									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
+										<div class="backdrop"></div>
+										<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
+											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" 
+											type="button" @click="videoMessageAction(userVideo)">
+											<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoLibraryTags(userVideo)">
+												<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
+											</button>
 										</div>
-										<svg class="relative" width="21" height="21" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-											<path d="M20.6719 10.5C20.6719 16.1178 16.1178 20.6719 10.5 20.6719C4.88221 20.6719 0.328125 16.1178 0.328125 10.5C0.328125 4.88221 4.88221 0.328125 10.5 0.328125C16.1178 0.328125 20.6719 4.88221 20.6719 10.5ZM9.32343 15.8859L16.8703 8.33905C17.1266 8.08279 17.1266 7.66726 16.8703 7.41099L15.9422 6.48293C15.686 6.22662 15.2704 6.22662 15.0141 6.48293L8.85938 12.6377L5.98586 9.76414C5.7296 9.50787 5.31407 9.50787 5.05776 9.76414L4.1297 10.6922C3.87343 10.9485 3.87343 11.364 4.1297 11.6203L8.39532 15.8859C8.65163 16.1422 9.06712 16.1422 9.32343 15.8859Z" fill="#3167E3" />
-										</svg>
+										
+										<div class="checkmark absolute-center rounded-full">
+											<div class="absolute-center w-full h-full p-0.5">
+												<div class="bg-white rounded-full w-full h-full"></div>
+											</div>
+											<svg class="relative" width="21" height="21" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+												<path d="M20.6719 10.5C20.6719 16.1178 16.1178 20.6719 10.5 20.6719C4.88221 20.6719 0.328125 16.1178 0.328125 10.5C0.328125 4.88221 4.88221 0.328125 10.5 0.328125C16.1178 0.328125 20.6719 4.88221 20.6719 10.5ZM9.32343 15.8859L16.8703 8.33905C17.1266 8.08279 17.1266 7.66726 16.8703 7.41099L15.9422 6.48293C15.686 6.22662 15.2704 6.22662 15.0141 6.48293L8.85938 12.6377L5.98586 9.76414C5.7296 9.50787 5.31407 9.50787 5.05776 9.76414L4.1297 10.6922C3.87343 10.9485 3.87343 11.364 4.1297 11.6203L8.39532 15.8859C8.65163 16.1422 9.06712 16.1422 9.32343 15.8859Z" fill="#3167E3" />
+											</svg>
+										</div>
+										<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
 									</div>
-									<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
-								</div>
+								</template>
 							</div>
 						</div>
 						<div class="mt-8 flex items-center justify-between">
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
 							</button>
+							<div class="mb-3 flex items-center justify-between">
+								<input type="text" v-model="searchLib" placeholder="Search library by tags..." />
+							</div>
 							<button
 								class="btn btn-md btn-primary"
 								:class="{ disabled: !selectedVideos.length }"
@@ -366,7 +371,8 @@ export default {
 		uploadProgress: 0,
 		gifProgress: 0,
 		tagOptions: [],
-		user_videos: null
+		user_videos: null,
+		searchLib : ''
 	}),
 
 	computed: {
@@ -871,12 +877,18 @@ export default {
 			}
 		},
 
-		async getUserVideoTags() {
+		getUserVideoTags() {
 			this.tagOptions = [];
 			let userVideoTags = JSON.parse( this.selectedVideoMessage.tags);
 			if (userVideoTags) {
 				userVideoTags.forEach(tag => this.tagOptions.push(tag));
 			}
+		},
+
+		inQuery(videoMessage) {
+			console.log(videoMessage);
+			const trimmed = this.searchLib.trim().toLowerCase();
+			return trimmed.length == 0 || videoMessage.tags.toLowerCase().includes(trimmed);
 		},
 	}
 };
