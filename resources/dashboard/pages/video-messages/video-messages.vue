@@ -117,7 +117,7 @@
 		</div>
 
 		<!-- Add form -->
-		<AddVideoMessage v-show="adding" :videoMessage="videoMessage" @close="adding = false" @submit="store"></AddVideoMessage>
+		<AddVideoMessage v-show="adding" :videoMessage="videoMessage" @close="adding = false" @submit="store" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
 
 		<Library
 			v-show="showLibrary"
@@ -339,22 +339,22 @@ export default {
 			}
 		},
 
-		async store(videoMessage) {
-			if (!videoMessage.userVideos.length) {
+		async store(data) {
+			if (!data.userVideos.length) {
 				return;
 			}
 
-			if (videoMessage.id) {
-				return this.update(videoMessage);
+			if (data.id) {
+				return this.update(data);
 			} else {
 				this.status = 'Processing...';
-				let userVideoIds = videoMessage.userVideos.map(x => x.id);
-				let initialMessage = await this.generateInitialMessage(videoMessage);
+				let userVideoIds = data.userVideos.map(x => x.id);
+				let initialMessage = await this.generateInitialMessage(data);
 				let videoMessagedata = {
-					title: videoMessage.title,
-					description: videoMessage.description,
+					title: data.title,
+					description: data.description,
 					initial_message: initialMessage,
-					service_id: videoMessage.service_id,
+					service_id: data.service_id,
 					user_video_ids: userVideoIds
 				};
 
@@ -362,7 +362,7 @@ export default {
 				this.videoMessage.userVideos.forEach(userVideo => {
 					totalDuration += userVideo.duration;
 				});
-				videoMessagedata.link_preview = await this.generateLinkPreview(videoMessage.userVideos[0].gif, totalDuration);
+				videoMessagedata.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
 				let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
 				if (videoMessage.data) {
 					this.reset();

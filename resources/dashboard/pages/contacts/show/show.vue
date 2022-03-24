@@ -414,7 +414,24 @@
 			</template>
 		</modal>
 
-		<AddVideoMessage v-show="addingVideoMessage" class="absolute top-0 left-0 h-screen w-full" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit"></AddVideoMessage>
+		<AddVideoMessage v-show="addingVideoMessage" class="absolute top-0 left-0 h-screen w-full" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
+		<Library
+			v-show="showLibrary"
+			@close="
+				showLibrary = false;
+				quickAdd = false;
+			"
+			@input="
+				if (videoMessage) {
+					videoMessage.userVideos = $event;
+					showLibrary = false;
+					if (quickAdd) {
+						updateVideoMessageSubmit();
+					}
+				}
+			"
+			:selectedUserVideos="videoMessage ? videoMessage.userVideos : []"
+		></Library>
 	</div>
 </template>
 
