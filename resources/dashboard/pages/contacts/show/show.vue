@@ -236,8 +236,8 @@
 			</div>
 			<div class="w-full lg:w-7/12 p-8">
 				<div class="flex items-center w-full mb-6 space-x-3">
-					<div class="font-serif uppercase font-semibold text-xs cursor-pointer transition-colors" :class="[rightTab == 'bookings' ? 'text-primary' : ' text-gray-500 hover:text-black']" @click="rightTab = 'bookings'">Bookings</div>
 					<div class="font-serif uppercase font-semibold text-xs cursor-pointer transition-colors" :class="[rightTab == 'video_messages' ? 'text-primary' : ' text-gray-500 hover:text-black']" @click="rightTab = 'video_messages'">Video Messages</div>
+					<div class="font-serif uppercase font-semibold text-xs cursor-pointer transition-colors" :class="[rightTab == 'bookings' ? 'text-primary' : ' text-gray-500 hover:text-black']" @click="rightTab = 'bookings'">Bookings</div>
 				</div>
 				<template v-if="rightTab == 'bookings'">
 					<div v-if="!contact.bookings.data || contact.bookings.data.length == 0" class="flex-grow relative h-full">
