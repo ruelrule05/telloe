@@ -72,7 +72,7 @@ class ContactService
 
         $contacts = $request->nopaginate ? $contacts->get() : $contacts->paginate(20);
 
-        return $contacts ;
+        return json_encode($contacts, JSON_INVALID_UTF8_IGNORE);
     }
 
     public function show(Request $request, Contact $contact)
@@ -462,6 +462,6 @@ class ContactService
     public static function getByUrn($urn)
     {
         $contact = Contact::where('user_id', Auth::user()->id)->where('linkedin_urn', $urn)->firstOrFail();
-        return response()->json($contact);
+        return response(json_encode($contact, JSON_INVALID_UTF8_IGNORE));
     }
 }
