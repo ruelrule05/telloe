@@ -129,7 +129,7 @@
 				videoMessage.userVideos = $event;
 				showLibrary = false;
 				if (quickAdd) {
-					update();
+					update(videoMessage);
 				}
 			"
 			:selectedUserVideos="videoMessage.userVideos"

@@ -276,10 +276,6 @@ export default {
 					});
 					this.selectedContacts = bookingUsers;
 				}
-
-				if (this.clonedBooking.linkedin_user) {
-					this.clonedBooking.linkedin_user = this.clonedBooking.linkedin_user.urn;
-				}
 			}
 		},
 		newEvent: function (value) {
@@ -622,9 +618,7 @@ export default {
 			if (this.contact) {
 				newData.contact_ids.push(this.contact.id);
 			}
-			if (newData.linkedin_user) {
-				newData.linkedin_user = this.linkedinUsers.find(x => x.urn == newData.linkedin_user);
-			}
+
 			newData.emails = this.selectedContacts.filter(x => x.type == 'email').map(x => x.data);
 			newData.booking_user_ids = this.selectedContacts.filter(x => x.type == 'booking-user').map(x => x.id);
 			delete newData.booking_users;

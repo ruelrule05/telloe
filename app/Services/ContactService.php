@@ -178,7 +178,6 @@ class ContactService
 
             $conversation = Conversation::create([
                 'user_id' => Auth::user()->id,
-                // 'contact_id' => $contact->id,
                 'custom_fields' => $custom_fields,
                 'slug' => $slug
             ]);
@@ -200,9 +199,9 @@ class ContactService
             ]);
         }
 
-        if ($request->sendToEmail) {
-            Mail::to($contact->email)->queue(new SendInvitation($invite_token, $authTab, $request->invite_message));
-        }
+        // if ($request->sendToEmail) {
+        //     Mail::to($contact->email)->queue(new SendInvitation($invite_token, $authTab, $request->invite_message));
+        // }
         $contact->conversation = $conversation;
         if ($createMessage) {
             $conversation->delete();

@@ -20,7 +20,6 @@ class Booking extends BaseModel
         'recurring_days' => 'array',
         'google_event_id' => 'array',
         'outlook_event_id' => 'array',
-        'linkedin_user' => 'array'
     ];
 
     public function bookingUsers()

@@ -145,12 +145,16 @@ export default {
 						if (contact && contact.label) {
 							label = contact.label;
 						}
+						let title = actor.description.text;
+						if (actor.name.attributes && actor.name.attributes.length && actor.name.attributes[0].miniCompany) {
+							title = activity.data.actor.description.text;
+						}
 
 						activities.push({
 							id: activity.id,
 							name: name,
 							vanityName: vanityName,
-							title: activity.data.actor.description.text,
+							title: title,
 							lastActivity: action,
 							recentActivityURL: recentActivityURL,
 							likedPost: likedPost,
@@ -219,10 +223,7 @@ export default {
 		},
 
 		async goToContact(actor) {
-			let response = await axios.get(`/contacts/get_by_urn/${actor.urn}`, { toast: true });
-			if (response) {
-				this.$router.push(`/dashboard/contacts/${response.data.id}`);
-			}
+			this.$router.push(`/dashboard/integrations/linkedin/${actor.urn}`);
 		},
 
 		getLabelStyles(label, style) {

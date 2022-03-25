@@ -157,6 +157,11 @@ const routes = [
 				component: () => import(/* webpackChunkName: "dashboard-integrations-linkedin" */ '../pages/integrations/linkedin/linkedin.vue')
 			},
 			{
+				path: 'integrations/linkedin/:memberID',
+				name: 'LinkedIn Member',
+				component: () => import(/* webpackChunkName: "dashboard-integrations-linkedin-member" */ '../pages/integrations/linkedin/member.vue')
+			},
+			{
 				name: 'Video Messages',
 				path: 'video-messages',
 				component: () => import(/* webpackChunkName: "dashboard-video-messages" */ '../pages/video-messages/video-messages.vue')
