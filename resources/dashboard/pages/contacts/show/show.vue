@@ -222,8 +222,9 @@
 												<span>{{ (contactPackage.service.completed || []).find(x => x == index) >= -1 ? 'Completed' : 'Book' }}</span>
 											</button>
 											<VueCheckbox @input="toggleBlockStatus($event, index, contactPackage)" :value="(contactPackage.service.completed || []).find(x => x == index) >= -1 ? true : false"></VueCheckbox>
-										</div></div
-								></template>
+										</div>
+									</div>
+								</template>
 							</div>
 						</div>
 					</template>

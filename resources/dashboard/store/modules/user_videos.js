@@ -11,7 +11,18 @@ const mutations = {
 	store(state, data) {
 		state.index.unshift(data);
 	},
-	delete() {}
+	delete(state, data) {
+		state.index.splice(
+			state.index.findIndex(x => x.id == data.id),
+			1
+		);
+	},
+	update(state, data) {
+		let userVideo = state.index.find(x => x.id == data.id);
+		if (userVideo) Object.assign(userVideo, data);
+		//userVideo = state.paginated.data.find(x => x.id == data.id);
+		//if (userVideo) Object.assign(userVideo, data);
+	},
 };
 
 const actions = {
@@ -28,7 +39,18 @@ const actions = {
 		}
 
 		return response;
-	}
+	},
+	async delete({ commit }, data) {
+		let response = await window.axios.delete(`/${name}/${data.id}`, { toast: true });
+		if (response) {
+			commit('delete', data);
+		}
+	},
+	async update({ commit }, data) {
+		let response = await window.axios.put(`/${name}/${data.id}`, data);
+		commit('update', response.data);
+		return response.data;
+	},
 };
 
 const getters = {};

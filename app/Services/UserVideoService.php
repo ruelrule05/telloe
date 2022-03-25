@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\UserVideo;
+use App\Models\VideoMessageVideo;
 use Auth;
 use Aws\MediaConvert\MediaConvertClient;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -62,5 +63,22 @@ class UserVideoService
         }
 
         return response()->json($userVideo);
+    }
+
+    public static function destroy(UserVideo $userVideo)
+    {
+        VideoMessageVideo::where('user_video_id', $userVideo->id)->delete();
+        UserVideo::where('id', $userVideo->id)->delete();
+        return response()->json(['deleted' => $userVideo->delete()]);
+    }
+
+    public function update(Request $request, UserVideo $userVideo)
+    {
+        $userVideo
+        ->where('id',$request->id)
+        ->update([
+            'tags' => $request->tags,
+        ]);
+        return response()->json(['updated' => true]);
     }
 }
