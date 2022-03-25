@@ -50,7 +50,8 @@ class User extends Authenticatable implements JWTSubject
         'contacts',
         'linkedin_username',
         'linkedin_token',
-        'linkedin_id'
+        'linkedin_id',
+        'retain_form_data'
     ];
 
     /**
