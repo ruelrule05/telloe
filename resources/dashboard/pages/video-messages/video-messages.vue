@@ -205,7 +205,8 @@ export default {
 		uploadProgress: 0,
 		gifProgress: 0,
 		status: null,
-		totalDuration: 0
+		totalDuration: 0,
+		isRetainFormData : 0
 	}),
 
 	computed: {
@@ -226,6 +227,8 @@ export default {
 				this.getVideoMessageStats(videoMessage);
 			}
 		});
+		
+		this.isRetainFormData = this.$root.auth.retain_form_data;
 	},
 
 	methods: {
@@ -333,6 +336,9 @@ export default {
 				}
 				this.videoMessage = data;
 				this.adding = true;
+				if(this.isRetainFormData){
+					this.localStorage(data);
+				}
 			} else if (action == 'Delete') {
 				this.selectedVideoMessage = videoMessage;
 				this.$refs.deleteModal.show();
@@ -357,6 +363,9 @@ export default {
 					service_id: videoMessage.service_id,
 					user_video_ids: userVideoIds
 				};
+				if(this.isRetainFormData){
+					this.localStorage(videoMessagedata);
+				}
 
 				let totalDuration = 0;
 				this.videoMessage.userVideos.forEach(userVideo => {
@@ -472,6 +481,9 @@ export default {
 			this.status = 'Finalizing...';
 			this.uploadProgress += 10;
 			await this.updateVideoMessage(data).catch(() => {});
+			if(this.isRetainFormData){
+				this.localStorage(data);
+			}
 			this.reset();
 		},
 
@@ -542,13 +554,19 @@ export default {
 			this.gifProgress = 0;
 			this.uploadProgress = 0;
 			this.videoMessage = {
-				title: '',
-				description: '',
+				title: localStorage.getItem('videoMessageStorageTitle'),
+				description: localStorage.getItem('videoMessageStorageDescription'),
 				initial_message: {},
 				service_id: null,
 				contact_id: null,
 				userVideos: []
 			};
+		},
+
+		localStorage(data){
+			localStorage.clear();
+			localStorage.setItem('videoMessageStorageTitle', data.title); 
+			localStorage.setItem('videoMessageStorageDescription', data.description);
 		}
 	}
 };
