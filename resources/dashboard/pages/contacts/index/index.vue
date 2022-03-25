@@ -142,13 +142,13 @@
 								<input type="text" v-model="newContact.last_name" />
 							</div>
 
-							<div>
+							<!-- <div>
 								<vue-checkbox v-model="newContact.sendToEmail" label="Send invitation link to email"></vue-checkbox>
 								<div v-if="newContact.sendToEmail" class="mt-4">
 									<label>Invitation Message (Optional)</label>
 									<textarea rows="3" class="resize-none" :placeholder="defaultEmailMessage" v-model="newContact.invite_message"></textarea>
 								</div>
-							</div>
+							</div> -->
 						</div>
 
 						<div class="d-flex mt-5">

@@ -426,7 +426,7 @@
 					videoMessage.userVideos = $event;
 					showLibrary = false;
 					if (quickAdd) {
-						updateVideoMessageSubmit();
+						updateVideoMessageSubmit(videoMessage);
 					}
 				}
 			"

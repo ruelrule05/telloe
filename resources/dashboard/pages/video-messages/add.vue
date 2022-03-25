@@ -120,7 +120,7 @@
 
 							<div class="mb-4">
 								<label>Contact</label>
-								<VueSelect :options="contactsOptions" clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
+								<VueSelect :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
 							</div>
 						</div>
 					</div>
