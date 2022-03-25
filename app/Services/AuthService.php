@@ -116,7 +116,8 @@ class AuthService
             'notify_sms',
             'notify_email',
             'notify_message',
-            'linkedin_username'
+            'linkedin_username',
+            'retain_form_data',
         ]) : false;
 
         if (! $user) {
@@ -318,6 +319,7 @@ class AuthService
         $data['match_up'] = $request->input('match_up');
         $data['messages'] = $request->input('messages');
         $data['contacts'] = $request->input('contacts');
+        $data['retain_form_data'] = $request->input('retain_form_data');
 
         Member::where('member_user_id', $user->id)->update([]); // update cache
 
