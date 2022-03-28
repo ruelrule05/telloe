@@ -871,7 +871,6 @@ export default {
 			let exists = this.tagOptions.find(x => x == newTag);
 			if (!exists) {
 				this.tagOptions.push(newTag);
-				console.log(this.selectedVideoMessage);
 				this.selectedVideoMessage.tags = this.tagOptions;
 				this.updateTag(this.selectedVideoMessage);
 			}
@@ -886,7 +885,6 @@ export default {
 		},
 
 		inQuery(videoMessage) {
-			console.log(videoMessage);
 			const trimmed = this.searchLib.trim().toLowerCase();
 			return trimmed.length == 0 || videoMessage.tags.toLowerCase().includes(trimmed);
 		},
