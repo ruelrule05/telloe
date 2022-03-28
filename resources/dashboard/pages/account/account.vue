@@ -378,6 +378,20 @@
 						</vue-form-validate>
 					</div>
 				</div>
+
+				<div v-else-if="activeMenu == 'Video Settings'" class="p-8">
+					<div class="notification-content account-body">
+						<h2 class="font-serif uppercase font-semibold mb-8">Video Settings</h2>
+						<vue-form-validate @submit="saveMenuSettings">
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="user.retain_form_data" label="Retain Form Data"></vue-checkbox>
+							</div>
+							<div class="mt-5">
+								<vue-button :loading="loading" type="submit" button_class="btn btn-primary"><span>Save</span></vue-button>
+							</div>
+						</vue-form-validate>
+					</div>
+				</div>
 			</div>
 		</div>
 

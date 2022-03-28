@@ -82,7 +82,7 @@ export default {
 		},
 		numbersOnly: numbersOnly,
 		phone: phone,
-		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications', 'My Menu'],
+		menus: ['Profile', 'Security', 'Plan', 'Billing', 'Payout', 'Notifications', 'My Menu', 'Video Settings'],
 		menusMobile: [
 			{ text: 'Profile', value: 'Profile' },
 			{ text: 'Security', value: 'Security' },
@@ -91,6 +91,7 @@ export default {
 			{ text: 'Payout', value: 'Payout' },
 			{ text: 'Notifications', value: 'Notifications' },
 			{ text: 'My Menu', value: 'My Menu' },
+			{ text: 'Video Settings', value: 'Video Settings' },
 			{ text: 'Log Out', value: 'Log Out' }
 		],
 		activeMenu: 'Profile',
@@ -586,6 +587,7 @@ export default {
 			user.match_up = this.$root.auth.match_up = this.user.match_up ?? false;
 			user.messages = this.$root.auth.messages = this.user.messages ?? false;
 			user.contacts = this.$root.auth.contacts = this.user.contacts ?? false;
+			user.retain_form_data = this.$root.auth.retain_form_data = this.user.retain_form_data ?? false;
 
 			let response = await window.axios.put('/auth', user, { toast: true });
 			this.loading = false;
@@ -619,6 +621,6 @@ export default {
 				}
 			});
 			return result;
-		}
+		},
 	}
 };
