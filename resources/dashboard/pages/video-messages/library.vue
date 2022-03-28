@@ -887,7 +887,7 @@ export default {
 
 		inQuery(videoMessage) {
 			const trimmed = this.searchLib.trim().toLowerCase();
-			return trimmed.length == 0 || videoMessage.tags.toLowerCase().includes(trimmed);
+			return trimmed.length == 0 || (videoMessage.tags && videoMessage.tags.toLowerCase().includes(trimmed));
 		}
 	}
 };
