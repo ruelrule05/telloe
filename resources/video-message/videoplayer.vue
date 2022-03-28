@@ -89,8 +89,11 @@ export default {
 		format: format,
 		videoReady: false,
 		playing: false,
-		isFullScreen: false
+		isFullScreen: false,
+		videosKey: new Date().valueOf()
 	}),
+
+	computed: {},
 
 	watch: {
 		playProgress: function (value) {
@@ -101,8 +104,8 @@ export default {
 		},
 		videos: function () {
 			this.$forceUpdate();
-
 			this.init();
+			this.videosKey = new Date().valueOf();
 		},
 		totalDuration: function () {
 			this.$emit('totalDuration', this.totalDuration);
@@ -120,7 +123,10 @@ export default {
 			this.playProgress = 0;
 			this.playing = false;
 			this.currentVideoIndex = 0;
-			this.videos.forEach((video, index) => {
+			this.totalDuration = 0;
+			this.videoReady = true;
+			for (var index = 0; index < this.videos.length; index++) {
+				let video = this.videos[index];
 				let videoEl = this.$refs[`video-${video.id}`];
 				if (videoEl) {
 					videoEl = videoEl[0];
@@ -149,10 +155,12 @@ export default {
 					}
 					let initialTime = 0;
 					videoEl.ontimeupdate = function () {
-						if (self.currentVideoIndex == index && videoEl.duration != Infinity) {
-							let currentTime = this.currentTime * 1000;
-							self.playProgress += currentTime - initialTime;
-							initialTime = currentTime;
+						if (videoEl.duration != Infinity) {
+							if (self.currentVideoIndex == index) {
+								let currentTime = this.currentTime * 1000;
+								self.playProgress += currentTime - initialTime;
+								initialTime = currentTime;
+							}
 						}
 					};
 					videoEl.onended = () => {
@@ -179,7 +187,7 @@ export default {
 						initialTime = 0;
 					};
 				}
-			});
+			}
 		},
 
 		fullScreen(state) {

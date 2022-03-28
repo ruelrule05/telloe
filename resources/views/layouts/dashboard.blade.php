@@ -120,9 +120,7 @@
 					<router-link v-if="$root.auth.messages" custom v-slot="{ isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
 						<div @click="toggleSidebar(`/dashboard/conversations/${currentConversationID}`)" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
 					</router-link>
-					<router-link v-if="$root.auth.contacts" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
-						<div @click="toggleSidebar('/dashboard/contacts')" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
-					</router-link>
+				
 					
 
 					<div class="mt-7">

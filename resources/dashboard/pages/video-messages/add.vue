@@ -27,7 +27,7 @@
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
 								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="$emit('showLibrary', true)">+ Add video</div>
-								<VideoPlayer v-else :videos="videoMessageData.userVideos" @totalDuration="totalDuration = $event"></VideoPlayer>
+								<VideoPlayer v-else :videos="videoMessageData.userVideos" @totalDuration="$emit('totalDuration', $event)"></VideoPlayer>
 							</div>
 
 							<div class="h-28 flex p-2 gap-2 overflow-hidden border-t bg-gray-100 w-full">

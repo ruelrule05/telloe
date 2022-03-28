@@ -219,9 +219,9 @@
 				<div class="bg-white rounded-xl p-6 transform transition-all w-full ease-in-out shadow-lg overflow-hidden relative">
 					<div v-if="userVideos.length > 0" class="flex flex-col h-full">
 						<div class="uppercase font-serif font-bold text-sm mb-4">Choose videos to be added to the sequence</div>
-							<div class="mb-3 flex items-center justify-between">
-								<input type="text" v-model="searchLib" placeholder="Search library by tags..." />
-							</div>
+						<div class="mb-3 flex items-center justify-between">
+							<input type="text" v-model="searchLib" placeholder="Search library by tags..." />
+						</div>
 						<div class="flex-grow">
 							<div class="grid grid-cols-9 gap-1">
 								<div class="h-24 p-0.5">
@@ -236,14 +236,14 @@
 									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 										<div class="backdrop"></div>
 										<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
-											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" 
-											type="button" @click="videoMessageAction(userVideo)">
-											<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
+											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoMessageAction(userVideo)">
+												<CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon>
+											</button>
 											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoLibraryTags(userVideo)">
 												<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
 											</button>
 										</div>
-										
+
 										<div class="checkmark absolute-center rounded-full">
 											<div class="absolute-center w-full h-full p-0.5">
 												<div class="bg-white rounded-full w-full h-full"></div>
@@ -261,7 +261,7 @@
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
 							</button>
-							
+
 							<button
 								class="btn btn-md btn-primary"
 								:class="{ disabled: !selectedVideos.length }"
@@ -373,12 +373,12 @@ export default {
 		gifProgress: 0,
 		tagOptions: [],
 		user_videos: null,
-		searchLib : ''
+		searchLib: ''
 	}),
 
 	computed: {
 		...mapState({
-			userVideos: state => state.user_videos.index,
+			userVideos: state => state.user_videos.index
 		})
 	},
 
@@ -415,7 +415,7 @@ export default {
 			getUserVideos: 'user_videos/index',
 			storeUserVideo: 'user_videos/store',
 			deleteUserVideo: 'user_videos/delete',
-			updateTag: 'user_videos/update',
+			updateTag: 'user_videos/update'
 		}),
 
 		secondsToDuration(seconds, limit = 14, end = 5) {
@@ -879,7 +879,7 @@ export default {
 
 		getUserVideoTags() {
 			this.tagOptions = [];
-			let userVideoTags = JSON.parse( this.selectedVideoMessage.tags);
+			let userVideoTags = JSON.parse(this.selectedVideoMessage.tags);
 			if (userVideoTags) {
 				userVideoTags.forEach(tag => this.tagOptions.push(tag));
 			}
@@ -887,8 +887,8 @@ export default {
 
 		inQuery(videoMessage) {
 			const trimmed = this.searchLib.trim().toLowerCase();
-			return trimmed.length == 0 || videoMessage.tags.toLowerCase().includes(trimmed);
-		},
+			return trimmed.length == 0 || (videoMessage.tags && videoMessage.tags.toLowerCase().includes(trimmed));
+		}
 	}
 };
 </script>

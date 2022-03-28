@@ -117,7 +117,7 @@
 		</div>
 
 		<!-- Add form -->
-		<AddVideoMessage v-show="adding" :videoMessage="videoMessage" @close="adding = false" @submit="store" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
+		<AddVideoMessage v-show="adding" :videoMessage="videoMessage" @close="adding = false" @submit="store" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)" @totalDuration="totalDuration = $event"></AddVideoMessage>
 
 		<Library
 			v-show="showLibrary"
@@ -206,7 +206,7 @@ export default {
 		gifProgress: 0,
 		status: null,
 		totalDuration: 0,
-		isRetainFormData : 0
+		isRetainFormData: 0
 	}),
 
 	computed: {
@@ -227,7 +227,7 @@ export default {
 				this.getVideoMessageStats(videoMessage);
 			}
 		});
-		
+
 		this.isRetainFormData = this.$root.auth.retain_form_data;
 	},
 
@@ -336,7 +336,7 @@ export default {
 				}
 				this.videoMessage = data;
 				this.adding = true;
-				if(this.isRetainFormData){
+				if (this.isRetainFormData) {
 					this.localStorage(data);
 				}
 			} else if (action == 'Delete') {
@@ -361,17 +361,14 @@ export default {
 					description: data.description,
 					initial_message: initialMessage,
 					service_id: data.service_id,
-					user_video_ids: userVideoIds
+					user_video_ids: userVideoIds,
+					contact_id: data.contact_id
 				};
-				if(this.isRetainFormData){
+				if (this.isRetainFormData) {
 					this.localStorage(videoMessagedata);
 				}
 
-				let totalDuration = 0;
-				this.videoMessage.userVideos.forEach(userVideo => {
-					totalDuration += userVideo.duration;
-				});
-				videoMessagedata.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
+				videoMessagedata.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
 				let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
 				if (videoMessage.data) {
 					this.reset();
@@ -481,7 +478,7 @@ export default {
 			this.status = 'Finalizing...';
 			this.uploadProgress += 10;
 			await this.updateVideoMessage(data).catch(() => {});
-			if(this.isRetainFormData){
+			if (this.isRetainFormData) {
 				this.localStorage(data);
 			}
 			this.reset();
@@ -563,9 +560,9 @@ export default {
 			};
 		},
 
-		localStorage(data){
+		localStorage(data) {
 			localStorage.clear();
-			localStorage.setItem('videoMessageStorageTitle', data.title); 
+			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
 		}
 	}
