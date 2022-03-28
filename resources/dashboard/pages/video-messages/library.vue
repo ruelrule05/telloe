@@ -219,6 +219,9 @@
 				<div class="bg-white rounded-xl p-6 transform transition-all w-full ease-in-out shadow-lg overflow-hidden relative">
 					<div v-if="userVideos.length > 0" class="flex flex-col h-full">
 						<div class="uppercase font-serif font-bold text-sm mb-4">Choose videos to be added to the sequence</div>
+							<div class="mb-3 flex items-center justify-between">
+								<input type="text" v-model="searchLib" placeholder="Search library by tags..." />
+							</div>
 						<div class="flex-grow">
 							<div class="grid grid-cols-9 gap-1">
 								<div class="h-24 p-0.5">
@@ -258,9 +261,7 @@
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
 							</button>
-							<div class="mb-3 flex items-center justify-between">
-								<input type="text" v-model="searchLib" placeholder="Search library by tags..." />
-							</div>
+							
 							<button
 								class="btn btn-md btn-primary"
 								:class="{ disabled: !selectedVideos.length }"
@@ -871,7 +872,6 @@ export default {
 			let exists = this.tagOptions.find(x => x == newTag);
 			if (!exists) {
 				this.tagOptions.push(newTag);
-				console.log(this.selectedVideoMessage);
 				this.selectedVideoMessage.tags = this.tagOptions;
 				this.updateTag(this.selectedVideoMessage);
 			}
@@ -886,7 +886,6 @@ export default {
 		},
 
 		inQuery(videoMessage) {
-			console.log(videoMessage);
 			const trimmed = this.searchLib.trim().toLowerCase();
 			return trimmed.length == 0 || videoMessage.tags.toLowerCase().includes(trimmed);
 		},
