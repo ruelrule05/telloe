@@ -45,6 +45,7 @@ class AuthService
             $data['last_name'] = $data['last_name'] ?? $data['family_name'] ?? $data['lastName']['localized']['en_US'];
             $data['blocked_timeslots'] = [];
             $user = User::where('email', $data['email'] ?? $data['emailAddress'])->first();
+            $data['email'] = $data['email'] ?? $data['emailAddress'];
             $driver_id = "{$driver}_id";
             if ($user) {
                 if (! $user[$driver_id]) {
@@ -319,7 +320,7 @@ class AuthService
         $data['match_up'] = $request->input('match_up');
         $data['messages'] = $request->input('messages');
         $data['contacts'] = $request->input('contacts');
-        $data['retain_form_data'] = $request->input('retain_form_data');
+        $data['retain_form_data'] = $request->input('retain_form_data') ?? 0;
 
         Member::where('member_user_id', $user->id)->update([]); // update cache
 
