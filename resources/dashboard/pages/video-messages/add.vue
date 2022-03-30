@@ -3,8 +3,10 @@
 		<vue-form-validate
 			v-if="videoMessageData"
 			@submit="
-				setInitialMessage();
-				$emit('submit', videoMessageData);
+				if (videoMessageData.userVideos.length) {
+					setInitialMessage();
+					$emit('submit', videoMessageData);
+				}
 			"
 			class="min-h-screen relative flex flex-col"
 		>
@@ -15,7 +17,7 @@
 						<span>Cancel</span>
 					</button>
 
-					<button type="submit" class="btn btn-md btn-primary">
+					<button type="submit" class="btn btn-md btn-primary" :disabled="!videoMessageData.userVideos.length">
 						<span>{{ videoMessageData.id ? 'Save' : 'Publish' }} </span>
 					</button>
 				</div>
@@ -118,7 +120,7 @@
 								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
 							</div>
 
-							<div class="mb-4">
+							<div v-if="!contactID" class="mb-4">
 								<label>Contact</label>
 								<VueSelect :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
 							</div>
@@ -145,6 +147,10 @@ export default {
 		videoMessage: {
 			type: Object,
 			default: () => {}
+		},
+
+		contactID: {
+			default: null
 		}
 	},
 	components: { VideoPlayer, draggable, VueSelect, VueFormValidate, CloseIcon, SendIcon },
@@ -178,17 +184,31 @@ export default {
 	created() {
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+			if (this.contactID) {
+				this.videoMessageData.contact_id = this.contactID;
+			}
 		}
 	},
 	watch: {
 		videoMessage: function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+				if (this.contactID) {
+					this.videoMessageData.contact_id = this.contactID;
+				}
+			}
+		},
+		contactID: function () {
+			if (this.videoMessageData) {
+				this.videoMessageData.contact_id = this.contactID;
 			}
 		},
 		'videoMessage.userVideos': function () {
 			if (this.videoMessage) {
-				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+				this.videoMessageData.userVideos = JSON.parse(JSON.stringify(this.videoMessage.userVideos));
+				if (this.contactID) {
+					this.videoMessageData.contact_id = this.contactID;
+				}
 			}
 		}
 	},

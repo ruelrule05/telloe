@@ -9,7 +9,7 @@
 
 		<div class="flex flex-col w-full h-full">
 			<div class="flex-grow relative overflow-hidden w-full h-full">
-				<div v-for="(video, videoIndex) in videos" :key="video.id" class="video" :class="{ show: videoIndex == currentVideoIndex }">
+				<div v-for="video in videos" :key="video.id" class="video" :class="{ show: video.id == currentVideoId }">
 					<div class="absolute w-full h-full top-0 left-0 bg-cover bg-center bg-no-repeat opacity-50" :style="{ backgroundImage: `url(${video.thumbnail})` }" style="filter: blur(30px)"></div>
 					<video :ref="`video-${video.id}`" class="w-full h-full pointer-events-none relative z-10" muted playsinline>
 						<source :src="video.source.replace('.webm', '.mp4')" type="video/mp4" />
@@ -83,29 +83,35 @@ export default {
 	components: {},
 
 	data: () => ({
-		currentVideoIndex: 0,
-		totalDuration: 0,
+		currentVideoId: 0,
 		playProgress: 0,
 		format: format,
 		videoReady: false,
 		playing: false,
 		isFullScreen: false,
-		videosKey: new Date().valueOf()
+		durations: {}
 	}),
 
-	computed: {},
+	computed: {
+		totalDuration: function () {
+			let totalDuration = 0;
+			totalDuration = Object.values(this.durations).reduce((a, b) => a + b, 0);
+
+			return totalDuration;
+		}
+	},
 
 	watch: {
 		playProgress: function (value) {
 			if (value >= this.totalDuration) {
-				this.currentVideoIndex = 0;
+				this.currentVideoId = 1;
 				this.playProgress = 0;
 			}
 		},
 		videos: function () {
-			this.$forceUpdate();
-			this.init();
-			this.videosKey = new Date().valueOf();
+			this.$nextTick(() => {
+				this.init();
+			});
 		},
 		totalDuration: function () {
 			this.$emit('totalDuration', this.totalDuration);
@@ -122,9 +128,14 @@ export default {
 		init() {
 			this.playProgress = 0;
 			this.playing = false;
-			this.currentVideoIndex = 0;
-			this.totalDuration = 0;
+			this.currentVideoId = this.videos[0].id;
 			this.videoReady = true;
+			let videoIds = this.videos.map(x => x.id);
+			Object.keys(this.durations).forEach(key => {
+				if (videoIds.indexOf(parseInt(key)) == -1) {
+					this.$delete(this.durations, key);
+				}
+			});
 			for (var index = 0; index < this.videos.length; index++) {
 				let video = this.videos[index];
 				let videoEl = this.$refs[`video-${video.id}`];
@@ -135,7 +146,7 @@ export default {
 				if (videoEl) {
 					videoEl.onloadedmetadata = async () => {
 						if (videoEl.duration != Infinity) {
-							this.totalDuration += videoEl.duration * 1000;
+							this.$set(this.durations, video.id, videoEl.duration * 1000);
 						}
 						if (index == 0) {
 							this.videoReady = true;
@@ -156,19 +167,21 @@ export default {
 					let initialTime = 0;
 					videoEl.ontimeupdate = function () {
 						if (videoEl.duration != Infinity) {
-							if (self.currentVideoIndex == index) {
+							if (self.currentVideoId == video.id) {
 								let currentTime = this.currentTime * 1000;
 								self.playProgress += currentTime - initialTime;
 								initialTime = currentTime;
+								self.$set(self.durations, video.id, videoEl.duration * 1000);
 							}
 						}
 					};
 					videoEl.onended = () => {
-						if (this.currentVideoIndex == index && this.currentVideoIndex < this.videos.length - 1) {
-							this.currentVideoIndex++;
-							if (this.currentVideoIndex < this.videos.length) {
-								let nextVideo = this.videos[this.currentVideoIndex];
+						let currentVideoIndex = this.videos.findIndex(x => x.id == this.currentVideoId);
+						if (this.currentVideoId == video.id && currentVideoIndex < this.videos.length - 1) {
+							if (currentVideoIndex < this.videos.length - 1) {
+								let nextVideo = this.videos[currentVideoIndex + 1];
 								if (nextVideo) {
+									this.currentVideoId = nextVideo.id;
 									let nextVideoEl = this.$refs[`video-${nextVideo.id}`][0] || null;
 									if (nextVideoEl) {
 										nextVideoEl.muted = false;
@@ -179,7 +192,7 @@ export default {
 						} else {
 							this.playProgress = 0;
 							this.playing = false;
-							this.currentVideoIndex = 0;
+							this.currentVideoId = this.videos[0].id;
 						}
 						setTimeout(() => {
 							videoEl.currentTime = 0;
@@ -204,7 +217,7 @@ export default {
 		},
 
 		playPause() {
-			let currentVideo = this.$refs[`video-${this.videos[this.currentVideoIndex].id}`];
+			let currentVideo = this.$refs[`video-${this.currentVideoId}`];
 			if (currentVideo) {
 				currentVideo = currentVideo[0];
 			}

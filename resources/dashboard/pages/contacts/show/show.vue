@@ -16,6 +16,17 @@
 				<router-link to="/dashboard/contacts" class="cursor-pointer rounded-full transition-colors hover:bg-gray-100 text-gray-600 p-1 mr-2"><ChevronLeftIcon class="fill-current"></ChevronLeftIcon></router-link>
 				CONTACT DETAILS
 			</div>
+			<button
+				v-if="!addingVideoMessage"
+				type="button"
+				class="btn btn-md btn-primary flex items-center"
+				@click="
+					reset();
+					addingVideoMessage = true;
+				"
+			>
+				<span>Create Video</span>
+			</button>
 		</div>
 		<div class="h-20 lg:hidden block" />
 
@@ -415,7 +426,7 @@
 			</template>
 		</modal>
 
-		<AddVideoMessage v-show="addingVideoMessage" class="absolute top-0 left-0 h-screen w-full" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
+		<AddVideoMessage v-show="addingVideoMessage" :contactID="clonedContact ? clonedContact.id : null" class="absolute top-0 left-0 h-screen w-full z-50" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
 		<Library
 			v-show="showLibrary"
 			@close="

@@ -148,7 +148,14 @@ export default {
 		contactPackageIndex: 0,
 		tagOptions: [],
 		rightTab: 'video_messages',
-		videoMessage: null,
+		videoMessage: {
+			title: '',
+			description: '',
+			initial_message: {},
+			service_id: null,
+			contact_id: null,
+			userVideos: []
+		},
 		addingVideoMessage: false,
 		videoMessageStatus: '',
 		uploadProgress: 0,
@@ -310,8 +317,24 @@ export default {
 			storeBooking: 'bookings/store',
 			storeConversation: 'conversations/store',
 			getPackages: 'packages/index',
-			updateVideoMessage: 'video_messages/update'
+			updateVideoMessage: 'video_messages/update',
+			storeVideoMessage: 'video_messages/store'
 		}),
+
+		reset() {
+			this.uploadProgress = 0;
+			this.gifProgress = 0;
+			this.addingVideoMessage = false;
+			this.videoMessageStatus = null;
+			this.videoMessage = {
+				title: '',
+				description: '',
+				initial_message: {},
+				service_id: null,
+				contact_id: null,
+				userVideos: []
+			};
+		},
 
 		async generateLinkPreview(gif, duration) {
 			return new Promise((resolve, reject) => {
@@ -415,7 +438,35 @@ export default {
 			return new File([u8arr], filename, { type: mime });
 		},
 
+		async storeVideoMessageSubmit(data) {
+			this.videoMessageStatus = 'Processing...';
+			let userVideoIds = data.userVideos.map(x => x.id);
+			let initialMessage = await this.generateInitialMessage(data);
+			let videoMessagedata = {
+				title: data.title,
+				description: data.description,
+				initial_message: initialMessage,
+				service_id: data.service_id,
+				user_video_ids: userVideoIds,
+				contact_id: data.contact_id
+			};
+			if (this.isRetainFormData) {
+				this.localStorage(videoMessagedata);
+			}
+
+			videoMessagedata.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+			let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
+			if (videoMessage.data) {
+				this.contact.videoMessages.unshift(videoMessage.data);
+				this.reset();
+			}
+		},
+
 		async updateVideoMessageSubmit(videoMessage) {
+			this.addingVideoMessage = false;
+			if (!videoMessage.id) {
+				return this.storeVideoMessageSubmit(videoMessage);
+			}
 			this.videoMessageStatus = 'Processing...';
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
