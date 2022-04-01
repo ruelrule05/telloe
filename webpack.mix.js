@@ -1,5 +1,5 @@
 const host = 'telloe.codes';
-const port = 8080;
+const port = 8082;
 const key = `/home/cleidoscope/.valet/Certificates/${host}.key`;
 const cert = `/home/cleidoscope/.valet/Certificates/${host}.crt`;
 
@@ -15,7 +15,7 @@ let timestamp = '';
 if (mix.inProduction()) {
 	timestamp = '-' + new Date().valueOf();
 }
-
+mix.disableNotifications();
 mix.vue({ version: 2 });
 mix.webpackConfig({
 	output: {

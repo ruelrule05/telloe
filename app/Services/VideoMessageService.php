@@ -39,6 +39,7 @@ class VideoMessageService
             'contact_id' => 'nullable|exists:contacts,id',
             'user_video_ids' => 'required|array',
             'link_preview' => 'nullable|string|max:255',
+            'linkedin_user' => 'nullable|string',
         ]);
         $authUser = Auth::user();
         if ($request->input('service_id')) {
@@ -52,7 +53,7 @@ class VideoMessageService
             $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->firstOrFail();
             $userVideos[] = $userVideo;
         }
-        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'link_preview', 'contact_id');
+        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'link_preview', 'contact_id', 'linkedin_user');
         $data['user_id'] = $authUser->id;
         $data['uuid'] = Str::uuid();
         $data['status'] = 'draft';
@@ -98,9 +99,11 @@ class VideoMessageService
         $videoMessage->user_initials = $user->initials;
         $videoMessage->user_profile_image = $user->profile_image;
         $videoMessage->username = $user->username;
-        if ($authUser && $authUser->id != $videoMessage->user_id) {
+        if (! $authUser || $authUser->id != $videoMessage->user_id) {
             $videoMessage->increment('views');
-            $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
+            if ($authUser) {
+                $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
+            }
             broadcast(new VideoMessageStat($videoMessage));
         }
         return view('video-message', compact('videoMessage'));
@@ -117,6 +120,7 @@ class VideoMessageService
             'user_video_ids' => 'required|array',
             'is_active' => 'required|boolean',
             'link_preview' => 'nullable|string|max:255',
+            'linkedin_user' => 'nullable|string',
         ]);
 
         $authUser = Auth::user();
@@ -150,7 +154,7 @@ class VideoMessageService
                 ]
             );
         }
-        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview', 'contact_id');
+        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview', 'contact_id', 'linkedin_user');
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);

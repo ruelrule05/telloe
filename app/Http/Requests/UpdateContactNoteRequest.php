@@ -14,6 +14,9 @@ class UpdateContactNoteRequest extends FormRequest
      */
     public function authorize()
     {
+        if (! $this->contact_id) {
+            return true;
+        }
         $note = ContactNote::findOrfail($this->contact_note);
         return $this->user()->can('show', $note->contact);
     }
