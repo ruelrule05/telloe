@@ -28,7 +28,7 @@
 					<div class="flex-grow w-full h-full overflow-hidden">
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
-								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="$emit('showLibrary', true)">+ Add video</div>
+								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="addVideo()">+ Add video</div>
 								<VideoPlayer v-else :videos="videoMessageData.userVideos" @totalDuration="$emit('totalDuration', $event)"></VideoPlayer>
 							</div>
 
@@ -251,6 +251,12 @@ export default {
 				this.$set(this.videoMessageData.initial_message, 'source', fileInput.files[0]);
 				this.$set(this.videoMessageData.initial_message, 'new_source', fileInput.files[0]);
 			}
+		},
+
+		addVideo(){
+			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
+			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
+			this.$emit('showLibrary', true)
 		}
 	}
 };
