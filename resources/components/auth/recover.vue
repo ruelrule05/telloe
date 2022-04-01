@@ -1,5 +1,5 @@
 <template>
-	<div class="row h-100 w-100 justify-content-center align-items-center mx-0" v-cloak>
+	<div class="row h-full w-full justify-center items-center mx-0" v-cloak>
 		<div class="col-md-10">
 			<div class="text-center" v-if="recoverForm.success">
 				<div class="text-muted mb-4">We have sent you the instructions on how to reset your password.</div>
