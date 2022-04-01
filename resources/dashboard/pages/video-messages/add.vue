@@ -252,6 +252,11 @@ export default {
 		}
 	},
 	methods: {
+		isImage(extension) {
+			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
+			return imageExtensions.indexOf(extension) > -1;
+		},
+
 		messageInput(e) {
 			if ((e.keyCode ? e.keyCode : e.which) == 13) {
 				e.preventDefault();
@@ -292,10 +297,10 @@ export default {
 			}
 		},
 
-		addVideo(){
+		addVideo() {
 			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
 			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
-			this.$emit('showLibrary', true)
+			this.$emit('showLibrary', true);
 		}
 	}
 };
