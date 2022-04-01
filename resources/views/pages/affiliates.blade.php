@@ -71,92 +71,66 @@
     <div class="grid grid-cols-12">
         <div class="lg:col-span-7 col-span-12 lg:pr-36 order-2 lg:order-1">
             <div>
-                <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
-                    <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="12" y1="4.37114e-08" x2="12" y2="24" stroke="#BDC2DB" stroke-width="2"
-                                class="line-1" />
-                            <line y1="11" x2="24" y2="11" stroke="#BDC2DB" stroke-width="2" />
-                        </svg>
-                    </div>
-                    <div class="pl-6">
+                <div class="flex items-center mt-7 ">
+          
+                    <div class="">
                         <span class="font-bold lg:text-xl feature-title">Content Publishers</span>
                     </div>
                 </div>
-                <div class="pl-12 feature-content">
+                <div class="feature-content">
                     <p class="text-muted mt-2">Writing about marketing, coaching, mentoring, personal fitness, Counselling, sales, or other business content marketing? Earn money by promoting Telloe on your social media, blog or, other channels.</p>
                 </div>
             </div>
 
             <div>
-                <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
+                <div class="flex items-center mt-7 ">
                     <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="12" y1="4.37114e-08" x2="12" y2="24" stroke="#BDC2DB" stroke-width="2"
-                                class="line-1" />
-                            <line y1="11" x2="24" y2="11" stroke="#BDC2DB" stroke-width="2" />
-                        </svg>
                     </div>
-                    <div class="pl-6">
+                    <div >
                         <span class="font-bold lg:text-xl">Marketing Agencies or Website Developers</span>
                     </div>
                 </div>
-                <div class="pl-12 feature-content">
+                <div class="feature-content">
                     <p class="text-muted mt-2">Recommend Telloe to your clients and earn commissions, all while helping them manage their meetings more seamlessly.</p>
                 </div>
             </div>
 
             <div>
-                <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
+                <div class="flex items-center mt-7">
                     <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="12" y1="4.37114e-08" x2="12" y2="24" stroke="#BDC2DB" stroke-width="2"
-                                class="line-1" />
-                            <line y1="11" x2="24" y2="11" stroke="#BDC2DB" stroke-width="2" />
-                        </svg>
                     </div>
-                    <div class="pl-6">
+                    <div class="">
                         <span class="font-bold lg:text-xl">PPC Paid Search Specialists</span>
                     </div>
                 </div>
-                <div class="pl-12 feature-content">
+                <div class=" feature-content">
                     <p class="text-muted mt-2">Run campaigns with 14-day free trial landing pages and attractive banners in both static and HTML5 formats.</p>
                 </div>
             </div>
 
             <div>
-                <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
+                <div class="flex items-center mt-7 ">
                     <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="12" y1="4.37114e-08" x2="12" y2="24" stroke="#BDC2DB" stroke-width="2"
-                                class="line-1" />
-                            <line y1="11" x2="24" y2="11" stroke="#BDC2DB" stroke-width="2" />
-                        </svg>
                     </div>
-                    <div class="pl-6">
+                    <div>
                         <span class="font-bold lg:text-xl">Course Creators</span>
                     </div>
                 </div>
-                <div class="pl-12 feature-content">
+                <div class="feature-content">
                     <p class="text-muted mt-2">Creating courses, webinars, or teaching coaching, personal training or sales-related training? Promote Telloe with affiliate links, make sales and earn ongoing money on each subscription.</p>
                 </div>
             </div>
 
 
             <div>
-                <div class="flex items-center mt-7 cursor-pointer hover:text-primary transition-all">
+                <div class="flex items-center mt-7">
                     <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="12" y1="4.37114e-08" x2="12" y2="24" stroke="#BDC2DB" stroke-width="2"
-                                class="line-1" />
-                            <line y1="11" x2="24" y2="11" stroke="#BDC2DB" stroke-width="2" />
-                        </svg>
                     </div>
-                    <div class="pl-6">
+                    <div>
                         <span class="font-bold lg:text-xl">Skilled Marketer or Allrounder</span>
                     </div>
                 </div>
-                <div class="pl-12 feature-content">
+                <div class="feature-content">
                     <p class="text-muted mt-2">Decide how you want to promote Telloe to suitable audiences to earn great CPA and Revenue Share with the Telloe Affiliate Program.</p>
                 </div>
             </div>

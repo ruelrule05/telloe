@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\NewMessageEvent;
 use App\Events\VideoMessageStat;
 use App\Http\Requests\StoreMessageRequest;
+use App\Jobs\SendNewMessageMail;
 use App\Mail\VideoMessageComment;
 use App\Models\Conversation;
 use App\Models\Message;
@@ -135,7 +136,7 @@ class MessageService
         if (! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;
             if ($targetUser && $targetUser->email && $targetUser->notify_message) {
-                Mail::to($targetUser->email)->queue(new NewMessage($message));
+                debounce(new SendNewMessageMail($message, $targetUser->email), 60);
             }
         }
 

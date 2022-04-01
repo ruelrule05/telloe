@@ -444,18 +444,25 @@ class ContactService
 
     public function contactNotes($id, Request $request)
     {
-        $contact = Contact::findOrFail($id);
-        $this->authorize('show', $contact);
-
         $order = $request->order ?? 'desc';
-        return ContactNote::where('contact_id', $contact->id)->orderBy('created_at', $order)->get();
+        if (strpos($id, 'urn') === false) {
+            $contact = Contact::findOrFail($id);
+            $this->authorize('show', $contact);
+            return ContactNote::where('contact_id', $contact->id)->orderBy('created_at', $order)->get();
+        } else {
+            return ContactNote::where('linkedin_user', $id)->orderBy('created_at', $order)->get();
+        }
     }
 
     public static function videoMessages($id)
     {
-        $contact = Contact::findOrFail($id);
-        (new self)->authorize('show', $contact);
-        return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('contact_id', $contact->id)->latest()->get());
+        if (strpos($id, 'urn') === false) {
+            $contact = Contact::findOrFail($id);
+            (new self)->authorize('show', $contact);
+            return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('contact_id', $contact->id)->latest()->get());
+        } else {
+            return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('linkedin_user', $id)->latest()->get());
+        }
     }
 
     public static function getByUrn($urn)

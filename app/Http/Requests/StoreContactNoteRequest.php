@@ -15,6 +15,9 @@ class StoreContactNoteRequest extends FormRequest
      */
     public function authorize()
     {
+        if (! $this->contact_id) {
+            return true;
+        }
         $contact = Contact::find($this->contact_id);
         return $this->user()->can('show', $contact);
     }
@@ -27,7 +30,8 @@ class StoreContactNoteRequest extends FormRequest
     public function rules()
     {
         return [
-            'contact_id' => 'required|integer|exists:contacts,id',
+            'contact_id' => 'nullable|integer|exists:contacts,id',
+            'linkedin_user' => 'nullable|string',
             'note' => 'required|string|max:255',
         ];
     }

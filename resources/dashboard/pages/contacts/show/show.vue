@@ -427,6 +427,7 @@
 		</modal>
 
 		<AddVideoMessage v-show="addingVideoMessage" :contactID="clonedContact ? clonedContact.id : null" class="absolute top-0 left-0 h-screen w-full z-50" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
+
 		<Library
 			v-show="showLibrary"
 			@close="
@@ -444,6 +445,17 @@
 			"
 			:selectedUserVideos="videoMessage ? videoMessage.userVideos : []"
 		></Library>
+
+		<Modal ref="deleteVideoMessageModal">
+			<div class="text-center">
+				<WarningIcon class="fill-current text-red-600 h-8 w-8 inline-block mb-4"></WarningIcon>
+				<p>Are you sure you want to delete this video message?</p>
+			</div>
+			<div class="flex justify-between mt-6">
+				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.deleteVideoMessageModal.hide()"><span>Cancel</span></button>
+				<button class="btn btn-sm btn-red" type="button" @click="confirmDeleteVideoMessage"><span>Delete</span></button>
+			</div>
+		</Modal>
 	</div>
 </template>
 

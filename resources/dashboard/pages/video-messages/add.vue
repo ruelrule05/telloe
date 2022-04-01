@@ -28,7 +28,7 @@
 					<div class="flex-grow w-full h-full overflow-hidden">
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
-								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="$emit('showLibrary', true)">+ Add video</div>
+								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="addVideo()">+ Add video</div>
 								<VideoPlayer v-else :videos="videoMessageData.userVideos" @totalDuration="$emit('totalDuration', $event)"></VideoPlayer>
 							</div>
 
@@ -124,6 +124,11 @@
 								<label>Contact</label>
 								<VueSelect :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
 							</div>
+
+							<div v-if="!linkedinUser && linkedinUsersOptions.length" class="mt-4">
+								<label>LinkedIn User</label>
+								<VueSelect clearable :options="linkedinUsersOptions" placeholder="Select LinkedIn user" class="mb-4" dropPosition="top w-full" v-model="videoMessageData.linkedin_user"></VueSelect>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -151,6 +156,10 @@ export default {
 
 		contactID: {
 			default: null
+		},
+
+		linkedinUser: {
+			default: null
 		}
 	},
 	components: { VideoPlayer, draggable, VueSelect, VueFormValidate, CloseIcon, SendIcon },
@@ -162,7 +171,8 @@ export default {
 	computed: {
 		...mapState({
 			services: state => state.services.index,
-			contacts: state => state.contacts.index
+			contacts: state => state.contacts.index,
+			linkedActivities: state => state.linkedin_activities.index
 		}),
 
 		servicesOptions() {
@@ -178,6 +188,31 @@ export default {
 			return contacts.map(contact => {
 				return { text: contact.full_name, value: contact.id };
 			});
+		},
+
+		linkedinUsers() {
+			let linkedinUsers = [];
+			this.linkedActivities.forEach(activity => {
+				let actor = activity.data.actor;
+				if (activity.data.resharedUpdate) {
+					actor = activity.data.resharedUpdate.actor;
+				}
+				if (actor && !linkedinUsers.find(x => x.urn == actor.urn)) {
+					linkedinUsers.push(actor);
+				}
+			});
+			return linkedinUsers;
+		},
+
+		linkedinUsersOptions() {
+			let linkedinUsersOptions = [];
+			this.linkedinUsers.forEach(actor => {
+				linkedinUsersOptions.push({
+					text: actor.name.text,
+					value: actor.urn
+				});
+			});
+			return linkedinUsersOptions;
 		}
 	},
 
@@ -205,7 +240,11 @@ export default {
 		},
 		'videoMessage.userVideos': function () {
 			if (this.videoMessage) {
-				this.videoMessageData.userVideos = JSON.parse(JSON.stringify(this.videoMessage.userVideos));
+				if (this.videoMessage.userVideos) {
+					this.videoMessageData.userVideos = JSON.parse(JSON.stringify(this.videoMessage.userVideos));
+				} else {
+					this.videoMessageData.userVideos = [];
+				}
 				if (this.contactID) {
 					this.videoMessageData.contact_id = this.contactID;
 				}
@@ -213,6 +252,11 @@ export default {
 		}
 	},
 	methods: {
+		isImage(extension) {
+			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
+			return imageExtensions.indexOf(extension) > -1;
+		},
+
 		messageInput(e) {
 			if ((e.keyCode ? e.keyCode : e.which) == 13) {
 				e.preventDefault();
@@ -251,6 +295,12 @@ export default {
 				this.$set(this.videoMessageData.initial_message, 'source', fileInput.files[0]);
 				this.$set(this.videoMessageData.initial_message, 'new_source', fileInput.files[0]);
 			}
+		},
+
+		addVideo() {
+			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
+			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
+			this.$emit('showLibrary', true);
 		}
 	}
 };

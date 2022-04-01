@@ -87,6 +87,7 @@ import { mapActions } from 'vuex';
 import VideoPlayer from './videoplayer.vue';
 import Messages from '../dashboard/components/Messages/Messages.vue';
 import CommentIcon from '../icons/comment.vue';
+import dayjs from 'dayjs';
 export default {
 	components: { VideoPlayer, Messages, CommentIcon },
 
@@ -140,7 +141,12 @@ export default {
 		async getMessageByID(messageID) {
 			let message = await window.axios.get(`/messages/${messageID}`).catch(() => {});
 			if (message) {
-				this.conversation.paginated_messages.data.unshift(message.data);
+				let sentNow = this.conversation.paginated_messages.data.find(x => {
+					return !x.id && dayjs(parseInt(x.timestamp)).format('YYYY-MM-DD H:m:s') == dayjs(parseInt(message.data.timestamp)).format('YYYY-MM-DD H:m:s');
+				});
+				if (!sentNow) {
+					this.conversation.paginated_messages.data.unshift(message.data);
+				}
 			}
 		},
 

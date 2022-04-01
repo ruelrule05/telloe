@@ -57,8 +57,11 @@ const S3 = new AWS.S3({
 	params: { Bucket: process.env.MIX_AWS_BUCKET }
 });
 
+import WarningIcon from '../../../../icons/warning';
+
 export default {
 	components: {
+		WarningIcon,
 		Library,
 		AddVideoMessage,
 		ShareIcon,
@@ -318,8 +321,17 @@ export default {
 			storeConversation: 'conversations/store',
 			getPackages: 'packages/index',
 			updateVideoMessage: 'video_messages/update',
-			storeVideoMessage: 'video_messages/store'
+			storeVideoMessage: 'video_messages/store',
+			deleteVideoMessage: 'video_messages/delete'
 		}),
+
+		setQuickAdd(videoMessage) {
+			let data = JSON.parse(JSON.stringify(videoMessage));
+			data.userVideos = data.videos.map(x => x.user_video);
+			this.videoMessage = data;
+			this.showLibrary = true;
+			this.quickAdd = true;
+		},
 
 		reset() {
 			this.uploadProgress = 0;
@@ -532,6 +544,17 @@ export default {
 			});
 		},
 
+		confirmDeleteVideoMessage() {
+			if (this.videoMessage.id) {
+				let index = this.contact.videoMessages.findIndex(x => x.id == this.videoMessage.id);
+				if (index > -1) {
+					this.contact.videoMessages.splice(index, 1);
+				}
+				this.deleteVideoMessage(this.videoMessage);
+			}
+			this.$refs.deleteVideoMessageModal.hide();
+		},
+
 		videoMessageAction(action, videoMessage) {
 			if (action == 'Edit') {
 				let data = JSON.parse(JSON.stringify(videoMessage));
@@ -545,7 +568,8 @@ export default {
 				this.videoMessage = data;
 				this.addingVideoMessage = true;
 			} else if (action == 'Delete') {
-				this.videoMessage = videoMessage;
+				let data = JSON.parse(JSON.stringify(videoMessage));
+				this.videoMessage = data;
 				this.$refs.deleteVideoMessageModal.show();
 			}
 		},

@@ -107,6 +107,7 @@ Route::group(
                 Route::apiResource('linkedin_activities', 'LinkedInController');
                 Route::apiResource('user_videos', 'UserVideoController');
                 Route::post('notifications/clear', 'NotificationController@clear');
+                Route::apiResource('linkedin_user', 'LinkedInUserController');
 
                 Route::post('contacts/{id}/create_invoice', 'ContactController@createInvoice');
                 Route::post('contacts/{id}/finalize_invoice', 'ContactController@finalizeInvoice');

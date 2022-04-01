@@ -7,16 +7,15 @@ use Carbon\Carbon;
 class Note extends BaseModel
 {
     //
-    protected $fillable = ['conversation_id', 'user_id', 'notes', 'tags'];
+    protected $fillable = ['conversation_id', 'user_id', 'notes', 'tags', 'linkedin_user'];
     protected $appends = ['created_at_format'];
     protected $casts = [
         'tags' => 'array',
     ];
     public function conversation()
     {
-    	return $this->belongsTo(Conversation::class);
+        return $this->belongsTo(Conversation::class);
     }
-
 
     public function getCreatedAtFormatAttribute()
     {
