@@ -11,7 +11,7 @@
 	<meta property="og:site_name" content="{{ config('app.name') }}" />
 	<meta name="twitter:card" content="summary_large_image" />
 
-	<meta property="og:title" content="Click here to play ➤ {{ $videoMessage->title }}" />
+	<meta property="og:title" content="Play ➤ {{ $videoMessage->title }}" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://telloe.com/" />
 	<meta property="og:image" content="{{ $videoMessage->link_preview ? $videoMessage->link_preview.'?latest' : config('app.url').'/images/og-image.png' }}" />

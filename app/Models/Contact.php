@@ -21,7 +21,7 @@ class Contact extends BaseModel
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'email', 'email');
     }
 
     public function contactUser()
