@@ -108,6 +108,7 @@ class MessageService
             }
             $location = Location::get($ip);
         }
+        $linkPreview = (new self)::generateLinkPreview($request);
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'user_id' => $authUser->id ?? null,
@@ -118,6 +119,7 @@ class MessageService
             'metadata' => $metadata,
             'timestamp' => $timestamp,
             'location' => $location,
+            'link_preview' => $linkPreview
         ]);
 
         //if ($request->broadcast == 'true') {
@@ -160,15 +162,16 @@ class MessageService
         return $message->delete();
     }
 
-    public function generateLinkPreview($id, Request $request)
+    public static function generateLinkPreview(Request $request)
     {
-        $message = Message::findOrFail($id);
-        $this->authorize('show', $message);
+        // $message = Message::findOrFail($id);
+        // $this->authorize('show', $message);
 
         $linkPreview = null;
 
-        preg_match_all('@((https?://)?([-\\w]+\\.[-\\w\\.]+)+\\w(:\\d+)?(/([-\\w/_\\.]*(\\?\\S+)?)?)*)@', $message->message, $links);
-        if (count($links) > 0 && $links[0] > 0) {
+
+        preg_match_all('@((https?://)?([-\\w]+\\.[-\\w\\.]+)+\\w(:\\d+)?(/([-\\w/_\\.]*(\\?\\S+)?)?)*)@', $request->input('message'), $links);
+        if (count($links) > 0 && count($links[0]) > 0) {
             $preview = Http::get('https://api.linkpreview.net/?key=' . config('app.link_preview_key') . '&q=' . $links[0][0]);
             $preview = $preview->json();
             if (! isset($preview['error'])) {
@@ -182,9 +185,9 @@ class MessageService
                 $linkPreview .= '<span class="preview-host">' . $host . '</span>';
                 $linkPreview .= '</a>';
 
-                $message->update([
-                    'link_preview' => $linkPreview
-                ]);
+                // $message->update([
+                //     'link_preview' => $linkPreview
+                // ]);
             }
         }
 

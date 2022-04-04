@@ -13,7 +13,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\LinkedinUser;
+use App\Models\Service;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -24,7 +26,7 @@ class LinkedInUserController extends Controller
      *
      * @return Response
      */
-    public function show(string $urn)
+    public function show(string $urn, Request $request)
     {
         $linkedInUser = LinkedinUser::firstOrCreate(
             [
@@ -36,6 +38,24 @@ class LinkedInUserController extends Controller
                 'tags' => []
             ]
         );
+
+        $authUser = Auth::user();
+        $serviceIds = Service::where('user_id', $authUser->id)->orWhereHas('parentService', function ($parentService) use ($authUser) {
+            $parentService->where('user_id', $authUser->id);
+        })->get()->pluck('id')->toArray();
+        if ($request->services) {
+            $serviceIdsCopy = $serviceIds;
+            $serviceIds = [];
+            $filterServiceIds = explode(',', $request->services);
+            foreach ($filterServiceIds as $filterServiceId) {
+                if (in_array($filterServiceId, $serviceIdsCopy)) {
+                    $serviceIds[] = $filterServiceId;
+                }
+            }
+        }
+
+        $order = $request->order ?? 'DESC';
+        $linkedInUser->bookings = Booking::where('linkedin_user', $linkedInUser->urn)->orderBy('date', $order)->whereIn('service_id', $serviceIds)->paginate();
 
         return response()->json($linkedInUser);
     }

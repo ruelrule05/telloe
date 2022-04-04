@@ -249,8 +249,12 @@ export default {
 
 <style lang="scss">
 .message-group .message-item.has-link {
-	width: 400px !important;
+	width: 320px !important;
+	.message-content {
+		max-width: 100% !important;
+	}
 }
+
 .message-input-wrapper {
 	@apply p-2;
 }

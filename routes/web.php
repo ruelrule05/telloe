@@ -68,7 +68,6 @@ Route::group(
                 Route::apiResource('conversations', 'ConversationController')->except(['destroy', 'show']);
                 Route::apiResource('contact_labels', 'ContactLabelController');
                 Route::apiResource('messages', 'MessageController')->only(['update', 'destroy']);
-                Route::get('messages/{id}/generate_link_preview', 'MessageController@generateLinkPreview');
                 Route::get('services/contact_services', 'ServiceController@contactServices');
                 Route::apiResource('services', 'ServiceController');
                 Route::apiResource('notes', 'NoteController');

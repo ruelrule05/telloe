@@ -38,6 +38,9 @@ export default {
 		contact: {
 			type: Object
 		},
+		linkedinUser: {
+			type: Object
+		},
 		member: {
 			type: Object
 		},
