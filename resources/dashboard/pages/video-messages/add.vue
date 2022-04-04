@@ -127,7 +127,7 @@
 
 							<div v-if="!linkedinUser && linkedinUsersOptions.length" class="mt-4">
 								<label>LinkedIn User</label>
-								<VueSelect clearable :options="linkedinUsersOptions" placeholder="Select LinkedIn user" class="mb-4" dropPosition="top w-full" v-model="videoMessageData.linkedin_user"></VueSelect>
+								<VueSelect clearable searchable :options="linkedinUsersOptions" noValuePlaceholder="No LinkedIn user found" placeholder="Select LinkedIn user" class="mb-4" dropPosition="top w-full" v-model="videoMessageData.linkedin_user"></VueSelect>
 							</div>
 						</div>
 					</div>
