@@ -329,6 +329,8 @@
 					<button class="btn btn-sm btn-red" type="button" @click="confirmDeleteVideoMessage"><span>Delete</span></button>
 				</div>
 			</Modal>
+
+			<Booking class="contact-booking" :linkedinUser="linkedinUser" @store="newBookingStored" :newEvent="newEvent" :booking="selectedBooking" @update="bookingUpdated" @close="selectedBooking = null" @delete="bookingDeleted"></Booking>
 		</div>
 	</div>
 </template>

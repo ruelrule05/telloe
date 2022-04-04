@@ -41,9 +41,12 @@ const gifshot = require('../../../../js/plugins/gifshot.min');
 import { GifReader } from 'omggif';
 const humanizeDuration = require('humanize-duration');
 import { cover } from 'intrinsic-scale';
+import ClockIcon from '../../../../icons/clock';
+import Paginate from '../../../../components/paginate/paginate.vue';
+import Booking from '../../../components/Booking/Booking.vue';
 
 export default {
-	components: { ChevronLeftIcon, VueFormValidate, VueSelect, VueDropdown, MoreIcon, draggable, MoveIcon, TrashIcon, Multiselect, ShareIcon, EyeIcon, CogIcon, ThumbdownIcon, ThumbupIcon, CommentIcon, PlusIcon, ToggleSwitch, Modal, WarningIcon, AddVideoMessage, Library },
+	components: { ChevronLeftIcon, VueFormValidate, VueSelect, VueDropdown, MoreIcon, draggable, MoveIcon, TrashIcon, Multiselect, ShareIcon, EyeIcon, CogIcon, ThumbdownIcon, ThumbupIcon, CommentIcon, PlusIcon, ToggleSwitch, Modal, WarningIcon, AddVideoMessage, Library, ClockIcon, Paginate, Booking },
 	data: () => ({
 		showLibrary: false,
 		quickAdd: false,
@@ -91,7 +94,10 @@ export default {
 			service_id: null,
 			contact_id: null,
 			userVideos: []
-		}
+		},
+		order: 'desc',
+		newEvent: false,
+		selectedBooking: null
 	}),
 
 	computed: {
@@ -198,6 +204,44 @@ export default {
 			updateVideoMessage: 'video_messages/update',
 			getContacts: 'contacts/index'
 		}),
+
+		bookingDeleted(booking) {
+			let index = this.bookings.data.findIndex(b => b.id == booking.id);
+			if (index >= -1) {
+				this.bookings.data.splice(index, 1);
+			}
+		},
+
+		bookingUpdated(booking) {
+			if (booking.id == this.selectedBooking.id) {
+				this.selectedBooking.date = dayjs(booking.date).format('YYYY-MM-DD');
+				this.selectedBooking.start = booking.start;
+				this.selectedBooking.end = booking.end;
+				this.selectedBooking.notes = booking.notes;
+			}
+			this.selectedBooking = null;
+		},
+
+		newBookingStored(bookings) {
+			bookings.forEach(booking => {
+				this.bookings.data.unshift(booking);
+			});
+		},
+
+		bookingAction(action, booking) {
+			switch (action) {
+				case 'Edit':
+					this.selectedBooking = booking;
+					break;
+				case 'Delete':
+					break;
+			}
+		},
+
+		createNewEvent() {
+			this.newEvent = true;
+			this.selectedBooking = { date: dayjs().format('YYYY-MM-DD'), start: '02:00', end: '03:00' };
+		},
 
 		setQuickAdd(videoMessage) {
 			let data = JSON.parse(JSON.stringify(videoMessage));
@@ -513,7 +557,14 @@ export default {
 			if (this.member) {
 				let response = await window.axios.get(`/linkedin_user/${this.member.urn}`);
 				this.linkedinUser = response.data;
+				this.bookings = response.data.bookings;
 			}
+		},
+
+		async filterBookings() {
+			let serviceIds = this.selectedService ? [this.selectedService.id] : [];
+			let response = await window.axios.get(`/linkedin_user/${this.member.urn}?page=${this.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
+			this.bookings = response.data.bookings;
 		},
 
 		noteAction(action, note) {

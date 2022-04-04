@@ -1,6 +1,6 @@
 import Vue from 'vue';
 const name = 'messages';
-const extractUrls = require('extract-urls');
+//const extractUrls = require('extract-urls');
 
 const state = () => ({});
 
@@ -40,12 +40,12 @@ const actions = {
 		Vue.set(newMessage, 'created_at_format', response.data.created_at_format);
 		Vue.set(newMessage, 'sending', false);
 
-		let links = extractUrls(response.data.message);
-		if (links && links.length > 0) {
-			window.axios.get(`/messages/${response.data.id}/generate_link_preview`).then(response => {
-				Vue.set(newMessage, 'link_preview', response.data);
-			});
-		}
+		//let links = extractUrls(response.data.message);
+		// if (links && links.length > 0) {
+		// 	window.axios.get(`/messages/${response.data.id}/generate_link_preview`).then(response => {
+		// 		Vue.set(newMessage, 'link_preview', response.data);
+		// 	});
+		// }
 		return response.data;
 	},
 
