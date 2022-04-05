@@ -18,7 +18,7 @@
 		<div class="flex items-center my-8">
 			<span class="text-muted">Or login with:</span>
 			<div class="ml-auto flex">
-				<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></FacebookAltIcon></button>
+				<!--<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="$parent.FacebookLogin" data-action="login"><FacebookAltIcon height="10" width="10" transform="scale(1.6)" class="fill-current text-primary"></FacebookAltIcon></button>-->
 				<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100 ml-3" type="button" @click="$parent.GoogleSignin" data-action="login"><GoogleAltIcon height="10" width="10" transform="scale(1.4)" class="fill-current text-primary"></GoogleAltIcon></button>
 				<button class="border border-primary rounded-full p-4 focus:outline-none transition-colors hover:bg-gray-100 ml-3" type="button" @click="$parent.LinkedinLogin" data-action="login"><LInkedinAltIcon height="10" width="10" transform="scale(1.4)" class="fill-current text-primary"></LInkedinAltIcon></button>
 			</div>
@@ -35,11 +35,11 @@
 <script>
 import VueFormValidate from '../../components/vue-form-validate.vue';
 import VueButton from '../../components/vue-button.vue';
-import FacebookAltIcon from '../../icons/facebook-alt.vue';
+//import FacebookAltIcon from '../../icons/facebook-alt.vue';
 import GoogleAltIcon from '../../icons/google-alt.vue';
 import LInkedinAltIcon from '../../icons/linkedin-alt.vue';
 export default {
-	components: { VueFormValidate, VueButton, FacebookAltIcon, GoogleAltIcon, LInkedinAltIcon },
+	components: { VueFormValidate, VueButton, GoogleAltIcon, LInkedinAltIcon },
 	data: () => ({
 		contact: null,
 		member: null,
