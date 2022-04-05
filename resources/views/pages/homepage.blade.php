@@ -78,7 +78,7 @@
 	</div>
 </div>
 
-<div class="container lg:py-24 py-8">
+<div id="about" class="container lg:py-24 py-8">
 	<div class="grid lg:grid-cols-1 items-center">
 		<div class="lg:pr-24 order-2 lg:order-1">
 		<h2 class="text-primary lg:text-5xl text-2xl font-bold lg:mt-5 lg:mb-10 mb-5"> 3 TOOLS, 1 RESULT </h2>
