@@ -135,7 +135,7 @@ export default {
 
 		filteredContacts() {
 			return this.contacts.data.filter(contact => {
-				let query = this.query.trim();
+				let query = this.query.trim().toLowerCase();
 				let inFilter = true;
 				let inQuery = true;
 				if (this.filterTags.length) {

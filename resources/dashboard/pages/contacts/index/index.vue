@@ -41,9 +41,9 @@
 								<multiselect v-model="filterTags" class="w-full mt-2 md:mt-0" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
 							</div>
 
-							<form class="mt-2 lg:mt-0 w-3/12">
+							<div class="mt-2 lg:mt-0 w-3/12">
 								<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name or email" />
-							</form>
+							</div>
 						</div>
 
 						<template v-if="filteredContacts.length > 0">
