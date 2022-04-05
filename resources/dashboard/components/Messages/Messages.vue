@@ -174,7 +174,7 @@
 						class="btn btn-md btn-red"
 						type="button"
 						@click="
-							deleteMessage(selectedMessage);
+							confirmDeleteMessage(selectedMessage);
 							$refs.deleteMessageModal.hide();
 						"
 					>

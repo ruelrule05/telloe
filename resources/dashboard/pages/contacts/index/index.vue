@@ -34,58 +34,54 @@
 			</div>
 
 			<div class="flex flex-col lg:flex-row h-full contact-content">
-				<div class="w-full lg:w-2/3 p-6 lg:p-8 border-b lg:border-b-0 border-r-0 lg:border-r relative">
-					<template v-if="filteredContacts.length > 0">
+				<div class="w-full lg:w6/12 p-6 lg:p-8 border-b lg:border-b-0 border-r-0 lg:border-r relative">
+					<template v-if="contacts.data.length > 0">
 						<div class="flex lg:items-center items-normal justify-between mb-3 header flex-col lg:flex-row w-full">
-							<div class="flex items-center flex-col md:flex-row">
-								<VueSelect :options="contactStatuses" dropPosition="w-full" class="contact-status" v-model="contactStatus" @input="getData" label="Status"></VueSelect>
-								<multiselect v-model="filterTags" class="ml-0 md:ml-2 w-6/12 md:w-full mt-2 md:mt-0" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
+							<div class="flex items-center flex-col md:flex-row w-3/12">
+								<multiselect v-model="filterTags" class="w-full mt-2 md:mt-0" :options="contactTags" :showLabels="false" placeholder="Filter by tags" multiple> <span slot="noResult" class="text-muted text-sm">No tags found.</span></multiselect>
 							</div>
 
-							<form @submit.prevent="getData()" class="mt-2 lg:mt-0 lg:w-5/12">
-								<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name, surname or e-mail" />
+							<form class="mt-2 lg:mt-0 w-3/12">
+								<input type="text" v-model="query" class="px-4 text-sm font-normal bg-gray-100 border-none rounded-full shadow-none" placeholder="Search by name or email" />
 							</form>
 						</div>
 
-						<div class="flex w-full flex-col md:flex-row xs:flex-row items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
-							<div class="flex w-full sm:w-6/12 items-start">
-								<div class="mr-2">
-									<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
-										<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
-										<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status">&nbsp;</i>
-									</div>
-								</div>
-								<div>
-									<router-link :to="`/dashboard/contacts/${contact.id}`" class="font-bold text-primary">{{ contact.contact_user.full_name }}</router-link>
-									<div class="text-xs text-muted">
-										<div v-if="contact.linkedin_urn" class="flex items-center">
-											<LinkedinIcon class="mr-1 w-3 h-3" />
-											<div>
-												LinkedIn Contact <span v-if="contact.contact_user.email">({{ contact.contact_user.email }})</span>
-											</div>
+						<template v-if="filteredContacts.length > 0">
+							<div class="flex w-full flex-col md:flex-row xs:flex-row items-start justify-between contact-row border-bottom" v-for="contact in filteredContacts" :key="contact.id">
+								<div class="flex w-full sm:w-6/12 items-start">
+									<div class="mr-2">
+										<div class="profile-image profile-image-sm" :style="{ backgroundImage: 'url(' + contact.contact_user.profile_image + ')' }">
+											<span v-if="!contact.contact_user.profile_image">{{ contact.contact_user.initials }}</span>
+											<i v-if="$root.isOnline(contact.contact_user_id)" class="online-status">&nbsp;</i>
 										</div>
-										<span v-else>{{ contact.contact_user.email }}</span>
+									</div>
+									<div>
+										<router-link :to="`/dashboard/contacts/${contact.id}`" class="font-bold text-primary">{{ contact.contact_user.full_name }}</router-link>
+										<div class="text-xs text-muted">
+											<span>{{ contact.contact_user.email }}</span>
+										</div>
 									</div>
 								</div>
-							</div>
-							<div class="flex w-10/12 sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
-								<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ dayjs(contact.created_at).format('MMM DD, YYYY') }}</p>
-								<div class="flex items-center">
-									<!-- <span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
+								<div class="flex w-10/12 sm:w-6/12 flex-col lg:flex-row items-start sm:items-end lg:items-center mt-2 sm:mt-0 ml-9 sm:ml-0 justify-end">
+									<p class="mr-0 lg:mr-5 text-xs text-muted">Date added: {{ dayjs(contact.created_at).format('MMM DD, YYYY') }}</p>
+									<div class="flex items-center">
+										<!-- <span class="px-3 py-1 text-xs font-bold rounded text-muted" :class="[contact.is_pending ? 'bg-yellow-200' : 'bg-gray-200']">{{ contact.is_pending ? 'Pending' : 'Accepted' }}</span>
 									<button v-if="!contact.is_pending" type="button" class="ml-2 transition-colors cursor-pointer rounded-full p-1 hover:bg-gray-100" @click="goToConversation(contact)">
 										<MessageIcon class="fill-current text-gray-400"></MessageIcon>
 									</button> -->
 
-									<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
-										<template #button>
-											<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
-												<CogIcon class="fill-current text-gray-400"></CogIcon>
-											</div>
-										</template>
-									</VueDropdown>
+										<VueDropdown :options="actions" @click="contactAction($event, contact)" class="-mr-2 ml-1">
+											<template #button>
+												<div class="transition-colors cursor-pointer rounded-full p-2 hover:bg-gray-100">
+													<CogIcon class="fill-current text-gray-400"></CogIcon>
+												</div>
+											</template>
+										</VueDropdown>
+									</div>
 								</div>
 							</div>
-						</div>
+						</template>
+						<div v-else class="text-center text-sm py-5 text-gray-400">No contact found.</div>
 
 						<Paginate v-if="contacts.data.length > 0" :data="contacts" @change="p => (page = p)" class="mt-6"></Paginate>
 					</template>

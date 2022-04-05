@@ -19,7 +19,7 @@
     </style>
     
     <script>
-        window.AUTH = {!! isset($authUser) ? "JSON.parse('".json_encode($authUser)."');" : 'null' !!};
+        window.AUTH = {!! isset($authUser) ? "JSON.parse('".json_encode($authUser, JSON_HEX_APOS)."');" : 'null' !!};
     </script>
 	<script src="{{ mix('js/account-setup.js') }}" async defer></script>
 </body>
