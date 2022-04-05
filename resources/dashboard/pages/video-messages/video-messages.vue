@@ -561,7 +561,6 @@ export default {
 		},
 
 		localStorage(data) {
-			localStorage.clear();
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
 		}
