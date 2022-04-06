@@ -209,6 +209,7 @@
 					<div class="w-1/3">Email</div>
 					<div class="w-1/3 px-3">First Name</div>
 					<div class="w-1/3">Last Name</div>
+					<div class="w-1/3">Tags</div>
 				</div>
 				<div class="overflow-y-auto overflow-x-hidden h-72">
 					<template v-for="(csvContact, csvContactIndex) in csvContacts">
@@ -216,6 +217,7 @@
 							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[0].heading] }}</div>
 							<div class="w-1/3 truncate overflow-hidden px-3">{{ csvContact[csvMappings[1].heading] }}</div>
 							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[2].heading] }}</div>
+							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[3].heading] }}</div>
 						</div>
 					</template>
 				</div>
