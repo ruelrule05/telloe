@@ -10,7 +10,6 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\VideoMessageController;
 use App\Http\SocialiteHelper;
-use Mail;
 
 Route::group(
     [
