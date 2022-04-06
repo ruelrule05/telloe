@@ -92,30 +92,21 @@ export default {
 		}),
 
 		activities: function () {
-			let activities = [];
+			let activities = {};
 			this.linkedActivities.forEach(activity => {
 				if (activity.data.actor && (activity.data.resharedUpdate || activity.data.header)) {
 					let actor = activity.data.actor;
-					let likedPost = 0;
-					let commentPost = 0;
-					let sharedPost = 0;
+
 					let action = 'Shared a post';
 					let recentActivityURL = activity.data.actor.navigationContext.actionTarget;
 					let name = activity.data.actor.name.text;
 					if (activity.data.resharedUpdate) {
 						name = activity.data.resharedUpdate.actor.name.text;
 						recentActivityURL = activity.data.resharedUpdate.actor.navigationContext.actionTarget;
-						sharedPost = 1;
 						actor = activity.data.resharedUpdate.actor;
 					}
 					if (activity.data.header) {
-						sharedPost = 0;
 						action = activity.data.header.text.text;
-						if (action.includes('commented')) {
-							commentPost = 1;
-						} else {
-							likedPost = 1;
-						}
 					}
 					if (actor.name.attributes && actor.name.attributes.length > 0) {
 						let vanityName = null;
@@ -135,11 +126,6 @@ export default {
 						} else if (action.includes('likes')) {
 							action = 'Liked a post';
 						}
-						likedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && (x.data.header.text.text.includes('likes') || x.data.header.text.text.includes('loves'))).length;
-
-						commentPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && x.data.header && x.data.header.text.text.includes('commented')).length;
-
-						sharedPost += this.linkedActivities.filter(x => x.id != activity.id && x.data.actor && ((x.data.resharedUpdate && x.data.resharedUpdate.actor.urn == actor.urn) || (!x.data.resharedUpdate && x.data.actor.urn == actor.urn)) && !x.data.header).length;
 						let label = null;
 						let contact = this.getContact(actor.urn);
 						if (contact && contact.label) {
@@ -150,16 +136,20 @@ export default {
 							title = activity.data.actor.description.text;
 						}
 
-						activities.push({
+						if (!activities[actor.urn]) {
+							activities[actor.urn] = [];
+						}
+
+						activities[actor.urn].push({
 							id: activity.id,
 							name: name,
 							vanityName: vanityName,
 							title: title,
 							lastActivity: action,
 							recentActivityURL: recentActivityURL,
-							likedPost: likedPost,
-							commentPost: commentPost,
-							sharedPost: sharedPost,
+							likedPost: 0,
+							commentPost: 0,
+							sharedPost: 0,
 							mutualConnections: 0,
 							linkedinProfile: linkedinProfile,
 							actor: actor,
@@ -169,7 +159,30 @@ export default {
 					}
 				}
 			});
-			return activities;
+			let sortedActivities = [];
+			Object.values(activities).forEach(a => {
+				if (a.length) {
+					let likedPost = 0;
+					let commentPost = 0;
+					let sharedPost = 0;
+					a.forEach(b => {
+						let action = b.lastActivity.toLowerCase();
+						if (action.includes('liked') || action.includes('loves')) {
+							likedPost++;
+						} else if (action.includes('commented')) {
+							commentPost++;
+						} else {
+							sharedPost++;
+						}
+					});
+					let lastActivity = a[0];
+					lastActivity.likedPost = likedPost;
+					lastActivity.commentPost = commentPost;
+					lastActivity.sharedPost = sharedPost;
+					sortedActivities.push(lastActivity);
+				}
+			});
+			return sortedActivities;
 		}
 	},
 

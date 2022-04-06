@@ -165,6 +165,14 @@ export default {
 			storeMessage: 'messages/store'
 		}),
 
+		confirmDeleteMessage() {
+			this.deleteMessage(this.selectedMessage);
+			let index = this.conversation.paginated_messages.data.findIndex(x => x.id == this.selectedMessage.id);
+			if (index > -1) {
+				this.conversation.paginated_messages.data.splice(index, 1);
+			}
+		},
+
 		async getClientLocation() {
 			let response = await axios.get('/conversations/get_client_location').catch(() => {});
 			if (response) {

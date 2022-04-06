@@ -135,7 +135,16 @@ export default {
 
 		filteredContacts() {
 			return this.contacts.data.filter(contact => {
-				return this.filterTags.length == 0 || this.filterTags.some(arr => contact.tags.includes(arr));
+				let query = this.query.trim().toLowerCase();
+				let inFilter = true;
+				let inQuery = true;
+				if (this.filterTags.length) {
+					inFilter = this.filterTags.some(arr => contact.tags.includes(arr));
+				}
+				if (query.length) {
+					inQuery = contact.full_name.toLowerCase().includes(query) || contact.email.toLowerCase().includes(query);
+				}
+				return inFilter && inQuery;
 			});
 		},
 

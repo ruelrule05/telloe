@@ -202,25 +202,12 @@ export default {
 			return notes;
 		},
 
-		selectedPackageOptions() {
-			let selectedPackageOptions = [];
-			if (this.selectedPackage) {
-				this.selectedPackage.services.forEach(service => {
-					selectedPackageOptions.push({
-						text: service.name,
-						value: service
-					});
-				});
-			}
-			return selectedPackageOptions;
-		},
-
 		packagesOptions() {
 			let packagesOptions = [];
 			this.packages.forEach(packageItem => {
 				packagesOptions.push({
 					text: packageItem.name,
-					value: packageItem
+					value: packageItem.id
 				});
 			});
 			return packagesOptions;
@@ -672,7 +659,7 @@ export default {
 
 		async addPackageService() {
 			this.addingPackage = false;
-			let response = await axios.post(`/contacts/${this.contact.id}/package`, { package_id: this.selectedPackage.id, service: this.selectedPackageService });
+			let response = await axios.post(`/contacts/${this.contact.id}/package`, { package_id: this.selectedPackage, service: this.selectedPackageService });
 			this.contact.contact_packages = this.contact.contact_packages.concat(response.data);
 			this.selectedPackage = null;
 			this.selectedPackageService = null;

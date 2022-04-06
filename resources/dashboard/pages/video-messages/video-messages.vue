@@ -550,9 +550,11 @@ export default {
 			this.status = null;
 			this.gifProgress = 0;
 			this.uploadProgress = 0;
+			let title = localStorage.getItem('videoMessageStorageTitle');
+			let description = localStorage.getItem('videoMessageStorageDescription');
 			this.videoMessage = {
-				title: localStorage.getItem('videoMessageStorageTitle'),
-				description: localStorage.getItem('videoMessageStorageDescription'),
+				title: title != 'null' ? title : '',
+				description: description != 'null' ? description : '',
 				initial_message: {},
 				service_id: null,
 				contact_id: null,
@@ -561,7 +563,6 @@ export default {
 		},
 
 		localStorage(data) {
-			localStorage.clear();
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
 		}

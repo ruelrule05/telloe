@@ -40,7 +40,7 @@
     </style>
 
     <script>
-        window.AUTH = {!! isset($authUser) ? "JSON.parse('".json_encode($authUser)."');" : 'null' !!};
+        window.AUTH = {!! isset($authUser) ? "JSON.parse('".json_encode($authUser, JSON_HEX_APOS)."');" : 'null' !!};
         window.CONVERSATION_ID = {!! isset($conversation) ? "JSON.parse('".json_encode($conversation->id)."');" : 'null' !!};
         
     </script>
