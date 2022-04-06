@@ -47,7 +47,7 @@
 						</div>
 						<span :style="{ left: `${(playProgress / totalDuration) * 100}%` }" class="absolute top-1/2 transform -translate-y-1/2 rounded-full bg-primary h-3.5 w-3.5 cursor-pointer"></span>
 
-						<div class="h-2 border border-gray-200 rounded cursor-pointer"></div>
+						<div class="h-2 border border-gray-200 rounded cursor-pointer" @click="seekTo"></div>
 					</div>
 				</div>
 				<span class="text-sm">{{ format(totalDuration - playProgress, { leading: true }) }}</span>
@@ -125,6 +125,11 @@ export default {
 	},
 
 	methods: {
+		seekTo(e) {
+			const domRect = e.target.getBoundingClientRect();
+			let percent = e.offsetX / domRect.width;
+			console.log(this.totalDuration * percent);
+		},
 		init() {
 			this.playProgress = 0;
 			this.playing = false;
