@@ -121,12 +121,12 @@
 												{{ item.label.label }}
 											</span>
 										</td>
-										<td v-if="columnList[3].isEnabled" class="text-sm py-3 text-center">{{ item.connected ? 'Yes' : 'No' }}</td>
-										<td v-if="columnList[4].isEnabled" class="text-sm py-3 text-center">{{ item.likedPost }}</td>
-										<td v-if="columnList[5].isEnabled" class="text-sm py-3 text-center">{{ item.commentPost }}</td>
-										<td v-if="columnList[6].isEnabled" class="text-sm py-3 text-center">{{ item.sharedPost }}</td>
-										<td v-if="columnList[7].isEnabled" class="text-sm py-3 text-center">{{ item.mutualConnections }}</td>
-										<td v-if="columnList[8].isEnabled" class="relative hover-trigger text-center">
+										<!-- <td v-if="columnList[3].isEnabled" class="text-sm py-3 text-center">{{ item.connected ? 'Yes' : 'No' }}</td> -->
+										<td v-if="columnList[3].isEnabled" class="text-sm py-3 text-center">{{ item.likedPost }}</td>
+										<td v-if="columnList[4].isEnabled" class="text-sm py-3 text-center">{{ item.commentPost }}</td>
+										<td v-if="columnList[5].isEnabled" class="text-sm py-3 text-center">{{ item.sharedPost }}</td>
+										<!-- <td v-if="columnList[7].isEnabled" class="text-sm py-3 text-center">{{ item.mutualConnections }}</td> -->
+										<td v-if="columnList[6].isEnabled" class="relative hover-trigger text-center">
 											<a target="_blank" :href="item.linkedinProfile" class="inline-block">
 												<LinkedinIcon />
 												<div class="text-sm absolute text-left bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
@@ -135,7 +135,7 @@
 											</a>
 										</td>
 
-										<td v-if="columnList[9].isEnabled" class="text-center text-sm relative hover-trigger">
+										<td v-if="columnList[7].isEnabled" class="text-center text-sm relative hover-trigger">
 											<a target="_blank" class="inline-block" :href="item.recentActivityURL">
 												<HistoryIcon />
 											</a>

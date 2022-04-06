@@ -65,11 +65,11 @@ export default {
 			{ name: 'my last activity', abv: 'mla.', isEnabled: true },
 			{ name: 'label', abv: 'mla.', isEnabled: true },
 			// { name: 'date', abv: 'dte.', isEnabled: true },
-			{ name: 'connected', abv: 'cnc.', isEnabled: true },
+			//{ name: 'connected', abv: 'cnc.', isEnabled: true },
 			{ name: 'liked post', abv: 'lps.', isEnabled: true },
 			{ name: 'commented on post', abv: 'lcm.', isEnabled: true },
 			{ name: 'shared post', abv: 'lcm.', isEnabled: true },
-			{ name: 'mutual connections', abv: 'mcn.', isEnabled: true },
+			//{ name: 'mutual connections', abv: 'mcn.', isEnabled: true },
 			{ name: 'linked profile', abv: 'lip.', isEnabled: true },
 			{ name: 'recent activity', abv: 'rac.', isEnabled: true }
 		],

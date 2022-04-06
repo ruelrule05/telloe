@@ -26,6 +26,7 @@ class VerifyCsrfToken extends Middleware
         'fb_messenger_webhook',
         'linkedin/feed',
         'ajax/botman',
-        'ajax/@*'
+        'ajax/@*',
+        'data365/callback*',
     ];
 }
