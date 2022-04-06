@@ -163,7 +163,8 @@ export default {
 		videoMessageStatus: '',
 		uploadProgress: 0,
 		gifProgress: 0,
-		app_url: process.env.MIX_APP_URL
+		app_url: process.env.MIX_APP_URL,
+		totalDuration: 0
 	}),
 
 	computed: {
