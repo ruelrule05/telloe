@@ -97,7 +97,8 @@ export default {
 		},
 		order: 'desc',
 		newEvent: false,
-		selectedBooking: null
+		selectedBooking: null,
+		totalDuration: 0
 	}),
 
 	computed: {

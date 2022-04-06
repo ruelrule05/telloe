@@ -426,7 +426,7 @@
 			</template>
 		</modal>
 
-		<AddVideoMessage v-show="addingVideoMessage" :contactID="clonedContact ? clonedContact.id : null" class="absolute top-0 left-0 h-screen w-full z-50" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
+		<AddVideoMessage v-show="addingVideoMessage" :contactID="clonedContact ? clonedContact.id : null" class="absolute top-0 left-0 h-screen w-full z-50" :videoMessage="videoMessage" @close="addingVideoMessage = false" @submit="updateVideoMessageSubmit" @totalDuration="totalDuration = $event" @showLibrary="showLibrary = $event" @removeVideo="videoMessage.userVideos.splice($event, 1)"></AddVideoMessage>
 
 		<Library
 			v-show="showLibrary"
