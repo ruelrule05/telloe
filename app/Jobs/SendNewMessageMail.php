@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\NewMessage;
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

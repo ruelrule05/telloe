@@ -156,6 +156,7 @@ class ContactController extends Controller
                     [
                         'first_name' => $contact['first_name'] ?? null,
                         'last_name' => $contact['last_name'] ?? null,
+                        'tags' => $contact['tags'] ?? null,
                     ]
                 );
             }

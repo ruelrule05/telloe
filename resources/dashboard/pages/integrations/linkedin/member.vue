@@ -37,13 +37,13 @@
 						<div class="flex items-start contact-profile">
 							<div class="mr-4">
 								<div class="profile-image profile-image-xl" :style="{ backgroundImage: 'url(' + member.profilePicture + ')' }">
-									<span v-if="!member.profilePicture">{{ member.name.text.charAt(0) }}</span>
+									<span v-if="!member.profilePicture">{{ member.name.charAt(0) }}</span>
 								</div>
 							</div>
 
 							<div class="flex-1 pt-2">
-								<h2 class="mb-1 text-xl font-bold">{{ member.name.text }}</h2>
-								<p class="text-xs text-muted">{{ member.description.text }}</p>
+								<h2 class="mb-1 text-xl font-bold">{{ member.name }}</h2>
+								<!-- <p class="text-xs text-muted">{{ member.description.text }}</p> -->
 							</div>
 						</div>
 						<div class="flex justify-end">

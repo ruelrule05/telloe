@@ -65,11 +65,11 @@ export default {
 			{ name: 'my last activity', abv: 'mla.', isEnabled: true },
 			{ name: 'label', abv: 'mla.', isEnabled: true },
 			// { name: 'date', abv: 'dte.', isEnabled: true },
-			{ name: 'connected', abv: 'cnc.', isEnabled: true },
+			//{ name: 'connected', abv: 'cnc.', isEnabled: true },
 			{ name: 'liked post', abv: 'lps.', isEnabled: true },
 			{ name: 'commented on post', abv: 'lcm.', isEnabled: true },
 			{ name: 'shared post', abv: 'lcm.', isEnabled: true },
-			{ name: 'mutual connections', abv: 'mcn.', isEnabled: true },
+			//{ name: 'mutual connections', abv: 'mcn.', isEnabled: true },
 			{ name: 'linked profile', abv: 'lip.', isEnabled: true },
 			{ name: 'recent activity', abv: 'rac.', isEnabled: true }
 		],
@@ -94,70 +94,10 @@ export default {
 		activities: function () {
 			let activities = {};
 			this.linkedActivities.forEach(activity => {
-				if (activity.data.actor && (activity.data.resharedUpdate || activity.data.header)) {
-					let actor = activity.data.actor;
-
-					let action = 'Shared a post';
-					let recentActivityURL = activity.data.actor.navigationContext.actionTarget;
-					let name = activity.data.actor.name.text;
-					if (activity.data.resharedUpdate) {
-						name = activity.data.resharedUpdate.actor.name.text;
-						recentActivityURL = activity.data.resharedUpdate.actor.navigationContext.actionTarget;
-						actor = activity.data.resharedUpdate.actor;
-					}
-					if (activity.data.header) {
-						action = activity.data.header.text.text;
-					}
-					if (actor.name.attributes && actor.name.attributes.length > 0) {
-						let vanityName = null;
-						if (actor.name.attributes[0].miniProfile) {
-							vanityName = actor.name.attributes[0].miniProfile.publicIdentifier;
-						} else if (actor.name.attributes[0].miniCompany) {
-							vanityName = actor.name.attributes[0].miniCompany.universalName;
-						}
-						recentActivityURL = new URL(recentActivityURL);
-						let linkedinProfile = recentActivityURL.origin + recentActivityURL.pathname;
-						recentActivityURL = recentActivityURL.origin + recentActivityURL.pathname + '/recent-activity/';
-
-						if (action.includes('commented')) {
-							action = 'Commented on a post';
-						} else if (action.includes('loves')) {
-							action = 'Loves a post';
-						} else if (action.includes('likes')) {
-							action = 'Liked a post';
-						}
-						let label = null;
-						let contact = this.getContact(actor.urn);
-						if (contact && contact.label) {
-							label = contact.label;
-						}
-						let title = actor.description.text;
-						if (actor.name.attributes && actor.name.attributes.length && actor.name.attributes[0].miniCompany) {
-							title = activity.data.actor.description.text;
-						}
-
-						if (!activities[actor.urn]) {
-							activities[actor.urn] = [];
-						}
-
-						activities[actor.urn].push({
-							id: activity.id,
-							name: name,
-							vanityName: vanityName,
-							title: title,
-							lastActivity: action,
-							recentActivityURL: recentActivityURL,
-							likedPost: 0,
-							commentPost: 0,
-							sharedPost: 0,
-							mutualConnections: 0,
-							linkedinProfile: linkedinProfile,
-							actor: actor,
-							label: label,
-							temp_label: label
-						});
-					}
+				if (!activities[activity.data.author_id]) {
+					activities[activity.data.author_id] = [];
 				}
+				activities[activity.data.author_id].push(activity);
 			});
 			let sortedActivities = [];
 			Object.values(activities).forEach(a => {
@@ -166,10 +106,9 @@ export default {
 					let commentPost = 0;
 					let sharedPost = 0;
 					a.forEach(b => {
-						let action = b.lastActivity.toLowerCase();
-						if (action.includes('liked') || action.includes('loves')) {
+						if (b.data.type == 'post_reaction' || b.data.type == 'comment_reaction') {
 							likedPost++;
-						} else if (action.includes('commented')) {
+						} else if (b.data.type == 'post_comment') {
 							commentPost++;
 						} else {
 							sharedPost++;
@@ -182,7 +121,9 @@ export default {
 					sortedActivities.push(lastActivity);
 				}
 			});
-			return sortedActivities;
+			return sortedActivities.sort((a, b) => {
+				return a.activity_id > b.activity_id ? -1 : 1;
+			});
 		}
 	},
 
@@ -205,6 +146,22 @@ export default {
 			getContacts: 'contacts/index',
 			updateContact: 'contacts/update'
 		}),
+
+		activityLabel(type) {
+			switch (type) {
+				case 'post_reaction':
+					return 'Reacted on post';
+
+				case 'comment_reaction':
+					return 'Reacted on comment';
+
+				case 'post_comment':
+					return 'Commented on post';
+
+				case 'shared_post':
+					return 'Share a post';
+			}
+		},
 
 		inQuery(activity) {
 			let inSearch = true;
@@ -236,7 +193,7 @@ export default {
 		},
 
 		async goToContact(actor) {
-			this.$router.push(`/dashboard/integrations/linkedin/${actor.urn}`);
+			this.$router.push(`/dashboard/integrations/linkedin/${actor.data.author_id}`);
 		},
 
 		getLabelStyles(label, style) {

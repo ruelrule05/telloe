@@ -9,7 +9,7 @@ use  App\Http\Controllers\BookingController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\VideoMessageController;
-use  App\Http\SocialiteHelper;
+use App\Http\SocialiteHelper;
 
 Route::group(
     [
@@ -38,7 +38,7 @@ Route::group(
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
         Route::get('/callback/linkedin', 'LinkedInController@callback')->middleware('auth');
         Route::get('/linkedin/getAccessToken', 'LinkedInController@getAccessToken')->middleware('auth');
-        Route::post('/linkedin/feed', 'LinkedInController@feed');
+        Route::post('/data365/callback/{username}', 'Data365Controller@callback');
 
         // AJAX
         Route::group([

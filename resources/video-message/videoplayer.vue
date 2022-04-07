@@ -1,5 +1,6 @@
 <template>
 	<div class="w-full h-full" ref="videoPlayer">
+		<span class="text-white absolute">{{ videoProgress }}</span>
 		<div v-if="!videoReady" class="absolute-center w-full h-full bg-black z-50">
 			<div class="absolute-center text-center">
 				<div class="spinner spinner-sm spinner-light"></div>
@@ -84,15 +85,21 @@ export default {
 
 	data: () => ({
 		currentVideoId: 0,
-		playProgress: 0,
 		format: format,
 		videoReady: false,
 		playing: false,
 		isFullScreen: false,
-		durations: {}
+		durations: {},
+		videoProgress: {}
 	}),
 
 	computed: {
+		playProgress: function () {
+			let playProgress = 0;
+			playProgress = Object.values(this.videoProgress).reduce((a, b) => a + b, 0);
+			return playProgress;
+		},
+
 		totalDuration: function () {
 			let totalDuration = 0;
 			totalDuration = Object.values(this.durations).reduce((a, b) => a + b, 0);
@@ -105,7 +112,7 @@ export default {
 		playProgress: function (value) {
 			if (value >= this.totalDuration) {
 				this.currentVideoId = 1;
-				this.playProgress = 0;
+				this.videoProgress = {};
 			}
 		},
 		videos: function () {
@@ -127,11 +134,42 @@ export default {
 	methods: {
 		seekTo(e) {
 			const domRect = e.target.getBoundingClientRect();
-			let percent = e.offsetX / domRect.width;
-			console.log(this.totalDuration * percent);
+			let percent = (e.offsetX - 5) / domRect.width;
+			let totalDurationSeek = this.totalDuration * percent;
+			let seekToMS = 0;
+			let duration = 0;
+			let video = null;
+			for (let i = 0; i < this.videos.length; i++) {
+				if (seekToMS >= duration) {
+					seekToMS = duration - (duration - totalDurationSeek);
+					video = this.videos[i];
+					this.$set(this.videoProgress, this.videos[i].id, seekToMS);
+					if (i == 0) {
+						Object.keys(this.videoProgress).forEach(key => {
+							if (key != video.id) {
+								this.videoProgress[key] = 0;
+							}
+						});
+					}
+					break;
+				} else {
+					console.log(this.videos[i].id);
+					this.$set(this.videoProgress, this.videos[i].id, this.durations[this.videos[i].id]);
+				}
+				duration += this.durations[this.videos[i].id];
+			}
+			if (video) {
+				this.currentVideoId = video.id;
+				let nextVideoEl = this.$refs[`video-${video.id}`][0] || null;
+				if (nextVideoEl) {
+					nextVideoEl.currentTime = seekToMS / 1000;
+					if (this.playing) {
+						nextVideoEl.play();
+					}
+				}
+			}
 		},
 		init() {
-			this.playProgress = 0;
 			this.playing = false;
 			this.currentVideoId = this.videos[0].id;
 			this.videoReady = true;
@@ -169,14 +207,11 @@ export default {
 							videoEl.currentTime = 0;
 						}, 1000);
 					}
-					let initialTime = 0;
 					videoEl.ontimeupdate = function () {
 						if (videoEl.duration != Infinity) {
 							if (self.currentVideoId == video.id) {
-								let currentTime = this.currentTime * 1000;
-								self.playProgress += currentTime - initialTime;
-								initialTime = currentTime;
 								self.$set(self.durations, video.id, videoEl.duration * 1000);
+								self.$set(self.videoProgress, video.id, this.currentTime * 1000);
 							}
 						}
 					};
@@ -195,14 +230,12 @@ export default {
 								}
 							}
 						} else {
-							this.playProgress = 0;
 							this.playing = false;
 							this.currentVideoId = this.videos[0].id;
 						}
 						setTimeout(() => {
 							videoEl.currentTime = 0;
 						}, 500);
-						initialTime = 0;
 					};
 				}
 			}
