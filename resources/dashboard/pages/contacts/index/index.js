@@ -112,6 +112,11 @@ export default {
 				label: 'Last Name',
 				field: 'last_name',
 				heading: ''
+			},
+			{
+				label: 'Tags',
+				field: 'tags',
+				heading: ''
 			}
 		],
 		csvContacts: [],
@@ -279,10 +284,12 @@ export default {
 				let contacts = [];
 				this.csvContacts.forEach(contact => {
 					if (contact[this.csvMappings[0].heading]) {
+						let contactTags = contact[this.csvMappings[3].heading].split(',');
 						contacts.push({
 							email: contact[this.csvMappings[0].heading],
 							first_name: contact[this.csvMappings[1].heading],
-							last_name: contact[this.csvMappings[2].heading]
+							last_name: contact[this.csvMappings[2].heading],
+							tags: contactTags
 						});
 					}
 				});
@@ -305,12 +312,17 @@ export default {
 					delete lines[0];
 					let csvContacts = [];
 					lines.forEach(line => {
-						csvContacts.push(line.replaceAll('"', '').split(','));
+						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+						if(regexLine){
+							regexLine[3] = regexLine[3].replaceAll('"', '')
+							csvContacts.push(regexLine);
+						}
 					});
 					this.csvContacts = csvContacts;
 				};
 				reader.readAsBinaryString(this.csvFile);
 			}
+			
 		},
 
 		contactAction(action, contact) {
