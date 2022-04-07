@@ -6,15 +6,13 @@
  *
  * @package    Telloe
  * @category   Controller
+ *
  * @author     Welyelf Hisula<welyelf@telloe.com>
  * @copyright  2022 Telloe
  */
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ScrapeLinkedin;
-use App\Models\Contact;
-use App\Models\LinkedinActivity;
 use Auth;
 use Config;
 use Illuminate\Http\Request;
@@ -38,49 +36,6 @@ class LinkedInController extends Controller
         return response()->json([
             'authUrl' => $redirectUrl
         ]);
-    }
-
-    public function feed(Request $request)
-    {
-        $this->validate($request, [
-            'user_id' => 'required|exists:users,id',
-            'data' => 'required'
-        ]);
-        $userId = $request->input('user_id');
-        foreach ($request->input('data') as $key => $data) {
-            if (isset($data['actor'])) {
-                $actor = $data['actor'];
-                if (isset($data['resharedUpdate'])) {
-                    $actor = $data['resharedUpdate']['actor'];
-                }
-                if ($actor) {
-                    LinkedinActivity::disableCache()->updateOrCreate(
-                        [
-                            'user_id' => $userId,
-                            'activity_id' => $data['entityUrn']
-                        ],
-                        [
-                            'data' => $data,
-                            'order' => $key
-                        ]
-                    );
-
-                    if (isset($actor['urn']) && isset($actor['name']['attributes']) && count($actor['name']['attributes']) > 0) {
-                        $profile = $actor['name']['attributes'][0]['miniProfile'] ?? $actor['name']['attributes'][0]['miniCompany'];
-                        Contact::firstOrCreate(
-                            [
-                                'user_id' => $userId,
-                                'linkedin_urn' => $actor['urn'],
-                            ],
-                            [
-                                'first_name' => $profile['firstName'] ?? $profile['name'],
-                                'last_name' => $profile['lastName'] ?? '',
-                            ]
-                        );
-                    }
-                }
-            }
-        }
     }
 
     public function callback(Request $request)
@@ -110,7 +65,6 @@ class LinkedInController extends Controller
     public function index()
     {
         $authUser = Auth::user();
-        debounce(new ScrapeLinkedin($authUser), 30);
         return response()->json($authUser->linkedinActivities);
     }
 

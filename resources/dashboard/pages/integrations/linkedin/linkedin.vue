@@ -104,15 +104,15 @@
 									<tr v-if="inQuery(item)" class="border-b hover:bg-gray-100" :key="item.id">
 										<td v-if="columnList[0].isEnabled" class="text-sm py-3">
 											<div class="w-250">
-												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="goToContact(item.actor)">
-													{{ item.name }}
+												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="goToContact(item)">
+													{{ item.data.author.name }}
 												</p>
 												<p class="text-gray-400 truncate text-xs">{{ item.title }}</p>
 											</div>
 										</td>
 										<td v-if="columnList[1].isEnabled" class="text-sm pr-2 py-3">
 											<p class="truncate">
-												{{ item.lastActivity }}
+												{{ activityLabel(item.data.type) }}
 											</p>
 										</td>
 
@@ -130,13 +130,13 @@
 											<a target="_blank" :href="item.linkedinProfile" class="inline-block">
 												<LinkedinIcon />
 												<div class="text-sm absolute text-left bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
-													{{ item.vanityName }}
+													{{ item.data.author.username }}
 												</div>
 											</a>
 										</td>
 
 										<td v-if="columnList[7].isEnabled" class="text-center text-sm relative hover-trigger">
-											<a target="_blank" class="inline-block" :href="item.recentActivityURL">
+											<a target="_blank" class="inline-block" :href="`https://www.linkedin.com/in/${item.data.author.username}/recent-activity`">
 												<HistoryIcon />
 											</a>
 										</td>

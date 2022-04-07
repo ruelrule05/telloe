@@ -158,33 +158,11 @@ export default {
 	created() {
 		(async () => {
 			await this.getLinkedinActivities();
-			let actor = null;
-			this.linkedActivities.forEach(activity => {
-				let actorData = null;
-				if (activity.data.actor && (activity.data.resharedUpdate || activity.data.header)) {
-					actorData = activity.data.actor;
-					if (activity.data.resharedUpdate) {
-						actorData = activity.data.resharedUpdate.actor;
-					}
-				}
-				if (actorData && actorData.urn == this.$route.params.memberID) {
-					if (actorData.name.attributes && actorData.name.attributes.length && actorData.name.attributes[0].miniCompany) {
-						actorData.description.text = activity.data.actor.description.text;
-					}
-					actor = actorData;
-				}
-			});
+			let actor = this.linkedActivities.find(x => x.data.author_id == this.$route.params.memberID);
 			if (!actor) {
 				this.$router.replace('/dashboard/integrations/linkedin');
 			} else {
-				if (actor.name.attributes && actor.name.attributes.length) {
-					let profile = actor.name.attributes[0].miniProfile || actor.name.attributes[0].miniCompany;
-					if (profile && profile.picture && profile.picture['com.linkedin.common.VectorImage']) {
-						let vectorImage = profile.picture['com.linkedin.common.VectorImage'];
-						actor.profilePicture = vectorImage.rootUrl + vectorImage.artifacts[0].fileIdentifyingUrlPathSegment;
-					}
-				}
-				this.member = actor;
+				this.member = actor.data.author;
 				this.getContactNotes();
 				this.getLinkedinUser();
 				this.showUserCustomFields();
@@ -203,8 +181,48 @@ export default {
 			storeUserCustomFields: 'user_custom_fields/store',
 			deleteVideoMessage: 'video_messages/delete',
 			updateVideoMessage: 'video_messages/update',
-			getContacts: 'contacts/index'
+			getContacts: 'contacts/index',
+			storeVideoMessage: 'video_messages/store'
 		}),
+
+		async storeVideoMessageSubmit(data) {
+			this.videoMessageStatus = 'Processing...';
+			let userVideoIds = data.userVideos.map(x => x.id);
+			let initialMessage = await this.generateInitialMessage(data);
+			let videoMessagedata = {
+				title: data.title,
+				description: data.description,
+				initial_message: initialMessage,
+				service_id: data.service_id,
+				user_video_ids: userVideoIds,
+				linkedin_user: this.member.id
+			};
+			if (this.isRetainFormData) {
+				this.localStorage(videoMessagedata);
+			}
+
+			videoMessagedata.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+			let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
+			if (videoMessage.data) {
+				this.videoMessages.unshift(videoMessage.data);
+				this.reset();
+			}
+		},
+
+		reset() {
+			this.uploadProgress = 0;
+			this.gifProgress = 0;
+			this.addingVideoMessage = false;
+			this.videoMessageStatus = null;
+			this.videoMessage = {
+				title: '',
+				description: '',
+				initial_message: {},
+				service_id: null,
+				contact_id: null,
+				userVideos: []
+			};
+		},
 
 		bookingDeleted(booking) {
 			let index = this.bookings.data.findIndex(b => b.id == booking.id);
@@ -517,7 +535,7 @@ export default {
 
 		async getVideoMessages() {
 			if (this.member) {
-				let response = await window.axios.get(`/contacts/${this.member.urn}/video_messages`);
+				let response = await window.axios.get(`/contacts/linkedin-${this.member.id}/video_messages`);
 				this.videoMessages = response.data;
 			}
 		},
@@ -556,7 +574,7 @@ export default {
 
 		async getLinkedinUser() {
 			if (this.member) {
-				let response = await window.axios.get(`/linkedin_user/${this.member.urn}`);
+				let response = await window.axios.get(`/linkedin_user/${this.member.id}`);
 				this.linkedinUser = response.data;
 				this.bookings = response.data.bookings;
 			}
@@ -564,7 +582,7 @@ export default {
 
 		async filterBookings() {
 			let serviceIds = this.selectedService ? [this.selectedService.id] : [];
-			let response = await window.axios.get(`/linkedin_user/${this.member.urn}?page=${this.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
+			let response = await window.axios.get(`/linkedin_user/${this.member.id}?page=${this.bookings.current_page}&services=${serviceIds}&order=${this.order}`);
 			this.bookings = response.data.bookings;
 		},
 
@@ -600,14 +618,14 @@ export default {
 
 		async getContactNotes(order = 'desc') {
 			if (this.member) {
-				let response = await window.axios.get(`/contacts/${this.member.urn}/contact_notes?order=${order}`);
+				let response = await window.axios.get(`/contacts/linkedin-${this.member.id}/contact_notes?order=${order}`);
 				this.notes = response.data;
 			}
 		},
 
 		async confirmAddNote() {
 			if (this.newNote) {
-				let response = await window.axios.post('/contact_notes', { linkedin_user: this.member.urn, note: this.newNote });
+				let response = await window.axios.post('/contact_notes', { linkedin_user: this.member.id, note: this.newNote });
 				this.notes.unshift(response.data);
 				this.addingNote = false;
 				this.newNote = '';

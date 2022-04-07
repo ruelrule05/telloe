@@ -445,23 +445,23 @@ class ContactService
     public function contactNotes($id, Request $request)
     {
         $order = $request->order ?? 'desc';
-        if (strpos($id, 'urn') === false) {
+        if (strpos($id, 'linkedin') === false) {
             $contact = Contact::findOrFail($id);
             $this->authorize('show', $contact);
             return ContactNote::where('contact_id', $contact->id)->orderBy('created_at', $order)->get();
         } else {
-            return ContactNote::where('linkedin_user', $id)->orderBy('created_at', $order)->get();
+            return ContactNote::where('linkedin_user', str_replace('linkedin-', '', $id))->orderBy('created_at', $order)->get();
         }
     }
 
     public static function videoMessages($id)
     {
-        if (strpos($id, 'urn') === false) {
+        if (strpos($id, 'linkedin') === false) {
             $contact = Contact::findOrFail($id);
             (new self)->authorize('show', $contact);
             return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('contact_id', $contact->id)->latest()->get());
         } else {
-            return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('linkedin_user', $id)->latest()->get());
+            return response()->json(VideoMessage::with('videos.userVideo', 'videoMessageLikes')->where('linkedin_user', str_replace('linkedin-', '', $id))->latest()->get());
         }
     }
 

@@ -38,12 +38,7 @@ Route::group(
         Route::get('/callback/xero', 'XeroController@callback')->middleware('auth');
         Route::get('/callback/linkedin', 'LinkedInController@callback')->middleware('auth');
         Route::get('/linkedin/getAccessToken', 'LinkedInController@getAccessToken')->middleware('auth');
-        Route::post('/linkedin/feed', 'LinkedInController@feed');
-        Route::post('/data365/callback', function () {
-            Mail::raw(json_encode(request()->all()), function ($message) {
-                $message->to('cleidoscope@gmail.com');
-            });
-        });
+        Route::post('/data365/callback/{username}', 'Data365Controller@callback');
 
         // AJAX
         Route::group([
