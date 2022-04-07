@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Http\Data365;
 use App\Http\StripeAPI;
 use App\Jobs\SendSMS;
 use App\Mail\UpcomingBooking;
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
      * Define the application's command schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     *
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -39,6 +41,10 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $this->checkSubscriptions();
         })->everyFiveMinutes();
+
+        $schedule->call(function () {
+            $this->getLinkedinData();
+        })->everyFourHours();
     }
 
     /**
@@ -118,5 +124,14 @@ class Kernel extends ConsoleKernel
         }
 
         Log::info('[booking_users_notify] CRON job completed.');
+    }
+
+    protected function getLinkedinData()
+    {
+        $users = User::whereNotNull('linkedin_username')->get();
+        foreach ($users as $user) {
+            $data365 = new Data365($user->username);
+            $data365->createTask();
+        }
     }
 }
