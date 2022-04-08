@@ -1,6 +1,5 @@
 <template>
 	<div class="w-full h-full" ref="videoPlayer">
-		<span class="text-white absolute">{{ videoProgress }}</span>
 		<div v-if="!videoReady" class="absolute-center w-full h-full bg-black z-50">
 			<div class="absolute-center text-center">
 				<div class="spinner spinner-sm spinner-light"></div>
@@ -41,14 +40,11 @@
 						</g>
 					</svg>
 				</button>
-				<div class="flex-grow px-3 relative">
-					<div ref="scrubber" class="relative">
-						<div class="rounded overflow-hidden absolute top-0 left-0 w-full pointer-events-none">
-							<div class="h-2 bg-primary" :style="{ width: `${(playProgress / totalDuration) * 100 + 0.5}%` }"></div>
-						</div>
-						<span :style="{ left: `${(playProgress / totalDuration) * 100}%` }" class="absolute top-1/2 transform -translate-y-1/2 rounded-full bg-primary h-3.5 w-3.5 cursor-pointer"></span>
-
-						<div class="h-2 border border-gray-200 rounded cursor-pointer" @click="seekTo"></div>
+				<div class="flex-grow mx-3 relative flex items-center">
+					<div class="absolute-center w-full bg-gray-200 h-1/2"></div>
+					<div v-for="video in videos" :key="video.id" class="relative h-3 cursor-pointer" @click="seekTo($event, video)" :style="{ width: `${(durations[video.id] / totalDuration) * 100}%` }">
+						<div class="absolute top-1/2 transform -translate-y-1/2 left-0 h-1/2 pointer-events-none bg-primary" :style="{ width: `${videoProgress[video.id] ? (videoProgress[video.id] / durations[video.id]) * 100 + 0.5 : 0}%` }"></div>
+						<span v-show="currentVideoId == video.id" :style="{ left: `${(videoProgress[video.id] / durations[video.id]) * 100}%` }" class="absolute top-1/2 transform -translate-y-1/2 rounded-full bg-primary h-3.5 w-3.5 cursor-pointer"></span>
 					</div>
 				</div>
 				<span class="text-sm">{{ format(totalDuration - playProgress, { leading: true }) }}</span>
@@ -132,42 +128,62 @@ export default {
 	},
 
 	methods: {
-		seekTo(e) {
+		seekTo(e, video) {
 			const domRect = e.target.getBoundingClientRect();
 			let percent = (e.offsetX - 5) / domRect.width;
-			let totalDurationSeek = this.totalDuration * percent;
-			let seekToMS = 0;
-			let duration = 0;
-			let video = null;
+			let seekTo = this.durations[video.id] * percent;
+			let currentVideoId = this.currentVideoId;
+			this.currentVideoId = video.id;
+			let videoEl = this.$refs[`video-${video.id}`][0] || null;
+			if (videoEl) {
+				videoEl.currentTime = seekTo / 1000;
+				if (this.playing) {
+					videoEl.play();
+				}
+			}
+
+			let videoIndex = this.videos.findIndex(x => x.id == video.id);
 			for (let i = 0; i < this.videos.length; i++) {
-				if (seekToMS >= duration) {
-					seekToMS = duration - (duration - totalDurationSeek);
-					video = this.videos[i];
-					this.$set(this.videoProgress, this.videos[i].id, seekToMS);
-					if (i == 0) {
-						Object.keys(this.videoProgress).forEach(key => {
-							if (key != video.id) {
-								this.videoProgress[key] = 0;
-							}
-						});
-					}
-					break;
-				} else {
-					console.log(this.videos[i].id);
+				if (i < videoIndex) {
 					this.$set(this.videoProgress, this.videos[i].id, this.durations[this.videos[i].id]);
-				}
-				duration += this.durations[this.videos[i].id];
-			}
-			if (video) {
-				this.currentVideoId = video.id;
-				let nextVideoEl = this.$refs[`video-${video.id}`][0] || null;
-				if (nextVideoEl) {
-					nextVideoEl.currentTime = seekToMS / 1000;
-					if (this.playing) {
-						nextVideoEl.play();
-					}
+				} else if (i != videoIndex) {
+					this.$set(this.videoProgress, this.videos[i].id, 0);
 				}
 			}
+			if (currentVideoId != video.id) {
+				let currentVideoEl = this.$refs[`video-${currentVideoId}`][0] || null;
+				if (currentVideoEl) {
+					currentVideoEl.currentTime = 0;
+					currentVideoEl.pause();
+				}
+			}
+			// let seekTo = totalSeekTo;
+			// let duration = 0;
+			// let durationToDeduct = 0;
+			// let videoIndex = 0;
+			// for (let i = 0; i < this.videos.length; i++) {
+			// 	duration += this.durations[this.videos[i].id];
+			// 	if (seekTo <= duration) {
+			// 		videoIndex = i;
+			// 		break;
+			// 	} else {
+			// 		durationToDeduct += this.durations[this.videos[i].id];
+			// 	}
+			// }
+			// seekTo = seekTo - durationToDeduct;
+
+			// let video = this.videos[videoIndex];
+
+			// if (video) {
+			// 	this.currentVideoId = video.id;
+			// 	let nextVideoEl = this.$refs[`video-${video.id}`][0] || null;
+			// 	if (nextVideoEl) {
+			// 		nextVideoEl.currentTime = seekTo / 1000;
+			// 		if (this.playing) {
+			// 			nextVideoEl.play();
+			// 		}
+			// 	}
+			// }
 		},
 		init() {
 			this.playing = false;
@@ -222,7 +238,7 @@ export default {
 								let nextVideo = this.videos[currentVideoIndex + 1];
 								if (nextVideo) {
 									this.currentVideoId = nextVideo.id;
-									let nextVideoEl = this.$refs[`video-${nextVideo.id}`][0] || null;
+									let nextVideoEl = this.$refs[`video-${this.currentVideoId}`][0] || null;
 									if (nextVideoEl) {
 										nextVideoEl.muted = false;
 										nextVideoEl.play();
