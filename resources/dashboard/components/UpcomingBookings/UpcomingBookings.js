@@ -75,9 +75,10 @@ export default {
 			// fetch day bookings
 			let dayBookings = this.bookings.filter(booking => booking.date == date);
 			dayBookings.map(function (value) {
-				allBookings.push({ startTime: dayjs(value.start).format('HH:mm'), endTime: dayjs(value.end).format('HH:mm'), title: value.name, integration: 'telloe' });
+				console.log(value);
+				allBookings.push({ startTime: value.start, endTime: value.end, title: value.name, integration: 'telloe' });
 			});
-
+			
 			// fetch google bookings
 			let googleBookingsList = this.googleCalendarEvents.filter(googleEventBooking => googleEventBooking.status == 'confirmed' && dayjs(googleEventBooking.start.dateTime).format('YYYY-MM-DD') == now && !googleEventBooking.id.includes('telloebooking'));
 			googleBookingsList.map(function (value) {
@@ -92,7 +93,6 @@ export default {
 				return dayjs(start).format('YYYY-MM-DD') == now;
 			});
 			outlookBookings.map(function (value) {
-				console.log(value.endTime);
 				allBookings.push({ startTime: value.startTime, endTime: value.endTime, title: value.subject, integration: 'outlook' });
 			});
 

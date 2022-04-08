@@ -14,7 +14,7 @@
 				<div v-for="booking in dayBookings(upcomingDay.value)" :key="booking.id">
 					<div v-if="booking.integration == 'telloe'" class="flex items-center mb-1 transition-colors hover:bg-gray-100 p-2 cursor-pointer rounded-lg" @click="$emit('eventClick', booking, 'booking')">
 						<div class="font-normal text-muted flex-grow">{{ convertTime(booking.startTime, 'hh:mmA') }} - {{ convertTime(booking.endTime, 'hh:mmA') }}</div>
-						<div class="badge truncate max-w-full badge-red flex items-center">
+						<div class="badge truncate max-w-full badge-grey flex items-center">
 							{{ booking.title }}
 						</div>
 					</div>
