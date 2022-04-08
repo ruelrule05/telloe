@@ -158,11 +158,11 @@ export default {
 	created() {
 		(async () => {
 			await this.getLinkedinActivities();
-			let actor = this.linkedActivities.find(x => x.data.author_id == this.$route.params.memberID);
+			let actor = this.linkedActivities.find(x => x.data.author.id == this.$route.params.memberID);
 			if (!actor) {
 				this.$router.replace('/dashboard/integrations/linkedin');
 			} else {
-				this.member = actor.data.author;
+				this.member = actor.data;
 				this.getContactNotes();
 				this.getLinkedinUser();
 				this.showUserCustomFields();

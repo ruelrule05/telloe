@@ -206,6 +206,8 @@ export default {
 					videoEl.onloadedmetadata = async () => {
 						if (videoEl.duration != Infinity) {
 							this.$set(this.durations, video.id, videoEl.duration * 1000);
+						} else {
+							this.$set(this.durations, video.id, video.duration);
 						}
 						if (index == 0) {
 							this.videoReady = true;

@@ -26,6 +26,12 @@ class LinkedInUserController extends Controller
      *
      * @return Response
      */
+
+    public function index()
+    {
+        return response()->json(LinkedinUser::where('user_id', Auth::user()->id)->latest()->get());
+    }
+
     public function show(string $urn, Request $request)
     {
         $linkedInUser = LinkedinUser::firstOrCreate(
@@ -66,6 +72,7 @@ class LinkedInUserController extends Controller
         $linkedInUser->update([
             'custom_fields' => $request->custom_fields,
             'tags' => $request->tags,
+            'label' => $request->label,
         ]);
 
         return response()->json($linkedInUser);
