@@ -229,6 +229,9 @@ export default {
 		});
 
 		this.isRetainFormData = this.$root.auth.retain_form_data;
+		if(!this.isRetainFormData){
+			localStorage.clear();
+		}
 	},
 
 	methods: {
