@@ -1,5 +1,5 @@
 const host = 'telloe.codes';
-const port = 8082;
+const port = 8080;
 const key = `/home/cleidoscope/.valet/Certificates/${host}.key`;
 const cert = `/home/cleidoscope/.valet/Certificates/${host}.crt`;
 

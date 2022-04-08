@@ -101,13 +101,13 @@
 							</thead>
 							<paginate tag="tbody" name="linkedin" :list="activities" :per="10" ref="paginate">
 								<template v-for="item in paginated('linkedin')">
-									<tr v-if="inQuery(item)" class="border-b hover:bg-gray-100" :key="item.id">
+									<tr v-if="inQuery(item)" class="border-b hover:bg-gray-100" :key="item.id" :data-id="item.id">
 										<td v-if="columnList[0].isEnabled" class="text-sm py-3">
 											<div class="w-250">
-												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="goToContact(item)">
+												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="goToMember(item)">
 													{{ item.data.author.name }}
 												</p>
-												<p class="text-gray-400 truncate text-xs">{{ item.title }}</p>
+												<p class="text-gray-400 truncate text-xs">{{ item.data.author_details.headline }}</p>
 											</div>
 										</td>
 										<td v-if="columnList[1].isEnabled" class="text-sm pr-2 py-3">
@@ -172,11 +172,11 @@
 
 		<Modal ref="labelSettingModal" class="labelSettingModal" size="sm">
 			<h2 class="font-bold font-serif">CHOOSE LABEL</h2>
-			<div v-for="(label, i) in labels" :key="i" class="mt-4 flex justify-between items-center cursor-pointer" @click="setContactLabel(label)">
+			<div v-for="(label, i) in labels" :key="i" class="mt-4 flex justify-between items-center cursor-pointer" @click="setMemberLabel(label)">
 				<p class="rounded-md py-1 px-4 font-semibold text-sm inline tracking-wide uppercase" :style="{ color: label.text_color, backgroundColor: label.color }">
 					{{ label.label }}
 				</p>
-				<span v-if="selectedActivity && selectedActivity.temp_label && label.label === selectedActivity.temp_label.label">
+				<span v-if="selectedActivity && selectedActivity.tempLabel && label.label === selectedActivity.tempLabel.label">
 					<CheckSolidIcon />
 				</span>
 			</div>
@@ -188,7 +188,7 @@
 				<span class="cursor-pointer" @click="handleAddLabel()"><PlusSolidIcon /></span>
 			</div>
 			<div class="mt-20">
-				<button class="btn btn-md btn-outline-primary w-full" type="button" @click="updateContactLabel()"><span>Save</span></button>
+				<button class="btn btn-md btn-outline-primary w-full" type="button" @click="updateMemberLabel()"><span>Save</span></button>
 			</div>
 		</Modal>
 	</div>

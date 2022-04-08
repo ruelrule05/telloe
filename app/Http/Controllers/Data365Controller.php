@@ -13,23 +13,10 @@ class Data365Controller
         $user = User::where('linkedin_username', $username)->first();
         if ($user) {
             $data365 = new Data365($username);
-            $sharedPosts = $data365->getActivities('created_post');
             $postComments = $data365->getActivities('created_comment_on_post');
             $postReactions = $data365->getActivities('reacted_to_post');
             $commentReactions = $data365->getActivities('reacted_to_comment_on_post');
-            foreach ($sharedPosts as $sharedPost) {
-                $sharedPost['type'] = 'shared_post';
-                LinkedinActivity::firstOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'activity_id' => $sharedPost['id'],
-                        'type_id' => $sharedPost['type'] . '-' . $sharedPost['id'],
-                    ], 
-                    [
-                        'data' => $sharedPost
-                    ]
-                );
-            }
+
             foreach ($postComments as $postComment) {
                 $postComment['type'] = 'post_comment';
                 LinkedinActivity::firstOrCreate(

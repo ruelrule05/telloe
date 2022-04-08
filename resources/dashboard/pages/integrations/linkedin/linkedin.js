@@ -81,23 +81,23 @@ export default {
 			liked: null,
 			commented: null,
 			shared: null
-		}
+		},
+		linkedinUsers: []
 	}),
 
 	computed: {
 		...mapState({
 			ready: state => state.linkedin_activities.ready,
-			linkedActivities: state => state.linkedin_activities.index,
-			contacts: state => state.contacts.index
+			linkedActivities: state => state.linkedin_activities.index
 		}),
 
 		activities: function () {
 			let activities = {};
 			this.linkedActivities.forEach(activity => {
-				if (!activities[activity.data.author_id]) {
-					activities[activity.data.author_id] = [];
+				if (!activities[activity.data.author.id]) {
+					activities[activity.data.author.id] = [];
 				}
-				activities[activity.data.author_id].push(activity);
+				activities[activity.data.author.id].push(activity);
 			});
 			let sortedActivities = [];
 			Object.values(activities).forEach(a => {
@@ -129,8 +129,8 @@ export default {
 
 	created() {
 		this.getLinkedinActivities();
-		this.getContacts({ nopaginate: true });
 		this.getContactLabels();
+		this.getLinkedinUsers();
 	},
 
 	watch: {
@@ -143,9 +143,22 @@ export default {
 	methods: {
 		...mapActions({
 			getLinkedinActivities: 'linkedin_activities/index',
-			getContacts: 'contacts/index',
 			updateContact: 'contacts/update'
 		}),
+
+		async getLinkedinUsers() {
+			let response = await axios.get('/linkedin_user');
+			if (response) {
+				this.linkedinUsers = response.data;
+				this.linkedinUsers.forEach(linkedinUser => {
+					let activity = this.linkedActivities.find(x => x.data.author.id == linkedinUser.urn);
+					if (activity) {
+						this.$set(activity, 'tempLabel', linkedinUser.label);
+						this.$set(activity, 'label', linkedinUser.label);
+					}
+				});
+			}
+		},
 
 		activityLabel(type) {
 			switch (type) {
@@ -167,7 +180,7 @@ export default {
 			let inSearch = true;
 			let inFilter = true;
 			if (this.searchInList.trim().length) {
-				inSearch = activity.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || activity.title.toLowerCase().includes(this.searchInList.toLowerCase().trim());
+				inSearch = activity.data.author.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || activity.data.author_details.headline.toLowerCase().includes(this.searchInList.toLowerCase().trim());
 			}
 			if (this.filters.liked && this.filters.liked != activity.likedPost) {
 				inFilter = false;
@@ -178,7 +191,7 @@ export default {
 			if (this.filters.shared && this.filters.shared != activity.sharedPost) {
 				inFilter = false;
 			}
-			return inSearch && inFilter;
+			return inSearch && inFilter && activity.data.author.username != this.$root.auth.linkedin_username;
 		},
 
 		getContact(urn) {
@@ -192,8 +205,8 @@ export default {
 			}
 		},
 
-		async goToContact(actor) {
-			this.$router.push(`/dashboard/integrations/linkedin/${actor.data.author_id}`);
+		async goToMember(actor) {
+			this.$router.push(`/dashboard/integrations/linkedin/${actor.data.author.id}`);
 		},
 
 		getLabelStyles(label, style) {
@@ -206,23 +219,35 @@ export default {
 		},
 
 		handleLabelSectionByLabel(activity) {
-			activity.temp_label = activity.label;
-			this.selectedActivity = activity;
+			this.selectedActivity = JSON.parse(JSON.stringify(activity));
 			this.$refs.labelSettingModal.show();
 		},
 
-		setContactLabel(label) {
-			let contact = this.getContact(this.selectedActivity.actor.urn);
-			if (contact) {
-				this.selectedActivity.temp_label = label;
+		async getMember(actor) {
+			let response = await axios.get(`/linkedin_user/${actor.data.author.id}`);
+			return response.data;
+		},
+
+		async updateMember(member) {
+			axios.put(`/linkedin_user/${member.id}`, member);
+		},
+
+		async setMemberLabel(label) {
+			let member = await this.getMember(this.selectedActivity);
+			if (member) {
+				this.$set(this.selectedActivity, 'tempLabel', label);
 			}
 		},
 
-		updateContactLabel() {
-			let contact = this.getContact(this.selectedActivity.actor.urn);
-			if (contact) {
-				contact.label = this.selectedActivity.temp_label;
-				this.updateContact(contact);
+		async updateMemberLabel() {
+			let member = await this.getMember(this.selectedActivity);
+			if (member) {
+				let activity = this.linkedActivities.find(x => x.id == this.selectedActivity.id);
+				if (activity) {
+					this.$set(activity, 'label', this.selectedActivity.tempLabel);
+				}
+				member.label = this.selectedActivity.tempLabel;
+				this.updateMember(member);
 			}
 			this.$refs.labelSettingModal.hide();
 		},

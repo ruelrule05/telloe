@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 class Data365
 {
     private $token; 
-    private $url = 'https://api.data365.co/v1.1';
+    private $url = 'https://api.data365.co/v1.2';
     private $username;
 
     public function __construct(string $username)
