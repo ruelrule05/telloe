@@ -260,9 +260,6 @@
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
 							</button>
-							<div class="mb-3 flex items-center justify-between">
-								<input type="text" v-model="searchLib" placeholder="Search library by tags..." />
-							</div>
 							<button
 								class="btn btn-md btn-primary"
 								:class="{ disabled: !selectedVideos.length }"
