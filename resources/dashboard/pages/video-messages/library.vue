@@ -877,7 +877,6 @@ export default {
 		},
 
 		getUserVideoTags(videoMessage) {
-			console.log(videoMessage);
 			this.tagOptions = [];
 			let userVideoTags;
 			this.selectedVideoMessage = videoMessage;
