@@ -13,7 +13,7 @@
 
 				<form action="/logout" ref="logoutForm" method="POST" class="sidebar-menu-item hidden md:block">
 					<input type="hidden" name="_token" :value="csrf_token" />
-					<button type="submit">Log Out</button>
+					<button type="submit" @click="clearStorage">Log Out</button>
 				</form>
 			</div>
 			<div class="flex-grow">
