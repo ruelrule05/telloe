@@ -139,7 +139,13 @@
 							</div>
 							<div class="mb-4">
 								<label class="form-label">Mobile Number (Optional)</label>
-								<input type="text" v-model="newContact.last_name" />
+								<div class="relative">
+								<div class="absolute left-2 top-1/2 transform -translate-y-1/2 flex items-center text-sm">
+									<span class="flag-icon line-height-0 mr-1"></span>
+									{{ newContact.dial_code }}
+								</div>
+								<input type="tel" ref="phone" @keydown="numbersOnly" class="pl-16" placeholder="Mobile No." v-model="newContact.phone_number" />
+							</div>
 							</div>
 
 							<!-- <div>

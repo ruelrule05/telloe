@@ -24,8 +24,12 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 import MessageIcon from '../../../../icons/comment';
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import LinkedinIcon from '../../../../icons/linkedin';
+import numbersOnly from 'numbers-only';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 const dayjs = require('dayjs');
 const mobile = require('is-mobile');
+const ct = require('countries-and-timezones').default;
+const countryCodes = require('country-codes-list');
 
 export default {
 	components: {
@@ -124,7 +128,9 @@ export default {
 		page: 1,
 		cookieItem: 'telloe_contacts_banner',
 		isContactFormTab: true,
-		dayjs: dayjs
+		dayjs: dayjs,
+		numbersOnly: numbersOnly,
+		getUnicodeFlagIcon: null,
 	}),
 
 	computed: {
@@ -200,7 +206,12 @@ export default {
 			this.selectedContact.ready = true;
 
 			return conversation;
-		}
+		},
+
+		// timezoneAreaCode() {
+		// 	let userTimezone = ct.getTimezone(this.newContact.timezone);
+		// 	return userTimezone;
+		// },
 	},
 
 	watch: {
@@ -216,7 +227,18 @@ export default {
 
 		page: function () {
 			this.getData();
-		}
+		},
+
+		'newContact.phone_number': function () {
+			this.newContact.dial_code = countryCodes.customArray(
+				{ text: '{countryCode}', value: '+{countryCallingCode}' },
+				{
+					filter: data => {
+						return this.timezoneAreaCode.country == data.countryCode;
+					}
+				}
+			)[0].value;
+		},
 	},
 
 	created() {
@@ -240,6 +262,7 @@ export default {
 		// this.$root.socket.on('invite_token', invite_token => {
 		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
 		// });
+		this.getUnicodeFlagIcon = getUnicodeFlagIcon;
 	},
 
 	mounted() {
