@@ -22,6 +22,8 @@ const loadImage = require('blueimp-load-image');
 const emojiRegex = require('emoji-regex');
 import 'country-flag-icons/3x2/flags.css';
 import axios from 'axios';
+import VideoRecorder from './VideoRecorder.vue';
+
 export default {
 	props: {
 		conversation: {
@@ -34,10 +36,15 @@ export default {
 		isVideoMessage: {
 			type: Boolean,
 			default: false
+		},
+		videoReply: {
+			type: Boolean,
+			default: false
 		}
 	},
 
 	components: {
+		VideoRecorder,
 		Modal,
 		TrashIcon,
 		VueFormValidate,
@@ -52,7 +59,7 @@ export default {
 		DocumentIcon,
 		PlayIcon,
 
-		gallery: () => import(/* webpackChunkName: "gallery" */ '../Gallery/Gallery.vue'),
+		Gallery: () => import(/* webpackChunkName: "gallery" */ '../Gallery/Gallery.vue'),
 		AudioRecorder: () => import(/* webpackChunkName: "AudioRecorder" */ '../AudioRecorder/AudioRecorder.vue')
 	},
 
@@ -164,6 +171,22 @@ export default {
 			deleteMessage: 'messages/delete',
 			storeMessage: 'messages/store'
 		}),
+
+		async videoRecorded(video) {
+			if (this.conversation) {
+				let message = {
+					user: this.$root.auth,
+					source: video.source,
+					preview: video.thumbnail,
+					base64Preview: video.base64Preview,
+					type: 'video',
+					message: 'video',
+					created_diff: 'Just now',
+					metadata: { duration: video.duration }
+				};
+				this.sendMessage(message);
+			}
+		},
 
 		confirmDeleteMessage() {
 			this.deleteMessage(this.selectedMessage);
@@ -399,7 +422,13 @@ export default {
 						file,
 						canvas => {
 							let dataurl = canvas.toDataURL(fileInput.files[0].type);
-							message.preview = dataurl;
+							let blobBin = atob(dataurl.split(',')[1]);
+							message.base64Preview = dataurl;
+							let array = [];
+							for (var i = 0; i < blobBin.length; i++) {
+								array.push(blobBin.charCodeAt(i));
+							}
+							message.preview = new Blob([new Uint8Array(array)], { type: 'image/png' });
 							this.sendMessage(message);
 						},
 						{ maxWidth: 450, canvas: true }

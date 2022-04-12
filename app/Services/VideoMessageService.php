@@ -59,6 +59,13 @@ class VideoMessageService
         $data['status'] = 'draft';
         $data['is_active'] = true;
         $data['initial_message'] = $request->input('initial_message');
+
+        $shortId = $authUser->id .Str::random(6);
+        while (VideoMessage::where('short_id', $shortId)->exists()) {
+            $shortId = $authUser->id . Str::random(6);
+        }
+        $data['short_id'] = $shortId;
+        
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
             $data['initial_message']['link_preview'] = $linkPreview;

@@ -7,7 +7,7 @@
 		<div v-if="file" class="flex-grow flex text-center overflow-hidden">
 			<div>
 				<div class="px-5 relative file-arrow h-2/3 mt-24 cursor-pointer" :class="{ disabled: !hasPrev }" @click="goToPrev()">
-					<chevron-left-icon width="90" height="90" fill="white" class="absolute-center"></chevron-left-icon>
+					<chevron-left-icon width="30" height="30" fill="white" class="absolute-center"></chevron-left-icon>
 				</div>
 			</div>
 			<div class="flex-grow relative">
@@ -21,7 +21,7 @@
 						</div>
 						<v-lazy-image :src="file.source" class="absolute-center" :class="{ 'opacity-0': !file.loaded }" @load="imageLoaded(file)" />
 					</template>
-					<video controls controlsList="nodownload" disablePictureInPicture v-else-if="file.type == 'video'" :poster="file.preview" :src="file.source" class="absolute-center outline-none mw-full h-full "></video>
+					<video controls controlsList="nodownload" disablePictureInPicture v-else-if="file.type == 'video'" :poster="file.preview" :src="file.source" class="absolute-center outline-none mw-full h-full"></video>
 					<waveplayer v-else-if="file.type == 'audio'" :source="file.source" :duration="file.metadata.duration" class="absolute-center bg-primary p-1 rounded text-white"></waveplayer>
 				</div>
 			</div>
