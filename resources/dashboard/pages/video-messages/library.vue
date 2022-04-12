@@ -303,7 +303,7 @@
 				<multiselect v-model="tagOptions" :options="tagOptions" :showLabels="false" :taggable="true" placeholder="" multiple @tag="addTag"></multiselect>
 			</div>
 			<div class="flex justify-between mt-6">
-				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.tagsModal.hide()"><span>Cancel</span></button>
+				<button class="btn btn-sm btn-outline-primary" type="button" @click="$refs.tagsModal.hide()"><span>Close</span></button>
 			</div>
 		</Modal>
 	</div>
@@ -861,7 +861,6 @@ export default {
 		},
 
 		videoLibraryTags(videoMessage) {
-			this.selectedVideoMessage = videoMessage;
 			this.$refs.tagsModal.show();
 			this.getUserVideoTags(videoMessage);
 		},
@@ -875,9 +874,15 @@ export default {
 			}
 		},
 
-		getUserVideoTags() {
+		getUserVideoTags(videoMessage) {
 			this.tagOptions = [];
-			let userVideoTags = JSON.parse(this.selectedVideoMessage.tags);
+			let userVideoTags;
+			this.selectedVideoMessage = videoMessage;
+			if(Array.isArray(this.selectedVideoMessage.tags)){
+				userVideoTags = this.selectedVideoMessage.tags;	
+			}else{
+				userVideoTags = JSON.parse(this.selectedVideoMessage.tags);
+			}
 			if (userVideoTags) {
 				userVideoTags.forEach(tag => this.tagOptions.push(tag));
 			}
