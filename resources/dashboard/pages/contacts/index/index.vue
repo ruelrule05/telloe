@@ -190,7 +190,7 @@
 					<div class="bg-gray-50 px-2 relative z-10">{{ mapping.label }} <span v-if="mapping.required">(Required)</span></div>
 					<div class="absolute-center w-full h-px bg-gray-300 z-0"></div>
 					<div class="bg-gray-50 px-2 relative z-10">
-						<select v-model="mapping.heading" :data-required="mapping.required" class="input cursor-pointer" :class="{ 'text-muted': !mapping.heading.toString().trim().length }">
+						<select v-model="mapping.heading" :data-required="mapping.required" ref="mapHeadingsForm" class="input cursor-pointer" :class="{ 'text-muted': !mapping.heading.toString().trim().length }">
 							<option value="" disabled>- Select heading -</option>
 							<option v-for="(heading, headingIndex) in csvHeadings" :key="heading" :value="headingIndex">{{ heading }}</option>
 						</select>

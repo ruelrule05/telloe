@@ -293,6 +293,7 @@ export default {
 						});
 					}
 				});
+				this.$refs.csvMappings.reset();
 				this.$refs.importCsv.hide();
 				await this.bulkStoreContact({ contacts: contacts });
 				this.getContacts();
