@@ -7,25 +7,28 @@
 		<div class="mb-0" v-else-if="message.type == 'image'">
 			<div v-if="message.sending" class="absolute-center message-sending w-full h-full">
 				<div class="absolute-center">
-					<div class="spinner-border spinner-border-sm text-primary"></div>
+					<div class="spinner spinner-sm text-primary"></div>
 				</div>
 			</div>
-			<div v-if="squareThumbnail" class="image-square rounded" :style="{ backgroundImage: 'url(' + message.preview + ')' }" @click="if (click) $parent.openFile(message);"></div>
-			<img v-else draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if (click) $parent.openFile(message);" />
+			<div v-if="squareThumbnail" class="image-square rounded" :style="{ backgroundImage: 'url(' + message.base64Preview || message.preview + ')' }" @click="if (click) $parent.openFile(message);"></div>
+			<img v-else draggable="false" class="rounded cursor-pointer" :src="message.base64Preview || message.preview" @click="if (click) $parent.openFile(message);" />
 		</div>
 
 		<!-- Video -->
-		<div class="mb-0" v-else-if="message.type == 'video'">
+		<div class="mb-0 relative" v-else-if="message.type == 'video'">
 			<div v-if="message.sending" class="absolute-center message-sending w-full h-full">
 				<div class="absolute-center">
-					<div class="spinner-border spinner-border-sm text-primary"></div>
+					<div class="spinner spinner-sm text-primary"></div>
 				</div>
 			</div>
 			<div v-else class="absolute-center preview-video-play pointer-events-none">
 				<play-icon height="20" width="20"></play-icon>
 			</div>
-			<div v-if="squareThumbnail" class="image-square rounded" :style="{ backgroundImage: 'url(' + message.preview + ')' }" @click="if (click) $parent.openFile(message);"></div>
-			<img v-else draggable="false" class="rounded cursor-pointer" :src="message.preview" @click="if (click) $parent.openFile(message);" />
+			<div v-if="squareThumbnail" class="image-square rounded" :style="{ backgroundImage: 'url(' + message.base64Preview || message.preview + ')' }" @click="if (click) $parent.openFile(message);"></div>
+			<img v-else draggable="false" class="rounded cursor-pointer" :src="message.base64Preview || message.preview" @click="if (click) $parent.openFile(message);" />
+			<span v-if="message.metadata && message.metadata.duration" class="absolute bottom-1 left-2 text-xs text-white opacity-75">
+				{{ secondsToDuration(message.metadata.duration / 1000) }}
+			</span>
 		</div>
 
 		<!-- Audio -->
@@ -89,6 +92,13 @@ export default {
 	components: { FileEmptyIcon, FileImageIcon, FileVideoIcon, FileAudioIcon, FilePdfIcon, FileArchiveIcon, DocumentIcon, ArrowCircleDownIcon, PlayIcon, Waveplayer },
 
 	methods: {
+		secondsToDuration(seconds, limit = 14, end = 5) {
+			let date = new Date(0);
+			date.setSeconds(seconds);
+			let timeString = date.toISOString().substr(limit, end);
+			return timeString;
+		},
+
 		fileIcon(extension) {
 			let iconComponent = 'document-icon';
 			let videoExtensions = ['mp4', 'webm'];

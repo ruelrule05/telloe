@@ -229,7 +229,7 @@ export default {
 		});
 
 		this.isRetainFormData = this.$root.auth.retain_form_data;
-		if(!this.isRetainFormData){
+		if (!this.isRetainFormData) {
 			localStorage.clear();
 		}
 	},
@@ -260,7 +260,7 @@ export default {
 		},
 
 		openVideoMessage(videoMessage) {
-			window.open(`${process.env.MIX_APP_URL}/video-messages/${videoMessage.uuid}`, '_blank');
+			window.open(`${process.env.MIX_APP_URL}/v/${videoMessage.short_id}`, '_blank');
 		},
 
 		setQuickAdd(videoMessage) {
@@ -296,7 +296,7 @@ export default {
 					let height = img.height * ratio;
 					let timestamp = new Date().valueOf();
 
-					let element = `<table> <tr> <td> <div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/video-messages/${videoMessage.uuid}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr></table>`;
+					let element = `<table> <tr> <td> <div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr></table>`;
 					let template = document.createElement('template');
 					template.innerHTML = element;
 					resolve(template.content.firstChild);
@@ -315,7 +315,7 @@ export default {
 		shareVideoMessage(action, videoMessage) {
 			switch (action) {
 				case 'Copy video link':
-					if (copy(`${process.env.MIX_APP_URL}/video-messages/${videoMessage.uuid}`)) {
+					if (copy(`${process.env.MIX_APP_URL}/v/${videoMessage.short_id}`)) {
 						this.$toast.open('Video message link copied to clipboard.');
 					}
 					break;
