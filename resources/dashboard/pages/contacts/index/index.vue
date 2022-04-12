@@ -137,6 +137,10 @@
 								<label class="form-label">Last Name (Optional)</label>
 								<input type="text" v-model="newContact.last_name" />
 							</div>
+							<div class="mb-4">
+								<label class="form-label">Mobile Number (Optional)</label>
+								<input type="text" v-model="newContact.last_name" />
+							</div>
 
 							<!-- <div>
 								<vue-checkbox v-model="newContact.sendToEmail" label="Send invitation link to email"></vue-checkbox>
