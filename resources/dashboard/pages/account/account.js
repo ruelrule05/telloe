@@ -622,5 +622,9 @@ export default {
 			});
 			return result;
 		},
+
+		clearStorage() {
+			localStorage.clear();
+		},
 	}
 };
