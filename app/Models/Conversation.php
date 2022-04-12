@@ -12,7 +12,7 @@ class Conversation extends BaseModel
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags', 'slug', 'video_message_id'];
+    protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags', 'slug', 'video_message_id', 'email_sent_at'];
     public $appends = ['member', 'last_message', 'timestamp'];
     protected $casts = [
         'metadata' => 'array',

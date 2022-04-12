@@ -58,6 +58,7 @@ Route::group(
             Route::post('messages',[MessageController::class, 'store']);
             Route::get('conversations/get_client_location', [ConversationController::class, 'getClientLocation']);
             Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
+                Route::get('conversations/{id}/files', 'ConversationController@files');
             Route::get('messages/{message}', [MessageController::class, 'show']);
 
             // Authenticated routes
@@ -117,7 +118,6 @@ Route::group(
                 Route::post('members/get_member_from_invite_token', 'MemberController@getMemberFromInviteToken');
 
                 Route::get('tags/search', 'DashboardController@searchTags');
-                Route::get('conversations/{id}/files', 'ConversationController@files');
 
                 // Google calendar
                 Route::get('google_calendar/client', 'GoogleCalendarController@getClient');
