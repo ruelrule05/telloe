@@ -273,7 +273,9 @@ export default {
 
 		inQuery(videoMessage) {
 			const trimmed = this.query.trim().toLowerCase();
-			return trimmed.length == 0 || videoMessage.title.toLowerCase().includes(trimmed) || videoMessage.description.toLowerCase().includes(trimmed);
+			let title = videoMessage.title ? videoMessage.title.toLowerCase() : '';
+			let description = videoMessage.description ? videoMessage.description.toLowerCase() : '';
+			return trimmed.length == 0 || title.includes(trimmed) || description.includes(trimmed);
 		},
 
 		async copyElementToClipboard(videoMessage) {
