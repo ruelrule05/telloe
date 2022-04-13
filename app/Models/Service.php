@@ -118,7 +118,20 @@ class Service extends BaseModel
         $outlookEventsList = Cache::get("{$user->id}_outlook_calendar_events", []);
 
         $now = Carbon::now();
+        $startsAt = null;
+        $endsAt = null;
+        if($this->starts_at && $this->ends_at) {
+            $startsAt = Carbon::parse($this->starts_at, $this->timezone);
+            $endsAt = Carbon::parse($this->ends_at, $this->timezone);
+        }
         while ($timeStart->lessThan($timeEnd)) {
+
+            if($startsAt && $endsAt) {
+                if(!$timeStart->between($startsAt, $endsAt)) {
+                    $timeStart->add($this->attributes['interval'] + $this->attributes['duration'], 'minute');
+                    continue;
+                }
+            }
             $timeslotBlocked = false;
             $timeslot = [
                 'label' => $timeStart->format('h:iA'),
@@ -138,12 +151,6 @@ class Service extends BaseModel
             $bookings = $serviceBookings->filter(function ($booking) use ($timeslot, $timeStart, $dateString) {
                 $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
                 $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
-                $timeslotTime = Carbon::parse($timeStart->format('Y-m-d') . ' ' . $timeslot['time'], $booking->timezone)->setTimezone($this->timezone)->format('H:i');
-
-                // if ($dateString == '2022-02-23') {
-                //     echo $timeslotTime . '----------------';
-                // }
-
                 return $start <= $timeslot['time'] && $end >= $timeslot['time'];
             })
             ->all();

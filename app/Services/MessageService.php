@@ -87,16 +87,21 @@ class MessageService
             $videoMessage = VideoMessage::find($conversation->video_message_id);
             if ($videoMessage) {
                 broadcast(new VideoMessageStat($videoMessage));
-                Mail::to($videoMessage->user->email)->later(now()->addMinutes(5), new VideoMessageComment($videoMessage));
+                if(!$conversation->email_sent_at || Carbon::now()->diffInMinutes(Carbon::parse($conversation->email_sent_at)) >= 5) {
+                    Mail::to($videoMessage->user->email)->send(new VideoMessageComment($videoMessage));
+                    $conversation->update([
+                        'email_sent_at' => Carbon::now()
+                    ]);
+                }
             }
         }
 
         //}
 
-        if (! $request->is_online) {
+        if (!$conversation->video_message_id && ! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;
             if ($targetUser && $targetUser->email && $targetUser->notify_message) {
-                debounce(new SendNewMessageMail($message, $targetUser->email), 60);
+                new SendNewMessageMail($message, $targetUser->email);
             }
         }
 
