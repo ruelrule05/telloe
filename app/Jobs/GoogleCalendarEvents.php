@@ -60,7 +60,9 @@ class GoogleCalendarEvents implements ShouldQueue
                     }
                 }
             }
-            Cache::forever("{$this->user->id}_google_calendar_events", $events);
+            $key = "{$this->user->id}_google_calendar_events";
+            Cache::forget($key);
+            Cache::forever($key, $events);
         }
     }
 }
