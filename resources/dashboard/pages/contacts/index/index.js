@@ -293,7 +293,7 @@ export default {
 						});
 					}
 				});
-				this.$refs.csvMappings.reset();
+				this.csvMappings.heading = '';
 				this.$refs.importCsv.hide();
 				await this.bulkStoreContact({ contacts: contacts });
 				this.getContacts();
