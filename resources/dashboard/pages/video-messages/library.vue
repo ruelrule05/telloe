@@ -19,6 +19,7 @@
 						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
 					</div>
 					<div class="mt-2 text-sm">{{ status }}</div>
+					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
 				</div>
 			</div>
 		</div>
@@ -880,9 +881,9 @@ export default {
 			this.tagOptions = [];
 			let userVideoTags;
 			this.selectedVideoMessage = videoMessage;
-			if(Array.isArray(this.selectedVideoMessage.tags)){
-				userVideoTags = this.selectedVideoMessage.tags;	
-			}else{
+			if (Array.isArray(this.selectedVideoMessage.tags)) {
+				userVideoTags = this.selectedVideoMessage.tags;
+			} else {
 				userVideoTags = JSON.parse(this.selectedVideoMessage.tags);
 			}
 			if (userVideoTags) {
