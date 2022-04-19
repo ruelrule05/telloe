@@ -177,11 +177,9 @@ export default {
 
 		servicesOptions() {
 			let services = this.services;
-			return services
-				.filter(x => x.is_available)
-				.map(service => {
-					return { text: service.name, value: service.id };
-				});
+			return services.map(service => {
+				return { text: service.name, value: service.id };
+			});
 		},
 		contactsOptions() {
 			let contacts = this.contacts;
@@ -219,6 +217,7 @@ export default {
 	created() {
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+
 			if (this.contactID) {
 				this.videoMessageData.contact_id = this.contactID;
 			}
@@ -228,6 +227,7 @@ export default {
 		videoMessage: function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+
 				if (this.contactID) {
 					this.videoMessageData.contact_id = this.contactID;
 				}

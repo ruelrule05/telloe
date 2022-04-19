@@ -266,6 +266,13 @@ export default {
 			storeConversation: 'conversations/store'
 		}),
 
+		updateField(e, index) {
+			if (e.target.value.trim().length) {
+				this.userCustomFields[index] = e.target.value.trim();
+				this.updateUserCustomFields();
+			}
+		},
+
 		checkCookie() {
 			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
 			if (!match) {
@@ -314,8 +321,8 @@ export default {
 					let csvContacts = [];
 					lines.forEach(line => {
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-						if(regexLine){
-							regexLine[3] = regexLine[3].replaceAll('"', '')
+						if (regexLine) {
+							regexLine[3] = regexLine[3].replaceAll('"', '');
 							csvContacts.push(regexLine);
 						}
 					});
@@ -323,7 +330,6 @@ export default {
 				};
 				reader.readAsBinaryString(this.csvFile);
 			}
-			
 		},
 
 		contactAction(action, contact) {

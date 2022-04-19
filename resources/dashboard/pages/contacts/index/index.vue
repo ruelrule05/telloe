@@ -232,7 +232,7 @@
 			<h4 class="font-serif uppercase font-semibold mb-4">MANAGE FIELDS</h4>
 			<div v-for="(custom_field, index) in userCustomFields" :key="index" class="flex items-center custom-field position-relative">
 				<div class="mb-1 flex items-center w-full">
-					<input type="text" :value="custom_field" class="flex-grow" />
+					<input type="text" :value="custom_field" class="flex-grow" @blur="updateField($event, index)" />
 					<TrashIcon
 						class="cursor-pointer ml-3 fill-current text-gray-300"
 						@click.native="

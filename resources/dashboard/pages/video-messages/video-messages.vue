@@ -362,6 +362,7 @@ export default {
 				this.status = 'Processing...';
 				let userVideoIds = data.userVideos.map(x => x.id);
 				let initialMessage = await this.generateInitialMessage(data);
+
 				let videoMessagedata = {
 					title: data.title,
 					description: data.description,
