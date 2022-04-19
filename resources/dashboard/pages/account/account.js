@@ -140,6 +140,14 @@ export default {
 			if (value == 'Log Out') {
 				this.$refs.logoutForm.submit();
 			}
+		},
+		plans: function () {
+			if (this.$route.query.plan) {
+				let plan = this.plans.find(x => x.name.toLowerCase() == this.$route.query.plan.toLowerCase());
+				if (plan) {
+					this.selectPlan(plan);
+				}
+			}
 		}
 	},
 
@@ -625,6 +633,6 @@ export default {
 
 		clearStorage() {
 			localStorage.clear();
-		},
+		}
 	}
 };

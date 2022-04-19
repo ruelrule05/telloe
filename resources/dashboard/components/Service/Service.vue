@@ -152,7 +152,7 @@
 
 							<div class="my-4">
 								<label>Starts At</label>
-								<v-date-picker class="relative" :min-date="new Date()" :max-date="clonedService.ends_at || null" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.starts_at" :masks="masks">
+								<v-date-picker class="relative" :min-date="new Date()" :max-date="clonedService.ends_at || new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="clonedService.starts_at" :masks="masks">
 									<template v-slot="{ inputValue, inputEvents }">
 										<input type="text" class="w-full lg:w-1/3" readonly v-on="inputEvents" :placeholder="clonedService.starts_at ? dayjs(clonedService.starts_at).format('MMMM D, YYYY') : ''" :value="inputValue" />
 									</template>

@@ -436,7 +436,9 @@ export default {
 
 	methods: {
 		addEmail(email) {
-			this.guests.push(email);
+			if (!this.guests.find(x => x.trim().toLowerCase() == email.trim().toLowerCase())) {
+				this.guests.push(email.trim().toLowerCase());
+			}
 			this.$refs.guestsSelect.$el.querySelector('input').blur();
 		},
 
