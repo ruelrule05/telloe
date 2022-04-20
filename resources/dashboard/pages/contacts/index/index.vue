@@ -148,7 +148,18 @@
 						</div>
 
 						<div class="d-flex mt-5">
-							<button class="btn btn-outline-primary btn-sm" type="button" @click="addContact = false"><span>Cancel</span></button>
+							<button
+								class="btn btn-outline-primary btn-sm"
+								type="button"
+								@click="
+									addContact = false;
+									newContact.email = '';
+									newContact.first_name = '';
+									newContact.last_name = '';
+								"
+							>
+								<span>Cancel</span>
+							</button>
 							<button class="btn-sm btn btn-primary" type="submit"><span>Add</span></button>
 						</div>
 					</div>

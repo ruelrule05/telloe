@@ -120,9 +120,9 @@
 								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
 							</div>
 
-							<div v-if="!contactID" class="mb-4">
+							<div class="mb-4">
 								<label>Contact</label>
-								<VueSelect :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
+								<VueSelect :disabled="contactID ? true : false" :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
 							</div>
 
 							<div v-if="!linkedinUser && linkedinUsersOptions.length" class="mt-4">
