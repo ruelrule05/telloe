@@ -33,6 +33,8 @@
 	<script>
 		window.CONTACT = {!! isset($contact) ? "JSON.parse('".json_encode($contact)."');" : 'null' !!};
 		window.MEMBER = {!! isset($member) ? "JSON.parse('".json_encode($member)."');" : 'null' !!};
+		window.AUTH_USER = {!! Auth::check() ? "JSON.parse('".json_encode(Auth::user(), JSON_HEX_APOS)."');" : 'null' !!};
+		
 	</script>
 
 	<script>

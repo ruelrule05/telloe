@@ -428,7 +428,20 @@
 					<!-- <div class="text-center text-muted"><small class="font-weight-light">Powered by</small>&nbsp;&nbsp;<img src="/images/stripe.png" height="55" /></div> -->
 
 					<div class="flex items-betweeen mt-6">
-						<button :disabled="paymentLoading" type="button" class="btn" @click="$refs.paymentModal.hide(true)"><span>Cancel</span></button>
+						<button
+							:disabled="paymentLoading"
+							type="button"
+							class="btn"
+							@click="
+								$refs.paymentModal.hide(true);
+								cardForm.number = '';
+								cardForm.expiration = '';
+								cardForm.cvc = '';
+								cardForm.name = '';
+							"
+						>
+							<span>Cancel</span>
+						</button>
 						<vue-button type="submit" :loading="paymentLoading" button_class="ml-auto btn btn-primary shadow-none"><span>Subscribe</span></vue-button>
 					</div>
 				</vue-form-validate>

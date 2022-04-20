@@ -122,7 +122,7 @@ class Service extends BaseModel
         $endsAt = null;
         if($this->starts_at && $this->ends_at) {
             $startsAt = Carbon::parse($this->starts_at, $this->timezone);
-            $endsAt = Carbon::parse($this->ends_at, $this->timezone);
+            $endsAt = Carbon::parse($this->ends_at, $this->timezone)->addDay(1);
         }
         while ($timeStart->lessThan($timeEnd)) {
 

@@ -45,8 +45,9 @@ class GoogleCalendarService
         $events = [];
         $user = Auth::user();
         if ($user->google_calendar_id && $user->google_calendar_token) {
-            if ($request->fresh) {
+            if (! $request->refresh) {
                 $events = Cache::get("{$user->id}_google_calendar_events", []);
+                GoogleCalendarEvents::dispatch($user);
             } else {
                 $events = Cache::rememberForever("{$user->id}_google_calendar_events", function () use ($user) {
                     $events = [];
@@ -76,8 +77,6 @@ class GoogleCalendarService
                 );
             }
         }
-
-        GoogleCalendarEvents::dispatch($user);
 
         return $events;
     }

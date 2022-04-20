@@ -2,7 +2,7 @@
 
 @section('content')
 
-<img src="{{ $videoMessage->link_preview }}" style="width: 100%; height; auto;" /> 
+<img src="{{ $videoMessage->link_preview }}" width="100%" style="width: 100%; height; auto; max-width: 100%;" /> 
 <p style="font-size: 16px; line-height: 1.5; text-align:left; margin: 0; text-align: center">
 Your video message has new comments.
 </p>

@@ -1,12 +1,13 @@
 <template>
 	<div class="min-h-screen relative" :class="{ 'h-screen max-h-screen overflow-hidden': showLibrary }" v-if="ready">
-		<div v-if="status" class="absolute-center w-full h-full z-50 bg-white">
+		<div v-if="status" class="absolute top-0 left-0 w-full h-full z-50 bg-white border">
 			<div class="absolute-center text-center w-full">
 				<div class="absolute-center w-3/12">
 					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
 						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
 					</div>
 					<div class="mt-2 text-sm">{{ status }}</div>
+					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
 				</div>
 			</div>
 		</div>
@@ -129,7 +130,7 @@
 				videoMessage.userVideos = $event;
 				showLibrary = false;
 				if (quickAdd) {
-					update(videoMessage);
+					update(videoMessage, true);
 				}
 			"
 			:selectedUserVideos="videoMessage.userVideos"
@@ -211,6 +212,7 @@ export default {
 
 	computed: {
 		...mapState({
+			services: state => state.services.index,
 			videoMessages: state => state.video_messages.index,
 			ready: state => state.video_messages.ready
 		})
@@ -273,7 +275,9 @@ export default {
 
 		inQuery(videoMessage) {
 			const trimmed = this.query.trim().toLowerCase();
-			return trimmed.length == 0 || videoMessage.title.toLowerCase().includes(trimmed) || videoMessage.description.toLowerCase().includes(trimmed);
+			let title = videoMessage.title ? videoMessage.title.toLowerCase() : '';
+			let description = videoMessage.description ? videoMessage.description.toLowerCase() : '';
+			return trimmed.length == 0 || title.includes(trimmed) || description.includes(trimmed);
 		},
 
 		async copyElementToClipboard(videoMessage) {
@@ -359,6 +363,7 @@ export default {
 				this.status = 'Processing...';
 				let userVideoIds = data.userVideos.map(x => x.id);
 				let initialMessage = await this.generateInitialMessage(data);
+
 				let videoMessagedata = {
 					title: data.title,
 					description: data.description,
@@ -467,19 +472,30 @@ export default {
 			});
 		},
 
-		async update(videoMessage) {
+		async update(videoMessage, durationFromUserVideos = false) {
 			this.status = 'Processing...';
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
 
 			this.uploadProgress += 20;
-			data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+			if (durationFromUserVideos) {
+				let totalDuration = 0;
+				data.userVideos.forEach(x => {
+					totalDuration += x.duration;
+				});
+				data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
+			} else {
+				data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+			}
 			data.initial_message = await this.generateInitialMessage(videoMessage);
 
 			delete data.original_message;
 			delete data.new_source;
 			this.status = 'Finalizing...';
 			this.uploadProgress += 10;
+			if (data.service_id && !this.services.find(x => x.id == data.service_id)) {
+				data.service_id = null;
+			}
 			await this.updateVideoMessage(data).catch(() => {});
 			if (this.isRetainFormData) {
 				this.localStorage(data);
@@ -545,6 +561,9 @@ export default {
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.is_active = status;
 			data.user_video_ids = data.videos.map(x => x.user_video_id);
+			if (data.service_id && !this.services.find(x => x.id == data.service_id)) {
+				data.service_id = null;
+			}
 			this.updateVideoMessage(data);
 		},
 
