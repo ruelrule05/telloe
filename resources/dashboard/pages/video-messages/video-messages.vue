@@ -212,6 +212,7 @@ export default {
 
 	computed: {
 		...mapState({
+			services: state => state.services.index,
 			videoMessages: state => state.video_messages.index,
 			ready: state => state.video_messages.ready
 		})
@@ -492,6 +493,9 @@ export default {
 			delete data.new_source;
 			this.status = 'Finalizing...';
 			this.uploadProgress += 10;
+			if (data.service_id && !this.services.find(x => x.id == data.service_id)) {
+				data.service_id = null;
+			}
 			await this.updateVideoMessage(data).catch(() => {});
 			if (this.isRetainFormData) {
 				this.localStorage(data);
@@ -557,6 +561,9 @@ export default {
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.is_active = status;
 			data.user_video_ids = data.videos.map(x => x.user_video_id);
+			if (data.service_id && !this.services.find(x => x.id == data.service_id)) {
+				data.service_id = null;
+			}
 			this.updateVideoMessage(data);
 		},
 

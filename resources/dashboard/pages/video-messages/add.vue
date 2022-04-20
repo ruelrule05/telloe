@@ -217,6 +217,9 @@ export default {
 	created() {
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+			if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
+				this.videoMessageData.service_id = null;
+			}
 
 			if (this.contactID) {
 				this.videoMessageData.contact_id = this.contactID;
@@ -227,6 +230,9 @@ export default {
 		videoMessage: function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+				if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
+					this.videoMessageData.service_id = null;
+				}
 
 				if (this.contactID) {
 					this.videoMessageData.contact_id = this.contactID;
@@ -251,6 +257,7 @@ export default {
 			}
 		}
 	},
+
 	methods: {
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
