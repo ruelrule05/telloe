@@ -26,9 +26,10 @@ import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import LinkedinIcon from '../../../../icons/linkedin';
 import numbersOnly from 'numbers-only';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
+import { isEmpty } from 'lodash';
 const dayjs = require('dayjs');
 const mobile = require('is-mobile');
-const ct = require('countries-and-timezones').default;
+//const ct = require('countries-and-timezones').default;
 const countryCodes = require('country-codes-list');
 
 export default {
@@ -131,6 +132,7 @@ export default {
 		dayjs: dayjs,
 		numbersOnly: numbersOnly,
 		getUnicodeFlagIcon: null,
+		timezoneAreaCode : 'US'
 	}),
 
 	computed: {
@@ -207,11 +209,6 @@ export default {
 
 			return conversation;
 		},
-
-		// timezoneAreaCode() {
-		// 	let userTimezone = ct.getTimezone(this.newContact.timezone);
-		// 	return userTimezone;
-		// },
 	},
 
 	watch: {
@@ -229,15 +226,19 @@ export default {
 			this.getData();
 		},
 
-		'newContact.phone_number': function () {
-			this.newContact.dial_code = countryCodes.customArray(
-				{ text: '{countryCode}', value: '+{countryCallingCode}' },
-				{
-					filter: data => {
-						return this.timezoneAreaCode.country == data.countryCode;
-					}
+		'newContact.phone_number': function (value) {
+			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
+			//console.log(countryList);
+			//console.log(value);
+			Object.keys(countryList).forEach ( key => {
+				let countryCode = value == key ? countryList[key] : '';
+				console.log(countryCode);
+				if(!isEmpty(countryCode)){
+					this.newContact.dial_code = '+'+value;
+					this.timezoneAreaCode = countryCode;
 				}
-			)[0].value;
+				
+			});
 		},
 	},
 
@@ -263,6 +264,7 @@ export default {
 		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
 		// });
 		this.getUnicodeFlagIcon = getUnicodeFlagIcon;
+		this.newContact.dial_code = '+61'; // default dial code set
 	},
 
 	mounted() {
