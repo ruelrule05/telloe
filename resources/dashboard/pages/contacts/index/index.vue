@@ -208,7 +208,16 @@
 					</div>
 				</div>
 				<div class="flex justify-between mt-4">
-					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.importCsv.hide()"><span>Cancel</span></button>
+					<button
+						class="btn btn-md btn-outline-primary"
+						type="button"
+						@click="
+							$refs.importCsv.hide();
+							resetCsvMappings();
+						"
+					>
+						<span>Cancel</span>
+					</button>
 					<button :disabled="!csvFile" class="btn btn-primary btn-md" type="submit"><span>Next</span></button>
 				</div>
 			</vue-form-validate>

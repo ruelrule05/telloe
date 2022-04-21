@@ -300,11 +300,17 @@ export default {
 						});
 					}
 				});
-				this.csvMappings.heading = '';
 				this.$refs.importCsv.hide();
 				await this.bulkStoreContact({ contacts: contacts });
 				this.getContacts();
+				this.resetCsvMappings();
 			}
+		},
+
+		resetCsvMappings() {
+			this.csvMappings.forEach(mapping => {
+				mapping.heading = '';
+			});
 		},
 
 		readCsv(e) {
