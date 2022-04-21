@@ -122,6 +122,11 @@ export default {
 				label: 'Tags',
 				field: 'tags',
 				heading: ''
+			},
+			{
+				label: 'Phone Number',
+				field: 'phone_number',
+				heading: ''
 			}
 		],
 		csvContacts: [],
@@ -324,7 +329,8 @@ export default {
 							email: contact[this.csvMappings[0].heading],
 							first_name: contact[this.csvMappings[1].heading],
 							last_name: contact[this.csvMappings[2].heading],
-							tags: contactTags
+							tags: contactTags,
+							phone_number: contact[this.csvMappings[4].heading],
 						});
 					}
 				});
@@ -347,6 +353,7 @@ export default {
 					delete lines[0];
 					let csvContacts = [];
 					lines.forEach(line => {
+						line = line.replaceAll(' ','');
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
 						if(regexLine){
 							regexLine[3] = regexLine[3].replaceAll('"', '')
