@@ -289,6 +289,16 @@
 							<label class="form-label">Last Name</label>
 							<input type="text" class="form-control" v-model="clonedContact.last_name" />
 						</div>
+						<div class="col">
+							<label class="form-label">Mobile Number</label>
+							<div class="relative">
+								<div class="absolute left-2 top-1/2 transform -translate-y-1/2 flex items-center text-sm">
+									<span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(editTimezoneAreaCode) }}</span>
+									{{ editContactDialCode }}
+								</div>
+								<input type="tel" ref="phone" class="pl-16" @keydown="numbersOnly" v-model="clonedContact.phone_number" />
+							</div>
+						</div>
 					</div>
 				</fieldset>
 				<div class="mb-4">
