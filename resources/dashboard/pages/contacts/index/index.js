@@ -356,7 +356,8 @@ export default {
 						line = line.replaceAll(' ','');
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
 						if(regexLine){
-							regexLine[3] = regexLine[3].replaceAll('"', '')
+							regexLine[3] = regexLine[3].replaceAll('"', '');
+							regexLine[4] = regexLine[4].replaceAll('+', '');
 							csvContacts.push(regexLine);
 						}
 					});
