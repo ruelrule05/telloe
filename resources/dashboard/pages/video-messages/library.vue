@@ -703,6 +703,7 @@ export default {
 			this.step = 3;
 			this.library = false;
 			this.previewSource = URL.createObjectURL(this.source);
+			
 		},
 
 		async createGif() {
@@ -742,6 +743,7 @@ export default {
 							};
 							image.src = obj.image;
 						} else {
+							this.$toast.error(obj.error);
 							console.log(obj.error);
 							reject();
 						}
@@ -771,6 +773,8 @@ export default {
 							if (this.uploadComplete == 3) {
 								resolve();
 							}
+						}else{
+							console.log('Error upload!');
 						}
 					}
 				);
