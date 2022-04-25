@@ -182,7 +182,8 @@ class AuthService
             'last_online' => null,
             'blocked_timeslots' => [],
             'default_availability' => json_decode(self::$defaultAvailability),
-            'trial_expires_at' => Carbon::now()->add(14, 'day')
+            'trial_expires_at' => Carbon::now()->add(14, 'day'),
+            'contacts' => true
         ]);
         $user->password = bcrypt($request->password);
         $user->is_premium = true;

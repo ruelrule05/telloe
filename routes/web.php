@@ -58,7 +58,10 @@ Route::group(
             Route::post('messages',[MessageController::class, 'store']);
             Route::get('conversations/get_client_location', [ConversationController::class, 'getClientLocation']);
             Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
+            Route::get('conversations/{id}/files', 'ConversationController@files');
             Route::get('messages/{message}', [MessageController::class, 'show']);
+
+            Route::put('video_messages/{video_message:uuid}/increment_views', [VideoMessageController::class, 'incrementViews'])->name('videoMessages.incrementViews');
 
             // Authenticated routes
             Route::group([
@@ -101,6 +104,7 @@ Route::group(
                 Route::apiResource('contact_notes', 'ContactNoteController');
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::apiResource('video_messages', 'VideoMessageController');
+
                 Route::put('video_messages/{video_message}/toggle_like', [VideoMessageController::class, 'toggleLike']);
                 Route::get('video_messages/{video_message}/get_stats', [VideoMessageController::class, 'getStats']);
                 Route::apiResource('linkedin_activities', 'LinkedInController');
@@ -117,7 +121,6 @@ Route::group(
                 Route::post('members/get_member_from_invite_token', 'MemberController@getMemberFromInviteToken');
 
                 Route::get('tags/search', 'DashboardController@searchTags');
-                Route::get('conversations/{id}/files', 'ConversationController@files');
 
                 // Google calendar
                 Route::get('google_calendar/client', 'GoogleCalendarController@getClient');
@@ -244,6 +247,7 @@ Route::group(
         });
 
         Route::get('/video-messages/{video_message:uuid}', 'VideoMessageController@show')->name('videoMessages.show');
+        Route::get('/v/{video_message:short_id}', 'VideoMessageController@show')->name('videoMessages.show');
         Route::get('/@{username}', 'UserController@profile')->name('bookingPage');
         Route::get('/@{username}/{service_id}', 'UserController@profile')->name('bookingPage');
         Route::get('/{organization}', 'OrganizationController@profile')->name('bookingPage');

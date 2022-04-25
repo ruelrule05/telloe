@@ -16,7 +16,7 @@
 					Let's get to know each other and make business magic happen.
 					<br/><br/><br/><br/>
 				</b>
-				<button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
+				<button v-if="!$root.authUser" type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 					<span class="relative -bottom-px">START FREE TRIAL</span>
 				</button>
 				<button type="button" class="w-full lg:w-auto px-9 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary lg:ml-4 text-base" @click="openVideoDemo(); changeCursorStatus('onWatchVideo')" @mouseover="changeCursorStatus('onWatchVideo')" @mouseleave="changeCursorStatus('browsing')">
@@ -151,7 +151,7 @@
 	</div>
 </div>
 
-<div class="container lg:py-24 py-8">
+<div v-if="!$root.authUser" class="container lg:py-24 py-8">
 	<span class="font-bold lg:text-xl">Wow your customers and prospects and stand out from the crowd with personalized communications that convert. </span>
 	<button type="button" class="w-full lg:w-auto px-9 lg:mb-0 mb-3 py-4 border-2 border-primary font-semibold rounded transition-all focus:outline-none font-serif bg-primary hover:bg-primary-dark text-white text-base" style="margin-top: 40px;" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 		<span class="relative -bottom-px">GIVE ME THE <b>WOW</b> FACTOR </span>
@@ -455,8 +455,8 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Monthly</div>
 			<div class="text-muted mb-4 text-sm"></div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'">
-				<span class="relative -bottom-px">START FREE TRIAL</span>
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="priceClicked('Monthly')">
+				<span class="relative -bottom-px">@{{ $root.authUser ? 'SUBSCRIBE' : 'START FREE TRIAL' }}</span>
 			</button>
 			</div>
 			<div class="text-center lg:text-right lg:mt-0 mt-4">
@@ -471,8 +471,8 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Quarterly - Save 20%</div>
 			<div class="text-muted mb-4 text-sm"> Billed as one payment of $83.85 </div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'">
-				<span class="relative -bottom-px">START FREE TRIAL</span>
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="priceClicked('Quarterly')">
+				<span class="relative -bottom-px">@{{ $root.authUser ? 'SUBSCRIBE' : 'START FREE TRIAL' }}</span>
 			</button>
 			</div>
 			<div class="text-center lg:text-right lg:mt-0 mt-4">
@@ -487,8 +487,8 @@
 			<div>
 			<div class="font-bold lg:text-2xl mb-1">Annually - Save 33%</div>
 			<div class="text-muted mb-4 text-sm"> Billed as one payment of $275.40 </div>
-			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'">
-				<span class="relative -bottom-px">START FREE TRIAL</span>
+			<button type="button" class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="priceClicked('Annually')">
+				<span class="relative -bottom-px">@{{ $root.authUser ? 'SUBSCRIBE' : 'START FREE TRIAL' }}</span>
 			</button>
 			</div>
 			<div class="text-center lg:text-right lg:mt-0 mt-4">
@@ -515,7 +515,7 @@
 			<p class="text-muted mb-8"> You'll get all the help you need to get the most out of the Telloe booking and communications platform. <br />
 			<br /> Ready to switch to one of the most powerful and efficient client communication platforms available?
 			</p>
-			<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
+			<button v-if="!$root.authUser" type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 			<span class="relative -bottom-px">START FREE TRIAL</span>
 			</button>
 		</div>
@@ -530,7 +530,7 @@
 				<h3 class="font-serif text-white font-semibold heading lg:mb-10 mb-5"> IT'S PERSONAL </h3>
 				<h4 class="text-white lg:text-3xl text-2xl font-semibold mb-4"> Telloe Makes Turning Connections Into Relationships Simple </h4>
 				<p class="text-white lg:text-xl mb-10"> Sign up today and discover how the art of personal connections can transform your business from a small-time player to an industry leader. </p>
-				<button type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
+				<button v-if="!$root.authUser" type="button" class="lg:w-auto w-full px-8 py-4 rounded font-semibold focus:outline-none font-serif bg-white transition-all hover:bg-gray-200 text-primary text-xs" @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
 				<span class="relative -bottom-px">START FREE TRIAL</span>
 				</button>
 			</div>

@@ -11,7 +11,7 @@
 					</button>
 				</div>
 				<div class="w-full flex-grow bg-black relative h-full">
-					<VideoPlayer :videos="$root.videoMessage.videos.map(x => x.user_video)"></VideoPlayer>
+					<VideoPlayer :videos="$root.videoMessage.videos.map(x => x.user_video)" @firstPlayAttempt="firstPlayAttempt()"></VideoPlayer>
 				</div>
 			</div>
 		</div>
@@ -74,7 +74,7 @@
 						</div>
 					</div>
 					<div class="flex-grow overflow-hidden h-full relative">
-						<Messages @ready="getConversation(1)" v-if="conversation" isVideoMessage :conversation="conversation" ready @scrollUp="getConversation($event)"></Messages>
+						<Messages @ready="getConversation(1)" videoReply v-if="conversation" isVideoMessage :conversation="conversation" ready @scrollUp="getConversation($event)"></Messages>
 					</div>
 				</div>
 			</div>
@@ -88,6 +88,7 @@ import VideoPlayer from './videoplayer.vue';
 import Messages from '../dashboard/components/Messages/Messages.vue';
 import CommentIcon from '../icons/comment.vue';
 import dayjs from 'dayjs';
+import axios from 'axios';
 export default {
 	components: { VideoPlayer, Messages, CommentIcon },
 
@@ -131,6 +132,10 @@ export default {
 			return text;
 		},
 
+		firstPlayAttempt() {
+			window.axios.put(`/video_messages/${this.$root.videoMessage.uuid}/increment_views`);
+		},
+
 		async toggleLike(isLiked) {
 			let response = await window.axios.put(`/video_messages/${this.$root.videoMessage.id}/toggle_like`, { is_liked: isLiked });
 			if (response) {
@@ -153,6 +158,7 @@ export default {
 		async getConversation(page) {
 			let response = await this.showConversation({ id: this.conversation.id, page: page });
 			if (response) {
+				this.getConversationFiles();
 				if (!this.conversation.paginated_messages) {
 					this.$set(this.conversation, 'paginated_messages', response.data.paginated_messages);
 				} else {
@@ -160,6 +166,13 @@ export default {
 					this.conversation.paginated_messages.data = this.conversation.paginated_messages.data.concat(response.data.paginated_messages.data);
 					this.conversation.paginated_messages.next_page_url = response.data.paginated_messages.next_page_url;
 				}
+			}
+		},
+
+		async getConversationFiles() {
+			let response = await axios.get(`/conversations/${this.conversation.id}/files`);
+			if (response) {
+				this.$set(this.conversation, 'files', response.data);
 			}
 		}
 	}

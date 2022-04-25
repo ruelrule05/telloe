@@ -36,6 +36,7 @@ window.app = new Vue({
 	directives: { clickOutside: vClickOutside.directive },
 
 	data: {
+		authUser: window.AUTH_USER,
 		auth: false, //false
 		action: 'login', // login
 		seats: 10,
@@ -67,7 +68,6 @@ window.app = new Vue({
 	},
 
 	created() {
-		//this.checkAuth();
 		const queryString = window.location.search;
 		let mobileApp = false;
 		if (queryString) {
@@ -124,6 +124,15 @@ window.app = new Vue({
 	},
 
 	methods: {
+		priceClicked(interval) {
+			if(!this.authUser) {
+				this.auth = true;
+				this.action = 'signup';
+			} else {
+				window.location.href = '/dashboard/account?tab=plan&plan='+ interval.toLowerCase()
+			}
+		},
+
 		openVideoDemo() {
 			this.WistiaPlayer.popover.showAndPlay();
 		},

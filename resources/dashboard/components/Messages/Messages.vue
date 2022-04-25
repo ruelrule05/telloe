@@ -133,6 +133,9 @@
 					</div>
 				</div>
 			</div>
+			<div v-if="videoReply" class="px-1 pb-1">
+				<button class="btn hover:bg-gray-100 btn-sm btn-block w-full text-center border" type="button" @click="$refs.videoRecorder.show()"><span>Reply with video</span></button>
+			</div>
 			<div class="flex items-start md:items-center flex-col md:flex-row">
 				<div class="overflow-hidden flex items-center text-primary">
 					<button data-step="6" data-position="top" type="button" class="line-height-sm p-0 focus:outline-none" @blur="emojipicker = false" :class="{ 'emojipicker-open': emojipicker }">
@@ -160,7 +163,7 @@
 			</div>
 		</div>
 
-		<gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></gallery>
+		<Gallery :conversation="conversation" :file="selectedFile" @close="selectedFile = null"></Gallery>
 
 		<AudioRecorder v-if="recorder == 'audio'" @submit="sendAudio" @close="recorder = ''"></AudioRecorder>
 
@@ -183,6 +186,8 @@
 				</div>
 			</template>
 		</Modal>
+
+		<VideoRecorder v-if="videoReply" ref="videoRecorder" @submit="videoRecorded"></VideoRecorder>
 
 		<!-- <video-recorder-modal v-if="recorder == 'video'" @submit="sendVideo" @close="recorder = ''" :conversation="conversation"></video-recorder-modal> -->
 	</div>

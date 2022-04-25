@@ -42,6 +42,7 @@
 		const AUTH = {!! json_encode(Auth::user()) !!};
 		const VIDEO_MESSAGE= {!! json_encode($videoMessage) !!};
 	</script>
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1058.0.min.js"></script>
 	<script src="{{ mix('js/video-message.js') }}" async defer></script>
 </body>
 </html>

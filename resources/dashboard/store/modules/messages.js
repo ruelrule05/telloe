@@ -1,6 +1,16 @@
 import Vue from 'vue';
 const name = 'messages';
+const randomstring = require('randomstring');
 //const extractUrls = require('extract-urls');
+const AWS = window.AWS;
+AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	IdentityPoolId: process.env.MIX_AWS_IDENTITY_POOL
+});
+const S3 = new AWS.S3({
+	apiVersion: '2006-03-01',
+	params: { Bucket: process.env.MIX_AWS_BUCKET }
+});
 
 const state = () => ({});
 
@@ -21,6 +31,13 @@ const actions = {
 		if (conversation) {
 			conversation.paginated_messages.data.push(newMessage);
 			Vue.set(conversation, 'last_message', newMessage);
+		}
+
+		if (data.source) {
+			data.source = await uploadToS3(data.source);
+		}
+		if (data.preview) {
+			data.preview = await uploadToS3(data.preview);
 		}
 
 		data.metadata = JSON.stringify(data.metadata);
@@ -85,5 +102,24 @@ function escapeHTML(text) {
 	};
 	return text.replace(/[&<>"']/g, function (m) {
 		return map[m];
+	});
+}
+
+async function uploadToS3(file) {
+	return new Promise(resolve => {
+		let filename = randomstring.generate(15);
+		let timestamp = new Date().getTime();
+		S3.upload(
+			{
+				Key: 'message-media/' + filename + '-' + timestamp + '/',
+				Body: file,
+				ACL: 'public-read'
+			},
+			(err, data) => {
+				if (!err && data) {
+					resolve(data.Location);
+				}
+			}
+		);
 	});
 }

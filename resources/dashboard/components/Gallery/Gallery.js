@@ -32,9 +32,11 @@ export default {
 	}),
 
 	watch: {
-		file: async function(value) {
+		file: async function (value) {
 			if (value) {
-				this.fileExtension = await value.metadata.filename.split('.').pop();
+				if (value.metadata.filename) {
+					this.fileExtension = value.metadata.filename.split('.').pop();
+				}
 				this.svg = new Image();
 				if (this.fileExtension == 'svg') {
 					this.svg = value.preview;

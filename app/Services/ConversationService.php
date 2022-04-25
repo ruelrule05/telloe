@@ -189,7 +189,9 @@ class ConversationService
     public function files($id)
     {
         $conversation = Conversation::withTrashed()->findOrFail($id);
-        $this->authorize('show', $conversation);
+        if (! $conversation->video_message_id) {
+            $this->authorize('show', $conversation); 
+        }
         $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/bookings/services/' . $conversation->id);
         return $files;
     }

@@ -306,6 +306,13 @@ export default {
 			storeConversation: 'conversations/store'
 		}),
 
+		updateField(e, index) {
+			if (e.target.value.trim().length) {
+				this.userCustomFields[index] = e.target.value.trim();
+				this.updateUserCustomFields();
+			}
+		},
+
 		checkCookie() {
 			var match = document.cookie.match(new RegExp('(^| )' + this.cookieItem + '=([^;]+)'));
 			if (!match) {
@@ -337,7 +344,14 @@ export default {
 				this.$refs.importCsv.hide();
 				await this.bulkStoreContact({ contacts: contacts });
 				this.getContacts();
+				this.resetCsvMappings();
 			}
+		},
+
+		resetCsvMappings() {
+			this.csvMappings.forEach(mapping => {
+				mapping.heading = '';
+			});
 		},
 
 		readCsv(e) {
@@ -365,7 +379,6 @@ export default {
 				};
 				reader.readAsBinaryString(this.csvFile);
 			}
-			
 		},
 
 		contactAction(action, contact) {

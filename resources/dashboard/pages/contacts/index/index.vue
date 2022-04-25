@@ -158,7 +158,18 @@
 						</div>
 
 						<div class="d-flex mt-5">
-							<button class="btn btn-outline-primary btn-sm" type="button" @click="addContact = false"><span>Cancel</span></button>
+							<button
+								class="btn btn-outline-primary btn-sm"
+								type="button"
+								@click="
+									addContact = false;
+									newContact.email = '';
+									newContact.first_name = '';
+									newContact.last_name = '';
+								"
+							>
+								<span>Cancel</span>
+							</button>
 							<button class="btn-sm btn btn-primary" type="submit"><span>Add</span></button>
 						</div>
 					</div>
@@ -207,7 +218,16 @@
 					</div>
 				</div>
 				<div class="flex justify-between mt-4">
-					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.importCsv.hide()"><span>Cancel</span></button>
+					<button
+						class="btn btn-md btn-outline-primary"
+						type="button"
+						@click="
+							$refs.importCsv.hide();
+							resetCsvMappings();
+						"
+					>
+						<span>Cancel</span>
+					</button>
 					<button :disabled="!csvFile" class="btn btn-primary btn-md" type="submit"><span>Next</span></button>
 				</div>
 			</vue-form-validate>
@@ -244,7 +264,7 @@
 			<h4 class="font-serif uppercase font-semibold mb-4">MANAGE FIELDS</h4>
 			<div v-for="(custom_field, index) in userCustomFields" :key="index" class="flex items-center custom-field position-relative">
 				<div class="mb-1 flex items-center w-full">
-					<input type="text" :value="custom_field" class="flex-grow" />
+					<input type="text" :value="custom_field" class="flex-grow" @blur="updateField($event, index)" />
 					<TrashIcon
 						class="cursor-pointer ml-3 fill-current text-gray-300"
 						@click.native="

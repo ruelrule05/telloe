@@ -8,6 +8,7 @@
 							<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
 						</div>
 						<div class="mt-2 text-sm">{{ videoMessageStatus }}</div>
+						<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
 					</div>
 				</div>
 			</div>

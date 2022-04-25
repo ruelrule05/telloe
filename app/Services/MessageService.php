@@ -51,48 +51,6 @@ class MessageService
 
         $metadata = json_decode($request->metadata, true);
 
-        $time = Str::random(15) . '-' . time();
-        $sourceFile = null;
-        $previewFile = null;
-        $sourceS3Path = '';
-        $previewS3Path = '';
-        if ($request->hasFile('source')) {
-            $folderName = $time . '-source';
-            $sourceFile = $request->file('source');
-            $originalName = $request->source->getClientOriginalName();
-
-            if ($request->type == 'video') {
-                $sourceFile = public_path() . "/storage/message-media/$folderName.mp4";
-                $tmpPath = sys_get_temp_dir() . '/' . $request->source->getFilename();
-                compressVideo($tmpPath, $sourceFile);
-            }
-            $targetPath = "message-media/$folderName/$originalName";
-            Storage::disk('s3')->put($targetPath, file_get_contents($sourceFile), 'public');
-            $sourceS3Path = Storage::disk('s3')->url($targetPath);
-
-            $metadata['filename'] = $originalName;
-            $metadata['size'] = formatBytes($request->source->getSize(), 0);
-
-            if ($request->type == 'image' || $request->type == 'video') {
-                $folderName = $time . '-preview';
-                $targetPath = "message-media/$folderName/$originalName";
-                if ($request->preview) {
-                    $source = $request->preview;
-                    $previewFile = base64_decode(substr($source, strpos($source, ',') + 1));
-                    Storage::disk('s3')->put($targetPath, $previewFile, 'public');
-                    $previewS3Path = Storage::disk('s3')->url($targetPath);
-                } else {
-                    $img = Image::make($request->file('source'));
-                    if ($img->width() > 450) {
-                        $img->resize(450, null, function ($constraint) {
-                            $constraint->aspectRatio();
-                            $constraint->upsize();
-                        });
-                    }
-                }
-            }
-        }
-
         $location = null;
         if (! $authUser) {
             $ip = $request->ip();
@@ -114,8 +72,8 @@ class MessageService
             'user_id' => $authUser->id ?? null,
             'type' => $request->type,
             'message' => htmlspecialchars($request->message),
-            'source' => $sourceS3Path,
-            'preview' => $previewS3Path,
+            'source' => $request->source,
+            'preview' => $request->preview,
             'metadata' => $metadata,
             'timestamp' => $timestamp,
             'location' => $location,
@@ -129,16 +87,21 @@ class MessageService
             $videoMessage = VideoMessage::find($conversation->video_message_id);
             if ($videoMessage) {
                 broadcast(new VideoMessageStat($videoMessage));
-                Mail::to($videoMessage->user->email)->later(now()->addMinutes(5), new VideoMessageComment($videoMessage));
+                if(!$conversation->email_sent_at || Carbon::now()->diffInMinutes(Carbon::parse($conversation->email_sent_at)) >= 5) {
+                    Mail::to($videoMessage->user->email)->send(new VideoMessageComment($videoMessage));
+                    $conversation->update([
+                        'email_sent_at' => Carbon::now()
+                    ]);
+                }
             }
         }
 
         //}
 
-        if (! $request->is_online) {
+        if (!$conversation->video_message_id && ! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;
             if ($targetUser && $targetUser->email && $targetUser->notify_message) {
-                debounce(new SendNewMessageMail($message, $targetUser->email), 60);
+                new SendNewMessageMail($message, $targetUser->email);
             }
         }
 

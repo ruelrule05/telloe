@@ -120,9 +120,9 @@
 								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
 							</div>
 
-							<div v-if="!contactID" class="mb-4">
+							<div class="mb-4">
 								<label>Contact</label>
-								<VueSelect :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
+								<VueSelect :disabled="contactID ? true : false" :options="contactsOptions" noValuePlaceholder="No contact found" searchable clearable placeholder="Select contact" class="mb-4 bg-white" v-model="videoMessageData.contact_id" dropPosition="top w-full"></VueSelect>
 							</div>
 
 							<div v-if="!linkedinUser && linkedinUsersOptions.length" class="mt-4">
@@ -177,11 +177,9 @@ export default {
 
 		servicesOptions() {
 			let services = this.services;
-			return services
-				.filter(x => x.is_available)
-				.map(service => {
-					return { text: service.name, value: service.id };
-				});
+			return services.map(service => {
+				return { text: service.name, value: service.id };
+			});
 		},
 		contactsOptions() {
 			let contacts = this.contacts;
@@ -219,6 +217,10 @@ export default {
 	created() {
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+			if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
+				this.videoMessageData.service_id = null;
+			}
+
 			if (this.contactID) {
 				this.videoMessageData.contact_id = this.contactID;
 			}
@@ -228,6 +230,10 @@ export default {
 		videoMessage: function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+				if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
+					this.videoMessageData.service_id = null;
+				}
+
 				if (this.contactID) {
 					this.videoMessageData.contact_id = this.contactID;
 				}
@@ -251,6 +257,7 @@ export default {
 			}
 		}
 	},
+
 	methods: {
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
