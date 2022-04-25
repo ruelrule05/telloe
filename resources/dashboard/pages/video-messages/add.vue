@@ -307,6 +307,8 @@ export default {
 		addVideo() {
 			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
 			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
+			localStorage.setItem('videoMessageMessage', this.videoMessageData.initialMessage.message);
+			localStorage.setItem('videoMessageService', this.videoMessageData.service_id);
 			this.$emit('showLibrary', true);
 		}
 	}

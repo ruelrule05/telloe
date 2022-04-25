@@ -196,7 +196,9 @@ export default {
 		videoMessage: {
 			title: '',
 			description: '',
-			initial_message: {},
+			initial_message: {
+				message : 'testing'
+			},
 			service_id: null,
 			contact_id: null,
 			userVideos: []
@@ -343,9 +345,11 @@ export default {
 				}
 				this.videoMessage = data;
 				this.adding = true;
+				console.log(data);
 				if (this.isRetainFormData) {
 					this.localStorage(data);
 				}
+				
 			} else if (action == 'Delete') {
 				this.selectedVideoMessage = videoMessage;
 				this.$refs.deleteModal.show();
@@ -577,16 +581,21 @@ export default {
 			this.videoMessage = {
 				title: title != 'null' ? title : '',
 				description: description != 'null' ? description : '',
-				initial_message: {},
-				service_id: null,
+				initial_message: {
+					message : localStorage.getItem('videoMessageMessage'),
+				},
+				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
 				userVideos: []
 			};
+			console.log(this.videoMessage);
 		},
 
 		localStorage(data) {
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
+			localStorage.setItem('videoMessageMessage', this.videoMessage.initialMessage);
+			localStorage.setItem('videoMessageService', this.videoMessage.service_id);
 		}
 	}
 };
