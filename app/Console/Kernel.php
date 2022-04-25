@@ -130,7 +130,7 @@ class Kernel extends ConsoleKernel
     {
         $users = User::whereNotNull('linkedin_username')->get();
         foreach ($users as $user) {
-            $data365 = new Data365($user->username);
+            $data365 = new Data365($user->linkedin_username);
             $data365->createTask();
         }
     }
