@@ -702,8 +702,12 @@ export default {
 			if (!this.source) return null;
 			this.step = 3;
 			this.library = false;
-			this.previewSource = URL.createObjectURL(this.source);
-			
+			if(this.source.type.includes('image')){
+				this.$toast.error('Trying to upload non supported file');
+				return null
+			}else{
+				this.previewSource = URL.createObjectURL(this.source);
+			}
 		},
 
 		async createGif() {
@@ -743,7 +747,6 @@ export default {
 							};
 							image.src = obj.image;
 						} else {
-							this.$toast.error(obj.error);
 							console.log(obj.error);
 							reject();
 						}
