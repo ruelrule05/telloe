@@ -225,6 +225,7 @@ export default {
 				this.videoMessageData.contact_id = this.contactID;
 			}
 		}
+		
 		this.isRetainFormData = this.$root.auth.retain_form_data;
 		if (this.isRetainFormData) {
 			this.retainMessage = localStorage.getItem('videoMessageMessage');
