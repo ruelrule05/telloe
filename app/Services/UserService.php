@@ -143,7 +143,7 @@ class UserService
 
         $script = File::get(public_path() . '/js/widget/widget.js');
         $response = Response::make($script);
-        $response->header('Content-Type', 'text/javascript');
+        $response->header('Content-Type', 'application/javascript');
         return $response;
     }
 
@@ -369,7 +369,8 @@ class UserService
             }
             $from = Carbon::parse("$booking->date $booking->start", $request->timezone);
             $to = $from->clone()->addMinute($booking->service->duration);
-            $link = Link::create($booking->name, $from, $to)
+            $linkName = 'Booking with '. $booking->service->coach->full_name;
+            $link = Link::create($linkName, $from, $to)
                 ->description($description);
 
             $booking->google_link = $link->google();
@@ -397,9 +398,11 @@ class UserService
         // }
 
         $data['uuid'] = (string) Uuid::generate();
-        $name = $service->name;
+        $name = 'Booking with ';
         if ($guest && isset($guest['first_name']) && isset($guest['last_name'])) {
-            $name = $guest['first_name'] . ' ' . $guest['last_name'];
+            $name .= $guest['first_name'] . ' ' . $guest['last_name'];
+        } else if($customer) {
+            $name .= $customer->full_name;
         }
         $data['name'] = $name;
 
@@ -524,7 +527,7 @@ class UserService
                     ];
                 }
                 $eventData = [
-                    'Subject' => $booking->service->name,
+                    'Subject' => $name,
                     'Body' => [
                         'ContentType' => 'HTML',
                         'Content' => $booking->service->description
@@ -585,7 +588,8 @@ class UserService
         if ($booking->zoom_link) {
             $description .= "\n\nZoom link: " . $booking->zoom_link;
         }
-        $link = Link::create($booking->name, $from, $to)
+        $linkName = 'Booking with '. $booking->service->coach->full_name;
+        $link = Link::create($linkName, $from, $to)
             ->description($description);
 
         $booking->google_link = $link->google();

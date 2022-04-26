@@ -101,7 +101,7 @@ export default {
 			});
 			let sortedActivities = [];
 			Object.values(activities).forEach(a => {
-				if (a.length) {
+				if (a.length && this.inQuery(a[0])) {
 					let likedPost = 0;
 					let commentPost = 0;
 					let sharedPost = 0;
@@ -128,9 +128,10 @@ export default {
 	},
 
 	created() {
-		this.getLinkedinActivities();
+		this.getLinkedinActivities().then(() => {
+			this.getLinkedinUsers();
+		});
 		this.getContactLabels();
-		this.getLinkedinUsers();
 	},
 
 	watch: {

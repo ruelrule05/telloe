@@ -139,7 +139,8 @@ class ContactService
             'is_pending' => true,
             'invite_token' => $invite_token,
             'blacklisted_services' => $request->blacklisted_services,
-            'tags' => NULL
+            'tags' => NULL,
+            'phone_number' => $request->phone_number,
         ]);
         $contact->load('contactUser');
 
@@ -212,7 +213,7 @@ class ContactService
     public function update(Request $request, Contact $contact)
     {
         $this->authorize('update', $contact);
-        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields', 'tags', 'label'));
+        $contact->update($request->only('first_name', 'last_name', 'email', 'blacklisted_services', 'custom_fields', 'tags', 'label', 'phone_number'));
         return response($contact->load('contactUser'));
     }
 

@@ -97,7 +97,8 @@ class BookingService
         if ($booking->zoom_link) {
             $description .= "\n\nZoom link: " . $booking->zoom_link;
         }
-        $link = Link::create($booking->name, $from, $to)
+        $linkName = 'Booking with '. $booking->service->coach->full_name;
+        $link = Link::create($linkName, $from, $to)
             ->description($description);
 
         $booking->google_link = $link->google();
