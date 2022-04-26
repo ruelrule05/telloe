@@ -708,6 +708,7 @@ export default {
 			}else{
 				this.previewSource = URL.createObjectURL(this.source);
 			}
+			
 		},
 
 		async createGif() {
