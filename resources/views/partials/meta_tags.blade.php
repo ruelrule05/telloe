@@ -7,12 +7,12 @@
 <meta property="og:site_name" content="{{ config('app.name') }}" />
 <meta name="twitter:card" content="summary_large_image" />
 
-<meta property="og:title" content="Schedule a meeting |  Create and share personalized videos  |  Keep connected | Meet Telloe" />
- <meta property="og:type" content="website" />
- <meta property="og:url" content="https://telloe.com/" />
- <meta property="og:description" content="With Telloe, it's personal! Create and send video messages, connect with contacts like never before and organize meetings; without needless back and forth." />
- <meta property="og:image" content="{{ config('app.url') }}/images/og-image.png" />
- <meta property="og:image:alt" content="" />
+<meta property="og:title" content="Video Messaging | Simple & Effective | Get Personal with Prospects and Clients | Meet Telloe" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://telloe.com/" />
+<meta property="og:description" content="With Telloe, it's personal! Create and send video messages, connect with contacts like never before and organize meetings; without needless back and forth." />
+<meta property="og:image" content="{{ config('app.url') }}/images/og-image.png" />
+<meta property="og:image:alt" content="" />
 
 
 <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
