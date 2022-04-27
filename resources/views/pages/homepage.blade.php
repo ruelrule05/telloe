@@ -1,7 +1,6 @@
 @extends('layouts.page')
 
 @section('title', ucwords("Video Messaging Application | Get Personal with Prospects and Clients | Meet Telloe"))
-
 @section('content')
 
 <div class="bg-secondary py-24">
