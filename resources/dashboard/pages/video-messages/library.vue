@@ -702,11 +702,11 @@ export default {
 			if (!this.source) return null;
 			this.step = 3;
 			this.library = false;
-			if(this.source.type.includes('image')){
+			if(this.source.type.includes('video')){
+				this.previewSource = URL.createObjectURL(this.source);
+			}else{
 				this.$toast.error('Trying to upload non supported file');
 				return null
-			}else{
-				this.previewSource = URL.createObjectURL(this.source);
 			}
 			
 		},
