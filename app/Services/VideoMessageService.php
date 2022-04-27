@@ -128,6 +128,7 @@ class VideoMessageService
             'is_active' => 'required|boolean',
             'link_preview' => 'nullable|string|max:255',
             'linkedin_user' => 'nullable|string',
+            'booking_url' => 'nullable|string',
         ]);
 
         $authUser = Auth::user();
@@ -161,7 +162,7 @@ class VideoMessageService
                 ]
             );
         }
-        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview', 'contact_id', 'linkedin_user');
+        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview', 'contact_id', 'linkedin_user', 'booking_url');
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
