@@ -221,7 +221,6 @@ export default {
 		this.getVideoMessages();
 		this.getServices();
 		this.getContacts({ nopaginate: true });
-
 		this.channel = this.$echo.private(`${this.$root.auth.id}.videoMessages`);
 		this.channel.listen('VideoMessageStat', v => {
 			let videoMessage = this.videoMessages.find(x => x.id == v.videoMessage.id);
