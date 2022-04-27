@@ -196,9 +196,7 @@ export default {
 		videoMessage: {
 			title: '',
 			description: '',
-			initial_message: {
-				message : 'testing'
-			},
+			initial_message: {},
 			service_id: null,
 			contact_id: null,
 			userVideos: []
