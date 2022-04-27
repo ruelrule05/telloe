@@ -11,7 +11,7 @@
 					</button>
 				</div>
 				<div class="w-full flex-grow bg-black relative h-full">
-					<VideoPlayer :videos="$root.videoMessage.videos.map(x => x.user_video)"></VideoPlayer>
+					<VideoPlayer :videos="$root.videoMessage.videos.map(x => x.user_video)" @firstPlayAttempt="firstPlayAttempt()"></VideoPlayer>
 				</div>
 			</div>
 		</div>
@@ -131,6 +131,10 @@ export default {
 				});
 			}
 			return text;
+		},
+
+		firstPlayAttempt() {
+			window.axios.put(`/video_messages/${this.$root.videoMessage.uuid}/increment_views`);
 		},
 
 		async toggleLike(isLiked) {

@@ -86,7 +86,8 @@ export default {
 		playing: false,
 		isFullScreen: false,
 		durations: {},
-		videoProgress: {}
+		videoProgress: {},
+		firstPlayAttempt: true
 	}),
 
 	computed: {
@@ -273,6 +274,10 @@ export default {
 		},
 
 		playPause() {
+			if (this.firstPlayAttempt) {
+				this.$emit('firstPlayAttempt');
+				this.firstPlayAttempt = false;
+			}
 			let currentVideo = this.$refs[`video-${this.currentVideoId}`];
 			if (currentVideo) {
 				currentVideo = currentVideo[0];

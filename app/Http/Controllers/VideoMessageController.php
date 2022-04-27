@@ -42,4 +42,9 @@ class VideoMessageController extends Controller
     {
         return VideoMessageService::getStats($videoMessage);
     }
+
+    public function incrementViews(VideoMessage $videoMessage)
+    {
+        return VideoMessageService::incrementViews($videoMessage);
+    }
 }

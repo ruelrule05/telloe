@@ -137,6 +137,16 @@
 								<label class="form-label">Last Name (Optional)</label>
 								<input type="text" v-model="newContact.last_name" />
 							</div>
+							<div class="mb-4">
+								<label class="form-label">Mobile Number (Optional)</label>
+								<div class="relative">
+									<div class="absolute left-2 top-1/2 transform -translate-y-1/2 flex items-center text-sm">
+										<span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(timezoneAreaCode) }}</span>
+										{{ newContact.dial_code }}
+									</div>
+									<input type="tel" ref="phone" class="pl-16" @keydown="numbersOnly" v-model="newContact.phone_number" />
+								</div>
+							</div>
 
 							<!-- <div>
 								<vue-checkbox v-model="newContact.sendToEmail" label="Send invitation link to email"></vue-checkbox>
@@ -208,7 +218,16 @@
 					</div>
 				</div>
 				<div class="flex justify-between mt-4">
-					<button class="btn btn-md btn-outline-primary" type="button" @click="$refs.importCsv.hide()"><span>Cancel</span></button>
+					<button
+						class="btn btn-md btn-outline-primary"
+						type="button"
+						@click="
+							$refs.importCsv.hide();
+							resetCsvMappings();
+						"
+					>
+						<span>Cancel</span>
+					</button>
 					<button :disabled="!csvFile" class="btn btn-primary btn-md" type="submit"><span>Next</span></button>
 				</div>
 			</vue-form-validate>
@@ -221,6 +240,7 @@
 					<div class="w-1/3 px-3">First Name</div>
 					<div class="w-1/3">Last Name</div>
 					<div class="w-1/3">Tags</div>
+					<div class="w-1/3">Phone Number</div>
 				</div>
 				<div class="overflow-y-auto overflow-x-hidden h-72">
 					<template v-for="(csvContact, csvContactIndex) in csvContacts">
@@ -229,6 +249,7 @@
 							<div class="w-1/3 truncate overflow-hidden px-3">{{ csvContact[csvMappings[1].heading] }}</div>
 							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[2].heading] }}</div>
 							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[3].heading] }}</div>
+							<div class="w-1/3 truncate overflow-hidden">{{ csvContact[csvMappings[4].heading] }}</div>
 						</div>
 					</template>
 				</div>
@@ -289,6 +310,16 @@
 						<div class="col">
 							<label class="form-label">Last Name</label>
 							<input type="text" class="form-control" v-model="clonedContact.last_name" />
+						</div>
+						<div class="col">
+							<label class="form-label">Mobile Number</label>
+							<div class="relative">
+								<div class="absolute left-2 top-1/2 transform -translate-y-1/2 flex items-center text-sm">
+									<span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(editTimezoneAreaCode) }}</span>
+									{{ editContactDialCode }}
+								</div>
+								<input type="tel" ref="phone" class="pl-16" @keydown="numbersOnly" v-model="clonedContact.phone_number" />
+							</div>
 						</div>
 					</div>
 				</fieldset>
