@@ -431,6 +431,7 @@ export default {
 					type: this.blobs[0].type
 				});
 				this.source = source;
+				console.log(this.source.type);
 				this.previewSource = URL.createObjectURL(this.source);
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;

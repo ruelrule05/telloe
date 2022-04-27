@@ -115,9 +115,16 @@
 								</div>
 							</div>
 
-							<div class="mb-4">
+							<div v-if="bookingType == 'service'" class="mb-4">
 								<label>Event Type</label>
-								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
+								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
+								<span class="text-blue-400 text-xs cursor-pointer hover:underline" @click="bookingType = 'custom'">Set custom booking URL</span>
+							</div>
+
+							<div v-else-if="bookingType == 'custom'" class="mb-4">
+								<label>Event Type</label>
+								<input type="text" class="input" v-model="videoMessageData.booking_url" placeholder="https://example.com" />
+								<span class="text-blue-400 text-xs cursor-pointer hover:underline" @click="bookingType = 'service'">Choose from event types</span>
 							</div>
 
 							<div class="mb-4">
@@ -165,7 +172,8 @@ export default {
 	components: { VideoPlayer, draggable, VueSelect, VueFormValidate, CloseIcon, SendIcon },
 
 	data: () => ({
-		videoMessageData: null
+		videoMessageData: null,
+		bookingType: 'service'
 	}),
 
 	computed: {
@@ -217,6 +225,11 @@ export default {
 	created() {
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+			if (this.videoMessageData.booking_url) {
+				this.bookingType = 'custom';
+			} else {
+				this.bookingType = 'service';
+			}
 			if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
 				this.videoMessageData.service_id = null;
 			}
@@ -230,6 +243,11 @@ export default {
 		videoMessage: function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+				if (this.videoMessageData.booking_url) {
+					this.bookingType = 'custom';
+				} else {
+					this.bookingType = 'service';
+				}
 				if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
 					this.videoMessageData.service_id = null;
 				}
