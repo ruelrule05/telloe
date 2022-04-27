@@ -180,7 +180,7 @@ export default {
 			let inSearch = true;
 			let inFilter = true;
 			if (this.searchInList.trim().length) {
-				inSearch = activity.data.author.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || activity.data.author_details.headline.toLowerCase().includes(this.searchInList.toLowerCase().trim());
+				inSearch = activity.data.author.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || (activity.data.author_details.headline && activity.data.author_details.headline.toLowerCase().includes(this.searchInList.toLowerCase().trim()));
 			}
 			if (this.filters.liked && this.filters.liked != activity.likedPost) {
 				inFilter = false;
