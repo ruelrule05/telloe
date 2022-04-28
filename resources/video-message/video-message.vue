@@ -17,8 +17,9 @@
 		</div>
 		<div class="chat-container" :class="{ show: showChat }">
 			<div class="h-full overflow-hidden flex flex-col">
-				<div v-if="$root.videoMessage.service" class="border-b p-3 flex items-center justify-between">
-					<a :href="`/@${$root.videoMessage.username}/${$root.videoMessage.service.id}`" target="_blank" class="btn btn-primary w-full block text-center"><span>Book with me</span></a>
+				<div v-if="$root.videoMessage.service || $root.videoMessage.booking_url" class="border-b p-3 flex items-center justify-between">
+					<a v-if="$root.videoMessage.booking_url" :href="$root.videoMessage.booking_url" target="_blank" class="btn btn-primary w-full block text-center"><span>Book with me</span></a>
+					<a v-else :href="`/@${$root.videoMessage.username}/${$root.videoMessage.service.id}`" target="_blank" class="btn btn-primary w-full block text-center"><span>Book with me</span></a>
 				</div>
 				<div class="border-b p-3 flex items-center justify-between">
 					<div class="text-muted">Message {{ this.$root.videoMessage.user.split(' ')[0] }}</div>

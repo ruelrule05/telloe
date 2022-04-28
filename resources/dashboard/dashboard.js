@@ -5,6 +5,11 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import VueRouter from 'vue-router';
 const introJS = require('intro.js');
 
+import { flare } from '@flareapp/flare-client';
+import { flareVue } from '@flareapp/flare-vue';
+
+flare.light(process.env.MIX_FLARE_KEY);
+Vue.use(flareVue);
 Vue.use(VueRouter);
 
 //window.Vue.component('vue-button', require('../components/vue-button.vue').default);
