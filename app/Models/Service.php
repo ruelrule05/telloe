@@ -12,7 +12,7 @@ class Service extends BaseModel
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment', 'types', 'starts_at', 'ends_at', 'timezone', 'type', 'form_builder'];
+    protected $fillable = ['user_id', 'member_id', 'name', 'description', 'duration', 'days', 'holidays', 'is_available', 'interval', 'ignored_calendar_events_google', 'is_preset', 'default_rate', 'in_widget', 'parent_service_id', 'manage_bookings', 'address', 'ask_skype', 'require_skype', 'ask_phone', 'require_phone', 'create_zoom_link', 'currency', 'require_payment', 'types', 'starts_at', 'ends_at', 'timezone', 'type', 'form_builder', 'redirect_url'];
 
     protected $casts = [
         'days' => 'array',
@@ -120,14 +120,13 @@ class Service extends BaseModel
         $now = Carbon::now();
         $startsAt = null;
         $endsAt = null;
-        if($this->starts_at && $this->ends_at) {
+        if ($this->starts_at && $this->ends_at) {
             $startsAt = Carbon::parse($this->starts_at, $this->timezone);
             $endsAt = Carbon::parse($this->ends_at, $this->timezone)->addDay(1);
         }
         while ($timeStart->lessThan($timeEnd)) {
-
-            if($startsAt && $endsAt) {
-                if(!$timeStart->between($startsAt, $endsAt)) {
+            if ($startsAt && $endsAt) {
+                if (! $timeStart->between($startsAt, $endsAt)) {
                     $timeStart->add($this->attributes['interval'] + $this->attributes['duration'], 'minute');
                     continue;
                 }

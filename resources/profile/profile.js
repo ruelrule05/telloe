@@ -561,6 +561,9 @@ export default {
 					this.step = 'booked-signup';
 				}
 			}
+			if (this.selectedService.redirect_url) {
+				return (window.location.href = this.selectedService.redirect_url);
+			}
 			this.bookingLoading = false;
 		},
 
@@ -596,6 +599,9 @@ export default {
 					this.bookings = response.data;
 					this.step = 'bookings';
 				}
+			}
+			if (this.selectedService.redirect_url) {
+				return (window.location.href = this.selectedService.redirect_url);
 			}
 			this.bookingLoading = false;
 		},
@@ -635,6 +641,9 @@ export default {
 						this.step = 'bookings';
 					}
 				}
+				if (this.selectedService.redirect_url) {
+					return (window.location.href = this.selectedService.redirect_url);
+				}
 				this.bookingLoading = false;
 			}
 		},
@@ -673,6 +682,9 @@ export default {
 						this.bookings = response.data;
 						this.step = 'bookings';
 					}
+				}
+				if (this.selectedService.redirect_url) {
+					return (window.location.href = this.selectedService.redirect_url);
 				}
 				this.bookingLoading = false;
 			}
@@ -805,7 +817,8 @@ export default {
 		},
 
 		reset() {
-			window.location.href = `/@${this.profile.username}`;
+			let service = this.service ? `/${this.service.id}` : '';
+			window.location.href = `/@${this.profile.username}${service}`;
 			this.bookings = [];
 			this.isBooking = false;
 			this.bookingSuccess = false;
@@ -908,11 +921,6 @@ export default {
 				} else {
 					this.services = response.data.services;
 				}
-				//this.packages = response.data.packages;
-
-				// testing
-				// this.selectedServiceForTimeline = this.services[0];
-				// this.selectedService = this.selectedServiceForTimeline;
 
 				this.ready = true;
 			});

@@ -14,6 +14,8 @@ import dayjs from 'dayjs';
 import VFormBuilder from './formBuilder';
 const ct = require('countries-and-timezones').default;
 const { getNameList } = require('country-list');
+import copy from 'copy-text-to-clipboard';
+
 export default {
 	props: {
 		service: {
@@ -40,7 +42,7 @@ export default {
 			input: 'MMMM D, YYYY'
 		},
 
-		menus: ['General Settings', 'Availability', 'Payment', 'Advanced', 'Form Builder'],
+		menus: ['General Settings', 'Availability', 'Payment', 'Advanced', 'Embed', 'Form Builder'],
 		menusMobile: [
 			{ text: 'General Settings', value: 'General Settings' },
 			{ text: 'Availability', value: 'Availability' },
@@ -90,6 +92,13 @@ export default {
 	}),
 
 	computed: {
+		embedCode() {
+			return `<!-- Telloe embed widget begin -->
+<div id="telloe-embed-widget" data-username="${this.$root.auth.username}" data-service="${this.service.id}" style="width: 460px; height: 630px"></div>
+<script type="text/javascript" src="${this.$root.app_url}/js/embed.js" async></script>
+<!-- Telloe embed widget end -->`;
+		},
+
 		availableTimezones() {
 			let timezones = [];
 
@@ -158,6 +167,14 @@ export default {
 			updateService: 'services/update',
 			storeService: 'services/store'
 		}),
+
+		copyEmbedCode(e) {
+			this.$toast.clear();
+			if (copy(this.embedCode)) {
+				this.$toast.open('Link copied to clipboard');
+			}
+			e.currentTarget.blur();
+		},
 
 		selectType(type) {
 			if (!this.clonedService.types) {
