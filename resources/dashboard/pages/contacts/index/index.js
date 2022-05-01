@@ -210,7 +210,6 @@ export default {
 					});
 				}
 			}
-
 			conversation.member.contact = this.selectedContact;
 			this.selectedContact.ready = true;
 
