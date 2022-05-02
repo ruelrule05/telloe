@@ -41,6 +41,12 @@ class UserController extends Controller
         return UserService::widget($request);
     }
 
+    public function embed(Request $request)
+    {
+        return UserService::embed($request);
+    }
+
+
     public function signupAndBook($username, $service_id, UserSignupAndBookRequest $request)
     {
         return response(UserService::signupAndBook($username, $service_id, $request));

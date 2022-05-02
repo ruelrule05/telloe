@@ -221,7 +221,6 @@ export default {
 		this.getVideoMessages();
 		this.getServices();
 		this.getContacts({ nopaginate: true });
-
 		this.channel = this.$echo.private(`${this.$root.auth.id}.videoMessages`);
 		this.channel.listen('VideoMessageStat', v => {
 			let videoMessage = this.videoMessages.find(x => x.id == v.videoMessage.id);
@@ -346,6 +345,7 @@ export default {
 				if (this.isRetainFormData) {
 					this.localStorage(data);
 				}
+				
 			} else if (action == 'Delete') {
 				this.selectedVideoMessage = videoMessage;
 				this.$refs.deleteModal.show();
@@ -578,7 +578,7 @@ export default {
 				title: title != 'null' ? title : '',
 				description: description != 'null' ? description : '',
 				initial_message: {},
-				service_id: null,
+				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
 				userVideos: []
 			};
@@ -587,6 +587,7 @@ export default {
 		localStorage(data) {
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
+			localStorage.setItem('videoMessageService', this.videoMessage.service_id);
 		}
 	}
 };

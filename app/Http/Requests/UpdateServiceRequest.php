@@ -32,7 +32,8 @@ class UpdateServiceRequest extends FormRequest
             'duration' => 'required|integer|min:5|max:360',
             'days' => 'required',
             'default_rate' => 'numeric',
-            'form_builder' => 'nullable|json'
+            'form_builder' => 'nullable|json',
+            'redirect_url' => 'nullable|string',
         ];
     }
 }

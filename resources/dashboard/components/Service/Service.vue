@@ -30,7 +30,9 @@
 				<VueSelect class="w-11/12 mx-auto block lg:hidden mt-5" :options="menusMobile" drop-position="w-full lg:px-6 pt-0 lg:pt-4" v-model="activeMenu"></VueSelect>
 
 				<div class="sidebar service-sidebar border-r-0 lg:border-right px-0 lg:px-6 pt-0 lg:pt-4 hidden lg:block">
-					<div v-for="(menu, menuIndex) in menus" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+					<template v-for="(menu, menuIndex) in menus">
+						<div v-if="menu != 'Embed' || !createService" :key="menuIndex" class="sidebar-menu-item" :class="{ active: activeMenu == menu }" @click="activeMenu = menu">{{ menu }}</div>
+					</template>
 				</div>
 				<div class="flex-grow p-6 lg:p-8 w-full lg:w-auto">
 					<!-- General Settings -->
@@ -166,10 +168,29 @@
 									</template>
 								</v-date-picker>
 							</div>
-							<div>
+							<div class="mb-4">
 								<label>Timezone</label>
 								<VueSelect class="w-full lg:w-1/3" :required="activeMenu == 'Advanced'" :options="availableTimezones" drop-position="top" searchable v-model="clonedService.timezone" placeholder="Select timezone"></VueSelect>
 							</div>
+							<div class="w-full lg:w-4/12">
+								<label>Redirect URL after booking</label>
+								<input type="text" v-model="clonedService.redirect_url" />
+							</div>
+						</div>
+					</div>
+
+					<!-- Embed -->
+					<div v-show="activeMenu == 'Embed' && !createService">
+						<div class="font-serif uppercase font-semibold text-xs mb-10">{{ activeMenu }}</div>
+						Loads your Telloe booking page directly in your website.
+						<div class="w-full lg:w-9/12">
+							<div class="rounded-2xl p-4 bg-gray-100 mt-5 text-muted text-sm">
+								<div class="whitespace-pre-line -mt-5">
+									{{ embedCode }}
+								</div>
+							</div>
+
+							<button type="button" class="btn btn-mdx btn-outline-primary mt-4 w-full" @click="copyEmbedCode"><span>COPY CODE</span></button>
 						</div>
 					</div>
 

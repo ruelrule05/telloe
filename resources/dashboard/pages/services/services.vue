@@ -2,9 +2,7 @@
 	<div>
 		<div v-show="!serviceToEdit" class="min-h-screen flex flex-col relative">
 			<div class="content-header border-bottom lg:static fixed w-full bg-white z-20">
-				<div class="ml-7 lg:ml-0 absolute lg:static top-7">
-					EVENT TYPES
-				</div>
+				<div class="ml-7 lg:ml-0 absolute lg:static top-7">EVENT TYPES</div>
 				<div class="ml-auto">
 					<button
 						type="button"
@@ -27,13 +25,9 @@
 					<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="hideBanner()"><CloseIcon width="10" height="10" class="fill-current text-primary"></CloseIcon></button>
 				</div>
 				<div class="bg-primary-ultralight rounded-xl flex p-6 flex-col md:flex-row relative">
-					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">
-						CREATE EVENT TYPES TO ENABLE SELF-SERVE BOOKINGS.
-					</div>
+					<div class="font-serif w-4/5 md:w-1/4 font-semibold uppercase">CREATE EVENT TYPES TO ENABLE SELF-SERVE BOOKINGS.</div>
 					<div class="w-full md:w-2/4 ml-0 md:ml-10">
-						<p class="text-muxted mb-4">
-							Change the Event Types visible to clients on your public page. Adjust your available times for event types to suit you.
-						</p>
+						<p class="text-muxted mb-4">Change the Event Types visible to clients on your public page. Adjust your available times for event types to suit you.</p>
 						<button
 							class="btn btn-md btn-outline-primary"
 							type="button"
@@ -63,9 +57,7 @@
 						<div class="w-full lg:w-5/12 p-6 md:p-">
 							<h6 class="font-serif font-semibold text-xs">YOUR PUBLIC PAGE</h6>
 							<div class="services-card card card-secondary mt-4">
-								<p class="text-sm text-muted">
-									Your public page shows all your active events in one place.
-								</p>
+								<p class="text-sm text-muted">Your public page shows all your active events in one place.</p>
 
 								<strong class="text-primary text-sm font-bold block my-5">
 									<a :href="`/@${$root.auth.username}`" target="_blank" class="hover:underline">{{ `${$root.app_url.replace('https://', '')}/@${$root.auth.username}` }}</a>
@@ -78,7 +70,7 @@
 								<div class="card mt-4">
 									<strong class="text-primary text-sm font-bold block mb-1">{{ widgetService.name }}</strong>
 									<strong class="text-gray-400 font-bold block mb-5 text-sm">{{ widgetService.duration }} min</strong>
-									<button type="button" class="btn btn-sm btn-outline-primary" @click="embedModal"><span>EMBED</span></button>
+									<button type="button" class="btn btn-sm btn-outline-primary" @click="embedModal"><span>EMBED CODE</span></button>
 								</div>
 							</div>
 						</div>
@@ -158,7 +150,7 @@
 				<div class="rounded-2xl p-4 bg-gray-100 mt-5 text-muted text-sm">
 					{{ scriptCode }}
 				</div>
-				<button type="button" class="btn btn-mdx btn-outline-primary mt-4 w-full" @click="copySCriptCode"><span>COPY LINK</span></button>
+				<button type="button" class="btn btn-mdx btn-outline-primary mt-4 w-full" @click="copySCriptCode"><span>COPY SCRIPT</span></button>
 			</div>
 		</Modal>
 

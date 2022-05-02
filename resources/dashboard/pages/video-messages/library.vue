@@ -407,6 +407,10 @@ export default {
 				this.duration = this.$refs.videoPlayback.duration * 1000;
 			}
 		};
+		const selectInput = document.querySelector('.multiselect__input')
+		if (selectInput) {
+			selectInput.setAttribute('maxlength', '20');
+		}
 	},
 
 	methods: {

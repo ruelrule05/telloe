@@ -30,6 +30,7 @@ Route::group(
         Route::get('/ics', 'BookingController@downloadIcs');
 
         Route::get('/js/widget.js', 'UserController@widget');
+        Route::get('/js/embed.js', 'UserController@embed');
         Route::get('/privacy-policy', 'PageController@privacyPolicy');
         Route::get('/terms-of-service', 'PageController@termsOfService');
         Route::get('/callback/zoom', 'ZoomController@callback')->middleware('auth');
