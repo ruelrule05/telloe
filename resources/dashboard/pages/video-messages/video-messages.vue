@@ -343,7 +343,6 @@ export default {
 				this.videoMessage = data;
 				this.adding = true;
 				if (this.isRetainFormData) {
-					console.log(data.initial_message.message);
 					localStorage.setItem('videoMessageMessage', data.initial_message.message);
 					this.localStorage(data);
 				}

@@ -300,6 +300,11 @@ export default {
 			let initialMessage = this.$refs.messageInput.innerText || this.videoMessageData.initial_message.message;
 			this.$set(this.videoMessageData.initial_message, 'message', initialMessage);
 			this.$refs.messageInput.innerHTML = '';
+
+			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
+			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
+			localStorage.setItem('videoMessageMessage', this.$refs.messageInput.innerText);
+			localStorage.setItem('videoMessageService', this.videoMessageData.service_id);
 		},
 
 		addFile(e) {
