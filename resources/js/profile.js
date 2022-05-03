@@ -6,10 +6,20 @@ window.app = new Vue({
 		Profile
 	},
 	data: () => ({
-		widget: false
+		widget: false,
+		embed: false
 	}),
 	created() {
 		const urlParams = new URLSearchParams(window.location.search);
 		this.widget = urlParams.get('widget');
+		this.embed = urlParams.get('embed');
+	},
+	mounted() {
+		if (this.embed) {
+			let app = document.querySelector('#app');
+			if (app) {
+				app.style.backgroundColor = 'transparent';
+			}
+		}
 	}
 });

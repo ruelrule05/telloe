@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ 'is-widget': $root.widget }">
+	<div :class="{ 'is-widget': $root.widget, 'is-embed': $root.embed }">
 		<div v-if="ready">
 			<div v-if="noServiceForWidget" class="absolute-center text-sm text-center text-muted w-full">No event type available for this widget.</div>
 			<template v-else>
@@ -149,7 +149,7 @@
 										<div class="button-date-nav lg:mt-0 mt-2">
 											<button type="button" @click="previousWeek()"><ArrowLeftIcon class="fill-current"></ArrowLeftIcon></button>
 
-											<div class="px-2">
+											<div class="px-2 flex-grow text-center">
 												<v-date-picker class="relative" :min-date="new Date()" :popover="{ placement: 'bottom', visibility: 'click' }" v-model="startDate" :masks="masks">
 													<template v-slot="{ inputValue, inputEvents }">
 														<button type="button" class="uppercase font-semibold" v-on="inputEvents">

@@ -101,9 +101,9 @@
 										<td v-if="columnList[0].isEnabled" class="text-sm py-3">
 											<div class="w-250">
 												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="goToMember(item)">
-													{{ item.data.author.name }}
+													{{ item.data.shared_post ? item.data.shared_post_details.author.name : item.data.author.name }}
 												</p>
-												<p class="text-gray-400 truncate text-xs">{{ item.data.author_details.headline }}</p>
+												<p class="text-gray-400 truncate text-xs">{{ item.data.shared_post ? item.data.shared_post_details.author_details.headline : item.data.author_details.headline }}</p>
 											</div>
 										</td>
 										<td v-if="columnList[1].isEnabled" class="text-sm pr-2 py-3">

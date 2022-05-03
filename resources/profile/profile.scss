@@ -2,7 +2,7 @@
 	opacity: 0;
 }
 
-.is-widget {
+.is-widget, .is-embed {
 	@apply h-full;
 	> div {
 		@apply h-full;
@@ -314,3 +314,6 @@ input.is-invalid:not(:focus) {
 		}
 	}
 }
+
+
+
