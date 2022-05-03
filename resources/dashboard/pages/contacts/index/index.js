@@ -330,13 +330,14 @@ export default {
 				let contacts = [];
 				this.csvContacts.forEach(contact => {
 					if (contact[this.csvMappings[0].heading]) {
-						let contactTags = contact[this.csvMappings[3].heading].split(',');
+						let contactTags = this.csvMappings[3].heading ? contact[this.csvMappings[3].heading].split(',') : '';
+						let number = this.csvMappings[4].heading ? contact[this.csvMappings[4].heading] : '';
 						contacts.push({
 							email: contact[this.csvMappings[0].heading],
 							first_name: contact[this.csvMappings[1].heading],
 							last_name: contact[this.csvMappings[2].heading],
 							tags: contactTags,
-							phone_number: contact[this.csvMappings[4].heading],
+							phone_number: number
 						});
 					}
 				});
@@ -369,8 +370,12 @@ export default {
 						line = line.replaceAll(' ','');
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
 						if(regexLine){
-							regexLine[3] = regexLine[3].replaceAll('"', '');
-							regexLine[4] = regexLine[4].replaceAll('+', '');
+							if(regexLine[3]){
+								regexLine[3] = regexLine[3].replaceAll('"', '');
+							}
+							if(regexLine[4]){
+								regexLine[4] = regexLine[4].replaceAll('+', '');
+							}
 							csvContacts.push(regexLine);
 						}
 					});
