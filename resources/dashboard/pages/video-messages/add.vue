@@ -226,6 +226,8 @@ export default {
 	},
 
 	created() {
+		this.isRetainFormData = this.$root.auth.retain_form_data;
+
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
 			if (this.videoMessageData.booking_url) {
@@ -239,9 +241,12 @@ export default {
 			if (this.contactID) {
 				this.videoMessageData.contact_id = this.contactID;
 			}
+		}else{
+			if (this.isRetainFormData) {
+				this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
+			}
 		}
-		
-		this.isRetainFormData = this.$root.auth.retain_form_data;
+
 		if (this.isRetainFormData) {
 			this.retainMessage = localStorage.getItem('videoMessageMessage');
 		}
@@ -335,10 +340,12 @@ export default {
 		},
 
 		addVideo() {
+			localStorage.clear();
 			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
 			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
 			localStorage.setItem('videoMessageMessage', this.$refs.messageInput.innerText);
 			localStorage.setItem('videoMessageService', this.videoMessageData.service_id);
+			console.log(this.$refs.messageInput.innerText);
 			this.$emit('showLibrary', true);
 		}
 	}
