@@ -4,7 +4,7 @@ namespace App\Models;
 
 class VideoMessage extends BaseModel
 {
-    protected $fillable = ['uuid', 'user_id', 'title', 'description', 'initial_message', 'service_id', 'views', 'is_active', 'link_preview', 'contact_id', 'linkedin_user', 'short_id', 'booking_url'];
+    protected $fillable = ['uuid', 'user_id', 'title', 'description', 'initial_message', 'service_id', 'views', 'is_active', 'link_preview', 'contact_id', 'linkedin_user', 'short_id', 'booking_url', 'video_campaign_id'];
     protected $casts = [
         'is_active' => 'boolean',
         'initial_message' => 'object'
@@ -13,6 +13,11 @@ class VideoMessage extends BaseModel
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function videoCampaign()
+    {
+        return $this->belongsTo(VideoCampaign::class);
     }
 
     public function videos()
@@ -39,5 +44,4 @@ class VideoMessage extends BaseModel
     {
         return $this->belongsTo(Contact::class);
     }
-
 }

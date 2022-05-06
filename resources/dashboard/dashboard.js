@@ -154,6 +154,7 @@ window.app = new Vue({
 			if (this.$refs.dashboardContent) {
 				this.$refs.dashboardContent.scroll(0, 0);
 			}
+			this.isSidebarOpen = false;
 		},
 		muted: function (value) {
 			this.$toasted.show(`Notifications ${value ? 'off' : 'on'}`, {
@@ -521,11 +522,6 @@ window.app = new Vue({
 				this.sendMessage(message);
 				this.closeRecorder('video');
 			}
-		},
-
-		toggleSidebar(path) {
-			this.isSidebarOpen = false;
-			if (this.$route.path !== path) this.$router.push(path);
 		}
 	}
 });

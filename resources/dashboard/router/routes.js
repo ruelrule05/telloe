@@ -165,6 +165,11 @@ const routes = [
 				name: 'Video Messages',
 				path: 'video-messages',
 				component: () => import(/* webpackChunkName: "dashboard-video-messages" */ '../pages/video-messages/video-messages.vue')
+			},
+			{
+				name: 'Video Campaigns',
+				path: 'video-campaigns',
+				component: () => import(/* webpackChunkName: "dashboard-video-campaigns" */ '../pages/video-campaigns/video-campaigns.vue')
 			}
 		]
 	},

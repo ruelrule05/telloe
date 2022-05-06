@@ -23,7 +23,7 @@ class VideoMessageService
     public static function index(Request $request)
     {
         return response()->json(app('model-cache')->runDisabled(function () {
-            return VideoMessage::where('user_id', Auth::user()->id)->with('videos.userVideo', 'user', 'videoMessageLikes')->with('conversation', function ($conversation) {
+            return VideoMessage::where('user_id', Auth::user()->id)->whereNull('video_campaign_id')->with('videos.userVideo', 'user', 'videoMessageLikes')->with('conversation', function ($conversation) {
                 $conversation->withCount('messages');
             })->disableCache()->latest()->get();
         }));
