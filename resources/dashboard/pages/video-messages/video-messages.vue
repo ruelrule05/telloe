@@ -579,7 +579,6 @@ export default {
 				title: title != 'null' ? title : '',
 				description: description != 'null' ? description : '',
 				initial_message: {
-
 				},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
@@ -590,7 +589,6 @@ export default {
 		localStorage(data) {
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
-			localStorage.setItem('videoMessageService', this.videoMessage.service_id);
 		}
 	}
 };

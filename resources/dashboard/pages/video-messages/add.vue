@@ -267,6 +267,9 @@ export default {
 				if (this.contactID) {
 					this.videoMessageData.contact_id = this.contactID;
 				}
+			}else{
+				this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
+				this.retainMessage = localStorage.getItem('videoMessageMessage');
 			}
 		},
 		contactID: function () {
@@ -305,11 +308,7 @@ export default {
 			let initialMessage = this.$refs.messageInput.innerText || this.videoMessageData.initial_message.message;
 			this.$set(this.videoMessageData.initial_message, 'message', initialMessage);
 			this.$refs.messageInput.innerHTML = '';
-
-			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
-			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
-			localStorage.setItem('videoMessageMessage', this.$refs.messageInput.innerText);
-			localStorage.setItem('videoMessageService', this.videoMessageData.service_id);
+			this.localStorage();
 		},
 
 		addFile(e) {
@@ -340,13 +339,16 @@ export default {
 		},
 
 		addVideo() {
-			localStorage.clear();
+			this.localStorage();
+			this.$emit('showLibrary', true);
+		},
+
+		localStorage() {
+			console.log(this.$refs.messageInput.innerText);
 			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
 			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
 			localStorage.setItem('videoMessageMessage', this.$refs.messageInput.innerText);
 			localStorage.setItem('videoMessageService', this.videoMessageData.service_id);
-			console.log(this.$refs.messageInput.innerText);
-			this.$emit('showLibrary', true);
 		}
 	}
 };
