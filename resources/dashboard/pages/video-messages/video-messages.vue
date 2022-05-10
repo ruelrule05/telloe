@@ -582,7 +582,8 @@ export default {
 				},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
-				userVideos: []
+				userVideos: [],
+				retainMessage : localStorage.getItem('videoMessageMessage')
 			};
 		},
 
