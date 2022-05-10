@@ -343,6 +343,7 @@ export default {
 				this.videoMessage = data;
 				this.adding = true;
 				if (this.isRetainFormData) {
+					localStorage.setItem('videoMessageMessage', data.initial_message.message);
 					this.localStorage(data);
 				}
 				
@@ -577,17 +578,18 @@ export default {
 			this.videoMessage = {
 				title: title != 'null' ? title : '',
 				description: description != 'null' ? description : '',
-				initial_message: {},
+				initial_message: {
+				},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
-				userVideos: []
+				userVideos: [],
+				retainMessage : localStorage.getItem('videoMessageMessage')
 			};
 		},
 
 		localStorage(data) {
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
-			localStorage.setItem('videoMessageService', this.videoMessage.service_id);
 		}
 	}
 };
