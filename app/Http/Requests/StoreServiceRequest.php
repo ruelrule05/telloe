@@ -30,7 +30,8 @@ class StoreServiceRequest extends FormRequest
             'days' => 'required',
             'default_rate' => 'numeric|numeric',
             'timezone' => 'required|string',
-            'form_builder' => 'nullable|json'
+            'form_builder' => 'nullable|json',
+            'redirect_url' => 'nullable|string',
         ];
     }
 }

@@ -16,6 +16,7 @@ class Data365Controller
             $postComments = $data365->getActivities('created_comment_on_post');
             $postReactions = $data365->getActivities('reacted_to_post');
             $commentReactions = $data365->getActivities('reacted_to_comment_on_post');
+            $createdPosts = $data365->getActivities('created_post');
 
             foreach ($postComments as $postComment) {
                 $postComment['type'] = 'post_comment';
@@ -55,6 +56,22 @@ class Data365Controller
                         'data' => $commentReaction
                     ]
                 );
+            }
+
+            foreach ($createdPosts as $createdPost) {
+                if ($createdPost['shared_post']['author_username'] ?? null != $username) {
+                    $createdPost['type'] = 'shared_post';
+                    LinkedinActivity::firstOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'activity_id' => $createdPost['id'],
+                        'type_id' => $createdPost['type'] . '-' . $createdPost['id'],
+                    ], 
+                    [
+                        'data' => $createdPost
+                    ]
+                );
+                }
             }
         }
     }

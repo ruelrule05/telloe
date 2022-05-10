@@ -409,6 +409,10 @@ export default {
 				this.duration = this.$refs.videoPlayback.duration * 1000;
 			}
 		};
+		const selectInput = document.querySelector('.multiselect__input')
+		if (selectInput) {
+			selectInput.setAttribute('maxlength', '20');
+		}
 	},
 
 	methods: {
@@ -433,6 +437,7 @@ export default {
 					type: this.blobs[0].type
 				});
 				this.source = source;
+				console.log(this.source.type);
 				this.previewSource = URL.createObjectURL(this.source);
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;

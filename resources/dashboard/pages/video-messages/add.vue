@@ -103,7 +103,7 @@
 								<div class="flex items-center mt-2">
 									<div class="flex-grow">
 										<div class="flex items-center rounded-full bg-gray-200 p-1" style="border-radius: 20px">
-											<div class="py-1 px-2 message-input h-auto overflow-auto flex-grow focus:outline-none" @keypress="messageInput" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput"></div>
+											<div class="py-1 px-2 message-input h-auto overflow-auto flex-grow focus:outline-none" @keypress="messageInput" contenteditable data-placeholder="Write a message.." spellcheck="false" ref="messageInput">{{ retainMessage }}</div>
 											<button type="button" class="btn-send-message rounded-full bg-white p-1.5 text-primary focus:outline-none transition-colors hover:text-white hover:bg-primary" @click="$refs.initialMessageFile.click()">
 												<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -115,9 +115,16 @@
 								</div>
 							</div>
 
-							<div class="mb-4">
+							<div v-if="bookingType == 'service'" class="mb-4">
 								<label>Event Type</label>
-								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="mb-4 bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
+								<VueSelect :options="servicesOptions" clearable placeholder="Select event type" class="bg-white" v-model="videoMessageData.service_id" dropPosition="top w-full"></VueSelect>
+								<span class="text-blue-400 text-xs cursor-pointer hover:underline" @click="bookingType = 'custom'">Set custom booking URL</span>
+							</div>
+
+							<div v-else-if="bookingType == 'custom'" class="mb-4">
+								<label>Event Type</label>
+								<input type="text" class="input" v-model="videoMessageData.booking_url" placeholder="https://example.com" />
+								<span class="text-blue-400 text-xs cursor-pointer hover:underline" @click="bookingType = 'service'">Choose from event types</span>
 							</div>
 
 							<div class="mb-4">
@@ -165,7 +172,9 @@ export default {
 	components: { VideoPlayer, draggable, VueSelect, VueFormValidate, CloseIcon, SendIcon },
 
 	data: () => ({
-		videoMessageData: null
+		videoMessageData: null,
+		retainMessage : '',
+		bookingType: 'service'
 	}),
 
 	computed: {
@@ -217,19 +226,33 @@ export default {
 	created() {
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+			if (this.videoMessageData.booking_url) {
+				this.bookingType = 'custom';
+			} else {
+				this.bookingType = 'service';
+			}
 			if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
 				this.videoMessageData.service_id = null;
 			}
-
 			if (this.contactID) {
 				this.videoMessageData.contact_id = this.contactID;
 			}
+		}
+		
+		this.isRetainFormData = this.$root.auth.retain_form_data;
+		if (this.isRetainFormData) {
+			this.retainMessage = localStorage.getItem('videoMessageMessage');
 		}
 	},
 	watch: {
 		videoMessage: function () {
 			if (this.videoMessage) {
 				this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
+				if (this.videoMessageData.booking_url) {
+					this.bookingType = 'custom';
+				} else {
+					this.bookingType = 'service';
+				}
 				if (this.videoMessageData.service_id && !this.services.find(x => x.id == this.videoMessageData.service_id)) {
 					this.videoMessageData.service_id = null;
 				}
@@ -307,6 +330,8 @@ export default {
 		addVideo() {
 			localStorage.setItem('videoMessageStorageTitle', this.videoMessageData.title);
 			localStorage.setItem('videoMessageStorageDescription', this.videoMessageData.description);
+			localStorage.setItem('videoMessageMessage', this.$refs.messageInput.innerText);
+			localStorage.setItem('videoMessageService', this.videoMessageData.service_id);
 			this.$emit('showLibrary', true);
 		}
 	}

@@ -94,14 +94,15 @@ export default {
 		activities: function () {
 			let activities = {};
 			this.linkedActivities.forEach(activity => {
-				if (!activities[activity.data.author.id]) {
-					activities[activity.data.author.id] = [];
+				let authorId = activity.data.shared_post ? activity.data.shared_post.author_id : activity.data.author.id;
+				if (!activities[authorId]) {
+					activities[authorId] = [];
 				}
-				activities[activity.data.author.id].push(activity);
+				activities[authorId].push(activity);
 			});
 			let sortedActivities = [];
 			Object.values(activities).forEach(a => {
-				if (a.length) {
+				if (a.length && this.inQuery(a[0])) {
 					let likedPost = 0;
 					let commentPost = 0;
 					let sharedPost = 0;
@@ -128,9 +129,10 @@ export default {
 	},
 
 	created() {
-		this.getLinkedinActivities();
+		this.getLinkedinActivities().then(() => {
+			this.getLinkedinUsers();
+		});
 		this.getContactLabels();
-		this.getLinkedinUsers();
 	},
 
 	watch: {
@@ -180,7 +182,7 @@ export default {
 			let inSearch = true;
 			let inFilter = true;
 			if (this.searchInList.trim().length) {
-				inSearch = activity.data.author.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || activity.data.author_details.headline.toLowerCase().includes(this.searchInList.toLowerCase().trim());
+				inSearch = activity.data.author.name.toLowerCase().includes(this.searchInList.toLowerCase().trim()) || (activity.data.author_details.headline && activity.data.author_details.headline.toLowerCase().includes(this.searchInList.toLowerCase().trim()));
 			}
 			if (this.filters.liked && this.filters.liked != activity.likedPost) {
 				inFilter = false;
@@ -191,7 +193,7 @@ export default {
 			if (this.filters.shared && this.filters.shared != activity.sharedPost) {
 				inFilter = false;
 			}
-			return inSearch && inFilter && activity.data.author.username != this.$root.auth.linkedin_username;
+			return inSearch && inFilter && ((activity.data.shared_post && activity.data.shared_post.author_username != this.$root.auth.linkedin_username) || (!activity.data.shared_post && activity.data.author.username != this.$root.auth.linkedin_username));
 		},
 
 		getContact(urn) {

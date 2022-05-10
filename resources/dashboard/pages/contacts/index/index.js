@@ -24,8 +24,13 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 import MessageIcon from '../../../../icons/comment';
 import InfoCircleIcon from '../../../../icons/info-circle.vue';
 import LinkedinIcon from '../../../../icons/linkedin';
+import numbersOnly from 'numbers-only';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
+import { isEmpty } from 'lodash';
 const dayjs = require('dayjs');
 const mobile = require('is-mobile');
+//const ct = require('countries-and-timezones').default;
+const countryCodes = require('country-codes-list');
 
 export default {
 	components: {
@@ -117,6 +122,11 @@ export default {
 				label: 'Tags',
 				field: 'tags',
 				heading: ''
+			},
+			{
+				label: 'Phone Number',
+				field: 'phone_number',
+				heading: ''
 			}
 		],
 		csvContacts: [],
@@ -124,7 +134,12 @@ export default {
 		page: 1,
 		cookieItem: 'telloe_contacts_banner',
 		isContactFormTab: true,
-		dayjs: dayjs
+		dayjs: dayjs,
+		numbersOnly: numbersOnly,
+		getUnicodeFlagIcon: null,
+		timezoneAreaCode : 'AU',
+		editTimezoneAreaCode : 'AU',
+		editContactDialCode : null
 	}),
 
 	computed: {
@@ -195,12 +210,11 @@ export default {
 					});
 				}
 			}
-
 			conversation.member.contact = this.selectedContact;
 			this.selectedContact.ready = true;
 
 			return conversation;
-		}
+		},
 	},
 
 	watch: {
@@ -216,7 +230,30 @@ export default {
 
 		page: function () {
 			this.getData();
-		}
+		},
+
+		'newContact.phone_number': function (value) {
+			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
+			Object.keys(countryList).forEach ( key => {
+				let countryCode = value == key ? countryList[key] : '';
+				console.log(countryCode);
+				if(!isEmpty(countryCode)){
+					this.newContact.dial_code = '+'+value;
+					this.timezoneAreaCode = countryCode;
+				}
+			});
+		},
+
+		'clonedContact.phone_number': function (value) {
+			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
+			Object.keys(countryList).forEach ( key => {
+				let countryCode = value == key ? countryList[key] : '';
+				if(!isEmpty(countryCode)){
+					this.editContactDialCode = '+'+value;
+					this.editTimezoneAreaCode = countryCode;
+				}
+			});
+		},
 	},
 
 	created() {
@@ -240,6 +277,8 @@ export default {
 		// this.$root.socket.on('invite_token', invite_token => {
 		// 	if (invite_token) this.getContactFromInviteToken(invite_token);
 		// });
+		this.getUnicodeFlagIcon = getUnicodeFlagIcon;
+		this.newContact.dial_code = '+61'; // default dial code set
 	},
 
 	mounted() {
@@ -291,12 +330,14 @@ export default {
 				let contacts = [];
 				this.csvContacts.forEach(contact => {
 					if (contact[this.csvMappings[0].heading]) {
-						let contactTags = contact[this.csvMappings[3].heading].split(',');
+						let contactTags = this.csvMappings[3].heading ? contact[this.csvMappings[3].heading].split(',') : '';
+						let number = this.csvMappings[4].heading ? contact[this.csvMappings[4].heading] : '';
 						contacts.push({
 							email: contact[this.csvMappings[0].heading],
 							first_name: contact[this.csvMappings[1].heading],
 							last_name: contact[this.csvMappings[2].heading],
-							tags: contactTags
+							tags: contactTags,
+							phone_number: number
 						});
 					}
 				});
@@ -326,9 +367,15 @@ export default {
 					delete lines[0];
 					let csvContacts = [];
 					lines.forEach(line => {
+						line = line.replaceAll(' ','');
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-						if (regexLine) {
-							regexLine[3] = regexLine[3].replaceAll('"', '');
+						if(regexLine){
+							if(regexLine[3]){
+								regexLine[3] = regexLine[3].replaceAll('"', '');
+							}
+							if(regexLine[4]){
+								regexLine[4] = regexLine[4].replaceAll('+', '');
+							}
 							csvContacts.push(regexLine);
 						}
 					});
@@ -340,9 +387,13 @@ export default {
 
 		contactAction(action, contact) {
 			this.selectedContact = contact;
+			
 			switch (action) {
 				case 'Edit':
 					this.clonedContact = JSON.parse(JSON.stringify(contact));
+					console.log(this.clonedContact);
+					console.log(this.clonedContact.phone_number);
+					this.checkNumberCountryCode(this.clonedContact.phone_number);
 					this.$refs.editModal.show();
 					break;
 				case 'Delete':
@@ -448,6 +499,19 @@ export default {
 				});
 				this.addContact = false;
 			}
+		},
+
+		checkNumberCountryCode(value){
+			const phoneNumber = value;
+			let first2Str = String(phoneNumber).slice(0, 2); 
+			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
+			Object.keys(countryList).forEach ( key => {
+				let countryCode = Number(first2Str) == key ? countryList[key] : '';
+				if(!isEmpty(countryCode)){
+					this.editContactDialCode = '+'+Number(first2Str);
+					this.editTimezoneAreaCode = countryCode;
+				}
+			});
 		}
 	}
 };

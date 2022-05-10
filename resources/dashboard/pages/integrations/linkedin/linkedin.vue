@@ -5,7 +5,7 @@
 		</div>
 		<div class="h-20 lg:hidden block" />
 
-		<div v-if="activities.length == 0" class="absolute-center text-center w-full">No data available yet. Please come back later.</div>
+		<div v-if="linkedActivities.length == 0" class="absolute-center text-center w-full">No data available yet. Please come back later.</div>
 		<div v-else class="page-integrations">
 			<div class="mx-auto">
 				<div class="flex flex-col md:flex-row justify-between items-center mt-4">
@@ -82,7 +82,7 @@
 
 				<div class="h-full pt-16 pb-8 px-4 md:px-7">
 					<div class="overflow-x-scroll w-full h-full pb-8">
-						<table class="table-auto w-full">
+						<table v-if="activities.length" class="table-auto w-full">
 							<thead class="mb-8">
 								<tr class="whitespace-nowrap">
 									<template v-for="(column, i) in columnList">
@@ -92,22 +92,18 @@
 											</div>
 										</th>
 									</template>
-									<!-- <th class="w-50 block cursor-pointer flex items-center justify-center" @click="isShrink = !isShrink">
-										<template v-if="isShrink"><ExpandIcon /></template>
-										<template v-else><CompressIcon /></template>
-									</th> -->
 									<th></th>
 								</tr>
 							</thead>
 							<paginate tag="tbody" name="linkedin" :list="activities" :per="10" ref="paginate">
 								<template v-for="item in paginated('linkedin')">
-									<tr v-if="inQuery(item)" class="border-b hover:bg-gray-100" :key="item.id" :data-id="item.id">
+									<tr class="border-b hover:bg-gray-100" :key="item.id" :data-id="item.id">
 										<td v-if="columnList[0].isEnabled" class="text-sm py-3">
 											<div class="w-250">
 												<p class="truncate text-primary cursor-pointer hover:underline font-bold text-md" @click="goToMember(item)">
-													{{ item.data.author.name }}
+													{{ item.data.shared_post ? item.data.shared_post_details.author.name : item.data.author.name }}
 												</p>
-												<p class="text-gray-400 truncate text-xs">{{ item.data.author_details.headline }}</p>
+												<p class="text-gray-400 truncate text-xs">{{ item.data.shared_post ? item.data.shared_post_details.author_details.headline : item.data.author_details.headline }}</p>
 											</div>
 										</td>
 										<td v-if="columnList[1].isEnabled" class="text-sm pr-2 py-3">
@@ -129,9 +125,9 @@
 										<td v-if="columnList[6].isEnabled" class="relative hover-trigger text-center">
 											<a target="_blank" :href="item.linkedinProfile" class="inline-block">
 												<LinkedinIcon />
-												<div class="text-sm absolute text-left bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
+												<a target="_blank" :href="`https://www.linkedin.com/in/${item.data.author.username}`" class="text-sm absolute text-left bg-white py-2 px-3 rounded-lg shadow-lg shadow-black text-black w-300 hover-target z-10">
 													{{ item.data.author.username }}
-												</div>
+												</a>
 											</a>
 										</td>
 
@@ -152,6 +148,10 @@
 								</template>
 							</paginate>
 						</table>
+						<div v-else class="text-sm text-center py-5 text-muted">
+							No search results found for <strong>{{ searchInList }}</strong
+							>.
+						</div>
 					</div>
 				</div>
 
