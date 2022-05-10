@@ -143,7 +143,7 @@ class VideoMessageService
 
         $userVideos = [];
         foreach ($request->input('user_video_ids') as $userVideoId) {
-            $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->firstOrFail();
+            $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->first();
             $userVideos[] = $userVideo;
         }
 
@@ -151,7 +151,7 @@ class VideoMessageService
             VideoMessageVideo::updateOrCreate(
                 [
                     'video_message_id' => $videoMessage->id,
-                    'user_video_id' => $userVideo->id,
+                    'user_video_id' => $userVideo->id ?? null,
                 ], 
                 [
                     'order' => $key

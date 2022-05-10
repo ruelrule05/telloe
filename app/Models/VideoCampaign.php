@@ -17,7 +17,7 @@ class VideoCampaign extends BaseModel
 
     public function videoCampaignVideos()
     {
-        return $this->hasMany(VideoCampaignVideo::class)->latest();
+        return $this->hasMany(VideoCampaignVideo::class)->orderBy('order', 'ASC');
     }
     public function videoMessages()
     {

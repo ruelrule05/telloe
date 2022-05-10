@@ -37,7 +37,7 @@
 									</template>
 								</VueDropdown>
 
-								<VideoPlayer v-if="(videoCampaignData.userVideos.filter(x => (x.id ? true : false)) || []).length > 0" :videos="videoCampaignData.userVideos.filter(x => (x.id ? true : false))" @totalDuration="totalDuration = $event"></VideoPlayer>
+								<VideoPlayer v-if="(videoCampaignData.userVideos.filter(x => (x && x.id ? true : false)) || []).length > 0" :videos="videoCampaignData.userVideos.filter(x => (x && x.id ? true : false))" @totalDuration="totalDuration = $event"></VideoPlayer>
 							</div>
 
 							<div class="h-28 flex p-2 gap-2 overflow-hidden border-t bg-gray-100 w-full">
@@ -52,7 +52,7 @@
 								<div class="flex-grow overflow-x-auto">
 									<draggable handle=".user-video" direction="h" :list="videoCampaignData.userVideos" class="h-full w-full flex gap-2">
 										<template v-for="(userVideo, userVideoIndex) in videoCampaignData.userVideos">
-											<div v-if="userVideo.id" :key="`userVideo-${userVideo.id}`">
+											<div v-if="userVideo && userVideo.id" :key="`userVideo-${userVideoIndex}`">
 												<div class="user-video cursor-move" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 													<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full p-1.5 bg-black bg-opacity-50 text-white" @click="videoCampaignData.userVideos.splice(userVideoIndex, 1)">
 														<CloseIcon class="h-2 w-2 transform scale-120 fill-current"></CloseIcon>
@@ -143,7 +143,7 @@
 
 							<div class="mb-4">
 								<label>Contact Tags</label>
-								<multiselect v-model="videoCampaignData.contactTags" ref="selectedContacts" label="name" :searchable="false" track-by="email" :options="contactTags" :showLabels="false" placeholder="Select contact tags" multiple clearOnSelect>
+								<multiselect v-model="videoCampaignData.contact_tags" ref="selectedContacts" label="name" :searchable="false" track-by="value" :options="contact_tags" :showLabels="false" placeholder="Select contact tags" multiple clearOnSelect>
 									<template slot="singleLabel" slot-scope="{ option }">{{ option.name }}</template>
 									<div slot="noResult" class="text-muted text-sm text-center">No tag found.</div>
 								</multiselect>
@@ -161,7 +161,7 @@
 				libraryInput($event);
 				showLibrary = false;
 			"
-			:selectedUserVideos="videoCampaignData.userVideos.filter(x => (x.id ? true : false))"
+			:selectedUserVideos="videoCampaignData.userVideos.filter(x => (x && x.id ? true : false))"
 		></Library>
 	</div>
 </template>
@@ -179,7 +179,6 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import VueDropdown from '../../../components/vue-dropdown/vue-dropdown.vue';
 import Library from '../video-messages/library.vue';
-import axios from 'axios';
 const gifshot = require('../../../js/plugins/gifshot.min.js');
 import { GifReader } from 'omggif';
 const humanizeDuration = require('humanize-duration');
@@ -193,6 +192,8 @@ const S3 = new AWS.S3({
 	apiVersion: '2006-03-01',
 	params: { Bucket: process.env.MIX_AWS_BUCKET }
 });
+
+import { mapActions } from 'vuex';
 
 export default {
 	props: {
@@ -229,26 +230,32 @@ export default {
 			});
 		},
 
-		contactTags() {
-			let contactTags = [];
+		contact_tags() {
+			let contact_tags = [];
 			this.contacts.forEach(contact => {
 				contact.tags.forEach(tag => {
-					let exists = contactTags.find(x => x == tag);
+					let exists = contact_tags.find(x => x == tag);
 					if (!exists) {
-						contactTags.push({
+						contact_tags.push({
 							name: tag,
 							value: tag
 						});
 					}
 				});
 			});
-			return contactTags;
+			return contact_tags;
 		}
 	},
 
 	created() {
 		if (this.videoCampaign) {
-			this.videoCampaignData = JSON.parse(JSON.stringify(this.videoCampaign));
+			let videoCampaignData = JSON.parse(JSON.stringify(this.videoCampaign));
+			videoCampaignData.contact_tags = videoCampaignData.contact_tags
+				.filter(x => x)
+				.map(x => {
+					return { name: x, value: x };
+				});
+			this.videoCampaignData = videoCampaignData;
 
 			if (this.videoCampaignData.service_id && !this.services.find(x => x.id == this.videoCampaignData.service_id)) {
 				this.videoCampaignData.service_id = null;
@@ -260,13 +267,18 @@ export default {
 				description: '',
 				initial_message: {},
 				service_id: null,
-				contactTags: [],
+				contact_tags: [],
 				userVideos: []
 			};
 		}
 	},
 
 	methods: {
+		...mapActions({
+			storeVideoCampaign: 'video_campaigns/store',
+			updateVideoCampaign: 'video_campaigns/update'
+		}),
+
 		dataURLtoFile(dataurl, filename) {
 			var arr = dataurl.split(','),
 				mime = arr[0].match(/:(.*?);/)[1],
@@ -420,10 +432,26 @@ export default {
 			}
 		},
 
+		async update() {
+			this.status = 'Processing...';
+			let data = JSON.parse(JSON.stringify(this.videoCampaignData));
+			data.contact_tags = data.contact_tags.map(x => x.value);
+			let userVideo = data.userVideos.find(x => (x || {}).id);
+			data.initial_message = await this.generateInitialMessage(this.videoCampaignData);
+			data.user_video_ids = data.userVideos.map(x => (x ? x.id : 'blank'));
+			if (userVideo) {
+				data.link_preview = await this.generateLinkPreview(userVideo.gif, this.totalDuration);
+			}
+			this.status = 'Finalizing...';
+			await this.updateVideoCampaign(data);
+			this.status = null;
+			this.$emit('close');
+		},
+
 		async store() {
 			this.status = 'Processing...';
 			let data = JSON.parse(JSON.stringify(this.videoCampaignData));
-			data.contactTags = data.contactTags.map(x => x.value);
+			data.contact_tags = data.contact_tags.map(x => x.value);
 			let userVideo = data.userVideos.find(x => x.id);
 			data.initial_message = await this.generateInitialMessage(this.videoCampaignData);
 			data.user_video_ids = data.userVideos.map(x => x.id || 'blank');
@@ -431,7 +459,9 @@ export default {
 				data.link_preview = await this.generateLinkPreview(userVideo.gif, this.totalDuration);
 			}
 			this.status = 'Finalizing...';
-			axios.post('/video_campaigns', data);
+			await this.storeVideoCampaign(data);
+			this.status = null;
+			this.$emit('close');
 		},
 
 		setInitialMessage() {
