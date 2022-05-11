@@ -25,7 +25,7 @@
 				</button>
 			</div>
 			<div class="lg:col-span-4 col-span-12 order-1 lg:order-2 lg:px-0 px-8 lg:mb-0 mb-6" >
-				<img class="w-full h-full object-cover" src="images/gifs/header_placeholder.gif">
+				<img class="w-full h-full object-cover cursor-pointer" src="images/gifs/header_placeholder.gif" @click="openVideoDemo(); changeCursorStatus('onWatchVideo')" @mouseover="changeCursorStatus('onWatchVideo')" @mouseleave="changeCursorStatus('browsing')">
 			</div>
 		</div>
 	</div>
