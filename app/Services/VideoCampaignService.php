@@ -37,6 +37,8 @@ class VideoCampaignService
             'user_video_ids' => 'required|array',
             'link_preview' => 'nullable|string|max:255',
             'linkedin_user' => 'nullable|string',
+            'email_template' => 'nullable|string',
+
         ]);
         $authUser = Auth::user();
         if ($request->input('service_id')) {
@@ -53,7 +55,7 @@ class VideoCampaignService
             }
         }
 
-        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags');
+        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags', 'email_template');
         $data['user_id'] = $authUser->id;
         $videoCampaign = VideoCampaign::create($data);
 
@@ -108,7 +110,7 @@ class VideoCampaignService
             }
         }
 
-        return response()->json($videoCampaign->load('videoMessages.videos.userVideo', 'videoMessages.contact', 'videoMessages.videoMessageLikes', 'videoMessages.videos.userVideo', 'videoCampaignVideos.userVideo'));
+        return response()->json($videoCampaign->load('videoMessages.videos.userVideo', 'videoMessages.videoMessageLikes', 'videoMessages.contact', 'videoMessages.videos.userVideo', 'videoCampaignVideos.userVideo'));
     }
 
     public static function update(VideoCampaign $videoCampaign, Request $request)
@@ -126,6 +128,7 @@ class VideoCampaignService
             'user_video_ids' => 'required|array',
             'link_preview' => 'nullable|string|max:255',
             'linkedin_user' => 'nullable|string',
+            'email_template' => 'nullable|string',
         ]);
         if ($request->input('service_id')) {
             Service::where('id', $request->input('service_id'))->where('user_id', $authUser->id)->firstOrFail();
@@ -142,7 +145,7 @@ class VideoCampaignService
         }
         VideoCampaignVideo::where('video_campaign_id', $videoCampaign->id)->delete();
 
-        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags');
+        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags', 'email_template');
         $data['user_id'] = $authUser->id;
         $videoCampaign->update($data);
 
@@ -202,7 +205,7 @@ class VideoCampaignService
             }
         }
 
-        return response()->json($videoCampaign->load('videoMessages.videos.userVideo', 'videoMessages.contact', 'videoMessages.videoMessageLikes', 'videoMessages.videos.userVideo', 'videoCampaignVideos.userVideo'));
+        return response()->json($videoCampaign->load('videoMessages.videos.userVideo', 'videoMessages.videoMessageLikes', 'videoMessages.contact', 'videoMessages.videos.userVideo', 'videoCampaignVideos.userVideo'));
     }
 
     protected static function generateLinkPreview($message)

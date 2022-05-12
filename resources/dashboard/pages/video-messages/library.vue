@@ -234,7 +234,7 @@
 									</div>
 								</div>
 								<template v-for="userVideo in userVideos">
-									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
+									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x && x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 										<div class="backdrop"></div>
 										<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
 											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoMessageAction(userVideo)">
@@ -268,7 +268,7 @@
 								:class="{ disabled: !selectedVideos.length }"
 								type="button"
 								@click="
-									$emit('input', selectedVideos);
+									$emit('input', single ? selectedVideos[0] : selectedVideos);
 									reset();
 								"
 							>
@@ -340,6 +340,10 @@ export default {
 		selectedUserVideos: {
 			type: Array,
 			default: () => []
+		},
+		single: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -394,6 +398,7 @@ export default {
 	},
 
 	mounted() {
+		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
 			if (this.$refs.videoPlayback.duration == Infinity) {
 				this.$refs.videoPlayback.currentTime = 1e101;
@@ -409,7 +414,7 @@ export default {
 				this.duration = this.$refs.videoPlayback.duration * 1000;
 			}
 		};
-		const selectInput = document.querySelector('.multiselect__input')
+		const selectInput = document.querySelector('.multiselect__input');
 		if (selectInput) {
 			selectInput.setAttribute('maxlength', '20');
 		}
@@ -437,7 +442,6 @@ export default {
 					type: this.blobs[0].type
 				});
 				this.source = source;
-				console.log(this.source.type);
 				this.previewSource = URL.createObjectURL(this.source);
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;
@@ -600,11 +604,16 @@ export default {
 		},
 
 		toggleSelectedVideo(userVideo) {
-			let index = this.selectedVideos.findIndex(x => x.id == userVideo.id);
-			if (index > -1) {
-				this.selectedVideos.splice(index, 1);
-			} else {
+			if (this.single) {
+				this.selectedVideos = [];
 				this.selectedVideos.push(userVideo);
+			} else {
+				let index = this.selectedVideos.findIndex(x => x.id == userVideo.id);
+				if (index > -1) {
+					this.selectedVideos.splice(index, 1);
+				} else {
+					this.selectedVideos.push(userVideo);
+				}
 			}
 		},
 
@@ -842,7 +851,11 @@ export default {
 			if (response) {
 				this.selectedVideos.push(response.data);
 			}
-			this.$emit('input', this.selectedVideos);
+			if (this.single) {
+				this.$emit('input', this.selectedVideos[0]);
+			} else {
+				this.$emit('input', this.selectedVideos);
+			}
 			this.reset();
 		},
 

@@ -139,21 +139,18 @@ class VideoMessageService
             Contact::where('id', $request->input('contact_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
 
-        VideoMessageVideo::where('video_message_id', $videoMessage->id)->whereNotIn('user_video_id', $request->input('user_video_ids'))->delete();
-
         $userVideos = [];
         foreach ($request->input('user_video_ids') as $userVideoId) {
             $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->first();
             $userVideos[] = $userVideo;
         }
+        VideoMessageVideo::where('video_message_id', $videoMessage->id)->delete();
 
         foreach ($userVideos as $key => $userVideo) {
-            VideoMessageVideo::updateOrCreate(
+            VideoMessageVideo::create(
                 [
                     'video_message_id' => $videoMessage->id,
                     'user_video_id' => $userVideo->id ?? null,
-                ], 
-                [
                     'order' => $key
                 ]
             );

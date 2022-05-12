@@ -21,8 +21,10 @@ const mutations = {
 	},
 
 	update(state, data) {
-		let booking = state.index.find(x => x.id == data.id);
-		if (booking) Object.assign(booking, data);
+		let index = state.index.findIndex(x => x.id == data.id);
+		if (index > -1) {
+			state.index[index] = data;
+		}
 	},
 
 	delete(state, data) {

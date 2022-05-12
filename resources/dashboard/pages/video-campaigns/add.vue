@@ -88,6 +88,10 @@
 								<textarea class="input resize-none" rows="3" v-model="videoCampaignData.description"></textarea>
 							</div>
 							<div class="mb-4">
+								<label>Email template</label>
+								<textarea class="input resize-none" rows="3" v-model="videoCampaignData.email_template"></textarea>
+							</div>
+							<div class="mb-4">
 								<label>Initial Message</label>
 								<input type="file" class="hidden" ref="initialMessageFile" @change="addFile" />
 								<div v-if="videoCampaignData.initial_message.message || videoCampaignData.initial_message.source" class="flex items-end">
@@ -438,13 +442,16 @@ export default {
 			data.contact_tags = data.contact_tags.map(x => x.value);
 			let userVideo = data.userVideos.find(x => (x || {}).id);
 			data.initial_message = await this.generateInitialMessage(this.videoCampaignData);
-			data.user_video_ids = data.userVideos.map(x => (x ? x.id : 'blank'));
+			data.user_video_ids = data.userVideos.map(x => (x && x.id ? x.id : 'blank'));
 			if (userVideo) {
 				data.link_preview = await this.generateLinkPreview(userVideo.gif, this.totalDuration);
 			}
 			this.status = 'Finalizing...';
-			await this.updateVideoCampaign(data);
+			let response = await this.updateVideoCampaign(data);
 			this.status = null;
+			if (response) {
+				this.$emit('update', response);
+			}
 			this.$emit('close');
 		},
 

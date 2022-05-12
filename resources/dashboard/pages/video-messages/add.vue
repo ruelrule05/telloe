@@ -28,8 +28,8 @@
 					<div class="flex-grow w-full h-full overflow-hidden">
 						<div class="flex flex-col w-full h-full">
 							<div class="bg-black flex-grow relative">
-								<div v-if="(videoMessageData.userVideos || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="addVideo()">+ Add video</div>
-								<VideoPlayer v-else :videos="videoMessageData.userVideos" @totalDuration="$emit('totalDuration', $event)"></VideoPlayer>
+								<div v-if="(videoMessageData.userVideos.filter(x => (x && x.id ? true : false)) || []).length == 0" class="absolute-center py-1 px-3 text-sm rounded-full border border-white text-white cursor-pointer hover:bg-opacity-20 hover:bg-white" @click="addVideo()">+ Add video</div>
+								<VideoPlayer v-else :videos="videoMessageData.userVideos.filter(x => (x && x.id ? true : false))" @totalDuration="$emit('totalDuration', $event)"></VideoPlayer>
 							</div>
 
 							<div class="h-28 flex p-2 gap-2 overflow-hidden border-t bg-gray-100 w-full">
@@ -40,8 +40,8 @@
 								</div>
 
 								<div class="flex-grow overflow-x-auto">
-									<draggable handle=".user-video" direction="h" :list="videoMessageData.userVideos" class="h-full w-full flex gap-2">
-										<div v-for="(userVideo, userVideoIndex) in videoMessageData.userVideos" :key="`userVideo-${userVideo.id}`">
+									<draggable handle=".user-video" direction="h" :list="videoMessageData.userVideos.filter(x => (x && x.id ? true : false))" class="h-full w-full flex gap-2">
+										<div v-for="(userVideo, userVideoIndex) in videoMessageData.userVideos.filter(x => (x && x.id ? true : false))" :key="`userVideo-${userVideo.id}`">
 											<div class="user-video cursor-move" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 												<div class="absolute top-0.5 right-0.5 cursor-pointer rounded-full p-1.5 bg-black bg-opacity-50 text-white" @click="$emit('removeVideo', userVideoIndex)">
 													<CloseIcon class="h-2 w-2 transform scale-120 fill-current"></CloseIcon>
@@ -173,7 +173,7 @@ export default {
 
 	data: () => ({
 		videoMessageData: null,
-		retainMessage : '',
+		retainMessage: '',
 		bookingType: 'service'
 	}),
 
@@ -238,7 +238,7 @@ export default {
 				this.videoMessageData.contact_id = this.contactID;
 			}
 		}
-		
+
 		this.isRetainFormData = this.$root.auth.retain_form_data;
 		if (this.isRetainFormData) {
 			this.retainMessage = localStorage.getItem('videoMessageMessage');
