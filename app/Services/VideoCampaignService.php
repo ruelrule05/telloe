@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Contact;
 use App\Models\Conversation;
+use App\Models\Service;
 use App\Models\UserVideo;
 use App\Models\VideoCampaign;
 use App\Models\VideoCampaignVideo;
