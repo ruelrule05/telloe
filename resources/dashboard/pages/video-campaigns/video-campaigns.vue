@@ -758,10 +758,12 @@ export default {
 						let regex = /[^{{}}]+(?=})/g;
 						let greeting = this.videoCampaign.email_template;
 						let matches = this.videoCampaign.email_template.match(regex);
-						matches.forEach(match => {
-							let prop = videoMessage.contact[match.trim()] || '';
-							greeting = greeting.replace(`{{${match}}}`, prop);
-						});
+						if (matches) {
+							matches.forEach(match => {
+								let prop = videoMessage.contact[match.trim()] || '';
+								greeting = greeting.replace(`{{${match}}}`, prop);
+							});
+						}
 
 						element += `<tr><td style="font-size: 13px; font-family: 'Arial', sans-serif">${this.nl2br(greeting.trim())}</td></tr>`;
 					}
