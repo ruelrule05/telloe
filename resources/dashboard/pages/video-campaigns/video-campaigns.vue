@@ -752,7 +752,7 @@ export default {
 					let height = img.height * ratio;
 					let timestamp = new Date().valueOf();
 
-					let element = `<table>`;
+					let element = `<table style="border: 0">`;
 
 					if (message) {
 						let regex = /[^{{}}]+(?=})/g;
@@ -763,7 +763,7 @@ export default {
 							greeting = greeting.replace(`{{${match}}}`, prop);
 						});
 
-						element += `<tr><td>${greeting.trim()}</td></tr>`;
+						element += `<tr><td style="font-size: 13px; font-family: 'Arial', sans-serif">${this.nl2br(greeting.trim())}</td></tr>`;
 					}
 					element += ` <tr> <td> <div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr>`;
 					element += `</table>`;
@@ -773,6 +773,14 @@ export default {
 				};
 				img.src = videoMessage.link_preview;
 			});
+		},
+
+		nl2br(str, is_xhtml) {
+			if (typeof str === 'undefined' || str === null) {
+				return '';
+			}
+			var breakTag = is_xhtml || typeof is_xhtml === 'undefined' ? '<br />' : '<br>';
+			return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 		},
 
 		async shareVideoMessage(action, videoMessage) {
