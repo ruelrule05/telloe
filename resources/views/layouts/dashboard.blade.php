@@ -144,7 +144,7 @@
 
 				<div class="dashboard-content position-relative h-full overflow-auto flex flex-col" ref="dashboardContent">
 
-					<div class="flex-grow">
+					<div class="flex-grow relative">
 						<router-view></router-view>
 					</div>
 					

@@ -42,6 +42,7 @@ class VideoCampaignService
 
         ]);
         $authUser = Auth::user();
+
         if ($request->input('service_id')) {
             Service::where('id', $request->input('service_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
@@ -69,7 +70,13 @@ class VideoCampaignService
         }
 
         if ($request->input('contact_tags')) {
-            $contacts = Contact::where('user_id', $authUser->id)->whereJsonContains('tags', $request->input('contact_tags'))->get();
+            $contacts = Contact::where('user_id', $authUser->id);
+            $contacts = $contacts->where(function ($query) use ($request) {
+                foreach ($request->input('contact_tags') as $tag) {
+                    $query->orWhereJsonContains('tags', $tag);
+                }
+            });
+            $contacts = $contacts->get();
             foreach ($contacts as $contact) {
                 if (! VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id',  $videoCampaign->id)->exists()) {
                     $shortId = $authUser->id . Str::random(6);
@@ -85,6 +92,15 @@ class VideoCampaignService
                     $data['is_active'] = true;
                     $data['short_id'] = $shortId;
                     $data['video_campaign_id'] = $videoCampaign->id;
+
+                    preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
+                    foreach ($matches[0] ?? [] as $match) {
+                        $data['title'] = str_replace("{{{$match}}}", $contact->$match, $data['title']);
+                    }
+                    preg_match_all('/[^{{}}]+(?=})/', $data['description'], $matches);
+                    foreach ($matches[0] ?? [] as $match) {
+                        $data['description'] = str_replace("{{{$match}}}", $contact->$match, $data['description']);
+                    }
 
                     if (isset($data['initial_message']['message'])) {
                         $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
@@ -159,7 +175,13 @@ class VideoCampaignService
         }
 
         if ($request->input('contact_tags')) {
-            $contacts = Contact::where('user_id', $authUser->id)->whereJsonContains('tags', $request->input('contact_tags'))->get();
+            $contacts = Contact::where('user_id', $authUser->id);
+            $contacts = $contacts->where(function ($query) use ($request) {
+                foreach ($request->input('contact_tags') as $tag) {
+                    $query->orWhereJsonContains('tags', $tag);
+                }
+            });
+            $contacts = $contacts->get();
 
             $videoMessages = VideoMessage::where('video_campaign_id', $videoCampaign->id)->get()->pluck('id')->toArray();
             VideoMessageVideo::whereIn('video_message_id', $videoMessages)->delete();
@@ -180,6 +202,14 @@ class VideoCampaignService
                     $data['is_active'] = true;
                     $data['short_id'] = $shortId;
                     $data['video_campaign_id'] = $videoCampaign->id;
+                    preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
+                    foreach ($matches[0] ?? [] as $match) {
+                        $data['title'] = str_replace("{{{$match}}}", $contact->$match, $data['title']);
+                    }
+                    preg_match_all('/[^{{}}]+(?=})/', $data['description'], $matches);
+                    foreach ($matches[0] ?? [] as $match) {
+                        $data['description'] = str_replace("{{{$match}}}", $contact->$match, $data['description']);
+                    }
 
                     if (isset($data['initial_message']['message'])) {
                         $linkPreview = self::generateLinkPreview($data['initial_message']['message']);

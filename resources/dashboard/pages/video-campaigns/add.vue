@@ -211,7 +211,7 @@ export default {
 	data: () => ({
 		app_url: process.env.MIX_APP_URL,
 		showLibrary: false,
-		actions: ['Blank video', 'Choose from library'],
+		actions: ['Placeholder video', 'Recording Type'],
 		videoCampaignData: null,
 		retainMessage: '',
 		uploadProgress: 0,
@@ -238,7 +238,7 @@ export default {
 			let contact_tags = [];
 			this.contacts.forEach(contact => {
 				contact.tags.forEach(tag => {
-					let exists = contact_tags.find(x => x == tag);
+					let exists = contact_tags.find(x => x.value == tag);
 					if (!exists) {
 						contact_tags.push({
 							name: tag,
@@ -487,7 +487,7 @@ export default {
 
 		dropdownAction(action) {
 			switch (action) {
-				case 'Blank video':
+				case 'Placeholder video':
 					this.videoCampaignData.userVideos.push({});
 					break;
 				default:

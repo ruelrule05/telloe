@@ -1,5 +1,5 @@
 <template>
-	<div class="relative h-screen overflow-auto">
+	<div class="absolute w-full h-screen top-0 left-0 overflow-auto bg-white">
 		<div v-if="status" class="absolute top-0 left-0 w-full h-full z-50 bg-white border">
 			<div class="absolute-center text-center w-full">
 				<div class="absolute-center w-3/12">
@@ -33,7 +33,7 @@
 		></Library>
 		<Library v-if="pickVideo" @close="pickVideo = null" :selectedUserVideos="[]" @input="videoPicked" :single="true"></Library>
 
-		<div v-show="!adding" class="h-full relative flex flex-col">
+		<div v-show="!adding && !editVideoMessage" class="h-full relative flex flex-col">
 			<div>
 				<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
 					<div class="ml-7 lg:ml-0">VIDEO CAMPAIGNS</div>
@@ -89,7 +89,7 @@
 						</template>
 					</div>
 
-					<div class="py-6 border-b mb-4 mt-8">
+					<div class="py-6 border-b mt-8">
 						<h6 class="text-muted text-sm">GENERATED VIDEOS</h6>
 					</div>
 
@@ -108,7 +108,7 @@
 					</div>
 
 					<div v-else v-for="vMessage in videoCampaign.video_messages" :key="vMessage.id">
-						<div class="flex items-start justify-between contact-row pt-2">
+						<div class="flex items-start justify-between contact-row pt-7">
 							<div class="flex-grow flex items-center gap-3">
 								<div class="flex gap-2 h-24 relative">
 									<template v-for="(video, videoIndex) in vMessage.videos">
@@ -121,7 +121,15 @@
 											</div>
 										</template>
 										<div v-else :key="`video-${videoIndex}`" class="relative">
-											<AddVideoIcon :key="`video-icon-${video.id}`" class="absolute left-0 -top-5 w-5 h-5 cursor-pointer" @click.native="$set(video, 'quickRecord', true)"></AddVideoIcon>
+											<AddVideoIcon
+												:key="`video-icon-${video.id}`"
+												class="absolute left-0 -top-5 w-5 h-5 cursor-pointer"
+												@click.native="
+													disableQuickRecorders();
+													$set(video, 'quickRecord', true);
+													scrollIntoView(video);
+												"
+											></AddVideoIcon>
 											<div
 												class="user-video border border-gray-300 cursor-pointer hover:border-black"
 												:class="[video.quickRecord ? 'border-blue-600 border-solid' : 'border-dashed']"
@@ -139,6 +147,7 @@
 											</div>
 											<QuickRecorder
 												v-if="video.quickRecord"
+												:ref="`recorder-${video.id}`"
 												@cancel="video.quickRecord = false"
 												@record="
 													$set(video, 'quickRecord', false);
@@ -248,6 +257,7 @@ export default {
 	computed: {
 		...mapState({
 			videoCampaigns: state => state.video_campaigns.index,
+			services: state => state.services.index,
 			contacts: state => state.contacts.index,
 			ready: state => state.video_campaigns.ready
 		}),
@@ -288,6 +298,7 @@ export default {
 	created() {
 		this.getContacts({ nopaginate: true });
 		this.getVideoCampaigns();
+		this.getServices();
 	},
 
 	methods: {
@@ -296,10 +307,43 @@ export default {
 			getVideoCampaigns: 'video_campaigns/index',
 			updateVideoMessage: 'video_messages/update',
 			deleteVideoMessage: 'video_messages/delete',
-			storeUserVideo: 'user_videos/store'
+			storeUserVideo: 'user_videos/store',
+			getServices: 'services/index'
 		}),
 
+		disableQuickRecorders() {
+			if (this.videoCampaign) {
+				this.videoCampaign.video_messages.forEach(vMessage => {
+					vMessage.videos.forEach(video => {
+						if (!video.user_video) {
+							this.$set(video, 'quickRecord', false);
+						}
+					});
+				});
+			}
+		},
+
+		scrollIntoView(video) {
+			this.$nextTick(() => {
+				let videoElement = this.$refs[`recorder-${video.id}`];
+				if (videoElement[0]) {
+					videoElement[0].$el.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });
+				}
+			});
+		},
+
 		async quickVideoStore(e, video, videoMessage, index) {
+			let vMessageIndex = this.videoCampaign.video_messages.findIndex(x => x.id == videoMessage.id);
+			let nextIndex = vMessageIndex + 1;
+			if (this.videoCampaign.video_messages[nextIndex]) {
+				let nextVideo = this.videoCampaign.video_messages[nextIndex].videos.find(x => !x.user_video);
+				if (nextVideo) {
+					setTimeout(() => {
+						this.$set(nextVideo, 'quickRecord', true);
+					}, 100);
+				}
+			}
+
 			let { gif, thumbnail } = await this.createGif(e.dimensions, e.source);
 			let { S3Source, S3Gif, S3Thumbnail } = await this.uploadToS3(e.source, gif, thumbnail);
 
