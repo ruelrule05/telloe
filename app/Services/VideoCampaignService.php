@@ -59,6 +59,7 @@ class VideoCampaignService
 
         $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags', 'email_template');
         $data['user_id'] = $authUser->id;
+
         $videoCampaign = VideoCampaign::create($data);
 
         foreach ($userVideos as $key => $userVideo) {
@@ -103,6 +104,10 @@ class VideoCampaignService
                     }
 
                     if (isset($data['initial_message']['message'])) {
+                        preg_match_all('/[^{{}}]+(?=})/', $data['initial_message']['message'], $matches);
+                        foreach ($matches[0] ?? [] as $match) {
+                            $data['initial_message']['message'] = str_replace("{{{$match}}}", $contact->$match, $data['initial_message']['message']);
+                        }
                         $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
                         $data['initial_message']['link_preview'] = $linkPreview;
                     }
@@ -163,6 +168,7 @@ class VideoCampaignService
         VideoCampaignVideo::where('video_campaign_id', $videoCampaign->id)->delete();
 
         $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags', 'email_template');
+
         $data['user_id'] = $authUser->id;
         $videoCampaign->update($data);
 
@@ -183,46 +189,52 @@ class VideoCampaignService
             });
             $contacts = $contacts->get();
 
-            $videoMessages = VideoMessage::where('video_campaign_id', $videoCampaign->id)->get()->pluck('id')->toArray();
-            VideoMessageVideo::whereIn('video_message_id', $videoMessages)->delete();
-
             foreach ($contacts as $contact) {
                 $videoMessage =  VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id',  $videoCampaign->id)->first();
+
+                $data = $request->only('title', 'description', 'initial_message', 'service_id', 'link_preview');
+                $data['contact_id'] = $contact->id;
+                $data['user_id'] = $authUser->id;
+                $data['uuid'] = Str::uuid();
+                $data['status'] = 'draft';
+                $data['is_active'] = true;
+                $data['video_campaign_id'] = $videoCampaign->id;
+                preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
+                foreach ($matches[0] ?? [] as $match) {
+                    $data['title'] = str_replace("{{{$match}}}", $contact->$match, $data['title']);
+                }
+                preg_match_all('/[^{{}}]+(?=})/', $data['description'], $matches);
+                foreach ($matches[0] ?? [] as $match) {
+                    $data['description'] = str_replace("{{{$match}}}", $contact->$match, $data['description']);
+                }
+                if (isset($data['initial_message']['message'])) {
+                    preg_match_all('/[^{{}}]+(?=})/', $data['initial_message']['message'], $matches);
+                    foreach ($matches[0] ?? [] as $match) {
+                        $data['initial_message']['message'] = str_replace("{{{$match}}}", $contact->$match, $data['initial_message']['message']);
+                    }
+                    $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
+                    $data['initial_message']['link_preview'] = $linkPreview;
+
+                    $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
+                    $data['initial_message']['link_preview'] = $linkPreview;
+                }
+
                 if (! $videoMessage) {
                     $shortId = $authUser->id . Str::random(6);
                     while (VideoMessage::where('short_id', $shortId)->exists()) {
                         $shortId = $authUser->id . Str::random(6);
                     }
-
-                    $data = $request->only('title', 'description', 'initial_message', 'service_id', 'link_preview');
-                    $data['contact_id'] = $contact->id;
-                    $data['user_id'] = $authUser->id;
-                    $data['uuid'] = Str::uuid();
-                    $data['status'] = 'draft';
-                    $data['is_active'] = true;
                     $data['short_id'] = $shortId;
-                    $data['video_campaign_id'] = $videoCampaign->id;
-                    preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
-                    foreach ($matches[0] ?? [] as $match) {
-                        $data['title'] = str_replace("{{{$match}}}", $contact->$match, $data['title']);
-                    }
-                    preg_match_all('/[^{{}}]+(?=})/', $data['description'], $matches);
-                    foreach ($matches[0] ?? [] as $match) {
-                        $data['description'] = str_replace("{{{$match}}}", $contact->$match, $data['description']);
-                    }
-
-                    if (isset($data['initial_message']['message'])) {
-                        $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
-                        $data['initial_message']['link_preview'] = $linkPreview;
-                    }
                     $videoMessage = VideoMessage::create($data);
-                }
-                foreach ($userVideos as $key => $userVideo) {
-                    VideoMessageVideo::create([
-                        'video_message_id' => $videoMessage->id,
-                        'user_video_id' => $userVideo->id ?? null,
-                        'order' => $key
-                    ]);
+                    foreach ($userVideos as $key => $userVideo) {
+                        VideoMessageVideo::create([
+                            'video_message_id' => $videoMessage->id,
+                            'user_video_id' => $userVideo->id ?? null,
+                            'order' => $key
+                        ]);
+                    }
+                } else {
+                    $videoMessage->update($data);
                 }
 
                 $slug = Str::random(32);

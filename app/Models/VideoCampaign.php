@@ -21,6 +21,6 @@ class VideoCampaign extends BaseModel
     }
     public function videoMessages()
     {
-        return $this->hasMany(VideoMessage::class)->latest();
+        return $this->hasMany(VideoMessage::class)->latest('created_at');
     }
 }

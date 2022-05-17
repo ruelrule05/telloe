@@ -332,18 +332,26 @@ export default {
 			});
 		},
 
-		async quickVideoStore(e, video, videoMessage, index) {
+		goToNextPlaceholder(videoMessage, index) {
 			let vMessageIndex = this.videoCampaign.video_messages.findIndex(x => x.id == videoMessage.id);
 			let nextIndex = vMessageIndex + 1;
 			if (this.videoCampaign.video_messages[nextIndex]) {
-				let nextVideo = this.videoCampaign.video_messages[nextIndex].videos.find(x => !x.user_video);
-				if (nextVideo) {
+				let nextVideo = this.videoCampaign.video_messages[nextIndex].videos[index];
+				if (nextVideo && !nextVideo.user_video) {
 					setTimeout(() => {
 						this.$set(nextVideo, 'quickRecord', true);
 					}, 100);
+				} else {
+					nextIndex = nextIndex + 1;
+					if (this.videoCampaign.video_messages[nextIndex]) {
+						this.goToNextPlaceholder(this.videoCampaign.video_messages[nextIndex], index);
+					}
 				}
 			}
+		},
 
+		async quickVideoStore(e, video, videoMessage, index) {
+			this.goToNextPlaceholder(videoMessage, index);
 			let { gif, thumbnail } = await this.createGif(e.dimensions, e.source);
 			let { S3Source, S3Gif, S3Thumbnail } = await this.uploadToS3(e.source, gif, thumbnail);
 
@@ -397,7 +405,8 @@ export default {
 						video: [source],
 						numFrames: 30,
 						gifWidth: gifWidth,
-						gifHeight: gifHeight
+						gifHeight: gifHeight,
+						numWorkers: 4
 					},
 					obj => {
 						if (!obj.error) {
@@ -653,7 +662,8 @@ export default {
 								images: images,
 								numFrames: 30,
 								gifWidth: canvas.width,
-								gifHeight: canvas.height
+								gifHeight: canvas.height,
+								numWorkers: 4
 							},
 							async obj => {
 								if (!obj.error) {
@@ -720,6 +730,8 @@ export default {
 		update(videoCampaign) {
 			videoCampaign.userVideos = videoCampaign.video_campaign_videos.map(x => x.user_video);
 			this.videoCampaign = videoCampaign;
+			let index = this.videoCampaigns.find(x => x.id == this.videoCampaign.id);
+			this.$set(this.videoCampaigns, index, videoCampaign);
 		},
 
 		updateVideoMessageStatus(status, videoMessage) {
@@ -752,7 +764,7 @@ export default {
 					let height = img.height * ratio;
 					let timestamp = new Date().valueOf();
 
-					let element = `<table style="border: 0">`;
+					let element = `<table style="border-collapse: collapse;" border="0" cellpadding="0" cellspacing="0">`;
 
 					if (message) {
 						let regex = /[^{{}}]+(?=})/g;

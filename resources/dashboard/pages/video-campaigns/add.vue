@@ -420,7 +420,10 @@ export default {
 					if (this.$refs.newInitialMessage) {
 						data.initial_message.message = this.$refs.newInitialMessage.innerText.trim();
 					}
-					resolve(data.initial_message);
+					if (this.$refs.messageInput && this.$refs.messageInput.innerText.trim()) {
+						data.initial_message.message = this.$refs.messageInput.innerText.trim();
+					}
+					resolve(Object.assign({}, data.initial_message));
 				})();
 			});
 		},
