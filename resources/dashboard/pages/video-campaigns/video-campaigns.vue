@@ -768,7 +768,7 @@ export default {
 
 					if (message) {
 						let regex = /[^{{}}]+(?=})/g;
-						let greeting = this.videoCampaign.email_template;
+						let greeting = this.videoCampaign.email_template ? this.videoCampaign.email_template : '';
 						if (this.videoCampaign.email_template) {
 							let matches = this.videoCampaign.email_template.match(regex);
 							if (matches) {
