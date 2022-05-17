@@ -6,6 +6,13 @@ import CloseIcon from '../../icons/close.vue';
 import jstz from 'jstz';
 const timezone = jstz.determine();
 import axios from 'axios';
+import Vue from "vue";
+import VueGtag from "vue-gtag";
+
+Vue.use(VueGtag, {
+	config: { id: "AW-369673356" }
+});
+
 
 export default {
 	components: {
@@ -72,6 +79,10 @@ export default {
 			this.pageloading = true;
 			let response = await axios.get('/auth/google/redirect');
 			window.location.href = response.data;
+		},
+
+		signUpConversion(){
+			this.$gtag.event('event', 'conversion', {'send_to': 'AW-369673356/_OdCCIibrrwDEIyJo7AB'});
 		}
 	}
 };
