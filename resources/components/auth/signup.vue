@@ -246,6 +246,7 @@ export default {
 						this.$root.signupStep = 1;
 						this.loading = false;
 						this.trackier();
+						this.$parent.signUpConversion(); // call for gtag signup conversion in auth.js
 					})
 					.catch(e => {
 						this.loading = false;
