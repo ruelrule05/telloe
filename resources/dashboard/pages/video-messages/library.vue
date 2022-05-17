@@ -705,9 +705,9 @@ export default {
 
 		createVideoPreview() {
 			if (!this.source) return null;
-			this.step = 3;
-			this.library = false;
 			if(this.source.type.includes('video')){
+				this.step = 3;
+				this.library = false;
 				this.previewSource = URL.createObjectURL(this.source);
 			}else{
 				this.$toast.error('Trying to upload non supported file');
