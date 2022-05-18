@@ -167,14 +167,14 @@
                 </th>
                 <th
                   class="text-muted font-serif text-xs font-semibold uppercase mb-2"
-                  style="float: right; margin: 0px"
+                  style="float: right; margin: 0px; padding-right: 35px;"
                 >
                   Premium
                 </th>
               </tr>
               <tr class="border-bottom">
                 <td>Video stitching</td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; ">
                   <svg
                     width="28"
                     height="28"
@@ -191,7 +191,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -228,7 +228,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -265,7 +265,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -292,7 +292,7 @@
                     text-align: center;
                   "
                 >
-                  10 Per Month
+                  10/Month <br> 1GB Video Storage
                 </td>
                 <td
                   style="
@@ -300,10 +300,9 @@
                     padding-bottom: 15px;
                     text-align: center;
                     float: right;
-                    margin-right: 13px;
                   "
                 >
-                  No limit
+                  500/Month <br> 100GB Video Storage
                 </td>
               </tr>
               <tr class="border-bottom">
@@ -325,7 +324,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -341,183 +340,6 @@
                       stroke-width="2"
                     ></path>
                   </svg>
-                </td>
-              </tr>
-              <tr class="mt-10">
-                <th
-                  class="text-muted font-serif text-xs font-semibold uppercase mb-2"
-                  style="float: left; margin: 0px; padding-top: 40px"
-                >
-                  Touch Point
-                </th>
-                <th
-                  class="text-muted font-serif text-xs font-semibold uppercase mb-2"
-                  style="padding-top: 40px"
-                >
-                  Free
-                </th>
-                <th
-                  class="text-muted font-serif text-xs font-semibold uppercase mb-2"
-                  style="float: right; margin: 0px; padding-top: 40px"
-                >
-                  Premium
-                </th>
-              </tr>
-              <tr class="border-bottom">
-                <td>People tracked</td>
-                <td
-                  style="
-                    padding-top: 15px;
-                    padding-bottom: 15px;
-                    text-align: center;
-                  "
-                >
-                  10 at a Time
-                </td>
-                <td
-                  style="
-                    padding-top: 15px;
-                    padding-bottom: 15px;
-                    text-align: center;
-                    float: right;
-                    margin-right: 13px;
-                  "
-                >
-                  No limit
-                </td>
-              </tr>
-              <tr class="border-bottom">
-                <td>Results console</td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="display: block; margin: auto"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="float: right; margin-right: 27px"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-              </tr>
-              <tr class="border-bottom">
-                <td>Tracking filter</td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="display: block; margin: auto"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="float: right; margin-right: 27px"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-              </tr>
-              <tr class="border-bottom">
-                <td>Quick add and remove</td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="display: block; margin: auto"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="float: right; margin-right: 27px"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-              </tr>
-              <tr class="border-bottom">
-                <td>Labels</td>
-                <td
-                  style="
-                    padding-top: 15px;
-                    padding-bottom: 15px;
-                    text-align: center;
-                  "
-                >
-                  3
-                </td>
-                <td
-                  style="
-                    padding-top: 15px;
-                    padding-bottom: 15px;
-                    text-align: center;
-                    float: right;
-                    margin-right: 13px;
-                  "
-                >
-                  No limit
                 </td>
               </tr>
               <tr class="mt-10">
@@ -535,7 +357,7 @@
                 </th>
                 <th
                   class="text-muted font-serif text-xs font-semibold uppercase mb-2"
-                  style="float: right; margin: 0px; padding-top: 40px"
+                  style="float: right; margin: 0px; padding-top: 40px; padding-right: 35px;"
                 >
                   Premium
                 </th>
@@ -559,7 +381,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -596,7 +418,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -633,7 +455,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -669,6 +491,7 @@
                     text-align: center;
                     float: right;
                     margin-right: 13px;
+                     padding-right: 35px;
                   "
                 >
                   No limit
@@ -693,7 +516,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -726,7 +549,7 @@
                 </th>
                 <th
                   class="text-muted font-serif text-xs font-semibold uppercase mb-2"
-                  style="float: right; margin: 0px; padding-top: 40px"
+                  style="float: right; margin: 0px; padding-top: 40px; padding-right: 35px;"
                 >
                   Premium
                 </th>
@@ -750,7 +573,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -787,7 +610,7 @@
                     ></path>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -835,7 +658,7 @@
                     ></line>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
@@ -883,44 +706,7 @@
                     ></line>
                   </svg>
                 </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="float: right; margin-right: 27px"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-              </tr>
-              <tr class="border-bottom">
-                <td>LinkedIn</td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="display: block; margin: auto"
-                  >
-                    <circle cx="14" cy="14" r="14" fill="#27D898"></circle>
-                    <path
-                      d="M7.77783 14.3459L11.8223 18.278L20.2223 10.1113"
-                      stroke="white"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                </td>
-                <td style="padding-top: 15px; padding-bottom: 15px">
+                <td style="padding-top: 15px; padding-bottom: 15px; padding-right: 35px;">
                   <svg
                     width="28"
                     height="28"
