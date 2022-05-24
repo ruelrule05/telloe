@@ -955,7 +955,7 @@
                 <button
                   type="button"
                   class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"
-                >
+                  @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
                   <span class="relative -bottom-px">START FREE TRIAL</span>
                 </button>
               </div>
@@ -983,7 +983,7 @@
                 <button
                   type="button"
                   class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"
-                >
+                  @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
                   <span class="relative -bottom-px">START FREE TRIAL</span>
                 </button>
               </div>
@@ -1011,7 +1011,7 @@
                 <button
                   type="button"
                   class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"
-                >
+                  @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
                   <span class="relative -bottom-px">START FREE TRIAL</span>
                 </button>
               </div>
