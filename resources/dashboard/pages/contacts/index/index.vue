@@ -318,7 +318,7 @@
 									<span class="flag-icon line-height-0 mr-1">{{ getUnicodeFlagIcon(editTimezoneAreaCode) }}</span>
 									{{ editContactDialCode }}
 								</div>
-								<input type="tel" ref="phone" class="pl-16" @keydown="numbersOnly" v-model="clonedContact.phone_number" />
+								<input type="tel" ref="phone" maxlength="15" class="pl-16" @keydown="numbersOnly" v-model="clonedContact.phone_number" />
 							</div>
 						</div>
 					</div>
