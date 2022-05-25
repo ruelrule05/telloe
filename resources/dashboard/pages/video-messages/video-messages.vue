@@ -64,7 +64,7 @@
 							<div class="flex-grow flex items-center gap-3">
 								<div class="flex gap-2">
 									<template v-for="(video, videoIndex) in vMessage.videos">
-										<div v-if="videoIndex < 3" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
+										<div v-if="videoIndex < 3 && video.user_video.thumbnail" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
 											<div v-if="videoIndex == 2 && vMessage.videos.length > 3" class="absolute-center w-full h-full bg-black bg-opacity-40">
 												<span class="absolute-center text-white">+{{ vMessage.videos.length - 2 }}</span>
 											</div>
@@ -233,6 +233,7 @@ export default {
 		if (!this.isRetainFormData) {
 			localStorage.clear();
 		}
+		console.log(this.videoMessages.length);
 	},
 
 	methods: {
