@@ -233,7 +233,6 @@ export default {
 		if (!this.isRetainFormData) {
 			localStorage.clear();
 		}
-		console.log(this.videoMessages.length);
 	},
 
 	methods: {
