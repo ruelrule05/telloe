@@ -30,7 +30,7 @@
 				</div>
 				<div class="h-20 lg:hidden block" />
 			</div>
-			<div v-if="videoMessages.length == 0 || !videoMessages" class="flex-grow">
+			<div v-if="videoMessages.length == 0 && videoMessages" class="flex-grow">
 				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
 					<div class="text-primary">
 						<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
@@ -64,7 +64,7 @@
 							<div class="flex-grow flex items-center gap-3">
 								<div class="flex gap-2">
 									<template v-for="(video, videoIndex) in vMessage.videos">
-										<div v-if="videoIndex < 3 && video.user_video.thumbnail" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
+										<div v-if="videoIndex < 3" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
 											<div v-if="videoIndex == 2 && vMessage.videos.length > 3" class="absolute-center w-full h-full bg-black bg-opacity-40">
 												<span class="absolute-center text-white">+{{ vMessage.videos.length - 2 }}</span>
 											</div>
