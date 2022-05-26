@@ -30,7 +30,7 @@
 				</div>
 				<div class="h-20 lg:hidden block" />
 			</div>
-			<div v-if="videoMessages.length == 0" class="flex-grow">
+			<div v-if="videoMessages" class="flex-grow">
 				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
 					<div class="text-primary">
 						<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
