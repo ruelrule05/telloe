@@ -108,8 +108,8 @@ class Service extends BaseModel
         $days = json_decode($this->attributes['days'], true);
 
         $day = $days[$dayName];
-        $timeStart = Carbon::parse($dateString . ' ' . $day['start'])->setTimezone($this->timezone);
-        $timeEnd = Carbon::parse($dateString . ' ' . $day['end'])->setTimezone($this->timezone);
+        $timeStart = Carbon::parse($dateString . ' ' . $day['start']);
+        $timeEnd = Carbon::parse($dateString . ' ' . $day['end']);
 
         $googleCalendarEvents = $user->google_calendar_events ?? [];
         $googleEventsList = Cache::get("{$user->id}_google_calendar_events", []);
@@ -121,8 +121,8 @@ class Service extends BaseModel
         $startsAt = null;
         $endsAt = null;
         if ($this->starts_at && $this->ends_at) {
-            $startsAt = Carbon::parse($this->starts_at, $this->timezone);
-            $endsAt = Carbon::parse($this->ends_at, $this->timezone)->addDay(1);
+            $startsAt = Carbon::parse($this->starts_at);
+            $endsAt = Carbon::parse($this->ends_at)->addDay(1);
         }
         while ($timeStart->lessThan($timeEnd)) {
             if ($startsAt && $endsAt) {
@@ -147,9 +147,9 @@ class Service extends BaseModel
                     break;
                 }
             }
-            $bookings = $serviceBookings->filter(function ($booking) use ($timeslot, $timeStart, $dateString) {
-                $start = Carbon::parse($booking->date . ' ' . $booking->start, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
-                $end = Carbon::parse($booking->date . ' ' . $booking->end, $booking->timezone)->setTimezone($this->timezone)->format('H:i');
+            $bookings = $serviceBookings->filter(function ($booking) use ($timeslot) {
+                $start = Carbon::parse($booking->date . ' ' . $booking->start)->format('H:i');
+                $end = Carbon::parse($booking->date . ' ' . $booking->end)->format('H:i');
                 return $start <= $timeslot['time'] && $end >= $timeslot['time'];
             })
             ->all();
@@ -269,8 +269,8 @@ class Service extends BaseModel
             if ($booking->recurring_end && $booking->recurring_frequency && $booking->recurring_days) {
                 $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                 $timeslotDayName = Carbon::parse($booking->date, $booking->timezone)->format('l');
-                $startDate = Carbon::parse($booking->date, $booking->timezone)->addDay(1);
-                $endDate = Carbon::parse($booking->recurring_end, $booking->timezone);
+                $startDate = Carbon::parse($booking->date)->addDay(1);
+                $endDate = Carbon::parse($booking->recurring_end);
 
                 while ($startDate->lessThan($endDate)) {
                     $createBooking = false;
