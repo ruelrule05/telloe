@@ -29,16 +29,18 @@
 		</div>
 
 		<div class="mt-5 members-container">
-			<div v-for="assignedService in service.assigned_services" :key="assignedService.id" class="-mr-2 border-2 border-gray-50 rounded-full relative">
-				<div
-					class="profile-image profile-image-sm"
-					:style="{
-						backgroundImage: 'url(' + assignedService.user.profile_image + ')'
-					}"
-				>
-					<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+			<template v-for="assignedService in service.assigned_services">
+				<div v-if="assignedService.user" :key="assignedService.id" class="-mr-2 border-2 border-gray-50 rounded-full relative">
+					<div
+						class="profile-image profile-image-sm"
+						:style="{
+							backgroundImage: 'url(' + assignedService.user.profile_image + ')'
+						}"
+					>
+						<span v-if="!assignedService.user.profile_image">{{ assignedService.user.initials }}</span>
+					</div>
 				</div>
-			</div>
+			</template>
 		</div>
 
 		<div class="mt-3 flex justify-between items-end">

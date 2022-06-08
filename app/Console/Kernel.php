@@ -69,9 +69,9 @@ class Kernel extends ConsoleKernel
             ->update([
                 'is_premium' => false
             ]);
+        $stripe_api = new StripeAPI();
         $users = collect(User::has('subscription')->get());
-        $users->each(function ($user) use ($freemiumAccounts) {
-            $stripe_api = new StripeAPI();
+        $users->each(function ($user) use ($freemiumAccounts, $stripe_api) {
             $subscription = $stripe_api->subscription('retrieve', $user->subscription->stripe_subscription_id);
             $user->is_premium = $subscription->status == 'active' || $subscription->status == 'trialing' || in_array($user->email, $freemiumAccounts);
             $user->save();

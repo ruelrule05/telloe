@@ -244,7 +244,6 @@
 												<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
 											</button>
 										</div>
-
 										<div class="checkmark absolute-center rounded-full">
 											<div class="absolute-center w-full h-full p-0.5">
 												<div class="bg-white rounded-full w-full h-full"></div>
@@ -262,7 +261,6 @@
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
 							</button>
-
 							<button
 								class="btn btn-md btn-primary"
 								:class="{ disabled: !selectedVideos.length }"
