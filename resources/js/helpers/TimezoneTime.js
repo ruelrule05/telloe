@@ -17,10 +17,7 @@ function getTimeZoneOffset(date, timeZone) {
 	let hour = map.get('hour');
 	const minute = map.get('minute');
 	const second = map.get('second');
-	const ms = date
-		.getMilliseconds()
-		.toString()
-		.padStart(3, '0');
+	const ms = date.getMilliseconds().toString().padStart(3, '0');
 	if (hour == '24') hour = '00';
 	const iso = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
 	const lie = new Date(iso + 'Z');
