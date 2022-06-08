@@ -83,7 +83,7 @@ class Kernel extends ConsoleKernel
         Log::info('[booking_users_notify] CRON job started');
         $now = \Carbon\Carbon::now();
         $bookings = Booking::has('bookingUsers')
-            ->with('service.user')
+            ->with('service.user', 'bookingUsers.user')
             ->where('date', '>=', $now->format('Y-m-d'))
             ->get();
         foreach ($bookings as $booking) {
