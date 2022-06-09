@@ -1,7 +1,7 @@
 const host = 'telloe.codes';
 const port = 8080;
-const key = `/home/cleidoscope/.valet/Certificates/${host}.key`;
-const cert = `/home/cleidoscope/.valet/Certificates/${host}.crt`;
+const key = `C:/Users/cleid/.config/valet/Certificates/${host}.key`;
+const cert = `C:/Users/cleid/.config/valet/Certificates/${host}.crt`;
 
 const args = process.argv;
 const mix = require('laravel-mix');
