@@ -240,6 +240,7 @@ export default {
 				if(!isEmpty(countryCode)){
 					this.newContact.dial_code = '+'+value;
 					this.timezoneAreaCode = countryCode;
+					this.newContact.phone_number = '+'+value;
 				}
 			});
 		},
@@ -251,6 +252,7 @@ export default {
 				if(!isEmpty(countryCode)){
 					this.editContactDialCode = '+'+value;
 					this.editTimezoneAreaCode = countryCode;
+					this.clonedContact.phone_number = '+'+value;
 				}
 			});
 		},
