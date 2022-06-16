@@ -608,7 +608,7 @@ export default {
 				this.selectedVideos = [];
 				this.selectedVideos.push(userVideo);
 			} else {
-				let index = this.selectedVideos.findIndex(x => x.id == userVideo.id);
+				let index = this.selectedVideos.findIndex(x => x && x.id == userVideo.id);
 				if (index > -1) {
 					this.selectedVideos.splice(index, 1);
 				} else {

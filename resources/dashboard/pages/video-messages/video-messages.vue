@@ -299,7 +299,7 @@ export default {
 					let height = img.height * ratio;
 					let timestamp = new Date().valueOf();
 
-					let element = `<table> <tr> <td> <div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr></table>`;
+					let element = `<div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div>`;
 					let template = document.createElement('template');
 					template.innerHTML = element;
 					resolve(template.content.firstChild);
@@ -345,7 +345,6 @@ export default {
 				if (this.isRetainFormData) {
 					this.localStorage(data);
 				}
-				
 			} else if (action == 'Delete') {
 				this.selectedVideoMessage = videoMessage;
 				this.$refs.deleteModal.show();
