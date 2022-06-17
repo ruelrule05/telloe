@@ -375,11 +375,17 @@ export default {
 						line = line.replaceAll(' ','');
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
 						if(regexLine){
+							console.log(regexLine);
+							console.log(20);
 							if(regexLine[3]){
 								regexLine[3] = regexLine[3].replaceAll('"', '');
 							}
 							if(regexLine[4]){
 								regexLine[4] = regexLine[4].replaceAll('+', '');
+								if(regexLine[4].length > 15){
+									this.$refs.importCsv.hide();
+									return this.$toast.error('Please import correct number only');
+								}
 							}
 							csvContacts.push(regexLine);
 						}
