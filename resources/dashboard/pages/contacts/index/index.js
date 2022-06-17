@@ -139,7 +139,8 @@ export default {
 		getUnicodeFlagIcon: null,
 		timezoneAreaCode : 'AU',
 		editTimezoneAreaCode : 'AU',
-		editContactDialCode : null
+		editContactDialCode : null,
+		prefix : null
 	}),
 
 	computed: {
@@ -239,7 +240,9 @@ export default {
 				console.log(countryCode);
 				if(!isEmpty(countryCode)){
 					this.newContact.dial_code = '+'+value;
+					this.prefix = value;
 					this.timezoneAreaCode = countryCode;
+					this.newContact.phone_number = ' ';
 				}
 			});
 		},
@@ -250,7 +253,9 @@ export default {
 				let countryCode = value == key ? countryList[key] : '';
 				if(!isEmpty(countryCode)){
 					this.editContactDialCode = '+'+value;
+					this.prefix = value;
 					this.editTimezoneAreaCode = countryCode;
+					this.clonedContact.phone_number = ' ';
 				}
 			});
 		},
@@ -425,6 +430,8 @@ export default {
 		},
 
 		update(contact) {
+			contact.phone_number = this.prefix + this.clonedContact.phone_number.replaceAll(' ', '');
+			console.log(contact);
 			this.updateContact(contact);
 			this.$refs['editModal'].hide();
 		},
@@ -490,6 +497,7 @@ export default {
 
 		store() {
 			if (this.newContact.email) {
+				this.newContact.phone_number = this.prefix + this.newContact.phone_number.replaceAll(' ', '');
 				this.storeContact(this.newContact).then(() => {
 					this.newContact = {
 						custom_fields: {},
@@ -510,6 +518,8 @@ export default {
 				if(!isEmpty(countryCode)){
 					this.editContactDialCode = '+'+Number(first2Str);
 					this.editTimezoneAreaCode = countryCode;
+					this.prefix = Number(first2Str);
+					this.clonedContact.phone_number = String(phoneNumber).slice(2); 
 				}
 			});
 		}
