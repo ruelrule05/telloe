@@ -951,12 +951,23 @@
               <div>
                 <div class="font-bold lg:text-2xl mb-1">Monthly</div>
                 <div class="text-muted mb-4 text-sm"></div>
+                @auth
+                <a href="/dashboard/account?tab=plan" >
+                  <button
+                    type="button"
+                    class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+                    <span class="relative -bottom-px">PLANS</span>
+                  </button>
+                </a>
+                @endauth
+                @guest
                 <button
                   type="button"
                   class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"
-                >
+                  @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
                   <span class="relative -bottom-px">START FREE TRIAL</span>
                 </button>
+                @endguest
               </div>
               <div class="text-center lg:text-right lg:mt-0 mt-4">
                 <div class="text-xl font-bold">
@@ -979,12 +990,23 @@
                 <div class="text-muted mb-4 text-sm">
                   Billed as one payment of $83.85
                 </div>
+                @auth
+                <a href="/dashboard/account?tab=plan" >
+                  <button
+                    type="button"
+                    class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+                    <span class="relative -bottom-px">PLANS</span>
+                  </button>
+                </a>
+                @endauth
+                @guest
                 <button
                   type="button"
                   class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"
-                >
+                  @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
                   <span class="relative -bottom-px">START FREE TRIAL</span>
                 </button>
+                @endguest
               </div>
               <div class="text-center lg:text-right lg:mt-0 mt-4">
                 <div class="text-xl font-bold">
@@ -1007,12 +1029,23 @@
                 <div class="text-muted mb-4 text-sm">
                   Billed as one payment of $275.40
                 </div>
+                @auth
+                <a href="/dashboard/account?tab=plan" >
+                  <button
+                    type="button"
+                    class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs">
+                    <span class="relative -bottom-px">PLANS</span>
+                  </button>
+                </a>
+                @endauth
+                @guest
                 <button
                   type="button"
                   class="px-8 py-4 lg:w-auto w-full rounded font-semibold focus:outline-none font-serif hover:bg-primary transition-all hover:text-white text-primary border-2 border-primary text-xs"
-                >
+                  @click="auth = true; action = 'signup'" @mouseover="changeCursorStatus('onFreeTrial')" @mouseleave="changeCursorStatus('browsing')">
                   <span class="relative -bottom-px">START FREE TRIAL</span>
                 </button>
+                @endguest
               </div>
               <div class="text-center lg:text-right lg:mt-0 mt-4">
                 <div class="text-xl font-bold">
