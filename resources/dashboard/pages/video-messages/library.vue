@@ -703,9 +703,15 @@ export default {
 
 		createVideoPreview() {
 			if (!this.source) return null;
-			this.step = 3;
-			this.library = false;
-			this.previewSource = URL.createObjectURL(this.source);
+			if(this.source.type.includes('video')){
+				this.step = 3;
+				this.library = false;
+				this.previewSource = URL.createObjectURL(this.source);
+			}else{
+				this.$toast.error('Trying to upload non supported file');
+				return null
+			}
+			
 		},
 
 		async createGif() {
@@ -774,6 +780,8 @@ export default {
 							if (this.uploadComplete == 3) {
 								resolve();
 							}
+						}else{
+							console.log('Error upload!');
 						}
 					}
 				);
