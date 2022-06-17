@@ -1,4 +1,5 @@
 <template>
+	
 	<div class="library">
 		<input
 			type="file"
@@ -22,6 +23,13 @@
 					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
 				</div>
 			</div>
+		</div>
+
+		<div class="vld-parent">
+			<loading :active.sync="isLoading" :is-full-page="fullPage">
+				<h1 class="absolute-center w-full h-full z-50 text-7xl">{{ countDown }}</h1>
+			</loading>
+			<!--<button type="button" class="btn btn-md btn-primary" @click.prevent="doAjax">fetch Data</button>-->
 		</div>
 
 		<div v-show="!library" class="w-full min-h-full">
@@ -171,7 +179,8 @@
 						</div>
 						<div class="text-center px-4 py-2">
 							<div class="inline-flex items-center">
-								<svg v-if="!isRecording" @click="startRecording" class="inline-block cursor-pointer" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<div class="w-30 pr-3 text-left"> {{ recording_state }}</div>
+								<svg v-if="!isRecording" @click="recordingLoader" class="inline-block cursor-pointer" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<rect width="48" height="48" rx="24" fill="#E33171" />
 									<rect x="16" y="16" width="16" height="16" fill="white" />
 								</svg>
@@ -332,6 +341,8 @@ import WarningIcon from '../../../icons/warning';
 import MoreVIcon from '../../../icons/more-v';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
 	props: {
@@ -341,7 +352,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect },
+	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect, Loading },
 
 	data: () => ({
 		library: false,
@@ -372,7 +383,11 @@ export default {
 		gifProgress: 0,
 		tagOptions: [],
 		user_videos: null,
-		searchLib: ''
+		searchLib: '',
+		recording_state : 'Start Recording',
+		isLoading: false,
+        fullPage: true,
+		countDown: 3
 	}),
 
 	computed: {
@@ -420,6 +435,26 @@ export default {
 			deleteUserVideo: 'user_videos/delete',
 			updateTag: 'user_videos/update'
 		}),
+
+		recordingLoader() {
+			this.countDownTimer();
+			this.isLoading = true;
+			// simulate AJAX
+			setTimeout(() => {
+				this.isLoading = false;
+			}, 3000);
+			
+		},
+		countDownTimer () {
+			if (this.countDown > 0) {
+				setTimeout(() => {
+					this.countDown -= 1
+					this.countDownTimer();
+				}, 1000)
+			}else{
+				this.startRecording();
+			}
+		},
 
 		secondsToDuration(seconds, limit = 14, end = 5) {
 			let date = new Date(0);
@@ -479,12 +514,15 @@ export default {
 
 		pauseRecording() {
 			if (this.videoRecorder) {
+				this.recording_state = 'Start Recording';
 				this.isRecording = false;
 				this.videoRecorder.pause();
 			}
 		},
 
 		startRecording() {
+			this.countDown = 3;
+			this.recording_state = 'Stop Recording';
 			if (this.videoRecorder) {
 				this.isRecording = true;
 				if (this.blobs.length) {
