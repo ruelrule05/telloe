@@ -6,7 +6,6 @@ use App\Models\UserVideo;
 use App\Models\VideoCampaignVideo;
 use App\Models\VideoMessageVideo;
 use Auth;
-use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\MediaConvert\MediaConvertClient;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -64,32 +63,6 @@ class UserVideoService
         } catch (AwsException $e) {
             echo $e->getMessage();
         }
-
-        // Transcode
-        // $sourcePath = ltrim(parse_url($request->input('source'))['path'], '/');
-        // $dirname = pathinfo($sourcePath)['dirname'];
-        // $credentials = [
-        //     'region' => config('filesystems.disks.s3.region'),
-        //     'version' => 'latest',
-        //     'credentials' => [
-        //         'key' =>  config('filesystems.disks.s3.key'),
-        //         'secret' => config('filesystems.disks.s3.secret')
-        //     ]];
-        // $AWSClient = new ElasticTranscoderClient($credentials);
-        // try {
-        //     $AWSClient->createJob([
-        //         'PipelineId' => config('aws.transcode.pipeline_id'),
-        //         'Input' => ['Key' => $sourcePath],
-        //         'Outputs' => [
-        //             [
-        //                 'Key' =>  $dirname . '/gif.gif',
-        //                 'PresetId' => config('aws.transcode.preset_id')
-        //             ]
-        //         ],
-        //     ]);
-        // } catch (AwsException $e) {
-        //     echo $e->getMessage();
-        // }
 
 
         return response()->json($userVideo);
