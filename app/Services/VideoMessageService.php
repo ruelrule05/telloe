@@ -11,6 +11,7 @@ use App\Models\VideoMessage;
 use App\Models\VideoMessageLike;
 use App\Models\VideoMessageVideo;
 use Auth;
+use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -38,7 +39,7 @@ class VideoMessageService
             'service_id' => 'nullable|exists:services,id',
             'contact_id' => 'nullable|exists:contacts,id',
             'user_video_ids' => 'required|array',
-            'link_preview' => 'nullable|string|max:255',
+            'gif_duration' => 'required|string',
             'linkedin_user' => 'nullable|string',
         ]);
         $authUser = Auth::user();
@@ -53,12 +54,15 @@ class VideoMessageService
             $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->firstOrFail();
             $userVideos[] = $userVideo;
         }
-        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'link_preview', 'contact_id', 'linkedin_user');
+        $data = $request->only('title', 'description', 'initial_message', 'service_id', 'embed_service', 'contact_id', 'linkedin_user');
         $data['user_id'] = $authUser->id;
         $data['uuid'] = Str::uuid();
         $data['status'] = 'draft';
         $data['is_active'] = true;
         $data['initial_message'] = $request->input('initial_message');
+        $timestamp = $authUser->id . '-' . time();
+        $host = parse_url($request->input('gif_duration'))['host'];
+        $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
 
         $shortId = $authUser->id . Str::random(6);
         while (VideoMessage::where('short_id', $shortId)->exists()) {
@@ -88,6 +92,37 @@ class VideoMessageService
             'slug' => $slug
         ]);
 
+        $userVideo = $userVideos[0];
+        $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+        $credentials = [
+            'region' => config('filesystems.disks.s3.region'),
+            'version' => 'latest',
+            'credentials' => [
+                'key' =>  config('filesystems.disks.s3.key'),
+                'secret' => config('filesystems.disks.s3.secret')
+            ]];
+        $AWSClient = new ElasticTranscoderClient($credentials);
+        try {
+            $AWSClient->createJob([
+                'PipelineId' => config('aws.transcode.pipeline_id'),
+                'Input' => ['Key' => $sourcePath],
+                'Outputs' => [
+                    [
+                        'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                        'PresetId' => config('aws.transcode.preset_id'),
+                        'Watermarks' => [
+                            [
+                                'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                'PresetWatermarkId' => 'BottomLeft'
+                            ]
+                        ]
+                    ]
+                ],
+            ]);
+        } catch (AwsException $e) {
+            echo $e->getMessage();
+        }
+
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
         })->first());
@@ -99,7 +134,7 @@ class VideoMessageService
             return abort(403);
         }
         $authUser = Auth::user();
-        $videoMessage->load('user','videos.userVideo', 'conversation', 'service');
+        $videoMessage->load('user', 'videos.userVideo', 'conversation', 'service');
         $user = $videoMessage->user;
         unset($videoMessage->user);
         $videoMessage->user = $user->full_name;

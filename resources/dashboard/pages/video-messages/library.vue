@@ -16,7 +16,7 @@
 			<div class="absolute-center text-center w-full">
 				<div class="absolute-center w-3/12">
 					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
-						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
+						<div class="bg-primary h-full" :style="{ width: `${uploadProgress}%` }"></div>
 					</div>
 					<div class="mt-2 text-sm">{{ status }}</div>
 					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
@@ -314,7 +314,6 @@
 
 <script>
 /// <reference types="aws-sdk" />
-const gifshot = require('../../../js/plugins/gifshot.min.js');
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -354,7 +353,6 @@ export default {
 		format: format,
 		source: null,
 		duration: 0,
-		gif: null,
 		thumbnail: null,
 		step: 1,
 		sourceType: null,
@@ -362,7 +360,6 @@ export default {
 		status: null,
 		uploadComplete: 0,
 		S3Source: null,
-		S3Gif: null,
 		S3Thumbnail: null,
 		selectedVideos: [],
 		audioStreams: null,
@@ -375,7 +372,6 @@ export default {
 		recordInterval: null,
 		recordDuration: 0,
 		uploadProgress: 0,
-		gifProgress: 0,
 		tagOptions: [],
 		user_videos: null,
 		searchLib: ''
@@ -414,6 +410,7 @@ export default {
 				this.duration = this.$refs.videoPlayback.duration * 1000;
 			}
 		};
+
 		const selectInput = document.querySelector('.multiselect__input');
 		if (selectInput) {
 			selectInput.setAttribute('maxlength', '20');
@@ -445,6 +442,17 @@ export default {
 				this.previewSource = URL.createObjectURL(this.source);
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;
+				this.$nextTick(() => {
+					this.$refs.videoPlayback.play();
+					setTimeout(() => {
+						const canvas = document.createElement('canvas');
+						canvas.width = 300;
+						canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+						this.thumbnail = canvas.toDataURL('image/png');
+					}, 500);
+				});
 			}
 
 			if (this.videoRecorder && this.isRecording) {
@@ -619,7 +627,6 @@ export default {
 
 		resetRecorder() {
 			clearInterval(this.recordInterval);
-			this.gifProgress = 0;
 			this.recordDuration = 0;
 			this.uploadProgress = 0;
 			this.step = 1;
@@ -663,17 +670,14 @@ export default {
 			clearInterval(this.recordInterval);
 			this.recordDuration = 0;
 			this.uploadProgress = 0;
-			this.gifProgress = 0;
 			this.library = false;
 			this.form = false;
 			this.previewSource = null;
-			this.gif = null;
 			this.thumbnail = null;
 			this.source = null;
 			this.step = 1;
 			this.uploadComplete = 0;
 			this.S3Source = null;
-			this.S3Gif = null;
 			this.S3Thumbnail = null;
 			this.status = null;
 			if (clearSelectedVideos) {
@@ -723,53 +727,8 @@ export default {
 			this.previewSource = URL.createObjectURL(this.source);
 		},
 
-		async createGif() {
-			this.status = 'Processing...';
-			return new Promise((resolve, reject) => {
-				let gifWidth = this.$refs.videoPlayback.videoWidth;
-				let gifHeight = this.$refs.videoPlayback.videoHeight;
-				if (gifWidth > 320) {
-					let ratio = 320 / gifWidth;
-					gifWidth = 320;
-					gifHeight = gifHeight * ratio;
-				}
-				gifshot.createGIF(
-					{
-						video: [this.source],
-						numFrames: 30,
-						gifWidth: gifWidth,
-						gifHeight: gifHeight,
-						progressCallback: captureProgress => {
-							this.gifProgress = 50 * captureProgress;
-						}
-					},
-					obj => {
-						if (!obj.error) {
-							this.gif = obj.image;
-							let image = new Image();
-							image.width = gifWidth;
-							image.height = gifHeight;
-							image.onload = () => {
-								let canvas = document.createElement('canvas');
-								canvas.width = image.width;
-								canvas.height = image.height;
-								let ctx = canvas.getContext('2d');
-								ctx.drawImage(image, 0, 0);
-								this.thumbnail = canvas.toDataURL('image/png');
-								resolve();
-							};
-							image.src = obj.image;
-						} else {
-							console.log(obj.error);
-							reject();
-						}
-					}
-				);
-			});
-		},
-
 		async uploadToS3() {
-			if (!this.source || !this.gif || !this.thumbnail) {
+			if (!this.source || !this.thumbnail) {
 				return;
 			}
 			this.status = 'Uploading...';
@@ -786,25 +745,7 @@ export default {
 							this.S3Source = data.Location;
 							this.uploadComplete++;
 							this.uploadProgress += 10;
-							if (this.uploadComplete == 3) {
-								resolve();
-							}
-						}
-					}
-				);
-
-				S3.upload(
-					{
-						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif.gif',
-						Body: this.dataURLtoFile(this.gif, 'gif.gif'),
-						ACL: 'public-read'
-					},
-					(err, data) => {
-						if (!err && data) {
-							this.S3Gif = data.Location;
-							this.uploadComplete++;
-							this.uploadProgress += 10;
-							if (this.uploadComplete == 3) {
+							if (this.uploadComplete == 2) {
 								resolve();
 							}
 						}
@@ -822,7 +763,7 @@ export default {
 							this.S3Thumbnail = data.Location;
 							this.uploadComplete++;
 							this.uploadProgress += 10;
-							if (this.uploadComplete == 3) {
+							if (this.uploadComplete == 2) {
 								resolve();
 							}
 						}
@@ -833,16 +774,15 @@ export default {
 
 		async store() {
 			this.$refs.videoPlayback.pause();
-			this.uploadProgress = 10;
-			await this.createGif();
+			this.uploadProgress = 30;
+
 			await this.uploadToS3();
 			this.status = 'Finalizing...';
-			if (!this.S3Source || !this.S3Gif || !this.S3Thumbnail || !this.duration) {
+			if (!this.S3Source || !this.S3Thumbnail || !this.duration) {
 				return;
 			}
 			let userVideoData = {
 				source: this.S3Source,
-				gif: this.S3Gif,
 				thumbnail: this.S3Thumbnail,
 				duration: parseInt(this.duration)
 			};

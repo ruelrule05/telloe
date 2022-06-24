@@ -6,6 +6,7 @@ use App\Models\UserVideo;
 use App\Models\VideoCampaignVideo;
 use App\Models\VideoMessageVideo;
 use Auth;
+use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\MediaConvert\MediaConvertClient;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -23,17 +24,18 @@ class UserVideoService
     {
         (new self)->validate($request, [
             'source' => 'nullable|string|max:255',
-            'gif' => 'nullable|string|max:255',
             'thumbnail' => 'nullable|string|max:255',
             'duration' => 'required|integer',
         ]);
 
         $authUser = Auth::user();
-        $data = $request->only('source','gif', 'thumbnail', 'duration');
+        $data = $request->only('source', 'thumbnail', 'duration');
         $data['user_id'] = $authUser->id;
+        $dirname = pathinfo($data['source'])['dirname'];
+        $data['gif'] = $dirname . '/gif.gif';
         $userVideo = UserVideo::create($data);
 
-        /* Mediaconvert */
+        // Mediaconvert
         $bucket = config('aws.s3.bucket');
         $mediaConvertClient = new MediaConvertClient([
             'version' => config('aws.mediaconvert.version'),
@@ -62,6 +64,33 @@ class UserVideoService
         } catch (AwsException $e) {
             echo $e->getMessage();
         }
+
+        // Transcode
+        // $sourcePath = ltrim(parse_url($request->input('source'))['path'], '/');
+        // $dirname = pathinfo($sourcePath)['dirname'];
+        // $credentials = [
+        //     'region' => config('filesystems.disks.s3.region'),
+        //     'version' => 'latest',
+        //     'credentials' => [
+        //         'key' =>  config('filesystems.disks.s3.key'),
+        //         'secret' => config('filesystems.disks.s3.secret')
+        //     ]];
+        // $AWSClient = new ElasticTranscoderClient($credentials);
+        // try {
+        //     $AWSClient->createJob([
+        //         'PipelineId' => config('aws.transcode.pipeline_id'),
+        //         'Input' => ['Key' => $sourcePath],
+        //         'Outputs' => [
+        //             [
+        //                 'Key' =>  $dirname . '/gif.gif',
+        //                 'PresetId' => config('aws.transcode.preset_id')
+        //             ]
+        //         ],
+        //     ]);
+        // } catch (AwsException $e) {
+        //     echo $e->getMessage();
+        // }
+
 
         return response()->json($userVideo);
     }
