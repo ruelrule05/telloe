@@ -242,7 +242,7 @@ class VideoCampaignService
             foreach ($contacts as $contact) {
                 $videoMessage =  VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id', $videoCampaign->id)->first();
 
-                $data = $request->only('title', 'description', 'initial_message', 'service_id', 'link_preview');
+                $data = $request->only('title', 'description', 'initial_message', 'service_id');
                 $data['contact_id'] = $contact->id;
                 $data['user_id'] = $authUser->id;
                 $data['uuid'] = Str::uuid();
@@ -295,7 +295,7 @@ class VideoCampaignService
                 $AWSClient = new ElasticTranscoderClient($credentials);
                 $host = parse_url($request->input('gif_duration'))['host'];
                 $timestamp = $authUser->id . '-' . time();
-                
+
                 $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
                 if ($userVideo) {
                     $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
