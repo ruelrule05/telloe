@@ -241,7 +241,6 @@ class VideoCampaignService
 
             foreach ($contacts as $contact) {
                 $videoMessage =  VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id', $videoCampaign->id)->first();
-
                 $data = $request->only('title', 'description', 'initial_message', 'service_id');
                 $data['contact_id'] = $contact->id;
                 $data['user_id'] = $authUser->id;
@@ -250,6 +249,7 @@ class VideoCampaignService
                 $data['is_active'] = true;
                 $data['video_campaign_id'] = $videoCampaign->id;
                 $data['link_preview'] = $linkPreview;
+
                 preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
                 foreach ($matches[0] ?? [] as $match) {
                     $data['title'] = str_replace("{{{$match}}}", $contact->$match, $data['title']);
@@ -273,6 +273,7 @@ class VideoCampaignService
                         $shortId = $authUser->id . Str::random(6);
                     }
                     $data['short_id'] = $shortId;
+                    print_r($data);
                     $videoMessage = VideoMessage::create($data);
                     foreach ($userVideos as $key => $userVideo) {
                         VideoMessageVideo::create([
