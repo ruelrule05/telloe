@@ -142,29 +142,30 @@ class VideoCampaignService
                     }
 
 
-                    $userVideo = $videoMessage->videos->first()->userVideo;
-                    $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
-                    try {
-                        $AWSClient->createJob([
-                            'PipelineId' => config('aws.transcode.pipeline_id'),
-                            'Input' => ['Key' => $sourcePath],
-                            'Outputs' => [
-                                [
-                                    'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
-                                    'PresetId' => config('aws.transcode.preset_id'),
-                                    'Watermarks' => [
-                                        [
-                                            'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
-                                            'PresetWatermarkId' => 'BottomLeft'
+                    $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
+                    if ($userVideo) {
+                        $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+                        try {
+                            $AWSClient->createJob([
+                                'PipelineId' => config('aws.transcode.pipeline_id'),
+                                'Input' => ['Key' => $sourcePath],
+                                'Outputs' => [
+                                    [
+                                        'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                                        'PresetId' => config('aws.transcode.preset_id'),
+                                        'Watermarks' => [
+                                            [
+                                                'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                                'PresetWatermarkId' => 'BottomLeft'
+                                            ]
                                         ]
                                     ]
-                                ]
-                            ],
-                        ]);
-                    } catch (AwsException $e) {
-                        echo $e->getMessage();
+                                ],
+                            ]);
+                        } catch (AwsException $e) {
+                            echo $e->getMessage();
+                        }
                     }
-
                     $slug = Str::random(32);
                     while (Conversation::where('slug', $slug)->exists()) {
                         $slug = Str::random(32);
@@ -294,27 +295,30 @@ class VideoCampaignService
                 $AWSClient = new ElasticTranscoderClient($credentials);
                 $host = parse_url($request->input('gif_duration'))['host'];
                 $timestamp = $authUser->id . '-' . time();
-                $userVideo = $videoMessage->videos->first()->userVideo;
-                $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
-                try {
-                    $AWSClient->createJob([
-                        'PipelineId' => config('aws.transcode.pipeline_id'),
-                        'Input' => ['Key' => $sourcePath],
-                        'Outputs' => [
-                            [
-                                'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
-                                'PresetId' => config('aws.transcode.preset_id'),
-                                'Watermarks' => [
-                                    [
-                                        'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
-                                        'PresetWatermarkId' => 'BottomLeft'
+                
+                $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
+                if ($userVideo) {
+                    $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+                    try {
+                        $AWSClient->createJob([
+                            'PipelineId' => config('aws.transcode.pipeline_id'),
+                            'Input' => ['Key' => $sourcePath],
+                            'Outputs' => [
+                                [
+                                    'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                                    'PresetId' => config('aws.transcode.preset_id'),
+                                    'Watermarks' => [
+                                        [
+                                            'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                            'PresetWatermarkId' => 'BottomLeft'
+                                        ]
                                     ]
                                 ]
-                            ]
-                        ],
-                    ]);
-                } catch (AwsException $e) {
-                    echo $e->getMessage();
+                            ],
+                        ]);
+                    } catch (AwsException $e) {
+                        echo $e->getMessage();
+                    }
                 }
 
                 $slug = Str::random(32);
