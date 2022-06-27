@@ -219,6 +219,7 @@ class VideoCampaignService
         $host = parse_url($request->input('gif_duration'))['host'];
         $timestamp = $authUser->id . '-' . time();
         $linkPreview = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
+        echo $linkPreview;
         $data['link_preview'] = $linkPreview;
         $videoCampaign->update($data);
 
