@@ -127,8 +127,8 @@ class VideoCampaignService
                         foreach ($matches[0] ?? [] as $match) {
                             $data['initial_message']['message'] = str_replace("{{{$match}}}", $contact->$match, $data['initial_message']['message']);
                         }
-                        $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
-                        $data['initial_message']['link_preview'] = $linkPreview;
+                        $messageLinkPreview = self::generateLinkPreview($data['initial_message']['message']);
+                        $data['initial_message']['link_preview'] = $messageLinkPreview;
                     }
                     $videoMessage = VideoMessage::create($data);
 
@@ -263,8 +263,8 @@ class VideoCampaignService
                     foreach ($matches[0] ?? [] as $match) {
                         $data['initial_message']['message'] = str_replace("{{{$match}}}", $contact->$match, $data['initial_message']['message']);
                     }
-                    $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
-                    $data['initial_message']['link_preview'] = $linkPreview;
+                    $messageLinkPreview = self::generateLinkPreview($data['initial_message']['message']);
+                    $data['initial_message']['link_preview'] = $messageLinkPreview;
                 }
 
                 if (! $videoMessage) {
@@ -273,8 +273,6 @@ class VideoCampaignService
                         $shortId = $authUser->id . Str::random(6);
                     }
                     $data['short_id'] = $shortId;
-                    echo $linkPreview . '==';
-                    print_r($data);
                     $videoMessage = VideoMessage::create($data);
                     foreach ($userVideos as $key => $userVideo) {
                         VideoMessageVideo::create([
