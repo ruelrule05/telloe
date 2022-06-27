@@ -236,7 +236,6 @@ import EyeIcon from '../../../icons/eye-solid';
 import Modal from '../../../components/modal/modal.vue';
 import WarningIcon from '../../../icons/warning';
 import Library from '../video-messages/library.vue';
-const gifshot = require('../../../js/plugins/gifshot.min.js');
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -384,48 +383,6 @@ export default {
 				}
 			}
 			video.processing = false;
-		},
-
-		async createGif(dimensions, source) {
-			return new Promise((resolve, reject) => {
-				let gifWidth = dimensions.width;
-				let gifHeight = dimensions.height;
-				if (gifWidth > 320) {
-					let ratio = 320 / gifWidth;
-					gifWidth = 320;
-					gifHeight = gifHeight * ratio;
-				}
-				gifshot.createGIF(
-					{
-						video: [source],
-						numFrames: 30,
-						gifWidth: gifWidth,
-						gifHeight: gifHeight,
-						numWorkers: 4
-					},
-					obj => {
-						if (!obj.error) {
-							let gif = obj.image;
-							let image = new Image();
-							image.width = gifWidth;
-							image.height = gifHeight;
-							image.onload = () => {
-								let canvas = document.createElement('canvas');
-								canvas.width = image.width;
-								canvas.height = image.height;
-								let ctx = canvas.getContext('2d');
-								ctx.drawImage(image, 0, 0);
-								let thumbnail = canvas.toDataURL('image/png');
-								resolve({ gif: gif, thumbnail: thumbnail });
-							};
-							image.src = obj.image;
-						} else {
-							console.log(obj.error);
-							reject();
-						}
-					}
-				);
-			});
 		},
 
 		async uploadToS3(source, thumbnail) {
