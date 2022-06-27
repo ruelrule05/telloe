@@ -219,7 +219,6 @@ class VideoCampaignService
         $host = parse_url($request->input('gif_duration'))['host'];
         $timestamp = $authUser->id . '-' . time();
         $linkPreview = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
-        echo $linkPreview;
         $data['link_preview'] = $linkPreview;
         $videoCampaign->update($data);
 
@@ -274,6 +273,7 @@ class VideoCampaignService
                         $shortId = $authUser->id . Str::random(6);
                     }
                     $data['short_id'] = $shortId;
+                    echo $linkPreview . '==';
                     print_r($data);
                     $videoMessage = VideoMessage::create($data);
                     foreach ($userVideos as $key => $userVideo) {
