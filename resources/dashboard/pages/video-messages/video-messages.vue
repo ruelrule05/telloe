@@ -443,9 +443,9 @@ export default {
 				data.userVideos.forEach(x => {
 					totalDuration += x.duration;
 				});
-				data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
+				data.gif_duration = await this.generateLinkPreview(data.userVideos[0], totalDuration);
 			} else {
-				data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+				data.gif_duration = await this.generateLinkPreview(data.userVideos[0], this.totalDuration);
 			}
 			data.initial_message = await this.generateInitialMessage(videoMessage);
 

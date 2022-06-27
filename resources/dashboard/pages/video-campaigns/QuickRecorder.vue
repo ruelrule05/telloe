@@ -109,7 +109,16 @@ export default {
 			});
 			let videoWidth = this.$refs.videoPreview.videoWidth;
 			let videoHeight = this.$refs.videoPreview.videoHeight;
-			this.$emit('record', { source: source, duration: this.blobs.length * 30 * 2, dimensions: { width: videoWidth, height: videoHeight } });
+
+			let thumbnail = null;
+			this.$refs.videoPreview.play();
+			const canvas = document.createElement('canvas');
+			canvas.width = 300;
+			canvas.height = (canvas.width / this.$refs.videoPreview.videoWidth) * this.$refs.videoPreview.videoHeight;
+			const ctx = canvas.getContext('2d');
+			ctx.drawImage(this.$refs.videoPreview, 0, 0, canvas.width, canvas.height);
+			thumbnail = canvas.toDataURL('image/png');
+			this.$emit('record', { source: source, thumbnail: thumbnail, duration: this.blobs.length * 30 * 2, dimensions: { width: videoWidth, height: videoHeight } });
 		},
 
 		dataURLtoFile(dataurl, filename) {

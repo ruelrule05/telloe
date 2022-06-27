@@ -4,7 +4,7 @@
 			<div class="absolute-center text-center w-full">
 				<div class="absolute-center w-3/12">
 					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
-						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
+						<div class="bg-primary h-full" :style="{ width: `${uploadProgress}%` }"></div>
 					</div>
 					<div class="mt-2 text-sm">{{ status }}</div>
 					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
@@ -237,8 +237,6 @@ import Modal from '../../../components/modal/modal.vue';
 import WarningIcon from '../../../icons/warning';
 import Library from '../video-messages/library.vue';
 const gifshot = require('../../../js/plugins/gifshot.min.js');
-import { GifReader } from 'omggif';
-import { cover } from 'intrinsic-scale';
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -288,7 +286,6 @@ export default {
 		editVideoMessage: null,
 		quickAdd: false,
 		uploadProgress: 0,
-		gifProgress: 0,
 		status: null,
 		videoMessageToDelete: null,
 		totalDuration: 0,
@@ -352,12 +349,10 @@ export default {
 
 		async quickVideoStore(e, video, videoMessage, index) {
 			this.goToNextPlaceholder(videoMessage, index);
-			let { gif, thumbnail } = await this.createGif(e.dimensions, e.source);
-			let { S3Source, S3Gif, S3Thumbnail } = await this.uploadToS3(e.source, gif, thumbnail);
+			let { S3Source, S3Thumbnail } = await this.uploadToS3(e.source, e.thumbnail);
 
 			let userVideoData = {
 				source: S3Source,
-				gif: S3Gif,
 				thumbnail: S3Thumbnail,
 				duration: parseInt(e.duration)
 			};
@@ -373,7 +368,7 @@ export default {
 						totalDuration += x.duration;
 					}
 				});
-				data.link_preview = await this.generateLinkPreview(response.data.gif, totalDuration, false);
+				data.gif_duration = await this.generateLinkPreview(response.data, totalDuration);
 				data.initial_message = await this.generateInitialMessage(videoMessage);
 				delete data.original_message;
 				delete data.new_source;
@@ -433,13 +428,13 @@ export default {
 			});
 		},
 
-		async uploadToS3(source, gif, thumbnail) {
+		async uploadToS3(source, thumbnail) {
 			this.uploadComplete = 0;
-			if (!source || !gif || !thumbnail) {
+			if (!source || !thumbnail) {
 				return;
 			}
 			return new Promise(resolve => {
-				let S3Source, S3Gif, S3Thumbnail;
+				let S3Source, S3Thumbnail;
 				let timestamp = new Date().getTime();
 				S3.upload(
 					{
@@ -451,25 +446,8 @@ export default {
 						if (!err && data) {
 							S3Source = data.Location;
 							this.uploadComplete++;
-							if (this.uploadComplete == 3) {
-								resolve({ S3Thumbnail: S3Thumbnail, S3Gif: S3Gif, S3Source: S3Source });
-							}
-						}
-					}
-				);
-
-				S3.upload(
-					{
-						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif.gif',
-						Body: this.dataURLtoFile(gif, 'gif.gif'),
-						ACL: 'public-read'
-					},
-					(err, data) => {
-						if (!err && data) {
-							S3Gif = data.Location;
-							this.uploadComplete++;
-							if (this.uploadComplete == 3) {
-								resolve({ S3Thumbnail: S3Thumbnail, S3Gif: S3Gif, S3Source: S3Source });
+							if (this.uploadComplete == 2) {
+								resolve({ S3Thumbnail: S3Thumbnail, S3Source: S3Source });
 							}
 						}
 					}
@@ -485,8 +463,8 @@ export default {
 						if (!err && data) {
 							S3Thumbnail = data.Location;
 							this.uploadComplete++;
-							if (this.uploadComplete == 3) {
-								resolve({ S3Thumbnail: S3Thumbnail, S3Gif: S3Gif, S3Source: S3Source });
+							if (this.uploadComplete == 2) {
+								resolve({ S3Thumbnail: S3Thumbnail, S3Source: S3Source });
 							}
 						}
 					}
@@ -526,9 +504,9 @@ export default {
 						totalDuration += x.duration;
 					}
 				});
-				data.link_preview = await this.generateLinkPreview(userVideo.gif, totalDuration);
+				data.gif_duration = await this.generateLinkPreview(userVideo, totalDuration);
 			} else {
-				data.link_preview = await this.generateLinkPreview(userVideo.gif, this.totalDuration);
+				data.gif_duration = await this.generateLinkPreview(userVideo, this.totalDuration);
 			}
 			data.initial_message = await this.generateInitialMessage(videoMessage);
 
@@ -547,7 +525,6 @@ export default {
 				}
 			}
 			this.status = null;
-			this.gifProgress = 0;
 			this.uploadProgress = 0;
 			this.editVideoMessage = null;
 			this.totalDuration = 0;
@@ -606,25 +583,13 @@ export default {
 			});
 		},
 
-		async generateLinkPreview(gif, duration, status = true) {
-			return new Promise((resolve, reject) => {
+		async generateLinkPreview(userVideo, duration) {
+			return new Promise(resolve => {
 				(async () => {
-					const response = await fetch(gif);
-					this.uploadProgress += 10;
-					const blob = await response.blob();
-					const arrayBuffer = await blob.arrayBuffer();
-					this.uploadProgress += 10;
-					const intArray = new Uint8Array(arrayBuffer);
-					const reader = new GifReader(intArray);
-					const info = reader.frameInfo(0);
-					const results = new Array(reader.numFrames()).fill(0).map((_, k) => {
-						const image = new ImageData(info.width, info.height);
-						reader.decodeAndBlitFrameRGBA(k, image.data);
-						return image;
-					});
+					this.uploadProgress += 20;
 					let canvas = document.createElement('canvas');
-					canvas.width = 600;
-					canvas.height = 313;
+					canvas.width = 350;
+					canvas.height = 66;
 					let ctx = canvas.getContext('2d');
 					let parsedDuration = humanizeDuration(duration, { round: true, units: duration < 60000 ? ['s'] : ['m'] })
 						.replace('minutes', 'minute')
@@ -634,64 +599,36 @@ export default {
 					let playImage = new Image();
 					playImage.src = `${this.app_url}/images/email-play.png`;
 
-					let images = [];
 					playImage.onload = () => {
-						results.forEach(imageData => {
-							let { width, height, x, y } = cover(canvas.width, canvas.height, imageData.width, imageData.height);
-							let renderer = document.createElement('canvas');
-							renderer.width = imageData.width;
-							renderer.height = imageData.height;
-							renderer.getContext('2d').putImageData(imageData, 0, 0);
-							ctx.drawImage(renderer, x, y, width, height);
+						const sourceImage = new Image();
+						sourceImage.src = userVideo.thumbnail;
+						sourceImage.onload = () => {
+							this.uploadProgress += 20;
 							ctx.beginPath();
-							ctx.rect(30, 240, 540, 50);
+							ctx.rect(25, 12, 310, 42);
 							ctx.fillStyle = '#3167e3';
 							ctx.fill();
 
-							ctx.drawImage(playImage, 20, 230, 70, 70);
-							ctx.font = '18px Arial';
+							ctx.drawImage(playImage, 10, 9, 50, 50);
+							ctx.font = '17px Arial';
 							ctx.fillStyle = 'white';
-							ctx.fillText(durationText, 230, 270);
-							images.push(canvas.toDataURL());
-							ctx.clearRect(0, 0, canvas.width, canvas.height);
-						});
-
-						this.uploadProgress += 5;
-						gifshot.createGIF(
-							{
-								images: images,
-								numFrames: 30,
-								gifWidth: canvas.width,
-								gifHeight: canvas.height,
-								numWorkers: 4
-							},
-							async obj => {
-								if (!obj.error) {
-									if (status) {
-										this.status = 'Uploading...';
+							ctx.fillText(durationText, 120, 40);
+							let timestamp = new Date().getTime();
+							S3.upload(
+								{
+									Key: 'gif-durations/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif_duration.png',
+									Body: this.dataURLtoFile(canvas.toDataURL('image/png'), 'gif_duration.png'),
+									ACL: 'public-read',
+									ContentType: 'image/png'
+								},
+								async (err, d) => {
+									if (!err && d) {
+										this.uploadProgress += 20;
+										resolve(d.Location);
 									}
-									this.uploadProgress += 15;
-									let timestamp = new Date().getTime();
-									S3.upload(
-										{
-											Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'link_preview.gif',
-											Body: this.dataURLtoFile(obj.image, 'link_preview.gif'),
-											ACL: 'public-read',
-											ContentType: 'image/gif'
-										},
-										async (err, d) => {
-											if (!err && d) {
-												this.uploadProgress += 20;
-												resolve(d.Location);
-											}
-										}
-									);
-								} else {
-									console.log(obj.error);
-									reject(obj.error);
 								}
-							}
-						);
+							);
+						};
 					};
 				})();
 			});

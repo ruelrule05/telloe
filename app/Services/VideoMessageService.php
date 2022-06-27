@@ -157,13 +157,12 @@ class VideoMessageService
             'contact_id' => 'nullable|exists:contacts,id',
             'user_video_ids' => 'required|array',
             'is_active' => 'required|boolean',
-            'link_preview' => 'nullable|string|max:255',
             'linkedin_user' => 'nullable|string',
             'booking_url' => 'nullable|string',
+            'gif_duration' => 'required|string',
         ]);
 
         $authUser = Auth::user();
-
         if ($videoMessage->user_id != $authUser->id) {
             return abort(403);
         }
@@ -172,6 +171,38 @@ class VideoMessageService
         }
         if ($request->input('contact_id')) {
             Contact::where('id', $request->input('contact_id'))->where('user_id', $authUser->id)->firstOrFail();
+        }
+        $userVideo = $videoMessage->videos->first()->userVideo;
+        $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+        $credentials = [
+            'region' => config('filesystems.disks.s3.region'),
+            'version' => 'latest',
+            'credentials' => [
+                'key' =>  config('filesystems.disks.s3.key'),
+                'secret' => config('filesystems.disks.s3.secret')
+            ]];
+        $AWSClient = new ElasticTranscoderClient($credentials);
+        $host = parse_url($request->input('gif_duration'))['host'];
+        $timestamp = $authUser->id . '-' . time();
+        try {
+            $AWSClient->createJob([
+                'PipelineId' => config('aws.transcode.pipeline_id'),
+                'Input' => ['Key' => $sourcePath],
+                'Outputs' => [
+                    [
+                        'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                        'PresetId' => config('aws.transcode.preset_id'),
+                        'Watermarks' => [
+                            [
+                                'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                'PresetWatermarkId' => 'BottomLeft'
+                            ]
+                        ]
+                    ]
+                ],
+            ]);
+        } catch (AwsException $e) {
+            echo $e->getMessage();
         }
 
         $userVideos = [];
@@ -190,12 +221,13 @@ class VideoMessageService
                 ]
             );
         }
-        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'link_preview', 'contact_id', 'linkedin_user', 'booking_url');
+        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'contact_id', 'linkedin_user', 'booking_url');
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
             $data['initial_message']['link_preview'] = $linkPreview;
         }
+        $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
         $videoMessage->update($data);
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');

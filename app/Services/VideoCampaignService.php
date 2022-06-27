@@ -11,6 +11,7 @@ use App\Models\VideoCampaignVideo;
 use App\Models\VideoMessage;
 use App\Models\VideoMessageVideo;
 use Auth;
+use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -28,6 +29,7 @@ class VideoCampaignService
             })->disableCache()->latest()->get();
         }));
     }
+
     public static function store(Request $request)
     {
         (new self)->validate($request, [
@@ -36,7 +38,7 @@ class VideoCampaignService
             'initial_message' => 'nullable|array|max:255',
             'service_id' => 'nullable|exists:services,id',
             'user_video_ids' => 'required|array',
-            'link_preview' => 'nullable|string|max:255',
+            'gif_duration' => 'nullable|string|max:255',
             'linkedin_user' => 'nullable|string',
             'email_template' => 'nullable|string',
 
@@ -57,8 +59,13 @@ class VideoCampaignService
             }
         }
 
-        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags', 'email_template');
+        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'contact_tags', 'email_template');
         $data['user_id'] = $authUser->id;
+
+        $host = parse_url($request->input('gif_duration'))['host'];
+        $timestamp = $authUser->id . '-' . time();
+        $linkPreview = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
+        $data['link_preview'] = $linkPreview;
 
         $videoCampaign = VideoCampaign::create($data);
 
@@ -78,14 +85,24 @@ class VideoCampaignService
                 }
             });
             $contacts = $contacts->get();
+            $credentials = [
+                'region' => config('filesystems.disks.s3.region'),
+                'version' => 'latest',
+                'credentials' => [
+                    'key' =>  config('filesystems.disks.s3.key'),
+                    'secret' => config('filesystems.disks.s3.secret')
+                ]];
+            $AWSClient = new ElasticTranscoderClient($credentials);
+            $host = parse_url($request->input('gif_duration'))['host'];
+            $timestamp = $authUser->id . '-' . time();
             foreach ($contacts as $contact) {
-                if (! VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id',  $videoCampaign->id)->exists()) {
+                if (! VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id', $videoCampaign->id)->exists()) {
                     $shortId = $authUser->id . Str::random(6);
                     while (VideoMessage::where('short_id', $shortId)->exists()) {
                         $shortId = $authUser->id . Str::random(6);
                     }
 
-                    $data = $request->only('title', 'description', 'initial_message', 'service_id', 'link_preview');
+                    $data = $request->only('title', 'description', 'initial_message', 'service_id');
                     $data['contact_id'] = $contact->id;
                     $data['user_id'] = $authUser->id;
                     $data['uuid'] = Str::uuid();
@@ -93,6 +110,8 @@ class VideoCampaignService
                     $data['is_active'] = true;
                     $data['short_id'] = $shortId;
                     $data['video_campaign_id'] = $videoCampaign->id;
+                    $data['link_preview'] = $linkPreview;
+
 
                     preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
                     foreach ($matches[0] ?? [] as $match) {
@@ -112,12 +131,38 @@ class VideoCampaignService
                         $data['initial_message']['link_preview'] = $linkPreview;
                     }
                     $videoMessage = VideoMessage::create($data);
+
+
                     foreach ($userVideos as $key => $userVideo) {
                         VideoMessageVideo::create([
                             'video_message_id' => $videoMessage->id,
                             'user_video_id' => $userVideo->id ?? null,
                             'order' => $key
                         ]);
+                    }
+
+
+                    $userVideo = $videoMessage->videos->first()->userVideo;
+                    $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+                    try {
+                        $AWSClient->createJob([
+                            'PipelineId' => config('aws.transcode.pipeline_id'),
+                            'Input' => ['Key' => $sourcePath],
+                            'Outputs' => [
+                                [
+                                    'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                                    'PresetId' => config('aws.transcode.preset_id'),
+                                    'Watermarks' => [
+                                        [
+                                            'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                            'PresetWatermarkId' => 'BottomLeft'
+                                        ]
+                                    ]
+                                ]
+                            ],
+                        ]);
+                    } catch (AwsException $e) {
+                        echo $e->getMessage();
                     }
 
                     $slug = Str::random(32);
@@ -148,7 +193,7 @@ class VideoCampaignService
             'initial_message' => 'nullable|array|max:255',
             'service_id' => 'nullable|exists:services,id',
             'user_video_ids' => 'required|array',
-            'link_preview' => 'nullable|string|max:255',
+            'gif_duration' => 'nullable|string|max:255',
             'linkedin_user' => 'nullable|string',
             'email_template' => 'nullable|string',
         ]);
@@ -167,9 +212,13 @@ class VideoCampaignService
         }
         VideoCampaignVideo::where('video_campaign_id', $videoCampaign->id)->delete();
 
-        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'link_preview', 'contact_tags', 'email_template');
+        $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'contact_tags', 'email_template');
 
         $data['user_id'] = $authUser->id;
+        $host = parse_url($request->input('gif_duration'))['host'];
+        $timestamp = $authUser->id . '-' . time();
+        $linkPreview = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
+        $data['link_preview'] = $linkPreview;
         $videoCampaign->update($data);
 
         foreach ($userVideos as $key => $userVideo) {
@@ -190,7 +239,7 @@ class VideoCampaignService
             $contacts = $contacts->get();
 
             foreach ($contacts as $contact) {
-                $videoMessage =  VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id',  $videoCampaign->id)->first();
+                $videoMessage =  VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id', $videoCampaign->id)->first();
 
                 $data = $request->only('title', 'description', 'initial_message', 'service_id', 'link_preview');
                 $data['contact_id'] = $contact->id;
@@ -199,6 +248,7 @@ class VideoCampaignService
                 $data['status'] = 'draft';
                 $data['is_active'] = true;
                 $data['video_campaign_id'] = $videoCampaign->id;
+                $data['link_preview'] = $linkPreview;
                 preg_match_all('/[^{{}}]+(?=})/', $data['title'], $matches);
                 foreach ($matches[0] ?? [] as $match) {
                     $data['title'] = str_replace("{{{$match}}}", $contact->$match, $data['title']);
@@ -212,9 +262,6 @@ class VideoCampaignService
                     foreach ($matches[0] ?? [] as $match) {
                         $data['initial_message']['message'] = str_replace("{{{$match}}}", $contact->$match, $data['initial_message']['message']);
                     }
-                    $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
-                    $data['initial_message']['link_preview'] = $linkPreview;
-
                     $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
                     $data['initial_message']['link_preview'] = $linkPreview;
                 }
@@ -235,6 +282,39 @@ class VideoCampaignService
                     }
                 } else {
                     $videoMessage->update($data);
+                }
+
+                $credentials = [
+                    'region' => config('filesystems.disks.s3.region'),
+                    'version' => 'latest',
+                    'credentials' => [
+                        'key' =>  config('filesystems.disks.s3.key'),
+                        'secret' => config('filesystems.disks.s3.secret')
+                    ]];
+                $AWSClient = new ElasticTranscoderClient($credentials);
+                $host = parse_url($request->input('gif_duration'))['host'];
+                $timestamp = $authUser->id . '-' . time();
+                $userVideo = $videoMessage->videos->first()->userVideo;
+                $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+                try {
+                    $AWSClient->createJob([
+                        'PipelineId' => config('aws.transcode.pipeline_id'),
+                        'Input' => ['Key' => $sourcePath],
+                        'Outputs' => [
+                            [
+                                'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                                'PresetId' => config('aws.transcode.preset_id'),
+                                'Watermarks' => [
+                                    [
+                                        'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                        'PresetWatermarkId' => 'BottomLeft'
+                                    ]
+                                ]
+                            ]
+                        ],
+                    ]);
+                } catch (AwsException $e) {
+                    echo $e->getMessage();
                 }
 
                 $slug = Str::random(32);
