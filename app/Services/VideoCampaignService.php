@@ -77,7 +77,8 @@ class VideoCampaignService
             ]);
         }
 
-        if ($request->input('contact_tags')) {
+
+        if ($request->input('contact_tags') && ($authUser->is_premium || VideoMessage::where('user_id', $authUser->id)->count() < 10)) {
             $contacts = Contact::where('user_id', $authUser->id);
             $contacts = $contacts->where(function ($query) use ($request) {
                 foreach ($request->input('contact_tags') as $tag) {
@@ -230,7 +231,7 @@ class VideoCampaignService
             ]);
         }
 
-        if ($request->input('contact_tags')) {
+        if ($request->input('contact_tags') && ($authUser->is_premium || VideoMessage::where('user_id', $authUser->id)->count() < 10)) {
             $contacts = Contact::where('user_id', $authUser->id);
             $contacts = $contacts->where(function ($query) use ($request) {
                 foreach ($request->input('contact_tags') as $tag) {

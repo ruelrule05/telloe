@@ -16,8 +16,11 @@
 			<div>
 				<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
 					<div class="ml-7 lg:ml-0">VIDEO MESSAGES</div>
+					<router-link v-if="!$root.auth.is_premium && videoMessages.length > 9" to="/dashboard/account?tab=plan" class="btn btn-md btn-primary flex items-center">
+						<span>Upgrade</span>
+					</router-link>
 					<button
-						v-if="!adding"
+						v-else-if="!adding"
 						type="button"
 						class="btn btn-md btn-primary flex items-center"
 						@click="

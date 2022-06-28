@@ -43,6 +43,9 @@ class VideoMessageService
             'linkedin_user' => 'nullable|string',
         ]);
         $authUser = Auth::user();
+        if (! $authUser->is_premium && VideoMessage::where('user_id', $authUser->id)->count() > 9) {
+            return abort(403, 'Please upgrade your account.');
+        }
         if ($request->input('service_id')) {
             Service::where('id', $request->input('service_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
