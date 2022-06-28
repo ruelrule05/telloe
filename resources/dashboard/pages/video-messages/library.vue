@@ -725,6 +725,15 @@ export default {
 			this.step = 3;
 			this.library = false;
 			this.previewSource = URL.createObjectURL(this.source);
+			this.$refs.videoPlayback.play();
+			setTimeout(() => {
+				const canvas = document.createElement('canvas');
+				canvas.width = 300;
+				canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+				this.thumbnail = canvas.toDataURL('image/png');
+			}, 500);
 		},
 
 		async uploadToS3() {
