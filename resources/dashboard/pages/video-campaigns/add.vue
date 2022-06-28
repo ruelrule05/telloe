@@ -442,7 +442,7 @@ export default {
 
 		libraryInput(e) {
 			e.forEach(x => {
-				if (!this.videoCampaignData.userVideos.find(y => y.id == x.id)) {
+				if (!this.videoCampaignData.userVideos.find(y => y && x && y.id == x.id)) {
 					this.videoCampaignData.userVideos.push(x);
 				}
 			});
