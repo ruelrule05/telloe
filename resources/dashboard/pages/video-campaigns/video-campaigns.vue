@@ -675,7 +675,7 @@ export default {
 
 						element += `<div style="font-size: 13px; font-family: 'Arial', sans-serif;border: none">${this.nl2br(greeting.trim())}</div>`;
 					}
-					element += `<div style="height:${height}px; border: none;border-collapse: collapse"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div>`;
+					element += `<div style="height:${height}px; border: none;border-collapse: collapse"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; border: none" href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div>`;
 					element += `</td></tr></table></div>`;
 					let template = document.createElement('template');
 					template.innerHTML = element;
