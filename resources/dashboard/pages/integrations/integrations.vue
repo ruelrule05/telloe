@@ -49,7 +49,7 @@
 						</div>
 					</div>
 
-					<div class="flex flex-col md:flex-row md:items-start items-center w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
+					<!--<div class="flex flex-col md:flex-row md:items-start items-center w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
 						<div class="w-16 image mb-5 md:mb-0">
 							<img src="/logos/linkedin.png" alt="Zoom" height="80" />
 						</div>
@@ -61,7 +61,7 @@
 								<span>{{ $root.auth.is_premium ? 'Add Integration' : 'Upgrade Account' }}</span>
 							</button>
 						</div>
-					</div>
+					</div>-->
 
 					<!-- <div class="flex w-full p-8 mb-4 rounded-lg pb-9 bg-secondary-light">
 						<div class="w-16 image">
