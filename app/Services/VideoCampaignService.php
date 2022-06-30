@@ -62,7 +62,7 @@ class VideoCampaignService
         $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'contact_tags', 'email_template');
         $data['user_id'] = $authUser->id;
 
-        $host = parse_url($request->input('gif_duration'))['host'];
+        $host = parse_url($request->input('gif_duration'))['host'] ?? null;
         $timestamp = $authUser->id . '-' . time();
         $linkPreview = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
         $data['link_preview'] = $linkPreview;
@@ -94,7 +94,7 @@ class VideoCampaignService
                     'secret' => config('filesystems.disks.s3.secret')
                 ]];
             $AWSClient = new ElasticTranscoderClient($credentials);
-            $host = parse_url($request->input('gif_duration'))['host'];
+            $host = parse_url($request->input('gif_duration'))['host'] ?? null;
             $timestamp = $authUser->id . '-' . time();
             foreach ($contacts as $contact) {
                 if (! VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id', $videoCampaign->id)->exists()) {
@@ -217,7 +217,7 @@ class VideoCampaignService
         $data = $request->only('name', 'title', 'description', 'initial_message', 'service_id', 'contact_tags', 'email_template');
 
         $data['user_id'] = $authUser->id;
-        $host = parse_url($request->input('gif_duration'))['host'];
+        $host = parse_url($request->input('gif_duration'))['host'] ?? null;
         $timestamp = $authUser->id . '-' . time();
         $linkPreview = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
         $data['link_preview'] = $linkPreview;
@@ -294,7 +294,7 @@ class VideoCampaignService
                         'secret' => config('filesystems.disks.s3.secret')
                     ]];
                 $AWSClient = new ElasticTranscoderClient($credentials);
-                $host = parse_url($request->input('gif_duration'))['host'];
+                $host = parse_url($request->input('gif_duration'))['host']  ?? null;
                 $timestamp = $authUser->id . '-' . time();
 
                 $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
@@ -344,7 +344,7 @@ class VideoCampaignService
             $preview = Http::get('https://api.linkpreview.net/?key=' . config('app.link_preview_key') . '&q=' . $links[0][0]);
             $preview = $preview->json();
             if (! isset($preview['error'])) {
-                $host = parse_url($preview['url'])['host'];
+                $host = parse_url($preview['url'])['host'] ?? null;
                 $linkPreview = '<a target="_blank" href="' . $preview['url'] . '">';
                 if ($preview['image']) {
                     $linkPreview .= '<div class="preview-image" style="background-image: url(\'' . $preview['image'] . '\')"></div>';

@@ -667,8 +667,10 @@ export default {
 							let matches = this.videoCampaign.email_template.match(regex);
 							if (matches) {
 								matches.forEach(match => {
-									let prop = videoMessage.contact[match.trim()] || '';
-									greeting = greeting.replace(`{{${match}}}`, prop);
+									if (videoMessage.contact) {
+										let prop = videoMessage.contact[match.trim()] || '';
+										greeting = greeting.replace(`{{${match}}}`, prop);
+									}
 								});
 							}
 						}
