@@ -347,7 +347,6 @@ export default {
 		},
 
 		async quickVideoStore(e, video, videoMessage, index) {
-			console.log(e);
 			this.goToNextPlaceholder(videoMessage, index);
 			let { S3Source, S3Thumbnail } = await this.uploadToS3(e.source, e.thumbnail);
 
@@ -403,8 +402,7 @@ export default {
 					(err, data) => {
 						if (!err && data) {
 							S3Source = data.Location;
-							this.uploadComplete++;
-							if (this.uploadComplete == 2) {
+							if (S3Thumbnail) {
 								resolve({ S3Thumbnail: S3Thumbnail, S3Source: S3Source });
 							}
 						}
@@ -420,8 +418,7 @@ export default {
 					(err, data) => {
 						if (!err && data) {
 							S3Thumbnail = data.Location;
-							this.uploadComplete++;
-							if (this.uploadComplete == 2) {
+							if (S3Source) {
 								resolve({ S3Thumbnail: S3Thumbnail, S3Source: S3Source });
 							}
 						}
