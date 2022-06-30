@@ -322,7 +322,7 @@ export default {
 		scrollIntoView(video) {
 			this.$nextTick(() => {
 				let videoElement = this.$refs[`recorder-${video.id}`];
-				if (videoElement[0]) {
+				if (videoElement && videoElement[0]) {
 					videoElement[0].$el.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });
 				}
 			});
