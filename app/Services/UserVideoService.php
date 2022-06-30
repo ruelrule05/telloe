@@ -22,8 +22,8 @@ class UserVideoService
     public static function store(Request $request)
     {
         (new self)->validate($request, [
-            'source' => 'nullable|string|max:255',
-            'thumbnail' => 'nullable|string|max:255',
+            'source' => 'required|string|max:255',
+            'thumbnail' => 'required|string|max:255',
             'duration' => 'required|integer',
         ]);
 

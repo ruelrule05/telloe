@@ -347,6 +347,7 @@ export default {
 		},
 
 		async quickVideoStore(e, video, videoMessage, index) {
+			console.log(e);
 			this.goToNextPlaceholder(videoMessage, index);
 			let { S3Source, S3Thumbnail } = await this.uploadToS3(e.source, e.thumbnail);
 

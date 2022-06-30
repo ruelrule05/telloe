@@ -119,7 +119,6 @@ export default {
 			const ctx = canvas.getContext('2d');
 			ctx.drawImage(this.$refs.videoPreview, 0, 0, canvas.width, canvas.height);
 			thumbnail = canvas.toDataURL('image/png');
-			console.log(thumbnail);
 			this.$emit('record', { source: source, thumbnail: thumbnail, duration: this.blobs.length * 30 * 2, dimensions: { width: videoWidth, height: videoHeight } });
 		},
 
