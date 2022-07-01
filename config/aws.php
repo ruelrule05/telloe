@@ -12,5 +12,9 @@ return [
         'version' => 'latest',
         'url' => env('AWS_MEDIACONVERT_ACCOUNT_URL'),
         'verification_token' => env('MEDIACONVERT_VERIFICATION_TOKEN')
+    ],
+    'transcode' => [
+        'pipeline_id' => env('TRANSCODE_PIPELINE_ID'),
+        'preset_id' => env('TRANSCODE_PRESET_ID')
     ]
 ];

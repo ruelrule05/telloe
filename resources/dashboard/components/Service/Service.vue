@@ -20,7 +20,7 @@
 			<div v-if="createService && !$root.auth.is_premium && servicesCount > 0">
 				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-4/12">
 					<div class="pl-4 -mt-1">
-						<p class="font-bold text-sm">Please upgrade your account to create more event types.</p>
+						<p class="font-bold text-sm">Your free trial has expired. Please upgrade your account to create more event types.</p>
 						<button type="button" class="btn btn-outline-primary btn-md mt-4" @click="goToPlans()"><span>View Plans</span></button>
 					</div>
 				</div>

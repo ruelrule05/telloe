@@ -1,5 +1,4 @@
 <template>
-	
 	<div class="library">
 		<input
 			type="file"
@@ -17,7 +16,7 @@
 			<div class="absolute-center text-center w-full">
 				<div class="absolute-center w-3/12">
 					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
-						<div class="bg-primary h-full" :style="{ width: `${uploadProgress + gifProgress}%` }"></div>
+						<div class="bg-primary h-full" :style="{ width: `${uploadProgress}%` }"></div>
 					</div>
 					<div class="mt-2 text-sm">{{ status }}</div>
 					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
@@ -179,7 +178,7 @@
 						</div>
 						<div class="text-center px-4 py-2">
 							<div class="inline-flex items-center">
-								<div class="w-30 pr-3 text-left"> {{ recording_state }}</div>
+								<div class="w-30 pr-3 text-left">{{ recording_state }}</div>
 								<svg v-if="!isRecording" @click="recordingLoader" class="inline-block cursor-pointer" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<rect width="48" height="48" rx="24" fill="#E33171" />
 									<rect x="16" y="16" width="16" height="16" fill="white" />
@@ -243,7 +242,7 @@
 									</div>
 								</div>
 								<template v-for="userVideo in userVideos">
-									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
+									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x && x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 										<div class="backdrop"></div>
 										<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
 											<button class="border border-primary rounded-full p-2 focus:outline-none transition-colors hover:bg-gray-100" type="button" @click="videoMessageAction(userVideo)">
@@ -275,7 +274,7 @@
 								:class="{ disabled: !selectedVideos.length }"
 								type="button"
 								@click="
-									$emit('input', selectedVideos);
+									$emit('input', single ? selectedVideos[0] : selectedVideos);
 									reset();
 								"
 							>
@@ -321,7 +320,6 @@
 
 <script>
 /// <reference types="aws-sdk" />
-const gifshot = require('../../../js/plugins/gifshot.min.js');
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -349,6 +347,10 @@ export default {
 		selectedUserVideos: {
 			type: Array,
 			default: () => []
+		},
+		single: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -359,7 +361,6 @@ export default {
 		format: format,
 		source: null,
 		duration: 0,
-		gif: null,
 		thumbnail: null,
 		step: 1,
 		sourceType: null,
@@ -367,7 +368,6 @@ export default {
 		status: null,
 		uploadComplete: 0,
 		S3Source: null,
-		S3Gif: null,
 		S3Thumbnail: null,
 		selectedVideos: [],
 		audioStreams: null,
@@ -380,13 +380,12 @@ export default {
 		recordInterval: null,
 		recordDuration: 0,
 		uploadProgress: 0,
-		gifProgress: 0,
 		tagOptions: [],
 		user_videos: null,
 		searchLib: '',
-		recording_state : 'Start Recording',
+		recording_state: 'Start Recording',
 		isLoading: false,
-        fullPage: true,
+		fullPage: true,
 		countDown: 3
 	}),
 
@@ -407,6 +406,7 @@ export default {
 	},
 
 	mounted() {
+		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
 			if (this.$refs.videoPlayback.duration == Infinity) {
 				this.$refs.videoPlayback.currentTime = 1e101;
@@ -422,7 +422,8 @@ export default {
 				this.duration = this.$refs.videoPlayback.duration * 1000;
 			}
 		};
-		const selectInput = document.querySelector('.multiselect__input')
+
+		const selectInput = document.querySelector('.multiselect__input');
 		if (selectInput) {
 			selectInput.setAttribute('maxlength', '20');
 		}
@@ -443,15 +444,14 @@ export default {
 			setTimeout(() => {
 				this.isLoading = false;
 			}, 3000);
-			
 		},
-		countDownTimer () {
+		countDownTimer() {
 			if (this.countDown > 0) {
 				setTimeout(() => {
-					this.countDown -= 1
+					this.countDown -= 1;
 					this.countDownTimer();
-				}, 1000)
-			}else{
+				}, 1000);
+			} else {
 				this.startRecording();
 			}
 		},
@@ -470,10 +470,20 @@ export default {
 					type: this.blobs[0].type
 				});
 				this.source = source;
-				console.log(this.source.type);
 				this.previewSource = URL.createObjectURL(this.source);
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;
+				this.$nextTick(() => {
+					this.$refs.videoPlayback.play();
+					setTimeout(() => {
+						const canvas = document.createElement('canvas');
+						canvas.width = 300;
+						canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+						this.thumbnail = canvas.toDataURL('image/png');
+					}, 500);
+				});
 			}
 
 			if (this.videoRecorder && this.isRecording) {
@@ -603,7 +613,11 @@ export default {
 			this.$refs.videoPreview.srcObject = this.finalStream;
 			this.$refs.videoPreview.muted = true;
 			this.$refs.videoPreview.volume = 0;
-			this.$refs.videoPreview.play();
+			try {
+				this.$refs.videoPreview.play();
+			} catch (e) {
+				//
+			}
 			this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm', videoBitsPerSecond: 2500000 });
 			this.videoRecorder.camera = this.finalStream;
 			this.videoRecorder.ondataavailable = e => {
@@ -632,17 +646,21 @@ export default {
 		},
 
 		toggleSelectedVideo(userVideo) {
-			let index = this.selectedVideos.findIndex(x => x.id == userVideo.id);
-			if (index > -1) {
-				this.selectedVideos.splice(index, 1);
-			} else {
+			if (this.single) {
+				this.selectedVideos = [];
 				this.selectedVideos.push(userVideo);
+			} else {
+				let index = this.selectedVideos.findIndex(x => x && x.id == userVideo.id);
+				if (index > -1) {
+					this.selectedVideos.splice(index, 1);
+				} else {
+					this.selectedVideos.push(userVideo);
+				}
 			}
 		},
 
 		resetRecorder() {
 			clearInterval(this.recordInterval);
-			this.gifProgress = 0;
 			this.recordDuration = 0;
 			this.uploadProgress = 0;
 			this.step = 1;
@@ -686,17 +704,14 @@ export default {
 			clearInterval(this.recordInterval);
 			this.recordDuration = 0;
 			this.uploadProgress = 0;
-			this.gifProgress = 0;
 			this.library = false;
 			this.form = false;
 			this.previewSource = null;
-			this.gif = null;
 			this.thumbnail = null;
 			this.source = null;
 			this.step = 1;
 			this.uploadComplete = 0;
 			this.S3Source = null;
-			this.S3Gif = null;
 			this.S3Thumbnail = null;
 			this.status = null;
 			if (clearSelectedVideos) {
@@ -741,15 +756,14 @@ export default {
 
 		createVideoPreview() {
 			if (!this.source) return null;
-			if(this.source.type.includes('video')){
+			if (this.source.type.includes('video')) {
 				this.step = 3;
 				this.library = false;
 				this.previewSource = URL.createObjectURL(this.source);
-			}else{
+			} else {
 				this.$toast.error('Trying to upload non supported file');
-				return null
+				return null;
 			}
-			
 		},
 
 		async createGif() {
@@ -798,7 +812,7 @@ export default {
 		},
 
 		async uploadToS3() {
-			if (!this.source || !this.gif || !this.thumbnail) {
+			if (!this.source || !this.thumbnail) {
 				return;
 			}
 			this.status = 'Uploading...';
@@ -818,7 +832,7 @@ export default {
 							if (this.uploadComplete == 3) {
 								resolve();
 							}
-						}else{
+						} else {
 							console.log('Error upload!');
 						}
 					}
@@ -853,7 +867,7 @@ export default {
 							this.S3Thumbnail = data.Location;
 							this.uploadComplete++;
 							this.uploadProgress += 10;
-							if (this.uploadComplete == 3) {
+							if (this.uploadComplete == 2) {
 								resolve();
 							}
 						}
@@ -864,16 +878,15 @@ export default {
 
 		async store() {
 			this.$refs.videoPlayback.pause();
-			this.uploadProgress = 10;
-			await this.createGif();
+			this.uploadProgress = 30;
+
 			await this.uploadToS3();
 			this.status = 'Finalizing...';
-			if (!this.S3Source || !this.S3Gif || !this.S3Thumbnail || !this.duration) {
+			if (!this.S3Source || !this.S3Thumbnail || !this.duration) {
 				return;
 			}
 			let userVideoData = {
 				source: this.S3Source,
-				gif: this.S3Gif,
 				thumbnail: this.S3Thumbnail,
 				duration: parseInt(this.duration)
 			};
@@ -882,7 +895,11 @@ export default {
 			if (response) {
 				this.selectedVideos.push(response.data);
 			}
-			this.$emit('input', this.selectedVideos);
+			if (this.single) {
+				this.$emit('input', this.selectedVideos[0]);
+			} else {
+				this.$emit('input', this.selectedVideos);
+			}
 			this.reset();
 		},
 

@@ -24,7 +24,6 @@
 						<template v-if="notifications?.filter(x => !x.is_read).length > 0">
 							<div class="flex items-center text-sm p-3">
 								<h6 class="font-bold">New Notifications</h6>
-								{{-- <u class="text-blue-400 ml-auto cursor-pointer" @click="clearNotifications()">Clear all</u> --}}
 							</div>
 							<div v-for="(notification, index) in notifications.filter(x => !x.is_read)" class="cursor-pointer border-bottom hover:bg-gray-100 transition-colors" @click="notification.is_read = true; updateNotification(notification); goToNotifLink(notification);">
 								<div class="text-sm p-3">
@@ -38,8 +37,8 @@
 				</div>
 
 				<div class="flex flex-col p-8 flex-grow overflow-auto">
-					<router-link custom to="/dashboard/account">
-						<div @click="toggleSidebar('/dashboard/account')" class="cursor-pointer flex items-center justify-center">
+					<router-link to="/dashboard/account" >
+						<div  class="cursor-pointer flex items-center justify-center">
 							<div class="profile-image profile-image-sm" :style="{backgroundImage: 'url('+auth.profile_image+')'}">
 								<span v-if="!auth.profile_image">@{{ auth.initials }}</span>
 							</div>
@@ -50,118 +49,55 @@
 						</div>
 					</router-link >
 					
-					{{-- <form action="/logout" method="POST">
-						@csrf
-						<button type="submit" class="dropdown-item outline-0">Log Out</button>
-					</form> --}}
 
-					
-					<div class="dropright profile-dropdown cursor-pointer" hidden>
-						<div class="p-3" data-toggle="dropdown" data-offset="-10, 5">
-						</div>
-						<div class="dropdown-menu overflow-hidden cursor-auto">
-							<span class="dropdown-header">Account</span>
-							<router-link exact to="/dashboard/account?tab=profile" class="dropdown-item d-flex align-items-center">
-								Profile
-							</router-link>
-							<router-link exact to="/dashboard/account?tab=security" class="dropdown-item d-flex align-items-center">
-								Security
-							</router-link>
-							<template>
-								<router-link exact to="/dashboard/account?tab=payout" class="dropdown-item d-flex align-items-center">
-									Payout
-								</router-link>
-								<router-link to="/dashboard/billing" class="dropdown-item d-flex align-items-center">
-									Billing
-								</router-link>
-								<router-link to="/dashboard/widget" class="dropdown-item d-flex align-items-center">
-									Widget
-								</router-link>
-							</template>
-
-							<div class="dropdown-divider mx-n2"></div>
-
-							<span class="dropdown-header">Help & Feedback</span>
-							<!-- <router-link to="#" class="dropdown-item d-flex align-items-center">
-								<play-alt-icon height="18" width="18" class="dropdown-item-icon"></play-alt-icon>
-								Watch a Demo
-							</router-link>
-							<router-link to="#" class="dropdown-item d-flex align-items-center">
-								<info-circle-icon height="18" width="18" class="dropdown-item-icon"></info-circle-icon>
-								Help Center
-							</router-link> -->
-
-							<div class="dropdown-divider mx-n2"></div>
-
-							<span class="dropdown-header">About</span>
-							<a target="_blank" href="/privacy-policy" class="dropdown-item d-flex align-items-center">
-								Privacy Policy
-							</a>
-							<a target="_blank" href="/terms-of-service" class="dropdown-item d-flex align-items-center">
-								Terms of Service
-							</a>
-
-							<div class="dropdown-divider mx-n2"></div>
-
-							<a target="_blank" :href="`/@${auth.username}`" class="dropdown-item d-flex align-items-center">
-								Booking Page
-							</a>
-							<form action="/logout" method="POST">
-								@csrf
-								<button type="submit" class="dropdown-item outline-0">Log Out</button>
-							</form>
-						</div>
-					</div>
 
 					<div class="sidebar-heading mt-7">COMMUNICATION</div>
-					<router-link  custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/video-messages">
-						<div @click="toggleSidebar('/dashboard/video-messages')" class="sidebar-menu-item" :class="{active: isActive}">Video Messages</div>
+					<router-link tag="div" class="sidebar-menu-item" to="/dashboard/video-messages">
+						Video Messages
 					</router-link>
-					<router-link v-if="$root.auth.messages" custom v-slot="{ isActive }" class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
-						<div @click="toggleSidebar(`/dashboard/conversations/${currentConversationID}`)" class="sidebar-menu-item" :class="{active: isActive}">Messages</div>
+					<router-link tag="div" class="sidebar-menu-item" to="/dashboard/video-campaigns">
+						Video Campaigns
+					</router-link>
+					<router-link tag="div" v-if="$root.auth.messages"class="sidebar-menu-item" :to="`/dashboard/conversations/${currentConversationID}`">
+						Messages
 					</router-link>
 				
 					
 
 					<div class="mt-7">
 						<div class="sidebar-heading">BOOKINGS</div>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/calendar">
-							<div @click="toggleSidebar('/dashboard/calendar')" :class="{active: isActive}">Calendar</div>
+						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/calendar">
+							Calendar
 						</router-link>
-						<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/services">
-							<div @click="toggleSidebar('/dashboard/services')" class="sidebar-menu-item" :class="{active: isActive}">Event Types</div>
+						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/services">
+							Event Types
 						</router-link>
-						<router-link v-if="$root.auth.match_up" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/booking-links">
-							<div @click="toggleSidebar('/dashboard/booking-links')" class="sidebar-menu-item" :class="{active: isActive}">Match Up</div>
+						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/booking-links">
+							Match Up
 						</router-link>
 
 
 						<template>
 							<div class="sidebar-heading mt-7">TOUCH POINT</div>
-							<router-link v-if="$root.auth.linkedin_username" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
-								<div @click="toggleSidebar('/dashboard/integrations/linkedin')" class="sidebar-menu-item" :class="{active: isActive}">LinkedIn</div>
+							<router-link tag="div" v-if="$root.auth.linkedin_username" class="sidebar-menu-item" to="/dashboard/integrations/linkedin">
+								LinkedIn
 							</router-link>
-							<router-link v-if="$root.auth.contacts" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/contacts">
-								<div @click="toggleSidebar('/dashboard/contacts')" class="sidebar-menu-item" :class="{active: isActive}">Contacts</div>
+							<router-link tag="div" v-if="$root.auth.contacts" class="sidebar-menu-item" to="/dashboard/contacts">
+								Contacts
 							</router-link>
 						</template>
 
 						
 						
 						<div class="sidebar-heading mt-7">INTEGRATIONS</div>
-						<router-link custom v-slot="{ isActive }" exact class="sidebar-menu-item" to="/dashboard/integrations">
-							<div @click="toggleSidebar('/dashboard/integrations')" class="sidebar-menu-item" :class="{active: isActive}">Add an Integration</div>
+						<router-link tag="div" exact class="sidebar-menu-item" to="/dashboard/integrations">
+							Add an Integration
 						</router-link>
-						{{-- <router-link v-if="auth.xero_token" tag="div" class="sidebar-menu-item" to="/dashboard/integrations/xero">
-							Xero Invoicing
-						</router-link> --}}
 						
 						<template v-if="$root.auth.packages">
 							<div class="sidebar-heading mt-7">APPS</div>
-							<div class="sidebar-menu-item mt-2 cursor-pointer p-1 d-none" hidden @click="$refs['addAppModal'].show()">
-							</div>
-							<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/packages">
-								<div @click="toggleSidebar('/dashboard/packages')" class="sidebar-menu-item" :class="{active: isActive}">Packages</div>
+							<router-link tag="div" class="sidebar-menu-item" to="/dashboard/packages">
+								Packages
 							</router-link>
 						</template>
 
@@ -169,11 +105,11 @@
 						
 						<template v-if="$root.auth.team">
 							<div class="sidebar-heading mt-7">TEAM</div>
-							<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/organizations">
-								<div @click="toggleSidebar('/dashboard/team/organizations')" :class="{active: isActive}">Organizations</div>
+							<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/organizations">
+								Organizations
 							</router-link>
-							<router-link tag="div" custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/team/members">
-								<div @click="toggleSidebar('/dashboard/team/members')" :class="{active: isActive}">Members</div>
+							<router-link tag="div" class="sidebar-menu-item" to="/dashboard/team/members">
+								Members
 							</router-link>
 						</template>
 
@@ -181,11 +117,11 @@
 
 						<template v-if="$root.auth.payments">
 							<div class="sidebar-heading mt-7">PAYMENTS</div>
-							<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/payments/invoices">
-								<div @click="toggleSidebar('/dashboard/payments/invoices')" class="sidebar-menu-item" :class="{active: isActive}">Invoices</div>
+							<router-link  tag="div" class="sidebar-menu-item" to="/dashboard/payments/invoices">
+								Invoices
 							</router-link>
-							<router-link custom v-slot="{ isActive }" class="sidebar-menu-item" to="/dashboard/payments/subscriptions">
-								<div @click="toggleSidebar('/dashboard/payments/subscriptions')" class="sidebar-menu-item" :class="{active: isActive}">Subscriptions</div>
+							<router-link  tag="div" class="sidebar-menu-item" to="/dashboard/payments/subscriptions">
+								Subscriptions
 							</router-link>
 						</template>
 					</div>
@@ -207,13 +143,8 @@
 				</div>
 
 				<div class="dashboard-content position-relative h-full overflow-auto flex flex-col" ref="dashboardContent">
-					{{-- <div class="contentloader position-absolute w-full h-full bg-light" v-if="$root.contentloading">
-						<div class="position-absolute-center">
-							<div class="spinner-border text-primary" role="status"></div>
-						</div> 
-					</div> --}}
 
-					<div class="flex-grow">
+					<div class="flex-grow relative">
 						<router-view></router-view>
 					</div>
 					
@@ -233,34 +164,7 @@
 			
 			<video-call ref="videoCall"></video-call>
 			<screen-recorder ref="screenRecorder" v-if="screenRecorder.conversation_id"></screen-recorder>
-			{{-- <notification ref="notification"></notification> --}}
-			{{-- <modal ref="addAppModal">
-				<h5 class="font-heading mb-3">Add App</h5>
-				<div class="d-flex border-bottom pt-3 pb-4">
-					<package-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></package-icon>
-					<div class="flex-grow-1 pl-4">
-						<h5 class="font-heading mb-1">Packages</h5>
-						<p class="text-muted">Group and offer your booking types into packages with service slots, price adn expiration date.</p>
-						<button class="btn btn-primary" disabled type="button" @click="auth.has_payments = true">Installed</button>
-					</div>
-				</div>
-				<div class="d-flex border-bottom pt-3 pb-4">
-					<payments-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></payments-icon>
-					<div class="flex-grow-1 pl-4">
-						<h5 class="font-heading mb-1">Payment</h5>
-						<p class="text-muted">Create invoices and subscriptions for your customers. Integrate and sync with your Xero account.</p>
-						<button class="btn btn-primary" type="button" @click="auth.has_payments = true">Upgrade to Pro</button>
-					</div>
-				</div>
-				<div class="d-flex pt-4 pb-3">
-					<member-icon height="35" width="35" transform="scale(1.4)" class="ml-2 mt-1"></member-icon>
-					<div class="flex-grow-1 pl-4">
-						<h5 class="font-heading mb-1">Team</h5>
-						<p class="text-muted">Manage and assign services to your members, and group them into organizations.</p>
-						<button class="btn btn-primary" type="button" @click="auth.has_team = true">Upgrade to Enterprise</button>
-					</div>
-				</div>
-			</modal> --}}
+			
 
 			
 			<div v-if="$root.toggleKnowBase">

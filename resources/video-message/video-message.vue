@@ -11,7 +11,7 @@
 					</button>
 				</div>
 				<div class="w-full flex-grow bg-black relative h-full">
-					<VideoPlayer :videos="$root.videoMessage.videos.map(x => x.user_video)" @firstPlayAttempt="firstPlayAttempt()"></VideoPlayer>
+					<VideoPlayer :videos="$root.videoMessage.videos.map(x => x.user_video).filter(x => (x && x.id ? true : false))" @firstPlayAttempt="firstPlayAttempt()"></VideoPlayer>
 				</div>
 			</div>
 		</div>

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\UserVideo;
+use App\Models\VideoCampaignVideo;
 use App\Models\VideoMessageVideo;
 use Auth;
 use Aws\MediaConvert\MediaConvertClient;
@@ -21,18 +22,19 @@ class UserVideoService
     public static function store(Request $request)
     {
         (new self)->validate($request, [
-            'source' => 'nullable|string|max:255',
-            'gif' => 'nullable|string|max:255',
-            'thumbnail' => 'nullable|string|max:255',
+            'source' => 'required|string|max:255',
+            'thumbnail' => 'required|string|max:255',
             'duration' => 'required|integer',
         ]);
 
         $authUser = Auth::user();
-        $data = $request->only('source','gif', 'thumbnail', 'duration');
+        $data = $request->only('source', 'thumbnail', 'duration');
         $data['user_id'] = $authUser->id;
+        $dirname = pathinfo($data['source'])['dirname'];
+        $data['gif'] = $dirname . '/gif.gif';
         $userVideo = UserVideo::create($data);
 
-        /* Mediaconvert */
+        // Mediaconvert
         $bucket = config('aws.s3.bucket');
         $mediaConvertClient = new MediaConvertClient([
             'version' => config('aws.mediaconvert.version'),
@@ -62,20 +64,20 @@ class UserVideoService
             echo $e->getMessage();
         }
 
+
         return response()->json($userVideo);
     }
 
     public static function destroy(UserVideo $userVideo)
     {
         VideoMessageVideo::where('user_video_id', $userVideo->id)->delete();
-        UserVideo::where('id', $userVideo->id)->delete();
+        VideoCampaignVideo::where('user_video_id', $userVideo->id)->delete();
         return response()->json(['deleted' => $userVideo->delete()]);
     }
 
     public function update(Request $request, UserVideo $userVideo)
     {
         $userVideo
-        ->where('id',$request->id)
         ->update([
             'tags' => $request->tags,
         ]);
