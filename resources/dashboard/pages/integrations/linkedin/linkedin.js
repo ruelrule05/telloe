@@ -94,10 +94,11 @@ export default {
 		activities: function () {
 			let activities = {};
 			this.linkedActivities.forEach(activity => {
-				if (!activities[activity.data.author.id]) {
-					activities[activity.data.author.id] = [];
+				let authorId = activity.data.shared_post ? activity.data.shared_post.author_id : activity.data.author.id;
+				if (!activities[authorId]) {
+					activities[authorId] = [];
 				}
-				activities[activity.data.author.id].push(activity);
+				activities[authorId].push(activity);
 			});
 			let sortedActivities = [];
 			Object.values(activities).forEach(a => {
@@ -192,7 +193,7 @@ export default {
 			if (this.filters.shared && this.filters.shared != activity.sharedPost) {
 				inFilter = false;
 			}
-			return inSearch && inFilter && activity.data.author.username != this.$root.auth.linkedin_username;
+			return inSearch && inFilter && ((activity.data.shared_post && activity.data.shared_post.author_username != this.$root.auth.linkedin_username) || (!activity.data.shared_post && activity.data.author.username != this.$root.auth.linkedin_username));
 		},
 
 		getContact(urn) {

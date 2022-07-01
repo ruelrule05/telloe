@@ -97,8 +97,8 @@ export default {
 					parsedBookings.push({
 						booking: parsedBooking,
 						name: parsedBooking.name,
-						start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
-						end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
+						start: timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone, 'YYYY-MM-DD HH:mm'),
+						end: timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone, 'YYYY-MM-DD HH:mm'),
 						category: 'bookings',
 						color: color
 					});
@@ -113,8 +113,8 @@ export default {
 					parsedBookings.push({
 						booking: parsedBooking,
 						name: parsedBooking.name,
-						start: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone),
-						end: parsedBooking.date + ' ' + timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone),
+						start: timezoneTime.get(`${parsedBooking.date} ${parsedBooking.start}`, parsedBooking.timezone, this.timezone, 'YYYY-MM-DD HH:mm'),
+						end: timezoneTime.get(`${parsedBooking.date} ${parsedBooking.end}`, parsedBooking.timezone, this.timezone, 'YYYY-MM-DD HH:mm'),
 						category: 'bookings',
 						color: color
 					});
@@ -145,8 +145,8 @@ export default {
 						booking: calendarEvent,
 						name: calendarEvent.summary,
 						type: 'google-event',
-						start: calendarEvent.date + ' ' + timezoneTime.get(`${calendarEvent.date} ${calendarEvent.start}`, calendarEvent.timezone, this.timezone),
-						end: calendarEvent.date + ' ' + timezoneTime.get(`${calendarEvent.date} ${calendarEvent.end}`, calendarEvent.timezone, this.timezone),
+						start: timezoneTime.get(`${calendarEvent.date} ${calendarEvent.start}`, calendarEvent.timezone, this.timezone, 'YYYY-MM-DD HH:mm'),
+						end: timezoneTime.get(`${calendarEvent.date} ${calendarEvent.end}`, calendarEvent.timezone, this.timezone, 'YYYY-MM-DD HH:mm'),
 						category: 'bookings',
 						color: color
 					};

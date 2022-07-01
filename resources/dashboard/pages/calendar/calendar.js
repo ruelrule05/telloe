@@ -73,7 +73,7 @@ export default {
 			this.bookings.forEach(booking => {
 				attributes.push({
 					customData: 'booking',
-					dates: booking.date
+					dates: timezoneTime.get(`${booking.date} ${booking.start}`, booking.timezone, this.timezone, 'YYYY-MM-DD')
 				});
 			});
 
@@ -221,6 +221,7 @@ export default {
 			let timezonedBookings = [];
 			bookings.forEach(booking => {
 				let parseBooking = JSON.parse(JSON.stringify(booking));
+				parseBooking.date = timezoneTime.get(`${booking.date} ${booking.start}`, booking.timezone, this.timezone, 'YYYY-MM-DD');
 				parseBooking.start = timezoneTime.get(`${booking.date} ${booking.start}`, booking.timezone, this.timezone);
 				parseBooking.end = timezoneTime.get(`${booking.date} ${booking.end}`, booking.timezone, this.timezone);
 				timezonedBookings.push(parseBooking);

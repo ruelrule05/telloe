@@ -24,6 +24,13 @@
 			</div>
 		</div>
 
+		<div class="vld-parent">
+			<loading :active.sync="isLoading" :is-full-page="fullPage">
+				<h1 class="absolute-center w-full h-full z-50 text-7xl">{{ countDown }}</h1>
+			</loading>
+			<!--<button type="button" class="btn btn-md btn-primary" @click.prevent="doAjax">fetch Data</button>-->
+		</div>
+
 		<div v-show="!library" class="w-full min-h-full">
 			<!-- Step 1 source -->
 			<div v-show="step == 1" class="w-full min-h-screen flex justify-center">
@@ -171,7 +178,8 @@
 						</div>
 						<div class="text-center px-4 py-2">
 							<div class="inline-flex items-center">
-								<svg v-if="!isRecording" @click="startRecording" class="inline-block cursor-pointer" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<div class="w-30 pr-3 text-left">{{ recording_state }}</div>
+								<svg v-if="!isRecording" @click="recordingLoader" class="inline-block cursor-pointer" width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<rect width="48" height="48" rx="24" fill="#E33171" />
 									<rect x="16" y="16" width="16" height="16" fill="white" />
 								</svg>
@@ -244,7 +252,6 @@
 												<MoreVIcon width="10" height="10" class="fill-current text-primary"></MoreVIcon>
 											</button>
 										</div>
-
 										<div class="checkmark absolute-center rounded-full">
 											<div class="absolute-center w-full h-full p-0.5">
 												<div class="bg-white rounded-full w-full h-full"></div>
@@ -262,7 +269,6 @@
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
 							</button>
-
 							<button
 								class="btn btn-md btn-primary"
 								:class="{ disabled: !selectedVideos.length }"
@@ -333,6 +339,8 @@ import WarningIcon from '../../../icons/warning';
 import MoreVIcon from '../../../icons/more-v';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
 	props: {
@@ -346,7 +354,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect },
+	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect, Loading },
 
 	data: () => ({
 		library: false,
@@ -374,7 +382,11 @@ export default {
 		uploadProgress: 0,
 		tagOptions: [],
 		user_videos: null,
-		searchLib: ''
+		searchLib: '',
+		recording_state: 'Start Recording',
+		isLoading: false,
+		fullPage: true,
+		countDown: 3
 	}),
 
 	computed: {
@@ -424,6 +436,25 @@ export default {
 			deleteUserVideo: 'user_videos/delete',
 			updateTag: 'user_videos/update'
 		}),
+
+		recordingLoader() {
+			this.countDownTimer();
+			this.isLoading = true;
+			// simulate AJAX
+			setTimeout(() => {
+				this.isLoading = false;
+			}, 3000);
+		},
+		countDownTimer() {
+			if (this.countDown > 0) {
+				setTimeout(() => {
+					this.countDown -= 1;
+					this.countDownTimer();
+				}, 1000);
+			} else {
+				this.startRecording();
+			}
+		},
 
 		secondsToDuration(seconds, limit = 14, end = 5) {
 			let date = new Date(0);
@@ -493,12 +524,15 @@ export default {
 
 		pauseRecording() {
 			if (this.videoRecorder) {
+				this.recording_state = 'Start Recording';
 				this.isRecording = false;
 				this.videoRecorder.pause();
 			}
 		},
 
 		startRecording() {
+			this.countDown = 3;
+			this.recording_state = 'Stop Recording';
 			if (this.videoRecorder) {
 				this.isRecording = true;
 				if (this.blobs.length) {
@@ -722,18 +756,59 @@ export default {
 
 		createVideoPreview() {
 			if (!this.source) return null;
-			this.step = 3;
-			this.library = false;
-			this.previewSource = URL.createObjectURL(this.source);
-			this.$refs.videoPlayback.play();
-			setTimeout(() => {
-				const canvas = document.createElement('canvas');
-				canvas.width = 300;
-				canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
-				const ctx = canvas.getContext('2d');
-				ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
-				this.thumbnail = canvas.toDataURL('image/png');
-			}, 500);
+			if (this.source.type.includes('video')) {
+				this.step = 3;
+				this.library = false;
+				this.previewSource = URL.createObjectURL(this.source);
+			} else {
+				this.$toast.error('Trying to upload non supported file');
+				return null;
+			}
+		},
+
+		async createGif() {
+			this.status = 'Processing...';
+			return new Promise((resolve, reject) => {
+				let gifWidth = this.$refs.videoPlayback.videoWidth;
+				let gifHeight = this.$refs.videoPlayback.videoHeight;
+				if (gifWidth > 320) {
+					let ratio = 320 / gifWidth;
+					gifWidth = 320;
+					gifHeight = gifHeight * ratio;
+				}
+				gifshot.createGIF(
+					{
+						video: [this.source],
+						numFrames: 30,
+						gifWidth: gifWidth,
+						gifHeight: gifHeight,
+						progressCallback: captureProgress => {
+							this.gifProgress = 50 * captureProgress;
+						}
+					},
+					obj => {
+						if (!obj.error) {
+							this.gif = obj.image;
+							let image = new Image();
+							image.width = gifWidth;
+							image.height = gifHeight;
+							image.onload = () => {
+								let canvas = document.createElement('canvas');
+								canvas.width = image.width;
+								canvas.height = image.height;
+								let ctx = canvas.getContext('2d');
+								ctx.drawImage(image, 0, 0);
+								this.thumbnail = canvas.toDataURL('image/png');
+								resolve();
+							};
+							image.src = obj.image;
+						} else {
+							console.log(obj.error);
+							reject();
+						}
+					}
+				);
+			});
 		},
 
 		async uploadToS3() {
@@ -754,7 +829,27 @@ export default {
 							this.S3Source = data.Location;
 							this.uploadComplete++;
 							this.uploadProgress += 10;
-							if (this.uploadComplete == 2) {
+							if (this.uploadComplete == 3) {
+								resolve();
+							}
+						} else {
+							console.log('Error upload!');
+						}
+					}
+				);
+
+				S3.upload(
+					{
+						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif.gif',
+						Body: this.dataURLtoFile(this.gif, 'gif.gif'),
+						ACL: 'public-read'
+					},
+					(err, data) => {
+						if (!err && data) {
+							this.S3Gif = data.Location;
+							this.uploadComplete++;
+							this.uploadProgress += 10;
+							if (this.uploadComplete == 3) {
 								resolve();
 							}
 						}

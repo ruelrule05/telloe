@@ -1,9 +1,5 @@
 <?php
-/*
- * Frontend Routes
- *
- *
- */
+// Frontend Routes
 use  App\Http\Controllers\AuthController;
 use  App\Http\Controllers\BookingController;
 use App\Http\Controllers\ConversationController;
@@ -56,7 +52,7 @@ Route::group(
             Route::post('auth/guest_account', 'AuthController@createGuestAccount');
             Route::put('booking-links/{uuid}/associate_user', 'BookingLinkController@associateUser')->middleware('auth');
 
-            Route::post('messages',[MessageController::class, 'store']);
+            Route::post('messages', [MessageController::class, 'store']);
             Route::get('conversations/get_client_location', [ConversationController::class, 'getClientLocation']);
             Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
             Route::get('conversations/{id}/files', 'ConversationController@files');
