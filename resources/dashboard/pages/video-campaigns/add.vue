@@ -281,6 +281,7 @@ export default {
 		}),
 
 		dataURLtoFile(dataurl, filename) {
+			console.log(dataurl, filename);
 			var arr = dataurl.split(','),
 				mime = arr[0].match(/:(.*?);/)[1],
 				bstr = atob(arr[1]),
