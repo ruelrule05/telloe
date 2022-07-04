@@ -766,51 +766,6 @@ export default {
 			}
 		},
 
-		async createGif() {
-			this.status = 'Processing...';
-			return new Promise((resolve, reject) => {
-				let gifWidth = this.$refs.videoPlayback.videoWidth;
-				let gifHeight = this.$refs.videoPlayback.videoHeight;
-				if (gifWidth > 320) {
-					let ratio = 320 / gifWidth;
-					gifWidth = 320;
-					gifHeight = gifHeight * ratio;
-				}
-				gifshot.createGIF(
-					{
-						video: [this.source],
-						numFrames: 30,
-						gifWidth: gifWidth,
-						gifHeight: gifHeight,
-						progressCallback: captureProgress => {
-							this.gifProgress = 50 * captureProgress;
-						}
-					},
-					obj => {
-						if (!obj.error) {
-							this.gif = obj.image;
-							let image = new Image();
-							image.width = gifWidth;
-							image.height = gifHeight;
-							image.onload = () => {
-								let canvas = document.createElement('canvas');
-								canvas.width = image.width;
-								canvas.height = image.height;
-								let ctx = canvas.getContext('2d');
-								ctx.drawImage(image, 0, 0);
-								this.thumbnail = canvas.toDataURL('image/png');
-								resolve();
-							};
-							image.src = obj.image;
-						} else {
-							console.log(obj.error);
-							reject();
-						}
-					}
-				);
-			});
-		},
-
 		async uploadToS3() {
 			if (!this.source || !this.thumbnail) {
 				return;
