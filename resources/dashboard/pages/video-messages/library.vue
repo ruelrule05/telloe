@@ -760,6 +760,17 @@ export default {
 				this.step = 3;
 				this.library = false;
 				this.previewSource = URL.createObjectURL(this.source);
+
+				this.$refs.videoPlayback.currentTime = 0;
+				this.$refs.videoPlayback.play();
+				setTimeout(() => {
+					const canvas = document.createElement('canvas');
+					canvas.width = 300;
+					canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+					this.thumbnail = canvas.toDataURL('image/png');
+				}, 300);
 			} else {
 				this.$toast.error('Trying to upload non supported file');
 				return null;
@@ -784,29 +795,11 @@ export default {
 							this.S3Source = data.Location;
 							this.uploadComplete++;
 							this.uploadProgress += 10;
-							if (this.uploadComplete == 3) {
+							if (this.uploadComplete == 2) {
 								resolve();
 							}
 						} else {
 							console.log('Error upload!');
-						}
-					}
-				);
-
-				S3.upload(
-					{
-						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif.gif',
-						Body: this.dataURLtoFile(this.gif, 'gif.gif'),
-						ACL: 'public-read'
-					},
-					(err, data) => {
-						if (!err && data) {
-							this.S3Gif = data.Location;
-							this.uploadComplete++;
-							this.uploadProgress += 10;
-							if (this.uploadComplete == 3) {
-								resolve();
-							}
 						}
 					}
 				);
