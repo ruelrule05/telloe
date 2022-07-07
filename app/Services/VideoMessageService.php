@@ -175,7 +175,7 @@ class VideoMessageService
         if ($request->input('contact_id')) {
             Contact::where('id', $request->input('contact_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
-        $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
+        $userVideo = $videoMessage->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
         if ($userVideo) {
             $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
             $credentials = [

@@ -299,8 +299,8 @@ export default {
 				(async () => {
 					this.uploadProgress += 20;
 					let canvas = document.createElement('canvas');
-					canvas.width = 350;
-					canvas.height = 66;
+					canvas.width = 400;
+					canvas.height = 75;
 					let ctx = canvas.getContext('2d');
 					let parsedDuration = humanizeDuration(duration, { round: true, units: duration < 60000 ? ['s'] : ['m'] })
 						.replace('minutes', 'minute')
@@ -316,7 +316,7 @@ export default {
 						sourceImage.onload = () => {
 							this.uploadProgress += 20;
 							ctx.beginPath();
-							ctx.rect(25, 12, 310, 42);
+							ctx.rect(25, 12, 360, 42);
 							ctx.fillStyle = '#3167e3';
 							ctx.fill();
 
