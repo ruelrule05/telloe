@@ -381,7 +381,8 @@ export default {
 				if (response) {
 					let index = this.videoCampaign.video_messages.findIndex(x => x.id == response.data.id);
 					if (index > -1) {
-						this.videoCampaign.video_messages[index] = response.data;
+						this.videoCampaign.video_messages[index].videos = response.data.videos;
+						this.videoCampaign.video_messages[index].link_preview = response.data.link_preview;
 					}
 				}
 			}
@@ -716,7 +717,7 @@ export default {
 
 				case 'Send to email':
 					this.$set(videoMessage, 'loading', true);
-					await this.copyElementToClipboard(videoMessage, true);
+					await this.copyElementToClipboard(videoMessage, true).catch(() => {});
 					this.$set(videoMessage, 'loading', false);
 					window.location.href = `mailto:${videoMessage.contact.email}?subject=${videoMessage.title}`;
 					break;

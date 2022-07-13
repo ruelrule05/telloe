@@ -126,7 +126,7 @@ class VideoMessageService
             echo $e->getMessage();
         }
 
-        return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
+        return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes', 'contact')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
         })->first());
     }
@@ -175,7 +175,26 @@ class VideoMessageService
         if ($request->input('contact_id')) {
             Contact::where('id', $request->input('contact_id'))->where('user_id', $authUser->id)->firstOrFail();
         }
-        $userVideo = $videoMessage->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
+
+        $userVideos = [];
+        foreach ($request->input('user_video_ids') as $userVideoId) {
+            $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->first();
+            $userVideos[] = $userVideo;
+        }
+        VideoMessageVideo::where('video_message_id', $videoMessage->id)->delete();
+
+        foreach ($userVideos as $key => $userVideo) {
+            VideoMessageVideo::create(
+                [
+                    'video_message_id' => $videoMessage->id,
+                    'user_video_id' => $userVideo->id ?? null,
+                    'order' => $key
+                ]
+            );
+        }
+
+
+        $userVideo = $videoMessage->fresh('videos')->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
         if ($userVideo) {
             $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
             $credentials = [
@@ -210,22 +229,6 @@ class VideoMessageService
             }
         }
 
-        $userVideos = [];
-        foreach ($request->input('user_video_ids') as $userVideoId) {
-            $userVideo = UserVideo::where('id', $userVideoId)->where('user_id', $authUser->id)->first();
-            $userVideos[] = $userVideo;
-        }
-        VideoMessageVideo::where('video_message_id', $videoMessage->id)->delete();
-
-        foreach ($userVideos as $key => $userVideo) {
-            VideoMessageVideo::create(
-                [
-                    'video_message_id' => $videoMessage->id,
-                    'user_video_id' => $userVideo->id ?? null,
-                    'order' => $key
-                ]
-            );
-        }
         $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'contact_id', 'linkedin_user', 'booking_url');
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
@@ -234,7 +237,7 @@ class VideoMessageService
         }
         $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
         $videoMessage->update($data);
-        return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes')->with('conversation', function ($conversation) {
+        return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes', 'contact')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
         })->first());
     }
