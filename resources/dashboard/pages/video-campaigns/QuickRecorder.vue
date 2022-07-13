@@ -114,7 +114,7 @@ export default {
 			this.$refs.videoPreview.currentTime = 0;
 			this.$refs.videoPreview.play();
 			const canvas = document.createElement('canvas');
-			canvas.width = 300;
+			canvas.width = 500;
 			canvas.height = (canvas.width / this.$refs.videoPreview.videoWidth) * this.$refs.videoPreview.videoHeight;
 			const ctx = canvas.getContext('2d');
 			ctx.drawImage(this.$refs.videoPreview, 0, 0, canvas.width, canvas.height);

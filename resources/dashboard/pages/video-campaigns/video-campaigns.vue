@@ -148,7 +148,7 @@
 											<QuickRecorder
 												v-if="video.quickRecord"
 												:ref="`recorder-${video.id}`"
-												@cancel="video.quickRecord = false"
+												@cancel="disableQuickRecorders()"
 												@record="
 													$set(video, 'quickRecord', false);
 													$set(video, 'processing', true);
@@ -169,8 +169,11 @@
 									</div>
 									<div class="text-xs text-gray-400 mb-1">{{ dayjs(vMessage.created_at).format('MMM DD, YYYY hh:mm A') }}</div>
 									<div class="flex items-center text-xs text-gray-500 mt-1 gap-4">
-										<div>
-											<VueDropdown @click="shareVideoMessage($event, vMessage)" :options="['Copy video link', 'Copy video for email', 'Send to email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
+										<div class="relative">
+											<div v-if="vMessage.loading" class="absolute-center">
+												<div class="spinner spinner-xs"></div>
+											</div>
+											<VueDropdown :class="{ 'opacity-0': vMessage.loading }" @click="shareVideoMessage($event, vMessage)" :options="['Copy video link', 'Copy video for email', 'Send to email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
 												<template #button>
 													<div class="flex items-center transition-colors cursor-pointer"><ShareIcon class="w-3.5 fill-current text-gray-400 mr-1"></ShareIcon> Share</div>
 												</template>
@@ -682,6 +685,11 @@ export default {
 					resolve(template.content.firstChild);
 				};
 				img.src = videoMessage.link_preview;
+				img.onerror = () => {
+					setTimeout(() => {
+						img.src = videoMessage.link_preview;
+					}, 1000);
+				};
 			});
 		},
 
@@ -707,7 +715,9 @@ export default {
 					break;
 
 				case 'Send to email':
+					this.$set(videoMessage, 'loading', true);
 					await this.copyElementToClipboard(videoMessage, true);
+					this.$set(videoMessage, 'loading', false);
 					window.location.href = `mailto:${videoMessage.contact.email}?subject=${videoMessage.title}`;
 					break;
 			}

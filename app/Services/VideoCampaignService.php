@@ -154,7 +154,6 @@ class VideoCampaignService
                     ]];
                 $AWSClient = new ElasticTranscoderClient($credentials);
                 $host = parse_url($request->input('gif_duration'))['host'] ?? null;
-                $timestamp = $authUser->id . '-' . time();
                 $userVideo = $videoMessage->fresh()->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
                 if ($userVideo) {
                     $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
@@ -298,7 +297,6 @@ class VideoCampaignService
                     ]];
                 $AWSClient = new ElasticTranscoderClient($credentials);
                 $host = parse_url($request->input('gif_duration'))['host']  ?? null;
-                $timestamp = $authUser->id . '-' . time();
 
                 $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
                 if ($userVideo) {
