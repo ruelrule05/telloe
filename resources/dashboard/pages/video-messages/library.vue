@@ -531,6 +531,7 @@ export default {
 					track.stop();
 				});
 			}
+			this.selfieSegmentation = null;
 			this.screenStreams = null;
 			clearInterval(this.recordInterval);
 		},
