@@ -67,7 +67,7 @@
 												@click="
 													sourceType = 'camera';
 													step++;
-													initMediastreams();
+													getCameraMode();
 												"
 											>
 												<span>Record video</span>
@@ -172,7 +172,8 @@
 					<div class="flex flex-col h-full overflow-hidden">
 						<div class="flex-grow relative">
 							<div class="absolute-center w-full h-full">
-								<video ref="videoPreview" class="w-full h-full bg-black" playsinline></video>
+								<video ref="videoPreview" class="w-full h-full bg-black" width="640" height="480" style="display: none" playsinline></video>
+								<canvas class="w-full h-full" id="videoCanvas" width="640" height="480"></canvas>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
 						</div>
@@ -341,6 +342,7 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import { SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 
 export default {
 	props: {
@@ -386,7 +388,14 @@ export default {
 		recording_state: 'Start Recording',
 		isLoading: false,
 		fullPage: true,
-		countDown: 3
+		countDown: 3,
+
+		canvaStream: null,
+		cameraMode: 3,
+		videoCanvas: null,
+		backgroundImg: null,
+		videoSettings: [],
+		selfieSegmentation: null,
 	}),
 
 	computed: {
@@ -406,6 +415,10 @@ export default {
 	},
 
 	mounted() {
+		this.videoElement = this.$refs['videoPreview'];
+		this.videoCanvas = document.getElementById('videoCanvas');
+		this.canvasCtx = this.videoCanvas.getContext("2d");
+
 		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
 			if (this.$refs.videoPlayback.duration == Infinity) {
@@ -547,8 +560,87 @@ export default {
 				}
 			}
 		},
+		
+
+		async getVideoSettings() {
+			let response = await window.axios.get('/video-settings')
+			this.videoSettings = response.data;
+			return
+		},
+		async openCamera() {
+			this.cameraStreams = await navigator.mediaDevices.getUserMedia({
+				video: true,
+			});
+			this.videoElement.onloadeddata = () => {
+				this.sendToMediaPipe();
+				this.init();
+			};
+			// Camera turned on successfully
+			if ('srcObject' in this.videoElement) {
+				this.videoElement.srcObject = this.cameraStreams;
+			} else {
+				this.videoElement.src = URL.createObjectURL(this.cameraStreams);
+			}
+			
+			this.videoElement.play();
+		},
+		init() {
+			this.selfieSegmentation = new SelfieSegmentation({
+				locateFile: (file) =>
+				`https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`,
+			});
+
+			this.selfieSegmentation.setOptions({
+				modelSelection: 1,
+				selfieMode: true,
+			});
+
+			this.selfieSegmentation.onResults(this.onResults);
+
+			// this.sendToMediaPipe()
+		},
+		async sendToMediaPipe() {
+			if (!this.videoElement.videoWidth) {
+				console.log(this.videoElement.videoWidth);
+				requestAnimationFrame(this.sendToMediaPipe);
+			} else {
+				await this.selfieSegmentation.send({ image: this.videoElement });
+				requestAnimationFrame(this.sendToMediaPipe);
+			}
+		},
+		// using the background image
+		onResults(results) {
+			this.canvasCtx.save();
+			this.canvasCtx.clearRect( 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.drawImage( results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.globalCompositeOperation = "source-out";
+			this.canvasCtx.drawImage( this.backgroundImg, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.globalCompositeOperation = "destination-atop";
+			this.canvasCtx.drawImage( results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.restore();
+		},
+		async getCameraMode() {
+			await this.getVideoSettings();
+
+			if( this.videoSettings.use_background_image) {
+				this.cameraMode=3
+				this.$refs.videoPreview.style.display = "none";
+				this.videoCanvas.style.display = "block";
+
+				this.backgroundImg = new Image()
+				this.backgroundImg.src = this.videoSettings.virtual_background_image
+				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous')
+			} else {
+				this.cameraMode=1
+				this.$refs.videoPreview.style.display = "block";
+				this.videoCanvas.style.display = "none";
+			}
+			this.initMediastreams();
+		},
 
 		async initMediastreams() {
+			( this.cameraMode === 3 && this.openCamera() )
+
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
 			if (this.audioStreams) {
@@ -618,13 +710,36 @@ export default {
 			} catch (e) {
 				//
 			}
-			this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm', videoBitsPerSecond: 2500000 });
-			this.videoRecorder.camera = this.finalStream;
-			this.videoRecorder.ondataavailable = e => {
-				if (this.isRecording) {
-					this.blobs.push(e.data);
+
+			if(this.sourceType.includes('camera') && this.cameraMode ===3) { // for using canva
+				const stream = this.videoCanvas.captureStream(25);
+				this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
+				if (this.audioStreams) {
+					this.audioStreams.getTracks().forEach(function (track) {
+						stream.addTrack(track);
+					});
 				}
-			};
+				this.canvaStream = stream;
+				this.videoRecorder = new MediaRecorder(this.canvaStream, {
+					mimeType: 'video/webm;codecs=vp9'
+				});
+				this.videoRecorder.ondataavailable = e => {
+					if(e.data.size > 0){
+						if (this.isRecording) {
+							this.blobs.push(e.data);
+						}
+					}
+				};
+				// this.videoRecorder.start();
+			} else {
+				this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm', videoBitsPerSecond: 2500000 });
+				this.videoRecorder.camera = this.finalStream;
+				this.videoRecorder.ondataavailable = e => {
+					if (this.isRecording) {
+						this.blobs.push(e.data);
+					}
+				};
+			}
 		},
 
 		async streamSize(stream) {

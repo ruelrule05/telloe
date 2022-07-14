@@ -117,7 +117,8 @@ export default {
 			sendToEmail: 1
 		},
 		csrf_token: '',
-		countrySpecs: []
+		countrySpecs: [],
+		videoSettings: null,
 	}),
 
 	watch: {
@@ -303,6 +304,7 @@ export default {
 		}
 		if (this.$route.query.tab) this.tab = this.$route.query.tab;
 
+		this.getVideoSettings();
 		this.getPlans();
 		this.getMembers();
 		this.getStripeInvoices();
@@ -583,6 +585,82 @@ export default {
 					this.user.profile_image = this.$root.auth.profile_image;
 				}
 			}
+		},
+		async getVideoSettings() {
+			let response = await window.axios.get('/video-settings')
+			this.videoSettings = response.data;
+		},
+		updateBgImage(e) {
+			let input = e.currentTarget;
+			let file = input.files[0];
+			if (file) {
+				if (file.type.match('image/jpeg') || file.type.match('image/png')) {
+					let photosize = file.size / 1000;
+					if (photosize > 5000) {
+						alert('Error: Image file too big. Please choose image file not bigger than 5MB.');
+					} else {
+						this.virtual_bg_image = file;
+
+						let img = document.createElement('img');
+						let reader = new FileReader();
+						reader.readAsDataURL(file);
+
+						reader.onload = oFREvent => {
+							let canvas = document.createElement('canvas');
+							img.src = oFREvent.target.result;
+							img.addEventListener('load', () => {
+								let ctx = canvas.getContext('2d');
+								ctx.drawImage(img, 0, 0);
+
+								let MAX_WIDTH = 350;
+								let MAX_HEIGHT = 350;
+								let width = img.width;
+								let height = img.height;
+
+								if (width > height) {
+									if (width > MAX_WIDTH) {
+										height *= MAX_WIDTH / width;
+										width = MAX_WIDTH;
+									}
+								} else {
+									if (height > MAX_HEIGHT) {
+										width *= MAX_HEIGHT / height;
+										height = MAX_HEIGHT;
+									}
+								}
+								canvas.width = width;
+								canvas.height = height;
+								ctx = canvas.getContext('2d');
+								ctx.drawImage(img, 0, 0, width, height);
+
+								let dataurl = canvas.toDataURL(file.type);
+								let imageFile = toBlob(dataurl);
+								this.videoSettings.virtual_background_image = dataurl;
+								this.videoSettings.virtual_image_file = imageFile;
+								this.videoSettings.imageUpdated = true;
+							});
+						};
+					}
+				} else {
+					alert('Error: Invalid image file!');
+					input.val('');
+				}
+			}
+		},
+		async updateVideoSettings() {
+			this.loading = true;
+			let videoSettings = Object.assign({}, this.videoSettings);
+
+			videoSettings.retain_form_data = this.videoSettings.retain_form_data;
+			videoSettings.virtual_background_image = this.videoSettings.virtual_background_image;
+			videoSettings.use_background_image = this.videoSettings.use_background_image;
+			videoSettings.imageUpdated = this.videoSettings.imageUpdated;
+
+			let response = await window.axios.post('/auth/video_settings', videoSettings, { toast: true });
+
+			this.loading = false;
+
+			return response;
 		},
 
 		async saveMenuSettings() {

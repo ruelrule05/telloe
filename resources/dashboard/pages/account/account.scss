@@ -12,6 +12,14 @@
 		line-height: 0.5;
 	}
 }
+.video-photo {
+	.image {
+		@apply p-8 text-3xl text-primary bg-secondary-light bg-center bg-no-repeat bg-cover;
+		line-height: 0.5;
+		width: 50%;
+		height: 250px;
+	}
+}
 .card-plan {
 	@apply bg-gray-50 rounded-xl p-4;
 	.active-plan {

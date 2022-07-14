@@ -38,6 +38,7 @@
 	"dependencies": {
 		"@flareapp/flare-client": "^3.0.1",
 		"@flareapp/flare-vue": "^3.0.1",
+		"@mediapipe/selfie_segmentation": "^0.1.1632777926",
 		"@tailwindcss/line-clamp": "^0.2.0",
 		"@vue/shared": "^3.2.33",
 		"blueimp-load-image": "^5.14.0",

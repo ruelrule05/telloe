@@ -46,6 +46,8 @@ Route::group(
             Route::get('auth', 'AuthController@get');
             Route::post('auth', 'AuthController@update');
             Route::put('auth', 'AuthController@update');
+            Route::get('video-settings', 'AuthController@getVideoSettings');
+            Route::post('auth/video_settings', 'AuthController@updateVideoSettings');
             Route::put('auth/password', 'AuthController@updatePassword');
             Route::post('fb_notify', 'InquiryController@messengerNotify');
             Route::put('auth/update_stripe_account', 'AuthController@updateStripeAccount');
