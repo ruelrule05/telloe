@@ -148,7 +148,7 @@
 											<QuickRecorder
 												v-if="video.quickRecord"
 												:ref="`recorder-${video.id}`"
-												@cancel="video.quickRecord = false"
+												@cancel="disableQuickRecorders()"
 												@record="
 													$set(video, 'quickRecord', false);
 													$set(video, 'processing', true);
@@ -169,8 +169,11 @@
 									</div>
 									<div class="text-xs text-gray-400 mb-1">{{ dayjs(vMessage.created_at).format('MMM DD, YYYY hh:mm A') }}</div>
 									<div class="flex items-center text-xs text-gray-500 mt-1 gap-4">
-										<div>
-											<VueDropdown @click="shareVideoMessage($event, vMessage)" :options="['Copy video link', 'Copy video for email', 'Send to email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
+										<div class="relative">
+											<div v-if="vMessage.loading" class="absolute-center">
+												<div class="spinner spinner-xs"></div>
+											</div>
+											<VueDropdown :class="{ 'opacity-0': vMessage.loading }" @click="shareVideoMessage($event, vMessage)" :options="['Copy video link', 'Copy video for email', 'Send to email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
 												<template #button>
 													<div class="flex items-center transition-colors cursor-pointer"><ShareIcon class="w-3.5 fill-current text-gray-400 mr-1"></ShareIcon> Share</div>
 												</template>
@@ -378,7 +381,8 @@ export default {
 				if (response) {
 					let index = this.videoCampaign.video_messages.findIndex(x => x.id == response.data.id);
 					if (index > -1) {
-						this.videoCampaign.video_messages[index] = response.data;
+						this.videoCampaign.video_messages[index].videos = response.data.videos;
+						this.videoCampaign.video_messages[index].link_preview = response.data.link_preview;
 					}
 				}
 			}
@@ -543,8 +547,8 @@ export default {
 				(async () => {
 					this.uploadProgress += 20;
 					let canvas = document.createElement('canvas');
-					canvas.width = 350;
-					canvas.height = 66;
+					canvas.width = 400;
+					canvas.height = 75;
 					let ctx = canvas.getContext('2d');
 					let parsedDuration = humanizeDuration(duration, { round: true, units: duration < 60000 ? ['s'] : ['m'] })
 						.replace('minutes', 'minute')
@@ -560,7 +564,7 @@ export default {
 						sourceImage.onload = () => {
 							this.uploadProgress += 20;
 							ctx.beginPath();
-							ctx.rect(25, 12, 310, 42);
+							ctx.rect(25, 12, 360, 42);
 							ctx.fillStyle = '#3167e3';
 							ctx.fill();
 
@@ -682,6 +686,11 @@ export default {
 					resolve(template.content.firstChild);
 				};
 				img.src = videoMessage.link_preview;
+				img.onerror = () => {
+					setTimeout(() => {
+						img.src = videoMessage.link_preview;
+					}, 1000);
+				};
 			});
 		},
 
@@ -707,7 +716,9 @@ export default {
 					break;
 
 				case 'Send to email':
-					await this.copyElementToClipboard(videoMessage, true);
+					this.$set(videoMessage, 'loading', true);
+					await this.copyElementToClipboard(videoMessage, true).catch(() => {});
+					this.$set(videoMessage, 'loading', false);
 					window.location.href = `mailto:${videoMessage.contact.email}?subject=${videoMessage.title}`;
 					break;
 			}

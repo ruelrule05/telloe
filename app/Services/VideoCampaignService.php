@@ -86,16 +86,7 @@ class VideoCampaignService
                 }
             });
             $contacts = $contacts->get();
-            $credentials = [
-                'region' => config('filesystems.disks.s3.region'),
-                'version' => 'latest',
-                'credentials' => [
-                    'key' =>  config('filesystems.disks.s3.key'),
-                    'secret' => config('filesystems.disks.s3.secret')
-                ]];
-            $AWSClient = new ElasticTranscoderClient($credentials);
-            $host = parse_url($request->input('gif_duration'))['host'] ?? null;
-            $timestamp = $authUser->id . '-' . time();
+            $videoMessage = null;
             foreach ($contacts as $contact) {
                 if (! VideoMessage::where('contact_id', $contact->id)->where('video_campaign_id', $videoCampaign->id)->exists()) {
                     $shortId = $authUser->id . Str::random(6);
@@ -142,31 +133,6 @@ class VideoCampaignService
                         ]);
                     }
 
-
-                    $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
-                    if ($userVideo) {
-                        $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
-                        try {
-                            $AWSClient->createJob([
-                                'PipelineId' => config('aws.transcode.pipeline_id'),
-                                'Input' => ['Key' => $sourcePath],
-                                'Outputs' => [
-                                    [
-                                        'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
-                                        'PresetId' => config('aws.transcode.preset_id'),
-                                        'Watermarks' => [
-                                            [
-                                                'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
-                                                'PresetWatermarkId' => 'BottomLeft'
-                                            ]
-                                        ]
-                                    ]
-                                ],
-                            ]);
-                        } catch (AwsException $e) {
-                            echo $e->getMessage();
-                        }
-                    }
                     $slug = Str::random(32);
                     while (Conversation::where('slug', $slug)->exists()) {
                         $slug = Str::random(32);
@@ -175,6 +141,42 @@ class VideoCampaignService
                         'video_message_id' => $videoMessage->id,
                         'slug' => $slug
                     ]);
+                }
+            }
+
+            if ($videoMessage) {
+                $credentials = [
+                    'region' => config('filesystems.disks.s3.region'),
+                    'version' => 'latest',
+                    'credentials' => [
+                        'key' =>  config('filesystems.disks.s3.key'),
+                        'secret' => config('filesystems.disks.s3.secret')
+                    ]];
+                $AWSClient = new ElasticTranscoderClient($credentials);
+                $host = parse_url($request->input('gif_duration'))['host'] ?? null;
+                $userVideo = $videoMessage->fresh()->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
+                if ($userVideo) {
+                    $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
+                    try {
+                        $AWSClient->createJob([
+                            'PipelineId' => config('aws.transcode.pipeline_id'),
+                            'Input' => ['Key' => $sourcePath],
+                            'Outputs' => [
+                                [
+                                    'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
+                                    'PresetId' => config('aws.transcode.preset_id'),
+                                    'Watermarks' => [
+                                        [
+                                            'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
+                                            'PresetWatermarkId' => 'BottomLeft'
+                                        ]
+                                    ]
+                                ]
+                            ],
+                        ]);
+                    } catch (AwsException $e) {
+                        echo $e->getMessage();
+                    }
                 }
             }
         }
@@ -295,7 +297,6 @@ class VideoCampaignService
                     ]];
                 $AWSClient = new ElasticTranscoderClient($credentials);
                 $host = parse_url($request->input('gif_duration'))['host']  ?? null;
-                $timestamp = $authUser->id . '-' . time();
 
                 $userVideo = $videoMessage->videos()->firstWhere('user_video_id', '<>', null)->userVideo;
                 if ($userVideo) {

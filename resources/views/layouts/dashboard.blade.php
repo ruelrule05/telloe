@@ -143,7 +143,9 @@
 				</div>
 
 				<div class="dashboard-content position-relative h-full overflow-auto flex flex-col" ref="dashboardContent">
-
+					<div v-if="!auth.is_premium" class="text-center bg-secondary-light p-3">
+						Your free trial has expired. Please upgrade your account <router-link to="/dashboard/account?tab=plan" class="text-blue-500"><u>here</u></router-link>.
+					</div>
 					<div class="flex-grow relative">
 						<router-view></router-view>
 					</div>
