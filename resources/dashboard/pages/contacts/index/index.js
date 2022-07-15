@@ -137,9 +137,10 @@ export default {
 		dayjs: dayjs,
 		numbersOnly: numbersOnly,
 		getUnicodeFlagIcon: null,
-		timezoneAreaCode : 'AU',
-		editTimezoneAreaCode : 'AU',
-		editContactDialCode : null
+		timezoneAreaCode: 'AU',
+		editTimezoneAreaCode: 'AU',
+		editContactDialCode: null,
+		prefix: null
 	}),
 
 	computed: {
@@ -214,7 +215,7 @@ export default {
 			this.selectedContact.ready = true;
 
 			return conversation;
-		},
+		}
 	},
 
 	watch: {
@@ -234,26 +235,30 @@ export default {
 
 		'newContact.phone_number': function (value) {
 			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
-			Object.keys(countryList).forEach ( key => {
+			Object.keys(countryList).forEach(key => {
 				let countryCode = value == key ? countryList[key] : '';
 				console.log(countryCode);
-				if(!isEmpty(countryCode)){
-					this.newContact.dial_code = '+'+value;
+				if (!isEmpty(countryCode)) {
+					this.newContact.dial_code = '+' + value;
+					this.prefix = value;
 					this.timezoneAreaCode = countryCode;
+					this.newContact.phone_number = ' ';
 				}
 			});
 		},
 
 		'clonedContact.phone_number': function (value) {
 			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
-			Object.keys(countryList).forEach ( key => {
+			Object.keys(countryList).forEach(key => {
 				let countryCode = value == key ? countryList[key] : '';
-				if(!isEmpty(countryCode)){
-					this.editContactDialCode = '+'+value;
+				if (!isEmpty(countryCode)) {
+					this.editContactDialCode = '+' + value;
+					this.prefix = value;
 					this.editTimezoneAreaCode = countryCode;
+					this.clonedContact.phone_number = ' ';
 				}
 			});
-		},
+		}
 	},
 
 	created() {
@@ -367,14 +372,18 @@ export default {
 					delete lines[0];
 					let csvContacts = [];
 					lines.forEach(line => {
-						line = line.replaceAll(' ','');
+						line = line.replaceAll(' ', '');
 						const regexLine = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-						if(regexLine){
-							if(regexLine[3]){
+						if (regexLine) {
+							if (regexLine[3]) {
 								regexLine[3] = regexLine[3].replaceAll('"', '');
 							}
-							if(regexLine[4]){
+							if (regexLine[4]) {
 								regexLine[4] = regexLine[4].replaceAll('+', '');
+								if (regexLine[4].length > 15) {
+									this.$refs.importCsv.hide();
+									return this.$toast.error('Please import correct number only');
+								}
 							}
 							csvContacts.push(regexLine);
 						}
@@ -387,7 +396,7 @@ export default {
 
 		contactAction(action, contact) {
 			this.selectedContact = contact;
-			
+
 			switch (action) {
 				case 'Edit':
 					this.clonedContact = JSON.parse(JSON.stringify(contact));
@@ -425,6 +434,8 @@ export default {
 		},
 
 		update(contact) {
+			contact.phone_number = this.prefix + this.clonedContact.phone_number.replaceAll(' ', '');
+			console.log(contact);
 			this.updateContact(contact);
 			this.$refs['editModal'].hide();
 		},
@@ -490,6 +501,7 @@ export default {
 
 		store() {
 			if (this.newContact.email) {
+				this.newContact.phone_number = this.prefix + this.newContact.phone_number.replaceAll(' ', '');
 				this.storeContact(this.newContact).then(() => {
 					this.newContact = {
 						custom_fields: {},
@@ -501,15 +513,17 @@ export default {
 			}
 		},
 
-		checkNumberCountryCode(value){
+		checkNumberCountryCode(value) {
 			const phoneNumber = value;
-			let first2Str = String(phoneNumber).slice(0, 2); 
+			let first2Str = String(phoneNumber).slice(0, 2);
 			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
-			Object.keys(countryList).forEach ( key => {
+			Object.keys(countryList).forEach(key => {
 				let countryCode = Number(first2Str) == key ? countryList[key] : '';
-				if(!isEmpty(countryCode)){
-					this.editContactDialCode = '+'+Number(first2Str);
+				if (!isEmpty(countryCode)) {
+					this.editContactDialCode = '+' + Number(first2Str);
 					this.editTimezoneAreaCode = countryCode;
+					this.prefix = Number(first2Str);
+					this.clonedContact.phone_number = String(phoneNumber).slice(2);
 				}
 			});
 		}

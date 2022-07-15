@@ -101,6 +101,7 @@ Route::group(
                 Route::apiResource('contact_notes', 'ContactNoteController');
                 Route::apiResource('notifications', 'NotificationController')->only(['index', 'show', 'update']);
                 Route::apiResource('video_messages', 'VideoMessageController');
+                Route::apiResource('video_campaigns', 'VideoCampaignController');
 
                 Route::put('video_messages/{video_message}/toggle_like', [VideoMessageController::class, 'toggleLike']);
                 Route::get('video_messages/{video_message}/get_stats', [VideoMessageController::class, 'getStats']);

@@ -16,8 +16,11 @@
 			<div>
 				<div class="content-header border-bottom flex items-center justify-between lg:static fixed w-full bg-white z-10">
 					<div class="ml-7 lg:ml-0">VIDEO MESSAGES</div>
+					<router-link v-if="!$root.auth.is_premium && videoMessages.length > 9" to="/dashboard/account?tab=plan" class="btn btn-md btn-primary flex items-center">
+						<span>Upgrade</span>
+					</router-link>
 					<button
-						v-if="!adding"
+						v-else-if="!adding"
 						type="button"
 						class="btn btn-md btn-primary flex items-center"
 						@click="
@@ -30,7 +33,7 @@
 				</div>
 				<div class="h-20 lg:hidden block" />
 			</div>
-			<div v-if="videoMessages.length == 0" class="flex-grow">
+			<div v-if="videoMessages.length < 1" class="flex-grow">
 				<div class="absolute-center p-8 bg-secondary rounded-xl flex items-start w-10/12 md:w-4/12">
 					<div class="text-primary">
 						<InfoCircleIcon class="fill-current w-6 h-6"></InfoCircleIcon>
@@ -169,9 +172,6 @@ import copy from 'copy-text-to-clipboard';
 import Modal from '../../../components/modal/modal.vue';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
 const humanizeDuration = require('humanize-duration');
-import { GifReader } from 'omggif';
-import { cover } from 'intrinsic-scale';
-const gifshot = require('../../../js/plugins/gifshot.min.js');
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -299,7 +299,7 @@ export default {
 					let height = img.height * ratio;
 					let timestamp = new Date().valueOf();
 
-					let element = `<table> <tr> <td> <div style="width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; " href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div></td></tr></table>`;
+					let element = `<div style="border: none; width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; border: none" href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div>`;
 					let template = document.createElement('template');
 					template.innerHTML = element;
 					resolve(template.content.firstChild);
@@ -346,7 +346,6 @@ export default {
 					localStorage.setItem('videoMessageMessage', data.initial_message.message);
 					this.localStorage(data);
 				}
-				
 			} else if (action == 'Delete') {
 				this.selectedVideoMessage = videoMessage;
 				this.$refs.deleteModal.show();
@@ -377,7 +376,7 @@ export default {
 					this.localStorage(videoMessagedata);
 				}
 
-				videoMessagedata.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+				videoMessagedata.gif_duration = await this.generateLinkPreview(data.userVideos[0], this.totalDuration);
 				let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
 				if (videoMessage.data) {
 					this.reset();
@@ -385,25 +384,13 @@ export default {
 			}
 		},
 
-		async generateLinkPreview(gif, duration) {
-			return new Promise((resolve, reject) => {
+		async generateLinkPreview(userVideo, duration) {
+			return new Promise(resolve => {
 				(async () => {
-					const response = await fetch(gif);
-					this.uploadProgress += 10;
-					const blob = await response.blob();
-					const arrayBuffer = await blob.arrayBuffer();
-					this.uploadProgress += 10;
-					const intArray = new Uint8Array(arrayBuffer);
-					const reader = new GifReader(intArray);
-					const info = reader.frameInfo(0);
-					const results = new Array(reader.numFrames()).fill(0).map((_, k) => {
-						const image = new ImageData(info.width, info.height);
-						reader.decodeAndBlitFrameRGBA(k, image.data);
-						return image;
-					});
+					this.uploadProgress += 20;
 					let canvas = document.createElement('canvas');
-					canvas.width = 600;
-					canvas.height = 313;
+					canvas.width = 400;
+					canvas.height = 75;
 					let ctx = canvas.getContext('2d');
 					let parsedDuration = humanizeDuration(duration, { round: true, units: duration < 60000 ? ['s'] : ['m'] })
 						.replace('minutes', 'minute')
@@ -413,61 +400,37 @@ export default {
 					let playImage = new Image();
 					playImage.src = `${this.app_url}/images/email-play.png`;
 
-					let images = [];
 					playImage.onload = () => {
-						results.forEach(imageData => {
-							let { width, height, x, y } = cover(canvas.width, canvas.height, imageData.width, imageData.height);
-							let renderer = document.createElement('canvas');
-							renderer.width = imageData.width;
-							renderer.height = imageData.height;
-							renderer.getContext('2d').putImageData(imageData, 0, 0);
-							ctx.drawImage(renderer, x, y, width, height);
+						const sourceImage = new Image();
+						sourceImage.src = userVideo.thumbnail;
+						sourceImage.onload = () => {
+							this.uploadProgress += 20;
 							ctx.beginPath();
-							ctx.rect(30, 240, 540, 50);
+							ctx.rect(25, 12, 360, 42);
 							ctx.fillStyle = '#3167e3';
 							ctx.fill();
 
-							ctx.drawImage(playImage, 20, 230, 70, 70);
-							ctx.font = '18px Arial';
+							ctx.drawImage(playImage, 10, 9, 50, 50);
+							ctx.font = '17px Arial';
 							ctx.fillStyle = 'white';
-							ctx.fillText(durationText, 230, 270);
-							images.push(canvas.toDataURL());
-							ctx.clearRect(0, 0, canvas.width, canvas.height);
-						});
-
-						this.uploadProgress += 5;
-						gifshot.createGIF(
-							{
-								images: images,
-								numFrames: 30,
-								gifWidth: canvas.width,
-								gifHeight: canvas.height
-							},
-							async obj => {
-								if (!obj.error) {
-									this.status = 'Uploading...';
-									this.uploadProgress += 15;
-									let timestamp = new Date().getTime();
-									S3.upload(
-										{
-											Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'link_preview.gif',
-											Body: this.dataURLtoFile(obj.image, 'link_preview.gif'),
-											ACL: 'public-read',
-											ContentType: 'image/gif'
-										},
-										async (err, d) => {
-											if (!err && d) {
-												this.uploadProgress += 20;
-												resolve(d.Location);
-											}
-										}
-									);
-								} else {
-									console.log(obj.error);
-									reject(obj.error);
+							ctx.fillText(durationText, 120, 40);
+							this.status = 'Uploading...';
+							let timestamp = new Date().getTime();
+							S3.upload(
+								{
+									Key: 'gif-durations/' + this.$root.auth.id + '/' + timestamp + '/' + 'gif_duration.png',
+									Body: this.dataURLtoFile(canvas.toDataURL('image/png'), 'gif_duration.png'),
+									ACL: 'public-read',
+									ContentType: 'image/png'
+								},
+								async (err, d) => {
+									if (!err && d) {
+										this.uploadProgress += 20;
+										resolve(d.Location);
+									}
 								}
-							}
-						);
+							);
+						};
 					};
 				})();
 			});
@@ -484,9 +447,9 @@ export default {
 				data.userVideos.forEach(x => {
 					totalDuration += x.duration;
 				});
-				data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, totalDuration);
+				data.gif_duration = await this.generateLinkPreview(data.userVideos[0], totalDuration);
 			} else {
-				data.link_preview = await this.generateLinkPreview(data.userVideos[0].gif, this.totalDuration);
+				data.gif_duration = await this.generateLinkPreview(data.userVideos[0], this.totalDuration);
 			}
 			data.initial_message = await this.generateInitialMessage(videoMessage);
 
@@ -578,12 +541,11 @@ export default {
 			this.videoMessage = {
 				title: title != 'null' ? title : '',
 				description: description != 'null' ? description : '',
-				initial_message: {
-				},
+				initial_message: {},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
 				userVideos: [],
-				retainMessage : localStorage.getItem('videoMessageMessage')
+				retainMessage: localStorage.getItem('videoMessageMessage')
 			};
 		},
 

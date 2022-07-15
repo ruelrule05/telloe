@@ -20,6 +20,7 @@ import booking_links from './modules/booking-links';
 import video_messages from './modules/video_messages';
 import user_videos from './modules/user_videos';
 import linkedin_activities from './modules/linkedin_activities';
+import video_campaigns from './modules/video-campaigns';
 
 Vue.use(Vuex);
 
@@ -44,6 +45,7 @@ export default new Vuex.Store({
 		booking_links,
 		video_messages,
 		user_videos,
-		linkedin_activities
+		linkedin_activities,
+		video_campaigns
 	}
 });
