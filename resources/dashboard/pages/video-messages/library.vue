@@ -573,8 +573,8 @@ export default {
 				video: true,
 			});
 			this.videoElement.onloadeddata = () => {
-				this.sendToMediaPipe();
 				this.init();
+				this.sendToMediaPipe();
 			};
 			// Camera turned on successfully
 			if ('srcObject' in this.videoElement) {
