@@ -112,7 +112,7 @@ window.app = new Vue({
 		setTimeout(() => {
 			let wq = window._wq || [];
 			wq.push({
-				id: 'ojhbdd1qg7',
+				id: 'mzuk5ibkv2',
 				onReady: video => {
 					this.WistiaPlayer = video;
 					if (this.videoOpen) {
@@ -125,11 +125,11 @@ window.app = new Vue({
 
 	methods: {
 		priceClicked(interval) {
-			if(!this.authUser) {
+			if (!this.authUser) {
 				this.auth = true;
 				this.action = 'signup';
 			} else {
-				window.location.href = '/dashboard/account?tab=plan&plan='+ interval.toLowerCase()
+				window.location.href = '/dashboard/account?tab=plan&plan=' + interval.toLowerCase();
 			}
 		},
 
