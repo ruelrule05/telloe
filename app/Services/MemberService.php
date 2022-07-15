@@ -104,7 +104,7 @@ class MemberService
 
         foreach ($request->assigned_services as $assigned_service) {
             $service = Service::where('id', $assigned_service)->where('user_id', $authUser->id)->first();
-            if ($service) {
+            if ($service && $memberUser) {
                 $assignedService = $service->replicate();
                 $assignedService->user_id = $memberUser->id;
                 $assignedService->member_id = $member->id;
