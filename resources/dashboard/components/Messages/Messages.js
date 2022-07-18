@@ -40,6 +40,10 @@ export default {
 		videoReply: {
 			type: Boolean,
 			default: false
+		},
+		promptNotify: {
+			type: Boolean,
+			default: false
 		}
 	},
 
@@ -77,7 +81,12 @@ export default {
 		pastedFile: null,
 		isScreenRecordDownloading: false,
 		selectedMessage: null,
-		location: null
+		location: null,
+		showPromptForm: false,
+		notifyForm: {
+			name: null,
+			email: null
+		}
 	}),
 
 	computed: {
@@ -171,6 +180,15 @@ export default {
 			deleteMessage: 'messages/delete',
 			storeMessage: 'messages/store'
 		}),
+
+		notify() {
+			axios.post(`/conversations/${this.conversation.id}/notify`, this.notifyForm).catch(() => {});
+			this.showPromptForm = false;
+			this.notifyForm = {
+				name: null,
+				email: null
+			};
+		},
 
 		async videoRecorded(video) {
 			if (this.conversation) {

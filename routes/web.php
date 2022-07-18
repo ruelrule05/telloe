@@ -228,6 +228,7 @@ Route::group(
                 // Route::post('upload_file', 'ChatboxController@uploadFile');
                 Route::get('stripe_invoices', 'DashboardController@stripeInvoices');
             });
+            Route::post('/conversations/{conversation:id}/notify', 'ConversationController@notify');
         });
 
         Route::post('logout', 'AuthController@logout')->middleware('auth');

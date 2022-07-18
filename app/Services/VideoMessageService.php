@@ -147,6 +147,7 @@ class VideoMessageService
         if ($authUser) {
             $videoMessage->setAttribute('video_message_like', $videoMessage->videoMessageLikes()->where('user_id', $authUser->id)->first());
         }
+
         return view('video-message', compact('videoMessage'));
     }
 

@@ -75,7 +75,7 @@
 						</div>
 					</div>
 					<div class="flex-grow overflow-hidden h-full relative">
-						<Messages @ready="getConversation(1)" videoReply v-if="conversation" isVideoMessage :conversation="conversation" ready @scrollUp="getConversation($event)"></Messages>
+						<Messages @ready="getConversation(1)" videoReply v-if="conversation" promptNotify isVideoMessage :conversation="conversation" ready @scrollUp="getConversation($event)"></Messages>
 					</div>
 				</div>
 			</div>

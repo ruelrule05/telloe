@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreConversationRequest;
+use App\Models\Conversation;
 use App\Services\ConversationService;
 use Illuminate\Http\Request;
 
@@ -45,5 +46,10 @@ class ConversationController extends Controller
     public function getClientLocation(Request $request)
     {
         return ConversationService::getClientLocation($request);
+    }
+
+    public function notify(Conversation $conversation, Request $request)
+    {
+        return ConversationService::notify($conversation, $request);
     }
 }

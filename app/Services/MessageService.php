@@ -6,8 +6,10 @@ use App\Events\NewMessageEvent;
 use App\Events\VideoMessageStat;
 use App\Http\Requests\StoreMessageRequest;
 use App\Jobs\SendNewMessageMail;
+use App\Mail\ConversationNotifyeeMail;
 use App\Mail\VideoMessageComment;
 use App\Models\Conversation;
+use App\Models\ConversationNotifyee;
 use App\Models\Message;
 use App\Models\VideoMessage;
 use Auth;
@@ -15,11 +17,8 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
-use Image;
 use Mail;
 use Stevebauman\Location\Facades\Location;
-use Storage;
 
 class MessageService
 {
@@ -87,10 +86,20 @@ class MessageService
             $videoMessage = VideoMessage::find($conversation->video_message_id);
             if ($videoMessage) {
                 broadcast(new VideoMessageStat($videoMessage));
-                if(!$conversation->email_sent_at || Carbon::now()->diffInMinutes(Carbon::parse($conversation->email_sent_at)) >= 5) {
+                if (! $conversation->email_sent_at || Carbon::now()->diffInMinutes(Carbon::parse($conversation->email_sent_at)) >= 5) {
                     Mail::to($videoMessage->user->email)->send(new VideoMessageComment($videoMessage));
                     $conversation->update([
                         'email_sent_at' => Carbon::now()
+                    ]);
+                }
+
+                // Notifyees
+                $now = Carbon::now();
+                $notifyees = ConversationNotifyee::with('conversation.videoMessage')->where('conversation_id', 161)->whereRaw('TIMESTAMPDIFF(minute, last_notified_at, "' . $now . '") >= 5')->get();
+                foreach ($notifyees as $notifyee) {
+                    Mail::to($notifyee->email)->queue(new ConversationNotifyeeMail($notifyee));
+                    $notifyee->update([
+                        'last_notified_at' => Carbon::now()
                     ]);
                 }
             }
@@ -98,7 +107,7 @@ class MessageService
 
         //}
 
-        if (!$conversation->video_message_id && ! $request->is_online) {
+        if (! $conversation->video_message_id && ! $request->is_online) {
             $targetUser = $conversation->members()->where('user_id', '<>', Auth::user()->id)->first()->user ?? null;
             if ($targetUser && $targetUser->email && $targetUser->notify_message) {
                 new SendNewMessageMail($message, $targetUser->email);
