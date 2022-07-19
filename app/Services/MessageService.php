@@ -95,7 +95,7 @@ class MessageService
 
                 // Notifyees
                 $now = Carbon::now();
-                $notifyees = ConversationNotifyee::with('conversation.videoMessage')->where('conversation_id', 161)->whereRaw('TIMESTAMPDIFF(minute, last_notified_at, "' . $now . '") >= 5')->get();
+                $notifyees = ConversationNotifyee::with('conversation.videoMessage')->where('conversation_id', $conversation->id)->whereRaw('TIMESTAMPDIFF(minute, last_notified_at, "' . $now . '") >= 5')->get();
                 foreach ($notifyees as $notifyee) {
                     Mail::to($notifyee->email)->queue(new ConversationNotifyeeMail($notifyee));
                     $notifyee->update([
