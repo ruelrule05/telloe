@@ -612,22 +612,22 @@ export default {
 								let ctx = canvas.getContext('2d');
 								ctx.drawImage(img, 0, 0);
 
-								// let MAX_WIDTH = 350;
-								// let MAX_HEIGHT = 350;
+								let MAX_WIDTH = 2048;
+								let MAX_HEIGHT = 1024;
 								let width = img.width;
 								let height = img.height;
 
-								// if (width > height) {
-								// 	if (width > MAX_WIDTH) {
-								// 		height *= MAX_WIDTH / width;
-								// 		width = MAX_WIDTH;
-								// 	}
-								// } else {
-								// 	if (height > MAX_HEIGHT) {
-								// 		width *= MAX_HEIGHT / height;
-								// 		height = MAX_HEIGHT;
-								// 	}
-								// }
+								if (width > height) {
+									if (width > MAX_WIDTH) {
+										height = MAX_HEIGHT;
+										width = MAX_WIDTH;
+									}
+								} else {
+									if (height > MAX_HEIGHT) {
+										width *= MAX_HEIGHT / height;
+										height = MAX_HEIGHT;
+									}
+								}
 								canvas.width = width;
 								canvas.height = height;
 								ctx = canvas.getContext('2d');

@@ -392,7 +392,8 @@
 							</div>
 							
 							<div class="form-group mb-2 video-photo" v-if="videoSettings.use_background_image">
-								<div class="mr-6 image relative cursor-pointer" :style="{ backgroundImage: 'url(' + videoSettings.virtual_background_image + ')'}" @click="$refs['bgImageInput'].click()">
+								<div class="mr-6 image relative cursor-pointer" @click="$refs['bgImageInput'].click()">
+									<img class="absolute top-0 w-full h-full left-0" :src="videoSettings.virtual_background_image">
 									<span v-if="!videoSettings.virtual_background_image" class="absolute-center text-gray-300 text-2xl">Virtual Background</span>
 									<span class="absolute left-0 w-full h-1/2 opacity-80 bottom-0 bg-gradient-to-t from-black"></span>
 									<span class="absolute bottom-2 left-0 text-center w-full text-white text-xs">Edit</span>
