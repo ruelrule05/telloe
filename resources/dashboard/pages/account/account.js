@@ -1,3 +1,14 @@
+/// <reference types="aws-sdk" />
+const AWS = window.AWS;
+AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	IdentityPoolId: process.env.MIX_AWS_IDENTITY_POOL
+});
+const S3 = new AWS.S3({
+	apiVersion: '2006-03-01',
+	params: { Bucket: process.env.MIX_AWS_BUCKET }
+});
+
 import VueFormValidate from '../../../components/vue-form-validate.vue';
 import VueButton from '../../../components/vue-button.vue';
 import VueCheckbox from '../../../components/vue-checkbox/vue-checkbox.vue';
@@ -119,6 +130,7 @@ export default {
 		csrf_token: '',
 		countrySpecs: [],
 		videoSettings: null,
+		S3Source: null
 	}),
 
 	watch: {
@@ -647,17 +659,37 @@ export default {
 				}
 			}
 		},
+		async uploadToS3() {
+			return new Promise(resolve => {
+				S3.upload(
+					{
+						Key: 'virtual-backgrounds/' + this.$root.auth.id + '/' + this.$root.auth.id + '.jpg',
+						Body: this.videoSettings.virtual_image_file,
+						ACL: 'public-read'
+					},
+					(err, data) => {
+						if (!err && data) {
+							this.S3Source = data.Location;
+							resolve();
+						} else {
+							console.log('Error upload!');
+						}
+					}
+				);
+			});
+		},
 		async updateVideoSettings() {
 			this.loading = true;
+			await this.uploadToS3();
+
 			let videoSettings = Object.assign({}, this.videoSettings);
 
 			videoSettings.retain_form_data = this.videoSettings.retain_form_data;
-			videoSettings.virtual_background_image = this.videoSettings.virtual_background_image;
+			videoSettings.virtual_background_image = this.S3Source;
 			videoSettings.use_background_image = this.videoSettings.use_background_image;
 			videoSettings.imageUpdated = this.videoSettings.imageUpdated;
 
 			let response = await window.axios.post('/auth/video_settings', videoSettings, { toast: true });
-
 			this.loading = false;
 
 			return response;

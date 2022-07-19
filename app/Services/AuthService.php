@@ -659,20 +659,19 @@ class AuthService
         $user->retain_form_data = $request->retain_form_data;
         $user->use_background_image = $request->use_background_image;
 
-        // Storage::disk('s3')->delete('path/file.jpg');
         if($request->imageUpdated) {
             if ($request->virtual_background_image) {
 
-                $path = 'virtual-backgrounds/' . $user->id . '/' . $user->id;
-                $url = 'https://telloe-development.s3-ap-southeast-1.amazonaws.com/';
+                // $path = 'virtual-backgrounds/' . $user->id . '/' . $user->id;
+                // $url = 'https://telloe-development.s3-ap-southeast-1.amazonaws.com/';
 
-                try{
-                    Storage::disk('s3')->put($path, file_get_contents($request->virtual_background_image), 'public');
-                }catch(Exception $e) {
-                    report($e);
-                }
+                // try{
+                //     Storage::disk('s3')->put($path, file_get_contents($request->virtual_background_image), 'public');
+                // }catch(Exception $e) {
+                //     report($e);
+                // }
 
-                $user->virtual_background_image = $url.$path;
+                $user->virtual_background_image = $request->virtual_background_image;
             }
         }
 
