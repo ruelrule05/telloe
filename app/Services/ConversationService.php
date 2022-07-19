@@ -7,9 +7,11 @@ use App\Mail\NewConversation;
 use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\ConversationMember;
+use App\Models\ConversationNotifyee;
 use App\Models\Member;
 use App\Models\User;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -190,7 +192,7 @@ class ConversationService
     {
         $conversation = Conversation::withTrashed()->findOrFail($id);
         if (! $conversation->video_message_id) {
-            $this->authorize('show', $conversation); 
+            $this->authorize('show', $conversation);
         }
         $files = $conversation->messages()->whereNotIn('type', ['text', 'emoji'])->paginate(100)->withPath('/dashboard/bookings/services/' . $conversation->id);
         return $files;
@@ -236,5 +238,21 @@ class ConversationService
         }
         $location = Location::get($ip);
         return response()->json($location);
+    }
+
+    public static function notify(Conversation $conversation, Request $request)
+    {
+        (new self)->validate($request, [
+            'name' => 'required|string',
+            'email' => 'required|string|email',
+        ]);
+        $conversationNotifyee = ConversationNotifyee::where('conversation_id', $conversation->id)->where('email', $request->input('email'))->first();
+        if (! $conversationNotifyee) {
+            $data = $request->all();
+            $data['conversation_id'] = $conversation->id;
+            $data['last_notified_at'] = Carbon::now();
+            $conversationNotifyee = ConversationNotifyee::create($data);
+        }
+        return response()->json($conversationNotifyee);
     }
 }

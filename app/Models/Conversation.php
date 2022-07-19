@@ -13,7 +13,9 @@ class Conversation extends BaseModel
     use SoftDeletes;
 
     protected $fillable = ['user_id', 'contact_id', 'metadata', 'name', 'tags', 'slug', 'video_message_id', 'email_sent_at'];
+
     public $appends = ['member', 'last_message', 'timestamp'];
+
     protected $casts = [
         'metadata' => 'array',
         'tags' => 'array',
@@ -116,5 +118,10 @@ class Conversation extends BaseModel
     public function getTimestampAttribute()
     {
         return $this->created_at->getPreciseTimestamp(3);
+    }
+
+    public function videoMessage()
+    {
+        return $this->belongsTo(VideoMessage::class);
     }
 }
