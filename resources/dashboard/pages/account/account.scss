@@ -14,10 +14,10 @@
 }
 .video-photo {
 	.image {
-		@apply p-8 text-3xl text-primary bg-secondary-light bg-center bg-no-repeat bg-cover;
+		@apply p-8 text-3xl text-primary bg-secondary-light bg-center bg-no-repeat bg-contain;
 		line-height: 0.5;
-		width: 50%;
-		height: 250px;
+		width: 520px;
+		height: 350px;
 	}
 }
 .card-plan {
