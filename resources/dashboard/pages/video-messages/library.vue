@@ -886,7 +886,8 @@ export default {
 			let exists = this.tagOptions.find(x => x == newTag);
 			if (!exists) {
 				this.tagOptions.push(newTag);
-				this.selectedVideoMessage.tags = this.tagOptions;
+				let index = this.userVideos.findIndex(x => x.id == this.selectedVideoMessage.id);
+				this.userVideos[index].tags = this.tagOptions;
 				this.updateTag(this.selectedVideoMessage);
 			}
 		},
@@ -907,7 +908,7 @@ export default {
 
 		inQuery(videoMessage) {
 			const trimmed = this.searchLib.trim().toLowerCase();
-			return trimmed.length == 0 || (videoMessage.tags && videoMessage.tags.toLowerCase().includes(trimmed));
+			return trimmed.length == 0 || (videoMessage.tags && videoMessage.tags.includes(trimmed));
 		}
 	}
 };

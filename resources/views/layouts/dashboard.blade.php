@@ -72,7 +72,7 @@
 						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/services">
 							Event Types
 						</router-link>
-						<router-link tag="div" class="sidebar-menu-item" to="/dashboard/booking-links">
+						<router-link v-if="$root.auth.match_up" tag="div" class="sidebar-menu-item" to="/dashboard/booking-links">
 							Match Up
 						</router-link>
 

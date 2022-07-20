@@ -226,7 +226,6 @@ export default {
 
 	created() {
 		this.isRetainFormData = this.$root.auth.retain_form_data;
-
 		if (this.videoMessage) {
 			this.videoMessageData = JSON.parse(JSON.stringify(this.videoMessage));
 			if (this.videoMessageData.booking_url) {
@@ -242,7 +241,10 @@ export default {
 			}
 		} else {
 			if (this.isRetainFormData) {
-				this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
+				const localVideoMessageService = localStorage.getItem('videoMessageService');
+				if (localVideoMessageService) {
+					this.videoMessageData.service_id = localVideoMessageService;
+				}
 				this.videoMessageData.retainMessage = localStorage.getItem('videoMessageMessage');
 			}
 		}
@@ -263,10 +265,9 @@ export default {
 				if (this.contactID) {
 					this.videoMessageData.contact_id = this.contactID;
 				}
-				if (this.isRetainFormData) {
-					this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
-					this.$refs.messageInput.innerHTML = localStorage.getItem('videoMessageMessage');
-				}
+			} else if (this.isRetainFormData) {
+				this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
+				this.$refs.messageInput.innerHTML = localStorage.getItem('videoMessageMessage');
 			}
 		},
 		contactID: function () {

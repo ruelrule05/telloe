@@ -45,9 +45,4 @@ class VideoMessage extends BaseModel
     {
         return $this->belongsTo(Contact::class);
     }
-
-    public function videoMessageNotifyees()
-    {
-        return $this->hasMany(VideoMessageNotifyee::class);
-    }
 }

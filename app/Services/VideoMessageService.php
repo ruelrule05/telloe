@@ -163,7 +163,7 @@ class VideoMessageService
             'is_active' => 'required|boolean',
             'linkedin_user' => 'nullable|string',
             'booking_url' => 'nullable|string',
-            'gif_duration' => 'required|string',
+            'gif_duration' => 'nullable|string',
         ]);
 
         $authUser = Auth::user();
@@ -195,8 +195,9 @@ class VideoMessageService
         }
 
 
+        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'contact_id', 'linkedin_user', 'booking_url');
         $userVideo = $videoMessage->fresh('videos')->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
-        if ($userVideo) {
+        if ($userVideo && $request->input('gif_duration')) {
             $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
             $credentials = [
                 'region' => config('filesystems.disks.s3.region'),
@@ -228,15 +229,15 @@ class VideoMessageService
             } catch (AwsException $e) {
                 echo $e->getMessage();
             }
+
+            $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
         }
 
-        $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'contact_id', 'linkedin_user', 'booking_url');
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {
             $linkPreview = self::generateLinkPreview($data['initial_message']['message']);
             $data['initial_message']['link_preview'] = $linkPreview;
         }
-        $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
         $videoMessage->update($data);
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes', 'contact')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
@@ -249,8 +250,9 @@ class VideoMessageService
         if ($videoMessage->user_id != $authUser->id) {
             return abort(403);
         }
-        $videoMessage->videos()->delete();
+        $videoMessage->conversation->notifyees()->forceDelete();
         $videoMessage->conversation()->forceDelete();
+        $videoMessage->videos()->delete();
         $videoMessage->videoMessageLikes()->forceDelete();
 
         return response()->json(['deleted' => $videoMessage->delete()]);

@@ -166,6 +166,7 @@
 									newContact.email = '';
 									newContact.first_name = '';
 									newContact.last_name = '';
+									newContact.phone_number = '';
 								"
 							>
 								<span>Cancel</span>
