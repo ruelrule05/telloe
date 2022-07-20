@@ -588,7 +588,7 @@ export default {
 		init() {
 			this.selfieSegmentation = new SelfieSegmentation({
 				locateFile: (file) =>
-				`https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`,
+				`../../../models/${file}`,
 			});
 
 			this.selfieSegmentation.setOptions({
@@ -601,13 +601,17 @@ export default {
 			// this.sendToMediaPipe()
 		},
 		async sendToMediaPipe() {
-			if (!this.videoElement.videoWidth) {
-				console.log(this.videoElement.videoWidth);
-				requestAnimationFrame(this.sendToMediaPipe);
-			} else {
-				await this.selfieSegmentation.send({ image: this.videoElement });
-				requestAnimationFrame(this.sendToMediaPipe);
-			}
+			// if (!this.videoElement.videoWidth) {
+			// 	console.log(this.videoElement.videoWidth);
+			// 	requestAnimationFrame(this.sendToMediaPipe);
+			// } else {
+				try {
+					await this.selfieSegmentation.send({ image: this.videoElement });
+					requestAnimationFrame(this.sendToMediaPipe);
+				} catch (e) {
+					//
+				}
+			// }
 		},
 		// using the background image
 		onResults(results) {
