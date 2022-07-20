@@ -601,17 +601,12 @@ export default {
 			// this.sendToMediaPipe()
 		},
 		async sendToMediaPipe() {
-			// if (!this.videoElement.videoWidth) {
-			// 	console.log(this.videoElement.videoWidth);
-			// 	requestAnimationFrame(this.sendToMediaPipe);
-			// } else {
-				try {
-					await this.selfieSegmentation.send({ image: this.videoElement });
-					requestAnimationFrame(this.sendToMediaPipe);
-				} catch (e) {
-					//
-				}
-			// }
+			try {
+				await this.selfieSegmentation.send({ image: this.videoElement });
+				requestAnimationFrame(this.sendToMediaPipe);
+			} catch (e) {
+				//
+			}
 		},
 		// using the background image
 		onResults(results) {
