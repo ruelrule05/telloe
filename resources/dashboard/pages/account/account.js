@@ -680,7 +680,8 @@ export default {
 		},
 		async updateVideoSettings() {
 			this.loading = true;
-			await this.uploadToS3();
+			
+			( this.videoSettings.imageUpdated && await this.uploadToS3() ) //trigger upload when image is updated
 
 			let videoSettings = Object.assign({}, this.videoSettings);
 
