@@ -245,7 +245,6 @@ export default {
 			}
 			const videoMessageMessage = localStorage.getItem('videoMessageMessage');
 			this.videoMessageData.retainMessage = videoMessageMessage;
-			this.$refs.messageInput.innerHTML = videoMessageMessage;
 		}
 	},
 
@@ -269,7 +268,6 @@ export default {
 				this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
 				const videoMessageMessage = localStorage.getItem('videoMessageMessage');
 				this.videoMessageData.retainMessage = videoMessageMessage;
-				this.$refs.messageInput.innerHTML = videoMessageMessage;
 			}
 		},
 		contactID: function () {
