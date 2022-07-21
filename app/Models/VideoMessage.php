@@ -8,7 +8,7 @@ class VideoMessage extends BaseModel
 
     protected $casts = [
         'is_active' => 'boolean',
-        'initial_message' => 'object'
+        'initial_message' => 'object',
     ];
 
     public function user()

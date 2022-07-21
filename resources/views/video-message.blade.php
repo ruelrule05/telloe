@@ -14,7 +14,7 @@
 	<meta property="og:title" content="Play ➤ {{ $videoMessage->title }}" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://telloe.com/" />
-	<meta property="og:image" content="{{ $videoMessage->link_preview ? $videoMessage->link_preview.'?latest' : config('app.url').'/images/og-image.png' }}" />
+	<meta property="og:image" name="image" content="{{ $videoMessage->link_preview ? $videoMessage->link_preview.'?latest' : config('app.url').'/images/og-image.png' }}" />
 	<meta property="og:image:type" content="image/gif" />
 	<meta property="og:image:alt" content="" />
 
