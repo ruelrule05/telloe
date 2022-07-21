@@ -239,14 +239,14 @@ export default {
 			if (this.contactID) {
 				this.videoMessageData.contact_id = this.contactID;
 			}
-		} else {
-			if (this.isRetainFormData) {
-				const localVideoMessageService = localStorage.getItem('videoMessageService');
-				if (localVideoMessageService) {
-					this.videoMessageData.service_id = localVideoMessageService;
-				}
-				this.videoMessageData.retainMessage = localStorage.getItem('videoMessageMessage');
+		} else if (this.isRetainFormData) {
+			const localVideoMessageService = localStorage.getItem('videoMessageService');
+			if (localVideoMessageService) {
+				this.videoMessageData.service_id = localVideoMessageService;
 			}
+			const videoMessageMessage = localStorage.getItem('videoMessageMessage');
+			this.videoMessageData.retainMessage = videoMessageMessage;
+			this.$refs.messageInput.innerHTML = videoMessageMessage;
 		}
 	},
 	watch: {
@@ -267,7 +267,9 @@ export default {
 				}
 			} else if (this.isRetainFormData) {
 				this.videoMessageData.service_id = localStorage.getItem('videoMessageService');
-				this.$refs.messageInput.innerHTML = localStorage.getItem('videoMessageMessage');
+				const videoMessageMessage = localStorage.getItem('videoMessageMessage');
+				this.videoMessageData.retainMessage = videoMessageMessage;
+				this.$refs.messageInput.innerHTML = videoMessageMessage;
 			}
 		},
 		contactID: function () {
