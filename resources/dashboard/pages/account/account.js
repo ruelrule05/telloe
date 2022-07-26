@@ -693,6 +693,8 @@ export default {
 			let response = await window.axios.post('/auth/video_settings', videoSettings, { toast: true });
 			this.loading = false;
 
+			Vue.$toast.open('Video settings has been updated successfully.');
+
 			return response;
 		},
 
