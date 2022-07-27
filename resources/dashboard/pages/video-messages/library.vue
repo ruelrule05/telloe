@@ -173,7 +173,9 @@
 						<div class="flex-grow relative">
 							<div class="absolute-center w-full h-full">
 								<video ref="videoPreview" class="w-full h-full bg-black" width="640" height="480" style="display: none" playsinline></video>
-								<canvas class="w-full h-full" id="videoCanvas" width="640" height="480"></canvas>
+								<div class="bg-black w-full h-full">
+									<canvas class="h-full mx-auto" style="aspect-ratio:1.33333" id="videoCanvas" width="640" height="480"></canvas>
+								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
 						</div>
