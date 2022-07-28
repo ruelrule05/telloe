@@ -93,7 +93,7 @@
 												@click="
 													sourceType = 'screen';
 													step++;
-													initMediastreams();
+													getCameraMode();
 												"
 											>
 												<span>Record video</span>
@@ -119,7 +119,7 @@
 												@click="
 													sourceType = 'screen_camera';
 													step++;
-													initMediastreams();
+													getCameraMode();
 												"
 											>
 												<span>Record video</span>
@@ -172,9 +172,9 @@
 					<div class="flex flex-col h-full overflow-hidden">
 						<div class="flex-grow relative">
 							<div class="absolute-center w-full h-full">
-								<video ref="videoPreview" class="w-full h-full bg-black" width="640" height="480" style="display: none" playsinline></video>
-								<div class="bg-black w-full h-full">
-									<canvas class="h-full mx-auto" style="aspect-ratio:1.33333" id="videoCanvas" width="640" height="480"></canvas>
+								<video ref="videoPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
+								<div ref="canvasBackground" id="canvasBackground" class="bg-black w-full h-full relative">
+									<canvas class="h-full mx-auto" style="aspect-ratio:1.78" id="videoCanvas" width="1280" height="720"></canvas>
 								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
@@ -616,18 +616,19 @@ export default {
 			this.canvasCtx.clearRect( 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.drawImage( results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.globalCompositeOperation = "source-out";
-			this.canvasCtx.drawImage( this.backgroundImg, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.drawImage( this.backgroundImg, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
 			this.canvasCtx.globalCompositeOperation = "destination-atop";
 			this.canvasCtx.drawImage( results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.restore();
 		},
 		async getCameraMode() {
-			await this.getVideoSettings();
+			( this.sourceType == 'camera' && await this.getVideoSettings() )
 
-			if( this.videoSettings.use_background_image) {
+			if( this.sourceType == 'camera' && this.videoSettings.use_background_image) {
 				this.cameraMode=3
 				this.$refs.videoPreview.style.display = "none";
 				this.videoCanvas.style.display = "block";
+				this.$refs.canvasBackground.style.display = "block";
 
 				this.backgroundImg = new Image()
 				this.backgroundImg.src = this.videoSettings.virtual_background_image
@@ -636,12 +637,14 @@ export default {
 				this.cameraMode=1
 				this.$refs.videoPreview.style.display = "block";
 				this.videoCanvas.style.display = "none";
+				this.$refs.canvasBackground.style.display = "none";
 			}
+
 			this.initMediastreams();
 		},
 
 		async initMediastreams() {
-			( this.cameraMode === 3 && this.openCamera() )
+			( this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera() )
 
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
@@ -713,7 +716,7 @@ export default {
 				//
 			}
 
-			if(this.sourceType.includes('camera') && this.cameraMode ===3) { // for using canva
+			if(this.sourceType == 'camera' && this.cameraMode ===3) { // for using canva
 				const stream = this.videoCanvas.captureStream(25);
 				this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
 				if (this.audioStreams) {
