@@ -174,7 +174,7 @@
 							<div class="absolute-center w-full h-full">
 								<video ref="videoPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
 								<div ref="canvasBackground" id="canvasBackground" class="bg-black w-full h-full relative">
-									<canvas class="h-full mx-auto" style="aspect-ratio:1.78" id="videoCanvas" width="1280" height="720"></canvas>
+									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
 								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
@@ -398,6 +398,8 @@ export default {
 		backgroundImg: null,
 		videoSettings: [],
 		selfieSegmentation: null,
+		streamHeight: 0,
+		streamWidth: 0
 	}),
 
 	computed: {
@@ -572,7 +574,10 @@ export default {
 		},
 		async openCamera() {
 			this.cameraStreams = await navigator.mediaDevices.getUserMedia({
-				video: true,
+				video: {
+					width: { min: 1024, ideal: 1280, max: 1920 },
+					height: { min: 576, ideal: 720, max: 1080 }
+				}
 			});
 			this.videoElement.onloadeddata = () => {
 				this.init();
@@ -586,6 +591,9 @@ export default {
 			}
 			
 			this.videoElement.play();
+			
+			const stream = this.videoElement.captureStream(25);
+			console.log(stream.getVideoTracks()[0].getSettings())
 		},
 		init() {
 			this.selfieSegmentation = new SelfieSegmentation({
@@ -613,6 +621,8 @@ export default {
 		// using the background image
 		onResults(results) {
 			this.canvasCtx.save();
+			this.canvasCtx.translate(this.videoCanvas.width, 0);
+			this.canvasCtx.scale(-1, 1);
 			this.canvasCtx.clearRect( 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.drawImage( results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.globalCompositeOperation = "source-out";
