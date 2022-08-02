@@ -112,7 +112,7 @@ window.app = new Vue({
 		setTimeout(() => {
 			let wq = window._wq || [];
 			wq.push({
-				id: 'mzuk5ibkv2',
+				id: 'b8xuoqg3on',
 				onReady: video => {
 					this.WistiaPlayer = video;
 					if (this.videoOpen) {
