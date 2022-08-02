@@ -124,4 +124,9 @@ class Conversation extends BaseModel
     {
         return $this->belongsTo(VideoMessage::class);
     }
+
+    public function notifyees()
+    {
+        return $this->hasMany(ConversationNotifyee::class, 'conversation_id');
+    }
 }

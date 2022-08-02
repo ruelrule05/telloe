@@ -8,7 +8,7 @@ class VideoMessage extends BaseModel
 
     protected $casts = [
         'is_active' => 'boolean',
-        'initial_message' => 'object'
+        'initial_message' => 'object',
     ];
 
     public function user()
@@ -44,10 +44,5 @@ class VideoMessage extends BaseModel
     public function contact()
     {
         return $this->belongsTo(Contact::class);
-    }
-
-    public function videoMessageNotifyees()
-    {
-        return $this->hasMany(VideoMessageNotifyee::class);
     }
 }

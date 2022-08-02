@@ -86,8 +86,12 @@
 									</div>
 									<div class="text-xs text-gray-400 mb-1">{{ dayjs(vMessage.created_at).format('MMM DD, YYYY hh:mm A') }}</div>
 									<div class="flex items-center text-xs text-gray-500 mt-1 gap-4">
-										<div>
-											<VueDropdown @click="shareVideoMessage($event, vMessage)" :options="['Copy video link', 'Copy video for email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
+										<div class="relative">
+											<div v-if="vMessage.loading" class="absolute-center">
+												<div class="spinner spinner-xs"></div>
+											</div>
+
+											<VueDropdown @click="shareVideoMessage($event, vMessage)" :class="{ 'opacity-0': vMessage.loading }" :options="['Copy video link', 'Copy video for email']" class="-mr-1 mt-0.5" dropPosition="right-auto left-0 w-44">
 												<template #button>
 													<div class="flex items-center transition-colors cursor-pointer"><ShareIcon class="w-3.5 fill-current text-gray-400 mr-1"></ShareIcon> Share</div>
 												</template>
@@ -297,14 +301,17 @@ export default {
 				img.onload = () => {
 					let ratio = 450 / img.width;
 					let height = img.height * ratio;
-					let timestamp = new Date().valueOf();
-
-					let element = `<div style="border: none; width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; border: none" href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}?ts=${timestamp}"/></a></div>`;
+					let element = `<div style="border: none; width: 450px; max-width: 450px;  height:${height}px"><a style=" display: block; grid-row-start: 1;  background: #3167e3;  height: 100%; width: 100%; grid-column-start: 1; border: none" href="${this.app_url}/v/${videoMessage.short_id}" ><img style="width: 100%;  height: auto" src="${videoMessage.link_preview}"/></a></div>`;
 					let template = document.createElement('template');
 					template.innerHTML = element;
 					resolve(template.content.firstChild);
 				};
 				img.src = videoMessage.link_preview;
+				img.onerror = () => {
+					setTimeout(() => {
+						img.src = videoMessage.link_preview;
+					}, 1000);
+				};
 			});
 		},
 
@@ -315,7 +322,7 @@ export default {
 			this.$refs.deleteModal.hide();
 		},
 
-		shareVideoMessage(action, videoMessage) {
+		async shareVideoMessage(action, videoMessage) {
 			switch (action) {
 				case 'Copy video link':
 					if (copy(`${process.env.MIX_APP_URL}/v/${videoMessage.short_id}`)) {
@@ -324,7 +331,9 @@ export default {
 					break;
 
 				case 'Copy video for email':
-					this.copyElementToClipboard(videoMessage);
+					this.$set(videoMessage, 'loading', true);
+					await this.copyElementToClipboard(videoMessage);
+					this.$set(videoMessage, 'loading', false);
 					this.$toast.open('Video message email copied to clipboard.');
 					break;
 			}

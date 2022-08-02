@@ -75,12 +75,12 @@ class UserVideoService
         return response()->json(['deleted' => $userVideo->delete()]);
     }
 
-    public function update(Request $request, UserVideo $userVideo)
+    public static function update(Request $request, UserVideo $userVideo)
     {
         $userVideo
         ->update([
             'tags' => $request->tags,
         ]);
-        return response()->json(['updated' => true]);
+        return response()->json($userVideo);
     }
 }

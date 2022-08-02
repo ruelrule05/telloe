@@ -237,7 +237,6 @@ export default {
 			let countryList = countryCodes.customList('countryCallingCode', '{countryCode}');
 			Object.keys(countryList).forEach(key => {
 				let countryCode = value == key ? countryList[key] : '';
-				console.log(countryCode);
 				if (!isEmpty(countryCode)) {
 					this.newContact.dial_code = '+' + value;
 					this.prefix = value;
@@ -400,8 +399,6 @@ export default {
 			switch (action) {
 				case 'Edit':
 					this.clonedContact = JSON.parse(JSON.stringify(contact));
-					console.log(this.clonedContact);
-					console.log(this.clonedContact.phone_number);
 					this.checkNumberCountryCode(this.clonedContact.phone_number);
 					this.$refs.editModal.show();
 					break;
@@ -435,7 +432,6 @@ export default {
 
 		update(contact) {
 			contact.phone_number = this.prefix + this.clonedContact.phone_number.replaceAll(' ', '');
-			console.log(contact);
 			this.updateContact(contact);
 			this.$refs['editModal'].hide();
 		},
@@ -501,7 +497,9 @@ export default {
 
 		store() {
 			if (this.newContact.email) {
-				this.newContact.phone_number = this.prefix + this.newContact.phone_number.replaceAll(' ', '');
+				if (this.newContact.phone_number) {
+					this.newContact.phone_number = this.prefix + this.newContact.phone_number.replaceAll(' ', '');
+				}
 				this.storeContact(this.newContact).then(() => {
 					this.newContact = {
 						custom_fields: {},
