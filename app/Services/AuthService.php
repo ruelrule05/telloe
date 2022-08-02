@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AuthService
 {
@@ -636,6 +637,49 @@ class AuthService
         }
 
         return response(['user' => $user]);
+    }
+
+    public static function getVideoSettings()
+    {
+        $user = Auth::user();
+        $video_settings = [
+            'retain_form_data' => $user->retain_form_data,
+            'use_background_image' => $user->use_background_image,
+            'virtual_background_image' => $user->virtual_background_image
+        ];
+        return response()->json($video_settings);
+    }
+
+    public static function updateVideoSettings(Request $request)
+    {
+        $user = Auth::user();
+
+        $user = User::find($user->id);
+        
+        $user->retain_form_data = $request->retain_form_data;
+        $user->use_background_image = $request->use_background_image;
+
+        if($request->imageUpdated) {
+            if ($request->virtual_background_image) {
+
+                // $path = 'virtual-backgrounds/' . $user->id . '/' . $user->id;
+                // $url = 'https://telloe-development.s3-ap-southeast-1.amazonaws.com/';
+
+                // try{
+                //     Storage::disk('s3')->put($path, file_get_contents($request->virtual_background_image), 'public');
+                // }catch(Exception $e) {
+                //     report($e);
+                // }
+
+                $user->virtual_background_image = $request->virtual_background_image;
+            }
+        }
+
+        if( $user->save() ) {
+            return response()->json([
+                'updated' => true
+            ]);
+        }
     }
 
     public static function setup()
