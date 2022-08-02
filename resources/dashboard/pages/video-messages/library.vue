@@ -592,8 +592,8 @@ export default {
 			
 			this.videoElement.play();
 			
-			const stream = this.videoElement.captureStream(25);
-			console.log(stream.getVideoTracks()[0].getSettings())
+			// const stream = this.videoElement.captureStream(25);
+			// console.log(stream.getVideoTracks()[0].getSettings())
 		},
 		init() {
 			this.selfieSegmentation = new SelfieSegmentation({
@@ -603,7 +603,7 @@ export default {
 
 			this.selfieSegmentation.setOptions({
 				modelSelection: 1,
-				selfieMode: true,
+				selfieMode: false,
 			});
 
 			this.selfieSegmentation.onResults(this.onResults);
@@ -621,8 +621,6 @@ export default {
 		// using the background image
 		onResults(results) {
 			this.canvasCtx.save();
-			this.canvasCtx.translate(this.videoCanvas.width, 0);
-			this.canvasCtx.scale(-1, 1);
 			this.canvasCtx.clearRect( 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.drawImage( results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.globalCompositeOperation = "source-out";
