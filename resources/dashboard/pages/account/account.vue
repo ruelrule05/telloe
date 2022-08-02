@@ -400,7 +400,7 @@
 			<div v-if="selectedPlan">
 				<h4 class="font-serif uppercase font-semibold mb-4">SUBSCRIBE</h4>
 
-				<div class="bg-secondary rounded-2xl px-4 py-3 font-bold mb-8 text-sm">You are subscribing to "{{ selectedPlan.name }}" plan which totals ${{ selectedPlan.price }} per {{ selectedPlan.interval }}.</div>
+				<div class="bg-secondary rounded-2xl px-4 py-3 font-bold mb-8 text-sm">You are subscribing to "{{ selectedPlan.name }}"{{ selectedPlan.name == 'Monthly' ? ` plan which totals $${selectedPlan.price} per ${selectedPlan.interval}` : `. ${selectedPlan.subheading}` }}.</div>
 
 				<vue-form-validate @submit="subscribe()">
 					<fieldset :disabled="paymentLoading">
