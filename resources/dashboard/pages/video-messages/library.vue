@@ -403,7 +403,7 @@ export default {
 		selfieSegmentation: null,
 		streamHeight: 0,
 		streamWidth: 0,
-		per_page: 49,
+		per_page: 53,
 		current_page: 1
 	}),
 

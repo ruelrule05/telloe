@@ -35,17 +35,20 @@ export default {
 	methods: {
 		goToPage(state) {
 			if (state == 'next') {
-				this.pageInput = (parseInt(this.pageInput)+1);
-				this.change(this.pageInput);
+				if( this.pageInput !== this.last_page ) {
+					this.pageInput = (parseInt(this.pageInput)+1);
+					this.change(this.pageInput);
+				}
 			}
 			if (state == 'previous') {
-				this.pageInput = (parseInt(this.pageInput)-1);
-				this.change(this.pageInput);
+				if( this.pageInput !== 1 ) {
+					this.pageInput = (parseInt(this.pageInput)-1);
+					this.change(this.pageInput);
+				}
 			}
 		},
 
 		change(page) {
-			this.pageInput = page;
 			if( page <= this.last_page && page >= 1 ) this.$emit('change', page);
 		}
 	}
