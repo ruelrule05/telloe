@@ -20,6 +20,7 @@ export default {
 	data() {
 		return {
 			pageInput: 1,
+			previousPageInput: 1
 		}
 	},
 
@@ -34,6 +35,8 @@ export default {
 
 	methods: {
 		goToPage(state) {
+			if (this.pageInput.length == 0 || this.pageInput <= 0 || this.pageInput > this.last_page) this.pageInput = this.previousPageInput
+
 			if (state == 'next') {
 				if( this.pageInput !== this.last_page ) {
 					this.pageInput = (parseInt(this.pageInput)+1);
@@ -46,6 +49,8 @@ export default {
 					this.change(this.pageInput);
 				}
 			}
+
+			this.previousPageInput = this.pageInput;
 		},
 
 		change(page) {
