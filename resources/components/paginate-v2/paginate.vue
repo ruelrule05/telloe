@@ -10,7 +10,7 @@
 					</span>
 				</li>
 				<li class="page-item mx-1 paginate">
-					<input type="text" class="paginate-input" v-model="pageInput" v-on:keyup.enter="change(pageInput)" />
+					<input type="number" class="paginate-input" v-model="pageInput" v-on:keyup.enter="change(pageInput)" />
 				</li>
 				<li class="page-item mx-3 disabled">
 					<span class="page-link">of</span>
@@ -33,3 +33,17 @@
 <script src="./paginate.js"></script>
 
 <style lang="scss" scoped src="./paginate.scss"></style>
+
+<style>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>
