@@ -10,7 +10,7 @@
 					</span>
 				</li>
 				<li class="page-item mx-1 paginate">
-					<input type="number" class="paginate-input" v-model="pageInput" v-on:keyup.enter="change(pageInput)" />
+					<input type="number" class="paginate-input" v-model="pageInput" :blur="change(pageInput)" />
 				</li>
 				<li class="page-item mx-3 disabled">
 					<span class="page-link">of</span>
