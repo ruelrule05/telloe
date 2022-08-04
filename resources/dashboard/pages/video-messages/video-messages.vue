@@ -120,7 +120,7 @@
 							</div>
 						</div>
 					</template>
-					<Paginate v-if="videoMessages.length > per_page" :total_items="videoMessages.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
+					<Paginate v-show="filteredVideoMessages.length > per_page" :total_items="filteredVideoMessages.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
 				</div>
 			</div>
 		</div>
@@ -224,9 +224,22 @@ export default {
 			videoMessages: state => state.video_messages.index,
 			ready: state => state.video_messages.ready
 		}),
+
+		filteredVideoMessages() {
+			let search = this.query.trim().toLowerCase();
+			return this.videoMessages.filter((videoMessage) => {
+				let title = videoMessage.title ? videoMessage.title.toLowerCase() : ''
+				let description = videoMessage.description ? videoMessage.description.toLowerCase() : ''
+
+				return title.includes(search) || description.includes(search)
+			});
+		},
+
 		paginatedVideoMessages: {
 			get() {
-				return this.videoMessages.slice(
+				let filtered = this.filteredVideoMessages
+
+				return filtered.slice(
 					(this.current_page - 1) * this.per_page,
 					this.current_page * this.per_page
 				);
@@ -589,6 +602,12 @@ export default {
 		localStorage(data) {
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
+		}
+	},
+	watch: {
+		query() {
+
+			this.current_page = 1;
 		}
 	}
 };

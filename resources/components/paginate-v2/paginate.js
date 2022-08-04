@@ -56,5 +56,12 @@ export default {
 		change(page) {
 			if( page <= this.last_page && page >= 1 ) this.$emit('change', page);
 		}
+	},
+
+	updated() {
+		if (this.pageInput > this.last_page) {
+			this.pageInput = this.last_page
+			this.previousPageInput = this.pageInput;
+		}
 	}
 };
