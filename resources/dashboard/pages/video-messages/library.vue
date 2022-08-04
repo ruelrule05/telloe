@@ -269,7 +269,7 @@
 								
 							</div>
 						</div>
-						<Paginate v-if="userVideos.length > per_page" :total_items="userVideos.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
+						<Paginate v-if="filteredUserVideos.length > per_page" :total_items="filteredUserVideos.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
 						<div class="mt-8 flex items-center justify-between">
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
@@ -411,9 +411,17 @@ export default {
 		...mapState({
 			userVideos: state => state.user_videos.index
 		}),
+
+		filteredUserVideos() {
+			let search = this.searchLib.trim().toLowerCase();
+			return this.userVideos.filter((userVideo) => {
+				return search.length == 0 || (userVideo.tags && userVideo.tags.find(tag => tag.toLowerCase().includes(search)))
+			});
+		},
+
 		paginatedUserVideos: {
 			get() {
-				return this.userVideos.slice(
+				return this.filteredUserVideos.slice(
 					(this.current_page - 1) * this.per_page,
 					this.current_page * this.per_page
 				);
@@ -425,6 +433,10 @@ export default {
 	},
 
 	watch: {
+		searchLib() {
+			this.current_page = 1;
+		},
+
 		selectedUserVideos: function (value) {
 			this.selectedVideos = JSON.parse(JSON.stringify(value));
 		}

@@ -237,9 +237,7 @@ export default {
 
 		paginatedVideoMessages: {
 			get() {
-				let filtered = this.filteredVideoMessages
-
-				return filtered.slice(
+				return this.filteredVideoMessages.slice(
 					(this.current_page - 1) * this.per_page,
 					this.current_page * this.per_page
 				);
@@ -606,7 +604,6 @@ export default {
 	},
 	watch: {
 		query() {
-
 			this.current_page = 1;
 		}
 	}
