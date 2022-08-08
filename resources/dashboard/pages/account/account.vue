@@ -105,7 +105,8 @@
 									<strong class="text-6xl">${{ parseInt(plan.price) }}</strong
 									><strong class="text-2xl">.{{ plan.price.split('.')[1] }}</strong>
 								</h3>
-								<div class="uppercase font-serif font-semibold text-muted text-xs">Monthly per user</div>
+								<div v-if="plan.name == 'Monthly'" class="uppercase font-serif font-semibold text-muted text-xs">Monthly per user</div>
+								<div v-else class="uppercase font-serif font-semibold text-muted text-xs">{{ plan.subheading }}</div>
 								<div class="bg-green-400 mt-5 rounded text-white p-3 font-semibold inline-block font-serif text-xs" :class="{ 'opacity-0': !plan.price_meta }">
 									<span class="relative -bottom-px">&nbsp;{{ plan.price_meta }}&nbsp;</span>
 								</div>
@@ -413,7 +414,7 @@
 			<div v-if="selectedPlan">
 				<h4 class="font-serif uppercase font-semibold mb-4">SUBSCRIBE</h4>
 
-				<div class="bg-secondary rounded-2xl px-4 py-3 font-bold mb-8 text-sm">You are subscribing to "{{ selectedPlan.name }}" plan which totals ${{ selectedPlan.price }} per {{ selectedPlan.interval }}.</div>
+				<div class="bg-secondary rounded-2xl px-4 py-3 font-bold mb-8 text-sm">You are subscribing to "{{ selectedPlan.name }}"{{ selectedPlan.name == 'Monthly' ? ` plan which totals $${selectedPlan.price} per ${selectedPlan.interval}` : `. ${selectedPlan.subheading}` }}.</div>
 
 				<vue-form-validate @submit="subscribe()">
 					<fieldset :disabled="paymentLoading">
