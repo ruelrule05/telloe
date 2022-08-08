@@ -18,7 +18,9 @@
 					<div class="rounded w-full h-2 border bg-gray-50 overflow-hidden">
 						<div class="bg-primary h-full" :style="{ width: `${uploadProgress}%` }"></div>
 					</div>
-					<div class="mt-2 text-sm">{{ status }}</div>
+					<div class="mt-2 text-sm">
+						{{ status }} <span v-if="status == 'Uploading'">{{ Math.ceil(uploadProgress) }}%</span>
+					</div>
 					<div class="text-sm mt-2 text-gray-800 bg-gray-100 p-2 border rounded">Note: Please keep this window open while we are processing the video.</div>
 				</div>
 			</div>
@@ -909,10 +911,10 @@ export default {
 			if (!this.source || !this.thumbnail) {
 				return;
 			}
-			this.status = 'Uploading...';
+			this.status = 'Uploading';
 			return new Promise(resolve => {
 				let timestamp = new Date().getTime();
-				S3.upload(
+				const upload = S3.upload(
 					{
 						Key: 'user-videos/' + this.$root.auth.id + '/' + timestamp + '/' + 'source.webm',
 						Body: this.source,
@@ -922,7 +924,6 @@ export default {
 						if (!err && data) {
 							this.S3Source = data.Location;
 							this.uploadComplete++;
-							this.uploadProgress += 10;
 							if (this.uploadComplete == 2) {
 								resolve();
 							}
@@ -931,6 +932,10 @@ export default {
 						}
 					}
 				);
+				upload.on('httpUploadProgress', progress => {
+					let progressPercentage = Math.round((progress.loaded / progress.total) * 100);
+					this.uploadProgress = progressPercentage;
+				});
 
 				S3.upload(
 					{
@@ -942,7 +947,6 @@ export default {
 						if (!err && data) {
 							this.S3Thumbnail = data.Location;
 							this.uploadComplete++;
-							this.uploadProgress += 10;
 							if (this.uploadComplete == 2) {
 								resolve();
 							}
@@ -954,7 +958,7 @@ export default {
 
 		async store() {
 			this.$refs.videoPlayback.pause();
-			this.uploadProgress = 30;
+			this.uploadProgress = 0;
 
 			await this.uploadToS3();
 			this.status = 'Finalizing...';
@@ -967,7 +971,6 @@ export default {
 				duration: parseInt(this.duration)
 			};
 			let response = await this.storeUserVideo(userVideoData);
-			this.uploadProgress += 10;
 			if (response) {
 				this.selectedVideos.push(response.data);
 			}

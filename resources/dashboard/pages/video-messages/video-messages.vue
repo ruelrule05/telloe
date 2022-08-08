@@ -63,9 +63,12 @@
 					</div>
 
 					<template v-for="vMessage in videoMessages">
-						<div v-if="inQuery(vMessage)" class="flex items-start justify-between contact-row border-t py-3" :key="vMessage.id">
+						{{ checkLinkPreview(vMessage) }}
+						<div v-if="inQuery(vMessage)" class="flex items-start justify-between contact-row border-t py-3 relative" :key="vMessage.id">
+							<div v-if="vMessage.processing" class="absolute top-0 left-0 z-50 w-full h-full bg-white opacity-70"></div>
 							<div class="flex-grow flex items-center gap-3">
 								<div class="flex gap-2">
+									<div v-if="vMessage.processing" class="absolute z-50 text-sm left-12 top-1/2 transform -translate-y-1/2">Processing..</div>
 									<template v-for="(video, videoIndex) in vMessage.videos">
 										<div v-if="videoIndex < 3" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
 											<div v-if="videoIndex == 2 && vMessage.videos.length > 3" class="absolute-center w-full h-full bg-black bg-opacity-40">
@@ -185,6 +188,7 @@ const S3 = new AWS.S3({
 	apiVersion: '2006-03-01',
 	params: { Bucket: process.env.MIX_AWS_BUCKET }
 });
+import gifshot from '../../../../resources/js/plugins/gifshot.min.js';
 
 import AddVideoMessage from './add.vue';
 
@@ -250,6 +254,20 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index'
 		}),
+
+		checkLinkPreview(videoMessage) {
+			const linkPreview = new Image();
+			linkPreview.src = videoMessage.link_preview;
+			linkPreview.onload = () => {
+				this.$set(videoMessage, 'processing', false);
+			};
+			linkPreview.onerror = () => {
+				this.$set(videoMessage, 'processing', true);
+				setTimeout(() => {
+					linkPreview.src = videoMessage.link_preview;
+				}, 1000);
+			};
+		},
 
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
@@ -446,6 +464,40 @@ export default {
 		},
 
 		async update(videoMessage, durationFromUserVideos = false) {
+			let clonedData = JSON.parse(JSON.stringify(videoMessage));
+			const userVideo = clonedData.userVideos[0];
+			const video = document.createElement('video');
+			video.src = userVideo.source;
+			let processing = false;
+			video.onloadedmetadata = () => {
+				if (!processing) {
+					processing = true;
+					let gifWidth = video.videoWidth;
+					let gifHeight = video.videoHeight;
+					const maxWidth = 350;
+					if (gifWidth > maxWidth) {
+						let ratio = maxWidth / gifWidth;
+						gifWidth = maxWidth;
+						gifHeight = gifHeight * ratio;
+					}
+					gifshot.createGIF(
+						{
+							video: video,
+							numFrames: 15,
+							gifWidth: gifWidth,
+							gifHeight: gifHeight,
+							numWorkers: 4
+						},
+						function (obj) {
+							if (!obj.error) {
+								console.log(obj);
+							}
+						}
+					);
+				}
+			};
+			return;
+			/* eslint-disable */
 			this.status = 'Processing...';
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
