@@ -244,7 +244,7 @@
 										</div>
 									</div>
 								</div>
-								<template v-for="userVideo in userVideos">
+								<template v-for="userVideo in paginatedUserVideos">
 									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x && x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 										<div class="backdrop"></div>
 										<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
@@ -266,8 +266,10 @@
 										<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
 									</div>
 								</template>
+								
 							</div>
 						</div>
+						<Paginate v-if="filteredUserVideos.length > per_page" :total_items="filteredUserVideos.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
 						<div class="mt-8 flex items-center justify-between">
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
@@ -345,6 +347,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import { SelfieSegmentation } from '@mediapipe/selfie_segmentation';
+import Paginate from '../../../components/paginate-v2/paginate.vue';
 
 export default {
 	props: {
@@ -358,7 +361,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect, Loading },
+	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect, Loading, Paginate },
 
 	data: () => ({
 		library: false,
@@ -399,16 +402,41 @@ export default {
 		videoSettings: [],
 		selfieSegmentation: null,
 		streamHeight: 0,
-		streamWidth: 0
+		streamWidth: 0,
+		per_page: 53,
+		current_page: 1
 	}),
 
 	computed: {
 		...mapState({
 			userVideos: state => state.user_videos.index
-		})
+		}),
+
+		filteredUserVideos() {
+			let search = this.searchLib.trim().toLowerCase();
+			return this.userVideos.filter((userVideo) => {
+				return search.length == 0 || (userVideo.tags && userVideo.tags.find(tag => tag.toLowerCase().includes(search)))
+			});
+		},
+
+		paginatedUserVideos: {
+			get() {
+				return this.filteredUserVideos.slice(
+					(this.current_page - 1) * this.per_page,
+					this.current_page * this.per_page
+				);
+			},
+			set(userVideos) {
+				return userVideos;
+			}
+		}
 	},
 
 	watch: {
+		searchLib() {
+			this.current_page = 1;
+		},
+
 		selectedUserVideos: function (value) {
 			this.selectedVideos = JSON.parse(JSON.stringify(value));
 		}
@@ -453,6 +481,19 @@ export default {
 			deleteUserVideo: 'user_videos/delete',
 			updateTag: 'user_videos/update'
 		}),
+
+		paginate(page_size, page_number) {
+			let itemsToSlice = this.paginatedUserVideos;
+			this.paginatedUserVideos = itemsToSlice.slice(
+				page_number * page_size,
+				(page_number + 1) * page_size
+			);
+		},
+
+		pageChanged(page) {
+			this.current_page = page;
+			this.paginate(this.per_page, page - 1);
+		},
 
 		recordingLoader() {
 			this.countDownTimer();
