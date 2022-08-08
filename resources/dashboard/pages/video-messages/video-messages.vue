@@ -587,13 +587,13 @@ export default {
 			let title = localStorage.getItem('videoMessageStorageTitle');
 			let description = localStorage.getItem('videoMessageStorageDescription');
 			this.videoMessage = {
-				title: title != 'null' ? title : '',
-				description: description != 'null' ? description : '',
+				title: (title != 'null' ? (this.isRetainFormData ? title : '') : ''),
+				description: (description != 'null' ? (this.isRetainFormData ? description : '') : ''),
 				initial_message: {},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
 				userVideos: [],
-				retainMessage: localStorage.getItem('videoMessageMessage')
+				retainMessage: ''
 			};
 		},
 
