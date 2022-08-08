@@ -304,6 +304,7 @@ export default {
 
 		setInitialMessage() {
 			let initialMessage = this.$refs.messageInput.innerText || this.videoMessageData.initial_message.message;
+			( this.isRetainFormData && localStorage.setItem('videoMessageStorageTitle', initialMessage) )
 			this.$set(this.videoMessageData.initial_message, 'message', initialMessage);
 		},
 

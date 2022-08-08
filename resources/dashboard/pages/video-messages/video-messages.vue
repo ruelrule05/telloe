@@ -62,7 +62,7 @@
 						<div class="text-primary cursor-pointer hover:underline hidden">Video library</div>
 					</div>
 
-					<template v-for="vMessage in videoMessages">
+					<template v-for="vMessage in paginatedVideoMessages">
 						<div v-if="inQuery(vMessage)" class="flex items-start justify-between contact-row border-t py-3" :key="vMessage.id">
 							<div class="flex-grow flex items-center gap-3">
 								<div class="flex gap-2">
@@ -120,6 +120,7 @@
 							</div>
 						</div>
 					</template>
+					<Paginate v-show="filteredVideoMessages.length > per_page" :total_items="filteredVideoMessages.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
 				</div>
 			</div>
 		</div>
@@ -175,6 +176,7 @@ import Library from './library.vue';
 import copy from 'copy-text-to-clipboard';
 import Modal from '../../../components/modal/modal.vue';
 import ToggleSwitch from '../../../components/toggle-switch/toggle-switch.vue';
+import Paginate from '../../../components/paginate-v2/paginate.vue';
 const humanizeDuration = require('humanize-duration');
 const AWS = window.AWS;
 AWS.config.region = process.env.MIX_AWS_DEFAULT_REGION; // Region
@@ -189,7 +191,7 @@ const S3 = new AWS.S3({
 import AddVideoMessage from './add.vue';
 
 export default {
-	components: { WarningIcon, Modal, InfoCircleIcon, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, ToggleSwitch, PlusIcon, ThumbdownIcon, AddVideoMessage },
+	components: { WarningIcon, Modal, InfoCircleIcon, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, ToggleSwitch, PlusIcon, ThumbdownIcon, AddVideoMessage, Paginate },
 	data: () => ({
 		app_url: process.env.MIX_APP_URL,
 		showLibrary: false,
@@ -211,7 +213,9 @@ export default {
 		gifProgress: 0,
 		status: null,
 		totalDuration: 0,
-		isRetainFormData: 0
+		isRetainFormData: 0,
+		per_page: 10,
+		current_page: 1
 	}),
 
 	computed: {
@@ -219,7 +223,29 @@ export default {
 			services: state => state.services.index,
 			videoMessages: state => state.video_messages.index,
 			ready: state => state.video_messages.ready
-		})
+		}),
+
+		filteredVideoMessages() {
+			let search = this.query.trim().toLowerCase();
+			return this.videoMessages.filter((videoMessage) => {
+				let title = videoMessage.title ? videoMessage.title.toLowerCase() : ''
+				let description = videoMessage.description ? videoMessage.description.toLowerCase() : ''
+
+				return title.includes(search) || description.includes(search)
+			});
+		},
+
+		paginatedVideoMessages: {
+			get() {
+				return this.filteredVideoMessages.slice(
+					(this.current_page - 1) * this.per_page,
+					this.current_page * this.per_page
+				);
+			},
+			set(videoMessages) {
+				return videoMessages;
+			}
+		}
 	},
 	created() {
 		this.getVideoMessages();
@@ -250,6 +276,19 @@ export default {
 			getServices: 'services/index',
 			getContacts: 'contacts/index'
 		}),
+
+		paginate(page_size, page_number) {
+			let itemsToSlice = this.paginatedVideoMessages;
+			this.paginatedVideoMessages = itemsToSlice.slice(
+				page_number * page_size,
+				(page_number + 1) * page_size
+			);
+		},
+
+		pageChanged(page) {
+			this.current_page = page;
+			this.paginate(this.per_page, page - 1);
+		},
 
 		isImage(extension) {
 			let imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'JPG', 'JPEG', 'PNG', 'GIF', 'SVG'];
@@ -548,19 +587,24 @@ export default {
 			let title = localStorage.getItem('videoMessageStorageTitle');
 			let description = localStorage.getItem('videoMessageStorageDescription');
 			this.videoMessage = {
-				title: title != 'null' ? title : '',
-				description: description != 'null' ? description : '',
+				title: (title != 'null' ? (this.isRetainFormData ? title : '') : ''),
+				description: (description != 'null' ? (this.isRetainFormData ? description : '') : ''),
 				initial_message: {},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
 				userVideos: [],
-				retainMessage: localStorage.getItem('videoMessageMessage')
+				retainMessage: ''
 			};
 		},
 
 		localStorage(data) {
 			localStorage.setItem('videoMessageStorageTitle', data.title);
 			localStorage.setItem('videoMessageStorageDescription', data.description);
+		}
+	},
+	watch: {
+		query() {
+			this.current_page = 1;
 		}
 	}
 };

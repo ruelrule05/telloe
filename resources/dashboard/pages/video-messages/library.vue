@@ -67,7 +67,7 @@
 												@click="
 													sourceType = 'camera';
 													step++;
-													initMediastreams();
+													getCameraMode();
 												"
 											>
 												<span>Record video</span>
@@ -93,7 +93,7 @@
 												@click="
 													sourceType = 'screen';
 													step++;
-													initMediastreams();
+													getCameraMode();
 												"
 											>
 												<span>Record video</span>
@@ -119,7 +119,7 @@
 												@click="
 													sourceType = 'screen_camera';
 													step++;
-													initMediastreams();
+													getCameraMode();
 												"
 											>
 												<span>Record video</span>
@@ -172,7 +172,10 @@
 					<div class="flex flex-col h-full overflow-hidden">
 						<div class="flex-grow relative">
 							<div class="absolute-center w-full h-full">
-								<video ref="videoPreview" class="w-full h-full bg-black" playsinline></video>
+								<video ref="videoPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
+								<div ref="canvasBackground" id="canvasBackground" class="bg-black w-full h-full relative">
+									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
+								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
 						</div>
@@ -241,7 +244,7 @@
 										</div>
 									</div>
 								</div>
-								<template v-for="userVideo in userVideos">
+								<template v-for="userVideo in paginatedUserVideos">
 									<div v-if="inQuery(userVideo)" :key="userVideo.id" class="user-video group" :class="{ selected: selectedVideos.findIndex(x => x && x.id == userVideo.id) > -1 }" @click="toggleSelectedVideo(userVideo)" :style="{ backgroundImage: `url(${userVideo.thumbnail})` }">
 										<div class="backdrop"></div>
 										<div class="font-serif absolute lg:top-1 lg:right-1 top-1 right-1 z-60 hidden group-hover:block">
@@ -263,8 +266,10 @@
 										<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
 									</div>
 								</template>
+								
 							</div>
 						</div>
+						<Paginate v-if="filteredUserVideos.length > per_page" :total_items="filteredUserVideos.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
 						<div class="mt-8 flex items-center justify-between">
 							<button type="button" class="btn btn-md btn-outline-primary" @click="library = false">
 								<span>Cancel</span>
@@ -341,6 +346,8 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import { SelfieSegmentation } from '@mediapipe/selfie_segmentation';
+import Paginate from '../../../components/paginate-v2/paginate.vue';
 
 export default {
 	props: {
@@ -354,7 +361,7 @@ export default {
 		}
 	},
 
-	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect, Loading },
+	components: { CloseIcon, Modal, WarningIcon, MoreVIcon, Multiselect, Loading, Paginate },
 
 	data: () => ({
 		library: false,
@@ -386,16 +393,50 @@ export default {
 		recording_state: 'Start Recording',
 		isLoading: false,
 		fullPage: true,
-		countDown: 3
+		countDown: 3,
+
+		canvaStream: null,
+		cameraMode: 3,
+		videoCanvas: null,
+		backgroundImg: null,
+		videoSettings: [],
+		selfieSegmentation: null,
+		streamHeight: 0,
+		streamWidth: 0,
+		per_page: 53,
+		current_page: 1
 	}),
 
 	computed: {
 		...mapState({
 			userVideos: state => state.user_videos.index
-		})
+		}),
+
+		filteredUserVideos() {
+			let search = this.searchLib.trim().toLowerCase();
+			return this.userVideos.filter((userVideo) => {
+				return search.length == 0 || (userVideo.tags && userVideo.tags.find(tag => tag.toLowerCase().includes(search)))
+			});
+		},
+
+		paginatedUserVideos: {
+			get() {
+				return this.filteredUserVideos.slice(
+					(this.current_page - 1) * this.per_page,
+					this.current_page * this.per_page
+				);
+			},
+			set(userVideos) {
+				return userVideos;
+			}
+		}
 	},
 
 	watch: {
+		searchLib() {
+			this.current_page = 1;
+		},
+
 		selectedUserVideos: function (value) {
 			this.selectedVideos = JSON.parse(JSON.stringify(value));
 		}
@@ -406,6 +447,10 @@ export default {
 	},
 
 	mounted() {
+		this.videoElement = this.$refs['videoPreview'];
+		this.videoCanvas = document.getElementById('videoCanvas');
+		this.canvasCtx = this.videoCanvas.getContext("2d");
+
 		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
 			if (this.$refs.videoPlayback.duration == Infinity) {
@@ -436,6 +481,19 @@ export default {
 			deleteUserVideo: 'user_videos/delete',
 			updateTag: 'user_videos/update'
 		}),
+
+		paginate(page_size, page_number) {
+			let itemsToSlice = this.paginatedUserVideos;
+			this.paginatedUserVideos = itemsToSlice.slice(
+				page_number * page_size,
+				(page_number + 1) * page_size
+			);
+		},
+
+		pageChanged(page) {
+			this.current_page = page;
+			this.paginate(this.per_page, page - 1);
+		},
 
 		recordingLoader() {
 			this.countDownTimer();
@@ -518,6 +576,7 @@ export default {
 					track.stop();
 				});
 			}
+			this.selfieSegmentation = null;
 			this.screenStreams = null;
 			clearInterval(this.recordInterval);
 		},
@@ -547,8 +606,95 @@ export default {
 				}
 			}
 		},
+		
+
+		async getVideoSettings() {
+			let response = await window.axios.get('/video-settings')
+			this.videoSettings = response.data;
+			return
+		},
+		async openCamera() {
+			this.cameraStreams = await navigator.mediaDevices.getUserMedia({
+				video: {
+					width: { min: 1024, ideal: 1280, max: 1920 },
+					height: { min: 576, ideal: 720, max: 1080 }
+				}
+			});
+			this.videoElement.onloadeddata = () => {
+				this.init();
+				this.sendToMediaPipe();
+			};
+			// Camera turned on successfully
+			if ('srcObject' in this.videoElement) {
+				this.videoElement.srcObject = this.cameraStreams;
+			} else {
+				this.videoElement.src = URL.createObjectURL(this.cameraStreams);
+			}
+			
+			this.videoElement.play();
+			
+			// const stream = this.videoElement.captureStream(25);
+			// console.log(stream.getVideoTracks()[0].getSettings())
+		},
+		init() {
+			this.selfieSegmentation = new SelfieSegmentation({
+				locateFile: (file) =>
+				`../../../models/${file}`,
+			});
+
+			this.selfieSegmentation.setOptions({
+				modelSelection: 1,
+				selfieMode: false,
+			});
+
+			this.selfieSegmentation.onResults(this.onResults);
+
+			// this.sendToMediaPipe()
+		},
+		async sendToMediaPipe() {
+			try {
+				await this.selfieSegmentation.send({ image: this.videoElement });
+				requestAnimationFrame(this.sendToMediaPipe);
+			} catch (e) {
+				//
+			}
+		},
+		// using the background image
+		onResults(results) {
+			this.canvasCtx.save();
+			this.canvasCtx.clearRect( 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.drawImage( results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.globalCompositeOperation = "source-out";
+			this.canvasCtx.drawImage( this.backgroundImg, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+			this.canvasCtx.globalCompositeOperation = "destination-atop";
+			this.canvasCtx.drawImage( results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.restore();
+		},
+		async getCameraMode() {
+			( this.sourceType == 'camera' && await this.getVideoSettings() )
+
+			if( this.sourceType == 'camera' && this.videoSettings.use_background_image) {
+				this.cameraMode=3
+				this.$refs.videoPreview.style.display = "none";
+				this.videoCanvas.style.display = "block";
+				this.$refs.canvasBackground.style.display = "block";
+
+				this.backgroundImg = new Image()
+				this.backgroundImg.src = this.videoSettings.virtual_background_image
+				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous')
+			} else {
+				this.cameraMode=1
+				this.$refs.videoPreview.style.display = "block";
+				this.videoCanvas.style.display = "none";
+				this.$refs.canvasBackground.style.display = "none";
+			}
+
+			this.initMediastreams();
+		},
 
 		async initMediastreams() {
+			( this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera() )
+
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
 			if (this.audioStreams) {
@@ -618,13 +764,36 @@ export default {
 			} catch (e) {
 				//
 			}
-			this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm', videoBitsPerSecond: 2500000 });
-			this.videoRecorder.camera = this.finalStream;
-			this.videoRecorder.ondataavailable = e => {
-				if (this.isRecording) {
-					this.blobs.push(e.data);
+
+			if(this.sourceType == 'camera' && this.cameraMode ===3) { // for using canva
+				const stream = this.videoCanvas.captureStream(25);
+				this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
+				if (this.audioStreams) {
+					this.audioStreams.getTracks().forEach(function (track) {
+						stream.addTrack(track);
+					});
 				}
-			};
+				this.canvaStream = stream;
+				this.videoRecorder = new MediaRecorder(this.canvaStream, {
+					mimeType: 'video/webm;codecs=vp9'
+				});
+				this.videoRecorder.ondataavailable = e => {
+					if(e.data.size > 0){
+						if (this.isRecording) {
+							this.blobs.push(e.data);
+						}
+					}
+				};
+				// this.videoRecorder.start();
+			} else {
+				this.videoRecorder = new MediaRecorder(this.finalStream, { mimeType: 'video/webm', videoBitsPerSecond: 2500000 });
+				this.videoRecorder.camera = this.finalStream;
+				this.videoRecorder.ondataavailable = e => {
+					if (this.isRecording) {
+						this.blobs.push(e.data);
+					}
+				};
+			}
 		},
 
 		async streamSize(stream) {

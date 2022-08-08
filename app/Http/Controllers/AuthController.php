@@ -79,4 +79,14 @@ class AuthController extends Controller
     {
         return AuthService::setup();
     }
+
+    public function getVideoSettings()
+    {
+        return AuthService::getVideoSettings();
+    }
+
+    public function updateVideoSettings(Request $request)
+    {
+        return AuthService::updateVideoSettings($request);
+    }
 }

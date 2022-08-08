@@ -105,7 +105,8 @@
 									<strong class="text-6xl">${{ parseInt(plan.price) }}</strong
 									><strong class="text-2xl">.{{ plan.price.split('.')[1] }}</strong>
 								</h3>
-								<div class="uppercase font-serif font-semibold text-muted text-xs">Monthly per user</div>
+								<div v-if="plan.name == 'Monthly'" class="uppercase font-serif font-semibold text-muted text-xs">Monthly per user</div>
+								<div v-else class="uppercase font-serif font-semibold text-muted text-xs">{{ plan.subheading }}</div>
 								<div class="bg-green-400 mt-5 rounded text-white p-3 font-semibold inline-block font-serif text-xs" :class="{ 'opacity-0': !plan.price_meta }">
 									<span class="relative -bottom-px">&nbsp;{{ plan.price_meta }}&nbsp;</span>
 								</div>
@@ -382,9 +383,23 @@
 				<div v-else-if="activeMenu == 'Video Settings'" class="p-8">
 					<div class="notification-content account-body">
 						<h2 class="font-serif uppercase font-semibold mb-8">Video Settings</h2>
-						<vue-form-validate @submit="saveMenuSettings">
+						<vue-form-validate @submit="updateVideoSettings">
 							<div class="form-group mb-2">
-								<vue-checkbox v-model="user.retain_form_data" label="Retain Form Data"></vue-checkbox>
+								<vue-checkbox v-model="videoSettings.retain_form_data" label="Retain Form Data"></vue-checkbox>
+							</div>
+							
+							<div class="form-group mb-2">
+								<vue-checkbox v-model="videoSettings.use_background_image" label="Use Virtual Background"></vue-checkbox>
+							</div>
+							
+							<div class="form-group mb-2 video-photo" v-if="videoSettings.use_background_image">
+								<div class="mr-6 image relative cursor-pointer" @click="$refs['bgImageInput'].click()">
+									<img class="absolute top-0 w-full h-full left-0" :src="videoSettings.virtual_background_image">
+									<span v-if="!videoSettings.virtual_background_image" class="absolute-center text-gray-300 text-2xl">Virtual Background</span>
+									<span class="absolute left-0 w-full h-1/2 opacity-80 bottom-0 bg-gradient-to-t from-black"></span>
+									<span class="absolute bottom-2 left-0 text-center w-full text-white text-xs">Edit</span>
+								</div>
+								<input ref="bgImageInput" type="file" accept="image/x-png,image/jpeg" @change="updateBgImage" class="hidden" />
 							</div>
 							<div class="mt-5">
 								<vue-button :loading="loading" type="submit" button_class="btn btn-primary"><span>Save</span></vue-button>
@@ -399,7 +414,7 @@
 			<div v-if="selectedPlan">
 				<h4 class="font-serif uppercase font-semibold mb-4">SUBSCRIBE</h4>
 
-				<div class="bg-secondary rounded-2xl px-4 py-3 font-bold mb-8 text-sm">You are subscribing to "{{ selectedPlan.name }}" plan which totals ${{ selectedPlan.price }} per {{ selectedPlan.interval }}.</div>
+				<div class="bg-secondary rounded-2xl px-4 py-3 font-bold mb-8 text-sm">You are subscribing to "{{ selectedPlan.name }}"{{ selectedPlan.name == 'Monthly' ? ` plan which totals $${selectedPlan.price} per ${selectedPlan.interval}` : `. ${selectedPlan.subheading}` }}.</div>
 
 				<vue-form-validate @submit="subscribe()">
 					<fieldset :disabled="paymentLoading">
