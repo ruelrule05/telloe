@@ -243,7 +243,6 @@ export default {
 									this.currentVideoId = nextVideo.id;
 									let nextVideoEl = this.$refs[`video-${this.currentVideoId}`][0] || null;
 									if (nextVideoEl) {
-										nextVideoEl.muted = false;
 										nextVideoEl.play();
 									}
 								}
