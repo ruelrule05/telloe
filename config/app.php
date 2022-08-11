@@ -2,6 +2,7 @@
 $admin_emails = env('ADMIN_EMAILS');
 $freemium_accounts = env('FREEMIUM_ACCOUNTS');
 return [
+    'transcode_verification_token' => env('TRANSCODE_VERIFICATION_TOKEN'),
     'admin_emails' => $admin_emails ? explode(',', $admin_emails) : [],
     'conversation_cache_time' => 40,
     'link_preview_key' => env('LINK_PREVIEW_KEY'),
@@ -155,9 +156,7 @@ return [
     */
 
     'providers' => [
-        /*
-         * Laravel Framework Service Providers...
-         */
+        // Laravel Framework Service Providers...
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -182,13 +181,9 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
 
-        /*
-         * Package Service Providers...
-         */
+        // Package Service Providers...
 
-        /*
-         * Application Service Providers...
-         */
+        // Application Service Providers...
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,

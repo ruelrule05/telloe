@@ -95,36 +95,12 @@ class VideoMessageService
             'slug' => $slug
         ]);
 
-        $userVideo = $userVideos[0];
-        $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
-        $credentials = [
-            'region' => config('filesystems.disks.s3.region'),
-            'version' => 'latest',
-            'credentials' => [
-                'key' =>  config('filesystems.disks.s3.key'),
-                'secret' => config('filesystems.disks.s3.secret')
-            ]];
-        $AWSClient = new ElasticTranscoderClient($credentials);
-        try {
-            $AWSClient->createJob([
-                'PipelineId' => config('aws.transcode.pipeline_id'),
-                'Input' => ['Key' => $sourcePath],
-                'Outputs' => [
-                    [
-                        'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
-                        'PresetId' => config('aws.transcode.preset_id'),
-                        'Watermarks' => [
-                            [
-                                'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
-                                'PresetWatermarkId' => 'BottomLeft'
-                            ]
-                        ]
-                    ]
-                ],
-            ]);
-        } catch (AwsException $e) {
-            echo $e->getMessage();
-        }
+        Http::post('https://transcoder.telloe.com', [
+            'verification_token' => config('app.transcode_verification_token'),
+            'source' => $userVideo->source,
+            'destination' => 's3://' . config('filesystems.disks.s3.bucket') . '/video-messages/' . $timestamp . '/link_preview.gif',
+            'watermark' => $request->input('gif_duration')
+        ]);
 
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes', 'contact')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
