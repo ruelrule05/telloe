@@ -39,9 +39,8 @@ mix.options({
 	postCss: [require('tailwindcss')]
 });
 
-if (mix.inProduction()) {
-	mix.version();
-} else {
+mix.version();
+if (!mix.inProduction()) {
 	if (args.includes('--hot')) {
 		mix.webpackConfig({
 			output: {

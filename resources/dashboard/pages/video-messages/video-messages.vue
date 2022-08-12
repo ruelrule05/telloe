@@ -230,20 +230,17 @@ export default {
 
 		filteredVideoMessages() {
 			let search = this.query.trim().toLowerCase();
-			return this.videoMessages.filter((videoMessage) => {
-				let title = videoMessage.title ? videoMessage.title.toLowerCase() : ''
-				let description = videoMessage.description ? videoMessage.description.toLowerCase() : ''
+			return this.videoMessages.filter(videoMessage => {
+				let title = videoMessage.title ? videoMessage.title.toLowerCase() : '';
+				let description = videoMessage.description ? videoMessage.description.toLowerCase() : '';
 
-				return title.includes(search) || description.includes(search)
+				return title.includes(search) || description.includes(search);
 			});
 		},
 
 		paginatedVideoMessages: {
 			get() {
-				return this.filteredVideoMessages.slice(
-					(this.current_page - 1) * this.per_page,
-					this.current_page * this.per_page
-				);
+				return this.filteredVideoMessages.slice((this.current_page - 1) * this.per_page, this.current_page * this.per_page);
 			},
 			set(videoMessages) {
 				return videoMessages;
@@ -292,12 +289,11 @@ export default {
 					linkPreview.src = videoMessage.link_preview;
 				}, 1000);
 			};
+		},
+
 		paginate(page_size, page_number) {
 			let itemsToSlice = this.paginatedVideoMessages;
-			this.paginatedVideoMessages = itemsToSlice.slice(
-				page_number * page_size,
-				(page_number + 1) * page_size
-			);
+			this.paginatedVideoMessages = itemsToSlice.slice(page_number * page_size, (page_number + 1) * page_size);
 		},
 
 		pageChanged(page) {
@@ -636,8 +632,8 @@ export default {
 			let title = localStorage.getItem('videoMessageStorageTitle');
 			let description = localStorage.getItem('videoMessageStorageDescription');
 			this.videoMessage = {
-				title: (title != 'null' ? (this.isRetainFormData ? title : '') : ''),
-				description: (description != 'null' ? (this.isRetainFormData ? description : '') : ''),
+				title: title != 'null' ? (this.isRetainFormData ? title : '') : '',
+				description: description != 'null' ? (this.isRetainFormData ? description : '') : '',
 				initial_message: {},
 				service_id: localStorage.getItem('videoMessageService'),
 				contact_id: null,
