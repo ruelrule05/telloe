@@ -79,7 +79,7 @@ class UserVideoService
     {
         $userVideo
         ->update([
-            'tags' => $request->tags,
+            'tags' => json_encode($request->tags),
         ]);
         return response()->json($userVideo);
     }
