@@ -57,7 +57,7 @@ export default {
 
 	created() {
 		(async () => {
-			this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
+			this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }).catch(() => {});
 			if (!this.cameraStreams) {
 				this.$toast.error('No camera detected.');
 				return;
