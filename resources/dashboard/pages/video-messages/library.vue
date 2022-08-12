@@ -174,7 +174,7 @@
 							<div class="absolute-center w-full h-full">
 								<video ref="videoPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
 								<div ref="canvasBackground" id="canvasBackground" class="bg-black w-full h-full relative">
-									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
+									<canvas class="h-full mx-auto" style="aspect-ratio: 1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
 								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
@@ -266,7 +266,6 @@
 										<span class="text-xxs absolute bottom-1 left-1 text-white bg-black bg-opacity-25 p-1 rounded leading-none">{{ format(userVideo.duration, { leading: true }) }}</span>
 									</div>
 								</template>
-								
 							</div>
 						</div>
 						<Paginate v-if="filteredUserVideos.length > per_page" :total_items="filteredUserVideos.length" :per_page="per_page" @change="pageChanged" class="mt-6"></Paginate>
@@ -414,17 +413,14 @@ export default {
 
 		filteredUserVideos() {
 			let search = this.searchLib.trim().toLowerCase();
-			return this.userVideos.filter((userVideo) => {
-				return search.length == 0 || (userVideo.tags && userVideo.tags.find(tag => tag.toLowerCase().includes(search)))
+			return this.userVideos.filter(userVideo => {
+				return search.length == 0 || (userVideo.tags && userVideo.tags.find(tag => tag.toLowerCase().includes(search)));
 			});
 		},
 
 		paginatedUserVideos: {
 			get() {
-				return this.filteredUserVideos.slice(
-					(this.current_page - 1) * this.per_page,
-					this.current_page * this.per_page
-				);
+				return this.filteredUserVideos.slice((this.current_page - 1) * this.per_page, this.current_page * this.per_page);
 			},
 			set(userVideos) {
 				return userVideos;
@@ -449,7 +445,7 @@ export default {
 	mounted() {
 		this.videoElement = this.$refs['videoPreview'];
 		this.videoCanvas = document.getElementById('videoCanvas');
-		this.canvasCtx = this.videoCanvas.getContext("2d");
+		this.canvasCtx = this.videoCanvas.getContext('2d');
 
 		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
@@ -484,10 +480,7 @@ export default {
 
 		paginate(page_size, page_number) {
 			let itemsToSlice = this.paginatedUserVideos;
-			this.paginatedUserVideos = itemsToSlice.slice(
-				page_number * page_size,
-				(page_number + 1) * page_size
-			);
+			this.paginatedUserVideos = itemsToSlice.slice(page_number * page_size, (page_number + 1) * page_size);
 		},
 
 		pageChanged(page) {
@@ -532,15 +525,17 @@ export default {
 				this.duration = this.blobs.length * 30 * 2;
 				this.step = 3;
 				this.$nextTick(() => {
+					this.$refs.videoPlayback.onplay = () => {
+						setTimeout(() => {
+							const canvas = document.createElement('canvas');
+							canvas.width = 500;
+							canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+							const ctx = canvas.getContext('2d');
+							ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+							this.thumbnail = canvas.toDataURL('image/png');
+						}, 500);
+					};
 					this.$refs.videoPlayback.play();
-					setTimeout(() => {
-						const canvas = document.createElement('canvas');
-						canvas.width = 500;
-						canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
-						const ctx = canvas.getContext('2d');
-						ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
-						this.thumbnail = canvas.toDataURL('image/png');
-					}, 500);
 				});
 			}
 
@@ -606,12 +601,11 @@ export default {
 				}
 			}
 		},
-		
 
 		async getVideoSettings() {
-			let response = await window.axios.get('/video-settings')
+			let response = await window.axios.get('/video-settings');
 			this.videoSettings = response.data;
-			return
+			return;
 		},
 		async openCamera() {
 			this.cameraStreams = await navigator.mediaDevices.getUserMedia({
@@ -630,21 +624,20 @@ export default {
 			} else {
 				this.videoElement.src = URL.createObjectURL(this.cameraStreams);
 			}
-			
+
 			this.videoElement.play();
-			
+
 			// const stream = this.videoElement.captureStream(25);
 			// console.log(stream.getVideoTracks()[0].getSettings())
 		},
 		init() {
 			this.selfieSegmentation = new SelfieSegmentation({
-				locateFile: (file) =>
-				`../../../models/${file}`,
+				locateFile: file => `../../../models/${file}`
 			});
 
 			this.selfieSegmentation.setOptions({
 				modelSelection: 1,
-				selfieMode: false,
+				selfieMode: false
 			});
 
 			this.selfieSegmentation.onResults(this.onResults);
@@ -662,38 +655,38 @@ export default {
 		// using the background image
 		onResults(results) {
 			this.canvasCtx.save();
-			this.canvasCtx.clearRect( 0, 0, this.videoCanvas.width, this.videoCanvas.height );
-			this.canvasCtx.drawImage( results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
-			this.canvasCtx.globalCompositeOperation = "source-out";
-			this.canvasCtx.drawImage( this.backgroundImg, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-			this.canvasCtx.globalCompositeOperation = "destination-atop";
-			this.canvasCtx.drawImage( results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
+			this.canvasCtx.clearRect(0, 0, this.videoCanvas.width, this.videoCanvas.height);
+			this.canvasCtx.drawImage(results.segmentationMask, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+			this.canvasCtx.globalCompositeOperation = 'source-out';
+			this.canvasCtx.drawImage(this.backgroundImg, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+			this.canvasCtx.globalCompositeOperation = 'destination-atop';
+			this.canvasCtx.drawImage(results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
 			this.canvasCtx.restore();
 		},
 		async getCameraMode() {
-			( this.sourceType == 'camera' && await this.getVideoSettings() )
+			this.sourceType == 'camera' && (await this.getVideoSettings());
 
-			if( this.sourceType == 'camera' && this.videoSettings.use_background_image) {
-				this.cameraMode=3
-				this.$refs.videoPreview.style.display = "none";
-				this.videoCanvas.style.display = "block";
-				this.$refs.canvasBackground.style.display = "block";
+			if (this.sourceType == 'camera' && this.videoSettings.use_background_image) {
+				this.cameraMode = 3;
+				this.$refs.videoPreview.style.display = 'none';
+				this.videoCanvas.style.display = 'block';
+				this.$refs.canvasBackground.style.display = 'block';
 
-				this.backgroundImg = new Image()
-				this.backgroundImg.src = this.videoSettings.virtual_background_image
-				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous')
+				this.backgroundImg = new Image();
+				this.backgroundImg.src = this.videoSettings.virtual_background_image;
+				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous');
 			} else {
-				this.cameraMode=1
-				this.$refs.videoPreview.style.display = "block";
-				this.videoCanvas.style.display = "none";
-				this.$refs.canvasBackground.style.display = "none";
+				this.cameraMode = 1;
+				this.$refs.videoPreview.style.display = 'block';
+				this.videoCanvas.style.display = 'none';
+				this.$refs.canvasBackground.style.display = 'none';
 			}
 
 			this.initMediastreams();
 		},
 
 		async initMediastreams() {
-			( this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera() )
+			this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera();
 
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
@@ -765,7 +758,8 @@ export default {
 				//
 			}
 
-			if(this.sourceType == 'camera' && this.cameraMode ===3) { // for using canva
+			if (this.sourceType == 'camera' && this.cameraMode === 3) {
+				// for using canva
 				const stream = this.videoCanvas.captureStream(25);
 				this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
 				if (this.audioStreams) {
@@ -778,7 +772,7 @@ export default {
 					mimeType: 'video/webm;codecs=vp9'
 				});
 				this.videoRecorder.ondataavailable = e => {
-					if(e.data.size > 0){
+					if (e.data.size > 0) {
 						if (this.isRecording) {
 							this.blobs.push(e.data);
 						}
@@ -929,17 +923,18 @@ export default {
 				this.step = 3;
 				this.library = false;
 				this.previewSource = URL.createObjectURL(this.source);
-
 				this.$refs.videoPlayback.currentTime = 0;
+				this.$refs.videoPlayback.onplay = () => {
+					setTimeout(() => {
+						const canvas = document.createElement('canvas');
+						canvas.width = 500;
+						canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+						this.thumbnail = canvas.toDataURL('image/png');
+					}, 500);
+				};
 				this.$refs.videoPlayback.play();
-				setTimeout(() => {
-					const canvas = document.createElement('canvas');
-					canvas.width = 500;
-					canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
-					const ctx = canvas.getContext('2d');
-					ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
-					this.thumbnail = canvas.toDataURL('image/png');
-				}, 300);
 			} else {
 				this.$toast.error('Trying to upload non supported file');
 				return null;

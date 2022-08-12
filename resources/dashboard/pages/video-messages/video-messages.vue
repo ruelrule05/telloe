@@ -421,8 +421,12 @@ export default {
 
 				videoMessagedata.gif_duration = await this.generateLinkPreview(data.userVideos[0], this.totalDuration);
 				let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
-				if (videoMessage.data) {
+				if (videoMessage && videoMessage.data) {
 					this.reset();
+				} else {
+					this.status = null;
+					this.gifProgress = 0;
+					this.uploadProgress = 0;
 				}
 			}
 		},

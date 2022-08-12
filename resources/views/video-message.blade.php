@@ -24,17 +24,22 @@
 	<link rel="alternate" href="{{ url()->current() }}" hreflang="en" />
 	@include('partials.styles')
 </head>
-<body class="bg-secondary overflow-hidden">
-	<div id="app" class="w-screen h-screen overflow-hidden " v-cloak>
+<body class="bg-secondary overflow-auto w-screen h-screen">
+	<div id="app" class="w-full h-full relative" v-cloak>
         <video-message></video-message>
     </div>
 
 	@include('partials.social_scripts')
 	<style>
+		#app {
+			overflow: hidden;
+		}
 		@media only screen and (max-width: 991px) {
 			#app {
 				height: 100vh;
 				height: calc(var(--vh, 1vh) * 100);
+				overflow: auto !important;
+				min-height: 680px;
 			}
 		}
 	</style>
