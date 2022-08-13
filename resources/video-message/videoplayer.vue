@@ -139,6 +139,7 @@ export default {
 			if (videoEl) {
 				videoEl.currentTime = seekTo / 1000;
 				if (this.playing) {
+					videoEl.muted = false;
 					videoEl.play();
 				}
 			}
@@ -158,33 +159,6 @@ export default {
 					currentVideoEl.pause();
 				}
 			}
-			// let seekTo = totalSeekTo;
-			// let duration = 0;
-			// let durationToDeduct = 0;
-			// let videoIndex = 0;
-			// for (let i = 0; i < this.videos.length; i++) {
-			// 	duration += this.durations[this.videos[i].id];
-			// 	if (seekTo <= duration) {
-			// 		videoIndex = i;
-			// 		break;
-			// 	} else {
-			// 		durationToDeduct += this.durations[this.videos[i].id];
-			// 	}
-			// }
-			// seekTo = seekTo - durationToDeduct;
-
-			// let video = this.videos[videoIndex];
-
-			// if (video) {
-			// 	this.currentVideoId = video.id;
-			// 	let nextVideoEl = this.$refs[`video-${video.id}`][0] || null;
-			// 	if (nextVideoEl) {
-			// 		nextVideoEl.currentTime = seekTo / 1000;
-			// 		if (this.playing) {
-			// 			nextVideoEl.play();
-			// 		}
-			// 	}
-			// }
 		},
 		init() {
 			this.playing = false;

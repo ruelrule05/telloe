@@ -108,9 +108,12 @@
 					</div>
 
 					<div v-else v-for="vMessage in videoCampaign.video_messages" :key="vMessage.id">
-						<div class="flex items-start justify-between contact-row pt-7">
+						{{ checkLinkPreview(vMessage) }}
+						<div class="flex items-start justify-between contact-row pt-7 relative">
+							<div v-if="vMessage.processing" class="absolute top-0 left-0 z-50 w-full h-full bg-white opacity-70"></div>
 							<div class="flex-grow flex items-center gap-3">
 								<div class="flex gap-2 h-24 relative">
+									<div v-if="vMessage.processing" class="absolute z-50 text-sm left-12 top-1/2 transform -translate-y-1/2">Processing..</div>
 									<template v-for="(video, videoIndex) in vMessage.videos">
 										<template v-if="video.user_video">
 											<div v-if="videoIndex < 3" class="h-24 w-44 bg-center bg-cover bg-no-repeat bg-gray-50 relative" :key="`video-${video.id}`" :style="{ backgroundImage: `url(${video.user_video.thumbnail})` }">
@@ -309,6 +312,20 @@ export default {
 			storeUserVideo: 'user_videos/store',
 			getServices: 'services/index'
 		}),
+
+		checkLinkPreview(videoMessage) {
+			const linkPreview = new Image();
+			linkPreview.src = videoMessage.link_preview;
+			linkPreview.onload = () => {
+				this.$set(videoMessage, 'processing', false);
+			};
+			linkPreview.onerror = () => {
+				this.$set(videoMessage, 'processing', true);
+				setTimeout(() => {
+					linkPreview.src = videoMessage.link_preview;
+				}, 1000);
+			};
+		},
 
 		disableQuickRecorders() {
 			if (this.videoCampaign) {
