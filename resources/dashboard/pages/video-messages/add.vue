@@ -60,11 +60,11 @@
 							<h5 class="font-bold font-lg mb-2">Video Details</h5>
 							<div class="mb-4">
 								<label required>Title</label>
-								<input type="text" class="input" v-model="videoMessageData.title" required />
+								<input type="text" class="input" v-model="videoMessageData.title" maxlength="350" required />
 							</div>
 							<div class="mb-4">
 								<label>Description</label>
-								<textarea class="input resize-none" rows="3" v-model="videoMessageData.description"></textarea>
+								<textarea class="input resize-none" rows="3" v-model="videoMessageData.description" maxlength="1000"></textarea>
 							</div>
 							<div class="mb-4">
 								<label>Initial Message</label>
@@ -304,7 +304,7 @@ export default {
 
 		setInitialMessage() {
 			let initialMessage = this.$refs.messageInput.innerText || this.videoMessageData.initial_message.message;
-			( this.isRetainFormData && localStorage.setItem('videoMessageStorageTitle', initialMessage) )
+			this.isRetainFormData && localStorage.setItem('videoMessageStorageTitle', initialMessage);
 			this.$set(this.videoMessageData.initial_message, 'message', initialMessage);
 		},
 

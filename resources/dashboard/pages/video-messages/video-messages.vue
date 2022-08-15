@@ -192,6 +192,7 @@ const S3 = new AWS.S3({
 import gifshot from '../../../../resources/js/plugins/gifshot.min.js';
 
 import AddVideoMessage from './add.vue';
+//import gifshot from '../../../js/plugins/gifshot.min.js';
 
 export default {
 	components: { WarningIcon, Modal, InfoCircleIcon, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, ToggleSwitch, PlusIcon, ThumbdownIcon, AddVideoMessage, Paginate },
@@ -437,8 +438,12 @@ export default {
 
 				videoMessagedata.gif_duration = await this.generateLinkPreview(data.userVideos[0], this.totalDuration);
 				let videoMessage = await this.storeVideoMessage(videoMessagedata).catch(() => {});
-				if (videoMessage.data) {
+				if (videoMessage && videoMessage.data) {
 					this.reset();
+				} else {
+					this.status = null;
+					this.gifProgress = 0;
+					this.uploadProgress = 0;
 				}
 			}
 		},
