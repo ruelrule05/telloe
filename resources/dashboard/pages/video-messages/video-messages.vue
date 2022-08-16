@@ -501,40 +501,6 @@ export default {
 		},
 
 		async update(videoMessage, durationFromUserVideos = false) {
-			let clonedData = JSON.parse(JSON.stringify(videoMessage));
-			const userVideo = clonedData.userVideos[0];
-			const video = document.createElement('video');
-			video.src = userVideo.source;
-			let processing = false;
-			video.onloadedmetadata = () => {
-				if (!processing) {
-					processing = true;
-					let gifWidth = video.videoWidth;
-					let gifHeight = video.videoHeight;
-					const maxWidth = 350;
-					if (gifWidth > maxWidth) {
-						let ratio = maxWidth / gifWidth;
-						gifWidth = maxWidth;
-						gifHeight = gifHeight * ratio;
-					}
-					gifshot.createGIF(
-						{
-							video: video,
-							numFrames: 15,
-							gifWidth: gifWidth,
-							gifHeight: gifHeight,
-							numWorkers: 4
-						},
-						function (obj) {
-							if (!obj.error) {
-								console.log(obj);
-							}
-						}
-					);
-				}
-			};
-			return;
-			/* eslint-disable */
 			this.status = 'Processing...';
 			let data = JSON.parse(JSON.stringify(videoMessage));
 			data.user_video_ids = data.userVideos.map(x => x.id);
