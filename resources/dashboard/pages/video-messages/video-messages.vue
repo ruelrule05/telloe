@@ -189,10 +189,7 @@ const S3 = new AWS.S3({
 	apiVersion: '2006-03-01',
 	params: { Bucket: process.env.MIX_AWS_BUCKET }
 });
-import gifshot from '../../../../resources/js/plugins/gifshot.min.js';
-
 import AddVideoMessage from './add.vue';
-//import gifshot from '../../../js/plugins/gifshot.min.js';
 
 export default {
 	components: { WarningIcon, Modal, InfoCircleIcon, CogIcon, VueDropdown, ShareIcon, EyeIcon, ThumbupIcon, CommentIcon, Library, ToggleSwitch, PlusIcon, ThumbdownIcon, AddVideoMessage, Paginate },
