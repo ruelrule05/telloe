@@ -6,7 +6,7 @@
 					<h1 class="font-serif text-primary font-semibold">{{ $root.videoMessage.title }}</h1>
 					<div class="font-semibold text-gray-500 text-sm mb-1">From {{ $root.videoMessage.user }}</div>
 					<p class="text-sm">{{ $root.videoMessage.description }}</p>
-					<button class="p-1 rounded-full bg-gray-100 absolute top-2 right-2 block md:hidden" type="button" @click="showChat = !showChat">
+					<button class="p-1 rounded-full bg-gray-100 absolute top-2 right-2 block lg:hidden" type="button" @click="showChat = !showChat">
 						<CommentIcon class="w-8 h-8"></CommentIcon>
 					</button>
 				</div>
@@ -35,7 +35,7 @@
 							</svg>
 						</div>
 
-						<div class="btn-like md:hidden" @click="showChat = !showChat">
+						<div class="btn-like lg:hidden" @click="showChat = !showChat">
 							<svg width="22" height="22" class="absolute-center stroke-current -mt-px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 							</svg>

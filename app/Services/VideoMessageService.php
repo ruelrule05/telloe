@@ -11,7 +11,6 @@ use App\Models\VideoMessage;
 use App\Models\VideoMessageLike;
 use App\Models\VideoMessageVideo;
 use Auth;
-use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -95,36 +94,12 @@ class VideoMessageService
             'slug' => $slug
         ]);
 
-        $userVideo = $userVideos[0];
-        $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
-        $credentials = [
-            'region' => config('filesystems.disks.s3.region'),
-            'version' => 'latest',
-            'credentials' => [
-                'key' =>  config('filesystems.disks.s3.key'),
-                'secret' => config('filesystems.disks.s3.secret')
-            ]];
-        $AWSClient = new ElasticTranscoderClient($credentials);
-        try {
-            $AWSClient->createJob([
-                'PipelineId' => config('aws.transcode.pipeline_id'),
-                'Input' => ['Key' => $sourcePath],
-                'Outputs' => [
-                    [
-                        'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
-                        'PresetId' => config('aws.transcode.preset_id'),
-                        'Watermarks' => [
-                            [
-                                'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
-                                'PresetWatermarkId' => 'BottomLeft'
-                            ]
-                        ]
-                    ]
-                ],
-            ]);
-        } catch (AwsException $e) {
-            echo $e->getMessage();
-        }
+        Http::post('https://transcoder.telloe.com', [
+            'verification_token' => config('app.transcode_verification_token'),
+            'source' => $userVideo->source,
+            'destination' => 's3://' . config('filesystems.disks.s3.bucket') . '/video-messages/' . $timestamp . '/link_preview.gif',
+            'watermark' => $request->input('gif_duration')
+        ]);
 
         return response()->json(VideoMessage::where('id', $videoMessage->id)->with('user', 'videos.userVideo', 'videoMessageLikes', 'contact')->with('conversation', function ($conversation) {
             $conversation->withCount('messages');
@@ -163,7 +138,7 @@ class VideoMessageService
             'is_active' => 'required|boolean',
             'linkedin_user' => 'nullable|string',
             'booking_url' => 'nullable|string',
-            'gif_duration' => 'nullable|string',
+            'gif_duration' => 'required|string',
         ]);
 
         $authUser = Auth::user();
@@ -197,41 +172,15 @@ class VideoMessageService
 
         $data = $request->only('title', 'description', 'initial_mesage', 'service_id', 'is_active', 'contact_id', 'linkedin_user', 'booking_url');
         $userVideo = $videoMessage->fresh('videos')->videos()->orderBy('order', 'ASC')->where('user_video_id', '<>', null)->first()->userVideo ?? null;
-        if ($userVideo && $request->input('gif_duration')) {
-            $sourcePath = ltrim(parse_url($userVideo->source)['path'], '/');
-            $credentials = [
-                'region' => config('filesystems.disks.s3.region'),
-                'version' => 'latest',
-                'credentials' => [
-                    'key' =>  config('filesystems.disks.s3.key'),
-                    'secret' => config('filesystems.disks.s3.secret')
-                ]];
-            $AWSClient = new ElasticTranscoderClient($credentials);
-            $host = parse_url($request->input('gif_duration'))['host'];
-            $timestamp = $authUser->id . '-' . time();
-            try {
-                $AWSClient->createJob([
-                    'PipelineId' => config('aws.transcode.pipeline_id'),
-                    'Input' => ['Key' => $sourcePath],
-                    'Outputs' => [
-                        [
-                            'Key' =>   'video-messages/' . $timestamp . '/link_preview.gif',
-                            'PresetId' => config('aws.transcode.preset_id'),
-                            'Watermarks' => [
-                                [
-                                    'InputKey' =>  ltrim(parse_url($request->input('gif_duration'))['path'], '/'),
-                                    'PresetWatermarkId' => 'BottomLeft'
-                                ]
-                            ]
-                        ]
-                    ],
-                ]);
-            } catch (AwsException $e) {
-                echo $e->getMessage();
-            }
-
-            $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
-        }
+        $host = parse_url($request->input('gif_duration'))['host'];
+        $timestamp = $authUser->id . '-' . time();
+        $data['link_preview'] = 'https://' . $host . '/video-messages/' . $timestamp . '/link_preview.gif';
+        Http::post('https://transcoder.telloe.com', [
+            'verification_token' => config('app.transcode_verification_token'),
+            'source' => $userVideo->source,
+            'destination' => 's3://' . config('filesystems.disks.s3.bucket') . '/video-messages/' . $timestamp . '/link_preview.gif',
+            'watermark' => $request->input('gif_duration')
+        ]);
 
         $data['initial_message'] = $request->input('initial_message');
         if (isset($data['initial_message']['message'])) {

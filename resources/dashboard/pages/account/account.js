@@ -599,7 +599,7 @@ export default {
 			}
 		},
 		async getVideoSettings() {
-			let response = await window.axios.get('/video-settings')
+			let response = await window.axios.get('/video-settings');
 			this.videoSettings = response.data;
 		},
 		updateBgImage(e) {
@@ -680,8 +680,8 @@ export default {
 		},
 		async updateVideoSettings() {
 			this.loading = true;
-			
-			( this.videoSettings.imageUpdated && await this.uploadToS3() ) //trigger upload when image is updated
+
+			this.videoSettings.imageUpdated && (await this.uploadToS3()); //trigger upload when image is updated
 
 			let videoSettings = Object.assign({}, this.videoSettings);
 
