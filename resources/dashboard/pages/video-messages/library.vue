@@ -926,17 +926,19 @@ export default {
 				this.library = false;
 				this.previewSource = URL.createObjectURL(this.source);
 				this.$refs.videoPlayback.currentTime = 0;
-				this.$refs.videoPlayback.onplay = () => {
-					setTimeout(() => {
-						const canvas = document.createElement('canvas');
-						canvas.width = 500;
-						canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
-						const ctx = canvas.getContext('2d');
-						ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
-						this.thumbnail = canvas.toDataURL('image/png');
-					}, 500);
-				};
-				this.$refs.videoPlayback.play();
+				this.$nextTick(() => {
+					this.$refs.videoPlayback.onplay = () => {
+						setTimeout(() => {
+							const canvas = document.createElement('canvas');
+							canvas.width = 500;
+							canvas.height = (canvas.width / this.$refs.videoPlayback.videoWidth) * this.$refs.videoPlayback.videoHeight;
+							const ctx = canvas.getContext('2d');
+							ctx.drawImage(this.$refs.videoPlayback, 0, 0, canvas.width, canvas.height);
+							this.thumbnail = canvas.toDataURL('image/png');
+						}, 500);
+					};
+					this.$refs.videoPlayback.play();
+				});
 			} else {
 				this.$toast.error('Trying to upload non supported file');
 				return null;
