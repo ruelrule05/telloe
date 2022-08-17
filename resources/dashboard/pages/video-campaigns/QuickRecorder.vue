@@ -3,7 +3,7 @@
 		<div class="flex items-center justify-between p-3">
 			<div class="uppercase font-serif text-xs font-semibold">Record Camera</div>
 			<div>
-				<button class="btn btn-sm btn-outline-primary" type="button" @click="$emit('cancel')"><span>CANCEL</span></button>
+				<button class="btn btn-sm btn-outline-primary" type="button" @click="$emit('cancel'); reset();"><span>CANCEL</span></button>
 			</div>
 		</div>
 
@@ -58,6 +58,7 @@ export default {
 		S3Gif: null,
 		S3Thumbnail: null,
 		videoCanvas: null,
+		canvaStream: null,
 		canvasCtx: null,
 		selfieSegmentation: null,
 		backgroundImg: null,
@@ -121,11 +122,17 @@ export default {
 				//
 			}
 
-			if( this.cameraMode === 2 ) {
+			if( this.cameraMode == 2 ) {
 				const stream = this.videoCanvas.captureStream(25);
-				this.videoRecorder = new MediaRecorder(stream, {
-					mimeType: 'video/webm;codecs=vp9',
-					videoBitsPerSecond: 2500000
+				const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
+				if (audioStream) {
+					audioStream.getTracks().forEach(function (track) {
+						stream.addTrack(track);
+					});
+				}
+				this.canvaStream = stream;
+				this.videoRecorder = new MediaRecorder(this.canvaStream, {
+					mimeType: 'video/webm;codecs=vp9'
 				});
 				this.videoRecorder.ondataavailable = e => {
 					if(e.data.size > 0){
@@ -184,9 +191,26 @@ export default {
 			canvas.width = 500;
 			canvas.height = (canvas.width / this.$refs.videoPreview.videoWidth) * this.$refs.videoPreview.videoHeight;
 			const ctx = canvas.getContext('2d');
-			ctx.drawImage(this.$refs.videoPreview, 0, 0, canvas.width, canvas.height);
+			if( this.cameraMode == 2 ) {
+				ctx.drawImage(this.videoCanvas, 0, 0, canvas.width, canvas.height);
+			} else {
+				ctx.drawImage(this.$refs.videoPreview, 0, 0, canvas.width, canvas.height);
+			}
 			thumbnail = canvas.toDataURL('image/png');
 			this.$emit('record', { source: source, thumbnail: thumbnail, duration: this.blobs.length * 30 * 2, dimensions: { width: videoWidth, height: videoHeight } });
+
+			if (this.cameraStreams) {
+				this.cameraStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.cameraStreams = null;
+			this.canvaStream = null;
+			
+			if(this.selfieSegmentation) {
+				this.selfieSegmentation.close();
+				this.selfieSegmentation = null;
+			}
 		},
 
 		dataURLtoFile(dataurl, filename) {
@@ -249,6 +273,21 @@ export default {
 			this.canvasCtx.drawImage( results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height );
 			this.canvasCtx.restore();
 		},
+
+		reset() {
+			if (this.cameraStreams) {
+				this.cameraStreams.getTracks().forEach(function (track) {
+					track.stop();
+				});
+			}
+			this.cameraStreams = null;
+			this.canvaStream = null;
+
+			if(this.selfieSegmentation) {
+				this.selfieSegmentation.close();
+				this.selfieSegmentation = null;
+			}
+		}
 	}
 };
 </script>
