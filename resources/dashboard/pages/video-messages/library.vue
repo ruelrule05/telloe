@@ -177,12 +177,8 @@
 								<video ref="videoPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
 								<video ref="videoOnScreenPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
 								<div ref="canvasBackground" id="canvasBackground" class="bg-black w-full h-full relative">
-<<<<<<< HEAD
-									<canvas class="h-full mx-auto" style="aspect-ratio: 1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
-=======
 									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
 									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas2" width="1280" height="720"></canvas>
->>>>>>> b85c7503 (fixed conflict after rebase)
 								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
@@ -460,14 +456,9 @@ export default {
 		this.videoElement = this.$refs['videoPreview'];
 		this.videoOnScreenElement = this.$refs['videoOnScreenPreview'];
 		this.videoCanvas = document.getElementById('videoCanvas');
-<<<<<<< HEAD
-		this.canvasCtx = this.videoCanvas.getContext('2d');
-=======
 		this.canvasCtx = this.videoCanvas.getContext("2d");
 		this.videoCanvas2 = document.getElementById('videoCanvas2');
 		this.canvasCtx2 = this.videoCanvas2.getContext("2d");
->>>>>>> b85c7503 (fixed conflict after rebase)
-
 		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
 			if (this.$refs.videoPlayback.duration == Infinity) {
@@ -708,24 +699,6 @@ export default {
 		
 		// CAMERA PROCESS STARTS IN THIS FUNCTION
 		async getCameraMode() {
-<<<<<<< HEAD
-			this.sourceType == 'camera' && (await this.getVideoSettings());
-
-			if (this.sourceType == 'camera' && this.videoSettings.use_background_image) {
-				this.cameraMode = 3;
-				this.$refs.videoPreview.style.display = 'none';
-				this.videoCanvas.style.display = 'block';
-				this.$refs.canvasBackground.style.display = 'block';
-
-				this.backgroundImg = new Image();
-				this.backgroundImg.src = this.videoSettings.virtual_background_image;
-				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous');
-			} else {
-				this.cameraMode = 1;
-				this.$refs.videoPreview.style.display = 'block';
-				this.videoCanvas.style.display = 'none';
-				this.$refs.canvasBackground.style.display = 'none';
-=======
 			( (this.sourceType == 'camera' || this.sourceType == 'screen_camera') && await this.getVideoSettings() ) // IDENTIFY cameraMode and set Video Settings
 
 			// SHOW/HIDE CAMERA DISPLAY DEPENDS ON CAMERA TYPE AND VIDEO SETTINGS
@@ -755,18 +728,13 @@ export default {
 				this.videoCanvas.style.display = "none";
 				this.videoCanvas2.style.display = "none";
 				this.$refs.canvasBackground.style.display = "none";
->>>>>>> b85c7503 (fixed conflict after rebase)
 			}
 
 			this.initMediastreams(); // INIT MEDIA STREAMS
 		},
 
 		async initMediastreams() {
-<<<<<<< HEAD
-			this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera();
-=======
 			( this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera() ) // IF USING ONLY CAMERA AND ENABLE VIRTUAL BACKGROUND
->>>>>>> b85c7503 (fixed conflict after rebase)
 
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
@@ -888,12 +856,7 @@ export default {
 				//
 			}
 
-<<<<<<< HEAD
-			if (this.sourceType == 'camera' && this.cameraMode === 3) {
-				// for using canva
-=======
 			if(this.sourceType == 'camera' && this.cameraMode ===3) { // THIS IS FOR USING CAMERA MODE ONLY VIRTUAL BACKGROUND
->>>>>>> b85c7503 (fixed conflict after rebase)
 				const stream = this.videoCanvas.captureStream(25);
 				this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
 				if (this.audioStreams) {
