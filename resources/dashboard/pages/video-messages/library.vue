@@ -175,8 +175,14 @@
 						<div class="flex-grow relative">
 							<div class="absolute-center w-full h-full">
 								<video ref="videoPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
+								<video ref="videoOnScreenPreview" class="w-full h-full bg-black" width="1280" height="720" style="display: none" playsinline></video>
 								<div ref="canvasBackground" id="canvasBackground" class="bg-black w-full h-full relative">
+<<<<<<< HEAD
 									<canvas class="h-full mx-auto" style="aspect-ratio: 1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
+=======
+									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas" width="1280" height="720"></canvas>
+									<canvas class="h-full mx-auto" style="aspect-ratio:1.7777777777777777" id="videoCanvas2" width="1280" height="720"></canvas>
+>>>>>>> b85c7503 (fixed conflict after rebase)
 								</div>
 								<video ref="cameraPreview" class="absolute" playsinline></video>
 							</div>
@@ -399,13 +405,19 @@ export default {
 		canvaStream: null,
 		cameraMode: 3,
 		videoCanvas: null,
+		videoCanvas2: null,
+		canvasCtx: null,
+		canvasCtx2: null,
 		backgroundImg: null,
 		videoSettings: [],
 		selfieSegmentation: null,
 		streamHeight: 0,
 		streamWidth: 0,
 		per_page: 53,
-		current_page: 1
+		current_page: 1,
+		selfieSegmentation2: null, // WE SET ANOTHER VARIABLE FOR SCREEN + CAMERA SEGMENTATION TO PREVENT BUG PROBLEM : SEGMENTATION CAN'T BE CLEARED
+		videoElement: null,
+		videoOnScreenElement: null
 	}),
 
 	computed: {
@@ -446,8 +458,15 @@ export default {
 
 	mounted() {
 		this.videoElement = this.$refs['videoPreview'];
+		this.videoOnScreenElement = this.$refs['videoOnScreenPreview'];
 		this.videoCanvas = document.getElementById('videoCanvas');
+<<<<<<< HEAD
 		this.canvasCtx = this.videoCanvas.getContext('2d');
+=======
+		this.canvasCtx = this.videoCanvas.getContext("2d");
+		this.videoCanvas2 = document.getElementById('videoCanvas2');
+		this.canvasCtx2 = this.videoCanvas2.getContext("2d");
+>>>>>>> b85c7503 (fixed conflict after rebase)
 
 		this.selectedVideos = JSON.parse(JSON.stringify(this.selectedUserVideos));
 		this.$refs.videoPlayback.onloadeddata = () => {
@@ -573,7 +592,18 @@ export default {
 					track.stop();
 				});
 			}
-			this.selfieSegmentation = null;
+			
+			// CLOSE THE SELFIE SEGMENTATION TO PREVENT MEMORY LEAK
+			if(this.selfieSegmentation) {
+				this.selfieSegmentation.close();
+				this.selfieSegmentation = null;
+			}
+			if(this.selfieSegmentation2) {
+				this.selfieSegmentation2.close();
+				this.selfieSegmentation2 = null;
+			}
+
+			this.canvaStream = null;
 			this.screenStreams = null;
 			clearInterval(this.recordInterval);
 		},
@@ -609,6 +639,7 @@ export default {
 			this.videoSettings = response.data;
 			return;
 		},
+
 		async openCamera() {
 			this.cameraStreams = await navigator.mediaDevices.getUserMedia({
 				video: {
@@ -646,7 +677,7 @@ export default {
 
 			// this.sendToMediaPipe()
 		},
-		async sendToMediaPipe() {
+		async sendToMediaPipe() { // THIS FUNCTION IS USED FOR CAMERA ONLY
 			try {
 				await this.selfieSegmentation.send({ image: this.videoElement });
 				requestAnimationFrame(this.sendToMediaPipe);
@@ -654,7 +685,16 @@ export default {
 				//
 			}
 		},
+		async sendMediaPipeScreen() { // THIS FUNCTION IS USED FOR CAMERA + SCREEN
+			try {
+				await this.selfieSegmentation2.send({ image: this.videoOnScreenElement });
+				requestAnimationFrame(this.sendMediaPipeScreen);
+			} catch (e) {
+				// requestAnimationFrame(this.sendMediaPipeScreen);
+			}
+		},
 		// using the background image
+		// THIS FUNCTION IS USED FOR CAMERA ONLY
 		onResults(results) {
 			this.canvasCtx.save();
 			this.canvasCtx.clearRect(0, 0, this.videoCanvas.width, this.videoCanvas.height);
@@ -665,7 +705,10 @@ export default {
 			this.canvasCtx.drawImage(results.image, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
 			this.canvasCtx.restore();
 		},
+		
+		// CAMERA PROCESS STARTS IN THIS FUNCTION
 		async getCameraMode() {
+<<<<<<< HEAD
 			this.sourceType == 'camera' && (await this.getVideoSettings());
 
 			if (this.sourceType == 'camera' && this.videoSettings.use_background_image) {
@@ -682,13 +725,48 @@ export default {
 				this.$refs.videoPreview.style.display = 'block';
 				this.videoCanvas.style.display = 'none';
 				this.$refs.canvasBackground.style.display = 'none';
+=======
+			( (this.sourceType == 'camera' || this.sourceType == 'screen_camera') && await this.getVideoSettings() ) // IDENTIFY cameraMode and set Video Settings
+
+			// SHOW/HIDE CAMERA DISPLAY DEPENDS ON CAMERA TYPE AND VIDEO SETTINGS
+			if( this.sourceType == 'camera' && this.videoSettings.use_background_image ) {
+				this.cameraMode=3
+				this.$refs.videoPreview.style.display = "none";
+				this.videoCanvas.style.display = "block";
+				this.videoCanvas2.style.display = "none";
+				this.$refs.canvasBackground.style.display = "block";
+
+				this.backgroundImg = new Image()
+				this.backgroundImg.src = this.videoSettings.virtual_background_image
+				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous')
+			} else if( this.sourceType == 'screen_camera' && this.videoSettings.use_background_image ) {
+				this.cameraMode=3
+				this.$refs.videoPreview.style.display = "block";
+				this.videoCanvas.style.display = "none";
+				this.videoCanvas2.style.display = "none";
+				this.$refs.canvasBackground.style.display = "none";
+
+				this.backgroundImg = new Image()
+				this.backgroundImg.src = this.videoSettings.virtual_background_image
+				this.backgroundImg.setAttribute('crossOrigin', 'Anonymous')
+			} else {
+				this.cameraMode=1
+				this.$refs.videoPreview.style.display = "block";
+				this.videoCanvas.style.display = "none";
+				this.videoCanvas2.style.display = "none";
+				this.$refs.canvasBackground.style.display = "none";
+>>>>>>> b85c7503 (fixed conflict after rebase)
 			}
 
-			this.initMediastreams();
+			this.initMediastreams(); // INIT MEDIA STREAMS
 		},
 
 		async initMediastreams() {
+<<<<<<< HEAD
 			this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera();
+=======
+			( this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera() ) // IF USING ONLY CAMERA AND ENABLE VIRTUAL BACKGROUND
+>>>>>>> b85c7503 (fixed conflict after rebase)
 
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
@@ -697,8 +775,12 @@ export default {
 					finalStream.addTrack(track);
 				});
 			}
-			if (this.sourceType.includes('camera')) {
-				this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
+			if (this.sourceType == 'camera' ) {
+				// if( this.sourceType == 'screen_camera' && this.cameraMode !== 3 ) {
+				// 	this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
+				// }
+
+				// cameraStreams already open in openCamera() function
 				if (!this.cameraStreams) {
 					this.$toast.error('No camera detected.');
 					this.reset();
@@ -715,17 +797,63 @@ export default {
 			}
 
 			if (this.sourceType == 'screen_camera') {
+				if( this.cameraMode === 3 ) {
+					// SELFIE SEGMENTATION PROCESS STARTS HERE FOR CAMERA + SCREEN
+					const onScreenResults = (results) => {
+						this.canvasCtx2.save();
+						this.canvasCtx2.clearRect( 0, 0, this.videoCanvas2.width, this.videoCanvas2.height );
+						this.canvasCtx2.drawImage( results.segmentationMask, 0, 0, this.videoCanvas2.width, this.videoCanvas2.height );
+						this.canvasCtx2.globalCompositeOperation = "source-out";
+						this.canvasCtx2.drawImage( this.backgroundImg, 0, 0, this.videoCanvas2.width, this.videoCanvas2.height);
+						this.canvasCtx2.globalCompositeOperation = "destination-atop";
+						this.canvasCtx2.drawImage( results.image, 0, 0, this.videoCanvas2.width, this.videoCanvas2.height );
+						this.canvasCtx2.restore();
+					}
+
+					this.cameraStreams = await navigator.mediaDevices.getUserMedia({
+						video: {
+							width: { min: 1024, ideal: 1280, max: 1920 },
+							height: { min: 576, ideal: 720, max: 1080 }
+						}
+					});
+					this.videoOnScreenElement.onloadeddata = () => {
+						this.selfieSegmentation2 = new SelfieSegmentation({
+							locateFile: (file) =>
+							`../../../models/${file}`,
+						});
+						this.selfieSegmentation2.setOptions({
+							modelSelection: 1,
+							selfieMode: false,
+						});
+						this.selfieSegmentation2.onResults(onScreenResults);
+						this.sendMediaPipeScreen();
+					};
+					if (!this.cameraStreams) {
+						this.$toast.error('No camera detected.');
+						this.reset();
+						return;
+					}
+					// Camera turned on successfully
+					if ('srcObject' in this.videoOnScreenElement) {
+						this.videoOnScreenElement.srcObject = this.cameraStreams;
+					} else {
+						this.videoOnScreenElement.src = URL.createObjectURL(this.cameraStreams);
+					}
+					this.videoOnScreenElement.play();
+				}
+
+				const stream = ( this.cameraMode === 3 ) ? this.videoCanvas2.captureStream(25) : this.cameraStreams; // IDENTIFY WHAT STREAM TO BE USED videoCanvas2 USES VIRTUAL BACKGROUND
 				let screenDimensions = await this.streamSize(this.screenStreams);
-				let cameraDimensions = await this.streamSize(this.cameraStreams);
+				let cameraDimensions = await this.streamSize(stream);
 				this.screenStreams.width = screenDimensions.width;
 				this.screenStreams.height = screenDimensions.height;
 				this.screenStreams.fullcanvas = true;
-				this.cameraStreams.width = 320;
-				this.cameraStreams.height = cameraDimensions.height * (320 / cameraDimensions.width);
-				this.cameraStreams.top = this.screenStreams.height - this.cameraStreams.height;
-				this.cameraStreams.left = this.screenStreams.width - this.cameraStreams.width;
+				stream.width = 320;
+				stream.height = cameraDimensions.height * (320 / cameraDimensions.width);
+				stream.top = this.screenStreams.height - stream.height;
+				stream.left = this.screenStreams.width - stream.width;
 
-				let mixer = new MultiStreamsMixer([this.screenStreams, this.cameraStreams], 'multi-streams-mixer');
+				let mixer = new MultiStreamsMixer([this.screenStreams, stream], 'multi-streams-mixer');
 				mixer.frameInterval = 10;
 				mixer.width = 360;
 				mixer.height = 240;
@@ -760,8 +888,12 @@ export default {
 				//
 			}
 
+<<<<<<< HEAD
 			if (this.sourceType == 'camera' && this.cameraMode === 3) {
 				// for using canva
+=======
+			if(this.sourceType == 'camera' && this.cameraMode ===3) { // THIS IS FOR USING CAMERA MODE ONLY VIRTUAL BACKGROUND
+>>>>>>> b85c7503 (fixed conflict after rebase)
 				const stream = this.videoCanvas.captureStream(25);
 				this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
 				if (this.audioStreams) {
@@ -861,6 +993,18 @@ export default {
 					track.stop();
 				});
 			}
+
+			// CLOSE THE SELFIE SEGMENTATION TO PREVENT MEMORY LEAK
+			if(this.selfieSegmentation) {
+				this.selfieSegmentation.close();
+				this.selfieSegmentation = null;
+			}
+			if(this.selfieSegmentation2) {
+				this.selfieSegmentation2.close();
+				this.selfieSegmentation2 = null;
+			}
+
+			this.canvaStream = null;
 			this.screenStreams = null;
 			this.blobs = [];
 		},
@@ -916,7 +1060,19 @@ export default {
 					track.stop();
 				});
 			}
+
+			// CLOSE THE SELFIE SEGMENTATION TO PREVENT MEMORY LEAK
+			if(this.selfieSegmentation) {
+				this.selfieSegmentation.close();
+				this.selfieSegmentation = null;
+			}
+			if(this.selfieSegmentation2) {
+				this.selfieSegmentation2.close();
+				this.selfieSegmentation2 = null;
+			}
+
 			this.screenStreams = null;
+			this.canvaStream = null;
 		},
 
 		createVideoPreview() {
