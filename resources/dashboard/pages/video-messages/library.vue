@@ -734,7 +734,7 @@ export default {
 		},
 
 		async initMediastreams() {
-			( this.cameraMode === 3 && this.sourceType == 'camera' && this.openCamera() ) // IF USING ONLY CAMERA AND ENABLE VIRTUAL BACKGROUND
+			( this.cameraMode === 3 && this.sourceType.includes('camera') && this.openCamera() ) // IF USING ONLY CAMERA AND ENABLE VIRTUAL BACKGROUND
 
 			let finalStream = new MediaStream();
 			this.audioStreams = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
@@ -743,10 +743,10 @@ export default {
 					finalStream.addTrack(track);
 				});
 			}
-			if (this.sourceType == 'camera' ) {
-				// if( this.sourceType == 'screen_camera' && this.cameraMode !== 3 ) {
-				// 	this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
-				// }
+			if (this.sourceType.includes('camera') ) {
+				if( this.cameraMode !== 3 ) {
+					this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
+				}
 
 				// cameraStreams already open in openCamera() function
 				if (!this.cameraStreams) {
