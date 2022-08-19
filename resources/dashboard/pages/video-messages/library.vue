@@ -743,7 +743,7 @@ export default {
 					finalStream.addTrack(track);
 				});
 			}
-			if (this.sourceType == 'camera' ) {
+			if (this.sourceType.includes('camera') ) {
 				if( this.cameraMode !== 3 ) {
 					this.cameraStreams = await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => {});
 				}
